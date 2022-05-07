@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.type.typed.fixture.stateless;
+package org.apache.shardingsphere.spi.type.typed.fixture;
 
-import org.apache.shardingsphere.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.spi.lifecycle.SPIPostProcessor;
 import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 
-@SingletonSPI
-public interface StatelessTypedSPIFixture extends TypedSPI {
+public interface TypedSPIFixture extends TypedSPI, SPIPostProcessor {
 }

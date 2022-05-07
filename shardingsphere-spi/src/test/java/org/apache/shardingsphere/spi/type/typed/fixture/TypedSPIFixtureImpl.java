@@ -15,12 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.type.typed.fixture.stateless;
+package org.apache.shardingsphere.spi.type.typed.fixture;
 
-public final class StatelessTypedSPIFixtureImpl implements StatelessTypedSPIFixture {
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Properties;
+
+@Getter
+@Setter
+public final class TypedSPIFixtureImpl implements TypedSPIFixture {
+    
+    private Properties props = new Properties();
     
     @Override
     public String getType() {
-        return "Stateless_Fixture";
+        return "TYPED.FIXTURE";
+    }
+    
+    @Override
+    public Collection<String> getTypeAliases() {
+        return Collections.singletonList("TYPED.ALIAS");
     }
 }
