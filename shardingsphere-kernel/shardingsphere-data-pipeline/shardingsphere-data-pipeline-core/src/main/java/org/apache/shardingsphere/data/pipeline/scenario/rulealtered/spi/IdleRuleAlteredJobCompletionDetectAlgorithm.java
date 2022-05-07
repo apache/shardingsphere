@@ -44,11 +44,10 @@ public final class IdleRuleAlteredJobCompletionDetectAlgorithm implements JobCom
     @Setter
     private Properties props;
     
-    private long incrementalTaskIdleSecondsThreshold;
+    private volatile long incrementalTaskIdleSecondsThreshold;
     
     @Override
     public void init(final Properties props) {
-        this.props = props;
         incrementalTaskIdleSecondsThreshold = getIncrementalTaskIdleSecondsThreshold(props);
     }
     
