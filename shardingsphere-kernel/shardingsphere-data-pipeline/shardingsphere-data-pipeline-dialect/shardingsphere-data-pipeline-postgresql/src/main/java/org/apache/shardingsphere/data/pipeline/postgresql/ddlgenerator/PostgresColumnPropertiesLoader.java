@@ -138,7 +138,7 @@ public final class PostgresColumnPropertiesLoader extends PostgresAbstractLoader
         handlePrimaryColumn(column);
         fetchLengthPrecision(column);
         editTypes.add(column.get("cltype").toString());
-        column.put("edit_types", editTypes);
+        column.put("edit_types", editTypes.stream().sorted().collect(Collectors.toList()));
         column.put("cltype", parseTypeName(column.get("cltype").toString()));
     }
     
