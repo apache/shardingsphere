@@ -49,15 +49,14 @@ public final class ShadowNonDMLStatementRoutingEngine implements ShadowRouteEngi
     }
     
     private Map<String, String> findShadowDataSourceMappings(final ShadowRule shadowRule) {
-        Map<String, String> result = new LinkedHashMap<>();
         Optional<Collection<String>> sqlComments = parseSQLComments();
         if (!sqlComments.isPresent()) {
-            return result;
+            return new LinkedHashMap<>();
         }
         if (isMatchAnyNoteShadowAlgorithms(shadowRule, createShadowDetermineCondition(sqlComments.get()))) {
             return shadowRule.getAllShadowDataSourceMappings();
         }
-        return result;
+        return new LinkedHashMap<>();
     }
     
     private Optional<Collection<String>> parseSQLComments() {
