@@ -60,8 +60,7 @@ public final class ShardingSphereGeneralLock implements ShardingSphereGlobalLock
     }
     
     private synchronized boolean innerTryLock(final String lockName, final long timeoutMillis) {
-        boolean isAcquired = sequencedSemaphoreLock.tryLock(lockName, TimeoutMilliseconds.MIN_TRY_LOCK);
-        if (!isAcquired) {
+        if (!sequencedSemaphoreLock.tryLock(lockName, TimeoutMilliseconds.MIN_TRY_LOCK)) {
             return false;
         }
         try {
