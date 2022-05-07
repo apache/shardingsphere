@@ -49,7 +49,7 @@ public final class PostgreSQLIncrementTaskRunnable implements Runnable {
         int executeCount = 0;
         List<Long> newPrimaryKeys = new LinkedList<>();
         try {
-            while (!Thread.currentThread().isInterrupted() && executeCount < 20) {
+            while (executeCount < 20 && !Thread.currentThread().isInterrupted()) {
                 newPrimaryKeys.add(insertOrderAndOrderItem());
                 if (newPrimaryKeys.size() % 2 == 0) {
                     deleteOrderAndOrderItem(newPrimaryKeys.get(newPrimaryKeys.size() - 1));

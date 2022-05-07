@@ -36,9 +36,9 @@ public final class MySQLIncrementTaskRunnable implements Runnable {
     
     private static final String INSERT_ORDER_ITEM = "INSERT INTO t_order_item(item_id,order_id,user_id,status) VALUES(?,?,?,?)";
     
-    private static final String UPDATE_ORDER_BY_ID = "UPDATE t_order SET t_varchar = 'update',t_unsigned_int = %s WHERE id = %s";
+    private static final String UPDATE_ORDER_BY_ID = "UPDATE t_order SET t_varchar = 'update',t_unsigned_int = ? WHERE id = ?";
     
-    private static final String UPDATE_ORDER_ITEM_BY_ID = "UPDATE t_order_item SET status = 'changed' WHERE item_id = %s";
+    private static final String UPDATE_ORDER_ITEM_BY_ID = "UPDATE t_order_item SET status = 'changed' WHERE item_id = ?";
     
     private final JdbcTemplate jdbcTemplate;
     
@@ -49,7 +49,7 @@ public final class MySQLIncrementTaskRunnable implements Runnable {
         int executeCount = 0;
         List<Long> newPrimaryKeys = new LinkedList<>();
         try {
-            while (!Thread.currentThread().isInterrupted() && executeCount < 20) {
+            while (executeCount < 20 && !Thread.currentThread().isInterrupted()) {
                 newPrimaryKeys.add(insertOrderAndOrderItem());
                 if (newPrimaryKeys.size() % 2 == 0) {
                     deleteOrderAndOrderItem(newPrimaryKeys.get(newPrimaryKeys.size() - 1));
@@ -73,9 +73,9 @@ public final class MySQLIncrementTaskRunnable implements Runnable {
     }
     
     private void updateOrderAndOrderItem(final long primaryKey) throws SQLException {
-        jdbcTemplate.execute(String.format(UPDATE_ORDER_BY_ID, "null", primaryKey));
-        jdbcTemplate.execute(String.format(UPDATE_ORDER_BY_ID, "100", primaryKey));
-        jdbcTemplate.execute(String.format(UPDATE_ORDER_ITEM_BY_ID, primaryKey));
+        jdbcTemplate.update(UPDATE_ORDER_BY_ID, null, primaryKey);
+        jdbcTemplate.update(UPDATE_ORDER_BY_ID, 100, primaryKey);
+        jdbcTemplate.update(UPDATE_ORDER_ITEM_BY_ID, primaryKey);
     }
     
     private void deleteOrderAndOrderItem(final long primaryKey) throws SQLException {
