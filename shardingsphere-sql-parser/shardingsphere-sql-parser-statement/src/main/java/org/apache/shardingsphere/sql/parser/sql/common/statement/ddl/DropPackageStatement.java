@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.fixture;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
-import org.apache.shardingsphere.traffic.spi.TrafficAlgorithm;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
-public final class TestTrafficAlgorithm implements TrafficAlgorithm {
-    
-    @Override
-    public String getType() {
-        return "TEST";
-    }
+/**
+ * Drop package statement.
+ */
+@ToString
+public abstract class DropPackageStatement extends AbstractSQLStatement implements DDLStatement {
 }

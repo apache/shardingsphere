@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.dbdiscovery.distsql.handler.fixture.DistSQLFixtureDatabaseDiscoveryProviderAlgorithm
+org.apache.shardingsphere.dbdiscovery.distsql.handler.fixture.DistSQLDatabaseDiscoveryProviderAlgorithmFixture

@@ -15,31 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.distsql.handler.fixture;
+package org.apache.shardingsphere.sharding.fixture;
 
-import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
-import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
+import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingAlgorithm;
+import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingValue;
 
-import javax.sql.DataSource;
+import java.util.Collection;
 
-public final class DistSQLFixtureDatabaseDiscoveryProviderAlgorithm implements DatabaseDiscoveryProviderAlgorithm {
+public final class CoreComplexKeysShardingAlgorithmFixture implements ComplexKeysShardingAlgorithm<Integer> {
     
     @Override
-    public void checkEnvironment(final String databaseName, final DataSource dataSource) {
-    }
-    
-    @Override
-    public boolean isPrimaryInstance(final DataSource dataSource) {
-        return false;
-    }
-    
-    @Override
-    public ReplicaDataSourceStatus loadReplicaStatus(final DataSource replicaDataSource) {
-        return new ReplicaDataSourceStatus(true, 0L);
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final ComplexKeysShardingValue<Integer> shardingValue) {
+        return availableTargetNames;
     }
     
     @Override
     public String getType() {
-        return "DISTSQL.FIXTURE";
+        return "CORE.COMPLEX.FIXTURE";
     }
 }

@@ -15,22 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.distsql.fixture;
+package org.apache.shardingsphere.dbdiscovery.distsql.handler.fixture;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
+import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
+import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
 
-import java.util.Properties;
+import javax.sql.DataSource;
 
-public final class HintShadowAlgorithmFixture implements ShadowAlgorithm {
+public final class DistSQLDatabaseDiscoveryProviderAlgorithmFixture implements DatabaseDiscoveryProviderAlgorithm {
     
-    @Getter
-    @Setter
-    private Properties props;
+    @Override
+    public void checkEnvironment(final String databaseName, final DataSource dataSource) {
+    }
+    
+    @Override
+    public boolean isPrimaryInstance(final DataSource dataSource) {
+        return false;
+    }
+    
+    @Override
+    public ReplicaDataSourceStatus loadReplicaStatus(final DataSource replicaDataSource) {
+        return new ReplicaDataSourceStatus(true, 0L);
+    }
     
     @Override
     public String getType() {
-        return "HINT_TEST";
+        return "DISTSQL.FIXTURE";
     }
 }

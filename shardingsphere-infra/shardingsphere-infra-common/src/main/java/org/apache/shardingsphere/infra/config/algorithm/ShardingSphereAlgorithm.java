@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.infra.config.algorithm;
 
-import org.apache.shardingsphere.spi.type.typed.StatefulTypedSPI;
+import org.apache.shardingsphere.spi.lifecycle.SPIPostProcessor;
+import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 
 /**
  * ShardingSphere algorithm.
  */
-public interface ShardingSphereAlgorithm extends StatefulTypedSPI {
+public interface ShardingSphereAlgorithm extends TypedSPI, SPIPostProcessor {
 }

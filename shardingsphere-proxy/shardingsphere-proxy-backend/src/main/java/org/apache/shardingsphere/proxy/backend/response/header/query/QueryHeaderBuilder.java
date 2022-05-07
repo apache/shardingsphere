@@ -21,15 +21,17 @@ import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.spi.type.required.RequiredSPI;
-import org.apache.shardingsphere.spi.type.typed.StatelessTypedSPI;
+import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 
 import java.sql.SQLException;
 
 /**
  * Query header builder.
  */
-public interface QueryHeaderBuilder extends StatelessTypedSPI, RequiredSPI {
+@SingletonSPI
+public interface QueryHeaderBuilder extends TypedSPI, RequiredSPI {
     
     /**
      * Build query header.

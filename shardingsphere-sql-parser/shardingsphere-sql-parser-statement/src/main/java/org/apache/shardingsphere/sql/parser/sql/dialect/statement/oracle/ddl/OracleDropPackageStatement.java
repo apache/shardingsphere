@@ -15,33 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.fixture;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropPackageStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
-import java.util.Properties;
-
-public final class TestEncryptAlgorithm implements EncryptAlgorithm<Object, String> {
-    
-    @Getter
-    @Setter
-    private Properties props;
-    
-    @Override
-    public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
-        return "encryptValue";
-    }
-    
-    @Override
-    public Object decrypt(final String cipherValue, final EncryptContext encryptContext) {
-        return "decryptValue";
-    }
-    
-    @Override
-    public String getType() {
-        return "TEST";
-    }
+/**
+ * Oracle drop package statement.
+ */
+@ToString
+public final class OracleDropPackageStatement extends DropPackageStatement implements OracleStatement {
 }

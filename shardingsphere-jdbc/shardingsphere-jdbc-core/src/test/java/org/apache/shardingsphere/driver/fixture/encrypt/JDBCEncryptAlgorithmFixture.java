@@ -15,34 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.fixture;
+package org.apache.shardingsphere.driver.fixture.encrypt;
 
-import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCalculateParameter;
-import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 
-import java.util.Collection;
-import java.util.Collections;
-
-public final class FixtureDataConsistencyCalculateAlgorithm implements DataConsistencyCalculateAlgorithm {
+public final class JDBCEncryptAlgorithmFixture implements EncryptAlgorithm<Object, String> {
     
     @Override
-    public Iterable<Object> calculate(final DataConsistencyCalculateParameter parameter) {
-        return Collections.singletonList(true);
+    public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
+        return "encryptValue";
     }
     
     @Override
-    public Collection<String> getSupportedDatabaseTypes() {
-        return DatabaseTypeRegistry.getDatabaseTypeNames();
-    }
-    
-    @Override
-    public String getDescription() {
-        return "Fixture";
+    public Object decrypt(final String cipherValue, final EncryptContext encryptContext) {
+        return "decryptValue";
     }
     
     @Override
     public String getType() {
-        return "FIXTURE";
+        return "JDBC.FIXTURE";
     }
 }

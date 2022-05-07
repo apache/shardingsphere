@@ -15,28 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.fixture;
+package org.apache.shardingsphere.encrypt.fixture;
 
-import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingAlgorithm;
-import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingValue;
+import org.apache.shardingsphere.encrypt.spi.QueryAssistedEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 
-import java.util.Collection;
-import java.util.Collections;
-
-public final class HintShardingAlgorithmFixture implements HintShardingAlgorithm<Integer> {
+public final class CoreQueryAssistedEncryptAlgorithmFixture implements QueryAssistedEncryptAlgorithm<Object, String> {
     
     @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final HintShardingValue<Integer> shardingValue) {
-        for (String each : availableTargetNames) {
-            if (each.endsWith(String.valueOf(shardingValue.getValues().iterator().next() % 2))) {
-                return Collections.singletonList(each);
-            }
-        }
-        return null;
+    public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
+        return "encryptValue";
+    }
+    
+    @Override
+    public Object decrypt(final String cipherValue, final EncryptContext encryptContext) {
+        return "decryptValue";
+    }
+    
+    @Override
+    public String queryAssistedEncrypt(final Object plainValue, final EncryptContext encryptContext) {
+        return "assistedEncryptValue";
     }
     
     @Override
     public String getType() {
-        return "HINT.FIXTURE";
+        return "CORE.QUERY_ASSISTED.FIXTURE";
     }
 }

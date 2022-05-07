@@ -15,28 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.fixture;
+package org.apache.shardingsphere.dbdiscovery.fixture;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
+import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
+import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
 
-import java.util.List;
-import java.util.Properties;
+import javax.sql.DataSource;
 
-@Getter
-@Setter
-public final class TestReplicaLoadBalanceAlgorithm implements ReplicaLoadBalanceAlgorithm {
-    
-    private Properties props = new Properties();
+public final class CoreDatabaseDiscoveryProviderAlgorithmFixture implements DatabaseDiscoveryProviderAlgorithm {
     
     @Override
-    public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames) {
-        return null;
+    public void checkEnvironment(final String databaseName, final DataSource dataSource) {
+    }
+    
+    @Override
+    public boolean isPrimaryInstance(final DataSource dataSource) {
+        return true;
+    }
+    
+    @Override
+    public ReplicaDataSourceStatus loadReplicaStatus(final DataSource replicaDataSource) {
+        return new ReplicaDataSourceStatus(true, 0L);
     }
     
     @Override
     public String getType() {
-        return "TEST";
+        return "CORE.FIXTURE";
     }
 }

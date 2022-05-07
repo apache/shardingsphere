@@ -17,27 +17,12 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.fixture;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.instance.definition.InstanceId;
-import org.apache.shardingsphere.traffic.spi.TrafficLoadBalanceAlgorithm;
+import org.apache.shardingsphere.traffic.spi.TrafficAlgorithm;
 
-import java.util.List;
-import java.util.Properties;
-
-@Getter
-@Setter
-public final class TestTrafficLoadBalanceAlgorithm implements TrafficLoadBalanceAlgorithm {
-    
-    private Properties props = new Properties();
+public final class DistSQLTrafficAlgorithmFixture implements TrafficAlgorithm {
     
     @Override
     public String getType() {
-        return "TEST";
-    }
-    
-    @Override
-    public InstanceId getInstanceId(final String name, final List<InstanceId> instanceIds) {
-        return null;
+        return "DISTSQL.FIXTURE";
     }
 }

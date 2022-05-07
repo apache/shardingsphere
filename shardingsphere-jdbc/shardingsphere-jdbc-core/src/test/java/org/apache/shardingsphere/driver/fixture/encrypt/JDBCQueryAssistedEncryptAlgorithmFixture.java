@@ -15,22 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.fixture;
+package org.apache.shardingsphere.driver.fixture.encrypt;
 
-import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingAlgorithm;
-import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingValue;
+import org.apache.shardingsphere.encrypt.spi.QueryAssistedEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 
-import java.util.Collection;
-
-public final class ComplexKeysShardingAlgorithmFixture implements ComplexKeysShardingAlgorithm<Integer> {
+public final class JDBCQueryAssistedEncryptAlgorithmFixture implements QueryAssistedEncryptAlgorithm<Object, String> {
     
     @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final ComplexKeysShardingValue<Integer> shardingValue) {
-        return availableTargetNames;
+    public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
+        return "encryptValue";
+    }
+    
+    @Override
+    public Object decrypt(final String cipherValue, final EncryptContext encryptContext) {
+        return "decryptValue";
+    }
+    
+    @Override
+    public String queryAssistedEncrypt(final Object plainValue, final EncryptContext encryptContext) {
+        return "assistedEncryptValue";
     }
     
     @Override
     public String getType() {
-        return "COMPLEX.FIXTURE";
+        return "JDBC.QUERY_ASSISTED.FIXTURE";
     }
 }

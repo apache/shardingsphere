@@ -15,30 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.fixture.encrypt;
+package org.apache.shardingsphere.data.pipeline.core.fixture;
 
-import org.apache.shardingsphere.encrypt.spi.QueryAssistedEncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
+import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCalculateParameter;
+import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 
-public final class TestQueryAssistedEncryptAlgorithm implements QueryAssistedEncryptAlgorithm<Object, String> {
+import java.util.Collection;
+import java.util.Collections;
+
+public final class DataConsistencyCalculateAlgorithmFixture implements DataConsistencyCalculateAlgorithm {
     
     @Override
-    public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
-        return "encryptValue";
+    public Iterable<Object> calculate(final DataConsistencyCalculateParameter parameter) {
+        return Collections.singletonList(true);
     }
     
     @Override
-    public Object decrypt(final String cipherValue, final EncryptContext encryptContext) {
-        return "decryptValue";
+    public Collection<String> getSupportedDatabaseTypes() {
+        return DatabaseTypeRegistry.getDatabaseTypeNames();
     }
     
     @Override
-    public String queryAssistedEncrypt(final Object plainValue, final EncryptContext encryptContext) {
-        return "assistedEncryptValue";
+    public String getDescription() {
+        return "Fixture";
     }
     
     @Override
     public String getType() {
-        return "assistedTest";
+        return "FIXTURE";
     }
 }

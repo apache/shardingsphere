@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.spi.sqlbuilder;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
-import org.apache.shardingsphere.spi.type.typed.StatefulTypedSPI;
+import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 
 import java.util.Collection;
 import java.util.List;
@@ -31,7 +31,17 @@ import java.util.Set;
 /**
  * Pipeline SQL builder.
  */
-public interface PipelineSQLBuilder extends StatefulTypedSPI {
+public interface PipelineSQLBuilder extends TypedSPI {
+    
+    /**
+     * Build create schema SQL.
+     *
+     * @param schemaName schema name
+     * @return create schema SQL
+     */
+    default String buildCreateSchemaSQL(String schemaName) {
+        throw new UnsupportedOperationException();
+    }
     
     /**
      * Build inventory dump SQL.

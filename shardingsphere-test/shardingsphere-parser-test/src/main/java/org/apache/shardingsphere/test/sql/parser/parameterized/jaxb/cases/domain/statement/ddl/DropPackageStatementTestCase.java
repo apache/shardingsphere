@@ -15,33 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.distsql.handler.fixture;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-import java.util.Properties;
-
-public final class TestEncryptAlgorithm implements EncryptAlgorithm<Object, String> {
-    
-    @Getter
-    @Setter
-    private Properties props;
-    
-    @Override
-    public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
-        return "encryptValue";
-    }
-    
-    @Override
-    public Object decrypt(final String cipherValue, final EncryptContext encryptContext) {
-        return "decryptValue";
-    }
-    
-    @Override
-    public String getType() {
-        return "test";
-    }
+/**
+ * Drop package statement test case.
+ */
+public final class DropPackageStatementTestCase extends SQLParserTestCase {
 }

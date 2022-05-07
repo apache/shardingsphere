@@ -18,10 +18,12 @@
 package org.apache.shardingsphere.proxy.frontend.state.impl;
 
 import org.apache.shardingsphere.proxy.frontend.state.ProxyState;
-import org.apache.shardingsphere.spi.type.typed.StatelessTypedSPI;
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 
 /**
  * OK proxy state.
  */
-public interface OKProxyState extends ProxyState, StatelessTypedSPI {
+@SingletonSPI
+public interface OKProxyState extends ProxyState, TypedSPI {
 }

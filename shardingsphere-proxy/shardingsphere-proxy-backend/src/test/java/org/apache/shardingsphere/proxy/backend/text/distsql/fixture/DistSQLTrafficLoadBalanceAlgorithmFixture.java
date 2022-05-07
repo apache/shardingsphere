@@ -15,31 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.fixture;
+package org.apache.shardingsphere.proxy.backend.text.distsql.fixture;
 
-import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
-import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
+import org.apache.shardingsphere.infra.instance.definition.InstanceId;
+import org.apache.shardingsphere.traffic.spi.TrafficLoadBalanceAlgorithm;
 
-import javax.sql.DataSource;
+import java.util.List;
 
-public final class CoreFixtureDatabaseDiscoveryProviderAlgorithm implements DatabaseDiscoveryProviderAlgorithm {
-    
-    @Override
-    public void checkEnvironment(final String databaseName, final DataSource dataSource) {
-    }
-    
-    @Override
-    public boolean isPrimaryInstance(final DataSource dataSource) {
-        return true;
-    }
-    
-    @Override
-    public ReplicaDataSourceStatus loadReplicaStatus(final DataSource replicaDataSource) {
-        return new ReplicaDataSourceStatus(true, 0L);
-    }
+public final class DistSQLTrafficLoadBalanceAlgorithmFixture implements TrafficLoadBalanceAlgorithm {
     
     @Override
     public String getType() {
-        return "CORE.FIXTURE";
+        return "DISTSQL.FIXTURE";
+    }
+    
+    @Override
+    public InstanceId getInstanceId(final String name, final List<InstanceId> instanceIds) {
+        return null;
     }
 }

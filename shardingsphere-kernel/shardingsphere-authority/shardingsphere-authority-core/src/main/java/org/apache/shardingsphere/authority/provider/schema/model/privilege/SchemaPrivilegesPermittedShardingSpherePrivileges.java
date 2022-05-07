@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.authority.provider.schema.model.privilege;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.authority.model.AccessSubject;
 import org.apache.shardingsphere.authority.model.PrivilegeType;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
@@ -26,8 +26,11 @@ import org.apache.shardingsphere.authority.provider.natived.model.subject.Schema
 import java.util.Collection;
 import java.util.Set;
 
-@AllArgsConstructor
-public class SchemaPrivilegesPermittedShardingSpherePrivileges implements ShardingSpherePrivileges {
+/**
+ * Schema privilegesPermittedShardingSpherePrivileges.
+ */
+@RequiredArgsConstructor
+public final class SchemaPrivilegesPermittedShardingSpherePrivileges implements ShardingSpherePrivileges {
     
     private final Set<String> schemas;
     
@@ -47,9 +50,6 @@ public class SchemaPrivilegesPermittedShardingSpherePrivileges implements Shardi
     
     @Override
     public boolean hasPrivileges(final AccessSubject accessSubject, final Collection<PrivilegeType> privileges) {
-        if (accessSubject instanceof SchemaAccessSubject) {
-            return hasPrivileges(((SchemaAccessSubject) accessSubject).getSchema());
-        }
-        return false;
+        return accessSubject instanceof SchemaAccessSubject && hasPrivileges(((SchemaAccessSubject) accessSubject).getSchema());
     }
 }
