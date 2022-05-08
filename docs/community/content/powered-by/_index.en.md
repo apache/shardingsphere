@@ -13,7 +13,7 @@ Please register [here](https://github.com/apache/shardingsphere/discussions/1225
 
 ## Who is Using ShardingSphere?
 
-Total: 192 companies.
+Total: 193 companies.
 
 ### Infra Software
 <ul>
@@ -103,6 +103,7 @@ Total: 192 companies.
     <li><a href="https://aifanfan.baidu.com/" rel="nofollow">Baidu aifanfan</a></li>
     <li><a href="https://www.tuya.com/" rel="nofollow">tuya</a></li>
     <li><a href="https://www.itrus.com.cn/" rel="nofollow">ITrusChina</a></li>
+    <li><a href="https://www.advancegroup.com/" rel="nofollow">Advance Intelligence Group</a></li>
     <li><a href="http://www.zhenxinsafe.com/" rel="nofollow">ZhenXin Safe</a></li>
     <li><a href="http://www.cloudansys.com/" rel="nofollow">YUNLU</a></li>
     <li><a href="http://www.compasshz.com/" rel="nofollow">Compasshz</a></li>
