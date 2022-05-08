@@ -69,7 +69,7 @@ public abstract class AbstractCosIdIntervalShardingAlgorithm<T extends Comparabl
     }
     
     private ZoneId getZoneId(final Properties props) {
-        return props.containsKey(ZONE_ID_KEY) ? ZoneId.of(props.get(ZONE_ID_KEY).toString()) : ZoneId.systemDefault();
+        return props.containsKey(ZONE_ID_KEY) ? ZoneId.of(props.getProperty(ZONE_ID_KEY)) : ZoneId.systemDefault();
     }
     
     private IntervalTimeline getIntervalTimeline(final Properties props) {
@@ -84,7 +84,7 @@ public abstract class AbstractCosIdIntervalShardingAlgorithm<T extends Comparabl
     
     private String getRequiredValue(final Properties props, final String key) {
         Preconditions.checkArgument(props.containsKey(key), "%s can not be null.", key);
-        return props.get(key).toString();
+        return props.getProperty(key);
     }
     
     @Override

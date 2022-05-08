@@ -51,6 +51,6 @@ public final class PipelineChannelCreatorFactory {
      * @return contains pipeline channel creator or not
      */
     public static boolean contains(final String pipelineChannelCreatorType) {
-        return TypedSPIRegistry.findRegisteredService(PipelineChannelCreator.class, pipelineChannelCreatorType, null).isPresent();
+        return TypedSPIRegistry.findRegisteredService(PipelineChannelCreator.class, pipelineChannelCreatorType).isPresent();
     }
 }

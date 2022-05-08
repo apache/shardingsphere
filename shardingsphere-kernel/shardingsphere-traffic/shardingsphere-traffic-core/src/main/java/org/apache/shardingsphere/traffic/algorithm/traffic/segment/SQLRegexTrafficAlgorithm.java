@@ -41,8 +41,8 @@ public final class SQLRegexTrafficAlgorithm implements SegmentTrafficAlgorithm {
     
     @Override
     public void init(final Properties props) {
-        Preconditions.checkArgument(props.containsKey(REGEX_PROPS_KEY), "%s cannot be null.", REGEX_PROPS_KEY);
-        regex = Pattern.compile(String.valueOf(props.get(REGEX_PROPS_KEY)));
+        Preconditions.checkArgument(props.containsKey(REGEX_PROPS_KEY), "%s can not be null.", REGEX_PROPS_KEY);
+        regex = Pattern.compile(props.getProperty(REGEX_PROPS_KEY));
     }
     
     @Override

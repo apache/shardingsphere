@@ -54,7 +54,7 @@ public final class CosIdModShardingAlgorithm<T extends Number & Comparable<T>> i
     
     private String getRequiredValue(final Properties props, final String key) {
         Preconditions.checkArgument(props.containsKey(key), "%s can not be null.", key);
-        return props.get(key).toString();
+        return props.getProperty(key);
     }
     
     @Override
