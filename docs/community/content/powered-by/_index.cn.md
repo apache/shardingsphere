@@ -13,7 +13,7 @@ chapter = true
 
 ## 谁在使用 ShardingSphere?
 
-共计 192 家公司。
+共计 193 家公司。
 
 ### 基础软件
 <ul>
@@ -103,6 +103,7 @@ chapter = true
     <li><a href="https://aifanfan.baidu.com/" rel="nofollow">百度爱番番</a></li>
     <li><a href="https://www.tuya.com/cn" rel="nofollow">涂鸦</a></li>
     <li><a href="https://www.itrus.com.cn/" rel="nofollow">天威诚信</a></li>
+    <li><a href="https://www.advancegroup.com.cn/" rel="nofollow">领创集团</a>：<a href="https://mp.weixin.qq.com/s/4iSewGT6-bOmDH56ukyBsQ" rel="nofollow">用户案例</a></li>
     <li><a href="http://www.zhenxinsafe.com/" rel="nofollow">真信认知科技</a></li>
     <li><a href="http://www.cloudansys.com/" rel="nofollow">云庐科技</a></li>
     <li><a href="http://www.compasshz.com/" rel="nofollow">康帕斯科技</a></li>
@@ -141,7 +142,7 @@ chapter = true
     <li><a href="https://www.ishansong.com/" rel="nofollow">闪送</a></li>
     <li><a href="http://www.yundaex.com/cn/index.php" rel="nofollow">韵达科技</a></li>
     <li><a href="http://www.huochebang.com/" rel="nofollow">货车帮</a></li>
-    <li><a href="https://www.huimin.cn" rel="nofollow">中商惠民</a>：<a href="https://mp.weixin.qq.com/s/UoMHNdPFj_kfwC-RAYazAg" rel="nofollow">用户案例</a></li></li>
+    <li><a href="https://www.huimin.cn" rel="nofollow">中商惠民</a>：<a href="https://mp.weixin.qq.com/s/UoMHNdPFj_kfwC-RAYazAg" rel="nofollow">用户案例</a></li>
     <li><a href="http://www.yl-scm.com/" rel="nofollow">云路供应链</a></li>
     <li><a href="https://www.newbeescm.com/" rel="nofollow">蜂网</a></li>
     <li><a href="https://www.dianwoda.com/" rel="nofollow">点我达</a></li>   
