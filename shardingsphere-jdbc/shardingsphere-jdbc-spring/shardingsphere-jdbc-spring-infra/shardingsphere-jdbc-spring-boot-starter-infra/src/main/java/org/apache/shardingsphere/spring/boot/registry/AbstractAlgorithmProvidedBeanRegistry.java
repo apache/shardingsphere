@@ -61,12 +61,11 @@ public abstract class AbstractAlgorithmProvidedBeanRegistry<T extends ShardingSp
         }
         Map<String, Object> parameterMap = PropertyUtil.handle(environment, prefix, Map.class);
         Collection<String> algorithmNames = parameterMap.keySet().stream().map(key -> key.contains(POINT) ? key.substring(0, key.indexOf(POINT)) : key).collect(Collectors.toSet());
-        Map<String, ShardingSphereAlgorithmConfiguration> yamlAlgorithmConfigs = createAlgorithmConfigurations(prefix, algorithmNames);
+        Map<String, ShardingSphereAlgorithmConfiguration> algorithmConfigs = createAlgorithmConfigurations(prefix, algorithmNames);
         ShardingSphereServiceLoader.register(algorithmClass);
-        for (Entry<String, ShardingSphereAlgorithmConfiguration> entry : yamlAlgorithmConfigs.entrySet()) {
+        for (Entry<String, ShardingSphereAlgorithmConfiguration> entry : algorithmConfigs.entrySet()) {
             ShardingSphereAlgorithmConfiguration algorithmConfig = entry.getValue();
-            ShardingSphereAlgorithm algorithm = ShardingSphereAlgorithmFactory.createAlgorithm(algorithmConfig, algorithmClass);
-            BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(algorithm.getClass());
+            BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(ShardingSphereAlgorithmFactory.createAlgorithm(algorithmConfig, algorithmClass).getClass());
             builder.addPropertyValue(PROPS, algorithmConfig.getProps());
             registry.registerBeanDefinition(entry.getKey(), builder.getBeanDefinition());
         }
@@ -81,7 +80,9 @@ public abstract class AbstractAlgorithmProvidedBeanRegistry<T extends ShardingSp
     }
     
     private ShardingSphereAlgorithmConfiguration createAlgorithmConfiguration(final String prefix, final String algorithmName) {
-        return new ShardingSphereAlgorithmConfiguration(environment.getProperty(String.join("", prefix, algorithmName, TYPE_SUFFIX)), getProperties(prefix, algorithmName));
+        String type = environment.getProperty(String.join("", prefix, algorithmName, TYPE_SUFFIX));
+        Properties props = getProperties(prefix, algorithmName);
+        return new ShardingSphereAlgorithmConfiguration(type, props);
     }
     
     private Properties getProperties(final String prefix, final String algorithmName) {
@@ -90,7 +91,7 @@ public abstract class AbstractAlgorithmProvidedBeanRegistry<T extends ShardingSp
         if (PropertyUtil.containPropertyPrefix(environment, propsPrefix)) {
             result.putAll(PropertyUtil.handle(environment, propsPrefix, Map.class));
         }
-        return result;
+        return convertToStringTypedProperties(result);
     }
     
     @Override
