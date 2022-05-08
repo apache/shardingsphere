@@ -108,7 +108,7 @@ public final class SM4EncryptAlgorithm implements EncryptAlgorithm<Object, Strin
     
     private String createSm4Padding(final Properties props) {
         Preconditions.checkArgument(props.containsKey(SM4_PADDING), "%s can not be null.", SM4_PADDING);
-        String result = String.valueOf(props.get(SM4_PADDING)).toUpperCase().replace("PADDING", "Padding");
+        String result = String.valueOf(props.getProperty(SM4_PADDING)).toUpperCase().replace("PADDING", "Padding");
         Preconditions.checkState(PADDINGS.contains(result), "Padding must be either PKCS5Padding or PKCS7Padding.");
         return result;
     }

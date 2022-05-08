@@ -95,14 +95,14 @@ public final class WeightReplicaLoadBalanceAlgorithm implements ReplicaLoadBalan
     
     private double getWeightValue(final String readDataSourceName) {
         Object weightObject = props.get(readDataSourceName);
-        if (weightObject == null) {
+        if (null == weightObject) {
             throw new IllegalStateException("Read database access weight is not configured：" + readDataSourceName);
         }
         double result;
         try {
             result = Double.parseDouble(weightObject.toString());
-        } catch (NumberFormatException e) {
-            throw new NumberFormatException("Read database weight configuration error, configuration parameters:" + weightObject.toString());
+        } catch (final NumberFormatException ex) {
+            throw new NumberFormatException("Read database weight configuration error, configuration parameters:" + weightObject);
         }
         if (Double.isInfinite(result)) {
             result = 10000.0D;
