@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory;
 
 import com.google.common.base.Strings;
+import lombok.Getter;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.AckCallback;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreator;
@@ -33,10 +34,14 @@ public final class MemoryPipelineChannelCreator implements PipelineChannelCreato
     
     private static final String BLOCK_QUEUE_SIZE_KEY = "block-queue-size";
     
+    @Getter
+    private Properties props;
+    
     private int blockQueueSize = 10000;
     
     @Override
     public void init(final Properties props) {
+        this.props = props;
         String blockQueueSizeValue = props.getProperty(BLOCK_QUEUE_SIZE_KEY);
         if (!Strings.isNullOrEmpty(blockQueueSizeValue)) {
             blockQueueSize = Integer.parseInt(blockQueueSizeValue);

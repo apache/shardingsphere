@@ -21,7 +21,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
@@ -57,25 +56,25 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
     private static final String INTERVAL_UNIT_KEY = "datetime-interval-unit";
     
     @Getter
-    @Setter
     private Properties props;
     
-    private volatile DateTimeFormatter dateTimeFormatter;
+    private DateTimeFormatter dateTimeFormatter;
     
-    private volatile int dateTimePatternLength;
+    private int dateTimePatternLength;
     
-    private volatile LocalDateTime dateTimeLower;
+    private LocalDateTime dateTimeLower;
     
-    private volatile LocalDateTime dateTimeUpper;
+    private LocalDateTime dateTimeUpper;
     
-    private volatile DateTimeFormatter tableSuffixPattern;
+    private DateTimeFormatter tableSuffixPattern;
     
-    private volatile int stepAmount;
+    private int stepAmount;
     
-    private volatile ChronoUnit stepUnit;
+    private ChronoUnit stepUnit;
     
     @Override
     public void init(final Properties props) {
+        this.props = props;
         String dateTimePattern = getDateTimePattern(props);
         dateTimeFormatter = DateTimeFormatter.ofPattern(dateTimePattern);
         dateTimePatternLength = dateTimePattern.length();

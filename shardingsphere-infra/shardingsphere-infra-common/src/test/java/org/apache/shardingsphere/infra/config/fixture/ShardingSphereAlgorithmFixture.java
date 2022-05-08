@@ -15,21 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.ratelimit;
+package org.apache.shardingsphere.infra.config.fixture;
 
-import org.apache.shardingsphere.data.pipeline.api.job.JobOperationType;
+import lombok.Getter;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
 
-/**
- * Fixture input job rate limit algorithm for SPI.
- */
-public final class FixtureInputJobRateLimitAlgorithm implements JobRateLimitAlgorithm {
+import java.util.Properties;
+
+@Getter
+public final class ShardingSphereAlgorithmFixture implements ShardingSphereAlgorithm {
+    
+    private Properties props;
+    
+    private String testValue;
     
     @Override
-    public String getType() {
-        return "FIXTURE_INPUT";
+    public void init(final Properties props) {
+        this.props = props;
+        testValue = props.getProperty("key");
     }
     
     @Override
-    public void intercept(final JobOperationType type, final Number data) {
+    public String getType() {
+        return "FIXTURE";
     }
 }

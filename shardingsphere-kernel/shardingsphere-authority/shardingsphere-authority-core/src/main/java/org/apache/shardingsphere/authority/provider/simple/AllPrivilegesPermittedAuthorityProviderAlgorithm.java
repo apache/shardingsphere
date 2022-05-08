@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.authority.provider.simple;
 
+import lombok.Getter;
 import org.apache.shardingsphere.authority.model.AccessSubject;
 import org.apache.shardingsphere.authority.model.PrivilegeType;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
@@ -28,13 +29,22 @@ import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Properties;
 
 /**
  * All privileges permitted authority provider algorithm.
  */
+@Getter
 public final class AllPrivilegesPermittedAuthorityProviderAlgorithm implements AuthorityProviderAlgorithm {
     
     private static final ShardingSpherePrivileges INSTANCE = new AllPrivilegesPermittedShardingSpherePrivileges();
+    
+    private Properties props;
+    
+    @Override
+    public void init(final Properties props) {
+        this.props = props;
+    }
     
     @Override
     public void init(final Map<String, ShardingSphereMetaData> metaDataMap, final Collection<ShardingSphereUser> users) {

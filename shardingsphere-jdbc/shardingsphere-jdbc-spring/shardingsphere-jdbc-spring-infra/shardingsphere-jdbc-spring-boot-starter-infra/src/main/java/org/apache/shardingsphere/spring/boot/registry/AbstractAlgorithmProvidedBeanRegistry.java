@@ -69,8 +69,8 @@ public abstract class AbstractAlgorithmProvidedBeanRegistry<T extends ShardingSp
         for (Entry<String, ShardingSphereAlgorithmConfiguration> entry : algorithmConfigs.entrySet()) {
             ShardingSphereAlgorithmConfiguration algorithmConfig = entry.getValue();
             BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(ShardingSphereAlgorithmFactory.createAlgorithm(algorithmConfig, algorithmClass).getClass());
-            propsMap.put(entry.getKey(), algorithmConfig.getProps());
             registry.registerBeanDefinition(entry.getKey(), builder.getBeanDefinition());
+            propsMap.put(entry.getKey(), algorithmConfig.getProps());
         }
     }
     
@@ -115,10 +115,7 @@ public abstract class AbstractAlgorithmProvidedBeanRegistry<T extends ShardingSp
     @Override
     public final Object postProcessAfterInitialization(final Object bean, final String beanName) {
         if (bean instanceof ShardingSphereAlgorithm && propsMap.containsKey(beanName)) {
-            ShardingSphereAlgorithm algorithm = (ShardingSphereAlgorithm) bean;
-            Properties props = propsMap.get(beanName);
-            algorithm.init(props);
-            algorithm.setProps(props);
+            ((ShardingSphereAlgorithm) bean).init(propsMap.get(beanName));
         }
         return bean;
     }

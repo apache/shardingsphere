@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.persist;
 
-import org.apache.shardingsphere.spi.aware.SPIPropertiesAware;
+import org.apache.shardingsphere.spi.lifecycle.SPIPostProcessor;
 import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 
 import java.util.List;
@@ -25,7 +25,7 @@ import java.util.List;
 /**
  * Persist repository.
  */
-public interface PersistRepository extends TypedSPI, SPIPropertiesAware {
+public interface PersistRepository extends TypedSPI, SPIPostProcessor {
     
     /**
      * Path separator.

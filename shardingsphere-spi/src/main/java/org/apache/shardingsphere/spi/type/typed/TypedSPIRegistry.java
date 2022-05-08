@@ -20,7 +20,6 @@ package org.apache.shardingsphere.spi.type.typed;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.aware.SPIPropertiesAware;
 import org.apache.shardingsphere.spi.exception.ServiceProviderNotFoundException;
 import org.apache.shardingsphere.spi.lifecycle.SPIPostProcessor;
 
@@ -65,9 +64,6 @@ public final class TypedSPIRegistry {
                 Properties stringTypeProps = convertToStringTypedProperties(props);
                 if (each instanceof SPIPostProcessor) {
                     ((SPIPostProcessor) each).init(stringTypeProps);
-                }
-                if (each instanceof SPIPropertiesAware) {
-                    ((SPIPropertiesAware) each).setProps(stringTypeProps);
                 }
                 return Optional.of(each);
             }
