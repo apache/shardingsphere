@@ -19,8 +19,8 @@ package org.apache.shardingsphere.spi;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.spi.exception.ServiceLoaderInstantiationException;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -67,15 +67,9 @@ public final class ShardingSphereServiceLoader {
         return null == serviceInterface.getAnnotation(SingletonSPI.class) ? newServiceInstances(serviceInterface) : getSingletonServiceInstances(serviceInterface);
     }
     
-    /**
-     * New service instances.
-     *
-     * @param serviceInterface service interface
-     * @param <T> type of service
-     * @return service instances
-     */
+    @SneakyThrows(ReflectiveOperationException.class)
     @SuppressWarnings("unchecked")
-    public static <T> Collection<T> newServiceInstances(final Class<T> serviceInterface) {
+    private static <T> Collection<T> newServiceInstances(final Class<T> serviceInterface) {
         if (!SERVICES.containsKey(serviceInterface)) {
             return Collections.emptyList();
         }
@@ -85,28 +79,13 @@ public final class ShardingSphereServiceLoader {
         }
         Collection<T> result = new LinkedList<>();
         for (Object each : services) {
-            result.add((T) newServiceInstance(each.getClass()));
+            result.add((T) each.getClass().getDeclaredConstructor().newInstance());
         }
         return result;
     }
     
-    private static Object newServiceInstance(final Class<?> clazz) {
-        try {
-            return clazz.getDeclaredConstructor().newInstance();
-        } catch (final ReflectiveOperationException ex) {
-            throw new ServiceLoaderInstantiationException(clazz, ex);
-        }
-    }
-    
-    /**
-     * Get singleton service instances.
-     *
-     * @param serviceInterface service interface
-     * @param <T> type of service
-     * @return service instances
-     */
     @SuppressWarnings("unchecked")
-    public static <T> Collection<T> getSingletonServiceInstances(final Class<T> serviceInterface) {
+    private static <T> Collection<T> getSingletonServiceInstances(final Class<T> serviceInterface) {
         return (Collection<T>) SERVICES.getOrDefault(serviceInterface, Collections.emptyList());
     }
 }
