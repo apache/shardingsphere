@@ -54,6 +54,6 @@ public final class EncryptAlgorithmFactory {
      * @return contains encrypt algorithm or not
      */
     public static boolean contains(final String encryptAlgorithmType) {
-        return TypedSPIRegistry.findRegisteredService(EncryptAlgorithm.class, encryptAlgorithmType, null).isPresent();
+        return TypedSPIRegistry.findRegisteredService(EncryptAlgorithm.class, encryptAlgorithmType).isPresent();
     }
 }

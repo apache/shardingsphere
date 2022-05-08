@@ -52,6 +52,6 @@ public final class TrafficAlgorithmFactory {
      * @return contains traffic algorithm or not
      */
     public static boolean contains(final String trafficAlgorithmType) {
-        return TypedSPIRegistry.findRegisteredService(TrafficAlgorithm.class, trafficAlgorithmType, null).isPresent();
+        return TypedSPIRegistry.findRegisteredService(TrafficAlgorithm.class, trafficAlgorithmType).isPresent();
     }
 }

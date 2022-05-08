@@ -52,6 +52,6 @@ public final class ShadowAlgorithmFactory {
      * @return contains shadow algorithm or not
      */
     public static boolean contains(final String shadowAlgorithmType) {
-        return TypedSPIRegistry.findRegisteredService(ShadowAlgorithm.class, shadowAlgorithmType, null).isPresent();
+        return TypedSPIRegistry.findRegisteredService(ShadowAlgorithm.class, shadowAlgorithmType).isPresent();
     }
 }

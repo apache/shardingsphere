@@ -52,6 +52,6 @@ public final class JobCompletionDetectAlgorithmFactory {
      * @return contains job completion detect algorithm or not
      */
     public static boolean contains(final String jobCompletionDetectAlgorithmType) {
-        return TypedSPIRegistry.findRegisteredService(JobCompletionDetectAlgorithm.class, jobCompletionDetectAlgorithmType, null).isPresent();
+        return TypedSPIRegistry.findRegisteredService(JobCompletionDetectAlgorithm.class, jobCompletionDetectAlgorithmType).isPresent();
     }
 }

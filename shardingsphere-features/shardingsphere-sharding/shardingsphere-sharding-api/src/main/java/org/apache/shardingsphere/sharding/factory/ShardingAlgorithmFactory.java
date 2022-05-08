@@ -52,6 +52,6 @@ public final class ShardingAlgorithmFactory {
      * @return contains sharding algorithm or not
      */
     public static boolean contains(final String shardingAlgorithmType) {
-        return TypedSPIRegistry.findRegisteredService(ShardingAlgorithm.class, shardingAlgorithmType, null).isPresent();
+        return TypedSPIRegistry.findRegisteredService(ShardingAlgorithm.class, shardingAlgorithmType).isPresent();
     }
 }

@@ -52,6 +52,6 @@ public final class DatabaseDiscoveryProviderAlgorithmFactory {
      * @return contains database discovery provider algorithm or not
      */
     public static boolean contains(final String databaseDiscoveryProviderAlgorithmType) {
-        return TypedSPIRegistry.findRegisteredService(DatabaseDiscoveryProviderAlgorithm.class, databaseDiscoveryProviderAlgorithmType, null).isPresent();
+        return TypedSPIRegistry.findRegisteredService(DatabaseDiscoveryProviderAlgorithm.class, databaseDiscoveryProviderAlgorithmType).isPresent();
     }
 }
