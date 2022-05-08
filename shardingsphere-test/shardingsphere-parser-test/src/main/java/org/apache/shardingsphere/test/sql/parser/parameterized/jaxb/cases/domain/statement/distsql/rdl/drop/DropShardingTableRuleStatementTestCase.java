@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop;
 
 import lombok.Getter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.DropRuleStatementTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
 import java.util.LinkedList;
@@ -28,7 +28,7 @@ import java.util.List;
  * Drop sharding table rule statement test case.
  */
 @Getter
-public final class DropShardingTableRuleStatementTestCase extends SQLParserTestCase {
+public final class DropShardingTableRuleStatementTestCase extends DropRuleStatementTestCase {
     
     @XmlElement(name = "table")
     private final List<String> tables = new LinkedList<>();

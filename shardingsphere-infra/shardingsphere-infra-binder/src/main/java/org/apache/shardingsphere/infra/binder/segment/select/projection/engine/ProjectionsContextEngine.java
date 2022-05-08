@@ -40,6 +40,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * Projections context engine.
@@ -48,8 +49,8 @@ public final class ProjectionsContextEngine {
     
     private final ProjectionEngine projectionEngine;
     
-    public ProjectionsContextEngine(final ShardingSphereSchema schema, final DatabaseType databaseType) {
-        projectionEngine = new ProjectionEngine(schema, databaseType);
+    public ProjectionsContextEngine(final String databaseName, final Map<String, ShardingSphereSchema> schemas, final DatabaseType databaseType) {
+        projectionEngine = new ProjectionEngine(databaseName, schemas, databaseType);
     }
     
     /**
@@ -61,7 +62,7 @@ public final class ProjectionsContextEngine {
      * @param orderByContext order by context
      * @return projections context
      */
-    public ProjectionsContext createProjectionsContext(final TableSegment table, final ProjectionsSegment projectionsSegment, 
+    public ProjectionsContext createProjectionsContext(final TableSegment table, final ProjectionsSegment projectionsSegment,
                                                        final GroupByContext groupByContext, final OrderByContext orderByContext) {
         Collection<Projection> projections = getProjections(table, projectionsSegment);
         ProjectionsContext result = new ProjectionsContext(projectionsSegment.getStartIndex(), projectionsSegment.getStopIndex(), projectionsSegment.isDistinctRow(), projections);

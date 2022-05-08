@@ -49,6 +49,8 @@ import java.sql.SQLException;
  */
 public final class CustomizedFilterableExecutor implements FederationExecutor {
     
+    private final String databaseName;
+    
     private final String schemaName;
     
     private final ShardingSphereOptimizer optimizer;
@@ -57,13 +59,14 @@ public final class CustomizedFilterableExecutor implements FederationExecutor {
     
     private final SQLParserRule sqlParserRule = new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build());
     
-    public CustomizedFilterableExecutor(final String schemaName, final OptimizerContext context) {
+    public CustomizedFilterableExecutor(final String databaseName, final String schemaName, final OptimizerContext context) {
+        this.databaseName = databaseName;
         this.schemaName = schemaName;
         optimizer = new ShardingSphereOptimizer(context);
     }
     
     @Override
-    public ResultSet executeQuery(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, 
+    public ResultSet executeQuery(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
                                   final JDBCExecutorCallback<? extends ExecuteResult> callback, final FederationContext federationContext) throws SQLException {
         String sql = federationContext.getLogicSQL().getSql();
         ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(
@@ -82,13 +85,13 @@ public final class CustomizedFilterableExecutor implements FederationExecutor {
     
     private Enumerable<Object[]> execute(final SQLStatement sqlStatement) {
         // TODO
-        return execute(optimizer.optimize(schemaName, sqlStatement));
+        return execute(optimizer.optimize(databaseName, schemaName, sqlStatement));
     }
     
     private Enumerable<Object[]> execute(final RelNode bestPlan) {
-        RelOptCluster cluster = optimizer.getContext().getPlannerContexts().get(schemaName).getConverter().getCluster();
+        RelOptCluster cluster = optimizer.getContext().getPlannerContexts().get(databaseName).getConverters().get(schemaName).getCluster();
         return new FederateInterpretableConverter(
-                cluster, cluster.traitSetOf(InterpretableConvention.INSTANCE), bestPlan).bind(new CustomizedFilterableExecuteDataContext(schemaName, optimizer.getContext()));
+                cluster, cluster.traitSetOf(InterpretableConvention.INSTANCE), bestPlan).bind(new CustomizedFilterableExecuteDataContext(databaseName, schemaName, optimizer.getContext()));
     }
     
     @Override

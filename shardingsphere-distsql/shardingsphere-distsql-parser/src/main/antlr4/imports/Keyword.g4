@@ -139,6 +139,10 @@ SCHEMA
     : S C H E M A
     ;
 
+DATABASE
+    : D A T A B A S E
+    ;
+
 SINGLE
     : S I N G L E
     ;
@@ -265,6 +269,10 @@ LOAD_BALANCER
 
 EXPORT
     : E X P O R T
+    ;
+
+IMPORT
+    : I M P O R T
     ;
 
 CONFIGURATION

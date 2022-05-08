@@ -84,6 +84,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.Or
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeLengthSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.ParameterMarkerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
@@ -112,6 +113,8 @@ import java.util.stream.Collectors;
 public abstract class SQL92StatementSQLVisitor extends SQL92StatementBaseVisitor<ASTNode> {
     
     private int currentParameterIndex;
+    
+    private final Collection<ParameterMarkerSegment> parameterMarkerSegments = new LinkedList<>();
     
     public SQL92StatementSQLVisitor(final Properties props) {
     }
@@ -357,7 +360,10 @@ public abstract class SQL92StatementSQLVisitor extends SQL92StatementBaseVisitor
         }
         if (astNode instanceof ParameterMarkerValue) {
             ParameterMarkerValue parameterMarker = (ParameterMarkerValue) astNode;
-            return new ParameterMarkerExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(), parameterMarker.getValue(), parameterMarker.getType());
+            ParameterMarkerExpressionSegment segment = new ParameterMarkerExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(),
+                    parameterMarker.getValue(), parameterMarker.getType());
+            parameterMarkerSegments.add(segment);
+            return segment;
         }
         if (astNode instanceof SubquerySegment) {
             return new SubqueryExpressionSegment((SubquerySegment) astNode);
@@ -377,7 +383,9 @@ public abstract class SQL92StatementSQLVisitor extends SQL92StatementBaseVisitor
         }
         if (null != ctx.parameterMarker()) {
             ParameterMarkerValue parameterMarker = (ParameterMarkerValue) visit(ctx.parameterMarker());
-            return new ParameterMarkerExpressionSegment(startIndex, stopIndex, parameterMarker.getValue(), parameterMarker.getType());
+            ParameterMarkerExpressionSegment segment = new ParameterMarkerExpressionSegment(startIndex, stopIndex, parameterMarker.getValue(), parameterMarker.getType());
+            parameterMarkerSegments.add(segment);
+            return segment;
         }
         if (null != ctx.literals()) {
             return SQLUtil.createLiteralExpression(visit(ctx.literals()), startIndex, stopIndex, ctx.literals().start.getInputStream().getText(new Interval(startIndex, stopIndex)));
@@ -415,7 +423,8 @@ public abstract class SQL92StatementSQLVisitor extends SQL92StatementBaseVisitor
     public final ASTNode visitAggregationFunction(final AggregationFunctionContext ctx) {
         String aggregationType = ctx.aggregationFunctionName().getText();
         return AggregationType.isAggregationType(aggregationType)
-                ? createAggregationSegment(ctx, aggregationType) : new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx));
+                ? createAggregationSegment(ctx, aggregationType)
+                : new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx));
     }
     
     private ASTNode createAggregationSegment(final AggregationFunctionContext ctx, final String aggregationType) {
@@ -532,7 +541,7 @@ public abstract class SQL92StatementSQLVisitor extends SQL92StatementBaseVisitor
     
     /**
      * Get original text.
-     * 
+     *
      * @param ctx context
      * @return original text
      */

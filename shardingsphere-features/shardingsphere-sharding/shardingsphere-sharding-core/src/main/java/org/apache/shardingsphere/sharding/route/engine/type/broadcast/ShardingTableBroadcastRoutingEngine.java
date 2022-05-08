@@ -20,8 +20,11 @@ package org.apache.shardingsphere.sharding.route.engine.type.broadcast;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.IndexAvailable;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.QualifiedTable;
+import org.apache.shardingsphere.infra.metadata.schema.util.IndexMetaDataUtil;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -34,7 +37,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSe
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -43,7 +45,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class ShardingTableBroadcastRoutingEngine implements ShardingRouteEngine {
     
-    private final ShardingSphereSchema schema;
+    private final ShardingSphereMetaData metaData;
     
     private final SQLStatementContext<?> sqlStatementContext;
     
@@ -106,24 +108,16 @@ public final class ShardingTableBroadcastRoutingEngine implements ShardingRouteE
         if (!shardingRuleTableNames.isEmpty()) {
             return shardingRuleTableNames;
         }
-        return sqlStatementContext instanceof IndexAvailable ? getTableNamesFromMetaData(((IndexAvailable) sqlStatementContext).getIndexes()) : Collections.emptyList();
+        return sqlStatementContext instanceof IndexAvailable ? getTableNames(metaData,
+                ((IndexAvailable) sqlStatementContext).getIndexes(), sqlStatementContext.getDatabaseType()) : Collections.emptyList();
     }
     
-    private Collection<String> getTableNamesFromMetaData(final Collection<IndexSegment> indexes) {
+    private Collection<String> getTableNames(final ShardingSphereMetaData metaData, final Collection<IndexSegment> indexes, final DatabaseType databaseType) {
         Collection<String> result = new LinkedList<>();
-        for (IndexSegment each : indexes) {
-            findLogicTableNameFromMetaData(each.getIdentifier().getValue()).ifPresent(result::add);
+        for (QualifiedTable each : IndexMetaDataUtil.getTableNamesFromMetaData(metaData, indexes, databaseType)) {
+            result.add(each.getTableName());
         }
         return result;
-    }
-    
-    private Optional<String> findLogicTableNameFromMetaData(final String logicIndexName) {
-        for (String each : schema.getAllTableNames()) {
-            if (schema.get(each).getIndexes().containsKey(logicIndexName)) {
-                return Optional.of(each);
-            }
-        }
-        return Optional.empty();
     }
     
     private Collection<RouteUnit> getBroadcastTableRouteUnits(final ShardingRule shardingRule, final String broadcastTableName) {

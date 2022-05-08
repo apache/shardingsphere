@@ -31,7 +31,7 @@ import java.util.List;
 @Getter
 @Setter
 public final class ExpectedProcedureParameters extends AbstractExpectedSQLSegment {
-
+    
     @XmlElement(name = "parameter")
     private List<ExpectedCallParameter> parameters = new LinkedList<>();
 }

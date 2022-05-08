@@ -43,7 +43,7 @@ public final class ReadwriteSplittingDataSourceRouter {
      */
     public String route(final SQLStatementContext<?> sqlStatementContext) {
         if (isPrimaryRoute(sqlStatementContext)) {
-            return rule.getReadwriteSplittingType().getWriteDataSource();
+            return rule.getReadwriteSplittingStrategy().getWriteDataSource();
         }
         if (1 == rule.getReadDataSourceNames().size()) {
             return rule.getReadDataSourceNames().get(0);

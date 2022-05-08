@@ -2042,4 +2042,12 @@
             </expr>
         </where>
     </select>
+    <select sql-case-id="select_age_for_postgres" >
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="not support" start-index="14" stop-index="70" />
+        </from>
+    </select>
 </sql-parser-test-cases>

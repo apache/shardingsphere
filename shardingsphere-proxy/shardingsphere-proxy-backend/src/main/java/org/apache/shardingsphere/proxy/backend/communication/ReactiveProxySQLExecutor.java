@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecuti
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.vertx.VertxExecutionContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.proxy.backend.communication.vertx.VertxBackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.vertx.VertxBackendStatement;
 import org.apache.shardingsphere.proxy.backend.communication.vertx.executor.ProxyReactiveExecutor;
 import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -95,29 +96,30 @@ public final class ReactiveProxySQLExecutor {
      * @throws SQLException SQL exception
      */
     public Future<List<ExecuteResult>> execute(final ExecutionContext executionContext) throws SQLException {
-        String schemaName = backendConnection.getConnectionSession().getSchemaName();
-        Collection<ShardingSphereRule> rules = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(schemaName).getRuleMetaData().getRules();
+        String databaseName = backendConnection.getConnectionSession().getDatabaseName();
+        Collection<ShardingSphereRule> rules = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(databaseName).getRuleMetaData().getRules();
         int maxConnectionsSizePerQuery = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         return useDriverToExecute(executionContext, rules, maxConnectionsSizePerQuery);
     }
     
     private Future<List<ExecuteResult>> useDriverToExecute(final ExecutionContext executionContext, final Collection<ShardingSphereRule> rules,
-                                                                 final int maxConnectionsSizePerQuery) throws SQLException {
+                                                           final int maxConnectionsSizePerQuery) throws SQLException {
+        VertxBackendStatement statementManager = (VertxBackendStatement) backendConnection.getConnectionSession().getStatementManager();
         DriverExecutionPrepareEngine<VertxExecutionUnit, Future<? extends SqlClient>> prepareEngine = new DriverExecutionPrepareEngine<>(
-                TYPE, maxConnectionsSizePerQuery, backendConnection, new VertxExecutionContext(), rules);
+                TYPE, maxConnectionsSizePerQuery, backendConnection, statementManager, new VertxExecutionContext(), rules);
         ExecutionGroupContext<VertxExecutionUnit> executionGroupContext;
         try {
             executionGroupContext = prepareEngine.prepare(executionContext.getRouteContext(), executionContext.getExecutionUnits());
         } catch (final SQLException ex) {
             return Future.succeededFuture(getSaneExecuteResults(executionContext, ex));
         }
-        executionGroupContext.setSchemaName(backendConnection.getConnectionSession().getSchemaName());
+        executionGroupContext.setDatabaseName(backendConnection.getConnectionSession().getDatabaseName());
         executionGroupContext.setGrantee(backendConnection.getConnectionSession().getGrantee());
         return reactiveExecutor.execute(executionContext.getLogicSQL(), executionGroupContext);
     }
     
     private List<ExecuteResult> getSaneExecuteResults(final ExecutionContext executionContext, final SQLException originalException) throws SQLException {
-        DatabaseType databaseType = ProxyContext.getInstance().getMetaData(backendConnection.getConnectionSession().getSchemaName()).getResource().getDatabaseType();
+        DatabaseType databaseType = ProxyContext.getInstance().getMetaData(backendConnection.getConnectionSession().getDatabaseName()).getResource().getDatabaseType();
         Optional<ExecuteResult> executeResult = JDBCSaneQueryResultEngineFactory.newInstance(databaseType).getSaneQueryResult(executionContext.getSqlStatementContext().getSqlStatement());
         if (executeResult.isPresent()) {
             return Collections.singletonList(executeResult.get());

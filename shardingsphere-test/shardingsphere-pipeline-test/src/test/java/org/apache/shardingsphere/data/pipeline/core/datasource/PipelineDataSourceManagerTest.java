@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.data.pipeline.core.datasource;
 
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
-import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;
-import org.apache.shardingsphere.data.pipeline.core.util.ResourceUtil;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
+import org.apache.shardingsphere.data.pipeline.core.util.JobConfigurationBuilder;
+import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -36,18 +36,18 @@ import static org.junit.Assert.assertTrue;
 
 public final class PipelineDataSourceManagerTest {
     
-    private JobConfiguration jobConfig;
+    private RuleAlteredJobConfiguration jobConfig;
     
     @Before
     public void setUp() {
-        jobConfig = ResourceUtil.mockJobConfig();
+        jobConfig = JobConfigurationBuilder.createJobConfiguration();
     }
     
     @Test
     public void assertGetDataSource() {
         PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager();
         DataSource actual = dataSourceManager.getDataSource(
-                PipelineDataSourceConfigurationFactory.newInstance(jobConfig.getPipelineConfig().getSource().getType(), jobConfig.getPipelineConfig().getSource().getParameter()));
+                PipelineDataSourceConfigurationFactory.newInstance(jobConfig.getSource().getType(), jobConfig.getSource().getParameter()));
         assertThat(actual, instanceOf(PipelineDataSourceWrapper.class));
     }
     
@@ -55,9 +55,9 @@ public final class PipelineDataSourceManagerTest {
     public void assertClose() throws NoSuchFieldException, IllegalAccessException {
         try (PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager()) {
             dataSourceManager.getDataSource(
-                    PipelineDataSourceConfigurationFactory.newInstance(jobConfig.getPipelineConfig().getSource().getType(), jobConfig.getPipelineConfig().getSource().getParameter()));
+                    PipelineDataSourceConfigurationFactory.newInstance(jobConfig.getSource().getType(), jobConfig.getSource().getParameter()));
             dataSourceManager.getDataSource(
-                    PipelineDataSourceConfigurationFactory.newInstance(jobConfig.getPipelineConfig().getTarget().getType(), jobConfig.getPipelineConfig().getTarget().getParameter()));
+                    PipelineDataSourceConfigurationFactory.newInstance(jobConfig.getTarget().getType(), jobConfig.getTarget().getParameter()));
             Map<?, ?> cachedDataSources = ReflectionUtil.getFieldValue(dataSourceManager, "cachedDataSources", Map.class);
             assertNotNull(cachedDataSources);
             assertThat(cachedDataSources.size(), is(2));

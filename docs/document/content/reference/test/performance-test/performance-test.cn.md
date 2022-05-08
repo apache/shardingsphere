@@ -5,36 +5,36 @@ weight = 1
 
 ## 目标
 
-对ShardingSphere-JDBC，ShardingSphere-Proxy及 MySQL 进行性能对比。从业务角度考虑，在基本应用场景（单路由，主从+加密+分库分表，全路由）下，INSERT+UPDATE+DELETE 通常用作一个完整的关联操作，用于性能评估，而SELECT关注分片优化可用作性能评估的另一个操作；而主从模式下，可将INSERT+SELECT+DELETE作为一组评估性能的关联操作。
+对 ShardingSphere-JDBC，ShardingSphere-Proxy 及 MySQL 进行性能对比。从业务角度考虑，在基本应用场景（单路由，主从+加密+分库分表，全路由）下，INSERT+UPDATE+DELETE 通常用作一个完整的关联操作，用于性能评估，而 SELECT 关注分片优化可用作性能评估的另一个操作；而主从模式下，可将 INSERT+SELECT+DELETE 作为一组评估性能的关联操作。
 为了更好的观察效果，设计在一定数据量的基础上，使用 jmeter 20 并发线程持续压测半小时，进行增删改查性能测试，且每台机器部署一个 MySQL 实例，而对比 MySQL 场景为单机单实例部署。
 
 ## 测试场景
 
 ### 单路由
 
-在1000数据量的基础上分库分表，根据`id`分为4个库，部署在同一台机器上，根据`k`分为1024个表，查询操作路由到单库单表；
-作为对比，MySQL 运行在1000数据量的基础上，使用 INSERT+UPDATE+DELETE 和单路由查询语句。
+在 1000 数据量的基础上分库分表，根据 `id` 分为 4 个库，部署在同一台机器上，根据 `k` 分为 1024 个表，查询操作路由到单库单表；
+作为对比，MySQL 运行在 1000 数据量的基础上，使用 INSERT+UPDATE+DELETE 和单路由查询语句。
 
 ### 主从
 
-基本主从场景，设置一主库一从库，部署在两台不同的机器上，在10000数据量的基础上，观察读写性能；
+基本主从场景，设置一主库一从库，部署在两台不同的机器上，在 10000 数据量的基础上，观察读写性能；
 作为对比，MySQL 运行在10000数据量的基础上，使用 INSERT+SELECT+DELETE 语句。
 
 ### 主从+加密+分库分表
 
-在1000数据量的基础上，根据`id`分为4个库，部署在四台不同的机器上，根据`k`分为1024个表，`c`使用aes加密，`pad` 使用md5加密，查询操作路由到单库单表；
-作为对比，MySQL 运行在1000数据量的基础上，使用 INSERT+UPDATE+DELETE 和单路由查询语句。
+在 1000 数据量的基础上，根据 `id` 分为 4 个库，部署在四台不同的机器上，根据 `k` 分为 1024 个表，`c` 使用 aes 加密，`pad` 使用 md5 加密，查询操作路由到单库单表；
+作为对比，MySQL 运行在 1000 数据量的基础上，使用 INSERT+UPDATE+DELETE 和单路由查询语句。
 
 ### 全路由
 
-在1000数据量的基础上，分库分表，根据`id`分为4个库，部署在四台不同的机器上，根据`k`分为1个表，查询操作使用全路由。
-作为对比，MySQL 运行在1000数据量的基础上，使用 INSERT+UPDATE+DELETE 和全路由查询语句。
+在 1000 数据量的基础上，分库分表，根据 `id` 分为 4 个库，部署在四台不同的机器上，根据 `k` 分为 1 个表，查询操作使用全路由。
+作为对比，MySQL 运行在 1000 数据量的基础上，使用 INSERT+UPDATE+DELETE 和全路由查询语句。
 
 ## 测试环境搭建
 
 ### 数据库表结构
 
-此处表结构参考 sysbench 的 sbtest 表
+此处表结构参考 sysbench 的 sbtest 表。
 
 ```shell
 CREATE TABLE `tbl` (
@@ -378,7 +378,7 @@ rules:
 ### 压测语句
 
 ```shell
-INSERT+UPDATE+DELETE语句：
+INSERT+UPDATE+DELETE 语句：
 INSERT INTO tbl(k, c, pad) VALUES(1, '###-###-###', '###-###');
 UPDATE tbl SET c='####-####-####', pad='####-####' WHERE id=?;
 DELETE FROM tbl WHERE id=?
@@ -389,7 +389,7 @@ SELECT max(id) FROM tbl WHERE id%4=1
 单路由查询语句：
 SELECT id, k FROM tbl ignore index(`PRIMARY`) WHERE id=1 AND k=1
 
-INSERT+SELECT+DELETE语句：
+INSERT+SELECT+DELETE 语句：
 INSERT INTO tbl1(k, c, pad) VALUES(1, '###-###-###', '###-###');
 SELECT count(id) FROM tbl1;
 SELECT max(id) FROM tbl1 ignore index(`PRIMARY`);
@@ -398,7 +398,7 @@ DELETE FROM tbl1 WHERE id=?
 
 ### 压测类
 
-参考[shardingsphere-benchmark](https://github.com/apache/shardingsphere-benchmark/tree/master/shardingsphere-benchmark)实现，注意阅读其中的注释
+参考 [ shardingsphere-benchmark ](https://github.com/apache/shardingsphere-benchmark/tree/master/shardingsphere-benchmark) 实现，注意阅读其中的注释。
 
 ### 编译
 
@@ -413,12 +413,12 @@ mvn clean install
 ```shell
 cp target/shardingsphere-benchmark-1.0-SNAPSHOT-jar-with-dependencies.jar apache-jmeter-4.0/lib/ext
 jmeter –n –t test_plan/test.jmx
-test.jmx参考https://github.com/apache/shardingsphere-benchmark/tree/master/report/script/test_plan/test.jmx
+test.jmx 参考 https://github.com/apache/shardingsphere-benchmark/tree/master/report/script/test_plan/test.jmx
 ```
 
 ### 压测结果处理
 
-注意修改为上一步生成的result.jtl的位置。
+注意修改为上一步生成的 result.jtl 的位置。
 ```shell
 sh shardingsphere-benchmark/report/script/gen_report.sh
 ```
@@ -427,5 +427,5 @@ sh shardingsphere-benchmark/report/script/gen_report.sh
 
 正在进行中，请等待。
 <!--
-[Benchmark性能平台](https://shardingsphere.apache.org/benchmark/#/overview)是数据以天粒度展示
+[Benchmark 性能平台](https://shardingsphere.apache.org/benchmark/#/overview)是数据以天粒度展示
 -->

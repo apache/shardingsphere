@@ -19,22 +19,23 @@ package org.apache.shardingsphere.proxy.frontend.spi;
 
 import org.apache.shardingsphere.db.protocol.codec.DatabasePacketCodecEngine;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.frontend.context.FrontendContext;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.command.CommandExecuteEngine;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeAwareSPI;
+import org.apache.shardingsphere.proxy.frontend.context.FrontendContext;
+import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 
 /**
  * Database protocol frontend engine.
  */
-public interface DatabaseProtocolFrontendEngine extends DatabaseTypeAwareSPI {
+public interface DatabaseProtocolFrontendEngine extends TypedSPI {
     
     /**
      * Set database version.
      * 
+     * @param schemaName schema name
      * @param databaseVersion database version
      */
-    default void setDatabaseVersion(String databaseVersion) {
+    default void setDatabaseVersion(String schemaName, String databaseVersion) {
     }
     
     /**
@@ -71,4 +72,11 @@ public interface DatabaseProtocolFrontendEngine extends DatabaseTypeAwareSPI {
      * @param connectionSession connection session
      */
     void release(ConnectionSession connectionSession);
+    
+    /**
+     * Handle exception.
+     *
+     * @param connectionSession connection session
+     */
+    void handleException(ConnectionSession connectionSession);
 }

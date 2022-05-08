@@ -32,6 +32,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Show transaction rule handler.
+ */
 @RequiredArgsConstructor
 public final class ShowTransactionRuleHandler extends QueryableRALBackendHandler<ShowTransactionRuleStatement, ShowTransactionRuleHandler> {
     
@@ -48,18 +51,15 @@ public final class ShowTransactionRuleHandler extends QueryableRALBackendHandler
     
     @Override
     protected Collection<List<Object>> getRows(final ContextManager contextManager) {
-        Optional<TransactionRuleConfiguration> optionalTransactionRuleConfiguration = ProxyContext.getInstance().getContextManager()
+        Optional<TransactionRuleConfiguration> ruleConfig = ProxyContext.getInstance().getContextManager()
                 .getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(TransactionRuleConfiguration.class).stream().findAny();
-        if (!optionalTransactionRuleConfiguration.isPresent()) {
+        if (!ruleConfig.isPresent()) {
             return Collections.emptyList();
         }
-        TransactionRuleConfiguration transactionRuleConfiguration = optionalTransactionRuleConfiguration.get();
         List<Object> row = new LinkedList<>();
-        row.add(transactionRuleConfiguration.getDefaultType());
-        row.add(null == transactionRuleConfiguration.getProviderType() ? "" : transactionRuleConfiguration.getProviderType());
-        row.add(null == transactionRuleConfiguration.getProps() ? "" : new Gson().toJson(transactionRuleConfiguration.getProps()));
-        Collection<List<Object>> rows = new LinkedList<>();
-        rows.add(row);
-        return rows;
+        row.add(ruleConfig.get().getDefaultType());
+        row.add(null == ruleConfig.get().getProviderType() ? "" : ruleConfig.get().getProviderType());
+        row.add(null == ruleConfig.get().getProps() ? "" : new Gson().toJson(ruleConfig.get().getProps()));
+        return Collections.singleton(row);
     }
 }

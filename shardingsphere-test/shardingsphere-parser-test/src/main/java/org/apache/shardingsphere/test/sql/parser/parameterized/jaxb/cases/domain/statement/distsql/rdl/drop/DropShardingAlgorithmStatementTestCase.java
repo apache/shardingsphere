@@ -19,9 +19,8 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domai
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.DropRuleStatementTestCase;
 
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import java.util.LinkedList;
 import java.util.List;
@@ -31,10 +30,7 @@ import java.util.List;
  */
 @Setter
 @Getter
-public final class DropShardingAlgorithmStatementTestCase extends SQLParserTestCase {
-    
-    @XmlAttribute(name = "contains-exists-clause")
-    private boolean containsExistsClause;
+public final class DropShardingAlgorithmStatementTestCase extends DropRuleStatementTestCase {
     
     @XmlElement(name = "algorithm")
     private final List<String> algorithms = new LinkedList<>();

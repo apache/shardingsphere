@@ -368,7 +368,7 @@ The new API also supports a variety of matching algorithms, such as column value
         column: user_id
         regex: "[1]"
     simple-hint-algorithm:
-      type: SIMPLE_NOTE
+      type: SIMPLE_HINT
       props:
         shadow: true
         foo: bar           
@@ -480,7 +480,7 @@ Since the `t_order_item` table does not require encryption or decryption, its ro
 As for the `t_order` table and the `t_user` table, we use the following SQL statements and manually create encrypt/decrypt tables on the underlying database of the routing result.
 
 ```
-# ds_0 Creare t_order_0、t_order_1 and t_user
+# ds_0 Creare t_order_0, t_order_1 and t_user
 CREATE TABLE t_order_0(order_id INT(11) PRIMARY KEY, user_id INT(11), content_plain VARCHAR(100), content_cipher VARCHAR(100))
 CREATE TABLE t_order_1(order_id INT(11) PRIMARY KEY, user_id INT(11), content_plain VARCHAR(100), content_cipher VARCHAR(100))
 CREATE TABLE t_user(user_id INT(11) PRIMARY KEY, telephone_plain VARCHAR(100), telephone_cipher VARCHAR(100))

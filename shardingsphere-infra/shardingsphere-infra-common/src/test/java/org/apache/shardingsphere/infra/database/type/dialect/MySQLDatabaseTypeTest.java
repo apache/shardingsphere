@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.database.type.dialect;
 
+import com.google.common.collect.Sets;
 import org.apache.shardingsphere.infra.database.metadata.dialect.MySQLDataSourceMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 import org.junit.Test;
@@ -28,6 +29,7 @@ import java.util.Arrays;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -65,5 +67,18 @@ public final class MySQLDatabaseTypeTest {
         QuoteCharacter actual = new MySQLDatabaseType().getQuoteCharacter();
         assertThat(actual.getStartDelimiter(), is("`"));
         assertThat(actual.getEndDelimiter(), is("`"));
+    }
+    
+    @Test
+    public void assertGetSystemDatabases() {
+        assertTrue(new MySQLDatabaseType().getSystemDatabaseSchemaMap().containsKey("information_schema"));
+        assertTrue(new MySQLDatabaseType().getSystemDatabaseSchemaMap().containsKey("performance_schema"));
+        assertTrue(new MySQLDatabaseType().getSystemDatabaseSchemaMap().containsKey("mysql"));
+        assertTrue(new MySQLDatabaseType().getSystemDatabaseSchemaMap().containsKey("sys"));
+    }
+    
+    @Test
+    public void assertGetSystemSchemas() {
+        assertThat(new MySQLDatabaseType().getSystemSchemas(), is(Sets.newHashSet("information_schema", "performance_schema", "mysql", "sys")));
     }
 }

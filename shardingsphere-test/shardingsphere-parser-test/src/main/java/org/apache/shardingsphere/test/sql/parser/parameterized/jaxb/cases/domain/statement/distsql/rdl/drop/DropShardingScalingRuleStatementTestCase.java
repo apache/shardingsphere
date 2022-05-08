@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domai
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.DropRuleStatementTestCase;
 
 import javax.xml.bind.annotation.XmlAttribute;
 
@@ -28,8 +28,8 @@ import javax.xml.bind.annotation.XmlAttribute;
  */
 @Getter
 @Setter
-public final class DropShardingScalingRuleStatementTestCase extends SQLParserTestCase {
-
+public final class DropShardingScalingRuleStatementTestCase extends DropRuleStatementTestCase {
+    
     @XmlAttribute(name = "scaling-name")
     private String scalingName;
 }

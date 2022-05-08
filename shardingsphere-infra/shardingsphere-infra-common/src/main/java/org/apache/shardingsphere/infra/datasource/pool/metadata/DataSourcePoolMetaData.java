@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.infra.datasource.pool.metadata;
 
-import org.apache.shardingsphere.spi.typed.TypedSPI;
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 
 import java.util.Collection;
 import java.util.Map;
@@ -25,6 +26,7 @@ import java.util.Map;
 /**
  * Data source pool meta data.
  */
+@SingletonSPI
 public interface DataSourcePoolMetaData extends TypedSPI {
     
     /**
@@ -56,9 +58,9 @@ public interface DataSourcePoolMetaData extends TypedSPI {
     Collection<String> getTransientFieldNames();
     
     /**
-     * Get JDBC URL meta data.
+     * Get data source pool field meta data.
      * 
-     * @return data source JDBC URL meta data
+     * @return data source pool field meta data
      */
-    DataSourceJdbcUrlMetaData getJdbcUrlMetaData();
+    DataSourcePoolFieldMetaData getFieldMetaData();
 }

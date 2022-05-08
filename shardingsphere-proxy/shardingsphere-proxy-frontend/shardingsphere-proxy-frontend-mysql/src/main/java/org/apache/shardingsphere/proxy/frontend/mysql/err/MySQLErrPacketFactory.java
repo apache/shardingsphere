@@ -17,19 +17,21 @@
 
 package org.apache.shardingsphere.proxy.frontend.mysql.err;
 
+import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobNotFoundException;
 import org.apache.shardingsphere.db.protocol.error.CommonErrorCode;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
-import org.apache.shardingsphere.infra.exception.SchemaNotExistedException;
+import org.apache.shardingsphere.infra.exception.DatabaseNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.CircuitBreakException;
 import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.DBDropNotExistsException;
-import org.apache.shardingsphere.proxy.backend.exception.DatabaseNotExistedException;
+import org.apache.shardingsphere.proxy.backend.exception.DatabaseLockedException;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
+import org.apache.shardingsphere.proxy.backend.exception.ResourceNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.TableLockWaitTimeoutException;
 import org.apache.shardingsphere.proxy.backend.exception.TableLockedException;
@@ -40,7 +42,6 @@ import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.exception
 import org.apache.shardingsphere.proxy.frontend.exception.FrontendTooManyConnectionsException;
 import org.apache.shardingsphere.proxy.frontend.exception.UnsupportedCommandException;
 import org.apache.shardingsphere.proxy.frontend.exception.UnsupportedPreparedStatementException;
-import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobNotFoundException;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.exception.UnknownCharacterSetException;
 import org.apache.shardingsphere.sharding.route.engine.exception.NoSuchTableException;
 import org.apache.shardingsphere.sharding.route.engine.exception.TableExistsException;
@@ -76,9 +77,9 @@ public final class MySQLErrPacketFactory {
         if (cause instanceof UnknownDatabaseException) {
             return new MySQLErrPacket(1, MySQLServerErrorCode.ER_BAD_DB_ERROR, ((UnknownDatabaseException) cause).getDatabaseName());
         }
-        if (cause instanceof SchemaNotExistedException) {
-            return null != ((SchemaNotExistedException) cause).getSchemaName()
-                    ? new MySQLErrPacket(1, MySQLServerErrorCode.ER_BAD_DB_ERROR, ((SchemaNotExistedException) cause).getSchemaName())
+        if (cause instanceof DatabaseNotExistedException) {
+            return null != ((DatabaseNotExistedException) cause).getDatabaseName()
+                    ? new MySQLErrPacket(1, MySQLServerErrorCode.ER_BAD_DB_ERROR, ((DatabaseNotExistedException) cause).getDatabaseName())
                     : new MySQLErrPacket(1, MySQLServerErrorCode.ER_NO_DB_ERROR);
         }
         if (cause instanceof NoDatabaseSelectedException) {
@@ -108,8 +109,12 @@ public final class MySQLErrPacketFactory {
         if (cause instanceof ShardingSphereConfigurationException || cause instanceof SQLParsingException) {
             return new MySQLErrPacket(1, MySQLServerErrorCode.ER_NOT_SUPPORTED_YET, cause.getMessage());
         }
-        if (cause instanceof RuleNotExistedException || cause instanceof DatabaseNotExistedException) {
+        if (cause instanceof RuleNotExistedException || cause instanceof ResourceNotExistedException) {
             return new MySQLErrPacket(1, MySQLServerErrorCode.ER_SP_DOES_NOT_EXIST);
+        }
+        if (cause instanceof DatabaseLockedException) {
+            DatabaseLockedException exception = (DatabaseLockedException) cause;
+            return new MySQLErrPacket(1, CommonErrorCode.DATABASE_WRITE_LOCKED, exception.getDatabaseName());
         }
         if (cause instanceof TableLockWaitTimeoutException) {
             TableLockWaitTimeoutException exception = (TableLockWaitTimeoutException) cause;
@@ -137,7 +142,7 @@ public final class MySQLErrPacketFactory {
     }
     
     private static String getErrorMessage(final SQLException cause) {
-        if (null != cause.getNextException() && StringUtils.isBlank(cause.getMessage())) {
+        if (null != cause.getNextException() && Strings.isNullOrEmpty(cause.getMessage())) {
             return cause.getNextException().getMessage();
         }
         return cause.getMessage();

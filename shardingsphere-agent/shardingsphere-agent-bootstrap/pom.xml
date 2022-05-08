@@ -16,23 +16,19 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-agent</artifactId>
-        <version>5.1.1-SNAPSHOT</version>
+        <version>5.1.2-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-agent-bootstrap</artifactId>
     <name>${project.artifactId}</name>
     
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <premain.class>org.apache.shardingsphere.agent.bootstrap.ShardingSphereAgent</premain.class>
-        <can.redefine.classes>true</can.redefine.classes>
-        <can.retransform.classes>true</can.retransform.classes>
     </properties>
     
     <dependencies>
@@ -55,10 +51,10 @@
                 <artifactId>maven-shade-plugin</artifactId>
                 <executions>
                     <execution>
-                        <phase>package</phase>
                         <goals>
                             <goal>shade</goal>
                         </goals>
+                        <phase>package</phase>
                         <configuration>
                             <shadedArtifactAttached>false</shadedArtifactAttached>
                             <createDependencyReducedPom>true</createDependencyReducedPom>
@@ -68,8 +64,8 @@
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <manifestEntries>
                                         <Premain-Class>${premain.class}</Premain-Class>
-                                        <Can-Redefine-Classes>${can.redefine.classes}</Can-Redefine-Classes>
-                                        <Can-Retransform-Classes>${can.retransform.classes}</Can-Retransform-Classes>
+                                        <Can-Redefine-Classes>true</Can-Redefine-Classes>
+                                        <Can-Retransform-Classes>true</Can-Retransform-Classes>
                                     </manifestEntries>
                                 </transformer>
                             </transformers>

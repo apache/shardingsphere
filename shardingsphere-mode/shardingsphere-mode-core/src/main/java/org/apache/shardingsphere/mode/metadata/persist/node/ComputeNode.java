@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.mode.metadata.persist.node;
 
+import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -36,6 +38,8 @@ public final class ComputeNode {
     private static final String ATTRIBUTES_NODE = "attributes";
     
     private static final String LABELS_NODE = "labels";
+    
+    private static final String PROCESS_TRIGGER = "process_trigger";
     
     private static final String STATUS_NODE = "status";
     
@@ -62,6 +66,36 @@ public final class ComputeNode {
      */
     public static String getOnlineInstanceNodePath(final String instanceId, final InstanceType instanceType) {
         return String.join("/", "", ROOT_NODE, COMPUTE_NODE, ONLINE_NODE, instanceType.name().toLowerCase(), instanceId);
+    }
+    
+    /**
+     * Get online compute node path.
+     *
+     * @return path of online compute node
+     */
+    public static String getOnlineInstanceNodePath() {
+        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, ONLINE_NODE);
+    }
+    
+    /**
+     * Get process trigger node path.
+     * 
+     * @return path of process trigger node path
+     */
+    public static String getProcessTriggerNodePatch() {
+        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, PROCESS_TRIGGER);
+    }
+    
+    /**
+     * Get process trigger instance show process list id node path.
+     *
+     * @param instanceId instance id
+     * @param instanceType instance type
+     * @param showProcessListId show process list id
+     * @return path of process trigger instance node path
+     */
+    public static String getProcessTriggerInstanceIdNodePath(final String instanceId, final InstanceType instanceType, final String showProcessListId) {
+        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, PROCESS_TRIGGER, instanceType.name().toLowerCase(), instanceId, showProcessListId);
     }
     
     /**
@@ -94,6 +128,15 @@ public final class ComputeNode {
     }
     
     /**
+     * Get compute node path.
+     *
+     * @return compute node path
+     */
+    public static String getComputeNodePath() {
+        return String.join("/", "", ROOT_NODE, COMPUTE_NODE);
+    }
+    
+    /**
      * Get instance worker id node path.
      *
      * @param instanceId instance id
@@ -110,7 +153,7 @@ public final class ComputeNode {
      * @return instance id
      */
     public static String getInstanceIdByAttributes(final String attributesPath) {
-        Pattern pattern = Pattern.compile(getAttributesNodePath() + "/([\\S]+)" + "(/status|/worker_id|/labels)$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getAttributesNodePath() + "/([\\S]+)" + "(/status|/worker_id|/labels|/xa_recovery_id)$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(attributesPath);
         return matcher.find() ? matcher.group(1) : "";
     }
@@ -123,5 +166,21 @@ public final class ComputeNode {
      */
     public static String getInstanceStatusNodePath(final String instanceId) {
         return String.join("/", "", ROOT_NODE, COMPUTE_NODE, ATTRIBUTES_NODE, instanceId, STATUS_NODE);
+    }
+    
+    /**
+     * Get instance definition by instance online path.
+     *
+     * @param onlineInstancePath online instance path
+     * @return instance id
+     */
+    public static Optional<InstanceDefinition> getInstanceDefinitionByInstanceOnlinePath(final String onlineInstancePath) {
+        Pattern pattern = Pattern.compile(getOnlineInstanceNodePath() + "/" + "(proxy|jdbc)" + "/([\\S]+)$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(onlineInstancePath);
+        return matcher.find() ? Optional.of(new InstanceDefinition(getInstanceType(matcher.group(1)), matcher.group(2))) : Optional.empty();
+    }
+    
+    private static InstanceType getInstanceType(final String instanceType) {
+        return InstanceType.PROXY.name().equalsIgnoreCase(instanceType) ? InstanceType.PROXY : InstanceType.JDBC;
     }
 }

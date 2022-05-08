@@ -8,26 +8,26 @@ weight = 4
 
 Consider about these challenges of ShardingSphere-Scaling, the solution is: Use two database clusters temporarily, and switch after the scaling is completed.
 
-![Scaling Principle Overview](https://shardingsphere.apache.org/document/current/img/scaling/scaling-principle-overview.en.png)
+![Scaling Principle Overview](https://shardingsphere.apache.org/document/current/img/scaling/principle_v2.png)
 
 Advantages:
 
 1. No effect for origin data during scaling.
-1. No risk for scaling failure.
-1. No limited by sharding strategies.
+2. No risk for scaling failure.
+3. No limited by sharding strategies.
 
 Disadvantages：
 
 1. Redundant servers during scaling.
-1. All data needs to be moved.
+2. All data needs to be moved.
 
 ShardingSphere-Scaling will analyze the sharding rules and extract information like datasource and data nodes.
 According the sharding rules, ShardingSphere-Scaling create a scaling job with 4 main phases.
 
 1. Preparing Phase.
-1. Inventory Phase.
-1. Incremental Phase.
-1. Switching Phase.
+2. Inventory Phase.
+3. Incremental Phase.
+4. Switching Phase.
 
 ![Workflow](https://shardingsphere.apache.org/document/current/img/scaling/workflow.en.png)
 

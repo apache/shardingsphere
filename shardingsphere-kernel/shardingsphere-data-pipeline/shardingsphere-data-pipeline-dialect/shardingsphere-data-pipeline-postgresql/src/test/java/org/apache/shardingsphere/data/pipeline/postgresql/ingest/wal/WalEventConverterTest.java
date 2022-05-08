@@ -18,11 +18,14 @@
 package org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.PlaceholderRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
+import org.apache.shardingsphere.data.pipeline.api.metadata.ActualTableName;
+import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
@@ -67,18 +70,20 @@ public final class WalEventConverterTest {
     private DumperConfiguration mockDumperConfiguration() {
         DumperConfiguration result = new DumperConfiguration();
         result.setDataSourceConfig(new StandardPipelineDataSourceConfiguration("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=PostgreSQL", "root", "root"));
-        result.setTableNameMap(Collections.singletonMap("t_order", "t_order"));
+        result.setTableNameMap(Collections.singletonMap(new ActualTableName("t_order"), new LogicTableName("t_order")));
+        result.setTableNameSchemaNameMapping(new TableNameSchemaNameMapping(Collections.emptyMap()));
         return result;
     }
     
     @SneakyThrows(SQLException.class)
     private void initTableData(final DumperConfiguration dumperConfig) {
         DataSource dataSource = new PipelineDataSourceManager().getDataSource(dumperConfig.getDataSourceConfig());
-        try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement()) {
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS t_order");
-            statement.execute("CREATE TABLE t_order (id INT PRIMARY KEY, user_id VARCHAR(12))");
-            statement.execute("INSERT INTO t_order (id, user_id) VALUES (1, 'xxx'), (999, 'yyy')");
+            statement.execute("CREATE TABLE t_order (order_id INT PRIMARY KEY, user_id VARCHAR(12))");
+            statement.execute("INSERT INTO t_order (order_id, user_id) VALUES (1, 'xxx'), (999, 'yyy')");
         }
     }
     
@@ -123,7 +128,7 @@ public final class WalEventConverterTest {
     
     private AbstractRowEvent mockWriteRowEvent() {
         WriteRowEvent result = new WriteRowEvent();
-        result.setSchemaName("");
+        result.setDatabaseName("");
         result.setTableName("t_order");
         result.setAfterRow(Arrays.asList("id", "user_id"));
         return result;
@@ -131,7 +136,7 @@ public final class WalEventConverterTest {
     
     private AbstractRowEvent mockUpdateRowEvent() {
         UpdateRowEvent result = new UpdateRowEvent();
-        result.setSchemaName("");
+        result.setDatabaseName("");
         result.setTableName("t_order");
         result.setAfterRow(Arrays.asList("id", "user_id"));
         return result;
@@ -139,7 +144,7 @@ public final class WalEventConverterTest {
     
     private AbstractRowEvent mockDeleteRowEvent() {
         DeleteRowEvent result = new DeleteRowEvent();
-        result.setSchemaName("");
+        result.setDatabaseName("");
         result.setTableName("t_order");
         result.setPrimaryKeys(Collections.singletonList("id"));
         return result;
@@ -147,7 +152,7 @@ public final class WalEventConverterTest {
     
     private AbstractRowEvent mockUnknownTableEvent() {
         WriteRowEvent result = new WriteRowEvent();
-        result.setSchemaName("");
+        result.setDatabaseName("");
         result.setTableName("t_other");
         return result;
     }

@@ -17,29 +17,30 @@
 
 package org.apache.shardingsphere.mode.metadata.persist;
 
+import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.schema.SchemaConfiguration;
+import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
-import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyerFactory;
+import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.mode.metadata.persist.service.ComputeNodePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.SchemaMetaDataPersistService;
-import org.apache.shardingsphere.mode.metadata.persist.service.SchemaVersionPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.DatabaseVersionPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.impl.DataSourcePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.impl.GlobalRulePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.impl.PropertiesPersistService;
-import org.apache.shardingsphere.mode.metadata.persist.service.impl.SchemaRulePersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.impl.DatabaseRulePersistService;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -54,7 +55,7 @@ public final class MetaDataPersistService {
     
     private final SchemaMetaDataPersistService schemaMetaDataService;
     
-    private final SchemaRulePersistService schemaRuleService;
+    private final DatabaseRulePersistService databaseRulePersistService;
     
     private final GlobalRulePersistService globalRuleService;
     
@@ -62,17 +63,17 @@ public final class MetaDataPersistService {
     
     private final ComputeNodePersistService computeNodePersistService;
     
-    private final SchemaVersionPersistService schemaVersionPersistService;
+    private final DatabaseVersionPersistService databaseVersionPersistService;
     
     public MetaDataPersistService(final PersistRepository repository) {
         this.repository = repository;
         dataSourceService = new DataSourcePersistService(repository);
         schemaMetaDataService = new SchemaMetaDataPersistService(repository);
-        schemaRuleService = new SchemaRulePersistService(repository);
+        databaseRulePersistService = new DatabaseRulePersistService(repository);
         globalRuleService = new GlobalRulePersistService(repository);
         propsService = new PropertiesPersistService(repository);
         computeNodePersistService = new ComputeNodePersistService(repository);
-        schemaVersionPersistService = new SchemaVersionPersistService(repository);
+        databaseVersionPersistService = new DatabaseVersionPersistService(repository);
     }
     
     /**
@@ -83,14 +84,14 @@ public final class MetaDataPersistService {
      * @param props properties
      * @param isOverwrite whether overwrite registry center's configuration if existed
      */
-    public void persistConfigurations(final Map<String, ? extends SchemaConfiguration> schemaConfigs,
+    public void persistConfigurations(final Map<String, ? extends DatabaseConfiguration> schemaConfigs,
                                       final Collection<RuleConfiguration> globalRuleConfigs, final Properties props, final boolean isOverwrite) {
         globalRuleService.persist(globalRuleConfigs, isOverwrite);
         propsService.persist(props, isOverwrite);
-        for (Entry<String, ? extends SchemaConfiguration> entry : schemaConfigs.entrySet()) {
-            String schemaName = entry.getKey();
-            dataSourceService.persist(schemaName, getDataSourcePropertiesMap(entry.getValue().getDataSources()), isOverwrite);
-            schemaRuleService.persist(schemaName, entry.getValue().getRuleConfigurations(), isOverwrite);
+        for (Entry<String, ? extends DatabaseConfiguration> entry : schemaConfigs.entrySet()) {
+            String databaseName = entry.getKey();
+            dataSourceService.persist(databaseName, getDataSourcePropertiesMap(entry.getValue().getDataSources()), isOverwrite);
+            databaseRulePersistService.persist(databaseName, entry.getValue().getRuleConfigurations(), isOverwrite);
         }
     }
     
@@ -104,7 +105,7 @@ public final class MetaDataPersistService {
     
     /**
      * Persist instance labels.
-     * 
+     *
      * @param instanceId instance id
      * @param labels labels
      * @param isOverwrite whether overwrite registry center's configuration if existed
@@ -115,20 +116,19 @@ public final class MetaDataPersistService {
     
     /**
      * Get effective data sources.
-     * 
-     * @param schemaName schema name
-     * @param schemaConfigs schema configurations
+     *
+     * @param databaseName database name
+     * @param databaseConfigs database configurations
      * @return effective data sources
-     * @throws SQLException SQL exception
      */
-    public Map<String, DataSource> getEffectiveDataSources(final String schemaName, final Map<String, ? extends SchemaConfiguration> schemaConfigs) throws SQLException {
-        Map<String, DataSourceProperties> persistedDataPropsMap = dataSourceService.load(schemaName);
-        return schemaConfigs.containsKey(schemaName)
-                ? mergeEffectiveDataSources(persistedDataPropsMap, schemaConfigs.get(schemaName).getDataSources()) : DataSourcePoolCreator.create(persistedDataPropsMap);
+    public Map<String, DataSource> getEffectiveDataSources(final String databaseName, final Map<String, ? extends DatabaseConfiguration> databaseConfigs) {
+        Map<String, DataSourceProperties> persistedDataPropsMap = dataSourceService.load(databaseName);
+        return databaseConfigs.containsKey(databaseName)
+                ? mergeEffectiveDataSources(persistedDataPropsMap, databaseConfigs.get(databaseName).getDataSources())
+                : DataSourcePoolCreator.create(persistedDataPropsMap);
     }
     
-    private Map<String, DataSource> mergeEffectiveDataSources(
-            final Map<String, DataSourceProperties> persistedDataSourcePropsMap, final Map<String, DataSource> localConfiguredDataSources) throws SQLException {
+    private Map<String, DataSource> mergeEffectiveDataSources(final Map<String, DataSourceProperties> persistedDataSourcePropsMap, final Map<String, DataSource> localConfiguredDataSources) {
         Map<String, DataSource> result = new LinkedHashMap<>(persistedDataSourcePropsMap.size(), 1);
         for (Entry<String, DataSourceProperties> entry : persistedDataSourcePropsMap.entrySet()) {
             String dataSourceName = entry.getKey();
@@ -140,7 +140,7 @@ public final class MetaDataPersistService {
                 result.put(dataSourceName, localConfiguredDataSource);
             } else {
                 result.put(dataSourceName, DataSourcePoolCreator.create(persistedDataSourceProps));
-                DataSourcePoolDestroyerFactory.destroy(localConfiguredDataSource);
+                new DataSourcePoolDestroyer(localConfiguredDataSource).asyncDestroy();
             }
         }
         return result;
@@ -153,12 +153,13 @@ public final class MetaDataPersistService {
      * @param isOverwrite whether overwrite registry center's configuration if existed
      */
     public void persistTransactionRule(final Properties props, final boolean isOverwrite) {
-        Collection<RuleConfiguration> ruleConfigurations = globalRuleService.load();
-        for (RuleConfiguration each : ruleConfigurations) {
-            if (each instanceof TransactionRuleConfiguration) {
-                ((TransactionRuleConfiguration) each).getProps().putAll(props);
-            }
+        Collection<RuleConfiguration> ruleConfigs = globalRuleService.load();
+        Optional<RuleConfiguration> ruleConfig = ruleConfigs.stream().filter(each -> each instanceof TransactionRuleConfiguration).findFirst();
+        Preconditions.checkState(ruleConfig.isPresent());
+        if (!props.equals(((TransactionRuleConfiguration) ruleConfig.get()).getProps())) {
+            ((TransactionRuleConfiguration) ruleConfig.get()).getProps().clear();
+            ((TransactionRuleConfiguration) ruleConfig.get()).getProps().putAll(props);
+            globalRuleService.persist(ruleConfigs, isOverwrite);
         }
-        globalRuleService.persist(ruleConfigurations, isOverwrite);
     }
 }

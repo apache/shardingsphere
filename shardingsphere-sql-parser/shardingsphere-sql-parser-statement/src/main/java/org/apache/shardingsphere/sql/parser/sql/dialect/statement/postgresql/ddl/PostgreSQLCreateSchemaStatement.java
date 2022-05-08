@@ -17,14 +17,30 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateSchemaStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
+
+import java.util.Optional;
 
 /**
  * PostgreSQL create schema statement.
  */
+@Getter
+@Setter
 @ToString
-public final class PostgreSQLCreateSchemaStatement extends AbstractSQLStatement implements DDLStatement, PostgreSQLStatement {
+public final class PostgreSQLCreateSchemaStatement extends CreateSchemaStatement implements PostgreSQLStatement {
+    
+    private String username;
+    
+    /**
+     * Get username.
+     *
+     * @return username
+     */
+    public Optional<String> getUsername() {
+        return Optional.ofNullable(username);
+    }
 }

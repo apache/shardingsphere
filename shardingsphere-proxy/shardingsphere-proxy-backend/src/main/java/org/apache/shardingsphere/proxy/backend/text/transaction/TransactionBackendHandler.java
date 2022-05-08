@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.text.transaction;
 
 import io.vertx.core.Future;
+import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.proxy.backend.communication.TransactionManager;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.JDBCBackendTransactionManager;
@@ -27,11 +29,16 @@ import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.ReleaseSavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLBeginTransactionStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.tcl.OpenGaussCommitStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.tcl.OpenGaussRollbackStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLCommitStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLRollbackStatement;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
 
 import java.sql.SQLException;
@@ -47,7 +54,7 @@ public final class TransactionBackendHandler implements TextProtocolBackendHandl
     private final TransactionOperationType operationType;
     
     private final TransactionManager backendTransactionManager;
-
+    
     private final ConnectionSession connectionSession;
     
     public TransactionBackendHandler(final TCLStatement tclStatement, final TransactionOperationType operationType, final ConnectionSession connectionSession) {
@@ -100,21 +107,18 @@ public final class TransactionBackendHandler implements TextProtocolBackendHandl
                 backendTransactionManager.begin();
                 break;
             case SAVEPOINT:
-                backendTransactionManager.setSavepoint(((SavepointStatement) tclStatement).getSavepointName());
+                handleSavepoint();
                 break;
             case ROLLBACK_TO_SAVEPOINT:
-                if (((RollbackStatement) tclStatement).getSavepointName().isPresent()) {
-                    backendTransactionManager.rollbackTo(((RollbackStatement) tclStatement).getSavepointName().get());
-                    break;
-                }
-                backendTransactionManager.rollback();
+                handleRollbackToSavepoint();
                 break;
             case RELEASE_SAVEPOINT:
-                backendTransactionManager.releaseSavepoint(((ReleaseSavepointStatement) tclStatement).getSavepointName());
+                handleReleaseSavepoint();
                 break;
             case COMMIT:
+                SQLStatement sqlStatement = getSQLStatementByCommit();
                 backendTransactionManager.commit();
-                break;
+                return new UpdateResponseHeader(sqlStatement);
             case ROLLBACK:
                 backendTransactionManager.rollback();
                 break;
@@ -122,5 +126,45 @@ public final class TransactionBackendHandler implements TextProtocolBackendHandl
                 throw new SQLFeatureNotSupportedException(operationType.name());
         }
         return new UpdateResponseHeader(tclStatement);
+    }
+    
+    private void handleSavepoint() throws SQLException {
+        if (!connectionSession.getTransactionStatus().isInTransaction() && checkPostgreSQLOrOpengauss()) {
+            throw new SQLFeatureNotSupportedException("SAVEPOINT can only be used in transaction blocks");
+        }
+        backendTransactionManager.setSavepoint(((SavepointStatement) tclStatement).getSavepointName());
+    }
+    
+    private void handleRollbackToSavepoint() throws SQLException {
+        if (!connectionSession.getTransactionStatus().isInTransaction() && checkPostgreSQLOrOpengauss()) {
+            throw new SQLFeatureNotSupportedException("ROLLBACK TO SAVEPOINT can only be used in transaction blocks");
+        }
+        backendTransactionManager.rollbackTo(((RollbackStatement) tclStatement).getSavepointName().get());
+    }
+    
+    private void handleReleaseSavepoint() throws SQLException {
+        if (!connectionSession.getTransactionStatus().isInTransaction() && checkPostgreSQLOrOpengauss()) {
+            throw new SQLFeatureNotSupportedException("RELEASE SAVEPOINT can only be used in transaction blocks");
+        }
+        backendTransactionManager.releaseSavepoint(((ReleaseSavepointStatement) tclStatement).getSavepointName());
+    }
+    
+    private boolean checkPostgreSQLOrOpengauss() {
+        if (connectionSession.getDatabaseType() instanceof PostgreSQLDatabaseType || connectionSession.getDatabaseType() instanceof OpenGaussDatabaseType) {
+            return true;
+        }
+        return false;
+    }
+    
+    private SQLStatement getSQLStatementByCommit() {
+        SQLStatement result = tclStatement;
+        if (connectionSession.getTransactionStatus().isRollbackOnly()) {
+            if (tclStatement instanceof OpenGaussCommitStatement) {
+                result = new OpenGaussRollbackStatement();
+            } else if (tclStatement instanceof PostgreSQLCommitStatement) {
+                result = new PostgreSQLRollbackStatement();
+            }
+        }
+        return result;
     }
 }

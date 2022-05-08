@@ -29,9 +29,12 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.Or
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WindowSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -42,48 +45,48 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public final class OrderByTokenGeneratorTest {
     
     private static final String TEST_COLUMN_ORDER_BY_ITEM_SEGMENT_COLUMN_LABEL = "TEST_COLUMN_ORDER_BY_ITEM_SEGMENT_COLUMN_LABEL";
-
+    
     private static final String TEST_EXPRESSION_ORDER_BY_ITEM_SEGMENT_COLUMN_LABEL = "TEST_EXPRESSION_ORDER_BY_ITEM_SEGMENT_COLUMN_LABEL";
-
+    
     private static final int TEST_OTHER_CLASS_ORDER_BY_ITEM_INDEX = 5;
-
-    private OrderDirection orderDirection = mock(OrderDirection.class);
-
+    
+    @Mock
+    private OrderDirection orderDirection;
+    
     @Test
     public void assertIsGenerateSQLToken() {
-        InsertStatementContext insertStatementContext = mock(InsertStatementContext.class);
-        OrderByTokenGenerator orderByTokenGenerator = new OrderByTokenGenerator();
-        assertFalse(orderByTokenGenerator.isGenerateSQLToken(insertStatementContext));
+        OrderByTokenGenerator generator = new OrderByTokenGenerator();
+        assertFalse(generator.isGenerateSQLToken(mock(InsertStatementContext.class)));
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(selectStatementContext.getOrderByContext().isGenerated()).thenReturn(Boolean.FALSE);
-        assertFalse(orderByTokenGenerator.isGenerateSQLToken(selectStatementContext));
+        assertFalse(generator.isGenerateSQLToken(selectStatementContext));
         when(selectStatementContext.getOrderByContext().isGenerated()).thenReturn(Boolean.TRUE);
-        assertTrue(orderByTokenGenerator.isGenerateSQLToken(selectStatementContext));
+        assertTrue(generator.isGenerateSQLToken(selectStatementContext));
     }
-
+    
     @Test
     public void assertGenerateSQLToken() {
         WindowSegment windowSegment = mock(WindowSegment.class);
-        final int testStopIndex = 2;
-        when(windowSegment.getStopIndex()).thenReturn(testStopIndex);
+        when(windowSegment.getStopIndex()).thenReturn(2);
         MySQLSelectStatement mySQLSelectStatement = mock(MySQLSelectStatement.class);
         when(mySQLSelectStatement.getWindow()).thenReturn(Optional.of(windowSegment));
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(selectStatementContext.getSqlStatement()).thenReturn(mySQLSelectStatement);
-        Collection<OrderByItem> orderByItemCollection = getOrderByItemCollection();
-        when(selectStatementContext.getOrderByContext().getItems()).thenReturn(orderByItemCollection);
-        OrderByTokenGenerator orderByTokenGenerator = new OrderByTokenGenerator();
-        OrderByToken orderByToken = orderByTokenGenerator.generateSQLToken(selectStatementContext);
-        assertThat(orderByToken.getColumnLabels().get(0), is(TEST_COLUMN_ORDER_BY_ITEM_SEGMENT_COLUMN_LABEL));
-        assertThat(orderByToken.getColumnLabels().get(1), is(TEST_EXPRESSION_ORDER_BY_ITEM_SEGMENT_COLUMN_LABEL));
-        assertThat(orderByToken.getColumnLabels().get(2), is(String.valueOf(TEST_OTHER_CLASS_ORDER_BY_ITEM_INDEX)));
-        assertThat(orderByToken.getOrderDirections().get(0), is(orderDirection));
+        Collection<OrderByItem> orderByItems = getOrderByItems();
+        when(selectStatementContext.getOrderByContext().getItems()).thenReturn(orderByItems);
+        OrderByTokenGenerator generator = new OrderByTokenGenerator();
+        OrderByToken actual = generator.generateSQLToken(selectStatementContext);
+        assertThat(actual.getColumnLabels().get(0), is(TEST_COLUMN_ORDER_BY_ITEM_SEGMENT_COLUMN_LABEL));
+        assertThat(actual.getColumnLabels().get(1), is(TEST_EXPRESSION_ORDER_BY_ITEM_SEGMENT_COLUMN_LABEL));
+        assertThat(actual.getColumnLabels().get(2), is(String.valueOf(TEST_OTHER_CLASS_ORDER_BY_ITEM_INDEX)));
+        assertThat(actual.getOrderDirections().get(0), is(orderDirection));
     }
-
-    private Collection<OrderByItem> getOrderByItemCollection() {
+    
+    private Collection<OrderByItem> getOrderByItems() {
         ColumnOrderByItemSegment columnOrderByItemSegment = mock(ColumnOrderByItemSegment.class);
         when(columnOrderByItemSegment.getText()).thenReturn(TEST_COLUMN_ORDER_BY_ITEM_SEGMENT_COLUMN_LABEL);
         when(columnOrderByItemSegment.getOrderDirection()).thenReturn(orderDirection);
@@ -99,10 +102,6 @@ public final class OrderByTokenGeneratorTest {
         OrderByItem otherClassOrderByItem = mock(OrderByItem.class);
         when(otherClassOrderByItem.getSegment()).thenReturn(orderByItemSegment);
         when(otherClassOrderByItem.getIndex()).thenReturn(TEST_OTHER_CLASS_ORDER_BY_ITEM_INDEX);
-        Collection<OrderByItem> result = new LinkedList<>();
-        result.add(columnOrderByItem);
-        result.add(expressionOrderByItem);
-        result.add(otherClassOrderByItem);
-        return result;
+        return Arrays.asList(columnOrderByItem, expressionOrderByItem, otherClassOrderByItem);
     }
 }

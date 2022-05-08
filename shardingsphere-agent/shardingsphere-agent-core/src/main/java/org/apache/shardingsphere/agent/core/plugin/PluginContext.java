@@ -13,7 +13,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package org.apache.shardingsphere.agent.core.plugin;
@@ -31,6 +30,6 @@ public final class PluginContext {
      * @return the plugin enable value
      */
     public static boolean isPluginEnabled() {
-        return !"false".equalsIgnoreCase(System.getProperty(PLUGIN_ENABLED_KEY)) && !"0".equalsIgnoreCase(System.getProperty(PLUGIN_ENABLED_KEY));
+        return !Boolean.FALSE.toString().equalsIgnoreCase(System.getProperty(PLUGIN_ENABLED_KEY)) && !"0".equalsIgnoreCase(System.getProperty(PLUGIN_ENABLED_KEY));
     }
 }

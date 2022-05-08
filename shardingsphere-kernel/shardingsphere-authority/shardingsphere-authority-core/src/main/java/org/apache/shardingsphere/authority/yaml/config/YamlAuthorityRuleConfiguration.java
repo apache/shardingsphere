@@ -32,9 +32,9 @@ import java.util.LinkedList;
 @Getter
 @Setter
 public final class YamlAuthorityRuleConfiguration implements YamlRuleConfiguration {
-
+    
     private Collection<String> users = new LinkedList<>();
-
+    
     private YamlShardingSphereAlgorithmConfiguration provider;
     
     @Override

@@ -42,39 +42,39 @@ public final class StoragePrivilegeMerger {
      * Merge privileges.
      * 
      * @param privileges privileges
-     * @param schemaName schema name
+     * @param databaseName database name
      * @param rules rules
      * @return map of user and  privilege
      */
-    public static Map<ShardingSphereUser, NativePrivileges> merge(final Map<ShardingSphereUser, Collection<NativePrivileges>> privileges, 
-                                                                  final String schemaName, final Collection<ShardingSphereRule> rules) {
+    public static Map<ShardingSphereUser, NativePrivileges> merge(final Map<ShardingSphereUser, Collection<NativePrivileges>> privileges,
+                                                                  final String databaseName, final Collection<ShardingSphereRule> rules) {
         Map<ShardingSphereUser, NativePrivileges> result = new HashMap<>(privileges.size(), 1);
         for (Entry<ShardingSphereUser, Collection<NativePrivileges>> entry : privileges.entrySet()) {
-            result.put(entry.getKey(), merge(entry.getValue(), schemaName, rules));
+            result.put(entry.getKey(), merge(entry.getValue(), databaseName, rules));
         }
         return result;
     }
     
-    private static NativePrivileges merge(final Collection<NativePrivileges> privileges, final String schemaName, final Collection<ShardingSphereRule> rules) {
-        return privileges.isEmpty() ? new NativePrivileges() : getMergedPrivileges(privileges.iterator().next(), schemaName, rules);
+    private static NativePrivileges merge(final Collection<NativePrivileges> privileges, final String databaseName, final Collection<ShardingSphereRule> rules) {
+        return privileges.isEmpty() ? new NativePrivileges() : getMergedPrivileges(privileges.iterator().next(), databaseName, rules);
     }
     
-    private static NativePrivileges getMergedPrivileges(final NativePrivileges privilege, final String schemaName, final Collection<ShardingSphereRule> rules) {
+    private static NativePrivileges getMergedPrivileges(final NativePrivileges privilege, final String databaseName, final Collection<ShardingSphereRule> rules) {
         NativePrivileges result = new NativePrivileges();
         result.getAdministrativePrivileges().getPrivileges().addAll(privilege.getAdministrativePrivileges().getPrivileges());
         result.getDatabasePrivileges().getGlobalPrivileges().addAll(privilege.getDatabasePrivileges().getGlobalPrivileges());
-        result.getDatabasePrivileges().getSpecificPrivileges().putAll(getMergedSchemaPrivileges(privilege, schemaName, rules));
+        result.getDatabasePrivileges().getSpecificPrivileges().putAll(getMergedSchemaPrivileges(privilege, databaseName, rules));
         return result;
     }
     
-    private static Map<String, SchemaPrivileges> getMergedSchemaPrivileges(final NativePrivileges privilege, final String schemaName, final Collection<ShardingSphereRule> rules) {
+    private static Map<String, SchemaPrivileges> getMergedSchemaPrivileges(final NativePrivileges privilege, final String databaseName, final Collection<ShardingSphereRule> rules) {
         Map<String, SchemaPrivileges> result = new HashMap<>(privilege.getDatabasePrivileges().getSpecificPrivileges().size(), 1);
         for (Entry<String, SchemaPrivileges> entry : privilege.getDatabasePrivileges().getSpecificPrivileges().entrySet()) {
-            if (!result.containsKey(schemaName)) {
-                SchemaPrivileges schemaPrivileges = new SchemaPrivileges(schemaName);
+            if (!result.containsKey(databaseName)) {
+                SchemaPrivileges schemaPrivileges = new SchemaPrivileges(databaseName);
                 schemaPrivileges.getGlobalPrivileges().addAll(entry.getValue().getGlobalPrivileges());
                 schemaPrivileges.getSpecificPrivileges().putAll(getMergedTablePrivileges(entry.getValue(), rules));
-                result.put(schemaName, schemaPrivileges);
+                result.put(databaseName, schemaPrivileges);
             }
         }
         return result;

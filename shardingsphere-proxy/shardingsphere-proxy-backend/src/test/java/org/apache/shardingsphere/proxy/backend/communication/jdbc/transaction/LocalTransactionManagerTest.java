@@ -1,4 +1,3 @@
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -82,7 +81,7 @@ public final class LocalTransactionManagerTest {
     @SneakyThrows(SQLException.class)
     public void assertCommit() {
         localTransactionManager.commit();
-        verify(transactionStatus).isInTransaction();
+        verify(transactionStatus).isRollbackOnly();
         verify(connection).commit();
     }
     

@@ -14,7 +14,7 @@ Attributes:
 | *Name*      | *DataType* | *Description*  |
 | -------------- | --------- | ------- |
 | column         | String    | Shadow column |
-| operation      | String    | SQL operation type（INSERT, UPDATE, DELETE, SELECT） |
+| operation      | String    | SQL operation type (INSERT, UPDATE, DELETE, SELECT) |
 | value          | String    | Shadow column matching value |
 
 ### Column Regex Match Shadow Algorithm

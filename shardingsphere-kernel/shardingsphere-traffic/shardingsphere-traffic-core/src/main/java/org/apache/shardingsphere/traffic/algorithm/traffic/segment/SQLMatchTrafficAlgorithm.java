@@ -33,20 +33,20 @@ import java.util.TreeSet;
 /**
  * SQL match traffic algorithm.
  */
-@Getter
-@Setter
 public final class SQLMatchTrafficAlgorithm implements SegmentTrafficAlgorithm {
     
     private static final String SQL_PROPS_KEY = "sql";
     
     private static final String EXCLUDED_CHARACTERS = "[]`'\" ";
     
-    private Properties props = new Properties();
+    @Getter
+    @Setter
+    private Properties props;
     
     private Collection<String> sql;
     
     @Override
-    public void init() {
+    public void init(final Properties props) {
         Preconditions.checkArgument(props.containsKey(SQL_PROPS_KEY), "%s cannot be null.", SQL_PROPS_KEY);
         sql = getExactlySQL(props.getProperty(SQL_PROPS_KEY));
     }

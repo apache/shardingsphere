@@ -39,7 +39,6 @@ import java.util.Iterator;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -87,7 +86,6 @@ public final class EncryptTokenGenerateBuilderTest {
     private void assertField(final SQLTokenGenerator sqlTokenGenerator, final Object filedInstance, final String fieldName) throws IllegalAccessException {
         Field field = findField(sqlTokenGenerator.getClass(), fieldName, filedInstance.getClass());
         field.setAccessible(true);
-        assertNotNull(field.get(sqlTokenGenerator));
         assertThat(field.get(sqlTokenGenerator), is(filedInstance));
     }
     

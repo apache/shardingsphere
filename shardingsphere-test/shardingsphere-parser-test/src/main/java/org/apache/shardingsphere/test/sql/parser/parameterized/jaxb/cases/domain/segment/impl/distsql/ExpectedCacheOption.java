@@ -32,10 +32,10 @@ public final class ExpectedCacheOption extends AbstractExpectedIdentifierSQLSegm
     
     @XmlAttribute(name = "initial-capacity")
     private int initialCapacity;
-
+    
     @XmlAttribute(name = "maximum-size")
     private long maximumSize;
-
+    
     @XmlAttribute(name = "concurrency-level")
     private int concurrencyLevel;
 }

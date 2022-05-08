@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
@@ -61,7 +62,15 @@ public final class CreateReadwriteSplittingRuleStatementUpdaterTest {
     
     @Test(expected = DuplicateRuleException.class)
     public void assertCheckSQLStatementWithDuplicateRuleNames() throws DistSQLException {
-        updater.checkSQLStatement(mock(ShardingSphereMetaData.class), createSQLStatement("TEST"), getCurrentRuleConfig());
+        updater.checkSQLStatement(mock(ShardingSphereMetaData.class), createSQLStatement("TEST"), createCurrentRuleConfiguration());
+    }
+    
+    @Test(expected = InvalidRuleConfigurationException.class)
+    public void assertCheckSQLStatementWithDuplicateResource() throws DistSQLException {
+        ShardingSphereMetaData shardingSphereMetaData = mock(ShardingSphereMetaData.class);
+        when(shardingSphereMetaData.getResource()).thenReturn(resource);
+        when(resource.getDataSources()).thenReturn(Collections.singletonMap("write_ds", null));
+        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement("write_ds", "TEST"), createCurrentRuleConfiguration());
     }
     
     @Test(expected = RequiredResourceMissedException.class)
@@ -81,12 +90,20 @@ public final class CreateReadwriteSplittingRuleStatementUpdaterTest {
         return new CreateReadwriteSplittingRuleStatement(Collections.singleton(ruleSegment));
     }
     
-    private ReadwriteSplittingRuleConfiguration getCurrentRuleConfig() {
-        Properties props = new Properties();
-        props.setProperty("write-data-source-name", "ds_write");
-        props.setProperty("read-data-source-names", "read_ds_0,read_ds_1");
-        ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig
-                = new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_ds", "Static", props, "TEST");
+    private CreateReadwriteSplittingRuleStatement createSQLStatement(final String ruleName, final String loadBalancerName) {
+        ReadwriteSplittingRuleSegment ruleSegment = new ReadwriteSplittingRuleSegment(ruleName, "write_ds", Arrays.asList("read_ds_0", "read_ds_1"), loadBalancerName, new Properties());
+        return new CreateReadwriteSplittingRuleStatement(Collections.singleton(ruleSegment));
+    }
+    
+    private ReadwriteSplittingRuleConfiguration createCurrentRuleConfiguration() {
+        ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig = new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_ds", "Static", createProperties(), "TEST");
         return new ReadwriteSplittingRuleConfiguration(new LinkedList<>(Collections.singleton(dataSourceRuleConfig)), Collections.emptyMap());
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty("write-data-source-name", "ds_write");
+        result.setProperty("read-data-source-names", "read_ds_0,read_ds_1");
+        return result;
     }
 }

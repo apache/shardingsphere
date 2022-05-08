@@ -15,9 +15,9 @@ SHOW SHADOW ALGORITHMS [FROM schemaName]
 shadowRule: 
     RULE ruleName
 ```
-- 支持查询所有影子规则和指定表查询
-- 支持查询所有表规则
-- 支持查询所有影子算法
+- 支持查询所有影子规则和指定表查询；
+- 支持查询所有表规则；
+- 支持查询所有影子算法。
 
 ## 返回值说明
 
@@ -85,7 +85,7 @@ mysql> show shadow table rules;
 +--------------+--------------------------------------------------------------------------------+
 | shadow_table | shadow_algorithm_name                                                          |
 +--------------+--------------------------------------------------------------------------------+
-| t_order_1    | user_id_match_algorithm,simple_note_algorithm_1                                |  
+| t_order_1    | user_id_match_algorithm,simple_hint_algorithm_1                                |  
 +--------------+--------------------------------------------------------------------------------+
 1 rows in set (0.01 sec)
 ```
@@ -97,8 +97,8 @@ mysql> show shadow algorithms;
 +-------------------------+--------------------+-------------------------------------------+----------------+
 | shadow_algorithm_name   | type               | props                                     | is_default     |
 +-------------------------+--------------------+-------------------------------------------+----------------+
-| user_id_match_algorithm | COLUMN_REGEX_MATCH | operation=insert,column=user_id,regex=[1] | false          |
-| simple_note_algorithm_1 | SIMPLE_NOTE        | shadow=true,foo=bar                       | false          |
+| user_id_match_algorithm | REGEX_MATCH        | operation=insert,column=user_id,regex=[1] | false          |
+| simple_hint_algorithm_1 | SIMPLE_HINT        | shadow=true,foo=bar                       | false          |
 +-------------------------+--------------------+-------------------------------------------+----------------+
 2 rows in set (0.01 sec)
 ```

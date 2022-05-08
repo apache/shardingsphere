@@ -25,7 +25,7 @@ import com.arjuna.ats.internal.jta.recovery.arjunacore.JTAActionStatusServiceXAR
 import com.arjuna.ats.internal.jta.recovery.arjunacore.JTANodeNameXAResourceOrphanFilter;
 import com.arjuna.ats.internal.jta.recovery.arjunacore.JTATransactionLogXAResourceOrphanFilter;
 import com.arjuna.ats.internal.jta.recovery.arjunacore.XARecoveryModule;
-import org.apache.shardingsphere.infra.config.schema.SchemaConfiguration;
+import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
@@ -34,6 +34,7 @@ import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseT
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaDataFactory;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaDataReflection;
+import org.apache.shardingsphere.infra.datasource.pool.metadata.type.DefaultDataSourcePoolFieldMetaData;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.transaction.spi.TransactionConfigurationFileGenerator;
 
@@ -78,6 +79,7 @@ public final class NarayanaConfigurationFileGenerator implements TransactionConf
         result.getEntries().add(createEntry("RecoveryEnvironmentBean.transactionStatusManagerAddress", ""));
         result.getEntries().add(createEntry("RecoveryEnvironmentBean.recoveryListener", "NO"));
         result.getEntries().add(createEntry("RecoveryEnvironmentBean.recoveryBackoffPeriod", "1"));
+        result.getEntries().add(createEntry("CoordinatorEnvironmentBean.defaultTimeout", "180"));
         return result;
     }
     
@@ -126,24 +128,24 @@ public final class NarayanaConfigurationFileGenerator implements TransactionConf
         config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.objectStoreType", JDBCStore.class.getName()));
         config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.jdbcAccess", jdbcAccess));
         config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.tablePrefix", "Action"));
-        config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.dropTable", "true"));
+        config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.dropTable", Boolean.TRUE.toString()));
         config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.stateStore.objectStoreType", JDBCStore.class.getName()));
         config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.stateStore.jdbcAccess", jdbcAccess));
         config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.stateStore.tablePrefix", "stateStore"));
-        config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.stateStore.dropTable", "true"));
+        config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.stateStore.dropTable", Boolean.TRUE.toString()));
         config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.communicationStore.objectStoreType", JDBCStore.class.getName()));
         config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.communicationStore.jdbcAccess", jdbcAccess));
         config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.communicationStore.tablePrefix", "Communication"));
-        config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.communicationStore.dropTable", "true"));
+        config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.communicationStore.dropTable", Boolean.TRUE.toString()));
     }
     
     @Override
-    public Properties getTransactionProps(final Properties originTransactionProps, final SchemaConfiguration schemaConfiguration, final String modeType) {
+    public Properties getTransactionProps(final Properties originTransactionProps, final DatabaseConfiguration databaseConfig, final String modeType) {
         Properties result = new Properties();
         if (!originTransactionProps.isEmpty()) {
             generateUserDefinedJdbcStoreConfiguration(originTransactionProps, result);
         } else if ("Cluster".equals(modeType)) {
-            generateDefaultJdbcStoreConfiguration(schemaConfiguration, result);
+            generateDefaultJdbcStoreConfiguration(databaseConfig, result);
         }
         return result;
     }
@@ -156,22 +158,21 @@ public final class NarayanaConfigurationFileGenerator implements TransactionConf
         generateTransactionProps(url, user, password, dataSourceClass, props);
     }
     
-    private void generateDefaultJdbcStoreConfiguration(final SchemaConfiguration schemaConfiguration, final Properties props) {
-        Map<String, DataSource> datasourceMap = schemaConfiguration.getDataSources();
+    private void generateDefaultJdbcStoreConfiguration(final DatabaseConfiguration databaseConfig, final Properties props) {
+        Map<String, DataSource> datasourceMap = databaseConfig.getDataSources();
         Optional<DataSource> dataSource = datasourceMap.values().stream().findFirst();
-        if (dataSource.isPresent()) {
-            Optional<DataSourcePoolMetaData> poolMetaData = DataSourcePoolMetaDataFactory.newInstance(dataSource.get().getClass().getName());
-            if (poolMetaData.isPresent()) {
-                DataSourcePoolMetaDataReflection dataSourcePoolMetaDataReflection = new DataSourcePoolMetaDataReflection(dataSource.get());
-                String jdbcUrl = dataSourcePoolMetaDataReflection.getJdbcUrl();
-                int endIndex = jdbcUrl.indexOf("?");
-                jdbcUrl = jdbcUrl.substring(0, endIndex);
-                String username = dataSourcePoolMetaDataReflection.getUsername();
-                String password = dataSourcePoolMetaDataReflection.getPassword();
-                String dataSourceClassName = getDataSourceClassNameByJdbcUrl(jdbcUrl);
-                generateTransactionProps(jdbcUrl, username, password, dataSourceClassName, props);
-            }
+        if (!dataSource.isPresent()) {
+            return;
         }
+        DataSourcePoolMetaDataReflection dataSourcePoolMetaDataReflection = new DataSourcePoolMetaDataReflection(dataSource.get(),
+                DataSourcePoolMetaDataFactory.newInstance(dataSource.get().getClass().getName()).map(DataSourcePoolMetaData::getFieldMetaData).orElseGet(DefaultDataSourcePoolFieldMetaData::new));
+        String jdbcUrl = dataSourcePoolMetaDataReflection.getJdbcUrl();
+        int endIndex = jdbcUrl.indexOf("?");
+        jdbcUrl = -1 == endIndex ? jdbcUrl : jdbcUrl.substring(0, endIndex);
+        String username = dataSourcePoolMetaDataReflection.getUsername();
+        String password = dataSourcePoolMetaDataReflection.getPassword();
+        String dataSourceClassName = getDataSourceClassNameByJdbcUrl(jdbcUrl);
+        generateTransactionProps(jdbcUrl, username, password, dataSourceClassName, props);
     }
     
     private String getDataSourceClassNameByJdbcUrl(final String jdbcUrl) {
@@ -184,8 +185,8 @@ public final class NarayanaConfigurationFileGenerator implements TransactionConf
         throw new UnsupportedOperationException(String.format("Cannot support database type: `%s` as narayana recovery store", type));
     }
     
-    private void generateTransactionProps(final String recoveryStoreUrl, final String recoveryStoreUser, final String recoveryStorePassword, final String recoveryStoreDataSource,
-                                          final Properties props) {
+    private void generateTransactionProps(final String recoveryStoreUrl, final String recoveryStoreUser, final String recoveryStorePassword,
+                                          final String recoveryStoreDataSource, final Properties props) {
         props.setProperty("recoveryStoreUrl", recoveryStoreUrl);
         props.setProperty("recoveryStoreUser", recoveryStoreUser);
         props.setProperty("recoveryStorePassword", recoveryStorePassword);

@@ -48,7 +48,7 @@ public final class SQLCasesLoader extends CasesLoader {
     public SQLCasesLoader(final String rootDirection) {
         super(rootDirection);
     }
-
+    
     @Override
     public void buildCaseMap(final Map<String, Case> sqlCaseMap, final InputStream inputStream) throws JAXBException {
         SQLCases sqlCases = (SQLCases) JAXBContext.newInstance(SQLCases.class).createUnmarshaller().unmarshal(inputStream);
@@ -106,7 +106,7 @@ public final class SQLCasesLoader extends CasesLoader {
     private String getPlaceholderSQL(final String sql) {
         return sql;
     }
-
+    
     private String getLiteralSQL(final String sql, final List<?> parameters) {
         if (null == parameters || parameters.isEmpty()) {
             return sql;

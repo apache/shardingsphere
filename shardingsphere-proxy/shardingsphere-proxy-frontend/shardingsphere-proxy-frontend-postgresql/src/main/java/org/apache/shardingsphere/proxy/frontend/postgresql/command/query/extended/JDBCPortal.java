@@ -39,7 +39,9 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.Postgr
 import org.apache.shardingsphere.distsql.parser.statement.DistSQLStatement;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.metadata.schema.builder.SystemSchemaBuilderRule;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.JDBCDatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
@@ -49,7 +51,7 @@ import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.data.impl.BinaryQueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.ClientEncodingResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
@@ -100,10 +102,27 @@ public final class JDBCPortal implements Portal<Void> {
                     preparedStatement.getSql(), () -> Optional.of(sqlStatement), backendConnection.getConnectionSession());
             return;
         }
+        String databaseName = backendConnection.getConnectionSession().getDefaultDatabaseName();
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(
-                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap(), parameters, sqlStatement, backendConnection.getConnectionSession().getDefaultSchemaName());
+                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap(), parameters, sqlStatement, databaseName);
+        if (containsSystemTable(sqlStatementContext.getTablesContext().getTableNames())) {
+            databaseCommunicationEngine = null;
+            DatabaseType databaseType = ProxyContext.getInstance().getMetaData(databaseName).getResource().getDatabaseType();
+            textProtocolBackendHandler = TextProtocolBackendHandlerFactory.newInstance(databaseType,
+                    preparedStatement.getSql(), () -> Optional.of(sqlStatement), backendConnection.getConnectionSession());
+            return;
+        }
         databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(sqlStatementContext, preparedStatement.getSql(), parameters, backendConnection);
         textProtocolBackendHandler = null;
+    }
+    
+    private boolean containsSystemTable(final Collection<String> tableNames) {
+        for (String each : tableNames) {
+            if (SystemSchemaBuilderRule.POSTGRESQL_PG_CATALOG.getTables().contains(each)) {
+                return true;
+            }
+        }
+        return false;
     }
     
     @SneakyThrows(SQLException.class)

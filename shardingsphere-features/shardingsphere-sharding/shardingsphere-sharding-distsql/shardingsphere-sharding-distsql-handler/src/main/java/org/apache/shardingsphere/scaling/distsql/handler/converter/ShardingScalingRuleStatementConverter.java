@@ -40,12 +40,12 @@ public final class ShardingScalingRuleStatementConverter {
      * @return on rule altered action configuration
      */
     public static OnRuleAlteredActionConfiguration convert(final ShardingScalingRuleConfigurationSegment segment) {
-        InputConfiguration inputConfiguration = convertToInputConfiguration(segment.getInputSegment());
-        OutputConfiguration outputConfiguration = convertToOutputConfiguration(segment.getOutputSegment());
+        InputConfiguration inputConfig = convertToInputConfiguration(segment.getInputSegment());
+        OutputConfiguration outputConfig = convertToOutputConfiguration(segment.getOutputSegment());
         ShardingSphereAlgorithmConfiguration streamChannel = convertToAlgorithm(segment.getStreamChannel());
         ShardingSphereAlgorithmConfiguration completionDetector = convertToAlgorithm(segment.getCompletionDetector());
-        ShardingSphereAlgorithmConfiguration dataConsistencyChecker = convertToAlgorithm(segment.getDataConsistencyChecker());
-        return new OnRuleAlteredActionConfiguration(inputConfiguration, outputConfiguration, streamChannel, completionDetector, dataConsistencyChecker);
+        ShardingSphereAlgorithmConfiguration dataConsistencyChecker = convertToAlgorithm(segment.getDataConsistencyCalculator());
+        return new OnRuleAlteredActionConfiguration(inputConfig, outputConfig, streamChannel, completionDetector, dataConsistencyChecker);
     }
     
     private static InputConfiguration convertToInputConfiguration(final InputOrOutputSegment inputSegment) {

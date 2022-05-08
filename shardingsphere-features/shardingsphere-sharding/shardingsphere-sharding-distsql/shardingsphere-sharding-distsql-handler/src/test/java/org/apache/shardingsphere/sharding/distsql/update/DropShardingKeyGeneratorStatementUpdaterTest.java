@@ -35,6 +35,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Properties;
 
 import static org.junit.Assert.assertTrue;
@@ -50,7 +51,7 @@ public final class DropShardingKeyGeneratorStatementUpdaterTest {
     
     @Before
     public void before() {
-        when(shardingSphereMetaData.getName()).thenReturn("test");
+        when(shardingSphereMetaData.getDatabaseName()).thenReturn("test");
     }
     
     @Test(expected = DuplicateKeyGeneratorException.class)
@@ -61,6 +62,13 @@ public final class DropShardingKeyGeneratorStatementUpdaterTest {
     @Test(expected = RequiredKeyGeneratorMissedException.class)
     public void assertExecuteWithNotExist() throws DistSQLException {
         updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement("uuid_key_generator"), new ShardingRuleConfiguration());
+    }
+    
+    @Test
+    public void assertExecuteWithNotExistWithIfExists() throws DistSQLException {
+        DropShardingKeyGeneratorStatement sqlStatement = new DropShardingKeyGeneratorStatement(Collections.singletonList("uuid_key_generator"));
+        sqlStatement.setContainsExistClause(true);
+        updater.checkSQLStatement(shardingSphereMetaData, sqlStatement, new ShardingRuleConfiguration());
     }
     
     @Test

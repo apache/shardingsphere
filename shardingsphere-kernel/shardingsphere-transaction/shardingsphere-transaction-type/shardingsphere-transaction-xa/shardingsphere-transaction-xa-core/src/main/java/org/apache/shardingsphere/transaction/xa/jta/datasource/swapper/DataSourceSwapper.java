@@ -90,8 +90,8 @@ public final class DataSourceSwapper {
             }
         }
         try {
-            return (XADataSource) xaDataSourceClass.newInstance();
-        } catch (final InstantiationException | IllegalAccessException ex) {
+            return (XADataSource) xaDataSourceClass.getDeclaredConstructor().newInstance();
+        } catch (final ReflectiveOperationException ex) {
             throw new ShardingSphereException("Failed to instance [%s]", xaDataSourceClassName);
         }
     }
@@ -106,7 +106,7 @@ public final class DataSourceSwapper {
             return result;
         } catch (final ReflectiveOperationException ex) {
             throw new ShardingSphereException("Cannot swap data source type: `%s`, please provide an implementation from SPI `%s`",
-                dataSource.getClass().getName(), DataSourcePropertyProvider.class.getName());
+                    dataSource.getClass().getName(), DataSourcePropertyProvider.class.getName());
         }
     }
     

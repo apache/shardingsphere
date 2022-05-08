@@ -36,12 +36,15 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.FinishedRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.api.job.JobOperationType;
+import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineTableMetaData;
+import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.InventoryDumper;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
+import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -60,15 +63,17 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
     @Getter(AccessLevel.PROTECTED)
     private final InventoryDumperConfiguration inventoryDumperConfig;
     
+    private final PipelineChannel channel;
+    
+    private final PipelineSQLBuilder pipelineSQLBuilder;
+    
+    private final DataSource dataSource;
+    
     private final int batchSize;
     
     private final JobRateLimitAlgorithm rateLimitAlgorithm;
     
     private final LazyInitializer<PipelineTableMetaData> tableMetaDataLazyInitializer;
-    
-    private final PipelineChannel channel;
-    
-    private final DataSource dataSource;
     
     protected AbstractInventoryDumper(final InventoryDumperConfiguration inventoryDumperConfig, final PipelineChannel channel,
                                       final DataSource dataSource, final PipelineTableMetaDataLoader metaDataLoader) {
@@ -76,16 +81,19 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
             throw new UnsupportedOperationException("AbstractInventoryDumper only support StandardPipelineDataSourceConfiguration");
         }
         this.inventoryDumperConfig = inventoryDumperConfig;
-        this.batchSize = inventoryDumperConfig.getBatchSize();
-        this.rateLimitAlgorithm = inventoryDumperConfig.getRateLimitAlgorithm();
+        this.channel = channel;
+        pipelineSQLBuilder = PipelineSQLBuilderFactory.newInstance(inventoryDumperConfig.getDataSourceConfig().getDatabaseType().getName());
+        this.dataSource = dataSource;
+        batchSize = inventoryDumperConfig.getBatchSize();
+        rateLimitAlgorithm = inventoryDumperConfig.getRateLimitAlgorithm();
         tableMetaDataLazyInitializer = new LazyInitializer<PipelineTableMetaData>() {
+            
             @Override
             protected PipelineTableMetaData initialize() {
-                return metaDataLoader.getTableMetaData(inventoryDumperConfig.getTableName());
+                String schemaName = inventoryDumperConfig.getSchemaName(new LogicTableName(inventoryDumperConfig.getLogicTableName()));
+                return metaDataLoader.getTableMetaData(schemaName, inventoryDumperConfig.getActualTableName());
             }
         };
-        this.channel = channel;
-        this.dataSource = dataSource;
     }
     
     @Override
@@ -94,7 +102,8 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
     }
     
     private void dump() {
-        String sql = getDumpSQL();
+        String schemaName = inventoryDumperConfig.getSchemaName(new LogicTableName(inventoryDumperConfig.getLogicTableName()));
+        String sql = pipelineSQLBuilder.buildInventoryDumpSQL(schemaName, inventoryDumperConfig.getActualTableName(), inventoryDumperConfig.getPrimaryKey());
         IngestPosition<?> position = inventoryDumperConfig.getPosition();
         log.info("inventory dump, sql={}, position={}", sql, position);
         try (Connection conn = dataSource.getConnection()) {
@@ -118,12 +127,6 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
         }
     }
     
-    private String getDumpSQL() {
-        String tableName = inventoryDumperConfig.getTableName();
-        String primaryKey = inventoryDumperConfig.getPrimaryKey();
-        return "SELECT * FROM " + tableName + " WHERE " + primaryKey + " > ? AND " + primaryKey + " <= ? ORDER BY " + primaryKey + " ASC LIMIT ?";
-    }
-    
     @SneakyThrows(ConcurrentException.class)
     private PipelineTableMetaData getTableMetaData() {
         return tableMetaDataLazyInitializer.get();
@@ -142,10 +145,11 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
                 ResultSetMetaData metaData = resultSet.getMetaData();
                 int rowCount = 0;
                 Number maxUniqueKeyValue = null;
+                String logicTableName = inventoryDumperConfig.getLogicTableName();
                 while (resultSet.next()) {
                     DataRecord record = new DataRecord(newPosition(resultSet), metaData.getColumnCount());
                     record.setType(IngestDataChangeType.INSERT);
-                    record.setTableName(inventoryDumperConfig.getTableNameMap().get(inventoryDumperConfig.getTableName()));
+                    record.setTableName(logicTableName);
                     for (int i = 1; i <= metaData.getColumnCount(); i++) {
                         boolean isPrimaryKey = tableMetaData.isPrimaryKey(i - 1);
                         Object value = readValue(resultSet, i);
@@ -161,9 +165,7 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
                         break;
                     }
                 }
-                if (log.isDebugEnabled()) {
-                    log.debug("dump, round={}, rowCount={}, maxUniqueKeyValue={}", round, rowCount, maxUniqueKeyValue);
-                } else if (0 == round % 50) {
+                if (0 == round % 50) {
                     log.info("dump, round={}, rowCount={}, maxUniqueKeyValue={}", round, rowCount, maxUniqueKeyValue);
                 }
                 return Optional.ofNullable(maxUniqueKeyValue);
@@ -172,30 +174,16 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
     }
     
     private long getPositionBeginValue(final IngestPosition<?> position) {
-        if (null == position) {
-            return 0;
-        }
-        if (!(position instanceof PrimaryKeyPosition)) {
-            return 0;
-        }
-        return ((PrimaryKeyPosition) position).getBeginValue();
+        return position instanceof PrimaryKeyPosition ? ((PrimaryKeyPosition) position).getBeginValue() : 0;
     }
     
     private long getPositionEndValue(final IngestPosition<?> position) {
-        if (null == position) {
-            return Integer.MAX_VALUE;
-        }
-        if (!(position instanceof PrimaryKeyPosition)) {
-            return Integer.MAX_VALUE;
-        }
-        return ((PrimaryKeyPosition) position).getEndValue();
+        return position instanceof PrimaryKeyPosition ? ((PrimaryKeyPosition) position).getEndValue() : Integer.MAX_VALUE;
     }
     
     private IngestPosition<?> newPosition(final ResultSet rs) throws SQLException {
-        if (null == inventoryDumperConfig.getPrimaryKey()) {
-            return new PlaceholderPosition();
-        }
-        return new PrimaryKeyPosition(rs.getLong(inventoryDumperConfig.getPrimaryKey()), ((PrimaryKeyPosition) inventoryDumperConfig.getPosition()).getEndValue());
+        return null == inventoryDumperConfig.getPrimaryKey() ? new PlaceholderPosition()
+                : new PrimaryKeyPosition(rs.getLong(inventoryDumperConfig.getPrimaryKey()), ((PrimaryKeyPosition) inventoryDumperConfig.getPosition()).getEndValue());
     }
     
     protected abstract PreparedStatement createPreparedStatement(Connection connection, String sql) throws SQLException;

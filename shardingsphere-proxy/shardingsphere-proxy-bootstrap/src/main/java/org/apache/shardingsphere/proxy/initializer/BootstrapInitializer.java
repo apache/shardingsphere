@@ -27,16 +27,14 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderFactory;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleListener;
+import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleListenerFactory;
+import org.apache.shardingsphere.proxy.backend.config.ProxyConfiguration;
+import org.apache.shardingsphere.proxy.backend.config.YamlProxyConfiguration;
+import org.apache.shardingsphere.proxy.backend.config.yaml.swapper.YamlProxyConfigurationSwapper;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
-import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
-import org.apache.shardingsphere.proxy.config.yaml.swapper.YamlProxyConfigurationSwapper;
 import org.apache.shardingsphere.proxy.version.ShardingSphereProxyVersion;
-import org.apache.shardingsphere.spi.singleton.SingletonSPIRegistry;
 
 import java.sql.SQLException;
-import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * Bootstrap initializer.
@@ -64,7 +62,7 @@ public final class BootstrapInitializer {
         ProxyConfiguration proxyConfig = new YamlProxyConfigurationSwapper().swap(yamlConfig);
         ContextManagerBuilderParameter parameter = ContextManagerBuilderParameter.builder()
                 .modeConfig(modeConfig)
-                .schemaConfigs(proxyConfig.getSchemaConfigurations())
+                .databaseConfigs(proxyConfig.getDatabaseConfigurations())
                 .globalRuleConfigs(proxyConfig.getGlobalConfiguration().getRules())
                 .props(proxyConfig.getGlobalConfiguration().getProperties())
                 .labels(proxyConfig.getGlobalConfiguration().getLabels())
@@ -73,15 +71,13 @@ public final class BootstrapInitializer {
     }
     
     private void contextManagerInitializedCallback(final ModeConfiguration modeConfig, final ContextManager contextManager) {
-        Map<String, ContextManagerLifecycleListener> listeners = SingletonSPIRegistry.getTypedSingletonInstancesMap(ContextManagerLifecycleListener.class);
-        log.info("listeners.keySet={}", listeners.keySet());
-        for (Entry<String, ContextManagerLifecycleListener> entry : listeners.entrySet()) {
+        for (ContextManagerLifecycleListener each : ContextManagerLifecycleListenerFactory.newInstances()) {
             try {
-                entry.getValue().onInitialized(modeConfig, contextManager);
+                each.onInitialized(modeConfig, contextManager);
                 // CHECKSTYLE:OFF
             } catch (final Exception ex) {
                 // CHECKSTYLE:ON
-                log.error("contextManager onInitialized callback for '{}' failed", entry.getKey(), ex);
+                log.error("contextManager onInitialized callback for '{}' failed", each.getClass().getName(), ex);
             }
         }
     }

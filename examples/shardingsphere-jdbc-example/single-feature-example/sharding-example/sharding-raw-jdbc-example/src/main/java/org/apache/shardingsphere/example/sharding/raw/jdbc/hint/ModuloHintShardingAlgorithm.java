@@ -26,10 +26,6 @@ import java.util.LinkedList;
 public final class ModuloHintShardingAlgorithm implements HintShardingAlgorithm<Long> {
     
     @Override
-    public void init() {
-    }
-    
-    @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final HintShardingValue<Long> shardingValue) {
         Collection<String> result = new LinkedList<>();
         for (String each : availableTargetNames) {

@@ -38,7 +38,7 @@ import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngi
 @Getter
 public final class PostgreSQLFrontendEngine implements DatabaseProtocolFrontendEngine {
     
-    private final FrontendContext frontendContext = new FrontendContext(true, true);
+    private final FrontendContext frontendContext = new FrontendContext(true);
     
     private final AuthenticationEngine authenticationEngine = new PostgreSQLAuthenticationEngine();
     
@@ -47,7 +47,7 @@ public final class PostgreSQLFrontendEngine implements DatabaseProtocolFrontendE
     private final DatabasePacketCodecEngine<PostgreSQLPacket> codecEngine = new PostgreSQLPacketCodecEngine();
     
     @Override
-    public void setDatabaseVersion(final String databaseVersion) {
+    public void setDatabaseVersion(final String schemaName, final String databaseVersion) {
         PostgreSQLServerInfo.setServerVersion(databaseVersion);
     }
     
@@ -58,7 +58,14 @@ public final class PostgreSQLFrontendEngine implements DatabaseProtocolFrontendE
     }
     
     @Override
-    public String getDatabaseType() {
+    public void handleException(final ConnectionSession connectionSession) {
+        if (connectionSession.getTransactionStatus().isInTransaction() && !connectionSession.getTransactionStatus().isRollbackOnly()) {
+            connectionSession.getTransactionStatus().setRollbackOnly(true);
+        }
+    }
+    
+    @Override
+    public String getType() {
         return "PostgreSQL";
     }
 }

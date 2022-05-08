@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
-import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
+import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -44,32 +44,24 @@ public final class DatabaseDiscoveryDataSourceRule {
     
     private final Properties heartbeatProps;
     
-    private final DatabaseDiscoveryType databaseDiscoveryType;
+    private final DatabaseDiscoveryProviderAlgorithm databaseDiscoveryProviderAlgorithm;
     
     private final Collection<String> disabledDataSourceNames = new HashSet<>();
     
-    private String primaryDataSourceName;
+    private volatile String primaryDataSourceName;
     
-    public DatabaseDiscoveryDataSourceRule(final DatabaseDiscoveryDataSourceRuleConfiguration config, final Properties props, final DatabaseDiscoveryType databaseDiscoveryType) {
+    public DatabaseDiscoveryDataSourceRule(final DatabaseDiscoveryDataSourceRuleConfiguration config,
+                                           final Properties props, final DatabaseDiscoveryProviderAlgorithm databaseDiscoveryProviderAlgorithm) {
         checkConfiguration(config);
         groupName = config.getGroupName();
         dataSourceNames = config.getDataSourceNames();
         this.heartbeatProps = props;
-        this.databaseDiscoveryType = databaseDiscoveryType;
+        this.databaseDiscoveryProviderAlgorithm = databaseDiscoveryProviderAlgorithm;
     }
     
     private void checkConfiguration(final DatabaseDiscoveryDataSourceRuleConfiguration config) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(config.getGroupName()), "Group name is required.");
         Preconditions.checkArgument(null != config.getDataSourceNames() && !config.getDataSourceNames().isEmpty(), "Data source names are required.");
-    }
-    
-    /**
-     * Get data source names.
-     *
-     * @return available data source names
-     */
-    public List<String> getDataSourceNames() {
-        return dataSourceNames.stream().filter(each -> !disabledDataSourceNames.contains(each)).collect(Collectors.toList());
     }
     
     /**
@@ -100,12 +92,12 @@ public final class DatabaseDiscoveryDataSourceRule {
     }
     
     /**
-     * Update primary data source name.
+     * Change primary data source name.
      *
-     * @param dataSourceName data source name
+     * @param primaryDataSourceName to be changed primary data source name
      */
-    public void updatePrimaryDataSourceName(final String dataSourceName) {
-        primaryDataSourceName = dataSourceName;
+    public void changePrimaryDataSourceName(final String primaryDataSourceName) {
+        this.primaryDataSourceName = primaryDataSourceName;
     }
     
     /**

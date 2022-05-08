@@ -32,6 +32,7 @@ import org.apache.shardingsphere.sharding.rule.aware.ShardingRuleAware;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * Parameter rewriter builder for sharding.
@@ -43,7 +44,7 @@ public final class ShardingParameterRewriterBuilder implements ParameterRewriter
     
     private final RouteContext routeContext;
     
-    private final ShardingSphereSchema schema;
+    private final Map<String, ShardingSphereSchema> schemas;
     
     private final SQLStatementContext<?> sqlStatementContext;
     
@@ -59,7 +60,7 @@ public final class ShardingParameterRewriterBuilder implements ParameterRewriter
     @SuppressWarnings("rawtypes")
     private void addParameterRewriter(final Collection<ParameterRewriter> parameterRewriters, final ParameterRewriter toBeAddedParameterRewriter) {
         if (toBeAddedParameterRewriter instanceof SchemaMetaDataAware) {
-            ((SchemaMetaDataAware) toBeAddedParameterRewriter).setSchema(schema);
+            ((SchemaMetaDataAware) toBeAddedParameterRewriter).setSchemas(schemas);
         }
         if (toBeAddedParameterRewriter instanceof ShardingRuleAware) {
             ((ShardingRuleAware) toBeAddedParameterRewriter).setShardingRule(shardingRule);

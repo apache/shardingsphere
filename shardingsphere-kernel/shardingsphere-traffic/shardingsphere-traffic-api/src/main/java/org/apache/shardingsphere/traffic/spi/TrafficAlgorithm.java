@@ -18,10 +18,9 @@
 package org.apache.shardingsphere.traffic.spi;
 
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPostProcessor;
 
 /**
  * Traffic algorithm.
  */
-public interface TrafficAlgorithm extends ShardingSphereAlgorithm, ShardingSphereAlgorithmPostProcessor {
+public interface TrafficAlgorithm extends ShardingSphereAlgorithm {
 }

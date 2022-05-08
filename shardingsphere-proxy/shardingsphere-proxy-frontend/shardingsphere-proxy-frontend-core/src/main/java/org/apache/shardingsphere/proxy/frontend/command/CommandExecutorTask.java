@@ -26,13 +26,17 @@ import org.apache.shardingsphere.db.protocol.packet.CommandPacket;
 import org.apache.shardingsphere.db.protocol.packet.CommandPacketType;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
-import org.apache.shardingsphere.proxy.backend.communication.SQLStatementSchemaHolder;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.proxy.backend.communication.SQLStatementDatabaseHolder;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.BackendConnectionException;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.constant.LogMDCConstants;
 import org.apache.shardingsphere.proxy.frontend.exception.ExpectedExceptions;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
+import org.slf4j.MDC;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -64,7 +68,11 @@ public final class CommandExecutorTask implements Runnable {
     @Override
     public void run() {
         boolean isNeedFlush = false;
+        boolean sqlShowEnabled = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.SQL_SHOW);
         try (PacketPayload payload = databaseProtocolFrontendEngine.getCodecEngine().createPacketPayload((ByteBuf) message, context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get())) {
+            if (sqlShowEnabled) {
+                fillLogMDC();
+            }
             connectionSession.getBackendConnection().prepareForTaskExecution();
             isNeedFlush = executeCommand(context, payload);
             // CHECKSTYLE:OFF
@@ -72,9 +80,9 @@ public final class CommandExecutorTask implements Runnable {
             // CHECKSTYLE:ON
             processException(ex);
         } finally {
-            // TODO optimize SQLStatementSchemaHolder
-            SQLStatementSchemaHolder.remove();
-            Collection<SQLException> exceptions = Collections.emptyList(); 
+            // TODO optimize SQLStatementDatabaseHolder
+            SQLStatementDatabaseHolder.remove();
+            Collection<SQLException> exceptions = Collections.emptyList();
             try {
                 connectionSession.getBackendConnection().closeExecutionResources();
             } catch (final BackendConnectionException ex) {
@@ -84,6 +92,9 @@ public final class CommandExecutorTask implements Runnable {
                 context.flush();
             }
             processClosedExceptions(exceptions);
+            if (sqlShowEnabled) {
+                clearLogMDC();
+            }
         }
     }
     
@@ -99,12 +110,15 @@ public final class CommandExecutorTask implements Runnable {
             }
             responsePackets.forEach(context::write);
             if (commandExecutor instanceof QueryCommandExecutor) {
-                return commandExecuteEngine.writeQueryData(context, connectionSession.getBackendConnection(), (QueryCommandExecutor) commandExecutor, responsePackets.size());
+                commandExecuteEngine.writeQueryData(context, connectionSession.getBackendConnection(), (QueryCommandExecutor) commandExecutor, responsePackets.size());
             }
+            return true;
+        } catch (final SQLException ex) {
+            databaseProtocolFrontendEngine.handleException(connectionSession);
+            throw ex;
         } finally {
             commandExecutor.close();
         }
-        return databaseProtocolFrontendEngine.getFrontendContext().isFlushForPerCommandPacket();
     }
     
     private void processException(final Exception cause) {
@@ -126,5 +140,14 @@ public final class CommandExecutorTask implements Runnable {
             ex.setNextException(each);
         }
         processException(ex);
+    }
+    
+    private void fillLogMDC() {
+        MDC.put(LogMDCConstants.DATABASE_KEY, connectionSession.getDatabaseName());
+        MDC.put(LogMDCConstants.USER_KEY, connectionSession.getGrantee().toString());
+    }
+    
+    private void clearLogMDC() {
+        MDC.clear();
     }
 }

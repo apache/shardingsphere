@@ -33,16 +33,16 @@ import java.util.List;
 @Getter
 @Setter
 public final class ExpectedJoinTable extends AbstractExpectedDelimiterSQLSegment {
-
+    
     @XmlElement(name = "left")
     private ExpectedTable left;
-
+    
     @XmlElement(name = "right")
     private ExpectedTable right;
-
+    
     @XmlElement(name = "on-condition")
     private ExpectedExpression onCondition;
-
+    
     @XmlElement(name = "using-columns")
     private final List<ExpectedColumn> usingColumns = new LinkedList<>();
 }

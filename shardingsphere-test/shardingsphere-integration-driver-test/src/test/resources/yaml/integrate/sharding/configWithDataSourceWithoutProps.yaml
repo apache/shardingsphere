@@ -17,16 +17,16 @@
 
 dataSources:
   db0:
-    dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.h2.Driver
-    url: jdbc:h2:mem:db0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    jdbcUrl: jdbc:h2:mem:db0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
     username: sa
     password: 
     maxTotal: 100
   db1:
-    dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.h2.Driver
-    url: jdbc:h2:mem:db1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    jdbcUrl: jdbc:h2:mem:db1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
     username: sa
     password: 
     maxTotal: 100
@@ -41,20 +41,20 @@ rules:
       databaseStrategy: 
         standard:
           shardingColumn: user_id
-          shardingAlgorithmName: standard_test
+          shardingAlgorithmName: standard_sharding_fixture
       tableStrategy:
         standard:
           shardingColumn: order_id
           shardingAlgorithmName: t_order_inline
       keyGenerateStrategy:
         column: order_id
-        keyGeneratorName: increment
+        keyGeneratorName: keygen_fixture
     t_order_item:
       actualDataNodes: db${0..1}.t_order_item_${0..1}
       databaseStrategy: 
         standard:
           shardingColumn: user_id
-          shardingAlgorithmName: standard_test
+          shardingAlgorithmName: standard_sharding_fixture
       tableStrategy: 
         standard:
           shardingColumn: order_id
@@ -66,13 +66,13 @@ rules:
   defaultTableStrategy:
     complex:
       shardingColumns: id, order_id
-      shardingAlgorithmName: complex_test
+      shardingAlgorithmName: complex_sharding_fixture
   
   shardingAlgorithms:
-    standard_test:
-      type: STANDARD_TEST
-    complex_test:
-      type: COMPLEX_TEST
+    standard_sharding_fixture:
+      type: DRIVER.STANDARD.FIXTURE
+    complex_sharding_fixture:
+      type: DRIVER.COMPLEX.FIXTURE
     t_order_inline:
       type: INLINE
       props:
@@ -83,8 +83,8 @@ rules:
         algorithm-expression: t_order_item_${order_id % 2}
   
   keyGenerators:
-    increment:
-      type: INCREMENT
+    keygen_fixture:
+      type: DRIVER.FIXTURE
 
 mode:
   type: Cluster

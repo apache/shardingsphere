@@ -47,7 +47,7 @@ import static org.mockito.Mockito.when;
 
 public final class ShowFunctionStatusExecutorTest {
     
-    private static final String SCHEMA_PATTERN = "schema_%s";
+    private static final String DATABASE_PATTERN = "db_%s";
     
     private ShowFunctionStatusExecutor showFunctionStatusExecutor;
     
@@ -70,7 +70,7 @@ public final class ShowFunctionStatusExecutorTest {
             ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
             when(metaData.isComplete()).thenReturn(false);
             when(metaData.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
-            result.put(String.format(SCHEMA_PATTERN, i), metaData);
+            result.put(String.format(DATABASE_PATTERN, i), metaData);
         }
         return result;
     }
@@ -84,7 +84,7 @@ public final class ShowFunctionStatusExecutorTest {
     private ConnectionSession mockConnectionSession() {
         ConnectionSession result = mock(ConnectionSession.class);
         when(result.getGrantee()).thenReturn(new Grantee("root", ""));
-        when(result.getSchemaName()).thenReturn(String.format(SCHEMA_PATTERN, 0));
+        when(result.getDatabaseName()).thenReturn(String.format(DATABASE_PATTERN, 0));
         return result;
     }
 }

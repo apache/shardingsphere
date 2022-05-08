@@ -25,7 +25,6 @@ import org.junit.Test;
 import java.nio.charset.StandardCharsets;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 public final class PostgreSQLBoolArrayBinaryProtocolValueTest {
@@ -49,8 +48,7 @@ public final class PostgreSQLBoolArrayBinaryProtocolValueTest {
         byteBuf.readInt();
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
         Object result = newInstance().read(payload, parameterValue.length());
-        assertNotNull(result);
-        assertThat(result, is(new boolean[] {true, false}));
+        assertThat(result, is(new boolean[]{true, false}));
         assertThat(byteBuf.readerIndex(), is(expectedLength));
     }
     

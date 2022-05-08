@@ -35,17 +35,17 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class DropViewStatementContextTest {
-
+    
     @Test
     public void assertMySQLNewInstance() {
         assertNewInstance(mock(MySQLDropViewStatement.class));
     }
-
+    
     @Test
     public void assertPostgreSQLNewInstance() {
         assertNewInstance(mock(PostgreSQLDropViewStatement.class));
     }
-
+    
     private void assertNewInstance(final DropViewStatement dropViewStatement) {
         SimpleTableSegment table1 = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_1")));
         SimpleTableSegment table2 = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_2")));

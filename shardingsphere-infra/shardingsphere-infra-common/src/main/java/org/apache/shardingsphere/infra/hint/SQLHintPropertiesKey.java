@@ -24,8 +24,8 @@ import org.apache.shardingsphere.infra.properties.TypedPropertyKey;
 /**
  * Typed property key of SQL Hint.
  */
-@Getter
 @RequiredArgsConstructor
+@Getter
 public enum SQLHintPropertiesKey implements TypedPropertyKey {
     
     /**
@@ -36,7 +36,17 @@ public enum SQLHintPropertiesKey implements TypedPropertyKey {
     /**
      * Whether hint route write data source or not.
      */
-    WRITE_ROUTE_ONLY_KEY("writeRouteOnly", String.valueOf(Boolean.FALSE), boolean.class);
+    WRITE_ROUTE_ONLY_KEY("writeRouteOnly", String.valueOf(Boolean.FALSE), boolean.class),
+    
+    /**
+     * Whether to use traffic or not.
+     */
+    USE_TRAFFIC("useTraffic", String.valueOf(Boolean.FALSE), boolean.class),
+    
+    /**
+     * Whether hint skip encrypt rewrite or not.
+     */
+    SKIP_ENCRYPT_REWRITE_KEY("skipEncryptRewrite", String.valueOf(Boolean.FALSE), boolean.class);
     
     private final String key;
     

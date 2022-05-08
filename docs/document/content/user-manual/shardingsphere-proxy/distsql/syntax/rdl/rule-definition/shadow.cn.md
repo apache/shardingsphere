@@ -33,13 +33,13 @@ algorithmProperties: algorithmProperty [, algorithmProperty] ...
 algorithmProperty: key=value
 ```
 
-- 重复的`ruleName`无法被创建
-- `resourceMapping` 指定源数据库和影子库的映射关系，需使用 RDL 管理的 `resource` ，请参考 [数据源资源](/cn/user-manual/shardingsphere-proxy/distsql/syntax/rdl/resource-definition/)
-- `shadowAlgorithm` 可同时作用于多个 `shadowTableRule`
-- `algorithmName` 未指定时会根据 `ruleName`、`tableName` 和 `shadowAlgorithmType` 自动生成
-- `shadowAlgorithmType` 目前支持 `VALUE_MATCH`、`REGEX_MATCH` 和 `SIMPLE_HINT`
-- `shadowTableRule` 能够被不同的 `shadowRuleDefinition` 复用，因此在执行 `DROP SHADOW RULE` 时，对应的 `shadowTableRule` 不会被移除
-- `shadowAlgorithm` 能够被不同的 `shadowTableRule` 复用，因此在执行 `ALTER SHADOW RULE` 时，对应的 `shadowAlgorithm` 不会被移除
+- 重复的`ruleName`无法被创建；
+- `resourceMapping` 指定源数据库和影子库的映射关系，需使用 RDL 管理的 `resource` ，请参考 [数据源资源](/cn/user-manual/shardingsphere-proxy/distsql/syntax/rdl/resource-definition/)；
+- `shadowAlgorithm` 可同时作用于多个 `shadowTableRule`；
+- `algorithmName` 未指定时会根据 `ruleName`、`tableName` 和 `shadowAlgorithmType` 自动生成；
+- `shadowAlgorithmType` 目前支持 `VALUE_MATCH`、`REGEX_MATCH` 和 `SIMPLE_HINT`；
+- `shadowTableRule` 能够被不同的 `shadowRuleDefinition` 复用，因此在执行 `DROP SHADOW RULE` 时，对应的 `shadowTableRule` 不会被移除；
+- `shadowAlgorithm` 能够被不同的 `shadowTableRule` 复用，因此在执行 `ALTER SHADOW RULE` 时，对应的 `shadowAlgorithm` 不会被移除。
 
 
 ## 示例
@@ -68,7 +68,7 @@ ALTER SHADOW ALGORITHM
 
 DROP SHADOW RULE shadow_rule;
 
-DROP SHADOW ALGORITHM simple_note_algorithm;
+DROP SHADOW ALGORITHM simple_hint_algorithm;
 
 CREATE DEFAULT SHADOW ALGORITHM NAME = simple_hint_algorithm;
 ```

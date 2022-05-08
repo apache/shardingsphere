@@ -157,7 +157,7 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
     }
     
     private void initRowsEvent(final AbstractRowsEvent rowsEvent, final MySQLBinlogEventHeader binlogEventHeader, final long tableId) {
-        rowsEvent.setSchemaName(binlogContext.getSchemaName(tableId));
+        rowsEvent.setDatabaseName(binlogContext.getDatabaseName(tableId));
         rowsEvent.setTableName(binlogContext.getTableName(tableId));
         rowsEvent.setFileName(binlogContext.getFileName());
         rowsEvent.setPosition(binlogEventHeader.getLogPos());

@@ -21,11 +21,13 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerDenyUserStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.column.ColumnAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.DenyUserStatementTestCase;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Deny user statement assert.
@@ -42,6 +44,7 @@ public final class DenyUserStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final SQLServerDenyUserStatement actual, final DenyUserStatementTestCase expected) {
         assertTable(assertContext, actual, expected);
+        assertColumns(assertContext, actual, expected);
     }
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final SQLServerDenyUserStatement actual, final DenyUserStatementTestCase expected) {
@@ -50,6 +53,14 @@ public final class DenyUserStatementAssert {
             TableAssert.assertIs(assertContext, actual.getTable(), expected.getTable());
         } else {
             assertNull(assertContext.getText("Actual table segment should not exist."), actual.getTable());
+        }
+    }
+    
+    private static void assertColumns(final SQLCaseAssertContext assertContext, final SQLServerDenyUserStatement actual, final DenyUserStatementTestCase expected) {
+        if (expected.getColumns().isEmpty()) {
+            assertTrue(assertContext.getText("Actual columns segments should not exist."), actual.getColumns().isEmpty());
+        } else {
+            ColumnAssert.assertIs(assertContext, actual.getColumns(), expected.getColumns());
         }
     }
 }

@@ -28,11 +28,9 @@ import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngi
 import org.apache.shardingsphere.proxy.frontend.state.impl.CircuitBreakProxyState;
 import org.apache.shardingsphere.proxy.frontend.state.impl.LockProxyState;
 import org.apache.shardingsphere.proxy.frontend.state.impl.OKProxyState;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.proxy.frontend.state.impl.OKProxyStateFactory;
 
 import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -50,9 +48,8 @@ public final class ProxyStateContext {
     }
     
     private static OKProxyState determineOKProxyState() {
-        ShardingSphereServiceLoader.register(OKProxyState.class);
-        String proxyBackendDriverType = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.PROXY_BACKEND_DRIVER_TYPE);
-        return TypedSPIRegistry.getRegisteredService(OKProxyState.class, proxyBackendDriverType, new Properties());
+        String backendDriverType = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.PROXY_BACKEND_DRIVER_TYPE);
+        return OKProxyStateFactory.newInstance(backendDriverType);
     }
     
     /**
@@ -62,7 +59,7 @@ public final class ProxyStateContext {
      * @param databaseProtocolFrontendEngine database protocol frontend engine
      * @param connectionSession connection session
      */
-    public static void execute(final ChannelHandlerContext context, final Object message, 
+    public static void execute(final ChannelHandlerContext context, final Object message,
                                final DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine, final ConnectionSession connectionSession) {
         ProxyContext.getInstance().getStateContext().ifPresent(optional -> STATES.get(optional.getCurrentState()).execute(context, message, databaseProtocolFrontendEngine, connectionSession));
     }

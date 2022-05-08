@@ -20,7 +20,8 @@ package org.apache.shardingsphere.infra.distsql.update;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.spi.typed.TypedSPI;
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
@@ -29,6 +30,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
  * @param <T> type of SQL statement
  * @param <R> type of rule configuration
  */
+@SingletonSPI
 public interface RuleDefinitionUpdater<T extends SQLStatement, R extends RuleConfiguration> extends TypedSPI {
     
     /**

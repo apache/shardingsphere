@@ -59,10 +59,10 @@ public final class BatchPreparedStatementExecutor {
     
     private int batchCount;
     
-    private final String schemaName;
+    private final String databaseName;
     
-    public BatchPreparedStatementExecutor(final MetaDataContexts metaDataContexts, final JDBCExecutor jdbcExecutor, final String schemaName) {
-        this.schemaName = schemaName;
+    public BatchPreparedStatementExecutor(final MetaDataContexts metaDataContexts, final JDBCExecutor jdbcExecutor, final String databaseName) {
+        this.databaseName = databaseName;
         this.metaDataContexts = metaDataContexts;
         this.jdbcExecutor = jdbcExecutor;
         executionGroupContext = new ExecutionGroupContext<>(new LinkedList<>());
@@ -92,8 +92,8 @@ public final class BatchPreparedStatementExecutor {
     
     private Collection<BatchExecutionUnit> createBatchExecutionUnits(final Collection<ExecutionUnit> executionUnits) {
         List<BatchExecutionUnit> result = new ArrayList<>(executionUnits.size());
-        for (ExecutionUnit executionUnit : executionUnits) {
-            BatchExecutionUnit batchExecutionUnit = new BatchExecutionUnit(executionUnit);
+        for (ExecutionUnit each : executionUnits) {
+            BatchExecutionUnit batchExecutionUnit = new BatchExecutionUnit(each);
             result.add(batchExecutionUnit);
         }
         return result;
@@ -134,7 +134,7 @@ public final class BatchPreparedStatementExecutor {
     public int[] executeBatch(final SQLStatementContext<?> sqlStatementContext) throws SQLException {
         boolean isExceptionThrown = SQLExecutorExceptionHandler.isExceptionThrown();
         JDBCExecutorCallback<int[]> callback = new JDBCExecutorCallback<int[]>(
-                metaDataContexts.getMetaData(schemaName).getResource().getDatabaseType(), sqlStatementContext.getSqlStatement(), isExceptionThrown) {
+                metaDataContexts.getMetaData(databaseName).getResource().getDatabaseType(), sqlStatementContext.getSqlStatement(), isExceptionThrown) {
             
             @Override
             protected int[] executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
@@ -155,7 +155,7 @@ public final class BatchPreparedStatementExecutor {
     }
     
     private boolean isNeedAccumulate(final SQLStatementContext<?> sqlStatementContext) {
-        for (ShardingSphereRule each : metaDataContexts.getMetaData(schemaName).getRuleMetaData().getRules()) {
+        for (ShardingSphereRule each : metaDataContexts.getMetaData(databaseName).getRuleMetaData().getRules()) {
             if (each instanceof DataNodeContainedRule && ((DataNodeContainedRule) each).isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames())) {
                 return true;
             }
@@ -246,16 +246,9 @@ public final class BatchPreparedStatementExecutor {
      * @throws SQLException SQL exception
      */
     public void clear() throws SQLException {
-        closeStatements();
         getStatements().clear();
         executionGroupContext.getInputGroups().clear();
         batchCount = 0;
         batchExecutionUnits.clear();
-    }
-    
-    private void closeStatements() throws SQLException {
-        for (Statement each : getStatements()) {
-            each.close();
-        }
     }
 }

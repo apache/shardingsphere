@@ -45,7 +45,7 @@ public final class FlashbackTableStatementAssert {
     private static void assertTable(final SQLCaseAssertContext assertContext, final OracleFlashbackTableStatement actual, final FlashbackTableStatementTestCase expected) {
         TableAssert.assertIs(assertContext, actual.getTable(), expected.getTable());
     }
-
+    
     private static void assertRenameTable(final SQLCaseAssertContext assertContext, final OracleFlashbackTableStatement actual, final FlashbackTableStatementTestCase expected) {
         if (null != expected.getRenameTable()) {
             TableAssert.assertIs(assertContext, actual.getRenameTable(), expected.getRenameTable());

@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.binder.segment.insert.values.OnDuplicateU
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
-import org.apache.shardingsphere.infra.exception.SchemaNotExistedException;
+import org.apache.shardingsphere.infra.exception.DatabaseNotExistedException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
@@ -64,7 +64,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     
     private final Map<String, ShardingSphereMetaData> metaDataMap;
     
-    private final String defaultSchemaName;
+    private final String defaultDatabaseName;
     
     private final List<String> insertColumnNames;
     
@@ -79,29 +79,31 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     private GeneratedKeyContext generatedKeyContext;
     
     public InsertStatementContext(final Map<String, ShardingSphereMetaData> metaDataMap, final List<Object> parameters,
-                                  final InsertStatement sqlStatement, final String defaultSchemaName) {
+                                  final InsertStatement sqlStatement, final String defaultDatabaseName) {
         super(sqlStatement);
         this.metaDataMap = metaDataMap;
-        this.defaultSchemaName = defaultSchemaName;
+        this.defaultDatabaseName = defaultDatabaseName;
         insertColumnNames = getInsertColumnNames();
         valueExpressions = getAllValueExpressions(sqlStatement);
         AtomicInteger parametersOffset = new AtomicInteger(0);
         insertValueContexts = getInsertValueContexts(parameters, parametersOffset, valueExpressions);
-        insertSelectContext = getInsertSelectContext(metaDataMap, parameters, parametersOffset, defaultSchemaName).orElse(null);
+        insertSelectContext = getInsertSelectContext(metaDataMap, parameters, parametersOffset, defaultDatabaseName).orElse(null);
         onDuplicateKeyUpdateValueContext = getOnDuplicateKeyUpdateValueContext(parameters, parametersOffset).orElse(null);
-        tablesContext = new TablesContext(getAllSimpleTableSegments());
-        ShardingSphereSchema schema = getSchema(metaDataMap, defaultSchemaName);
+        tablesContext = new TablesContext(getAllSimpleTableSegments(), getDatabaseType());
+        ShardingSphereSchema schema = getSchema(metaDataMap, defaultDatabaseName);
         columnNames = useDefaultColumns() ? schema.getAllColumnNames(sqlStatement.getTable().getTableName().getIdentifier().getValue()) : insertColumnNames;
-        generatedKeyContext = new GeneratedKeyContextEngine(sqlStatement, schema).createGenerateKeyContext(insertColumnNames, getAllValueExpressions(sqlStatement), parameters).orElse(null);
+        generatedKeyContext = new GeneratedKeyContextEngine(sqlStatement, schema)
+                .createGenerateKeyContext(insertColumnNames, getAllValueExpressions(sqlStatement), parameters).orElse(null);
     }
     
-    private ShardingSphereSchema getSchema(final Map<String, ShardingSphereMetaData> metaDataMap, final String defaultSchemaName) {
-        String schemaName = tablesContext.getSchemaName().orElse(defaultSchemaName);
-        ShardingSphereMetaData metaData = metaDataMap.get(schemaName);
+    private ShardingSphereSchema getSchema(final Map<String, ShardingSphereMetaData> metaDataMap, final String defaultDatabaseName) {
+        String databaseName = tablesContext.getDatabaseName().orElse(defaultDatabaseName);
+        ShardingSphereMetaData metaData = metaDataMap.get(databaseName);
         if (null == metaData) {
-            throw new SchemaNotExistedException(schemaName);
+            throw new DatabaseNotExistedException(databaseName);
         }
-        return metaData.getSchema();
+        String defaultSchema = getDatabaseType().getDefaultSchema(databaseName);
+        return tablesContext.getSchemaName().map(metaData::getSchemaByName).orElseGet(() -> metaData.getSchemaByName(defaultSchema));
     }
     
     private Collection<SimpleTableSegment> getAllSimpleTableSegments() {
@@ -120,13 +122,13 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
         return result;
     }
     
-    private Optional<InsertSelectContext> getInsertSelectContext(final Map<String, ShardingSphereMetaData> metaDataMap, final List<Object> parameters, 
-                                                                 final AtomicInteger parametersOffset, final String defaultSchemaName) {
+    private Optional<InsertSelectContext> getInsertSelectContext(final Map<String, ShardingSphereMetaData> metaDataMap, final List<Object> parameters,
+                                                                 final AtomicInteger parametersOffset, final String defaultDatabaseName) {
         if (!getSqlStatement().getInsertSelect().isPresent()) {
             return Optional.empty();
         }
         SubquerySegment insertSelectSegment = getSqlStatement().getInsertSelect().get();
-        SelectStatementContext selectStatementContext = new SelectStatementContext(metaDataMap, parameters, insertSelectSegment.getSelect(), defaultSchemaName);
+        SelectStatementContext selectStatementContext = new SelectStatementContext(metaDataMap, parameters, insertSelectSegment.getSelect(), defaultDatabaseName);
         InsertSelectContext insertSelectContext = new InsertSelectContext(selectStatementContext, parameters, parametersOffset.get());
         parametersOffset.addAndGet(insertSelectContext.getParameterCount());
         return Optional.of(insertSelectContext);
@@ -215,7 +217,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
         Optional<SetAssignmentSegment> setAssignment = InsertStatementHandler.getSetAssignmentSegment(insertStatement);
         return setAssignment.isPresent() ? 1 : insertStatement.getValues().size();
     }
-        
+    
     /**
      * Get insert column names.
      *
@@ -245,7 +247,8 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     
     private List<List<ExpressionSegment>> getAllValueExpressions(final InsertStatement insertStatement) {
         Optional<SetAssignmentSegment> setAssignment = InsertStatementHandler.getSetAssignmentSegment(insertStatement);
-        return setAssignment.map(each -> Collections.singletonList(getAllValueExpressionsFromSetAssignment(each))).orElseGet(() -> getAllValueExpressionsFromValues(insertStatement.getValues()));
+        return setAssignment
+                .map(optional -> Collections.singletonList(getAllValueExpressionsFromSetAssignment(optional))).orElseGet(() -> getAllValueExpressionsFromValues(insertStatement.getValues()));
     }
     
     private List<ExpressionSegment> getAllValueExpressionsFromSetAssignment(final SetAssignmentSegment setAssignment) {
@@ -268,9 +271,9 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     public void setUpParameters(final List<Object> parameters) {
         AtomicInteger parametersOffset = new AtomicInteger(0);
         insertValueContexts = getInsertValueContexts(parameters, parametersOffset, valueExpressions);
-        insertSelectContext = getInsertSelectContext(metaDataMap, parameters, parametersOffset, defaultSchemaName).orElse(null);
+        insertSelectContext = getInsertSelectContext(metaDataMap, parameters, parametersOffset, defaultDatabaseName).orElse(null);
         onDuplicateKeyUpdateValueContext = getOnDuplicateKeyUpdateValueContext(parameters, parametersOffset).orElse(null);
-        ShardingSphereSchema schema = getSchema(metaDataMap, defaultSchemaName);
+        ShardingSphereSchema schema = getSchema(metaDataMap, defaultDatabaseName);
         generatedKeyContext = new GeneratedKeyContextEngine(getSqlStatement(), schema).createGenerateKeyContext(insertColumnNames, valueExpressions, parameters).orElse(null);
     }
 }

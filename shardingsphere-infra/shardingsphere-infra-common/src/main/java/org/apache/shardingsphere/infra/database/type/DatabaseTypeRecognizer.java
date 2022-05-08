@@ -52,7 +52,7 @@ public final class DatabaseTypeRecognizer {
         try (Connection connection = dataSource.getConnection()) {
             return DatabaseTypeRegistry.getDatabaseTypeByURL(connection.getMetaData().getURL());
         } catch (final SQLException ex) {
-            throw new IllegalArgumentException("An error occurred when open datasource connection!", ex);
+            throw new IllegalArgumentException(ex.getMessage(), ex);
         }
     }
 }

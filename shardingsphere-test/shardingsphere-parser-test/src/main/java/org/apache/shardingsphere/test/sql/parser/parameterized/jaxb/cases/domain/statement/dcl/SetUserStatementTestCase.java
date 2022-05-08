@@ -19,14 +19,12 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domai
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.user.ExpectedUser;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
  * Set user statement test case.
  */
-@ToString
 @Getter
 @Setter
 public final class SetUserStatementTestCase extends SQLParserTestCase {

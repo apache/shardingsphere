@@ -60,9 +60,8 @@ public final class NoResourceShowExecutor implements DatabaseAdminQueryExecutor 
     public void execute(final ConnectionSession connectionSession) {
         TableSegment tableSegment = sqlStatement.getFrom();
         expressions = sqlStatement.getProjections().getProjections().stream().filter(each -> !(each instanceof ShorthandProjectionSegment))
-                .map(each -> new ProjectionEngine(null, null).createProjection(tableSegment, each))
-                .filter(Optional::isPresent).map(each -> each.get().getAlias().isPresent() ? each.get().getAlias().get() : each.get().getExpression())
-                .collect(Collectors.toCollection(LinkedList::new));
+                .map(each -> new ProjectionEngine(null, Collections.emptyMap(), null).createProjection(tableSegment, each))
+                .filter(Optional::isPresent).map(each -> each.get().getAlias().isPresent() ? each.get().getAlias().get() : each.get().getExpression()).collect(Collectors.toList());
         mergedResult = new TransparentMergedResult(getQueryResult());
     }
     
@@ -72,7 +71,7 @@ public final class NoResourceShowExecutor implements DatabaseAdminQueryExecutor 
             rows.add(new MemoryQueryResultDataRow(Collections.singletonList("")));
             return new RawMemoryQueryResult(getQueryResultMetaData(), rows);
         }
-        ArrayList<Object> row = new ArrayList<>(expressions);
+        List<Object> row = new ArrayList<>(expressions);
         row.replaceAll(each -> "");
         rows.add(new MemoryQueryResultDataRow(row));
         return new RawMemoryQueryResult(getQueryResultMetaData(), rows);
@@ -84,8 +83,8 @@ public final class NoResourceShowExecutor implements DatabaseAdminQueryExecutor 
             RawQueryResultColumnMetaData defaultColumnMetaData = new RawQueryResultColumnMetaData("", "", "", Types.VARCHAR, "VARCHAR", 100, 0);
             return new RawQueryResultMetaData(Collections.singletonList(defaultColumnMetaData));
         }
-        LinkedList<RawQueryResultColumnMetaData> raws = expressions.stream().map(each -> new RawQueryResultColumnMetaData("", each.toString(), each.toString(), Types.VARCHAR, "VARCHAR", 100, 0))
-                .collect(Collectors.toCollection(LinkedList::new));
-        return new RawQueryResultMetaData(raws);
+        List<RawQueryResultColumnMetaData> columns = expressions.stream().map(each -> new RawQueryResultColumnMetaData("", each.toString(), each.toString(), Types.VARCHAR, "VARCHAR", 100, 0))
+                .collect(Collectors.toList());
+        return new RawQueryResultMetaData(columns);
     }
 }

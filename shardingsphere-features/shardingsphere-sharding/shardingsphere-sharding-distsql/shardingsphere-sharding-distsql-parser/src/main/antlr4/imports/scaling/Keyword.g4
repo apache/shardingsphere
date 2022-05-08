@@ -158,3 +158,11 @@ ENABLE
 DISABLE
     : D I S A B L E
     ;
+
+IF
+    : I F
+    ;
+
+EXISTS
+    : E X I S T S
+    ;

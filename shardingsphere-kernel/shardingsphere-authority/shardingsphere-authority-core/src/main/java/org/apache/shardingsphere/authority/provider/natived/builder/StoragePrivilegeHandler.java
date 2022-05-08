@@ -19,7 +19,8 @@ package org.apache.shardingsphere.authority.provider.natived.builder;
 
 import org.apache.shardingsphere.authority.provider.natived.model.privilege.NativePrivileges;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.spi.typed.TypedSPI;
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -29,6 +30,7 @@ import java.util.Map;
 /**
  * Storage privilege handler.
  */
+@SingletonSPI
 public interface StoragePrivilegeHandler extends TypedSPI {
     
     /**

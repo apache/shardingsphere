@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.encrypt.algorithm;
 
-import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
+import org.apache.shardingsphere.encrypt.factory.EncryptAlgorithmFactory;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -34,15 +33,11 @@ import static org.mockito.Mockito.mock;
 
 public final class MD5EncryptAlgorithmTest {
     
-    static {
-        ShardingSphereServiceLoader.register(EncryptAlgorithm.class);
-    }
-    
-    private EncryptAlgorithm encryptAlgorithm;
+    private EncryptAlgorithm<Object, String> encryptAlgorithm;
     
     @Before
     public void setUp() {
-        encryptAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new ShardingSphereAlgorithmConfiguration("Md5", new Properties()), EncryptAlgorithm.class);
+        encryptAlgorithm = EncryptAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("MD5", new Properties()));
     }
     
     @Test
@@ -58,13 +53,5 @@ public final class MD5EncryptAlgorithmTest {
     @Test
     public void assertDecode() {
         assertThat(encryptAlgorithm.decrypt("test", mock(EncryptContext.class)).toString(), is("test"));
-    }
-    
-    @Test
-    public void assertProps() {
-        Properties props = new Properties();
-        props.setProperty("key1", "value1");
-        encryptAlgorithm.setProps(props);
-        assertThat(encryptAlgorithm.getProps().getProperty("key1"), is("value1"));
     }
 }

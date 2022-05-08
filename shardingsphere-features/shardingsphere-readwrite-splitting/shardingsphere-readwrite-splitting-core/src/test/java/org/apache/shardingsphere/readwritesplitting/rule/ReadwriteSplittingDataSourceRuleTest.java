@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.readwritesplitting.rule;
 
-import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.RandomReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.RoundRobinReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
@@ -25,9 +24,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -84,10 +81,15 @@ public final class ReadwriteSplittingDataSourceRuleTest {
     }
     
     @Test
-    public void assertGetDataSourceMapper() {
-        Map<String, Collection<String>> actual = readwriteSplittingDataSourceRule.getDataSourceMapper();
-        Map<String, Collection<String>> expected = ImmutableMap.of("test_pr", Arrays.asList("write_ds", "read_ds_0", "read_ds_1"));
-        assertThat(actual, is(expected));
+    public void assertGetWriteDataSource() {
+        String writeDataSourceName = readwriteSplittingDataSourceRule.getWriteDataSource();
+        assertThat(writeDataSourceName, is("write_ds"));
+    }
+    
+    @Test
+    public void assertGetEnabledReplicaDataSources() {
+        readwriteSplittingDataSourceRule.updateDisabledDataSourceNames("read_ds_0", true);
+        assertThat(readwriteSplittingDataSourceRule.getEnabledReplicaDataSources(), is(Collections.singletonList("read_ds_1")));
     }
     
     private Properties getProperties(final String writeDataSource, final String readDataSources) {

@@ -49,7 +49,7 @@ public final class OpenGaussFrontendEngine implements DatabaseProtocolFrontendEn
     }
     
     @Override
-    public void setDatabaseVersion(final String databaseVersion) {
+    public void setDatabaseVersion(final String schemaName, final String databaseVersion) {
         PostgreSQLServerInfo.setServerVersion(databaseVersion);
     }
     
@@ -59,7 +59,14 @@ public final class OpenGaussFrontendEngine implements DatabaseProtocolFrontendEn
     }
     
     @Override
-    public String getDatabaseType() {
+    public void handleException(final ConnectionSession connectionSession) {
+        if (connectionSession.getTransactionStatus().isInTransaction() && !connectionSession.getTransactionStatus().isRollbackOnly()) {
+            connectionSession.getTransactionStatus().setRollbackOnly(true);
+        }
+    }
+    
+    @Override
+    public String getType() {
         return "openGauss";
     }
 }

@@ -35,7 +35,7 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.generic.PostgreSQLComTerminationExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.generic.PostgreSQLUnsupportedCommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLAggregatedBatchedInsertsCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLAggregatedBatchedStatementsCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLAggregatedCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.bind.PostgreSQLComBindExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.close.PostgreSQLComCloseExecutor;
@@ -83,8 +83,7 @@ public final class PostgreSQLCommandExecutorFactoryTest {
                 new InputOutput(PostgreSQLCommandPacketType.SYNC_COMMAND, PostgreSQLComSyncPacket.class, PostgreSQLComSyncExecutor.class),
                 new InputOutput(PostgreSQLCommandPacketType.CLOSE_COMMAND, PostgreSQLComClosePacket.class, PostgreSQLComCloseExecutor.class),
                 new InputOutput(PostgreSQLCommandPacketType.TERMINATE, PostgreSQLComTerminationPacket.class, PostgreSQLComTerminationExecutor.class),
-                new InputOutput(PostgreSQLCommandPacketType.FLUSH_COMMAND, null, PostgreSQLUnsupportedCommandExecutor.class)
-        );
+                new InputOutput(PostgreSQLCommandPacketType.FLUSH_COMMAND, null, PostgreSQLUnsupportedCommandExecutor.class));
         for (InputOutput inputOutput : inputOutputs) {
             Class<? extends PostgreSQLCommandPacket> commandPacketClass = inputOutput.getCommandPacketClass();
             if (null == commandPacketClass) {
@@ -105,7 +104,7 @@ public final class PostgreSQLCommandExecutorFactoryTest {
     }
     
     @Test
-    public void assertAggregatedPacketNotBatchedInserts() throws SQLException {
+    public void assertAggregatedPacketNotBatchedStatements() throws SQLException {
         PostgreSQLComParsePacket parsePacket = mock(PostgreSQLComParsePacket.class);
         when(parsePacket.getIdentifier()).thenReturn(PostgreSQLCommandPacketType.PARSE_COMMAND);
         PostgreSQLComBindPacket bindPacket = mock(PostgreSQLComBindPacket.class);
@@ -117,7 +116,7 @@ public final class PostgreSQLCommandExecutorFactoryTest {
         PostgreSQLComSyncPacket syncPacket = mock(PostgreSQLComSyncPacket.class);
         when(syncPacket.getIdentifier()).thenReturn(PostgreSQLCommandPacketType.SYNC_COMMAND);
         PostgreSQLAggregatedCommandPacket packet = mock(PostgreSQLAggregatedCommandPacket.class);
-        when(packet.isContainsBatchedInserts()).thenReturn(false);
+        when(packet.isContainsBatchedStatements()).thenReturn(false);
         when(packet.getPackets()).thenReturn(Arrays.asList(parsePacket, bindPacket, describePacket, executePacket, syncPacket));
         CommandExecutor actual = PostgreSQLCommandExecutorFactory.newInstance(null, packet, connectionSession, connectionContext);
         assertTrue(actual instanceof PostgreSQLAggregatedCommandExecutor);
@@ -131,7 +130,7 @@ public final class PostgreSQLCommandExecutorFactoryTest {
     }
     
     @Test
-    public void assertAggregatedPacketIsBatchedInserts() throws SQLException {
+    public void assertAggregatedPacketIsBatchedStatements() throws SQLException {
         PostgreSQLComParsePacket parsePacket = mock(PostgreSQLComParsePacket.class);
         when(parsePacket.getIdentifier()).thenReturn(PostgreSQLCommandPacketType.PARSE_COMMAND);
         PostgreSQLComBindPacket bindPacket = mock(PostgreSQLComBindPacket.class);
@@ -140,7 +139,7 @@ public final class PostgreSQLCommandExecutorFactoryTest {
         PostgreSQLComSyncPacket syncPacket = mock(PostgreSQLComSyncPacket.class);
         when(syncPacket.getIdentifier()).thenReturn(PostgreSQLCommandPacketType.SYNC_COMMAND);
         PostgreSQLAggregatedCommandPacket packet = mock(PostgreSQLAggregatedCommandPacket.class);
-        when(packet.isContainsBatchedInserts()).thenReturn(true);
+        when(packet.isContainsBatchedStatements()).thenReturn(true);
         when(packet.getPackets()).thenReturn(Arrays.asList(parsePacket, bindPacket, describePacket, executePacket, bindPacket, describePacket, executePacket, syncPacket));
         when(packet.getFirstBindIndex()).thenReturn(1);
         when(packet.getLastExecuteIndex()).thenReturn(6);
@@ -148,7 +147,7 @@ public final class PostgreSQLCommandExecutorFactoryTest {
         assertTrue(actual instanceof PostgreSQLAggregatedCommandExecutor);
         Iterator<CommandExecutor> actualPacketsIterator = getExecutorsFromAggregatedCommandExecutor((PostgreSQLAggregatedCommandExecutor) actual).iterator();
         assertTrue(actualPacketsIterator.next() instanceof PostgreSQLComParseExecutor);
-        assertTrue(actualPacketsIterator.next() instanceof PostgreSQLAggregatedBatchedInsertsCommandExecutor);
+        assertTrue(actualPacketsIterator.next() instanceof PostgreSQLAggregatedBatchedStatementsCommandExecutor);
         assertTrue(actualPacketsIterator.next() instanceof PostgreSQLComSyncExecutor);
         assertFalse(actualPacketsIterator.hasNext());
     }

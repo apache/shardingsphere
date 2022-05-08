@@ -22,15 +22,11 @@ import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
-import io.vertx.sqlclient.Query;
-import io.vertx.sqlclient.Row;
-import io.vertx.sqlclient.RowSet;
 import io.vertx.sqlclient.SqlClient;
 import io.vertx.sqlclient.SqlConnection;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.vertx.ExecutorVertxManager;
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.vertx.VertxExecutionContext;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.vertx.ExecutorVertxConnectionManager;
 import org.apache.shardingsphere.proxy.backend.communication.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.ConnectionPostProcessor;
 import org.apache.shardingsphere.proxy.backend.communication.vertx.transaction.VertxLocalTransactionManager;
@@ -48,7 +44,7 @@ import java.util.List;
  * Vert.x backend connection.
  */
 @Getter
-public final class VertxBackendConnection implements BackendConnection<Future<Void>>, ExecutorVertxManager {
+public final class VertxBackendConnection implements BackendConnection<Future<Void>>, ExecutorVertxConnectionManager {
     
     private final ConnectionSession connectionSession;
     
@@ -66,7 +62,8 @@ public final class VertxBackendConnection implements BackendConnection<Future<Vo
     @Override
     public List<Future<? extends SqlClient>> getConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) {
         return connectionSession.getTransactionStatus().isInTransaction()
-                ? getConnectionsWithTransaction(dataSourceName, connectionSize) : getConnectionsWithoutTransaction(dataSourceName);
+                ? getConnectionsWithTransaction(dataSourceName, connectionSize)
+                : getConnectionsWithoutTransaction(dataSourceName);
     }
     
     private List<Future<? extends SqlClient>> getConnectionsWithTransaction(final String dataSourceName, final int connectionSize) {
@@ -95,8 +92,8 @@ public final class VertxBackendConnection implements BackendConnection<Future<Vo
     }
     
     private List<Future<SqlConnection>> createNewConnections(final String dataSourceName, final int connectionSize) {
-        Preconditions.checkNotNull(connectionSession.getSchemaName(), "Current schema is null.");
-        List<Future<SqlConnection>> result = ReactiveProxyContext.getInstance().getVertxBackendDataSource().getConnections(connectionSession.getSchemaName(), dataSourceName, connectionSize);
+        Preconditions.checkNotNull(connectionSession.getDatabaseName(), "Current database is null.");
+        List<Future<SqlConnection>> result = ReactiveProxyContext.getInstance().getVertxBackendDataSource().getConnections(connectionSession.getDatabaseName(), dataSourceName, connectionSize);
         for (Future<SqlConnection> each : result) {
             replayMethodsInvocation(each);
         }
@@ -110,21 +107,10 @@ public final class VertxBackendConnection implements BackendConnection<Future<Vo
     }
     
     private List<Future<? extends SqlClient>> getConnectionsWithoutTransaction(final String dataSourceName) {
-        Preconditions.checkNotNull(connectionSession.getSchemaName(), "Current schema is null.");
+        Preconditions.checkNotNull(connectionSession.getDatabaseName(), "Current database is null.");
         // TODO At present, amount of connections without transaction is controlled by Vert.x pool.
-        Future<SqlClient> poolFuture = Future.succeededFuture(ReactiveProxyContext.getInstance().getVertxBackendDataSource().getPool(connectionSession.getSchemaName(), dataSourceName));
+        Future<SqlClient> poolFuture = Future.succeededFuture(ReactiveProxyContext.getInstance().getVertxBackendDataSource().getPool(connectionSession.getDatabaseName(), dataSourceName));
         return Collections.singletonList(poolFuture);
-    }
-    
-    @Override
-    public Future<Query<RowSet<Row>>> createStorageResource(final Future<? extends SqlClient> connection, final ConnectionMode connectionMode, final VertxExecutionContext option) {
-        return Future.failedFuture(new UnsupportedOperationException("Vert.x query is not like JDBC statement."));
-    }
-    
-    @Override
-    public Future<Query<RowSet<Row>>> createStorageResource(final String sql, final List<Object> parameters, final Future<? extends SqlClient> connection, final ConnectionMode connectionMode,
-                                                            final VertxExecutionContext ignored) {
-        return Future.failedFuture(new UnsupportedOperationException("Vert.x prepared query is not like JDBC prepared statement."));
     }
     
     @Override

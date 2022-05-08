@@ -19,8 +19,7 @@ package org.apache.shardingsphere.infra.parser.cache;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserExecutor;
-import org.apache.shardingsphere.parser.rule.SQLParserRule;
-import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
+import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.junit.Test;
 
@@ -38,8 +37,7 @@ public final class SQLStatementCacheLoaderTest {
     @SneakyThrows
     @Test
     public void assertSQLStatementCacheLoad() {
-        SQLParserRule parserRule = new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build());
-        SQLStatementCacheLoader sqlStatementCacheLoader = new SQLStatementCacheLoader("MySQL", parserRule);
+        SQLStatementCacheLoader sqlStatementCacheLoader = new SQLStatementCacheLoader("MySQL", new CacheOption(128, 1024L, 4), false);
         Field sqlStatementParserExecutorField = sqlStatementCacheLoader.getClass().getDeclaredField("sqlStatementParserExecutor");
         SQLStatementParserExecutor executor = mock(SQLStatementParserExecutor.class, RETURNS_DEEP_STUBS);
         sqlStatementParserExecutorField.setAccessible(true);

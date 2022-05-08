@@ -41,7 +41,7 @@ import static org.mockito.Mockito.when;
 @NoArgsConstructor
 @Getter
 @Setter
-public final class MockedDataSource implements DataSource {
+public final class MockedDataSource implements DataSource, AutoCloseable {
     
     private String url = "jdbc:mock://127.0.0.1/foo_ds";
     
@@ -62,6 +62,9 @@ public final class MockedDataSource implements DataSource {
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
     private Connection connection;
+    
+    @Setter(AccessLevel.NONE)
+    private Boolean closed;
     
     public MockedDataSource(final String url, final String username, final String password) {
         this.url = url;
@@ -125,5 +128,10 @@ public final class MockedDataSource implements DataSource {
     @Override
     public Logger getParentLogger() {
         return null;
+    }
+    
+    @Override
+    public void close() {
+        closed = true;
     }
 }

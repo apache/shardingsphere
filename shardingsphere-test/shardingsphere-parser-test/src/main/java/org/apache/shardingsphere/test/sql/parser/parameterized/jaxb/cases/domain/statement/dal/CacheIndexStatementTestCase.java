@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.index.ExpectedCacheTableIndex;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.index.ExpectedPartitionDefinition;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
@@ -31,6 +32,7 @@ import java.util.List;
  * Cache index statement test case.
  */
 @Getter
+@Setter
 public final class CacheIndexStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "table-index")

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal;
 
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlJdbcConfiguration;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.BaseLogSequenceNumber;
 import org.postgresql.PGConnection;
 import org.postgresql.PGProperty;
@@ -32,6 +33,7 @@ import java.util.Properties;
 /**
  * PostgreSQL logical replication.
  */
+// TODO add prefix PostgreSQL
 public final class LogicalReplication {
     
     /**
@@ -43,12 +45,13 @@ public final class LogicalReplication {
      */
     public Connection createConnection(final StandardPipelineDataSourceConfiguration pipelineDataSourceConfig) throws SQLException {
         Properties props = new Properties();
-        PGProperty.USER.set(props, pipelineDataSourceConfig.getHikariConfig().getUsername());
-        PGProperty.PASSWORD.set(props, pipelineDataSourceConfig.getHikariConfig().getPassword());
+        YamlJdbcConfiguration jdbcConfig = pipelineDataSourceConfig.getJdbcConfig();
+        PGProperty.USER.set(props, jdbcConfig.getUsername());
+        PGProperty.PASSWORD.set(props, jdbcConfig.getPassword());
         PGProperty.ASSUME_MIN_SERVER_VERSION.set(props, "9.6");
         PGProperty.REPLICATION.set(props, "database");
         PGProperty.PREFER_QUERY_MODE.set(props, "simple");
-        return DriverManager.getConnection(pipelineDataSourceConfig.getHikariConfig().getJdbcUrl(), props);
+        return DriverManager.getConnection(jdbcConfig.getJdbcUrl(), props);
     }
     
     /**

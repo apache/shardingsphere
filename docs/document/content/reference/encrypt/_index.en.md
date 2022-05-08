@@ -56,7 +56,7 @@ As long as the user's SQL is written according to this logical column, and the c
 
 **Query Attribute configuration**：When the plaintext data and ciphertext data are stored in the underlying database table at the same time, 
 this attribute switch is used to decide whether to directly query the plaintext data in the database table to return, 
-or to query the ciphertext data and decrypt it through Apache ShardingSphere to return.
+or to query the ciphertext data and decrypt it through Apache ShardingSphere to return. This switch supports table level and whole rule level configuration, and table level has the highest priority. 
 
 ### Encryption Process
 

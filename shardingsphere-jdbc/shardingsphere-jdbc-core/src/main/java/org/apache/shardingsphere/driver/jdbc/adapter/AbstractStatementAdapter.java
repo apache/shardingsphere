@@ -17,11 +17,17 @@
 
 package org.apache.shardingsphere.driver.jdbc.adapter;
 
+import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.driver.executor.DriverExecutor;
 import org.apache.shardingsphere.driver.jdbc.adapter.executor.ForceExecuteTemplate;
+import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
+import org.apache.shardingsphere.driver.jdbc.core.statement.StatementManager;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationStatement;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 
 import java.sql.SQLException;
 import java.sql.SQLWarning;
@@ -31,30 +37,25 @@ import java.util.Collection;
 /**
  * Adapter for {@code Statement}.
  */
-@RequiredArgsConstructor
+@Getter
 public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperationStatement {
     
-    private final Class<? extends Statement> targetClass;
-    
+    @Getter(AccessLevel.NONE)
     private final ForceExecuteTemplate<Statement> forceExecuteTemplate = new ForceExecuteTemplate<>();
     
-    @Getter
     private boolean poolable;
     
-    @Getter
     private int fetchSize;
     
-    @Getter
     private int fetchDirection;
     
-    @Getter
     private boolean closed;
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public final void setPoolable(final boolean poolable) throws SQLException {
         this.poolable = poolable;
-        getMethodInvocationRecorder().record(targetClass, "setPoolable", new Class[] {boolean.class}, new Object[] {poolable});
+        getMethodInvocationRecorder().record("setPoolable", statement -> statement.setPoolable(poolable));
         forceExecuteTemplate.execute((Collection) getRoutedStatements(), statement -> statement.setPoolable(poolable));
     }
     
@@ -62,7 +63,7 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     @Override
     public final void setFetchSize(final int rows) throws SQLException {
         fetchSize = rows;
-        getMethodInvocationRecorder().record(targetClass, "setFetchSize", new Class[] {int.class}, new Object[] {rows});
+        getMethodInvocationRecorder().record("setFetchSize", statement -> statement.setFetchSize(rows));
         forceExecuteTemplate.execute((Collection) getRoutedStatements(), statement -> statement.setFetchSize(rows));
     }
     
@@ -70,7 +71,7 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     @Override
     public final void setFetchDirection(final int direction) throws SQLException {
         fetchDirection = direction;
-        getMethodInvocationRecorder().record(targetClass, "setFetchDirection", new Class[] {int.class}, new Object[] {direction});
+        getMethodInvocationRecorder().record("setFetchDirection", statement -> statement.setFetchDirection(direction));
         forceExecuteTemplate.execute((Collection) getRoutedStatements(), statement -> statement.setFetchDirection(direction));
     }
     
@@ -82,7 +83,7 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public final void setMaxFieldSize(final int max) throws SQLException {
-        getMethodInvocationRecorder().record(targetClass, "setMaxFieldSize", new Class[] {int.class}, new Object[] {max});
+        getMethodInvocationRecorder().record("setMaxFieldSize", statement -> statement.setMaxFieldSize(max));
         forceExecuteTemplate.execute((Collection) getRoutedStatements(), statement -> statement.setMaxFieldSize(max));
     }
     
@@ -95,7 +96,7 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public final void setMaxRows(final int max) throws SQLException {
-        getMethodInvocationRecorder().record(targetClass, "setMaxRows", new Class[] {int.class}, new Object[] {max});
+        getMethodInvocationRecorder().record("setMaxRows", statement -> statement.setMaxRows(max));
         forceExecuteTemplate.execute((Collection) getRoutedStatements(), statement -> statement.setMaxRows(max));
     }
     
@@ -107,14 +108,14 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public final void setQueryTimeout(final int seconds) throws SQLException {
-        getMethodInvocationRecorder().record(targetClass, "setQueryTimeout", new Class[] {int.class}, new Object[] {seconds});
+        getMethodInvocationRecorder().record("setQueryTimeout", statement -> statement.setQueryTimeout(seconds));
         forceExecuteTemplate.execute((Collection) getRoutedStatements(), statement -> statement.setQueryTimeout(seconds));
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public final void setEscapeProcessing(final boolean enable) throws SQLException {
-        getMethodInvocationRecorder().record(targetClass, "setEscapeProcessing", new Class[] {boolean.class}, new Object[] {enable});
+        getMethodInvocationRecorder().record("setEscapeProcessing", statement -> statement.setEscapeProcessing(enable));
         forceExecuteTemplate.execute((Collection) getRoutedStatements(), statement -> statement.setEscapeProcessing(enable));
     }
     
@@ -184,8 +185,20 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
             if (null != getExecutor()) {
                 getExecutor().close();
             }
+            if (null != getStatementManager()) {
+                getStatementManager().close();
+            }
         } finally {
             getRoutedStatements().clear();
+        }
+    }
+    
+    protected final void handleExceptionInTransaction(final ShardingSphereConnection connection, final MetaDataContexts metaDataContexts) {
+        if (connection.getConnectionManager().getConnectionTransaction().isInTransaction()) {
+            DatabaseType databaseType = metaDataContexts.getMetaData(connection.getDatabaseName()).getResource().getDatabaseType();
+            if (databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType) {
+                connection.getConnectionManager().getConnectionTransaction().setRollbackOnly(true);
+            }
         }
     }
     
@@ -194,4 +207,6 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     protected abstract Collection<? extends Statement> getRoutedStatements();
     
     protected abstract DriverExecutor getExecutor();
+    
+    protected abstract StatementManager getStatementManager();
 }

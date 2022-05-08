@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sharding.rewrite.token;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CreateDatabaseStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CreateTableStatementContext;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.TableTokenGenerator;
-import org.apache.shardingsphere.sharding.rewrite.token.pojo.TableToken;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -28,9 +27,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Tab
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.junit.Test;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -40,7 +38,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class TableTokenGeneratorTest {
-
+    
     @Test
     public void assertGenerateSQLToken() {
         ShardingRule shardingRule = mock(ShardingRule.class);
@@ -49,14 +47,10 @@ public final class TableTokenGeneratorTest {
         tableTokenGenerator.setShardingRule(shardingRule);
         CreateDatabaseStatementContext createDatabaseStatementContext = mock(CreateDatabaseStatementContext.class);
         assertThat(tableTokenGenerator.generateSQLTokens(createDatabaseStatementContext), is(Collections.emptyList()));
-        final int testStartIndex = 3;
+        int testStartIndex = 3;
         TableNameSegment tableNameSegment = new TableNameSegment(testStartIndex, 8, new IdentifierValue("test"));
-        SimpleTableSegment simpleTableSegment = new SimpleTableSegment(tableNameSegment);
-        Collection<SimpleTableSegment> simpleTableSegmentCollection = new LinkedList<>();
-        simpleTableSegmentCollection.add(simpleTableSegment);
         CreateTableStatementContext createTableStatementContext = mock(CreateTableStatementContext.class);
-        when(createTableStatementContext.getAllTables()).thenReturn(simpleTableSegmentCollection);
-        Collection<TableToken> result = tableTokenGenerator.generateSQLTokens(createTableStatementContext);
-        assertThat((new LinkedList<>(result)).get(0).getStartIndex(), is(testStartIndex));
+        when(createTableStatementContext.getAllTables()).thenReturn(Collections.singleton(new SimpleTableSegment(tableNameSegment)));
+        assertThat((new ArrayList<>(tableTokenGenerator.generateSQLTokens(createTableStatementContext))).get(0).getStartIndex(), is(testStartIndex));
     }
 }

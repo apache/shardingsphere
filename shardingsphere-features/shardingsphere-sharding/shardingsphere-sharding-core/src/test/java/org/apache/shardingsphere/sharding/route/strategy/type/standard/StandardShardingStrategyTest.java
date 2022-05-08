@@ -21,9 +21,9 @@ import com.google.common.collect.Range;
 import com.google.common.collect.Sets;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
+import org.apache.shardingsphere.sharding.fixture.CoreStandardShardingAlgorithmFixture;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.RangeShardingConditionValue;
-import org.apache.shardingsphere.sharding.route.strategy.fixture.StandardShardingAlgorithmFixture;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -44,7 +44,7 @@ public final class StandardShardingStrategyTest {
     
     @Before
     public void setUp() {
-        standardShardingStrategy = new StandardShardingStrategy("column", new StandardShardingAlgorithmFixture());
+        standardShardingStrategy = new StandardShardingStrategy("column", new CoreStandardShardingAlgorithmFixture());
         dataNodeSegment = new DataNodeInfo("logicTable_", 1, '0');
     }
     

@@ -32,21 +32,21 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class TableModifyInTransactionExceptionTest {
-
+    
     @Test
     public void assertTableNameWhenSQLStatementContextInstanceOfSQLStatementContextUnImplementsTableAvailable() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
         TableModifyInTransactionException tableModifyInTransactionException = new TableModifyInTransactionException(sqlStatementContext);
         assertThat(tableModifyInTransactionException.getTableName(), is("unknown_table"));
     }
-
+    
     @Test
     public void assertTableNameWhenSQLStatementContextInstanceOfSQLStatementContextImplementsTableAvailable() {
         SQLStatementContext sqlStatementContext = mock(TestSQLStatementContextInstanceOfTableAvailable.class);
         TableModifyInTransactionException tableModifyInTransactionException = new TableModifyInTransactionException(sqlStatementContext);
         assertThat(tableModifyInTransactionException.getTableName(), is("unknown_table"));
     }
-
+    
     @Test
     public void assertTableNameWhenSQLStatementContextInstanceOfSQLStatementContextImplementsTableAvailableOnEmptyTableList() {
         TestSQLStatementContextInstanceOfTableAvailable sqlStatementContext = mock(TestSQLStatementContextInstanceOfTableAvailable.class);
@@ -54,7 +54,7 @@ public class TableModifyInTransactionExceptionTest {
         TableModifyInTransactionException tableModifyInTransactionException = new TableModifyInTransactionException(sqlStatementContext);
         assertThat(tableModifyInTransactionException.getTableName(), is("unknown_table"));
     }
-
+    
     @Test
     public void assertTableNameWhenSQLStatementContextInstanceOfSQLStatementContextImplementsTableAvailableOnAnyTableList() {
         TestSQLStatementContextInstanceOfTableAvailable sqlStatementContext = mock(TestSQLStatementContextInstanceOfTableAvailable.class);

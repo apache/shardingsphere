@@ -17,29 +17,22 @@
 
 package org.apache.shardingsphere.singletable.rule.builder;
 
-import java.util.Collection;
 import org.apache.shardingsphere.infra.rule.builder.schema.DefaultSchemaRuleConfigurationBuilder;
+import org.apache.shardingsphere.infra.rule.builder.schema.DefaultSchemaRuleConfigurationBuilderFactory;
 import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.ordered.OrderedSPIRegistry;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class DefaultSingleTableSchemaRuleConfigurationBuilderTest {
-
-    static {
-        ShardingSphereServiceLoader.register(DefaultSchemaRuleConfigurationBuilder.class);
-    }
-
+    
+    @SuppressWarnings("rawtypes")
     @Test
     public void assertBuild() {
-        Collection<DefaultSchemaRuleConfigurationBuilder> registeredServices = OrderedSPIRegistry.getRegisteredServices(DefaultSchemaRuleConfigurationBuilder.class);
-        DefaultSchemaRuleConfigurationBuilder builder = registeredServices.iterator().next();
+        DefaultSchemaRuleConfigurationBuilder builder = DefaultSchemaRuleConfigurationBuilderFactory.newInstance(Collections.singletonList(new SingleTableRuleBuilder())).values().iterator().next();
         assertThat(builder.build(), instanceOf(SingleTableRuleConfiguration.class));
     }
 }

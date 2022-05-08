@@ -53,10 +53,15 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     private final ClusterPersistRepository repository;
     
     @Override
+    public boolean isExisted(final String key) {
+        return null != repository.get(key);
+    }
+    
+    @Override
     public void persistJobProgress(final RuleAlteredJobContext jobContext) {
         JobProgress jobProgress = new JobProgress();
         jobProgress.setStatus(jobContext.getStatus());
-        jobProgress.setSourceDatabaseType(jobContext.getJobConfig().getHandleConfig().getSourceDatabaseType());
+        jobProgress.setSourceDatabaseType(jobContext.getJobConfig().getSourceDatabaseType());
         jobProgress.setIncrementalTaskProgressMap(getIncrementalTaskProgressMap(jobContext));
         jobProgress.setInventoryTaskProgressMap(getInventoryTaskProgressMap(jobContext));
         String value = YamlEngine.marshal(JOB_PROGRESS_YAML_SWAPPER.swapToYaml(jobProgress));

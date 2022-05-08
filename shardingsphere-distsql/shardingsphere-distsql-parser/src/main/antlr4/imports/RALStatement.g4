@@ -31,6 +31,10 @@ showAllVariables
     : SHOW ALL VARIABLES
     ;
 
+alterInstance
+    : ALTER INSTANCE instanceId SET variableName EQ variableValues
+    ;
+
 enableInstance
     : ENABLE INSTANCE (instanceId | instanceDefination)
     ;
@@ -102,7 +106,11 @@ labelInstance
 unlabelInstance
     : UNLABEL INSTANCE (instanceDefination | instanceId) (WITH label (COMMA label)*)?
     ;
-    
+
+countInstanceRules
+    : COUNT INSTANCE RULES (FROM schemaName)?
+    ;
+
 trafficRuleDefinition
     : ruleName LP (labelDefinition COMMA)? trafficAlgorithmDefinition (COMMA loadBalancerDefinition)? RP
     ;
@@ -127,8 +135,12 @@ typeName
     : IDENTIFIER
     ;
 
-exportSchemaConfiguration
-    : EXPORT SCHEMA (CONFIGURATION | CONFIG) (FROM schemaName)? (COMMA? FILE EQ filePath)?
+exportDatabaseConfiguration
+    : EXPORT DATABASE (CONFIGURATION | CONFIG) (FROM databaseName)? (COMMA? FILE EQ filePath)?
+    ;
+
+importDatabaseConfiguration
+    : IMPORT DATABASE (CONFIGURATION | CONFIG) FILE EQ filePath
     ;
 
 filePath
@@ -159,8 +171,12 @@ variableName
     : IDENTIFIER
     ;
 
+variableValues
+    : variableValue (COMMA variableValue)*
+    ;
+
 variableValue
-    : IDENTIFIER | STRING | (MINUS)? INT | TRUE | FALSE
+    : IDENTIFIER | STRING | (MINUS)? INT | TRUE | FALSE | instanceId
     ;
 
 instanceDefination

@@ -17,13 +17,18 @@
 
 package org.apache.shardingsphere.spi;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.spi.exception.ServiceLoaderInstantiationException;
-import org.apache.shardingsphere.spi.fixture.typed.TypedSPIFixture;
+import org.apache.shardingsphere.spi.fixture.NonSingletonFixtureService;
+import org.apache.shardingsphere.spi.fixture.SingletonFixtureService;
+import org.apache.shardingsphere.spi.type.typed.fixture.TypedSPIFixture;
 import org.junit.Test;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
@@ -83,5 +88,29 @@ public final class ShardingSphereServiceLoaderTest {
             targetException = ex.getTargetException();
         }
         assertTrue(targetException instanceof ServiceLoaderInstantiationException);
+    }
+    
+    @Test
+    public void assertGetSingletonServiceInstance() {
+        ShardingSphereServiceLoader.register(SingletonFixtureService.class);
+        Collection<SingletonFixtureService> actual = ShardingSphereServiceLoader.getServiceInstances(SingletonFixtureService.class);
+        Collection<Object> expected = getRegisteredServices(SingletonFixtureService.class);
+        assertThat(actual, is(expected));
+    }
+    
+    @Test
+    public void assertGetNonSingletonServiceInstance() {
+        ShardingSphereServiceLoader.register(NonSingletonFixtureService.class);
+        Collection<NonSingletonFixtureService> actual = ShardingSphereServiceLoader.getServiceInstances(NonSingletonFixtureService.class);
+        Collection<Object> expected = getRegisteredServices(NonSingletonFixtureService.class);
+        assertThat(actual, not(expected));
+    }
+    
+    @SuppressWarnings("unchecked")
+    @SneakyThrows({NoSuchFieldException.class, IllegalAccessException.class})
+    private Collection<Object> getRegisteredServices(final Class<?> serviceClass) {
+        Field field = ShardingSphereServiceLoader.class.getDeclaredField("SERVICES");
+        field.setAccessible(true);
+        return ((Map<Class<?>, Collection<Object>>) field.get(null)).get(serviceClass);
     }
 }

@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.infra.state;
 
-import com.google.common.eventbus.Subscribe;
-
 import java.util.Collections;
 import java.util.Deque;
 import java.util.Optional;
@@ -37,7 +35,6 @@ public final class StateContext {
      * @param type state type
      * @param on true if state type is valid, false if not            
      */
-    @Subscribe
     public void switchState(final StateType type, final boolean on) {
         if (on) {
             currentState.push(type);

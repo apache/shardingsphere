@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.core.datasource.creator;
 
-import org.apache.shardingsphere.spi.singleton.SingletonSPI;
-import org.apache.shardingsphere.spi.typed.TypedSPI;
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -26,7 +26,8 @@ import java.sql.SQLException;
 /**
  * Pipeline data source creator.
  */
-public interface PipelineDataSourceCreator extends TypedSPI, SingletonSPI {
+@SingletonSPI
+public interface PipelineDataSourceCreator extends TypedSPI {
     
     /**
      * Create pipeline data source.

@@ -39,23 +39,22 @@ chapter = true
 
 ## DataSourcePoolMetaData
 
-| *SPI 名称*                    | *详细说明*    |
-| ---------------------------- |-----------|
-| DataSourcePoolMetaData        | 数据源连接池元数据 |
+| *SPI 名称*                    | *详细说明*        |
+| ---------------------------- |-----------------|
+| DataSourcePoolMetaData       | 数据源连接池元数据 |
 
-| *已知实现类*                          | *详细说明*                |
-|----------------------------------|-----------------------|
-| DBCPDataSourcePoolMetaData       | DBCP 数据库连接池元数据        |
-| HikariDataSourcePoolMetaData     | Hikari 数据源连接池元数据      |
-| TomcatDBCPDataSourcePoolMetaData | Tomcat DBCP 数据源连接池元数据 |
+| *已知实现类*                   | *详细说明*              |
+|------------------------------|-----------------------|
+| DBCPDataSourcePoolMetaData   | DBCP 数据库连接池元数据   |
+| HikariDataSourcePoolMetaData | Hikari 数据源连接池元数据 |
 
-## DataSourcePoolDestroyer
+## DataSourcePoolActiveDetector
 
-| *SPI 名称*                      | *详细说明*              |
-| ------------------------------ | ---------------------- |
-| DataSourcePoolDestroyer        | 数据源连接池销毁器        |
+| *SPI 名称*                           | *详细说明*                 |
+| ----------------------------------- | ------------------------- |
+| DataSourcePoolActiveDetector        | 数据源连接池活跃探测器        |
 
-| *已知实现类*                     | *详细说明*              |
-| ------------------------------ | ---------------------- |
-| DefaultDataSourcePoolDestroyer | 默认数据源连接池销毁器     |
-| HikariDataSourcePoolDestroyer  | Hikari 数据源连接池销毁器 |
+| *已知实现类*                          | *详细说明*                 |
+| ----------------------------------- | ------------------------- |
+| DefaultDataSourcePoolActiveDetector | 默认数据源连接池活跃探测器     |
+| HikariDataSourcePoolActiveDetector  | Hikari 数据源连接池活跃探测器 |

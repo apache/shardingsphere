@@ -21,7 +21,7 @@ import lombok.Builder;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
-import org.apache.shardingsphere.infra.config.schema.SchemaConfiguration;
+import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 
 import java.util.Collection;
@@ -37,7 +37,7 @@ public final class ContextManagerBuilderParameter {
     
     private final ModeConfiguration modeConfig;
     
-    private final Map<String, ? extends SchemaConfiguration> schemaConfigs;
+    private final Map<String, ? extends DatabaseConfiguration> databaseConfigs;
     
     private final Collection<RuleConfiguration> globalRuleConfigs;
     
@@ -54,6 +54,6 @@ public final class ContextManagerBuilderParameter {
      */
     public boolean isEmpty() {
         return props.isEmpty() && globalRuleConfigs.isEmpty()
-                && schemaConfigs.entrySet().stream().allMatch(entry -> entry.getValue().getDataSources().isEmpty() && entry.getValue().getRuleConfigurations().isEmpty());
+                && databaseConfigs.entrySet().stream().allMatch(entry -> entry.getValue().getDataSources().isEmpty() && entry.getValue().getRuleConfigurations().isEmpty());
     }
 }

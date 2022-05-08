@@ -38,7 +38,7 @@ public final class OnRuleAlteredActionConfiguration {
     
     private final ShardingSphereAlgorithmConfiguration completionDetector;
     
-    private final ShardingSphereAlgorithmConfiguration dataConsistencyChecker;
+    private final ShardingSphereAlgorithmConfiguration dataConsistencyCalculator;
     
     @RequiredArgsConstructor
     @Getter

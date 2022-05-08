@@ -10,7 +10,7 @@ SHOW ENCRYPT RULES [FROM schemaName]
 
 SHOW ENCRYPT TABLE RULE tableName [from schemaName]
 ```
-- 支持查询所有的数据加密规则和指定逻辑表名查询
+- 支持查询所有的数据加密规则和指定逻辑表名查询。
 
 ## 返回值说明
 

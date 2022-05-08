@@ -17,30 +17,42 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Sets;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
-import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
+import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WalPosition;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.PostgreSQLLogSequenceNumber;
 import org.junit.Test;
 import org.postgresql.replication.LogSequenceNumber;
+
+import java.util.Map;
+import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class PostgreSQLPipelineSQLBuilderTest {
     
+    private final PostgreSQLPipelineSQLBuilder sqlBuilder = new PostgreSQLPipelineSQLBuilder();
+    
+    private final Map<LogicTableName, Set<String>> shardingColumnsMap = ImmutableMap.<LogicTableName, Set<String>>builder()
+            .put(new LogicTableName("t_order"), Sets.newHashSet("order_id", "user_id")).build();
+    
     @Test
     public void assertBuildInsertSQL() {
-        String actual = PipelineSQLBuilderFactory.getSQLBuilder("PostgreSQL").buildInsertSQL(mockDataRecord());
-        assertThat(actual, is("INSERT INTO \"t_order\"(\"id\",\"name\") VALUES(?,?) ON CONFLICT (id) DO NOTHING"));
+        String actual = sqlBuilder.buildInsertSQL("schema1", mockDataRecord(), shardingColumnsMap);
+        assertThat(actual, is("INSERT INTO \"schema1\".\"t_order\"(\"order_id\",\"user_id\",\"status\") VALUES(?,?,?) ON CONFLICT (order_id)"
+                + " DO UPDATE SET \"status\"=EXCLUDED.\"status\""));
     }
     
     private DataRecord mockDataRecord() {
         DataRecord result = new DataRecord(new WalPosition(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(100L))), 2);
         result.setTableName("t_order");
-        result.addColumn(new Column("id", 1, true, true));
-        result.addColumn(new Column("name", "", true, false));
+        result.addColumn(new Column("order_id", 1, true, true));
+        result.addColumn(new Column("user_id", 2, true, false));
+        result.addColumn(new Column("status", "ok", true, false));
         return result;
     }
 }

@@ -27,10 +27,10 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.Number
 @Getter
 @Setter
 public final class ResetMasterOptionSegment extends ResetOptionSegment {
-
+    
     private int startIndex;
-
+    
     private int stopIndex;
-
+    
     private NumberLiteralValue binaryLogFileIndexNumber;
 }

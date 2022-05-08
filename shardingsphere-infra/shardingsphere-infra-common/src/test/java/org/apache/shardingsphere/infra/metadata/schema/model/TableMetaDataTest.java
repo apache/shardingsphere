@@ -21,6 +21,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -34,29 +35,17 @@ public final class TableMetaDataTest {
     
     @Before
     public void setUp() {
-        tableMetaData = new TableMetaData(null, Collections.singletonList(new ColumnMetaData("test", Types.INTEGER, true, false, true)), Collections.emptyList());
+        tableMetaData = new TableMetaData(null, Collections.singletonList(new ColumnMetaData("test", Types.INTEGER, true, false, true)), Collections.emptyList(), Collections.emptyList());
     }
     
     @Test
     public void assertGetColumnMetaData() {
-        ColumnMetaData actual = tableMetaData.getColumnMetaData(0);
+        ColumnMetaData actual = tableMetaData.getColumns().get(new ArrayList<>(tableMetaData.getColumns().keySet()).get(0));
         assertThat(actual.getName(), is("test"));
         assertThat(actual.getDataType(), is(Types.INTEGER));
         assertTrue(actual.isPrimaryKey());
         assertFalse(actual.isGenerated());
         assertTrue(actual.isCaseSensitive());
-    }
-    
-    @Test
-    public void assertFindColumnIndex() {
-        assertThat(tableMetaData.findColumnIndex("test"), is(0));
-        assertThat(tableMetaData.findColumnIndex("non_exist"), is(-1));
-    }
-    
-    @Test
-    public void assertIsPrimaryKey() {
-        assertTrue(tableMetaData.isPrimaryKey(0));
-        assertFalse(tableMetaData.isPrimaryKey(1));
     }
     
     @Test

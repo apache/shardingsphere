@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.Agg
 import org.apache.shardingsphere.infra.binder.statement.ddl.CreateDatabaseStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.DistinctProjectionPrefixTokenGenerator;
-import org.apache.shardingsphere.sharding.rewrite.token.pojo.DistinctProjectionPrefixToken;
 import org.junit.Test;
 
 import java.util.LinkedList;
@@ -36,27 +35,25 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class DistinctProjectionPrefixTokenGeneratorTest {
-
+    
     @Test
     public void assertIsGenerateSQLToken() {
-        CreateDatabaseStatementContext createDatabaseStatementContext = mock(CreateDatabaseStatementContext.class);
-        DistinctProjectionPrefixTokenGenerator distinctProjectionPrefixTokenGenerator = new DistinctProjectionPrefixTokenGenerator();
-        assertFalse(distinctProjectionPrefixTokenGenerator.isGenerateSQLToken(createDatabaseStatementContext));
+        DistinctProjectionPrefixTokenGenerator generator = new DistinctProjectionPrefixTokenGenerator();
+        assertFalse(generator.isGenerateSQLToken(mock(CreateDatabaseStatementContext.class)));
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        List<AggregationDistinctProjection> aggregationDistinctProjectionList = new LinkedList<>();
-        when(selectStatementContext.getProjectionsContext().getAggregationDistinctProjections()).thenReturn(aggregationDistinctProjectionList);
-        assertFalse(distinctProjectionPrefixTokenGenerator.isGenerateSQLToken(selectStatementContext));
-        aggregationDistinctProjectionList.add(mock(AggregationDistinctProjection.class));
-        assertTrue(distinctProjectionPrefixTokenGenerator.isGenerateSQLToken(selectStatementContext));
+        List<AggregationDistinctProjection> aggregationDistinctProjections = new LinkedList<>();
+        when(selectStatementContext.getProjectionsContext().getAggregationDistinctProjections()).thenReturn(aggregationDistinctProjections);
+        assertFalse(generator.isGenerateSQLToken(selectStatementContext));
+        aggregationDistinctProjections.add(mock(AggregationDistinctProjection.class));
+        assertTrue(generator.isGenerateSQLToken(selectStatementContext));
     }
-
+    
     @Test
     public void assertGenerateSQLToken() {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         final int testStartIndex = 1;
         when(selectStatementContext.getProjectionsContext().getStartIndex()).thenReturn(testStartIndex);
-        DistinctProjectionPrefixTokenGenerator distinctProjectionPrefixTokenGenerator = new DistinctProjectionPrefixTokenGenerator();
-        DistinctProjectionPrefixToken distinctProjectionPrefixToken = distinctProjectionPrefixTokenGenerator.generateSQLToken(selectStatementContext);
-        assertThat(distinctProjectionPrefixToken.toString(), is("DISTINCT "));
+        DistinctProjectionPrefixTokenGenerator generator = new DistinctProjectionPrefixTokenGenerator();
+        assertThat(generator.generateSQLToken(selectStatementContext).toString(), is("DISTINCT "));
     }
 }

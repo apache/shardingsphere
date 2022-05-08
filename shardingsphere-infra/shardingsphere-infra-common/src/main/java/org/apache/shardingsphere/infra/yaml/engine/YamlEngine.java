@@ -52,8 +52,7 @@ public final class YamlEngine {
     public static <T extends YamlConfiguration> T unmarshal(final File yamlFile, final Class<T> classType) throws IOException {
         try (
                 FileInputStream fileInputStream = new FileInputStream(yamlFile);
-                InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream)
-        ) {
+                InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream)) {
             return new Yaml(new ShardingSphereYamlConstructor(classType)).loadAs(inputStreamReader, classType);
         }
     }
@@ -90,13 +89,13 @@ public final class YamlEngine {
      *
      * @param yamlContent YAML content
      * @param classType class type
-     * @param skipMissingProperties true if missing properties should be skipped, false otherwise
+     * @param skipMissingProps true if missing properties should be skipped, false otherwise
      * @param <T> type of class
      * @return object from YAML
      */
-    public static <T> T unmarshal(final String yamlContent, final Class<T> classType, final boolean skipMissingProperties) {
+    public static <T> T unmarshal(final String yamlContent, final Class<T> classType, final boolean skipMissingProps) {
         Representer representer = new Representer();
-        representer.getPropertyUtils().setSkipMissingProperties(skipMissingProperties);
+        representer.getPropertyUtils().setSkipMissingProperties(skipMissingProps);
         return new Yaml(new ShardingSphereYamlConstructor(classType), representer).loadAs(yamlContent, classType);
     }
     

@@ -54,7 +54,7 @@ public final class OptimizerParserContextFactory {
     private static Properties createSQLDialectProperties(final DatabaseType databaseType) {
         Properties result = new Properties();
         result.setProperty(CalciteConnectionProperty.TIME_ZONE.camelName(), "UTC");
-        result.putAll(OptimizerSQLDialectBuilderFactory.build(databaseType, result));
+        result.putAll(OptimizerSQLDialectBuilderFactory.build(databaseType));
         return result;
     }
 }

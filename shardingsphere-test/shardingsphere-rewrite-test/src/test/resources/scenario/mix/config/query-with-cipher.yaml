@@ -17,11 +17,7 @@
 
 dataSources:
   db:
-    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-    driverClassName: org.h2.Driver
-    jdbcUrl: jdbc:h2:mem:db;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
-    username: sa
-    password:
+    dataSourceClassName: org.apache.shardingsphere.test.mock.MockedDataSource
 
 rules:
 - !SHARDING
@@ -34,7 +30,7 @@ rules:
           shardingAlgorithmName: t_account_inline
       keyGenerateStrategy:
         column: account_id
-        keyGeneratorName: test
+        keyGeneratorName: rewrite_keygen_fixture
     t_account_bak:
       actualDataNodes: db.t_account_bak_${0..1}
       tableStrategy: 
@@ -43,7 +39,7 @@ rules:
           shardingAlgorithmName: t_account_bak_inline
       keyGenerateStrategy:
         column: account_id
-        keyGeneratorName: test
+        keyGeneratorName: rewrite_keygen_fixture
     t_account_detail:
       actualDataNodes: db.t_account_detail_${0..1}
       tableStrategy: 
@@ -68,8 +64,8 @@ rules:
         algorithm-expression: t_account_detail_${account_id % 2}
   
   keyGenerators:
-    test:
-      type: TEST
+    rewrite_keygen_fixture:
+      type: REWRITE.FIXTURE
 
 - !ENCRYPT
   tables:
@@ -78,34 +74,34 @@ rules:
         password:
           cipherColumn: cipher_password
           assistedQueryColumn: assisted_query_password
-          encryptorName: assisted_query
+          encryptorName: rewrite_assisted_query_fixture
         amount:
           cipherColumn: cipher_amount
-          encryptorName: normal
+          encryptorName: rewrite_normal_fixture
     t_account_bak:
       columns:
         password:
           cipherColumn: cipher_password
           assistedQueryColumn: assisted_query_password
           plainColumn: plain_password
-          encryptorName: assisted_query
+          encryptorName: rewrite_assisted_query_fixture
         amount:
           cipherColumn: cipher_amount
           plainColumn: plain_amount
-          encryptorName: normal
+          encryptorName: rewrite_normal_fixture
     t_account_detail:
       columns:
         password:
           cipherColumn: cipher_password
           assistedQueryColumn: assisted_query_password
           plainColumn: plain_password
-          encryptorName: assisted_query
+          encryptorName: rewrite_assisted_query_fixture
         amount:
           cipherColumn: cipher_amount
           plainColumn: plain_amount
-          encryptorName: normal
+          encryptorName: rewrite_normal_fixture
   encryptors:
-    normal:
-      type: NORMAL_ENCRYPT
-    assisted_query:
-      type: ASSISTED_QUERY_ENCRYPT
+    rewrite_normal_fixture:
+      type: REWRITE.NORMAL.FIXTURE
+    rewrite_assisted_query_fixture:
+      type: REWRITE.ASSISTED_QUERY.FIXTURE

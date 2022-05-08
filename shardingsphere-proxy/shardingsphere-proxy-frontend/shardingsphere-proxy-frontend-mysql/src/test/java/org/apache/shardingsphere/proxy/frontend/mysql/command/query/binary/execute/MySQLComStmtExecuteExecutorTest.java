@@ -35,7 +35,7 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.JDBCDatabaseCo
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
@@ -103,8 +103,8 @@ public final class MySQLComStmtExecuteExecutorTest {
     
     @Test
     public void assertIsQueryResponse() throws NoSuchFieldException, SQLException {
-        when(connectionSession.getSchemaName()).thenReturn("logic_db");
-        when(connectionSession.getDefaultSchemaName()).thenReturn("logic_db");
+        when(connectionSession.getDatabaseName()).thenReturn("logic_db");
+        when(connectionSession.getDefaultDatabaseName()).thenReturn("logic_db");
         MySQLComStmtExecutePacket packet = mock(MySQLComStmtExecutePacket.class);
         when(packet.getSql()).thenReturn("SELECT 1");
         MySQLComStmtExecuteExecutor mysqlComStmtExecuteExecutor = new MySQLComStmtExecuteExecutor(packet, connectionSession);
@@ -116,8 +116,8 @@ public final class MySQLComStmtExecuteExecutorTest {
     
     @Test
     public void assertIsUpdateResponse() throws NoSuchFieldException, SQLException {
-        when(connectionSession.getSchemaName()).thenReturn("logic_db");
-        when(connectionSession.getDefaultSchemaName()).thenReturn("logic_db");
+        when(connectionSession.getDatabaseName()).thenReturn("logic_db");
+        when(connectionSession.getDefaultDatabaseName()).thenReturn("logic_db");
         MySQLComStmtExecutePacket packet = mock(MySQLComStmtExecutePacket.class);
         when(packet.getSql()).thenReturn("SELECT 1");
         MySQLComStmtExecuteExecutor mysqlComStmtExecuteExecutor = new MySQLComStmtExecuteExecutor(packet, connectionSession);
@@ -129,8 +129,8 @@ public final class MySQLComStmtExecuteExecutorTest {
     
     @Test
     public void assertExecutePreparedCommit() throws SQLException, NoSuchFieldException {
-        when(connectionSession.getSchemaName()).thenReturn("logic_db");
-        when(connectionSession.getDefaultSchemaName()).thenReturn("logic_db");
+        when(connectionSession.getDatabaseName()).thenReturn("logic_db");
+        when(connectionSession.getDefaultDatabaseName()).thenReturn("logic_db");
         MySQLComStmtExecutePacket packet = mock(MySQLComStmtExecutePacket.class);
         when(packet.getSql()).thenReturn("commit");
         MySQLComStmtExecuteExecutor mysqlComStmtExecuteExecutor = new MySQLComStmtExecuteExecutor(packet, connectionSession);

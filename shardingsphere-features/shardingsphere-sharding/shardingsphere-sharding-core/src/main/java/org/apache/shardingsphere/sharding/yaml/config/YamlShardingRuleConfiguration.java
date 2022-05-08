@@ -28,9 +28,9 @@ import org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfigur
 import org.apache.shardingsphere.sharding.yaml.config.strategy.keygen.YamlKeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShardingStrategyConfiguration;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 /**
@@ -44,9 +44,9 @@ public final class YamlShardingRuleConfiguration implements YamlRuleConfiguratio
     
     private Map<String, YamlShardingAutoTableRuleConfiguration> autoTables = new LinkedHashMap<>();
     
-    private Collection<String> bindingTables = new ArrayList<>();
+    private Collection<String> bindingTables = new LinkedList<>();
     
-    private Collection<String> broadcastTables = new ArrayList<>();
+    private Collection<String> broadcastTables = new LinkedList<>();
     
     private YamlShardingStrategyConfiguration defaultDatabaseStrategy;
     
@@ -57,7 +57,7 @@ public final class YamlShardingRuleConfiguration implements YamlRuleConfiguratio
     private Map<String, YamlShardingSphereAlgorithmConfiguration> shardingAlgorithms = new LinkedHashMap<>();
     
     private Map<String, YamlShardingSphereAlgorithmConfiguration> keyGenerators = new LinkedHashMap<>();
-
+    
     private String defaultShardingColumn;
     
     private String scalingName;

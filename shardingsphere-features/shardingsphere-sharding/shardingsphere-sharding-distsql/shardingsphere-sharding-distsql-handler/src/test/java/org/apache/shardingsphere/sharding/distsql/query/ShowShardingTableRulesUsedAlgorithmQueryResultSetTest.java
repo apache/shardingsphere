@@ -43,12 +43,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class ShowShardingTableRulesUsedAlgorithmQueryResultSetTest {
-
+    
     @Test
     public void assertGetRowData() {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         when(metaData.getRuleMetaData().findRuleConfiguration(ShardingRuleConfiguration.class)).thenReturn(Collections.singleton(createRuleConfiguration()));
-        when(metaData.getName()).thenReturn("sharding_db");
+        when(metaData.getDatabaseName()).thenReturn("sharding_db");
         DistSQLResultSet resultSet = new ShardingTableRulesUsedAlgorithmQueryResultSet();
         ShowShardingTableRulesUsedAlgorithmStatement statement = mock(ShowShardingTableRulesUsedAlgorithmStatement.class);
         when(statement.getAlgorithmName()).thenReturn(Optional.of("t_order_inline"));
@@ -66,7 +66,7 @@ public final class ShowShardingTableRulesUsedAlgorithmQueryResultSetTest {
         assertThat(actual.get(1), is("auto_table"));
         assertThat(actual.get(2), is("t_order_auto"));
     }
-
+    
     private ShardingRuleConfiguration createRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         result.getTables().add(createShardingTableRuleConfiguration());
@@ -80,36 +80,34 @@ public final class ShowShardingTableRulesUsedAlgorithmQueryResultSetTest {
         result.getKeyGenerators().put("snowflake", createKeyGeneratorConfiguration());
         return result;
     }
-
+    
     private ShardingAutoTableRuleConfiguration createShardingAutoTableRuleConfiguration() {
         ShardingAutoTableRuleConfiguration result = new ShardingAutoTableRuleConfiguration("t_order_auto", "ds_0, ds_1");
         result.setShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "auto_mod"));
         result.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("order_id", "snowflake"));
         return result;
     }
-
+    
     private ShardingTableRuleConfiguration createShardingTableRuleConfiguration() {
         ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("t_order", "ds_${0..1}.t_order_${0..1}");
         result.setTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "t_order_inline"));
         result.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("order_id", "snowflake"));
         return result;
     }
-
+    
     private ShardingSphereAlgorithmConfiguration createShardingInlineAlgorithmConfiguration(final String algorithmExpression) {
         Properties props = new Properties();
         props.put("algorithm-expression", algorithmExpression);
         return new ShardingSphereAlgorithmConfiguration("INLINE", props);
     }
-
+    
     private ShardingSphereAlgorithmConfiguration createShardingAutoModAlgorithmConfiguration() {
         Properties props = new Properties();
         props.put("sharding-count", 4);
         return new ShardingSphereAlgorithmConfiguration("MOD", props);
     }
-
+    
     private ShardingSphereAlgorithmConfiguration createKeyGeneratorConfiguration() {
-        Properties props = new Properties();
-        props.put("worker-id", "123");
-        return new ShardingSphereAlgorithmConfiguration("SNOWFLAKE", props);
+        return new ShardingSphereAlgorithmConfiguration("SNOWFLAKE", new Properties());
     }
 }

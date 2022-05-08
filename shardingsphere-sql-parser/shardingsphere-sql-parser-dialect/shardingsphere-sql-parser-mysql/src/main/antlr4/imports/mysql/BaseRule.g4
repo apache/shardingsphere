@@ -47,6 +47,7 @@ customKeyword
     | INNODB
     | REDO_LOG
     | LAST_VALUE
+    | PRIMARY
     ;
     
 literals
@@ -64,7 +65,7 @@ string_
     ;
     
 stringLiterals
-    : UNDERSCORE_CHARSET? string_ | NCHAR_TEXT
+    : (UNDERSCORE_CHARSET | UL_BINARY )? string_ | NCHAR_TEXT
     ;
     
 numberLiterals
@@ -104,6 +105,7 @@ identifier
     | identifierKeywordsAmbiguous4SystemVariables
     | customKeyword
     | DOUBLE_QUOTED_TEXT
+    | UNDERSCORE_CHARSET
     ;
     
 identifierKeywordsUnambiguous

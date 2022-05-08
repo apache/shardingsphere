@@ -36,9 +36,12 @@ public final class TransactionStatus {
     private volatile boolean inTransaction;
     
     private volatile TransactionType transactionType;
-
+    
     @Setter
     private volatile boolean manualXA;
+    
+    @Setter
+    private volatile boolean rollbackOnly;
     
     public TransactionStatus(final TransactionType initialTransactionType) {
         transactionType = initialTransactionType;
@@ -52,7 +55,7 @@ public final class TransactionStatus {
     public TransactionType getTransactionType() {
         return manualXA ? TransactionType.MANUALXA : transactionType;
     }
-
+    
     /**
      * Check there's any transaction on this session.
      *
@@ -61,7 +64,7 @@ public final class TransactionStatus {
     public boolean isInTransaction() {
         return inTransaction || manualXA;
     }
-
+    
     /**
      * Change transaction type of current channel.
      *

@@ -17,27 +17,26 @@
 
 package org.apache.shardingsphere.infra.context.refresher.type;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.refresher.MetaDataRefresher;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContext;
-import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationSchemaMetaData;
+import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.metadata.schema.event.SchemaAlteredEvent;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.util.IndexMetaDataUtil;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.DropIndexStatementHandler;
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Schema refresher for drop index statement.
@@ -47,44 +46,31 @@ public final class DropIndexStatementSchemaRefresher implements MetaDataRefreshe
     private static final String TYPE = DropIndexStatement.class.getName();
     
     @Override
-    public void refresh(final ShardingSphereMetaData schemaMetaData, final FederationSchemaMetaData schema, final Map<String, OptimizerPlannerContext> optimizerPlanners, 
-                        final Collection<String> logicDataSourceNames, final DropIndexStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
-        Collection<String> indexNames = getIndexNames(sqlStatement);
+    public void refresh(final ShardingSphereMetaData metaData, final FederationDatabaseMetaData database, final Map<String, OptimizerPlannerContext> optimizerPlanners,
+                        final Collection<String> logicDataSourceNames, final String schemaName, final DropIndexStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
+        for (IndexSegment each : sqlStatement.getIndexes()) {
+            String actualSchemaName = each.getOwner().map(optional -> optional.getIdentifier().getValue()).orElse(schemaName);
+            Optional<String> logicTableName = findLogicTableName(metaData, sqlStatement, Collections.singletonList(each));
+            if (!logicTableName.isPresent()) {
+                continue;
+            }
+            TableMetaData tableMetaData = metaData.getSchemaByName(actualSchemaName).get(logicTableName.get());
+            tableMetaData.getIndexes().remove(each.getIndexName().getIdentifier().getValue());
+            post(metaData.getDatabaseName(), actualSchemaName, tableMetaData);
+        }
+    }
+    
+    private Optional<String> findLogicTableName(final ShardingSphereMetaData metaData, final DropIndexStatement sqlStatement, final Collection<IndexSegment> indexSegments) {
         Optional<SimpleTableSegment> simpleTableSegment = DropIndexStatementHandler.getSimpleTableSegment(sqlStatement);
-        String tableName = simpleTableSegment.map(tableSegment -> tableSegment.getTableName().getIdentifier().getValue()).orElse("");
-        TableMetaData tableMetaData = schemaMetaData.getSchema().get(tableName);
-        if (!Strings.isNullOrEmpty(tableName)) {
-            for (String each : indexNames) {
-                tableMetaData.getIndexes().remove(each);
-            }
-            post(schemaMetaData.getName(), tableMetaData);
-            return;
+        if (simpleTableSegment.isPresent()) {
+            return Optional.of(simpleTableSegment.get().getTableName().getIdentifier().getValue());
         }
-        for (String each : indexNames) {
-            Optional<String> logicTableNameOptional = findLogicTableName(schemaMetaData.getSchema(), each);
-            if (logicTableNameOptional.isPresent()) {
-                String logicTableName = logicTableNameOptional.orElse("");
-                Preconditions.checkArgument(!Strings.isNullOrEmpty(logicTableName), "Cannot get the table name!");
-                if (null == tableMetaData) {
-                    tableMetaData = schemaMetaData.getSchema().get(logicTableName);
-                }
-                Preconditions.checkNotNull(tableMetaData, "Cannot get the table metadata!");
-                tableMetaData.getIndexes().remove(each);
-            }
-        }
-        post(schemaMetaData.getName(), tableMetaData);
+        Collection<QualifiedTable> tableNames = IndexMetaDataUtil.getTableNamesFromMetaData(metaData, indexSegments, metaData.getResource().getDatabaseType());
+        return tableNames.isEmpty() ? Optional.empty() : Optional.of(tableNames.iterator().next().getTableName());
     }
     
-    private Collection<String> getIndexNames(final DropIndexStatement dropIndexStatement) {
-        return dropIndexStatement.getIndexes().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toCollection(LinkedList::new));
-    }
-    
-    private Optional<String> findLogicTableName(final ShardingSphereSchema schema, final String logicIndexName) {
-        return schema.getAllTableNames().stream().filter(each -> schema.get(each).getIndexes().containsKey(logicIndexName)).findFirst();
-    }
-    
-    private void post(final String schemaName, final TableMetaData tableMetaData) {
-        SchemaAlteredEvent event = new SchemaAlteredEvent(schemaName);
+    private void post(final String databaseName, final String schemaName, final TableMetaData tableMetaData) {
+        SchemaAlteredEvent event = new SchemaAlteredEvent(databaseName, schemaName);
         event.getAlteredTables().add(tableMetaData);
         ShardingSphereEventBus.getInstance().post(event);
     }

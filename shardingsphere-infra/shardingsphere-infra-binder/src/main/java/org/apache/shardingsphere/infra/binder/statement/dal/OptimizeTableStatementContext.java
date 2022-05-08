@@ -36,7 +36,7 @@ public final class OptimizeTableStatementContext extends CommonSQLStatementConte
     
     public OptimizeTableStatementContext(final MySQLOptimizeTableStatement sqlStatement) {
         super(sqlStatement);
-        tablesContext = new TablesContext(sqlStatement.getTables());
+        tablesContext = new TablesContext(sqlStatement.getTables(), getDatabaseType());
     }
     
     @Override

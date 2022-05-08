@@ -20,10 +20,12 @@ package org.apache.shardingsphere.infra.binder.statement.ddl;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.type.ConstraintAvailable;
 import org.apache.shardingsphere.infra.binder.type.IndexAvailable;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
@@ -35,13 +37,13 @@ import java.util.LinkedList;
  * Create table statement context.
  */
 @Getter
-public final class CreateTableStatementContext extends CommonSQLStatementContext<CreateTableStatement> implements TableAvailable, IndexAvailable {
+public final class CreateTableStatementContext extends CommonSQLStatementContext<CreateTableStatement> implements TableAvailable, IndexAvailable, ConstraintAvailable {
     
     private final TablesContext tablesContext;
     
     public CreateTableStatementContext(final CreateTableStatement sqlStatement) {
         super(sqlStatement);
-        tablesContext = new TablesContext(sqlStatement.getTable());
+        tablesContext = new TablesContext(sqlStatement.getTable(), getDatabaseType());
     }
     
     @Override
@@ -64,6 +66,15 @@ public final class CreateTableStatementContext extends CommonSQLStatementContext
         Collection<IndexSegment> result = new LinkedList<>();
         for (ConstraintDefinitionSegment each : getSqlStatement().getConstraintDefinitions()) {
             each.getIndexName().ifPresent(result::add);
+        }
+        return result;
+    }
+    
+    @Override
+    public Collection<ConstraintSegment> getConstraints() {
+        Collection<ConstraintSegment> result = new LinkedList<>();
+        for (ConstraintDefinitionSegment each : getSqlStatement().getConstraintDefinitions()) {
+            each.getConstraintName().ifPresent(result::add);
         }
         return result;
     }

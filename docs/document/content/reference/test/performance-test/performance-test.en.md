@@ -34,7 +34,7 @@ While as a comparison, MySQL runs with INSERT & UPDATE & DELETE statement and fu
 
 ### Table Structure of Database
 
-The structure of table here refer to `sbtest` in `sysbench`
+The structure of table here refer to `sbtest` in `sysbench`.
 
 ```shell
 CREATE TABLE `tbl` (

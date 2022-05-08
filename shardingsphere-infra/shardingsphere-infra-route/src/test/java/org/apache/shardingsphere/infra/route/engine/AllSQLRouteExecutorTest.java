@@ -38,7 +38,7 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class AllSQLRouteExecutorTest {
-
+    
     @Test
     public void assertRouteSuccess() {
         String name = "test";

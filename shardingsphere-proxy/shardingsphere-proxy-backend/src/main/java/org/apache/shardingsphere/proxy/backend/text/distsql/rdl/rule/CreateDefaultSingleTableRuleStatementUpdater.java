@@ -36,20 +36,20 @@ public final class CreateDefaultSingleTableRuleStatementUpdater implements RuleD
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final CreateDefaultSingleTableRuleStatement sqlStatement,
                                   final SingleTableRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String schemaName = shardingSphereMetaData.getName();
-        checkResourceExist(schemaName, shardingSphereMetaData, sqlStatement);
-        checkDefaultResourceDuplicate(schemaName, currentRuleConfig);
+        String databaseName = shardingSphereMetaData.getDatabaseName();
+        checkResourceExist(databaseName, shardingSphereMetaData, sqlStatement);
+        checkDefaultResourceDuplicate(databaseName, currentRuleConfig);
     }
     
-    private void checkResourceExist(final String schemaName, final ShardingSphereMetaData metaData, final CreateDefaultSingleTableRuleStatement sqlStatement) throws DistSQLException {
+    private void checkResourceExist(final String databaseName, final ShardingSphereMetaData metaData, final CreateDefaultSingleTableRuleStatement sqlStatement) throws DistSQLException {
         Collection<String> resourceNames = metaData.getResource().getDataSources().keySet();
-        DistSQLException.predictionThrow(resourceNames.contains(sqlStatement.getDefaultResource()),
-                new RequiredResourceMissedException(schemaName, Collections.singleton(sqlStatement.getDefaultResource())));
+        DistSQLException.predictionThrow(resourceNames.contains(sqlStatement.getDefaultResource()), () -> new RequiredResourceMissedException(
+                databaseName, Collections.singleton(sqlStatement.getDefaultResource())));
     }
     
-    private void checkDefaultResourceDuplicate(final String schemaName, final SingleTableRuleConfiguration currentRuleConfig) throws DistSQLException {
+    private void checkDefaultResourceDuplicate(final String databaseName, final SingleTableRuleConfiguration currentRuleConfig) throws DistSQLException {
         if (null != currentRuleConfig) {
-            DistSQLException.predictionThrow(!currentRuleConfig.getDefaultDataSource().isPresent(), new DuplicateRuleException("default single table rule", schemaName));
+            DistSQLException.predictionThrow(!currentRuleConfig.getDefaultDataSource().isPresent(), () -> new DuplicateRuleException("default single table rule", databaseName));
         }
     }
     

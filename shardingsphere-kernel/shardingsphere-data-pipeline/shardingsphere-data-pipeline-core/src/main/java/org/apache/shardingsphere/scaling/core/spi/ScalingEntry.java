@@ -20,14 +20,15 @@ package org.apache.shardingsphere.scaling.core.spi;
 import org.apache.shardingsphere.data.pipeline.spi.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.IncrementalDumper;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.InventoryDumper;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeAwareSPI;
 import org.apache.shardingsphere.scaling.core.job.check.EnvironmentChecker;
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 
 /**
  * Scaling entry.
  */
-// TODO separate methods, use SPI instead
-public interface ScalingEntry extends DatabaseTypeAwareSPI {
+@SingletonSPI
+public interface ScalingEntry extends TypedSPI {
     
     /**
      * Get inventory dumper type.

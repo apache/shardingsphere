@@ -45,7 +45,9 @@ import java.util.Optional;
 @Setter
 public final class EncryptOrderByItemTokenGenerator implements CollectionSQLTokenGenerator, SchemaMetaDataAware, EncryptRuleAware {
     
-    private ShardingSphereSchema schema;
+    private String databaseName;
+    
+    private Map<String, ShardingSphereSchema> schemas;
     
     private EncryptRule encryptRule;
     
@@ -59,6 +61,8 @@ public final class EncryptOrderByItemTokenGenerator implements CollectionSQLToke
     @Override
     public Collection<SubstitutableColumnNameToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         Collection<SubstitutableColumnNameToken> result = new LinkedHashSet<>();
+        String defaultSchema = sqlStatementContext.getDatabaseType().getDefaultSchema(databaseName);
+        ShardingSphereSchema schema = sqlStatementContext.getTablesContext().getSchemaName().map(schemas::get).orElse(schemas.get(defaultSchema));
         for (OrderByItem each : getOrderByItems(sqlStatementContext)) {
             if (each.getSegment() instanceof ColumnOrderByItemSegment) {
                 ColumnSegment columnSegment = ((ColumnOrderByItemSegment) each.getSegment()).getColumn();
@@ -88,9 +92,8 @@ public final class EncryptOrderByItemTokenGenerator implements CollectionSQLToke
                 }
             }
             Optional<String> assistedQueryColumn = encryptTable.get().findAssistedQueryColumn(column.getIdentifier().getValue());
-            SubstitutableColumnNameToken encryptColumnNameToken = assistedQueryColumn.map(columnName
-                -> new SubstitutableColumnNameToken(startIndex, stopIndex, createColumnProjections(columnName))).orElseGet(()
-                    -> new SubstitutableColumnNameToken(startIndex, stopIndex, createColumnProjections(encryptTable.get().getCipherColumn(column.getIdentifier().getValue()))));
+            SubstitutableColumnNameToken encryptColumnNameToken = assistedQueryColumn.map(optional -> new SubstitutableColumnNameToken(startIndex, stopIndex, createColumnProjections(optional)))
+                    .orElseGet(() -> new SubstitutableColumnNameToken(startIndex, stopIndex, createColumnProjections(encryptTable.get().getCipherColumn(column.getIdentifier().getValue()))));
             result.add(encryptColumnNameToken);
         }
         return result;

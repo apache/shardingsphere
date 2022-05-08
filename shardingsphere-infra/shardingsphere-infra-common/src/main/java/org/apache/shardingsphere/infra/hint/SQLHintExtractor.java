@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.hint;
 
+import lombok.Getter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.CommentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -27,6 +28,7 @@ import java.util.Properties;
 /**
  * SQL hint extractor.
  */
+@Getter
 public final class SQLHintExtractor {
     
     private static final SQLHintProperties DEFAULT_SQL_HINT_PROPERTIES = new SQLHintProperties(new Properties());
@@ -39,11 +41,11 @@ public final class SQLHintExtractor {
     }
     
     private SQLHintProperties extract(final AbstractSQLStatement statement) {
-        Properties properties = new Properties();
+        Properties props = new Properties();
         for (CommentSegment each : statement.getCommentSegments()) {
-            properties.putAll(SQLHintUtils.getSQLHintProps(each.getText()));
+            props.putAll(SQLHintUtils.getSQLHintProps(each.getText()));
         }
-        return new SQLHintProperties(properties);
+        return new SQLHintProperties(props);
     }
     
     /**
@@ -63,5 +65,14 @@ public final class SQLHintExtractor {
      */
     public boolean isHintWriteRouteOnly() {
         return sqlHintProperties.getValue(SQLHintPropertiesKey.WRITE_ROUTE_ONLY_KEY);
+    }
+    
+    /**
+     * Judge whether hint skip encrypt rewrite or not.
+     *
+     * @return whether hint skip encrypt rewrite or not
+     */
+    public boolean isHintSkipEncryptRewrite() {
+        return sqlHintProperties.getValue(SQLHintPropertiesKey.SKIP_ENCRYPT_REWRITE_KEY);
     }
 }

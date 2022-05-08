@@ -58,11 +58,11 @@ public final class EncryptLiteralAssignmentToken extends EncryptAssignmentToken 
         
         @Override
         public String toString() {
-            return String.format("%s = %s", columnName, toString(value));
+            return columnName + " = " + toString(value);
         }
-    
+        
         private String toString(final Object value) {
-            return String.class == value.getClass() ? String.format("'%s'", value) : value.toString();
+            return value instanceof String ? "'" + value + "'" : value.toString();
         }
     }
 }

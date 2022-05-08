@@ -20,10 +20,10 @@ package org.apache.shardingsphere.sharding.algorithm.sharding.range;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Range;
 import com.google.common.math.LongMath;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.RoundingMode;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -38,6 +38,10 @@ public final class VolumeBasedRangeShardingAlgorithm extends AbstractRangeShardi
     private static final String RANGE_UPPER_KEY = "range-upper";
     
     private static final String SHARDING_VOLUME_KEY = "sharding-volume";
+    
+    @Getter
+    @Setter
+    private Properties props;
     
     @Override
     public Map<Integer, Range<Comparable<?>>> calculatePartitionRange(final Properties props) {
@@ -61,10 +65,5 @@ public final class VolumeBasedRangeShardingAlgorithm extends AbstractRangeShardi
     @Override
     public String getType() {
         return "VOLUME_RANGE";
-    }
-    
-    @Override
-    public Collection<String> getAllPropertyKeys() {
-        return Arrays.asList(RANGE_LOWER_KEY, RANGE_UPPER_KEY, SHARDING_VOLUME_KEY);
     }
 }

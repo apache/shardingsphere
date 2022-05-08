@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.transaction.context;
 
 import org.apache.shardingsphere.infra.database.DefaultSchema;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
@@ -31,7 +30,6 @@ import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 
@@ -47,20 +45,15 @@ public final class TransactionContextsBuilderTest {
     
     @Test
     public void assertNewInstanceWithEmptyEngines() {
-        TransactionContexts transactionContexts = new TransactionContextsBuilder(Collections.emptyMap(), Collections.emptyList()).build();
-        assertTrue(transactionContexts.getEngines().isEmpty());
+        assertTrue(new TransactionContextsBuilder(Collections.emptyMap(), Collections.emptyList()).build().getEngines().isEmpty());
     }
     
-    @Test(expected = NullPointerException.class)
+    @Test
     public void assertGetDefaultTransactionManagerEngine() {
-        Map<String, ShardingSphereMetaData> metaDataMap = new HashMap<>(1, 1);
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        when(metaData.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
         when(metaData.getResource().getDataSources()).thenReturn(createDataSourceMap());
-        metaDataMap.put(DefaultSchema.LOGIC_NAME, metaData);
-        Collection<ShardingSphereRule> globalRules = new LinkedList<>();
-        globalRules.add(new TransactionRule(new TransactionRuleConfiguration(TransactionType.LOCAL.name(), null, new Properties())));
-        TransactionContexts transactionContexts = new TransactionContextsBuilder(metaDataMap, globalRules).build();
+        Collection<ShardingSphereRule> globalRules = Collections.singleton(new TransactionRule(new TransactionRuleConfiguration(TransactionType.LOCAL.name(), null, new Properties())));
+        TransactionContexts transactionContexts = new TransactionContextsBuilder(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), globalRules).build();
         Map<String, ShardingSphereTransactionManagerEngine> engines = transactionContexts.getEngines();
         assertThat(engines.size(), is(1));
         assertNotNull(transactionContexts.getEngines().get(DefaultSchema.LOGIC_NAME));

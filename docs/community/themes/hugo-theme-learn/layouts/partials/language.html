@@ -1,0 +1,40 @@
+{{ $currentNode := . }}
+        {{ $showvisitedlinks := .Site.Params.showVisitedLinks }}
+        {{ if or .Site.IsMultiLingual $showvisitedlinks }}
+        <section id="prefooter">
+          <!-- <hr/> -->
+          <ul>
+          {{ if and .Site.IsMultiLingual (not .Site.Params.DisableLanguageSwitchingButton)}}
+            <li>
+              <a class="padding">
+                <i class="fa fa-fw fa-language"></i>
+              <div class="select-style">
+                <select id="select-language" onchange="location = this.value;">
+              {{ $siteLanguages := .Site.Languages}}
+              {{ $pageLang := .Page.Lang}}
+              {{ range .Page.AllTranslations }}
+                  {{ $translation := .}}
+                  {{ range $siteLanguages }}
+                      {{ if eq $translation.Lang .Lang }}
+                        {{ $selected := false }}
+                        {{ if eq $pageLang .Lang}}
+                          <option id="{{ $translation.Language }}" value="{{ $translation.URL }}" selected>{{ .LanguageName }}</option>
+                        {{ else }}
+                          <option id="{{ $translation.Language }}" value="{{ $translation.URL }}">{{ .LanguageName }}</option>
+                        {{ end }}
+                      {{ end }}
+                  {{ end }}
+              {{ end }}
+            </select>
+            <svg t="1645437162166" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2449" width="32" height="32"><path d="M483.072 714.496l30.165333 30.208 415.957334-415.829333a42.837333 42.837333 0 0 0 0-60.288 42.538667 42.538667 0 0 0-60.330667-0.042667l-355.541333 355.413333-355.242667-355.413333a42.496 42.496 0 0 0-60.288 0 42.837333 42.837333 0 0 0-0.085333 60.330667l383.701333 383.872 1.706667 1.749333z" fill="#3D3D3D" p-id="2450"></path></svg>
+            </div>
+            </a>
+            </li>
+          {{end}} 
+          
+          {{ if $showvisitedlinks}}
+            <li><a class="padding" href="#" data-clear-history-toggle=""><i class="fa fa-fw fa-history"></i> {{T "Clear-History"}}</a></li>         
+          {{ end }}
+          </ul>
+        </section>
+        {{ end }}

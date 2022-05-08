@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.Se
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
 import org.junit.Test;
 
-import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -38,28 +38,24 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class GeneratedKeyAssignmentTokenGeneratorTest {
-
+    
     @Test
     public void assertGenerateSQLToken() {
         GeneratedKeyContext generatedKeyContext = mock(GeneratedKeyContext.class, RETURNS_DEEP_STUBS);
         when(generatedKeyContext.getColumnName()).thenReturn("testColumnName");
-        Collection<Comparable<?>> testGeneratedValuesCollection = new LinkedList<>();
-        final int testGeneratedValue = 4;
-        testGeneratedValuesCollection.add(testGeneratedValue);
-        when(generatedKeyContext.getGeneratedValues()).thenReturn(testGeneratedValuesCollection);
+        when(generatedKeyContext.getGeneratedValues()).thenReturn(Collections.singleton(4));
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class);
         when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Optional.of(generatedKeyContext));
         MySQLInsertStatement insertStatement = mock(MySQLInsertStatement.class);
         when(insertStatementContext.getSqlStatement()).thenReturn(insertStatement);
         SetAssignmentSegment setAssignmentSegment = mock(SetAssignmentSegment.class);
-        final int testStopIndex = 2;
-        when(setAssignmentSegment.getStopIndex()).thenReturn(testStopIndex);
+        when(setAssignmentSegment.getStopIndex()).thenReturn(2);
         when(insertStatement.getSetAssignment()).thenReturn(Optional.of(setAssignmentSegment));
         List<Object> testParameters = new LinkedList<>();
-        GeneratedKeyAssignmentTokenGenerator generatedKeyAssignmentTokenGenerator = new GeneratedKeyAssignmentTokenGenerator();
-        generatedKeyAssignmentTokenGenerator.setParameters(testParameters);
-        assertThat(generatedKeyAssignmentTokenGenerator.generateSQLToken(insertStatementContext), instanceOf(LiteralGeneratedKeyAssignmentToken.class));
+        GeneratedKeyAssignmentTokenGenerator generator = new GeneratedKeyAssignmentTokenGenerator();
+        generator.setParameters(testParameters);
+        assertThat(generator.generateSQLToken(insertStatementContext), instanceOf(LiteralGeneratedKeyAssignmentToken.class));
         testParameters.add("testObject");
-        assertThat(generatedKeyAssignmentTokenGenerator.generateSQLToken(insertStatementContext), instanceOf(ParameterMarkerGeneratedKeyAssignmentToken.class));
+        assertThat(generator.generateSQLToken(insertStatementContext), instanceOf(ParameterMarkerGeneratedKeyAssignmentToken.class));
     }
 }

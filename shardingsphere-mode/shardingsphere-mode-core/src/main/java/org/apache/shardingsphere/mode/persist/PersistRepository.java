@@ -17,14 +17,15 @@
 
 package org.apache.shardingsphere.mode.persist;
 
-import org.apache.shardingsphere.spi.typed.TypedSPI;
+import org.apache.shardingsphere.spi.aware.SPIPropertiesAware;
+import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 
 import java.util.List;
 
 /**
  * Persist repository.
  */
-public interface PersistRepository extends TypedSPI {
+public interface PersistRepository extends TypedSPI, SPIPropertiesAware {
     
     /**
      * Path separator.

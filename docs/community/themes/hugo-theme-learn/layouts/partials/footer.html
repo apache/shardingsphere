@@ -1,70 +1,128 @@
-        {{ if .Params.chapter }}
-            </div> <!-- end chapter-->
-        {{ end }}
-        </div> 
-        {{ partial "custom-comments.html" . }}
-      </div>
+{{ if .Params.chapter }}
+</div> <!-- end chapter-->
+{{ end }}
+</div> 
+{{ partial "custom-comments.html" . }}
+</div>
 
-    <div id="navigation">
-        <!-- Next prev page -->
-        {{ $currentNode := . }}
-        
-        {{ template "menu-nextprev" dict "menu" .Site.Home "currentnode" $currentNode }}
-        
-        {{ define "menu-nextprev" }}
-            {{$currentNode := .currentnode }}
-            {{ if ne .menu.Params.hidden true}}
-                {{if hasPrefix $currentNode.URL .menu.URL }}
-                    {{ $currentNode.Scratch.Set "NextPageOK" "OK" }}
-                    {{ $currentNode.Scratch.Set "prevPage" ($currentNode.Scratch.Get "prevPageTmp") }}
-                {{else}}
-                    {{if eq ($currentNode.Scratch.Get "NextPageOK") "OK"}}
-                        {{ $currentNode.Scratch.Set "NextPageOK" nil }}
-                        {{ $currentNode.Scratch.Set "nextPage" .menu }}
-                    {{end}}
-                {{end}}
-                {{ $currentNode.Scratch.Set "prevPageTmp" .menu }}
+<div id="navigation" >
+<!-- Next prev page -->
+{{ $currentNode := . }}
 
-                    {{ $currentNode.Scratch.Set "pages" .menu.Pages }}
-                    {{ if .menu.IsHome}}
-                        {{ $currentNode.Scratch.Set "pages" .menu.Sections }}
-                    {{ else if .menu.Sections}}
-                        {{ $currentNode.Scratch.Set "pages" (.menu.Pages | union .menu.Sections) }}
-                    {{end}}
-                    {{ $pages := ($currentNode.Scratch.Get "pages") }}
+{{ template "menu-nextprev" dict "menu" .Site.Home "currentnode" $currentNode }}
 
-                    {{ range $pages.ByWeight  }}
-                        {{ template "menu-nextprev" dict "menu" . "currentnode" $currentNode }}
-                    {{end}}
-            {{ end }}
-        {{ end }}
-
-
-        {{with ($.Scratch.Get "prevPage")}}
-            <a class="nav nav-prev" href="{{.URL}}" title="{{.Title}}"> <i class="fa fa-chevron-left"></i></a>
+{{ define "menu-nextprev" }}
+{{$currentNode := .currentnode }}
+{{ if ne .menu.Params.hidden true}}
+    {{if hasPrefix $currentNode.URL .menu.URL }}
+        {{ $currentNode.Scratch.Set "NextPageOK" "OK" }}
+        {{ $currentNode.Scratch.Set "prevPage" ($currentNode.Scratch.Get "prevPageTmp") }}
+    {{else}}
+        {{if eq ($currentNode.Scratch.Get "NextPageOK") "OK"}}
+            {{ $currentNode.Scratch.Set "NextPageOK" nil }}
+            {{ $currentNode.Scratch.Set "nextPage" .menu }}
         {{end}}
-        {{with ($.Scratch.Get "nextPage")}}
-            <a class="nav nav-next" href="{{.URL}}" title="{{.Title}}" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+    {{end}}
+    {{ $currentNode.Scratch.Set "prevPageTmp" .menu }}
+
+        {{ $currentNode.Scratch.Set "pages" .menu.Pages }}
+        {{ if .menu.IsHome}}
+            {{ $currentNode.Scratch.Set "pages" .menu.Sections }}
+        {{ else if .menu.Sections}}
+            {{ $currentNode.Scratch.Set "pages" (.menu.Pages | union .menu.Sections) }}
         {{end}}
-    </div>
+        {{ $pages := ($currentNode.Scratch.Get "pages") }}
 
-    </section>
-    
-    <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
-      <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
-    </div>
-    <script src="{{"js/clipboard.min.js" | relURL}}{{ if not .Site.Params.disableAssetsBusting }}?{{ now.Unix }}{{ end }}"></script>
-    <script src="{{"js/perfect-scrollbar.min.js" | relURL}}{{ if not .Site.Params.disableAssetsBusting }}?{{ now.Unix }}{{ end }}"></script>
-    <script src="{{"js/perfect-scrollbar.jquery.min.js" | relURL}}{{ if not .Site.Params.disableAssetsBusting }}?{{ now.Unix }}{{ end }}"></script>
-    <script src="{{"js/jquery.sticky.js" | relURL}}{{ if not .Site.Params.disableAssetsBusting }}?{{ now.Unix }}{{ end }}"></script>
-    <script src="{{"js/featherlight.min.js" | relURL}}{{ if not .Site.Params.disableAssetsBusting }}?{{ now.Unix }}{{ end }}"></script>
-    <script src="{{"js/html5shiv-printshiv.min.js" | relURL}}{{ if not .Site.Params.disableAssetsBusting }}?{{ now.Unix }}{{ end }}"></script>
-    <script src="{{"js/highlight.pack.js" | relURL}}{{ if not .Site.Params.disableAssetsBusting }}?{{ now.Unix }}{{ end }}"></script>
-    <script>hljs.initHighlightingOnLoad();</script>
-    <script src="{{"js/modernizr.custom.71422.js" | relURL}}{{ if not .Site.Params.disableAssetsBusting }}?{{ now.Unix }}{{ end }}"></script>
-    <script src="{{"js/learn.js" | relURL}}{{ if not .Site.Params.disableAssetsBusting }}?{{ now.Unix }}{{ end }}"></script>
-    <script src="{{"js/hugo-learn.js" | relURL}}{{ if not .Site.Params.disableAssetsBusting }}?{{ now.Unix }}{{ end }}"></script>
+        {{ range $pages.ByWeight  }}
+            {{ template "menu-nextprev" dict "menu" . "currentnode" $currentNode }}
+        {{end}}
+{{ end }}
+{{ end }}
 
-    {{ partial "custom-footer.html" . }}
-  </body>
+
+{{with ($.Scratch.Get "prevPage")}}
+{{ if eq .Lang "en"}}
+    <a class="nav nav-prev" href="{{.URL}}" title="{{.Title}}"> <i class="fa fa-long-arrow-left fa-lg"></i> Previous</a>
+{{ else }} 
+    <a class="nav nav-prev" href="{{.URL}}" title="{{.Title}}"> <i class="fa fa-long-arrow-left fa-lg"></i> 上一篇</a>
+{{end}}
+{{end}}
+{{with ($.Scratch.Get "nextPage")}}
+{{ if eq .Lang "en"}}
+    <a class="nav nav-next" href="{{.URL}}" title="{{.Title}}" style="margin-right: 0px;">Next<i class="fa fa-long-arrow-right fa-lg"></i></a>
+{{ else }} 
+    <a class="nav nav-next" href="{{.URL}}" title="{{.Title}}" style="margin-right: 0px;">下一篇 <i class="fa fa-long-arrow-right fa-lg"></i></a>
+{{end}}
+{{end}}
+</div>
+
+</section>
+</div>
+<div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
+<div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
+</div>
+<!-- <div class="icon-1"></div>
+<div class="icon-2"></div>
+<div class="icon-3"></div> -->
+<script src="{{"js/clipboard.min.js" | relURL}}{{ if not .Site.Params.disableAssetsBusting }}?{{ now.Unix }}{{ end }}"></script>
+<script src="{{"js/perfect-scrollbar.min.js" | relURL}}{{ if not .Site.Params.disableAssetsBusting }}?{{ now.Unix }}{{ end }}"></script>
+<script src="{{"js/perfect-scrollbar.jquery.min.js" | relURL}}{{ if not .Site.Params.disableAssetsBusting }}?{{ now.Unix }}{{ end }}"></script>
+<script src="{{"js/jquery.sticky.js" | relURL}}{{ if not .Site.Params.disableAssetsBusting }}?{{ now.Unix }}{{ end }}"></script>
+<script src="{{"js/featherlight.min.js" | relURL}}{{ if not .Site.Params.disableAssetsBusting }}?{{ now.Unix }}{{ end }}"></script>
+<script src="{{"js/html5shiv-printshiv.min.js" | relURL}}{{ if not .Site.Params.disableAssetsBusting }}?{{ now.Unix }}{{ end }}"></script>
+<script src="{{"js/highlight.pack.js" | relURL}}{{ if not .Site.Params.disableAssetsBusting }}?{{ now.Unix }}{{ end }}"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<script src="{{"js/modernizr.custom.71422.js" | relURL}}{{ if not .Site.Params.disableAssetsBusting }}?{{ now.Unix }}{{ end }}"></script>
+<script src="{{"js/learn.js" | relURL}}{{ if not .Site.Params.disableAssetsBusting }}?{{ now.Unix }}{{ end }}"></script>
+<script src="{{"js/hugo-learn.js" | relURL}}{{ if not .Site.Params.disableAssetsBusting }}?{{ now.Unix }}{{ end }}"></script>
+<script>
+try{
+
+function log(fileName, category, locale){
+    window._hmt.push(['_trackEvent', 'document', 'download', locale ? 'PDF_'+locale : fileName]);
+
+    gtag('event', 'Downloads', {
+        'event_category' : locale ? 'PDF' : category,
+        'event_label' : locale ? locale+'.pdf' : fileName
+    });
+}
+
+$('.padding[href*=shardingsphere]').on('click', function(){
+    var locale = /cn/.test(location.pathname) ?'cn':'en';
+    log('','', locale)
+})
+
+function getFileName(str){
+    var strs = str.split('/');
+    return strs[strs.length - 1]
+}
+
+$('a[href$="src.zip"]').on('click', function(){
+    log(getFileName($(this).attr('href')), "SRC")
+})
+
+$('a[href$="zip.asc"]').on('click', function(){
+    log(getFileName($(this).attr('href')), "ASC")
+})
+
+$('a[href$="zip.sha512"]').on('click', function(){
+    log(getFileName($(this).attr('href')), "SHA512")
+})
+
+$('a[href$="tar.gz.asc"]').on('click', function(){
+    log(getFileName($(this).attr('href')), "ASC")
+})
+
+$('a[href$="tar.gz.sha512"]').on('click', function(){
+    log(getFileName($(this).attr('href')), "SHA512")
+})
+
+$('a[href$="tar.gz"]').on('click', function(){
+    log(getFileName($(this).attr('href')), "TAR")
+})
+
+}catch(ex){}
+</script>
+{{ partial "custom-footer.html" . }}
+</body>
 </html>

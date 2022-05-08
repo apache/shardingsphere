@@ -219,6 +219,10 @@ DIRECTORY
     : D I R E C T O R Y
     ;
 
+CREDENTIALS
+    : C R E D E N T I A L S
+    ;
+
 EDITION
     : E D I T I O N
     ;
@@ -929,6 +933,10 @@ LOG
 
 REUSE
     : R E U S E
+    ;
+
+SETTINGS
+    : S E T T I N G S
     ;
 
 STORAGE
@@ -2637,4 +2645,72 @@ CHILD
 
 DETERMINES
     : D E T E R M I N E S
+    ;
+
+RELIES_ON
+    : R E L I E S UL_ O N
+    ;
+
+AGGREGATE
+    : A G G R E G A T E
+    ;
+
+POLYMORPHIC
+    : P O L Y M O R P H I C
+    ;
+
+SQL_MARCO
+    : S Q L UL_ M A R C O
+    ;
+
+LANGUAGE
+    : L A N G U A G E
+    ;
+
+AGENT
+    : A G E N T
+    ;
+
+SELF
+    : S E L F
+    ;
+
+TDO
+    : T D O
+    ;
+
+INDICATOR
+    : I N D I C A T O R
+    ;
+
+STRUCT
+    : S T R U C T
+    ;
+
+LENGTH
+    : L E N G T H
+    ;
+
+DURATION
+    : D U R A T I O N
+    ;
+
+MAXLEN
+    : M A X L E N
+    ;
+
+CHARSETID
+    : C H A R S E T I D
+    ;
+
+CHARSETFORM
+    : C H A R S E T F O R M
+    ;
+
+SINGLE_C
+    : C
+    ;
+
+SYSTIMESTAMP
+    : S Y S T I M E S T A M P
     ;

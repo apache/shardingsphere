@@ -55,13 +55,13 @@ public final class DataRecordMerger {
      */
     public List<DataRecord> merge(final List<DataRecord> dataRecords) {
         Map<DataRecord.Key, DataRecord> result = new HashMap<>();
-        dataRecords.forEach(dataRecord -> {
-            if (IngestDataChangeType.INSERT.equals(dataRecord.getType())) {
-                mergeInsert(dataRecord, result);
-            } else if (IngestDataChangeType.UPDATE.equals(dataRecord.getType())) {
-                mergeUpdate(dataRecord, result);
-            } else if (IngestDataChangeType.DELETE.equals(dataRecord.getType())) {
-                mergeDelete(dataRecord, result);
+        dataRecords.forEach(each -> {
+            if (IngestDataChangeType.INSERT.equals(each.getType())) {
+                mergeInsert(each, result);
+            } else if (IngestDataChangeType.UPDATE.equals(each.getType())) {
+                mergeUpdate(each, result);
+            } else if (IngestDataChangeType.DELETE.equals(each.getType())) {
+                mergeDelete(each, result);
             }
         });
         return new ArrayList<>(result.values());
@@ -77,12 +77,9 @@ public final class DataRecordMerger {
         List<DataRecord> mergedDataRecords = merge(dataRecords);
         List<GroupedDataRecord> result = new ArrayList<>(100);
         Map<String, List<DataRecord>> tableGroup = mergedDataRecords.stream().collect(Collectors.groupingBy(DataRecord::getTableName));
-        for (Entry<String, List<DataRecord>> each : tableGroup.entrySet()) {
-            Map<String, List<DataRecord>> typeGroup = each.getValue().stream().collect(Collectors.groupingBy(DataRecord::getType));
-            result.add(new GroupedDataRecord(each.getKey(),
-                    typeGroup.get(IngestDataChangeType.INSERT),
-                    typeGroup.get(IngestDataChangeType.UPDATE),
-                    typeGroup.get(IngestDataChangeType.DELETE)));
+        for (Entry<String, List<DataRecord>> entry : tableGroup.entrySet()) {
+            Map<String, List<DataRecord>> typeGroup = entry.getValue().stream().collect(Collectors.groupingBy(DataRecord::getType));
+            result.add(new GroupedDataRecord(entry.getKey(), typeGroup.get(IngestDataChangeType.INSERT), typeGroup.get(IngestDataChangeType.UPDATE), typeGroup.get(IngestDataChangeType.DELETE)));
         }
         return result;
     }
@@ -96,9 +93,7 @@ public final class DataRecordMerger {
     }
     
     private void mergeUpdate(final DataRecord dataRecord, final Map<DataRecord.Key, DataRecord> dataRecords) {
-        DataRecord beforeDataRecord = checkUpdatedPrimaryKey(dataRecord)
-                ? dataRecords.get(dataRecord.getOldKey())
-                : dataRecords.get(dataRecord.getKey());
+        DataRecord beforeDataRecord = checkUpdatedPrimaryKey(dataRecord) ? dataRecords.get(dataRecord.getOldKey()) : dataRecords.get(dataRecord.getKey());
         if (null == beforeDataRecord) {
             dataRecords.put(dataRecord.getKey(), dataRecord);
             return;
@@ -138,8 +133,7 @@ public final class DataRecordMerger {
                                 ? beforeDataRecord.getColumn(i).getOldValue()
                                 : beforeDataRecord.getColumn(i).getValue(),
                         true,
-                        dataRecord.getColumn(i).isPrimaryKey()
-                ));
+                        dataRecord.getColumn(i).isPrimaryKey()));
             }
             mergedDataRecord.setTableName(dataRecord.getTableName());
             mergedDataRecord.setType(IngestDataChangeType.DELETE);
@@ -164,15 +158,12 @@ public final class DataRecordMerger {
                             : null,
                     curDataRecord.getColumn(i).getValue(),
                     preDataRecord.getColumn(i).isUpdated() || curDataRecord.getColumn(i).isUpdated(),
-                    curDataRecord.getColumn(i).isPrimaryKey()
-            ));
+                    curDataRecord.getColumn(i).isPrimaryKey()));
         }
         return result;
     }
     
     private Object mergePrimaryKeyOldValue(final Column beforeColumn, final Column column) {
-        return beforeColumn.isUpdated()
-                ? beforeColumn.getOldValue()
-                : (column.isUpdated() ? column.getOldValue() : null);
+        return beforeColumn.isUpdated() ? beforeColumn.getOldValue() : (column.isUpdated() ? column.getOldValue() : null);
     }
 }

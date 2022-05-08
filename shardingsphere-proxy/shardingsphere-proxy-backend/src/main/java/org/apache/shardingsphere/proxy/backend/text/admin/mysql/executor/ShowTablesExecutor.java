@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultColumnMetaData;
@@ -31,6 +32,7 @@ import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminQueryExecutor;
+import org.apache.shardingsphere.proxy.backend.util.RegularUtil;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
 
@@ -53,21 +55,23 @@ public final class ShowTablesExecutor implements DatabaseAdminQueryExecutor {
     
     private final MySQLShowTablesStatement showTablesStatement;
     
+    private final DatabaseType databaseType;
+    
     private QueryResultMetaData queryResultMetaData;
     
     private MergedResult mergedResult;
     
     @Override
     public void execute(final ConnectionSession connectionSession) {
-        queryResultMetaData = createQueryResultMetaData(connectionSession.getSchemaName());
-        mergedResult = new TransparentMergedResult(getQueryResult(connectionSession.getSchemaName()));
+        queryResultMetaData = createQueryResultMetaData(connectionSession.getDatabaseName());
+        mergedResult = new TransparentMergedResult(getQueryResult(connectionSession.getDatabaseName()));
     }
     
-    private QueryResult getQueryResult(final String schemaName) {
-        if (!ProxyContext.getInstance().getMetaData(schemaName).isComplete()) {
+    private QueryResult getQueryResult(final String databaseName) {
+        if (!databaseType.getSystemSchemas().contains(databaseName) && !ProxyContext.getInstance().getMetaData(databaseName).isComplete()) {
             return new RawMemoryQueryResult(queryResultMetaData, Collections.emptyList());
         }
-        List<MemoryQueryResultDataRow> rows = getAllTableNames(schemaName).stream().map(each -> {
+        List<MemoryQueryResultDataRow> rows = getAllTableNames(databaseName).stream().map(each -> {
             List<Object> rowValues = new LinkedList<>();
             rowValues.add(each);
             rowValues.add(TABLE_TYPE);
@@ -76,18 +80,19 @@ public final class ShowTablesExecutor implements DatabaseAdminQueryExecutor {
         return new RawMemoryQueryResult(queryResultMetaData, rows);
     }
     
-    private Collection<String> getAllTableNames(final String schemaName) {
-        Collection<String> result = ProxyContext.getInstance().getMetaData(schemaName).getSchema().getTables().values().stream().map(TableMetaData::getName).collect(Collectors.toList());
+    private Collection<String> getAllTableNames(final String databaseName) {
+        Collection<String> result = ProxyContext.getInstance().getMetaData(databaseName)
+                .getSchemaByName(databaseName).getTables().values().stream().map(TableMetaData::getName).collect(Collectors.toList());
         if (showTablesStatement.getFilter().isPresent()) {
-            Optional<String> pattern = showTablesStatement.getFilter().get().getLike().map(each -> SQLUtil.convertLikePatternToRegex(each.getPattern()));
-            return pattern.isPresent() ? result.stream().filter(each -> each.matches(pattern.get())).collect(Collectors.toList()) : result;
+            Optional<String> pattern = showTablesStatement.getFilter().get().getLike().map(optional -> SQLUtil.convertLikePatternToRegex(optional.getPattern()));
+            return pattern.isPresent() ? result.stream().filter(each -> RegularUtil.matchesCaseInsensitive(pattern.get(), each)).collect(Collectors.toList()) : result;
         }
         return result;
     }
     
-    private QueryResultMetaData createQueryResultMetaData(final String schemaName) {
+    private QueryResultMetaData createQueryResultMetaData(final String databaseName) {
         List<RawQueryResultColumnMetaData> columnNames = new LinkedList<>();
-        String tableColumnName = String.format("Tables_in_%s", schemaName);
+        String tableColumnName = String.format("Tables_in_%s", databaseName);
         columnNames.add(new RawQueryResultColumnMetaData("", tableColumnName, tableColumnName, Types.VARCHAR, "VARCHAR", 255, 0));
         columnNames.add(new RawQueryResultColumnMetaData("", "Table_type", "Table_type", Types.VARCHAR, "VARCHAR", 20, 0));
         return new RawQueryResultMetaData(columnNames);

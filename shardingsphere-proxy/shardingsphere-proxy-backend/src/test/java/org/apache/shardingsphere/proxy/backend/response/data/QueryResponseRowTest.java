@@ -32,13 +32,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class QueryResponseRowTest {
-
+    
     @Test
     public void assertGetDataWhenQueryResponseCellsOfEmptyList() {
         QueryResponseRow queryResponseRow = new QueryResponseRow(Collections.emptyList());
         assertThat(queryResponseRow.getData(), is(Collections.emptyList()));
     }
-
+    
     @Test
     public void assertGetDataWhenQueryResponseCellsInstanceOfBinaryQueryResponseCell() {
         BinaryQueryResponseCell binaryQueryResponseCell1 = mock(BinaryQueryResponseCell.class);
@@ -49,7 +49,7 @@ public final class QueryResponseRowTest {
         assertThat(queryResponseRow.getData().size(), is(2));
         assertTrue(queryResponseRow.getData().containsAll(Arrays.asList(1, "2")));
     }
-
+    
     @Test
     public void assertGetDataWhenQueryResponseCellsInstanceOfTextQueryResponseCell() {
         TextQueryResponseCell textQueryResponseCell1 = mock(TextQueryResponseCell.class);
@@ -61,7 +61,7 @@ public final class QueryResponseRowTest {
         assertThat(queryResponseRow.getData().iterator().next(), instanceOf(String.class));
         assertTrue(queryResponseRow.getData().containsAll(Arrays.asList("column_1", "column_2")));
     }
-
+    
     @Test
     public void assertGetDataWhenQueryResponseCellsInstanceOfAllTypeQueryResponseCell() {
         BinaryQueryResponseCell binaryQueryResponseCell = mock(BinaryQueryResponseCell.class);

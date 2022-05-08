@@ -17,12 +17,17 @@
 
 package org.apache.shardingsphere.scaling.core.job.environment;
 
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
+import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -32,9 +37,8 @@ import java.util.Collection;
 /**
  * Scaling environment manager.
  */
+@Slf4j
 public final class ScalingEnvironmentManager {
-    
-    private final PipelineDataSourceFactory dataSourceFactory = new PipelineDataSourceFactory();
     
     /**
      * Cleanup target tables.
@@ -43,13 +47,19 @@ public final class ScalingEnvironmentManager {
      * @throws SQLException SQL exception
      */
     // TODO seems it should be removed, dangerous to use
-    public void cleanupTargetTables(final JobConfiguration jobConfig) throws SQLException {
-        Collection<String> tables = jobConfig.getHandleConfig().splitLogicTableNames();
-        YamlPipelineDataSourceConfiguration target = jobConfig.getPipelineConfig().getTarget();
-        try (PipelineDataSourceWrapper dataSource = dataSourceFactory.newInstance(PipelineDataSourceConfigurationFactory.newInstance(target.getType(), target.getParameter()));
-             Connection connection = dataSource.getConnection()) {
+    public void cleanupTargetTables(final RuleAlteredJobConfiguration jobConfig) throws SQLException {
+        Collection<String> tables = jobConfig.splitLogicTableNames();
+        log.info("cleanupTargetTables, tables={}", tables);
+        YamlPipelineDataSourceConfiguration target = jobConfig.getTarget();
+        PipelineSQLBuilder pipelineSQLBuilder = PipelineSQLBuilderFactory.newInstance(jobConfig.getTargetDatabaseType());
+        ShardingSphereMetaData metaData = PipelineContext.getContextManager().getMetaDataContexts().getMetaData(jobConfig.getDatabaseName());
+        TableNameSchemaNameMapping tableNameSchemaNameMapping = new TableNameSchemaNameMapping(TableNameSchemaNameMapping.convert(metaData.getSchemas()));
+        try (
+                PipelineDataSourceWrapper dataSource = PipelineDataSourceFactory.newInstance(PipelineDataSourceConfigurationFactory.newInstance(target.getType(), target.getParameter()));
+                Connection connection = dataSource.getConnection()) {
             for (String each : tables) {
-                String sql = PipelineSQLBuilderFactory.getSQLBuilder(jobConfig.getHandleConfig().getTargetDatabaseType()).buildTruncateSQL(each);
+                String sql = pipelineSQLBuilder.buildTruncateSQL(tableNameSchemaNameMapping.getSchemaName(each), each);
+                log.info("cleanupTargetTables, tableName={}, sql={}", each, sql);
                 try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
                     preparedStatement.execute();
                 }

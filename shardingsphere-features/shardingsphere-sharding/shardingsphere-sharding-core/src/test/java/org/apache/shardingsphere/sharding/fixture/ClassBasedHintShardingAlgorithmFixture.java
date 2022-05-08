@@ -23,16 +23,12 @@ import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingValue;
 import java.util.Collection;
 
 public final class ClassBasedHintShardingAlgorithmFixture implements HintShardingAlgorithm<Integer> {
-
-    @Override
-    public void init() {
-    }
-
+    
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final HintShardingValue<Integer> shardingValue) {
         return availableTargetNames;
     }
-
+    
     @Override
     public String getType() {
         return null;

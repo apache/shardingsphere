@@ -43,34 +43,34 @@ public final class DropDatabaseDiscoveryRuleStatementUpdater implements RuleDefi
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final DropDatabaseDiscoveryRuleStatement sqlStatement,
                                   final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String schemaName = shardingSphereMetaData.getName();
-        checkCurrentRuleConfiguration(schemaName, sqlStatement, currentRuleConfig);
-        checkIsInUse(schemaName, sqlStatement, shardingSphereMetaData);
+        String databaseName = shardingSphereMetaData.getDatabaseName();
+        checkCurrentRuleConfiguration(databaseName, sqlStatement, currentRuleConfig);
+        checkIsInUse(databaseName, sqlStatement, shardingSphereMetaData);
     }
     
-    private void checkCurrentRuleConfiguration(final String schemaName, final DropDatabaseDiscoveryRuleStatement sqlStatement,
+    private void checkCurrentRuleConfiguration(final String databaseName, final DropDatabaseDiscoveryRuleStatement sqlStatement,
                                                final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
         if (sqlStatement.isContainsExistClause()) {
             return;
         }
-        DistSQLException.predictionThrow(null != currentRuleConfig, new RequiredRuleMissedException(RULE_TYPE, schemaName));
-        checkIsExist(schemaName, sqlStatement, currentRuleConfig);
+        DistSQLException.predictionThrow(null != currentRuleConfig, () -> new RequiredRuleMissedException(RULE_TYPE, databaseName));
+        checkIsExist(databaseName, sqlStatement, currentRuleConfig);
     }
     
-    private void checkIsExist(final String schemaName, final DropDatabaseDiscoveryRuleStatement sqlStatement,
+    private void checkIsExist(final String databaseName, final DropDatabaseDiscoveryRuleStatement sqlStatement,
                               final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
         Collection<String> currentRuleNames = currentRuleConfig.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getGroupName).collect(Collectors.toList());
         Collection<String> notExistedRuleNames = sqlStatement.getRuleNames().stream().filter(each -> !currentRuleNames.contains(each)).collect(Collectors.toList());
-        DistSQLException.predictionThrow(notExistedRuleNames.isEmpty(), new RequiredRuleMissedException(RULE_TYPE, schemaName));
+        DistSQLException.predictionThrow(notExistedRuleNames.isEmpty(), () -> new RequiredRuleMissedException(RULE_TYPE, databaseName));
     }
     
-    private void checkIsInUse(final String schemaName, final DropDatabaseDiscoveryRuleStatement sqlStatement, final ShardingSphereMetaData shardingSphereMetaData) throws DistSQLException {
+    private void checkIsInUse(final String databaseName, final DropDatabaseDiscoveryRuleStatement sqlStatement, final ShardingSphereMetaData shardingSphereMetaData) throws DistSQLException {
         Collection<String> rulesInUse = shardingSphereMetaData.getRuleMetaData().findRules(ExportableRule.class).stream()
                 .filter(each -> each.containExportableKey(Collections.singletonList(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE_NAME)))
                 .map(each -> each.export(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE_NAME)).filter(Optional::isPresent)
                 .map(each -> (Collection<String>) each.get()).flatMap(Collection::stream).collect(Collectors.toSet());
         Collection<String> invalid = sqlStatement.getRuleNames().stream().filter(rulesInUse::contains).collect(Collectors.toList());
-        DistSQLException.predictionThrow(invalid.isEmpty(), new RuleInUsedException(RULE_TYPE, schemaName, invalid));
+        DistSQLException.predictionThrow(invalid.isEmpty(), () -> new RuleInUsedException(RULE_TYPE, databaseName, invalid));
     }
     
     @Override
@@ -82,18 +82,15 @@ public final class DropDatabaseDiscoveryRuleStatementUpdater implements RuleDefi
     }
     
     private void dropRule(final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final String ruleName) {
-        Optional<DatabaseDiscoveryDataSourceRuleConfiguration> dataSourceRuleConfig = currentRuleConfig.getDataSources().stream().filter(dataSource ->
-                dataSource.getGroupName().equals(ruleName)).findAny();
-        dataSourceRuleConfig.ifPresent(op -> {
-            currentRuleConfig.getDataSources().remove(dataSourceRuleConfig.get());
-        });
+        Optional<DatabaseDiscoveryDataSourceRuleConfiguration> dataSourceRuleConfig = currentRuleConfig.getDataSources().stream().filter(each -> each.getGroupName().equals(ruleName)).findAny();
+        dataSourceRuleConfig.ifPresent(optional -> currentRuleConfig.getDataSources().remove(dataSourceRuleConfig.get()));
     }
     
     @Override
     public boolean hasAnyOneToBeDropped(final DropDatabaseDiscoveryRuleStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
         return isExistRuleConfig(currentRuleConfig)
                 && !getIdenticalData(currentRuleConfig.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getGroupName).collect(Collectors.toSet()),
-                sqlStatement.getRuleNames()).isEmpty();
+                        sqlStatement.getRuleNames()).isEmpty();
     }
     
     @Override

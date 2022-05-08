@@ -62,7 +62,7 @@ public final class UnicastDatabaseBackendHandlerTest {
     
     private static final String EXECUTE_SQL = "SELECT 1 FROM user WHERE id = 1";
     
-    private static final String SCHEMA_PATTERN = "schema_%s";
+    private static final String DATABASE_PATTERN = "db_%s";
     
     private UnicastDatabaseBackendHandler unicastDatabaseBackendHandler;
     
@@ -84,7 +84,7 @@ public final class UnicastDatabaseBackendHandlerTest {
                 mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         contextManagerField.set(ProxyContext.getInstance(), contextManager);
-        when(connectionSession.getDefaultSchemaName()).thenReturn(String.format(SCHEMA_PATTERN, 0));
+        when(connectionSession.getDefaultDatabaseName()).thenReturn(String.format(DATABASE_PATTERN, 0));
         mockDatabaseCommunicationEngine(new UpdateResponseHeader(mock(SQLStatement.class)));
         unicastDatabaseBackendHandler = new UnicastDatabaseBackendHandler(mock(SQLStatementContext.class), EXECUTE_SQL, connectionSession);
         setBackendHandlerFactory(unicastDatabaseBackendHandler);
@@ -96,7 +96,7 @@ public final class UnicastDatabaseBackendHandlerTest {
             ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
             when(metaData.hasDataSource()).thenReturn(true);
             when(metaData.getResource().getDatabaseType()).thenReturn(new H2DatabaseType());
-            result.put(String.format(SCHEMA_PATTERN, i), metaData);
+            result.put(String.format(DATABASE_PATTERN, i), metaData);
         }
         return result;
     }

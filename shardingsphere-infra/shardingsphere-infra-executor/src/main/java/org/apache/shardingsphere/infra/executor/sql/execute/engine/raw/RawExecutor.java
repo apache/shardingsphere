@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.executor.sql.execute.engine.raw;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
@@ -61,8 +60,8 @@ public final class RawExecutor {
             // TODO Load query header for first query
             List<ExecuteResult> results = execute(executionGroupContext, (RawSQLExecutorCallback) null, callback);
             ExecuteProcessEngine.finish(executionGroupContext.getExecutionID());
-            return CollectionUtils.isEmpty(results) || Objects.isNull(results.get(0)) ? Collections
-                .singletonList(new UpdateResult(0, 0L)) : results;
+            return results.isEmpty() || Objects.isNull(results.get(0)) ? Collections
+                    .singletonList(new UpdateResult(0, 0L)) : results;
         } finally {
             ExecuteProcessEngine.clean();
         }

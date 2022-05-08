@@ -47,7 +47,7 @@ public final class ListExpressionConverter implements SQLSegmentConverter<ListEx
                 left = optional.get();
                 continue;
             }
-            left = new SqlBasicCall(SqlStdOperatorTable.OR, new SqlNode[] {left, optional.get()}, SqlParserPos.ZERO);
+            left = new SqlBasicCall(SqlStdOperatorTable.OR, new SqlNode[]{left, optional.get()}, SqlParserPos.ZERO);
         }
         return Optional.ofNullable(left);
     }
@@ -60,7 +60,7 @@ public final class ListExpressionConverter implements SQLSegmentConverter<ListEx
         if (sqlNode instanceof SqlNodeList) {
             List<SqlNode> items = ((SqlNodeList) sqlNode).getList();
             ListExpression result = new ListExpression(getStartIndex(sqlNode), getStopIndex(sqlNode));
-            items.forEach(item -> new ExpressionConverter().convertToSQLSegment(item).ifPresent(result.getItems()::add));
+            items.forEach(each -> new ExpressionConverter().convertToSQLSegment(each).ifPresent(result.getItems()::add));
             return Optional.of(result);
         }
         return Optional.empty();

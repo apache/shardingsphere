@@ -23,6 +23,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.Column
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,9 +43,9 @@ public final class JoinTableSegment implements TableSegment {
     
     private TableSegment right;
     
-    private List<ColumnSegment> using;
-    
     private ExpressionSegment condition;
+    
+    private List<ColumnSegment> using = Collections.emptyList();
     
     @Override
     public Optional<String> getAlias() {

@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.traffic.spi;
 
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
-import org.apache.shardingsphere.spi.required.RequiredSPI;
+import org.apache.shardingsphere.infra.instance.definition.InstanceId;
+import org.apache.shardingsphere.spi.type.required.RequiredSPI;
 
 import java.util.List;
 
@@ -34,5 +35,5 @@ public interface TrafficLoadBalanceAlgorithm extends ShardingSphereAlgorithm, Re
      * @param instanceIds instance id collection
      * @return instance id
      */
-    String getInstanceId(String name, List<String> instanceIds);
+    InstanceId getInstanceId(String name, List<InstanceId> instanceIds);
 }

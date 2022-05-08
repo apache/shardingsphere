@@ -44,6 +44,7 @@
     
     <drop-index sql-case-id="drop_index_with_double_quota" />
     <drop-index sql-case-id="drop_index_concurrently" />
+    <drop-index sql-case-id="drop_index_with_schema" />
     
     <drop-index sql-case-id="drop_index_with_bracket">
         <table name="t_order" start-delimiter="[" end-delimiter="]" start-index="28" stop-index="36" />

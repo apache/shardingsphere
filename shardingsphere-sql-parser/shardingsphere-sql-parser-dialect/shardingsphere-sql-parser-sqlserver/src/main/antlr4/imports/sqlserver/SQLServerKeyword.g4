@@ -1810,3 +1810,103 @@ LIST
 SEND
     : S E N D
     ;
+
+MEMBER
+    : M E M B E R
+    ;
+
+HASHED
+    : H A S H E D
+    ;
+
+MUST_CHANGE
+    : M U S T UL_ C H A N G E
+    ;
+
+DEFAULT_DATABASE
+    : D E F A U L T UL_ D A T A B A S E
+    ;
+
+CHECK_EXPIRATION
+    : C H E C K UL_ E X P I R A T I O N
+    ;
+
+CHECK_POLICY
+    : C H E C K UL_ P O L I C Y
+    ;
+
+WINDOWS
+    : W I N D O W S
+    ;
+
+UNLOCK
+    : U N L O C K
+    ;
+
+REVERT
+    : R E V E R T
+    ;
+
+COOKIE
+    : C O O K I E
+    ;
+
+BROWSE
+    : B R O W S E
+    ;
+
+RAW
+    : R A W
+    ;
+
+XMLDATA
+    : X M L D A T A
+    ;
+
+XMLSCHEMA
+    : X M L S C H E M A
+    ;
+
+ELEMENTS
+    : E L E M E N T S
+    ;
+
+XSINIL
+    : X S I N I L
+    ;
+
+ABSENT
+    : A B S E N T
+    ;
+
+EXPLICIT
+    : E X P L I C I T
+    ;
+
+PATH
+    : P A T H
+    ;
+
+BASE64
+    : B A S E '6' '4'
+    ;
+
+ROOT
+    : R O O T
+    ;
+
+JSON
+    : J S O N
+    ;
+
+INCLUDE_NULL_VALUES
+    : I N C L U D E UL_ N U L L UL_ V A L U E S
+    ;
+
+WITHOUT_ARRAY_WRAPPER
+    : W I T H O U T UL_ A R R A Y UL_ W R A P P E R
+    ;
+
+XMLNAMESPACES
+    : X M L N A M E S P A C E S
+    ;

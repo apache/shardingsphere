@@ -52,18 +52,12 @@ import static org.mockito.Mockito.when;
 public final class TrafficRuleTest {
     
     @Test
-    public void assertGetRuleType() {
-        TrafficRule authorityRule = new TrafficRule(new TrafficRuleConfiguration());
-        assertThat(authorityRule.getType(), is(TrafficRule.class.getSimpleName()));
-    }
-    
-    @Test
     public void assertFindMatchedStrategyRuleWhenSQLHintMatch() {
         TrafficRule trafficRule = new TrafficRule(createTrafficRuleConfig());
         Optional<TrafficStrategyRule> actual = trafficRule.findMatchedStrategyRule(createLogicSQL(true), false);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getName(), is("sql_hint_traffic"));
-        assertThat(actual.get().getLabels(), is(Arrays.asList("OLTP", "OLAP")));
+        assertThat(actual.get().getLabels(), is(Sets.newHashSet("OLTP", "OLAP")));
         assertThat(actual.get().getTrafficAlgorithm(), instanceOf(SQLHintTrafficAlgorithm.class));
         assertThat(actual.get().getLoadBalancer(), instanceOf(RandomTrafficLoadBalanceAlgorithm.class));
     }
@@ -81,7 +75,7 @@ public final class TrafficRuleTest {
         Optional<TrafficStrategyRule> actual = trafficRule.findMatchedStrategyRule(createLogicSQL(false), true);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getName(), is("transaction_traffic"));
-        assertThat(actual.get().getLabels(), is(Collections.singletonList("OLAP")));
+        assertThat(actual.get().getLabels(), is(Sets.newHashSet("OLAP")));
         assertThat(actual.get().getTrafficAlgorithm(), instanceOf(ProxyTrafficAlgorithm.class));
         assertThat(actual.get().getLoadBalancer(), instanceOf(RandomTrafficLoadBalanceAlgorithm.class));
     }
@@ -98,7 +92,7 @@ public final class TrafficRuleTest {
         LogicSQL result = mock(LogicSQL.class);
         MySQLSelectStatement sqlStatement = mock(MySQLSelectStatement.class);
         Collection<CommentSegment> comments = includeComments ? Collections.singletonList(
-                new CommentSegment("/* ShardingSphere hint: traffic=true */", 0, 0)) : Collections.emptyList();
+                new CommentSegment("/* ShardingSphere hint: useTraffic=true */", 0, 0)) : Collections.emptyList();
         when(sqlStatement.getCommentSegments()).thenReturn(comments);
         when(sqlStatement.getProjections()).thenReturn(new ProjectionsSegment(0, 0));
         SQLStatementContext statementContext = new SelectStatementContext(createMetaDataMap(), Collections.emptyList(), sqlStatement, "sharding_db");

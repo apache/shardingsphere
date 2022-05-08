@@ -20,8 +20,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.stat
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.StatusNode;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.StorageNodeStatus;
-import org.apache.shardingsphere.infra.metadata.schema.QualifiedSchema;
+import org.apache.shardingsphere.infra.metadata.schema.QualifiedDatabase;
 
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -35,46 +34,46 @@ public final class StorageStatusNode {
     
     private static final String STORAGE_NODES = "storage_nodes";
     
+    private static final String ATTRIBUTES_NODE = "attributes";
+    
     /**
      * Get storage node root path.
      *
      * @return root path of storage node
      */
     public static String getRootPath() {
-        return String.join("/", "", StatusNode.ROOT_NODE, STORAGE_NODES);
+        return String.join("/", "", StatusNode.ROOT_NODE, STORAGE_NODES, ATTRIBUTES_NODE);
     }
     
     /**
-     * Get storage node status path.
+     * Get storage node data source path.
      *
-     * @param status storage node status
-     * @return status path of storage node
+     * @param dataSourcePath data source path
+     * @return data source path of storage node
      */
-    public static String getStatusPath(final StorageNodeStatus status) {
-        return String.join("/", "", StatusNode.ROOT_NODE, STORAGE_NODES, status.name().toLowerCase());
+    public static String getStorageNodesDataSourcePath(final String dataSourcePath) {
+        return String.join("/", "", StatusNode.ROOT_NODE, STORAGE_NODES, ATTRIBUTES_NODE, dataSourcePath);
     }
     
     /**
      * Get storage node status path.
      *
-     * @param status storage node status
      * @param schema cluster schema
      * @return status path of storage node
      */
-    public static String getStatusPath(final StorageNodeStatus status, final QualifiedSchema schema) {
-        return String.join("/", "", StatusNode.ROOT_NODE, STORAGE_NODES, status.name().toLowerCase(), schema.toString());
+    public static String getStatusPath(final QualifiedDatabase schema) {
+        return String.join("/", "", StatusNode.ROOT_NODE, STORAGE_NODES, ATTRIBUTES_NODE, schema.toString());
     }
     
     /**
      * Extract qualified schema.
      *
-     * @param status storage node status
      * @param storageNodePath storage node path
      * @return extracted qualified schema
      */
-    public static Optional<QualifiedSchema> extractQualifiedSchema(final StorageNodeStatus status, final String storageNodePath) {
-        Pattern pattern = Pattern.compile(getRootPath() + "/" + status.name().toLowerCase() + "/(\\S+)$", Pattern.CASE_INSENSITIVE);
+    public static Optional<QualifiedDatabase> extractQualifiedSchema(final String storageNodePath) {
+        Pattern pattern = Pattern.compile(getRootPath() + "/(\\S+)$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(storageNodePath);
-        return matcher.find() ? Optional.of(new QualifiedSchema(matcher.group(1))) : Optional.empty();
+        return matcher.find() ? Optional.of(new QualifiedDatabase(matcher.group(1))) : Optional.empty();
     }
 }

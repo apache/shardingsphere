@@ -28,26 +28,28 @@ import java.util.Collections;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 public final class EncryptRuleStatementConverterTest {
     
     @Test
     public void assertCovert() {
-        EncryptRuleConfiguration encryptRuleConfiguration = EncryptRuleStatementConverter.convert(Collections.singleton(new EncryptRuleSegment("t_encrypt", buildColumns(), null)));
-        assertNotNull(encryptRuleConfiguration);
-        assertThat(encryptRuleConfiguration.getTables().iterator().next().getName(), is("t_encrypt"));
-        assertThat(encryptRuleConfiguration.getTables().iterator().next().getColumns().iterator().next().getLogicColumn(), is("user_id"));
-        assertThat(encryptRuleConfiguration.getTables().iterator().next().getColumns().iterator().next().getCipherColumn(), is("user_cipher"));
-        assertThat(encryptRuleConfiguration.getTables().iterator().next().getColumns().iterator().next().getPlainColumn(), is("user_plain"));
-        assertThat(encryptRuleConfiguration.getTables().iterator().next().getColumns().iterator().next().getAssistedQueryColumn(), is("assisted_column"));
-        assertThat(encryptRuleConfiguration.getTables().iterator().next().getColumns().iterator().next().getEncryptorName(), is("t_encrypt_user_id"));
+        EncryptRuleConfiguration actual = EncryptRuleStatementConverter.convert(Collections.singleton(new EncryptRuleSegment("t_encrypt", createColumns(), null)));
+        assertThat(actual.getTables().iterator().next().getName(), is("t_encrypt"));
+        assertThat(actual.getTables().iterator().next().getColumns().iterator().next().getLogicColumn(), is("user_id"));
+        assertThat(actual.getTables().iterator().next().getColumns().iterator().next().getCipherColumn(), is("user_cipher"));
+        assertThat(actual.getTables().iterator().next().getColumns().iterator().next().getPlainColumn(), is("user_plain"));
+        assertThat(actual.getTables().iterator().next().getColumns().iterator().next().getAssistedQueryColumn(), is("assisted_column"));
+        assertThat(actual.getTables().iterator().next().getColumns().iterator().next().getEncryptorName(), is("t_encrypt_user_id"));
     }
     
-    private Collection<EncryptColumnSegment> buildColumns() {
-        Properties props = new Properties();
-        props.setProperty("MD5-key", "MD5-value");
-        return Collections.singleton(new EncryptColumnSegment("user_id", "user_cipher", "user_plain", "assisted_column", new AlgorithmSegment("MD5", props)));
+    private Collection<EncryptColumnSegment> createColumns() {
+        return Collections.singleton(new EncryptColumnSegment("user_id", "user_cipher", "user_plain", "assisted_column", new AlgorithmSegment("MD5", createProperties())));
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty("MD5-key", "MD5-value");
+        return result;
     }
 }

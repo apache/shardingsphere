@@ -19,9 +19,11 @@ package org.apache.shardingsphere.proxy;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.proxy.arguments.BootstrapArguments;
-import org.apache.shardingsphere.proxy.config.ProxyConfigurationLoader;
-import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
+import org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoader;
+import org.apache.shardingsphere.proxy.backend.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.frontend.ShardingSphereProxy;
 import org.apache.shardingsphere.proxy.initializer.BootstrapInitializer;
 
@@ -44,7 +46,8 @@ public final class Bootstrap {
     public static void main(final String[] args) throws IOException, SQLException {
         BootstrapArguments bootstrapArgs = new BootstrapArguments(args);
         YamlProxyConfiguration yamlConfig = ProxyConfigurationLoader.load(bootstrapArgs.getConfigurationPath());
-        new BootstrapInitializer().init(yamlConfig, bootstrapArgs.getPort());
-        new ShardingSphereProxy().start(bootstrapArgs.getPort());
+        int port = bootstrapArgs.getPort().orElseGet(() -> new ConfigurationProperties(yamlConfig.getServerConfiguration().getProps()).getValue(ConfigurationPropertyKey.PROXY_DEFAULT_PORT));
+        new BootstrapInitializer().init(yamlConfig, port);
+        new ShardingSphereProxy().start(port);
     }
 }

@@ -34,6 +34,6 @@ public final class GeneratedKeyInsertColumnToken extends SQLToken implements Att
     
     @Override
     public String toString() {
-        return String.format(", %s", column);
+        return ", " + column;
     }
 }

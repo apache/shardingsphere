@@ -33,7 +33,6 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Properties;
@@ -41,7 +40,6 @@ import java.util.Properties;
 /**
  * Auto interval sharding algorithm.
  */
-@Getter
 public final class AutoIntervalShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>>, ShardingAutoTableAlgorithm {
     
     private static final String DATE_TIME_LOWER_KEY = "datetime-lower";
@@ -52,23 +50,25 @@ public final class AutoIntervalShardingAlgorithm implements StandardShardingAlgo
     
     private static final DateTimeFormatter DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     
+    @Getter
     @Setter
-    private Properties props = new Properties();
+    private Properties props;
     
-    private LocalDateTime dateTimeLower;
+    private volatile LocalDateTime dateTimeLower;
     
-    private long shardingSeconds;
+    private volatile long shardingSeconds;
     
-    private int autoTablesAmount;
+    @Getter
+    private volatile int autoTablesAmount;
     
     @Override
-    public void init() {
-        dateTimeLower = getDateTime();
-        shardingSeconds = getShardingSeconds();
+    public void init(final Properties props) {
+        dateTimeLower = getDateTime(props);
+        shardingSeconds = getShardingSeconds(props);
         autoTablesAmount = (int) (Math.ceil((double) (parseDate(props.getProperty(DATE_TIME_UPPER_KEY)) / shardingSeconds)) + 2);
     }
     
-    private LocalDateTime getDateTime() {
+    private LocalDateTime getDateTime(final Properties props) {
         String value = props.getProperty(DATE_TIME_LOWER_KEY);
         Preconditions.checkNotNull(value, "%s cannot be null.", DATE_TIME_LOWER_KEY);
         try {
@@ -78,7 +78,7 @@ public final class AutoIntervalShardingAlgorithm implements StandardShardingAlgo
         }
     }
     
-    private long getShardingSeconds() {
+    private long getShardingSeconds(final Properties props) {
         Preconditions.checkArgument(props.containsKey(SHARDING_SECONDS_KEY), "%s cannot be null.", SHARDING_SECONDS_KEY);
         return Long.parseLong(props.getProperty(SHARDING_SECONDS_KEY));
     }
@@ -122,10 +122,5 @@ public final class AutoIntervalShardingAlgorithm implements StandardShardingAlgo
     @Override
     public String getType() {
         return "AUTO_INTERVAL";
-    }
-    
-    @Override
-    public Collection<String> getAllPropertyKeys() {
-        return Arrays.asList(DATE_TIME_LOWER_KEY, DATE_TIME_UPPER_KEY, SHARDING_SECONDS_KEY);
     }
 }

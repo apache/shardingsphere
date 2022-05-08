@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryTypeSegment;
+import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryProviderAlgorithmSegment;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.AlterDatabaseDiscoveryTypeStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.distsql.AlgorithmAssert;
@@ -51,12 +51,12 @@ public final class AlterDatabaseDiscoveryTypeStatementAssert {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual statement should exist."), actual);
-            Map<String, DatabaseDiscoveryTypeSegment> actualMap = actual.getTypes().stream().collect(Collectors.toMap(DatabaseDiscoveryTypeSegment::getDiscoveryTypeName, each -> each));
+            Map<String, DatabaseDiscoveryProviderAlgorithmSegment> actualMap = actual.getProviders()
+                    .stream().collect(Collectors.toMap(DatabaseDiscoveryProviderAlgorithmSegment::getDiscoveryProviderName, each -> each));
             expected.getTypes().forEach(each -> {
-                DatabaseDiscoveryTypeSegment actualSegment = actualMap.get(each.getDiscoveryTypeName());
-                assertNotNull(actualSegment);
-                assertThat(actualSegment.getDiscoveryTypeName(), is(each.getDiscoveryTypeName()));
-                AlgorithmAssert.assertIs(assertContext, actualSegment.getAlgorithmSegment(), each.getAlgorithmSegment());
+                DatabaseDiscoveryProviderAlgorithmSegment actualSegment = actualMap.get(each.getDiscoveryTypeName());
+                assertThat(actualSegment.getDiscoveryProviderName(), is(each.getDiscoveryTypeName()));
+                AlgorithmAssert.assertIs(assertContext, actualSegment.getAlgorithm(), each.getAlgorithmSegment());
             });
         }
     }

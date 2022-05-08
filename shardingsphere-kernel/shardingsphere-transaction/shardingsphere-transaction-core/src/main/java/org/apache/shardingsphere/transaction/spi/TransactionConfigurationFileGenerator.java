@@ -17,15 +17,17 @@
 
 package org.apache.shardingsphere.transaction.spi;
 
-import org.apache.shardingsphere.infra.config.schema.SchemaConfiguration;
+import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.spi.typed.TypedSPI;
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 
 import java.util.Properties;
 
 /**
  * Transaction configuration file generator.
  */
+@SingletonSPI
 public interface TransactionConfigurationFileGenerator extends TypedSPI {
     
     /**
@@ -40,9 +42,9 @@ public interface TransactionConfigurationFileGenerator extends TypedSPI {
      * Get transaction rule props.
      *
      * @param originTransactionProps origin transaction properties
-     * @param schemaConfiguration schema configuration
+     * @param databaseConfig database configuration
      * @param modeType mode type
      * @return transaction rule props
      */
-    Properties getTransactionProps(Properties originTransactionProps, SchemaConfiguration schemaConfiguration, String modeType);
+    Properties getTransactionProps(Properties originTransactionProps, DatabaseConfiguration databaseConfig, String modeType);
 }

@@ -7,7 +7,7 @@ weight = 2
 
 ### Environment
 
-JAVA，JDK 1.8+.
+JAVA, JDK 1.8+.
 
 The migration scene we support:
 
@@ -29,10 +29,10 @@ If the backend database is in following table, please download JDBC driver jar a
 Supported features:
 
 | Feature                                  | MySQL         | PostgreSQL    | openGauss     |
-| ---------------------------------------- | ------------- | ------------- | ------------- |
+| ---------------------------------------- | ------------- |---------------| ------------- |
 | Inventory migration                      | Supported     | Supported     | Supported     |
 | Incremental migration                    | Supported     | Supported     | Supported     |
-| Create table automatically               | Supported     | Unsupported   | Supported     |
+| Create table automatically               | Supported     | Supported     | Supported     |
 | DATA_MATCH data consistency check        | Supported     | Supported     | Supported     |
 | CRC32_MATCH data consistency check       | Supported     | Unsupported   | Unsupported   |
 
@@ -77,7 +77,7 @@ As shown below, it means binlog has been turned on:
 
 Execute the following SQL to confirm whether the user has migration permission or not:
 ```sql
-SHOW GRANTS 'user';
+SHOW GRANTS FOR 'user';
 ```
 
 Result Example:
@@ -110,21 +110,19 @@ Please refer to [Write Ahead Log](https://www.postgresql.org/docs/9.6/runtime-co
 
 Example:
 ```sql
-preview select count(1) from t_order;
+preview SELECT COUNT(1) FROM t_order;
 ```
 
 Response:
 ```
-mysql> preview select count(1) from t_order;
-+------------------+--------------------------------+
-| data_source_name | sql                            |
-+------------------+--------------------------------+
-| ds_0             | select count(1) from t_order_0 |
-| ds_0             | select count(1) from t_order_1 |
-| ds_1             | select count(1) from t_order_0 |
-| ds_1             | select count(1) from t_order_1 |
-+------------------+--------------------------------+
-4 rows in set (0.00 sec)
+mysql> preview SELECT COUNT(1) FROM t_order;
++------------------+-------------------------------------------------------------------------+
+| data_source_name | actual_sql                                                              |
++------------------+-------------------------------------------------------------------------+
+| ds_0             | SELECT COUNT(1) FROM t_order_0 UNION ALL SELECT COUNT(1) FROM t_order_1 |
+| ds_1             | SELECT COUNT(1) FROM t_order_0 UNION ALL SELECT COUNT(1) FROM t_order_1 |
++------------------+-------------------------------------------------------------------------+
+2 rows in set (0.65 sec)
 ```
 
 #### Start scaling job
@@ -155,7 +153,9 @@ ADD RESOURCE ds_2 (
 );
 ```
 
-2. Alter all sharding table rule
+2. Alter sharding table rule for tables to be scaled
+
+We could scale all tables or partial tables. Binding tables must be scaled together.
 
 Currently, scaling job could only be emitted by executing `ALTER SHARDING TABLE RULE` DistSQL.
 
@@ -264,30 +264,244 @@ If `status` fails, you can check the log of `proxy` to view the error stack and 
 
 Example:
 ```sql
-preview select count(1) from t_order;
+preview SELECT COUNT(1) FROM t_order;
 ```
 
 Response:
 ```
-mysql> preview select count(1) from t_order;
-+------------------+--------------------------------+
-| data_source_name | sql                            |
-+------------------+--------------------------------+
-| ds_2             | select count(1) from t_order_0 |
-| ds_2             | select count(1) from t_order_1 |
-| ds_3             | select count(1) from t_order_0 |
-| ds_3             | select count(1) from t_order_1 |
-| ds_4             | select count(1) from t_order_0 |
-| ds_4             | select count(1) from t_order_1 |
-+------------------+--------------------------------+
-6 rows in set (0.01 sec)
+mysql> PREVIEW SELECT COUNT(1) FROM t_order;
++------------------+-------------------------------------------------------------------------+
+| data_source_name | actual_sql                                                              |
++------------------+-------------------------------------------------------------------------+
+| ds_2             | SELECT COUNT(1) FROM t_order_0 UNION ALL SELECT COUNT(1) FROM t_order_1 |
+| ds_3             | SELECT COUNT(1) FROM t_order_0 UNION ALL SELECT COUNT(1) FROM t_order_1 |
+| ds_4             | SELECT COUNT(1) FROM t_order_0 UNION ALL SELECT COUNT(1) FROM t_order_1 |
++------------------+-------------------------------------------------------------------------+
+3 rows in set (0.21 sec)
 ```
 
 #### Other DistSQL
 Please refer to [RAL#Scaling](/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/#scaling) for more details.
 
-### DistSQL API for manual mode
+### DistSQL manual mode whole process example
 
-Data consistency check and switch configuration could be emitted manually. Please refer to [RAL#Scaling](/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/#scaling) for more details.
+On manual mode, data consistency check and switch configuration could be emitted manually. Please refer to [RAL#Scaling](/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/#scaling) for more details.
 
-Attention: It's still under development.
+This example show how to migrate data from MySQL to proxy.
+
+Most SQLs should be executed in proxy, except few ones mentioned for MySQL.
+
+#### Create source databases
+
+It's not needed in practice. It just simulates databases for testing.
+
+Execute SQLs in MySQL:
+```sql
+DROP DATABASE IF EXISTS scaling_ds_0;
+CREATE DATABASE scaling_ds_0 DEFAULT CHARSET utf8;
+
+DROP DATABASE IF EXISTS scaling_ds_1;
+CREATE DATABASE scaling_ds_1 DEFAULT CHARSET utf8;
+```
+
+#### Login proxy
+
+```shell
+mysql -h127.0.0.1 -P3307 -uroot -proot
+```
+
+#### Create and configure schema
+
+Create schema:
+```sql
+CREATE DATABASE scaling_db;
+
+USE scaling_db
+```
+
+Add source database resource:
+```sql
+ADD RESOURCE ds_0 (
+    URL="jdbc:mysql://127.0.0.1:3306/scaling_ds_0?serverTimezone=UTC&useSSL=false",
+    USER=root,
+    PASSWORD=root,
+    PROPERTIES("maximumPoolSize"=50,"idleTimeout"="60000")
+), ds_1 (
+    URL="jdbc:mysql://127.0.0.1:3306/scaling_ds_1?serverTimezone=UTC&useSSL=false",
+    USER=root,
+    PASSWORD=root,
+    PROPERTIES("maximumPoolSize"=50,"idleTimeout"="60000")
+);
+```
+
+Configure rules:
+Configure tables of existing system in sharding rule, sharding table rules and INLINE algorithm will be used to fit existing tables name.
+```sql
+CREATE SHARDING ALGORITHM database_inline (
+TYPE(NAME=INLINE,PROPERTIES("algorithm-expression"="ds_${user_id % 2}"))
+);
+CREATE SHARDING ALGORITHM t_order_inline (
+TYPE(NAME=INLINE,PROPERTIES("algorithm-expression"="t_order_${order_id % 2}"))
+);
+CREATE SHARDING ALGORITHM t_order_item_inline (
+TYPE(NAME=INLINE,PROPERTIES("algorithm-expression"="t_order_item_${order_id % 2}"))
+);
+
+CREATE SHARDING TABLE RULE t_order (
+DATANODES("ds_${0..1}.t_order_${0..1}"),
+DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
+TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=t_order_inline),
+KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME=snowflake))
+), t_order_item (
+DATANODES("ds_${0..1}.t_order_item_${0..1}"),
+DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
+TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=t_order_item_inline),
+KEY_GENERATE_STRATEGY(COLUMN=order_item_id,TYPE(NAME=snowflake))
+);
+
+CREATE SHARDING BINDING TABLE RULES (t_order,t_order_item);
+
+CREATE SHARDING SCALING RULE scaling_manual2 (
+DATA_CONSISTENCY_CHECKER(TYPE(NAME=CRC32_MATCH))
+);
+```
+
+#### Create test tables and initialize records
+
+It's not needed in practice.
+
+```sql
+CREATE TABLE t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) CHARSET utf8mb4, PRIMARY KEY (order_id));
+CREATE TABLE t_order_item (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) CHARSET utf8mb4, creation_date DATE, PRIMARY KEY (item_id));
+
+INSERT INTO T_ORDER (order_id, user_id, status) VALUES (1,2,'ok'),(2,4,'ok'),(3,6,'ok'),(4,1,'ok'),(5,3,'ok'),(6,5,'ok');
+INSERT INTO T_ORDER_ITEM (item_id, order_id, user_id, status) VALUES (1,1,2,'ok'),(2,2,4,'ok'),(3,3,6,'ok'),(4,4,1,'ok'),(5,5,3,'ok'),(6,6,5,'ok');
+```
+
+#### Run migration
+
+Preview sharding:
+```sql
+mysql> PREVIEW SELECT COUNT(1) FROM t_order;
++------------------+-------------------------------------------------------------------------+
+| data_source_name | actual_sql                                                              |
++------------------+-------------------------------------------------------------------------+
+| ds_0             | SELECT COUNT(1) FROM t_order_0 UNION ALL SELECT COUNT(1) FROM t_order_1 |
+| ds_1             | SELECT COUNT(1) FROM t_order_0 UNION ALL SELECT COUNT(1) FROM t_order_1 |
++------------------+-------------------------------------------------------------------------+
+2 rows in set (0.65 sec)
+```
+
+Create target databases in MySQL:
+```sql
+DROP DATABASE IF EXISTS scaling_ds_10;
+CREATE DATABASE scaling_ds_10 DEFAULT CHARSET utf8;
+
+DROP DATABASE IF EXISTS scaling_ds_11;
+CREATE DATABASE scaling_ds_11 DEFAULT CHARSET utf8;
+
+DROP DATABASE IF EXISTS scaling_ds_12;
+CREATE DATABASE scaling_ds_12 DEFAULT CHARSET utf8;
+```
+
+Add target database resource:
+```sql
+ADD RESOURCE ds_2 (
+    URL="jdbc:mysql://127.0.0.1:3306/scaling_ds_10?serverTimezone=UTC&useSSL=false",
+    USER=root,
+    PASSWORD=root,
+    PROPERTIES("maximumPoolSize"=50,"idleTimeout"="60000")
+), ds_3 (
+    URL="jdbc:mysql://127.0.0.1:3306/scaling_ds_11?serverTimezone=UTC&useSSL=false",
+    USER=root,
+    PASSWORD=root,
+    PROPERTIES("maximumPoolSize"=50,"idleTimeout"="60000")
+), ds_4 (
+    URL="jdbc:mysql://127.0.0.1:3306/scaling_ds_12?serverTimezone=UTC&useSSL=false",
+    USER=root,
+    PASSWORD=root,
+    PROPERTIES("maximumPoolSize"=50,"idleTimeout"="60000")
+);
+```
+
+Alter sharding rule to emit scaling job:
+```sql
+ALTER SHARDING ALGORITHM database_inline (
+TYPE(NAME=INLINE,PROPERTIES("algorithm-expression"="ds_${user_id % 3 + 2}"))
+);
+
+ALTER SHARDING TABLE RULE t_order (
+DATANODES("ds_${2..4}.t_order_${0..1}"),
+DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
+TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=t_order_inline),
+KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME=snowflake))
+), t_order_item (
+DATANODES("ds_${2..4}.t_order_item_${0..1}"),
+DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
+TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=t_order_item_inline),
+KEY_GENERATE_STRATEGY(COLUMN=order_item_id,TYPE(NAME=snowflake))
+);
+```
+
+Query job progress:
+```sql
+mysql> SHOW SCALING LIST;
++--------------------------------------------+----------------------+----------------------+--------+---------------------+-----------+
+| id                                         | tables               | sharding_total_count | active | create_time         | stop_time |
++--------------------------------------------+----------------------+----------------------+--------+---------------------+-----------+
+| 0130317c30317c3054317c7363616c696e675f6462 | t_order,t_order_item | 2                    | true   | 2022-04-16 17:22:19 | NULL      |
++--------------------------------------------+----------------------+----------------------+--------+---------------------+-----------+
+1 row in set (0.34 sec)
+
+mysql> SHOW SCALING STATUS 0130317c30317c3054317c7363616c696e675f6462;
++------+-------------+--------------------------+--------+-------------------------------+--------------------------+
+| item | data_source | status                   | active | inventory_finished_percentage | incremental_idle_seconds |
++------+-------------+--------------------------+--------+-------------------------------+--------------------------+
+| 0    | ds_0        | EXECUTE_INCREMENTAL_TASK | true   | 100                           | 8                        |
+| 1    | ds_1        | EXECUTE_INCREMENTAL_TASK | true   | 100                           | 7                        |
++------+-------------+--------------------------+--------+-------------------------------+--------------------------+
+2 rows in set (0.02 sec)
+```
+When `status` is `EXECUTE_INCREMENTAL_TASK`, it means inventory migration stage is successful, it's running on incremental migration stage.
+
+Choose an idle time of business system, stop source database writing or stop upper database operation.
+
+Stop source writing in proxy:
+```sql
+mysql> STOP SCALING SOURCE WRITING 0130317c30317c3054317c7363616c696e675f6462;
+Query OK, 0 rows affected (0.07 sec)
+```
+
+Data consistency check:
+```sql
+mysql> CHECK SCALING 0130317c30317c3054317c7363616c696e675f6462 BY TYPE (NAME=CRC32_MATCH);
++--------------+----------------------+----------------------+-----------------------+-------------------------+
+| table_name   | source_records_count | target_records_count | records_count_matched | records_content_matched |
++--------------+----------------------+----------------------+-----------------------+-------------------------+
+| t_order      | 6                    | 6                    | true                  | true                    |
+| t_order_item | 6                    | 6                    | true                  | true                    |
++--------------+----------------------+----------------------+-----------------------+-------------------------+
+2 rows in set (2.16 sec)
+```
+
+Apply metadata:
+```sql
+mysql> APPLY SCALING 0130317c30317c3054317c7363616c696e675f6462;
+Query OK, 0 rows affected (0.22 sec)
+```
+
+Preview sharding again:
+```sql
+mysql> PREVIEW SELECT COUNT(1) FROM t_order;
++------------------+-------------------------------------------------------------------------+
+| data_source_name | actual_sql                                                              |
++------------------+-------------------------------------------------------------------------+
+| ds_2             | SELECT COUNT(1) FROM t_order_0 UNION ALL SELECT COUNT(1) FROM t_order_1 |
+| ds_3             | SELECT COUNT(1) FROM t_order_0 UNION ALL SELECT COUNT(1) FROM t_order_1 |
+| ds_4             | SELECT COUNT(1) FROM t_order_0 UNION ALL SELECT COUNT(1) FROM t_order_1 |
++------------------+-------------------------------------------------------------------------+
+3 rows in set (0.21 sec)
+```
+Sharding already take effect.
+
+Optionally, unused `ds_0` and `ds_1` could be removed.

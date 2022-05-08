@@ -27,6 +27,7 @@ import javax.annotation.Resource;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 @ContextConfiguration(locations = "classpath:META-INF/spring/sql-parser-application-context.xml")
 public final class SQLParserSpringNamespaceTest extends AbstractJUnit4SpringContextTests {
@@ -36,11 +37,11 @@ public final class SQLParserSpringNamespaceTest extends AbstractJUnit4SpringCont
     
     @Test
     public void assertSQLParserRule() {
-        assertThat(sqlParserRuleConfiguration.isSqlCommentParseEnabled(), is(true));
+        assertTrue(sqlParserRuleConfiguration.isSqlCommentParseEnabled());
         assertCacheOption(sqlParserRuleConfiguration.getSqlStatementCache());
         assertCacheOption(sqlParserRuleConfiguration.getParseTreeCache());
     }
-
+    
     private void assertCacheOption(final CacheOption cacheOption) {
         assertThat(cacheOption.getInitialCapacity(), is(1024));
         assertThat(cacheOption.getMaximumSize(), is(1024L));

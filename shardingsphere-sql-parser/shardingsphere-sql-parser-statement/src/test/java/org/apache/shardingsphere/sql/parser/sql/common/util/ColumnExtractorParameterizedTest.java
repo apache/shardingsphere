@@ -27,6 +27,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.Identifi
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -37,24 +38,24 @@ import static org.junit.Assert.assertThat;
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
 public final class ColumnExtractorParameterizedTest {
-
+    
     private static Collection<ExpressionSegment> testUnits = new LinkedList<>();
-
+    
     private static final ColumnSegment COLUMN_SEGMENT = new ColumnSegment(35, 42, new IdentifierValue("order_item_id"));
-
+    
     static {
         testUnits.add(new BinaryOperationExpression(0, 0, COLUMN_SEGMENT, null, null, null));
         testUnits.add(new InExpression(0, 0, COLUMN_SEGMENT, null, false));
         testUnits.add(new BetweenExpression(0, 0, COLUMN_SEGMENT, null, null, false));
     }
-
+    
     private final ExpressionSegment expression;
-
-    @Parameterized.Parameters(name = "{0}")
+    
+    @Parameters(name = "{0}")
     public static Collection<ExpressionSegment> getTestParameters() {
         return testUnits;
     }
-
+    
     @Test
     public void assertExtract() {
         Collection<ColumnSegment> columnSegments = ColumnExtractor.extract(expression);

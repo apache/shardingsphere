@@ -63,26 +63,6 @@ public final class UnsupportedOperationConnectionTest {
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertSetSavepoint() throws SQLException {
-        shardingSphereConnection.setSavepoint();
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertSetSavepointWithName() throws SQLException {
-        shardingSphereConnection.setSavepoint("");
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertReleaseSavepoint() throws SQLException {
-        shardingSphereConnection.releaseSavepoint(null);
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertRollback() throws SQLException {
-        shardingSphereConnection.rollback(null);
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertAbort() throws SQLException {
         shardingSphereConnection.abort(null);
     }

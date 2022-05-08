@@ -27,8 +27,6 @@ import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfi
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.query.ShardingTableNodesQueryResultSet;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableNodesStatement;
-import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -43,10 +41,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class ShardingTableNodesQueryResultSetTest {
-    
-    static {
-        ShardingSphereServiceLoader.register(ShardingAlgorithm.class);
-    }
     
     @Test
     public void assertGetRowData() {
@@ -72,8 +66,8 @@ public final class ShardingTableNodesQueryResultSetTest {
         result.getTables().add(createShardingTableRuleConfiguration());
         result.getAutoTables().add(createProductAutoTableConfiguration());
         result.getAutoTables().add(createUserAutoTableConfiguration());
-        result.getShardingAlgorithms().put("t_product_algorithm", new ShardingSphereAlgorithmConfiguration("MOD_TEST", newProperties("sharding-count", 2)));
-        result.getShardingAlgorithms().put("t_user_algorithm", new ShardingSphereAlgorithmConfiguration("BOUNDARY_RANGE_TEST", newProperties("sharding-ranges", "10,20,30")));
+        result.getShardingAlgorithms().put("t_product_algorithm", new ShardingSphereAlgorithmConfiguration("FOO.DISTSQL.FIXTURE", newProperties("sharding-count", 2)));
+        result.getShardingAlgorithms().put("t_user_algorithm", new ShardingSphereAlgorithmConfiguration("BAR.DISTSQL.FIXTURE", newProperties("sharding-ranges", "10,20,30")));
         result.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "t_product_algorithm"));
         result.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "t_product_algorithm"));
         return result;

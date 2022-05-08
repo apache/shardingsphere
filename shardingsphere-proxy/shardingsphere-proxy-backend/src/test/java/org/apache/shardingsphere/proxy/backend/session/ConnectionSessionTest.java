@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.session;
 
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
@@ -38,6 +39,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -61,19 +63,19 @@ public final class ConnectionSessionTest {
     @Before
     public void setup() {
         ProxyContext.getInstance().init(contextManager);
-        connectionSession = new ConnectionSession(TransactionType.LOCAL, null);
+        connectionSession = new ConnectionSession(mock(MySQLDatabaseType.class), TransactionType.LOCAL, null);
         when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
     }
     
     @Test
     public void assertSetCurrentSchema() {
-        connectionSession.setCurrentSchema("currentSchema");
-        assertThat(connectionSession.getSchemaName(), is("currentSchema"));
+        connectionSession.setCurrentDatabase("currentDatabase");
+        assertThat(connectionSession.getDatabaseName(), is("currentDatabase"));
     }
     
     @Test(expected = ShardingSphereException.class)
     public void assertFailedSwitchTransactionTypeWhileBegin() throws SQLException {
-        connectionSession.setCurrentSchema("schema");
+        connectionSession.setCurrentDatabase("db");
         JDBCBackendTransactionManager transactionManager = new JDBCBackendTransactionManager(backendConnection);
         transactionManager.begin();
         connectionSession.getTransactionStatus().setTransactionType(TransactionType.XA);
@@ -81,10 +83,10 @@ public final class ConnectionSessionTest {
     
     @Test(expected = ShardingSphereException.class)
     public void assertFailedSwitchSchemaWhileBegin() throws SQLException {
-        connectionSession.setCurrentSchema("schema");
+        connectionSession.setCurrentDatabase("db");
         JDBCBackendTransactionManager transactionManager = new JDBCBackendTransactionManager(backendConnection);
         transactionManager.begin();
-        connectionSession.setCurrentSchema("newSchema");
+        connectionSession.setCurrentDatabase("newDB");
     }
     
     @Test

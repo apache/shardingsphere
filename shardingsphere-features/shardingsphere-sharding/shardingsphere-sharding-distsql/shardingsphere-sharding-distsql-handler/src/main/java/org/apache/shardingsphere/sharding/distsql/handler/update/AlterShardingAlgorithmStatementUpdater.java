@@ -29,13 +29,10 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.converter.ShardingTableRuleStatementConverter;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.ShardingAlgorithmSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingAlgorithmStatement;
-import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
-import org.apache.shardingsphere.spi.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.sharding.factory.ShardingAlgorithmFactory;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Map;
-import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
@@ -46,30 +43,28 @@ public final class AlterShardingAlgorithmStatementUpdater implements RuleDefinit
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final AlterShardingAlgorithmStatement sqlStatement,
                                   final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String schemaName = shardingSphereMetaData.getName();
-        Collection<String> requireNames = sqlStatement.getAlgorithmSegments().stream().map(ShardingAlgorithmSegment::getShardingAlgorithmName).collect(Collectors.toCollection(LinkedList::new));
-        checkDuplicate(schemaName, requireNames);
+        String databaseName = shardingSphereMetaData.getDatabaseName();
+        Collection<String> requireNames = sqlStatement.getAlgorithmSegments().stream().map(ShardingAlgorithmSegment::getShardingAlgorithmName).collect(Collectors.toList());
+        checkDuplicate(databaseName, requireNames);
         checkExist(requireNames, currentRuleConfig);
         checkAlgorithmType(sqlStatement);
     }
-
-    private void checkDuplicate(final String schemaName, final Collection<String> requireNames) throws DistSQLException {
+    
+    private void checkDuplicate(final String databaseName, final Collection<String> requireNames) throws DistSQLException {
         Collection<String> duplicateRequire = requireNames.stream().collect(Collectors.groupingBy(each -> each, Collectors.counting())).entrySet().stream()
                 .filter(each -> each.getValue() > 1).map(Map.Entry::getKey).collect(Collectors.toSet());
-        DistSQLException.predictionThrow(duplicateRequire.isEmpty(), new DuplicateRuleException("sharding", schemaName, duplicateRequire));
+        DistSQLException.predictionThrow(duplicateRequire.isEmpty(), () -> new DuplicateRuleException("sharding", databaseName, duplicateRequire));
     }
     
     private void checkExist(final Collection<String> requireNames, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        Collection<String> notExistAlgorithms = requireNames.stream().filter(each -> !currentRuleConfig.getShardingAlgorithms().containsKey(each)).collect(Collectors.toCollection(LinkedList::new));
-        DistSQLException.predictionThrow(notExistAlgorithms.isEmpty(), new RequiredAlgorithmMissedException("sharding", notExistAlgorithms));
+        Collection<String> notExistAlgorithms = requireNames.stream().filter(each -> !currentRuleConfig.getShardingAlgorithms().containsKey(each)).collect(Collectors.toList());
+        DistSQLException.predictionThrow(notExistAlgorithms.isEmpty(), () -> new RequiredAlgorithmMissedException("sharding", notExistAlgorithms));
     }
     
     private void checkAlgorithmType(final AlterShardingAlgorithmStatement sqlStatement) throws DistSQLException {
-        Collection<String> requireNames = sqlStatement.getAlgorithmSegments().stream()
-                .map(ShardingAlgorithmSegment::getAlgorithmSegment).map(AlgorithmSegment::getName).collect(Collectors.toCollection(LinkedList::new));
-        Collection<String> invalidAlgorithmNames = requireNames.stream()
-                .filter(each -> !TypedSPIRegistry.findRegisteredService(ShardingAlgorithm.class, each, new Properties()).isPresent()).collect(Collectors.toList());
-        DistSQLException.predictionThrow(invalidAlgorithmNames.isEmpty(), new InvalidAlgorithmConfigurationException("sharding", invalidAlgorithmNames));
+        Collection<String> requireNames = sqlStatement.getAlgorithmSegments().stream().map(ShardingAlgorithmSegment::getAlgorithmSegment).map(AlgorithmSegment::getName).collect(Collectors.toList());
+        Collection<String> invalidAlgorithmNames = requireNames.stream().filter(each -> !ShardingAlgorithmFactory.contains(each)).collect(Collectors.toList());
+        DistSQLException.predictionThrow(invalidAlgorithmNames.isEmpty(), () -> new InvalidAlgorithmConfigurationException("sharding", invalidAlgorithmNames));
     }
     
     @Override

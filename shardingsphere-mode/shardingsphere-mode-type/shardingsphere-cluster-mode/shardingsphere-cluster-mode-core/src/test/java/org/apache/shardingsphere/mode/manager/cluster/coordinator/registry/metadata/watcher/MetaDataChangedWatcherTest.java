@@ -34,7 +34,7 @@ public final class MetaDataChangedWatcherTest {
     
     @Test
     public void assertCreateEventWithInvalidPath() {
-        String key = "/metadata_invalid/sharding_db";
+        String key = "/metadata_invalid/sharding_db/sharding_schema";
         String value = "encrypt_db";
         Optional<GovernanceEvent> actual = createEvent(key, value, Type.UPDATED);
         assertFalse(actual.isPresent());
@@ -90,14 +90,14 @@ public final class MetaDataChangedWatcherTest {
     
     @Test
     public void assertCreateTableSchemaChangedEvent() {
-        String key = "/metadata/sharding_db/tables/t_order";
+        String key = "/metadata/sharding_db/schemas/sharding_schema/tables/t_order";
         Optional<GovernanceEvent> actual = createEvent(key, "{}", Type.UPDATED);
         assertTrue(actual.isPresent());
     }
     
     @Test
     public void assertCreateTableSchemaDeletedEvent() {
-        String key = "/metadata/sharding_db/tables/t_order";
+        String key = "/metadata/sharding_db/schemas/sharding_schema/tables/t_order";
         Optional<GovernanceEvent> actual = createEvent(key, "{}", Type.DELETED);
         assertTrue(actual.isPresent());
         assertThat(((SchemaChangedEvent) actual.get()).getDeletedTable(), is("t_order"));

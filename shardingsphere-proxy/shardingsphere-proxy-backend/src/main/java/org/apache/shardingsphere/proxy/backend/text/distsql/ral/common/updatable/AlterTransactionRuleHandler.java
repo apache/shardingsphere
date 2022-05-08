@@ -20,14 +20,17 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatabl
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.AlterTransactionRuleStatement;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.UpdatableRALBackendHandler;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
+import org.apache.shardingsphere.transaction.rule.TransactionRule;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Optional;
 
 /**
@@ -37,19 +40,19 @@ public final class AlterTransactionRuleHandler extends UpdatableRALBackendHandle
     
     @Override
     protected void update(final ContextManager contextManager, final AlterTransactionRuleStatement sqlStatement) {
-        updateTransactionRule();
-    }
-    
-    private void updateTransactionRule() {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         ShardingSphereRuleMetaData globalRuleMetaData = metaDataContexts.getGlobalRuleMetaData();
-        Collection<RuleConfiguration> globalRuleConfigurations = globalRuleMetaData.getConfigurations();
-        globalRuleConfigurations.removeIf(each -> each instanceof TransactionRuleConfiguration);
+        Collection<ShardingSphereRule> globalRules = globalRuleMetaData.getRules();
+        globalRules.removeIf(each -> each instanceof TransactionRule);
+        Collection<RuleConfiguration> globalRuleConfigs = new LinkedList<>(globalRuleMetaData.getConfigurations());
+        globalRuleConfigs.removeIf(each -> each instanceof TransactionRuleConfiguration);
         TransactionRuleConfiguration toBeAlteredRuleConfig = buildTransactionRuleConfiguration();
-        globalRuleConfigurations.add(toBeAlteredRuleConfig);
+        globalRules.add(new TransactionRule(toBeAlteredRuleConfig));
+        globalRuleConfigs.add(toBeAlteredRuleConfig);
+        ProxyContext.getInstance().getContextManager().renewAllTransactionContext();
         Optional<MetaDataPersistService> metaDataPersistService = metaDataContexts.getMetaDataPersistService();
         if (metaDataPersistService.isPresent() && null != metaDataPersistService.get().getGlobalRuleService()) {
-            metaDataPersistService.get().getGlobalRuleService().persist(globalRuleConfigurations, true);
+            metaDataPersistService.get().getGlobalRuleService().persist(globalRuleConfigs, true);
         }
     }
     

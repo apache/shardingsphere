@@ -87,7 +87,7 @@ public final class SQLRewriteEngineTestParametersBuilder {
     
     private static void appendFromFile(final String type, final File file, final String path, final Map<String, RewriteAssertionsRootEntity> result) {
         if (file.getName().endsWith(".xml")) {
-            String key = path.toLowerCase().replace(type.toLowerCase() + "/", "") + file.getName();
+            String key = path.toLowerCase().replace(type.toLowerCase() + "/", "") + "/" + file.getName();
             result.put(key, new RewriteAssertionsRootEntityLoader().load(path + "/" + file.getName()));
         }
     }
@@ -97,7 +97,7 @@ public final class SQLRewriteEngineTestParametersBuilder {
         for (RewriteAssertionEntity each : rootAssertions.getAssertions()) {
             for (String databaseType : getDatabaseTypes(each.getDatabaseTypes())) {
                 result.add(new SQLRewriteEngineTestParameters(type, each.getId(), fileName, rootAssertions.getYamlRule(), each.getInput().getSql(),
-                        createInputParameters(each.getInput().getParameters()), createOutputSQLs(each.getOutputs()), createOutputGroupedParameters(each.getOutputs()), databaseType).toArray());   
+                        createInputParameters(each.getInput().getParameters()), createOutputSQLs(each.getOutputs()), createOutputGroupedParameters(each.getOutputs()), databaseType).toArray());
             }
         }
         return result;
@@ -115,9 +115,9 @@ public final class SQLRewriteEngineTestParametersBuilder {
         if (null == inputParameters) {
             return Collections.emptyList();
         } else {
-            return Splitter.on(",").trimResults().splitToList(inputParameters).stream().map(input -> {
-                Object result = Ints.tryParse(input);
-                return result == null ? input : result;
+            return Splitter.on(",").trimResults().splitToList(inputParameters).stream().map(each -> {
+                Object result = Ints.tryParse(each);
+                return result == null ? each : result;
             }).collect(Collectors.toList());
         }
     }

@@ -35,9 +35,9 @@ import java.lang.reflect.Method;
  * SQL parser engine advice.
  */
 public class SQLParserEngineAdvice implements InstanceMethodAroundAdvice {
-
+    
     private static final String OPERATION_NAME = "/ShardingSphere/parseSQL/";
-
+    
     @Override
     public void beforeMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
         Span root = (Span) ExecutorDataMap.getValue().get(OpenTelemetryConstants.ROOT_SPAN);
@@ -51,12 +51,12 @@ public class SQLParserEngineAdvice implements InstanceMethodAroundAdvice {
         }
         target.setAttachment(spanBuilder.startSpan());
     }
-
+    
     @Override
     public void afterMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
         ((Span) target.getAttachment()).end();
     }
-
+    
     @Override
     public void onThrowing(final AdviceTargetObject target, final Method method, final Object[] args, final Throwable throwable) {
         ((Span) target.getAttachment()).setStatus(StatusCode.ERROR).recordException(throwable);

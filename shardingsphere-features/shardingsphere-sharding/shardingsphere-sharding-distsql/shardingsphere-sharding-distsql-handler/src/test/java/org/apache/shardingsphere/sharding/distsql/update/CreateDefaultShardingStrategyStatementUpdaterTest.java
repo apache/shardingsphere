@@ -49,7 +49,7 @@ public final class CreateDefaultShardingStrategyStatementUpdaterTest {
     
     @Before
     public void before() {
-        when(shardingSphereMetaData.getName()).thenReturn("test");
+        when(shardingSphereMetaData.getDatabaseName()).thenReturn("test");
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
@@ -88,8 +88,8 @@ public final class CreateDefaultShardingStrategyStatementUpdaterTest {
         currentRuleConfig.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "orderAlgorithm"));
         currentRuleConfig.getShardingAlgorithms().put("order_id_algorithm", null);
         updater.checkSQLStatement(shardingSphereMetaData, statement, currentRuleConfig);
-        ShardingRuleConfiguration toBeCreatedRuleConfiguration = updater.buildToBeCreatedRuleConfiguration(statement);
-        updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfiguration);
+        ShardingRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(statement);
+        updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
         StandardShardingStrategyConfiguration defaultTableShardingStrategy = (StandardShardingStrategyConfiguration) currentRuleConfig.getDefaultTableShardingStrategy();
         assertThat(defaultTableShardingStrategy.getShardingAlgorithmName(), is("order_id_algorithm"));
         assertThat(defaultTableShardingStrategy.getShardingColumn(), is("order_id"));
@@ -101,8 +101,8 @@ public final class CreateDefaultShardingStrategyStatementUpdaterTest {
         CreateDefaultShardingStrategyStatement statement = new CreateDefaultShardingStrategyStatement("DATABASE", "standard", "user_id", null, databaseAlgorithmSegment);
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
         updater.checkSQLStatement(shardingSphereMetaData, statement, currentRuleConfig);
-        ShardingRuleConfiguration toBeCreatedRuleConfiguration = updater.buildToBeCreatedRuleConfiguration(statement);
-        updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfiguration);
+        ShardingRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(statement);
+        updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
         StandardShardingStrategyConfiguration defaultDatabaseShardingStrategy = (StandardShardingStrategyConfiguration) currentRuleConfig.getDefaultDatabaseShardingStrategy();
         assertThat(defaultDatabaseShardingStrategy.getShardingAlgorithmName(), is("default_database_inline"));
         assertThat(defaultDatabaseShardingStrategy.getShardingColumn(), is("user_id"));

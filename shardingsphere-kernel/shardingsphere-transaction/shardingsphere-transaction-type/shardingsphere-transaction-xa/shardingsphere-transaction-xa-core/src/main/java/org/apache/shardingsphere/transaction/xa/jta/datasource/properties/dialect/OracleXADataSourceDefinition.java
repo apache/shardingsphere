@@ -28,12 +28,12 @@ import java.util.Collections;
 public final class OracleXADataSourceDefinition implements XADataSourceDefinition {
     
     @Override
-    public String getDatabaseType() {
-        return "Oracle";
+    public Collection<String> getXADriverClassName() {
+        return Collections.singletonList("oracle.jdbc.xa.client.OracleXADataSource");
     }
     
     @Override
-    public Collection<String> getXADriverClassName() {
-        return Collections.singletonList("oracle.jdbc.xa.client.OracleXADataSource");
+    public String getType() {
+        return "Oracle";
     }
 }

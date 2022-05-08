@@ -30,23 +30,21 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class PersistRepositoryConfigurationYamlSwapperEngineTest {
-
+    
     @Test
     public void assertSwapToYamlConfiguration() {
-        PersistRepositoryConfigurationYamlSwapperEngine persistRepositoryConfigurationYamlSwapperEngine = new PersistRepositoryConfigurationYamlSwapperEngine();
         String type = "Standalone";
-        StandalonePersistRepositoryConfiguration standalonePersistRepositoryConfiguration = new StandalonePersistRepositoryConfiguration("Standalone", new Properties());
-        YamlPersistRepositoryConfiguration yamlPersistRepositoryConfiguration = persistRepositoryConfigurationYamlSwapperEngine.swapToYamlConfiguration(type, standalonePersistRepositoryConfiguration);
-        assertTrue(yamlPersistRepositoryConfiguration.getType().equalsIgnoreCase("Standalone"));
+        StandalonePersistRepositoryConfiguration standalonePersistRepositoryConfig = new StandalonePersistRepositoryConfiguration("Standalone", new Properties());
+        YamlPersistRepositoryConfiguration yamlPersistRepositoryConfig = new PersistRepositoryConfigurationYamlSwapperEngine().swapToYamlConfiguration(type, standalonePersistRepositoryConfig);
+        assertTrue(yamlPersistRepositoryConfig.getType().equalsIgnoreCase("Standalone"));
     }
-
+    
     @Test
     public void assertSwapToObject() {
-        PersistRepositoryConfigurationYamlSwapperEngine persistRepositoryConfigurationYamlSwapperEngine = new PersistRepositoryConfigurationYamlSwapperEngine();
         String type = "Standalone";
-        YamlPersistRepositoryConfiguration yamlPersistRepositoryConfiguration = new YamlPersistRepositoryConfiguration();
-        yamlPersistRepositoryConfiguration.setType("Standalone");
-        PersistRepositoryConfiguration persistRepositoryConfiguration = persistRepositoryConfigurationYamlSwapperEngine.swapToObject(type, yamlPersistRepositoryConfiguration);
-        assertThat(persistRepositoryConfiguration.getType(), is("Standalone"));
+        YamlPersistRepositoryConfiguration yamlPersistRepositoryConfig = new YamlPersistRepositoryConfiguration();
+        yamlPersistRepositoryConfig.setType("Standalone");
+        PersistRepositoryConfiguration persistRepositoryConfig = new PersistRepositoryConfigurationYamlSwapperEngine().swapToObject(type, yamlPersistRepositoryConfig);
+        assertThat(persistRepositoryConfig.getType(), is("Standalone"));
     }
 }

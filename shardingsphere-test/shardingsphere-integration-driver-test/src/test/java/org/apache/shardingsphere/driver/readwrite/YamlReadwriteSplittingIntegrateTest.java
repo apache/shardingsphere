@@ -20,8 +20,8 @@ package org.apache.shardingsphere.driver.readwrite;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.driver.AbstractYamlDataSourceTest;
+import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,6 +34,7 @@ import java.sql.Connection;
 import java.sql.Statement;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Objects;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
@@ -44,7 +45,7 @@ public final class YamlReadwriteSplittingIntegrateTest extends AbstractYamlDataS
     private final boolean hasDataSource;
     
     @Parameters(name = "{index}:{0}-{1}")
-    public static Collection<?> init() {
+    public static Collection<Object[]> init() {
         return Arrays.asList(new Object[][]{
                 {"/yaml/integrate/readwrite_splitting/configWithReadwriteSplittingDataSourceWithoutProps.yaml", true},
                 {"/yaml/integrate/readwrite_splitting/configWithReadwriteSplittingDataSourceWithoutProps.yaml", true},
@@ -55,7 +56,7 @@ public final class YamlReadwriteSplittingIntegrateTest extends AbstractYamlDataS
     
     @Test
     public void assertWithDataSource() throws Exception {
-        File yamlFile = new File(YamlReadwriteSplittingIntegrateTest.class.getResource(filePath).toURI());
+        File yamlFile = new File(Objects.requireNonNull(YamlReadwriteSplittingIntegrateTest.class.getResource(filePath)).toURI());
         DataSource dataSource;
         if (hasDataSource) {
             dataSource = YamlShardingSphereDataSourceFactory.createDataSource(yamlFile);
@@ -63,8 +64,9 @@ public final class YamlReadwriteSplittingIntegrateTest extends AbstractYamlDataS
             dataSource = YamlShardingSphereDataSourceFactory.createDataSource(
                     Maps.asMap(Sets.newHashSet("db_write", "read_ds_0", "read_ds_1"), AbstractYamlDataSourceTest::createDataSource), yamlFile);
         }
-        try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement()) {
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement()) {
             statement.executeQuery("SELECT * FROM t_order");
             statement.executeQuery("SELECT * FROM t_order_item");
             statement.executeQuery("SELECT * FROM t_config");
@@ -74,16 +76,17 @@ public final class YamlReadwriteSplittingIntegrateTest extends AbstractYamlDataS
     
     @Test
     public void assertWithDataSourceByYamlBytes() throws Exception {
-        File yamlFile = new File(YamlReadwriteSplittingIntegrateTest.class.getResource(filePath).toURI());
+        File yamlFile = new File(Objects.requireNonNull(YamlReadwriteSplittingIntegrateTest.class.getResource(filePath)).toURI());
         DataSource dataSource;
         if (hasDataSource) {
             dataSource = YamlShardingSphereDataSourceFactory.createDataSource(yamlFile);
         } else {
             dataSource = YamlShardingSphereDataSourceFactory.createDataSource(
-                    Maps.asMap(Sets.newHashSet("db_write", "read_ds_0", "read_ds_1"), AbstractYamlDataSourceTest::createDataSource), getYamlBytes(yamlFile));
+                    Maps.asMap(Sets.newHashSet("db_write", "read_ds_0", "read_ds_1"), AbstractYamlDataSourceTest::createDataSource), yamlFile);
         }
-        try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement()) {
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement()) {
             statement.executeQuery("SELECT * FROM t_order");
             statement.executeQuery("SELECT * FROM t_order_item");
             statement.executeQuery("SELECT * FROM t_config");

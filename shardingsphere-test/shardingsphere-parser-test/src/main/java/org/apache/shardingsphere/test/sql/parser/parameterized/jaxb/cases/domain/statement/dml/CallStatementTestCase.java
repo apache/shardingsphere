@@ -31,10 +31,10 @@ import javax.xml.bind.annotation.XmlElement;
 @Getter
 @Setter
 public final class CallStatementTestCase extends SQLParserTestCase {
-
+    
     @XmlElement(name = "procedure-name")
     private ExpectedProcedureName procedureName;
-
+    
     @XmlElement(name = "parameters")
     private ExpectedProcedureParameters procedureParameters;
 }

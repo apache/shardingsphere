@@ -98,7 +98,7 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
                 throw new IngestException("Unknown rowEventType: " + rowEventType);
         }
         String[] tableMetaData = mppTableData.getTableName().split("\\.");
-        result.setSchemaName(tableMetaData[0]);
+        result.setDatabaseName(tableMetaData[0]);
         result.setTableName(tableMetaData[1]);
         return result;
     }
@@ -120,10 +120,9 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
         result.setPrimaryKeys(getDeleteColumnDataFromMppDataEvent(data));
         return result;
     }
-
+    
     private List<Object> getColumnDataFromMppDataEvent(final MppTableData data) {
         List<Object> columns = new LinkedList<>();
-    
         for (int i = 0; i < data.getColumnsType().length; i++) {
             columns.add(readColumnData(data.getColumnsVal()[i], data.getColumnsType()[i]));
         }

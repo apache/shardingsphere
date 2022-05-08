@@ -20,10 +20,8 @@ package org.apache.shardingsphere.driver.state;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.spi.singleton.SingletonSPIRegistry;
 
 import java.sql.Connection;
-import java.util.Map;
 
 /**
  * Driver state context.
@@ -31,20 +29,14 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DriverStateContext {
     
-    private static final Map<String, DriverState> STATES;
-    
-    static {
-        STATES = SingletonSPIRegistry.getTypedSingletonInstancesMap(DriverState.class);
-    }
-    
     /**
      * Get connection.
      *
-     * @param schemaName schema name
+     * @param databaseName database name
      * @param contextManager context manager
      * @return connection
      */
-    public static Connection getConnection(final String schemaName, final ContextManager contextManager) {
-        return STATES.get(contextManager.getInstanceContext().getState().getCurrentState().name()).getConnection(schemaName, contextManager);
+    public static Connection getConnection(final String databaseName, final ContextManager contextManager) {
+        return DriverStateFactory.newInstance(contextManager.getInstanceContext().getInstance().getState().getCurrentState()).getConnection(databaseName, contextManager);
     }
 }

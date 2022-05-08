@@ -17,14 +17,16 @@
 
 package org.apache.shardingsphere.mode.manager;
 
-import org.apache.shardingsphere.spi.required.RequiredSPI;
-import org.apache.shardingsphere.spi.typed.TypedSPI;
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.spi.type.required.RequiredSPI;
+import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 
 import java.sql.SQLException;
 
 /**
  * Context manager builder.
  */
+@SingletonSPI
 public interface ContextManagerBuilder extends TypedSPI, RequiredSPI {
     
     /**

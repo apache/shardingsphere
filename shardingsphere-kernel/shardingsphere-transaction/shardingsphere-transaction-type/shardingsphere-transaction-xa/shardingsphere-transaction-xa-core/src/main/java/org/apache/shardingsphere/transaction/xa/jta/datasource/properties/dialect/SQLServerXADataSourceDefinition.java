@@ -28,13 +28,12 @@ import java.util.Collections;
 public final class SQLServerXADataSourceDefinition implements XADataSourceDefinition {
     
     @Override
-    public String getDatabaseType() {
-        return "SQLServer";
-    }
-    
-    @Override
     public Collection<String> getXADriverClassName() {
         return Collections.singletonList("com.microsoft.sqlserver.jdbc.SQLServerXADataSource");
     }
+    
+    @Override
+    public String getType() {
+        return "SQLServer";
+    }
 }
-

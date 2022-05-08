@@ -28,13 +28,13 @@ import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.core.fixture.EmbedTestingServer;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.JobProgressYamlSwapper;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
+import org.apache.shardingsphere.data.pipeline.core.util.ConfigurationFileUtil;
+import org.apache.shardingsphere.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineContextUtil;
-import org.apache.shardingsphere.data.pipeline.core.util.ResourceUtil;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
@@ -65,8 +65,7 @@ public final class GovernanceRepositoryAPIImplTest {
     
     @BeforeClass
     public static void beforeClass() {
-        EmbedTestingServer.start();
-        PipelineContextUtil.mockModeConfig();
+        PipelineContextUtil.mockModeConfigAndContextManager();
         governanceRepositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
     }
     
@@ -75,7 +74,7 @@ public final class GovernanceRepositoryAPIImplTest {
         RuleAlteredJobContext jobContext = mockJobContext();
         governanceRepositoryAPI.persistJobProgress(jobContext);
         JobProgress actual = governanceRepositoryAPI.getJobProgress(jobContext.getJobId(), jobContext.getShardingItem());
-        assertThat(YamlEngine.marshal(JOB_PROGRESS_YAML_SWAPPER.swapToYaml(actual)), is(ResourceUtil.readFileAndIgnoreComments("governance-repository.yaml")));
+        assertThat(YamlEngine.marshal(JOB_PROGRESS_YAML_SWAPPER.swapToYaml(actual)), is(ConfigurationFileUtil.readFileAndIgnoreComments("governance-repository.yaml")));
     }
     
     @Test
@@ -102,8 +101,7 @@ public final class GovernanceRepositoryAPIImplTest {
         assertTrue(actual.contains("1"));
     }
     
-    // TODO seems CuratorZookeeperRepository will cause get wrong value from cache, comment it for now. It depend on unit test cases ordering.
-    //@Test
+    @Test
     public void assertWatch() throws InterruptedException {
         AtomicReference<DataChangedEvent> eventReference = new AtomicReference<>();
         CountDownLatch countDownLatch = new CountDownLatch(1);
@@ -141,7 +139,7 @@ public final class GovernanceRepositoryAPIImplTest {
     }
     
     private RuleAlteredJobContext mockJobContext() {
-        RuleAlteredJobContext result = new RuleAlteredJobContext(ResourceUtil.mockJobConfig());
+        RuleAlteredJobContext result = new RuleAlteredJobContext(JobConfigurationBuilder.createJobConfiguration());
         TaskConfiguration taskConfig = result.getTaskConfig();
         result.getInventoryTasks().add(mockInventoryTask(taskConfig));
         result.getIncrementalTasks().add(mockIncrementalTask(taskConfig));
@@ -151,12 +149,13 @@ public final class GovernanceRepositoryAPIImplTest {
     private InventoryTask mockInventoryTask(final TaskConfiguration taskConfig) {
         InventoryDumperConfiguration dumperConfig = new InventoryDumperConfiguration(taskConfig.getDumperConfig());
         dumperConfig.setPosition(new PlaceholderPosition());
-        dumperConfig.setTableName("t_order");
+        dumperConfig.setActualTableName("t_order");
+        dumperConfig.setLogicTableName("t_order");
         dumperConfig.setPrimaryKey("order_id");
         dumperConfig.setShardingItem(0);
         PipelineDataSourceWrapper dataSource = mock(PipelineDataSourceWrapper.class);
         PipelineTableMetaDataLoader metaDataLoader = new PipelineTableMetaDataLoader(dataSource);
-        return new InventoryTask(dumperConfig, taskConfig.getImporterConfig(), PipelineContextUtil.getPipelineChannelFactory(),
+        return new InventoryTask(dumperConfig, taskConfig.getImporterConfig(), PipelineContextUtil.getPipelineChannelCreator(),
                 new PipelineDataSourceManager(), dataSource, metaDataLoader, PipelineContextUtil.getExecuteEngine());
     }
     
@@ -164,7 +163,7 @@ public final class GovernanceRepositoryAPIImplTest {
         DumperConfiguration dumperConfig = taskConfig.getDumperConfig();
         dumperConfig.setPosition(new PlaceholderPosition());
         PipelineTableMetaDataLoader metaDataLoader = new PipelineTableMetaDataLoader(mock(PipelineDataSourceWrapper.class));
-        return new IncrementalTask(3, dumperConfig, taskConfig.getImporterConfig(), PipelineContextUtil.getPipelineChannelFactory(),
+        return new IncrementalTask(3, dumperConfig, taskConfig.getImporterConfig(), PipelineContextUtil.getPipelineChannelCreator(),
                 new PipelineDataSourceManager(), metaDataLoader, PipelineContextUtil.getExecuteEngine());
     }
 }

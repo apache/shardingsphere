@@ -34,13 +34,13 @@ import java.util.function.BiPredicate;
 public final class AuthorityCheckerFixture implements SQLChecker<AuthorityRule> {
     
     @Override
-    public boolean check(final String schemaName, final Grantee grantee, final AuthorityRule authorityRule) {
-        return !"test".equals(schemaName);
+    public boolean check(final String databaseName, final Grantee grantee, final AuthorityRule authorityRule) {
+        return !"test".equals(databaseName);
     }
     
     @Override
     public SQLCheckResult check(final SQLStatement sqlStatement, final List<Object> parameters, final Grantee grantee,
-                                final String currentSchema, final Map<String, ShardingSphereMetaData> metaDataMap, final AuthorityRule authorityRule) {
+                                final String currentDatabase, final Map<String, ShardingSphereMetaData> metaDataMap, final AuthorityRule authorityRule) {
         return new SQLCheckResult(true, "");
     }
     

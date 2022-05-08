@@ -76,6 +76,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DropVie
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExecuteStmtContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FieldDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FlowControlStatementContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FunctionNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.IfStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.KeyListWithExpressionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.KeyPartContext;
@@ -112,7 +113,10 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.Co
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.AddConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.DropConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.ModifyConstraintDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.DropIndexDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.FunctionNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.RoutineBodySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.ValidStatementSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.ConvertTableDefinitionSegment;
@@ -120,6 +124,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.RenameT
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.SimpleExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
@@ -210,6 +215,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     public ASTNode visitCreateDatabase(final CreateDatabaseContext ctx) {
         MySQLCreateDatabaseStatement result = new MySQLCreateDatabaseStatement();
         result.setDatabaseName(new IdentifierValue(ctx.schemaName().getText()).getValue());
+        result.setContainsNotExistClause(null != ctx.notExistClause());
         return result;
     }
     
@@ -222,9 +228,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     public ASTNode visitDropDatabase(final DropDatabaseContext ctx) {
         MySQLDropDatabaseStatement result = new MySQLDropDatabaseStatement();
         result.setDatabaseName(new IdentifierValue(ctx.schemaName().getText()).getValue());
-        if (null != ctx.existClause()) {
-            result.setContainsExistClause(true);
-        }
+        result.setContainsExistClause(null != ctx.existClause());
         return result;
     }
     
@@ -289,6 +293,8 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
                     result.setRenameTable(((RenameTableDefinitionSegment) each).getRenameTable());
                 } else if (each instanceof ConvertTableDefinitionSegment) {
                     result.setConvertTableDefinition((ConvertTableDefinitionSegment) each);
+                } else if (each instanceof DropIndexDefinitionSegment) {
+                    result.getDropIndexDefinitions().add((DropIndexDefinitionSegment) each);
                 }
             }
         }
@@ -333,6 +339,9 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
                     result.getValue().add(new DropConstraintDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), constraintSegment));
                 } else if (null == alterTableDrop.KEY() && null == alterTableDrop.keyOrIndex()) {
                     result.getValue().add(generateDropColumnDefinitionSegment(alterTableDrop));
+                } else if (null != alterTableDrop.keyOrIndex()) {
+                    IndexSegment indexSegment = (IndexSegment) visit(alterTableDrop.indexName());
+                    result.getValue().add(new DropIndexDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), indexSegment));
                 }
             }
             if (each instanceof AddTableConstraintContext) {
@@ -548,7 +557,8 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     public ASTNode visitCreateIndex(final CreateIndexContext ctx) {
         MySQLCreateIndexStatement result = new MySQLCreateIndexStatement();
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-        result.setIndex(new IndexSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), new IdentifierValue(ctx.indexName().getText())));
+        IndexNameSegment indexName = new IndexNameSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), new IdentifierValue(ctx.indexName().getText()));
+        result.setIndex(new IndexSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), indexName));
         return result;
     }
     
@@ -556,7 +566,8 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     public ASTNode visitDropIndex(final DropIndexContext ctx) {
         MySQLDropIndexStatement result = new MySQLDropIndexStatement();
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-        result.getIndexes().add(new IndexSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), new IdentifierValue(ctx.indexName().getText())));
+        IndexNameSegment indexName = new IndexNameSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), new IdentifierValue(ctx.indexName().getText()));
+        result.getIndexes().add(new IndexSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), indexName));
         return result;
     }
     
@@ -575,7 +586,17 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     @Override
     public ASTNode visitCreateProcedure(final CreateProcedureContext ctx) {
         MySQLCreateProcedureStatement result = new MySQLCreateProcedureStatement();
+        result.setProcedureName((FunctionNameSegment) visit(ctx.functionName()));
         result.setRoutineBody((RoutineBodySegment) visit(ctx.routineBody()));
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitFunctionName(final FunctionNameContext ctx) {
+        FunctionNameSegment result = new FunctionNameSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (IdentifierValue) visit(ctx.identifier()));
+        if (null != ctx.owner()) {
+            result.setOwner((OwnerSegment) visit(ctx.owner()));
+        }
         return result;
     }
     
@@ -592,6 +613,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     @Override
     public ASTNode visitCreateFunction(final CreateFunctionContext ctx) {
         MySQLCreateFunctionStatement result = new MySQLCreateFunctionStatement();
+        result.setFunctionName((FunctionNameSegment) visit(ctx.functionName()));
         result.setRoutineBody((RoutineBodySegment) visit(ctx.routineBody()));
         return result;
     }

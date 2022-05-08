@@ -55,27 +55,27 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class ShardingResultMergerEngineTest {
-
+    
     @Test
     public void assertNewInstanceWithSelectStatementForMySQL() {
         assertNewInstanceWithSelectStatement(new MySQLSelectStatement());
     }
-
+    
     @Test
     public void assertNewInstanceWithSelectStatementForOracle() {
         assertNewInstanceWithSelectStatement(new OracleSelectStatement());
     }
-
+    
     @Test
     public void assertNewInstanceWithSelectStatementForPostgreSQL() {
         assertNewInstanceWithSelectStatement(new PostgreSQLSelectStatement());
     }
-
+    
     @Test
     public void assertNewInstanceWithSelectStatementForSQL92() {
         assertNewInstanceWithSelectStatement(new SQL92SelectStatement());
     }
-
+    
     @Test
     public void assertNewInstanceWithSelectStatementForSQLServer() {
         assertNewInstanceWithSelectStatement(new SQLServerSelectStatement());
@@ -84,7 +84,7 @@ public final class ShardingResultMergerEngineTest {
     private void assertNewInstanceWithSelectStatement(final SelectStatement selectStatement) {
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-        when(metaData.getSchema()).thenReturn(mock(ShardingSphereSchema.class));
+        when(metaData.getSchemaByName(DefaultSchema.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         SelectStatementContext sqlStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData),
                 Collections.emptyList(), selectStatement, DefaultSchema.LOGIC_NAME);
@@ -114,7 +114,7 @@ public final class ShardingResultMergerEngineTest {
     
     private InsertStatementContext createInsertStatementContext(final InsertStatement insertStatement) {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-        when(metaData.getSchema()).thenReturn(mock(ShardingSphereSchema.class));
+        when(metaData.getSchemaByName(DefaultSchema.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
         Map<String, ShardingSphereMetaData> metaDataMap = Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData);
         return new InsertStatementContext(metaDataMap, Collections.emptyList(), insertStatement, DefaultSchema.LOGIC_NAME);
     }

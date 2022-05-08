@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.encrypt.algorithm;
 
-import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
+import org.apache.shardingsphere.encrypt.factory.EncryptAlgorithmFactory;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -34,17 +33,22 @@ import static org.mockito.Mockito.mock;
 
 public final class AESEncryptAlgorithmTest {
     
-    static {
-        ShardingSphereServiceLoader.register(EncryptAlgorithm.class);
-    }
-    
-    private EncryptAlgorithm encryptAlgorithm;
+    private EncryptAlgorithm<Object, String> encryptAlgorithm;
     
     @Before
     public void setUp() {
-        Properties props = new Properties();
-        props.setProperty("aes-key-value", "test");
-        encryptAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new ShardingSphereAlgorithmConfiguration("AES", props), EncryptAlgorithm.class);
+        encryptAlgorithm = EncryptAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("AES", createProperties()));
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty("aes-key-value", "test");
+        return result;
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void assertCreateNewInstanceWithoutAESKey() {
+        EncryptAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("AES", new Properties()));
     }
     
     @Test
@@ -53,19 +57,9 @@ public final class AESEncryptAlgorithmTest {
         assertThat(actual, is("dSpPiyENQGDUXMKFMJPGWA=="));
     }
     
-    @Test(expected = IllegalArgumentException.class)
-    public void assertEncryptWithoutKey() {
-        Properties props = new Properties();
-        encryptAlgorithm.setProps(props);
-        encryptAlgorithm.init();
-        Object actual = encryptAlgorithm.encrypt("test", mock(EncryptContext.class));
-        assertThat(actual, is("dSpPiyENQGDUXMKFMJPGWA=="));
-    }
-    
     @Test
-    public void assertEncryptWithNullPlaintext() {
-        Object actual = encryptAlgorithm.encrypt(null, mock(EncryptContext.class));
-        assertNull(actual);
+    public void assertEncryptNullValue() {
+        assertNull(encryptAlgorithm.encrypt(null, mock(EncryptContext.class)));
     }
     
     @Test
@@ -74,18 +68,8 @@ public final class AESEncryptAlgorithmTest {
         assertThat(actual.toString(), is("test"));
     }
     
-    @Test(expected = IllegalArgumentException.class)
-    public void assertDecryptWithoutKey() {
-        Properties props = new Properties();
-        encryptAlgorithm.setProps(props);
-        encryptAlgorithm.init();
-        Object actual = encryptAlgorithm.decrypt("dSpPiyENQGDUXMKFMJPGWA==", mock(EncryptContext.class));
-        assertThat(actual.toString(), is("test"));
-    }
-    
     @Test
-    public void assertDecryptWithNullCiphertext() {
-        Object actual = encryptAlgorithm.decrypt(null, mock(EncryptContext.class));
-        assertNull(actual);
+    public void assertDecryptNullValue() {
+        assertNull(encryptAlgorithm.decrypt(null, mock(EncryptContext.class)));
     }
 }

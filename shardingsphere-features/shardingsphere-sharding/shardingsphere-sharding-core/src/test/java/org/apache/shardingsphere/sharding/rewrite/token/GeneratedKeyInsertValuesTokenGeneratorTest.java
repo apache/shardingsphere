@@ -26,10 +26,10 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.InsertValue;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.InsertValuesToken;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.keygen.GeneratedKeyInsertValuesTokenGenerator;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.junit.Test;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -40,56 +40,37 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class GeneratedKeyInsertValuesTokenGeneratorTest {
-
+    
     @Test
     public void assertGenerateSQLToken() {
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class);
         GeneratedKeyContext generatedKeyContext = getGeneratedKeyContext();
         when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Optional.of(generatedKeyContext));
-        List<InsertValueContext> insertValueContextsList = getInsertValueContextsList();
-        when(insertStatementContext.getInsertValueContexts()).thenReturn(insertValueContextsList);
-        List<List<Object>> groupedParametersList = new LinkedList<>();
-        List<Object> groupedParameters = new LinkedList<>();
-        groupedParameters.add(new Object());
-        groupedParametersList.add(groupedParameters);
-        when(insertStatementContext.getGroupedParameters()).thenReturn(groupedParametersList);
-        GeneratedKeyInsertValuesTokenGenerator generatedKeyInsertValuesTokenGenerator = new GeneratedKeyInsertValuesTokenGenerator();
-        List<SQLToken> previousSQLTokens = getPreviousSQLTokens();
-        generatedKeyInsertValuesTokenGenerator.setPreviousSQLTokens(previousSQLTokens);
-        SQLToken sqlToken = generatedKeyInsertValuesTokenGenerator.generateSQLToken(insertStatementContext);
+        when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(mock(InsertValueContext.class)));
+        List<List<Object>> parameterGroups = Collections.singletonList(new ArrayList<>(Collections.singletonList(new Object())));
+        when(insertStatementContext.getGroupedParameters()).thenReturn(parameterGroups);
+        GeneratedKeyInsertValuesTokenGenerator generator = new GeneratedKeyInsertValuesTokenGenerator();
+        generator.setPreviousSQLTokens(getPreviousSQLTokens());
+        SQLToken sqlToken = generator.generateSQLToken(insertStatementContext);
         assertThat(sqlToken, instanceOf(InsertValuesToken.class));
         assertThat(((InsertValuesToken) sqlToken).getInsertValues().get(0).getValues().get(0), instanceOf(DerivedParameterMarkerExpressionSegment.class));
-        groupedParametersList.get(0).clear();
+        parameterGroups.get(0).clear();
         ((InsertValuesToken) sqlToken).getInsertValues().get(0).getValues().clear();
-        sqlToken = generatedKeyInsertValuesTokenGenerator.generateSQLToken(insertStatementContext);
+        sqlToken = generator.generateSQLToken(insertStatementContext);
         assertThat(((InsertValuesToken) sqlToken).getInsertValues().get(0).getValues().get(0), instanceOf(DerivedLiteralExpressionSegment.class));
     }
-
+    
     private List<SQLToken> getPreviousSQLTokens() {
-        List<ExpressionSegment> valuesList = new LinkedList<>();
         InsertValue insertValue = mock(InsertValue.class);
-        when(insertValue.getValues()).thenReturn(valuesList);
-        List<InsertValue> insertValuesList = new LinkedList<>();
-        insertValuesList.add(insertValue);
+        when(insertValue.getValues()).thenReturn(new LinkedList<>());
         InsertValuesToken insertValuesToken = mock(InsertValuesToken.class);
-        when(insertValuesToken.getInsertValues()).thenReturn(insertValuesList);
-        List<SQLToken> result = new LinkedList<>();
-        result.add(insertValuesToken);
-        return result;
+        when(insertValuesToken.getInsertValues()).thenReturn(Collections.singletonList(insertValue));
+        return Collections.singletonList(insertValuesToken);
     }
-
+    
     private GeneratedKeyContext getGeneratedKeyContext() {
         GeneratedKeyContext result = mock(GeneratedKeyContext.class);
-        Collection<Comparable<?>> generatedValuesCollection = new LinkedList<>();
-        generatedValuesCollection.add("TEST_GENERATED_VALUE");
-        when(result.getGeneratedValues()).thenReturn(generatedValuesCollection);
-        return result;
-    }
-
-    private List<InsertValueContext> getInsertValueContextsList() {
-        InsertValueContext insertValueContext = mock(InsertValueContext.class);
-        List<InsertValueContext> result = new LinkedList<>();
-        result.add(insertValueContext);
+        when(result.getGeneratedValues()).thenReturn(Collections.singleton("TEST_GENERATED_VALUE"));
         return result;
     }
 }

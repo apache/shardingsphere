@@ -18,13 +18,12 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl;
 
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterSchemaStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
 
 /**
  * SQLServer alter schema statement.
  */
 @ToString
-public final class SQLServerAlterSchemaStatement extends AbstractSQLStatement implements DDLStatement, SQLServerStatement {
+public final class SQLServerAlterSchemaStatement extends AlterSchemaStatement implements SQLServerStatement {
 }

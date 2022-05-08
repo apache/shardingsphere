@@ -27,6 +27,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.Identifi
 import org.junit.Test;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -37,38 +38,33 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class ConstraintTokenGeneratorTest {
-
+    
     @Test
     public void assertIsGenerateSQLToken() {
-        CreateDatabaseStatementContext createDatabaseStatementContext = mock(CreateDatabaseStatementContext.class);
-        ConstraintTokenGenerator constraintTokenGenerator = new ConstraintTokenGenerator();
-        assertFalse(constraintTokenGenerator.isGenerateSQLToken(createDatabaseStatementContext));
+        ConstraintTokenGenerator generator = new ConstraintTokenGenerator();
+        assertFalse(generator.isGenerateSQLToken(mock(CreateDatabaseStatementContext.class)));
         AlterTableStatementContext alterTableStatementContext = mock(AlterTableStatementContext.class);
-        Collection<ConstraintSegment> constraintSegmentCollection = new LinkedList<>();
-        when(alterTableStatementContext.getConstraints()).thenReturn(constraintSegmentCollection);
-        assertFalse(constraintTokenGenerator.isGenerateSQLToken(alterTableStatementContext));
-        constraintSegmentCollection.add(mock(ConstraintSegment.class));
-        assertTrue(constraintTokenGenerator.isGenerateSQLToken(alterTableStatementContext));
+        Collection<ConstraintSegment> constraintSegments = new LinkedList<>();
+        when(alterTableStatementContext.getConstraints()).thenReturn(constraintSegments);
+        assertFalse(generator.isGenerateSQLToken(alterTableStatementContext));
+        constraintSegments.add(mock(ConstraintSegment.class));
+        assertTrue(generator.isGenerateSQLToken(alterTableStatementContext));
     }
-
+    
     @Test
     public void assertGenerateSQLTokens() {
         ConstraintSegment constraintSegment = mock(ConstraintSegment.class);
-        final int testStartIndex = 1;
-        when(constraintSegment.getStartIndex()).thenReturn(testStartIndex);
-        final int testStopIndex = 3;
-        when(constraintSegment.getStopIndex()).thenReturn(testStopIndex);
+        when(constraintSegment.getStartIndex()).thenReturn(1);
+        when(constraintSegment.getStopIndex()).thenReturn(3);
         IdentifierValue constraintIdentifier = mock(IdentifierValue.class);
         when(constraintSegment.getIdentifier()).thenReturn(constraintIdentifier);
-        Collection<ConstraintSegment> constraintSegmentCollection = new LinkedList<>();
-        constraintSegmentCollection.add(constraintSegment);
         AlterTableStatementContext alterTableStatementContext = mock(AlterTableStatementContext.class);
-        when(alterTableStatementContext.getConstraints()).thenReturn(constraintSegmentCollection);
-        ShardingRule shardingRule = mock(ShardingRule.class);
-        ConstraintTokenGenerator constraintTokenGenerator = new ConstraintTokenGenerator();
-        constraintTokenGenerator.setShardingRule(shardingRule);
-        Collection<ConstraintToken> result = constraintTokenGenerator.generateSQLTokens(alterTableStatementContext);
-        assertThat(result.size(), is(1));
-        assertThat((new LinkedList<>(result)).get(0).getStartIndex(), is(testStartIndex));
+        when(alterTableStatementContext.getConstraints()).thenReturn(Collections.singleton(constraintSegment));
+        ConstraintTokenGenerator generator = new ConstraintTokenGenerator();
+        generator.setShardingRule(mock(ShardingRule.class));
+        Collection<ConstraintToken> actual = generator.generateSQLTokens(alterTableStatementContext);
+        assertThat(actual.size(), is(1));
+        assertThat((new LinkedList<>(actual)).get(0).getStartIndex(), is(1));
+        assertThat((new LinkedList<>(actual)).get(0).getStopIndex(), is(3));
     }
 }

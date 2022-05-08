@@ -22,7 +22,7 @@ Finally, scaling should not affect the existing data. How to ensure the availabi
 
 ShardingSphere-Scaling is a common solution for migrating or scaling data.
 
-![Overview](https://shardingsphere.apache.org/document/current/img/scaling/overview.en.png)
+![Overview](https://shardingsphere.apache.org/document/current/img/scaling/overview_v2.png)
 
 ## Goal
 

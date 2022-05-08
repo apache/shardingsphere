@@ -35,14 +35,14 @@ public abstract class BaseShadowConfiguration implements ExampleConfiguration {
     
     protected Map<String, DataSource> createDataSourceMap() {
         Map<String, DataSource> result = new LinkedHashMap<>();
-        result.put("ds", DataSourceUtil.createDataSource("ds"));
-        result.put("ds_shadow", DataSourceUtil.createDataSource("ds_shadow"));
+        result.put("ds", DataSourceUtil.createDataSource("demo_ds"));
+        result.put("ds_shadow", DataSourceUtil.createDataSource("shadow_demo_ds"));
         return result;
     }
     
     protected Properties createShardingSphereProps() {
         Properties result = new Properties();
-        result.setProperty(ConfigurationPropertyKey.SQL_SHOW.getKey(), "true");
+        result.setProperty(ConfigurationPropertyKey.SQL_SHOW.getKey(), Boolean.TRUE.toString());
         return result;
     }
     
@@ -79,7 +79,7 @@ public abstract class BaseShadowConfiguration implements ExampleConfiguration {
         userIdSelectProps.setProperty("value", "1");
         result.put("user-id-select-match-algorithm", new ShardingSphereAlgorithmConfiguration("VALUE_MATCH", userIdSelectProps));
         Properties noteAlgorithmProps = new Properties();
-        noteAlgorithmProps.setProperty("shadow", "true");
+        noteAlgorithmProps.setProperty("shadow", Boolean.TRUE.toString());
         noteAlgorithmProps.setProperty("foo", "bar");
         result.put("simple-hint-algorithm", new ShardingSphereAlgorithmConfiguration("SIMPLE_HINT", noteAlgorithmProps));
         return result;

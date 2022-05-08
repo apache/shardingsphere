@@ -30,10 +30,10 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 @Getter
 @Setter
 public abstract class SetTransactionStatement extends AbstractSQLStatement implements TCLStatement {
-
+    
     private TransactionIsolationLevel isolationLevel;
-
+    
     private OperationScope scope;
-
+    
     private TransactionAccessType accessMode;
 }

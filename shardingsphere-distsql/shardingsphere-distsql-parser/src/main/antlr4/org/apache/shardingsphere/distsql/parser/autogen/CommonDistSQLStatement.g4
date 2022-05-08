@@ -35,6 +35,8 @@ execute
     | showInstanceMode
     | labelInstance
     | unlabelInstance
+    | countInstanceRules
+    | alterInstance
     | countSchemaRules
     | prepareDistSQL
     | applyDistSQL
@@ -55,7 +57,8 @@ execute
     | dropTrafficRule
     | createTrafficRule
     | alterTrafficRule
-    | exportSchemaConfiguration
+    | exportDatabaseConfiguration
     | showRulesUsedResource
+    | importDatabaseConfiguration
     ) SEMI?
     ;

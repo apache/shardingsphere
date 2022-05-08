@@ -18,8 +18,7 @@
 package org.apache.shardingsphere.transaction.xa.jta.datasource.swapper;
 
 import com.google.common.collect.ImmutableList;
-import com.zaxxer.hikari.HikariDataSource;
-import org.apache.commons.dbcp2.BasicDataSource;
+import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition;
 import org.h2.jdbcx.JdbcDataSource;
 import org.junit.Before;
@@ -28,7 +27,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import javax.sql.DataSource;
 import javax.sql.XADataSource;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -42,45 +40,21 @@ public final class DataSourceSwapperTest {
     @Mock
     private XADataSourceDefinition xaDataSourceDefinition;
     
-    private DataSourceSwapper swapper;
-    
     @Before
     public void before() {
         when(xaDataSourceDefinition.getXADriverClassName()).thenReturn(ImmutableList.of("org.h2.jdbcx.JdbcDataSource"));
     }
     
     @Test
-    public void assertSwapByDefaultProvider() {
-        swapper = new DataSourceSwapper(xaDataSourceDefinition);
-        assertResult(swapper.swap(createDBCPDataSource()));
-    }
-    
-    private DataSource createDBCPDataSource() {
-        BasicDataSource result = new BasicDataSource();
-        result.setUrl("jdbc:mysql://localhost:3306/demo_ds");
-        result.setUsername("root");
-        result.setPassword("root");
-        return result;
-    }
-    
-    @Test
-    public void assertSwapBySPIProvider() {
-        swapper = new DataSourceSwapper(xaDataSourceDefinition);
-        assertResult(swapper.swap(createHikariCPDataSource()));
-    }
-    
-    private DataSource createHikariCPDataSource() {
-        HikariDataSource result = new HikariDataSource();
-        result.setJdbcUrl("jdbc:mysql://localhost:3306/demo_ds");
-        result.setUsername("root");
-        result.setPassword("root");
-        return result;
+    public void assertSwap() {
+        DataSourceSwapper swapper = new DataSourceSwapper(xaDataSourceDefinition);
+        assertResult(swapper.swap(new MockedDataSource()));
     }
     
     private void assertResult(final XADataSource xaDataSource) {
         assertThat(xaDataSource, instanceOf(JdbcDataSource.class));
         JdbcDataSource h2XADataSource = (JdbcDataSource) xaDataSource;
-        assertThat(h2XADataSource.getUrl(), is("jdbc:mysql://localhost:3306/demo_ds"));
+        assertThat(h2XADataSource.getUrl(), is("jdbc:mock://127.0.0.1/foo_ds"));
         assertThat(h2XADataSource.getUser(), is("root"));
         assertThat(h2XADataSource.getPassword(), is("root"));
     }

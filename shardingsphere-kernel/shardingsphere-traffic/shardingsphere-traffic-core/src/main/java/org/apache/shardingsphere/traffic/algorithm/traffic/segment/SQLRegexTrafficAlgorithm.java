@@ -29,18 +29,18 @@ import java.util.regex.Pattern;
 /**
  * SQL regex traffic algorithm.
  */
-@Getter
-@Setter
 public final class SQLRegexTrafficAlgorithm implements SegmentTrafficAlgorithm {
     
     private static final String REGEX_PROPS_KEY = "regex";
     
-    private Properties props = new Properties();
+    @Getter
+    @Setter
+    private Properties props;
     
     private Pattern regex;
     
     @Override
-    public void init() {
+    public void init(final Properties props) {
         Preconditions.checkArgument(props.containsKey(REGEX_PROPS_KEY), "%s cannot be null.", REGEX_PROPS_KEY);
         regex = Pattern.compile(String.valueOf(props.get(REGEX_PROPS_KEY)));
     }

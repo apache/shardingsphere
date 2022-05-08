@@ -19,16 +19,14 @@ package org.apache.shardingsphere.traffic.engine;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
-import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.instance.definition.InstanceId;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.traffic.context.TrafficContext;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.apache.shardingsphere.traffic.rule.TrafficStrategyRule;
 import org.apache.shardingsphere.traffic.spi.TrafficLoadBalanceAlgorithm;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,7 +38,7 @@ public final class TrafficEngine {
     
     private final TrafficRule trafficRule;
     
-    private final MetaDataContexts metaDataContexts;
+    private final InstanceContext instanceContext;
     
     /**
      * Dispatch.
@@ -55,26 +53,16 @@ public final class TrafficEngine {
         if (!strategyRule.isPresent() || isInvalidStrategyRule(strategyRule.get())) {
             return result;
         }
-        List<String> instanceIds = getInstanceIdsByLabels(strategyRule.get().getLabels());
+        List<InstanceId> instanceIds = instanceContext.getComputeNodeInstanceIds(InstanceType.PROXY, strategyRule.get().getLabels());
         if (!instanceIds.isEmpty()) {
             TrafficLoadBalanceAlgorithm loadBalancer = strategyRule.get().getLoadBalancer();
-            result.setInstanceId(loadBalancer.getInstanceId(strategyRule.get().getName(), instanceIds));
+            InstanceId instanceId = 1 == instanceIds.size() ? instanceIds.iterator().next() : loadBalancer.getInstanceId(strategyRule.get().getName(), instanceIds);
+            result.setInstanceId(instanceId.getId());
         }
         return result;
     }
     
     private boolean isInvalidStrategyRule(final TrafficStrategyRule strategyRule) {
         return strategyRule.getLabels().isEmpty() || null == strategyRule.getLoadBalancer();
-    }
-    
-    private List<String> getInstanceIdsByLabels(final Collection<String> labels) {
-        List<String> result = new ArrayList<>();
-        if (metaDataContexts.getMetaDataPersistService().isPresent()) {
-            Collection<ComputeNodeInstance> instances = metaDataContexts.getMetaDataPersistService().get().getComputeNodePersistService().loadComputeNodeInstances(InstanceType.PROXY, labels);
-            for (ComputeNodeInstance each : instances) {
-                result.add(each.getInstanceDefinition().getInstanceId().getId());
-            }
-        }
-        return result;
     }
 }

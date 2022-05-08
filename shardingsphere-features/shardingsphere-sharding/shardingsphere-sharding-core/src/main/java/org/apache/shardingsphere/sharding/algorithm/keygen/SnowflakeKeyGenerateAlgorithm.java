@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereInstanceRequiredAlgorithm;
+import org.apache.shardingsphere.infra.config.algorithm.InstanceAwareAlgorithm;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
@@ -39,7 +39,7 @@ import java.util.Properties;
  *     12 bits auto increment offset in one mills
  * </pre>
  */
-public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm, ShardingSphereInstanceRequiredAlgorithm {
+public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm, InstanceAwareAlgorithm {
     
     public static final long EPOCH;
     
@@ -70,18 +70,19 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     
     @Getter
     @Setter
-    private Properties props = new Properties();
+    private Properties props;
     
-    private int maxVibrationOffset;
+    private volatile int maxVibrationOffset;
     
-    private int maxTolerateTimeDifferenceMilliseconds;
+    private volatile int maxTolerateTimeDifferenceMilliseconds;
     
-    private int sequenceOffset = -1;
+    private volatile int sequenceOffset = -1;
     
-    private long sequence;
+    private volatile long sequence;
     
-    private long lastMilliseconds;
+    private volatile long lastMilliseconds;
     
+    @Setter
     private InstanceContext instanceContext;
     
     static {
@@ -95,23 +96,23 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     }
     
     @Override
-    public void init() {
-        maxVibrationOffset = getMaxVibrationOffset();
-        maxTolerateTimeDifferenceMilliseconds = getMaxTolerateTimeDifferenceMilliseconds();
+    public void init(final Properties props) {
+        maxVibrationOffset = getMaxVibrationOffset(props);
+        maxTolerateTimeDifferenceMilliseconds = getMaxTolerateTimeDifferenceMilliseconds(props);
     }
     
-    private int getMaxVibrationOffset() {
+    private int getMaxVibrationOffset(final Properties props) {
         int result = Integer.parseInt(props.getOrDefault(MAX_VIBRATION_OFFSET_KEY, DEFAULT_VIBRATION_VALUE).toString());
         Preconditions.checkArgument(result >= 0 && result <= SEQUENCE_MASK, "Illegal max vibration offset.");
         return result;
     }
     
-    private int getMaxTolerateTimeDifferenceMilliseconds() {
+    private int getMaxTolerateTimeDifferenceMilliseconds(final Properties props) {
         return Integer.parseInt(props.getOrDefault(MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS_KEY, MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS).toString());
     }
     
     @Override
-    public synchronized Comparable<?> generateKey() {
+    public synchronized Long generateKey() {
         long currentMilliseconds = timeService.getCurrentMillis();
         if (waitTolerateTimeDifferenceIfNeed(currentMilliseconds)) {
             currentMilliseconds = timeService.getCurrentMillis();
@@ -134,7 +135,7 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
             return false;
         }
         long timeDifferenceMilliseconds = lastMilliseconds - currentMilliseconds;
-        Preconditions.checkState(timeDifferenceMilliseconds < maxTolerateTimeDifferenceMilliseconds, 
+        Preconditions.checkState(timeDifferenceMilliseconds < maxTolerateTimeDifferenceMilliseconds,
                 "Clock is moving backwards, last time is %d milliseconds, current time is %d milliseconds", lastMilliseconds, currentMilliseconds);
         Thread.sleep(timeDifferenceMilliseconds);
         return true;
@@ -148,6 +149,7 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
         return result;
     }
     
+    @SuppressWarnings("NonAtomicOperationOnVolatileField")
     private void vibrateSequenceOffset() {
         sequenceOffset = sequenceOffset >= maxVibrationOffset ? 0 : sequenceOffset + 1;
     }
@@ -169,10 +171,5 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     @Override
     public boolean isDefault() {
         return true;
-    }
-    
-    @Override
-    public void setInstanceContext(final InstanceContext instanceContext) {
-        this.instanceContext = instanceContext;
     }
 }

@@ -59,7 +59,7 @@ public final class FeaturedDistSQLStatementParserEngine {
     private FeaturedDistSQLParseASTNode parseToASTNode(final String sql) {
         for (FeaturedDistSQLStatementParserFacade each : FACADES.values()) {
             try {
-                ParseASTNode parseASTNode = (ParseASTNode) SQLParserFactory.newInstance(sql, each.getLexerClass(), each.getParserClass(), false).parse();
+                ParseASTNode parseASTNode = (ParseASTNode) SQLParserFactory.newInstance(sql, each.getLexerClass(), each.getParserClass()).parse();
                 return new FeaturedDistSQLParseASTNode(each.getFeatureType(), parseASTNode);
             } catch (final ParseCancellationException | SQLParsingException ignored) {
             }
@@ -70,7 +70,7 @@ public final class FeaturedDistSQLStatementParserEngine {
     @SneakyThrows(ReflectiveOperationException.class)
     @SuppressWarnings("rawtypes")
     private SQLStatement getSQLStatement(final String sql, final String featureType, final ParseASTNode parseASTNode) {
-        SQLVisitor visitor = FACADES.get(featureType).getVisitorClass().newInstance();
+        SQLVisitor visitor = FACADES.get(featureType).getVisitorClass().getDeclaredConstructor().newInstance();
         if (parseASTNode.getRootNode() instanceof ErrorNode) {
             throw new SQLParsingException("Unsupported SQL of `%s`", sql);
         }

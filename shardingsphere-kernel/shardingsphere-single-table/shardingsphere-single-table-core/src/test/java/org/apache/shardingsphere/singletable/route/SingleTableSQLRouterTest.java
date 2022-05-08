@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CreateTableStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -48,6 +49,7 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -56,39 +58,39 @@ public final class SingleTableSQLRouterTest {
     
     @Test
     public void assertCreateRouteContextWithSingleDataSource() {
-        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), mock(DatabaseType.class),
+        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), DefaultSchema.LOGIC_NAME, mock(DatabaseType.class),
                 createSingleDataSourceMap(), Collections.emptyList(), new ConfigurationProperties(new Properties()));
-        singleTableRule.getSingleTableDataNodes().put("t_order", Collections.singletonList(new DataNode("ds_0", "t_order")));
+        singleTableRule.getSingleTableDataNodes().put("t_order", Collections.singletonList(mockDataNode("ds_0")));
         ShardingSphereMetaData metaData = mockSingleDataSourceMetaData();
         RouteContext actual = new SingleTableSQLRouter().createRouteContext(createLogicSQL(), metaData, singleTableRule, new ConfigurationProperties(new Properties()));
         List<RouteUnit> routeUnits = new ArrayList<>(actual.getRouteUnits());
         assertThat(actual.getRouteUnits().size(), is(1));
         assertThat(routeUnits.get(0).getDataSourceMapper().getLogicName(), is("ds_0"));
         assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_0"));
-        assertThat(routeUnits.get(0).getTableMappers().size(), is(0));
+        assertTrue(routeUnits.get(0).getTableMappers().isEmpty());
         assertFalse(actual.isFederated());
     }
     
     @Test
     public void assertCreateRouteContextWithReadwriteSplittingDataSource() {
-        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), mock(DatabaseType.class),
+        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), DefaultSchema.LOGIC_NAME, mock(DatabaseType.class),
                 createReadwriteSplittingDataSourceMap(), Collections.emptyList(), new ConfigurationProperties(new Properties()));
-        singleTableRule.getSingleTableDataNodes().put("t_order", Collections.singletonList(new DataNode("write_ds", "t_order")));
+        singleTableRule.getSingleTableDataNodes().put("t_order", Collections.singletonList(mockDataNode("write_ds")));
         ShardingSphereMetaData metaData = mockReadwriteSplittingDataSourceMetaData();
         RouteContext actual = new SingleTableSQLRouter().createRouteContext(createLogicSQL(), metaData, singleTableRule, new ConfigurationProperties(new Properties()));
         List<RouteUnit> routeUnits = new ArrayList<>(actual.getRouteUnits());
         assertThat(actual.getRouteUnits().size(), is(1));
         assertThat(routeUnits.get(0).getDataSourceMapper().getLogicName(), is("readwrite_ds"));
         assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("write_ds"));
-        assertThat(routeUnits.get(0).getTableMappers().size(), is(0));
+        assertTrue(routeUnits.get(0).getTableMappers().isEmpty());
         assertFalse(actual.isFederated());
     }
     
     @Test
     public void assertCreateRouteContextWithMultiDataSource() {
-        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), mock(DatabaseType.class),
+        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), DefaultSchema.LOGIC_NAME, mock(DatabaseType.class),
                 createMultiDataSourceMap(), Collections.emptyList(), new ConfigurationProperties(new Properties()));
-        singleTableRule.getSingleTableDataNodes().put("t_order", Collections.singletonList(new DataNode("ds_0", "t_order")));
+        singleTableRule.getSingleTableDataNodes().put("t_order", Collections.singletonList(mockDataNode("ds_0")));
         ShardingSphereMetaData metaData = mockMultiDataSourceMetaData();
         RouteContext actual = new SingleTableSQLRouter().createRouteContext(createLogicSQL(), metaData, singleTableRule, new ConfigurationProperties(new Properties()));
         List<RouteUnit> routeUnits = new ArrayList<>(actual.getRouteUnits());
@@ -100,6 +102,12 @@ public final class SingleTableSQLRouterTest {
         assertThat(tableMapper.getActualName(), is("t_order"));
         assertThat(tableMapper.getLogicName(), is("t_order"));
         assertFalse(actual.isFederated());
+    }
+    
+    private DataNode mockDataNode(final String dataSourceName) {
+        DataNode result = new DataNode(dataSourceName, "t_order");
+        result.setSchemaName(DefaultSchema.LOGIC_NAME);
+        return result;
     }
     
     private ShardingSphereMetaData mockSingleDataSourceMetaData() {
@@ -124,6 +132,7 @@ public final class SingleTableSQLRouterTest {
         dataSourceMap.put("ds_0", mock(DataSource.class, RETURNS_DEEP_STUBS));
         dataSourceMap.put("ds_1", mock(DataSource.class, RETURNS_DEEP_STUBS));
         when(result.getResource().getDataSources()).thenReturn(dataSourceMap);
+        when(result.getDatabaseName()).thenReturn(DefaultSchema.LOGIC_NAME);
         return result;
     }
     
@@ -133,9 +142,9 @@ public final class SingleTableSQLRouterTest {
         SimpleTableSegment simpleTableSegment = new SimpleTableSegment(tableNameSegment);
         CreateTableStatement createTableStatement = new MySQLCreateTableStatement();
         createTableStatement.setTable(simpleTableSegment);
-        List<Object> parametersList = new LinkedList<>();
+        List<Object> parameters = new LinkedList<>();
         SQLStatementContext<CreateTableStatement> sqlStatementContext = new CreateTableStatementContext(createTableStatement);
-        return new LogicSQL(sqlStatementContext, "create table", parametersList);
+        return new LogicSQL(sqlStatementContext, "create table", parameters);
     }
     
     private Map<String, DataSource> createSingleDataSourceMap() {

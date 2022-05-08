@@ -25,6 +25,3 @@ org.apache.shardingsphere.sharding.algorithm.sharding.datetime.IntervalShardingA
 org.apache.shardingsphere.sharding.algorithm.sharding.classbased.ClassBasedShardingAlgorithm
 org.apache.shardingsphere.sharding.algorithm.sharding.complex.ComplexInlineShardingAlgorithm
 org.apache.shardingsphere.sharding.algorithm.sharding.hint.HintInlineShardingAlgorithm
-org.apache.shardingsphere.sharding.algorithm.sharding.cosid.CosIdModShardingAlgorithm
-org.apache.shardingsphere.sharding.algorithm.sharding.cosid.CosIdIntervalShardingAlgorithm
-org.apache.shardingsphere.sharding.algorithm.sharding.cosid.CosIdSnowflakeIntervalShardingAlgorithm

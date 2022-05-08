@@ -20,11 +20,11 @@ package org.apache.shardingsphere.sharding.route.strategy;
 import com.google.common.collect.Range;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
+import org.apache.shardingsphere.sharding.fixture.CoreComplexKeysShardingAlgorithmFixture;
+import org.apache.shardingsphere.sharding.fixture.CoreStandardShardingAlgorithmFixture;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.RangeShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
-import org.apache.shardingsphere.sharding.route.strategy.fixture.ComplexKeysShardingAlgorithmFixture;
-import org.apache.shardingsphere.sharding.route.strategy.fixture.StandardShardingAlgorithmFixture;
 import org.apache.shardingsphere.sharding.route.strategy.type.complex.ComplexShardingStrategy;
 import org.apache.shardingsphere.sharding.route.strategy.type.none.NoneShardingStrategy;
 import org.apache.shardingsphere.sharding.route.strategy.type.standard.StandardShardingStrategy;
@@ -53,7 +53,7 @@ public final class ShardingStrategyTest {
     
     @Test
     public void assertDoShardingForBetweenSingleKey() {
-        StandardShardingStrategy strategy = new StandardShardingStrategy("column", new StandardShardingAlgorithmFixture());
+        StandardShardingStrategy strategy = new StandardShardingStrategy("column", new CoreStandardShardingAlgorithmFixture());
         Collection<ShardingConditionValue> shardingConditionValues = Collections.singleton(new RangeShardingConditionValue<>("column", "logicTable", Range.open(1, 3)));
         assertThat(strategy.doSharding(targets, shardingConditionValues, DATA_NODE_INFO, new ConfigurationProperties(new Properties())), is(Collections.singleton("1")));
     }
@@ -64,7 +64,7 @@ public final class ShardingStrategyTest {
         expected.add("1");
         expected.add("2");
         expected.add("3");
-        ComplexShardingStrategy strategy = new ComplexShardingStrategy("column1, column2", new ComplexKeysShardingAlgorithmFixture());
+        ComplexShardingStrategy strategy = new ComplexShardingStrategy("column1, column2", new CoreComplexKeysShardingAlgorithmFixture());
         Collection<ShardingConditionValue> shardingConditionValues = Arrays.asList(
                 new ListShardingConditionValue<>("column1", "logicTable", Collections.singletonList(1)),
                 new RangeShardingConditionValue<>("column2", "logicTable", Range.open(1, 3)));

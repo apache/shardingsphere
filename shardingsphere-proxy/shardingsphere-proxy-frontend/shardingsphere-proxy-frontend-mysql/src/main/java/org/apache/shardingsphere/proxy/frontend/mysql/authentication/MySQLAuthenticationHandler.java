@@ -57,7 +57,7 @@ public final class MySQLAuthenticationHandler {
         }
         return null == databaseName || SQLCheckEngine.check(databaseName, rules, grantee) ? Optional.empty() : Optional.of(MySQLServerErrorCode.ER_DBACCESS_DENIED_ERROR);
     }
-
+    
     /**
      * Get authenticator.
      *

@@ -25,6 +25,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementParser.CreateDefaultShadowAlgorithmContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementParser.CreateShadowAlgorithmContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementParser.CreateShadowRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementParser.DropDefaultShadowAlgorithmContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementParser.DropShadowAlgorithmContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementParser.DropShadowRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementParser.SchemaNameContext;
@@ -42,6 +43,7 @@ import org.apache.shardingsphere.shadow.distsql.parser.statement.AlterShadowRule
 import org.apache.shardingsphere.shadow.distsql.parser.statement.CreateDefaultShadowAlgorithmStatement;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.CreateShadowAlgorithmStatement;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.CreateShadowRuleStatement;
+import org.apache.shardingsphere.shadow.distsql.parser.statement.DropDefaultShadowAlgorithmStatement;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.DropShadowAlgorithmStatement;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.DropShadowRuleStatement;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.ShowShadowAlgorithmsStatement;
@@ -51,7 +53,6 @@ import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.StringLiteralValue;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -92,14 +93,14 @@ public final class ShadowDistSQLStatementVisitor extends ShadowDistSQLStatementB
     public ASTNode visitShadowAlgorithmDefinition(final ShadowAlgorithmDefinitionContext ctx) {
         AlgorithmSegment segment = new AlgorithmSegment(getIdentifierValue(ctx.shadowAlgorithmType()), getAlgorithmProperties(ctx.algorithmProperties()));
         String algorithmName = null != ctx.algorithmName() ? getIdentifierValue(ctx.algorithmName())
-                : createAlgorithmName(getIdentifierValue(((ShadowRuleDefinitionContext) ctx.getParent().getParent()).ruleName()), 
-                getIdentifierValue(((ShadowTableRuleContext) ctx.getParent()).tableName()), segment);
+                : createAlgorithmName(getIdentifierValue(((ShadowRuleDefinitionContext) ctx.getParent().getParent()).ruleName()),
+                        getIdentifierValue(((ShadowTableRuleContext) ctx.getParent()).tableName()), segment);
         return new ShadowAlgorithmSegment(algorithmName, segment);
     }
     
     private Properties getAlgorithmProperties(final AlgorithmPropertiesContext ctx) {
         Properties result = new Properties();
-        ctx.algorithmProperty().forEach(each -> result.put(new IdentifierValue(each.key.getText()).getValue(), new StringLiteralValue(each.value.getText()).getValue()));
+        ctx.algorithmProperty().forEach(each -> result.put(IdentifierValue.getQuotedContent(each.key.getText()), IdentifierValue.getQuotedContent(each.value.getText())));
         return result;
     }
     
@@ -128,6 +129,11 @@ public final class ShadowDistSQLStatementVisitor extends ShadowDistSQLStatementB
     public ASTNode visitDropShadowAlgorithm(final DropShadowAlgorithmContext ctx) {
         return new DropShadowAlgorithmStatement(null != ctx.existClause(), null == ctx.algorithmName() ? Collections.emptyList()
                 : ctx.algorithmName().stream().map(this::getIdentifierValue).collect(Collectors.toSet()));
+    }
+    
+    @Override
+    public ASTNode visitDropDefaultShadowAlgorithm(final DropDefaultShadowAlgorithmContext ctx) {
+        return new DropDefaultShadowAlgorithmStatement(null != ctx.existClause());
     }
     
     @Override

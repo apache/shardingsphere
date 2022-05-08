@@ -153,7 +153,7 @@ public final class ComputeNodePersistService {
             if (actualLabels.stream().anyMatch(labels::contains)) {
                 ComputeNodeInstance instance = new ComputeNodeInstance(new InstanceDefinition(instanceType, each));
                 instance.setLabels(actualLabels);
-                instance.setStatus(loadInstanceStatus(each));
+                instance.switchState(loadInstanceStatus(each));
                 loadInstanceWorkerId(each).ifPresent(instance::setWorkerId);
                 result.add(instance);
             }
@@ -184,7 +184,7 @@ public final class ComputeNodePersistService {
     public ComputeNodeInstance loadComputeNodeInstance(final InstanceDefinition instanceDefinition) {
         ComputeNodeInstance result = new ComputeNodeInstance(instanceDefinition);
         result.setLabels(loadInstanceLabels(instanceDefinition.getInstanceId().getId()));
-        result.setStatus(loadInstanceStatus(instanceDefinition.getInstanceId().getId()));
+        result.switchState(loadInstanceStatus(instanceDefinition.getInstanceId().getId()));
         loadInstanceWorkerId(instanceDefinition.getInstanceId().getId()).ifPresent(result::setWorkerId);
         loadXaRecoveryId(instanceDefinition.getInstanceId().getId()).ifPresent(result::setXaRecoveryId);
         return result;

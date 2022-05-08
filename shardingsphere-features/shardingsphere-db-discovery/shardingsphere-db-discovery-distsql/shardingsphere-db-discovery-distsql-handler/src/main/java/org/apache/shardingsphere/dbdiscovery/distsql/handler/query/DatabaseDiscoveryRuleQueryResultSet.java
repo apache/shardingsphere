@@ -62,6 +62,7 @@ public final class DatabaseDiscoveryRuleQueryResultSet implements DistSQLResultS
     
     private Map<String, String> primaryDataSources;
     
+    @SuppressWarnings("unchecked")
     @Override
     public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
         Optional<DatabaseDiscoveryRuleConfiguration> ruleConfig = metaData.getRuleMetaData().getConfigurations()
@@ -101,11 +102,9 @@ public final class DatabaseDiscoveryRuleQueryResultSet implements DistSQLResultS
         return Arrays.asList(groupName, String.join(",", dataSourceRuleConfig.getDataSourceNames()), primaryDataSourceName, typeMap, heartbeatMap);
     }
     
+    @SuppressWarnings("unchecked")
     private Map<String, String> convertToMap(final Object obj) {
-        if (null == obj) {
-            return Collections.emptyMap();
-        }
-        return new Gson().fromJson(new Gson().toJson(obj), LinkedHashMap.class);
+        return null == obj ? Collections.emptyMap() : new Gson().fromJson(new Gson().toJson(obj), LinkedHashMap.class);
     }
     
     @Override

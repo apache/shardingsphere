@@ -42,7 +42,7 @@ public final class OutputSegment implements SQLSegment {
     @Setter
     private TableNameSegment tableName;
     
-    private Collection<ColumnProjectionSegment> outputColumns = new LinkedList<>();
+    private final Collection<ColumnProjectionSegment> outputColumns = new LinkedList<>();
     
-    private Collection<ColumnSegment> tableColumns = new LinkedList<>();
+    private final Collection<ColumnSegment> tableColumns = new LinkedList<>();
 }

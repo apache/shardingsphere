@@ -37,11 +37,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class EncryptContextBuilderTest {
-
+    
     @Test
     public void assertBuildWhenConfigDateType() {
-        EncryptContext actual = EncryptContextBuilder.build("encrypt_db", "test", "cipher", mockEncryptRule());
-        assertThat(actual.getSchemaName(), is("encrypt_db"));
+        EncryptContext actual = EncryptContextBuilder.build("encrypt_db", "encrypt_db", "test", "cipher", mockEncryptRule());
+        assertThat(actual.getDatabaseName(), is("encrypt_db"));
         assertThat(actual.getTableName(), is("test"));
         assertThat(actual.getColumnName(), is("cipher"));
         assertTrue(actual.getLogicDataType().isPresent());
@@ -60,8 +60,8 @@ public final class EncryptContextBuilderTest {
     
     @Test
     public void assertBuildWhenNotConfigDateType() {
-        EncryptContext actual = EncryptContextBuilder.build("encrypt_db", "test", "cipher", mock(EncryptRule.class));
-        assertThat(actual.getSchemaName(), is("encrypt_db"));
+        EncryptContext actual = EncryptContextBuilder.build("encrypt_db", "encrypt_db", "test", "cipher", mock(EncryptRule.class));
+        assertThat(actual.getDatabaseName(), is("encrypt_db"));
         assertThat(actual.getTableName(), is("test"));
         assertThat(actual.getColumnName(), is("cipher"));
         assertFalse(actual.getLogicDataType().isPresent());
@@ -91,7 +91,7 @@ public final class EncryptContextBuilderTest {
         EncryptColumnDataType cipherDataType = new EncryptColumnDataType("varchar(200) not null default ''", dataTypes);
         EncryptColumnDataType assistedQueryDataType = new EncryptColumnDataType("varchar(200) not null", dataTypes);
         EncryptColumnDataType plainDataType = new EncryptColumnDataType("int(20) unsigned not null default 0", dataTypes);
-        return new EncryptColumn(logicDataType, "cipher_certificate_number", cipherDataType, "assisted_certificate_number", 
+        return new EncryptColumn(logicDataType, "cipher_certificate_number", cipherDataType, "assisted_certificate_number",
                 assistedQueryDataType, "certificate_number_plain", plainDataType, "test");
     }
 }

@@ -22,8 +22,10 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaDataFactory;
+import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaDataReflection;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.custom.CustomDataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.registry.GlobalDataSourceRegistry;
 
 import javax.sql.DataSource;
 import java.util.LinkedHashMap;
@@ -38,6 +40,9 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DataSourcePoolCreator {
     
+    // TODO pipeline doesn't need cache even if cache is enabled, since there might be some temp data sources
+    // TODO when all data source configurations of instance are dropped by DistSQL, cached data source should be closed
+    
     /**
      * Create data sources.
      *
@@ -45,7 +50,8 @@ public final class DataSourcePoolCreator {
      * @return created data sources
      */
     public static Map<String, DataSource> create(final Map<String, DataSourceProperties> dataSourcePropsMap) {
-        return dataSourcePropsMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        return dataSourcePropsMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> create(entry.getKey(), entry.getValue()), (oldValue, currentValue) -> oldValue,
+                LinkedHashMap::new));
     }
     
     /**
@@ -55,6 +61,7 @@ public final class DataSourcePoolCreator {
      * @return created data source
      */
     public static DataSource create(final DataSourceProperties dataSourceProps) {
+        // TODO when aggregation is enabled, some data source properties should be changed, e.g. maxPoolSize
         DataSource result = createDataSource(dataSourceProps.getDataSourceClassName());
         Optional<DataSourcePoolMetaData> poolMetaData = DataSourcePoolMetaDataFactory.newInstance(dataSourceProps.getDataSourceClassName());
         DataSourceReflection dataSourceReflection = new DataSourceReflection(result);
@@ -62,9 +69,24 @@ public final class DataSourcePoolCreator {
             setDefaultFields(dataSourceReflection, poolMetaData.get());
             setConfiguredFields(dataSourceProps, dataSourceReflection, poolMetaData.get());
             appendJdbcUrlProperties(dataSourceProps.getCustomDataSourceProperties(), result, poolMetaData.get());
-            dataSourceReflection.addDefaultDataSourceProperties(poolMetaData.get());
+            dataSourceReflection.addDefaultDataSourceProperties();
         } else {
             setConfiguredFields(dataSourceProps, dataSourceReflection);
+        }
+        return result;
+    }
+    
+    /**
+     * Create data source.
+     *
+     * @param dataSourceName data source name
+     * @param dataSourceProps data source properties
+     * @return created data source
+     */
+    public static DataSource create(final String dataSourceName, final DataSourceProperties dataSourceProps) {
+        DataSource result = create(dataSourceProps);
+        if (!GlobalDataSourceRegistry.getInstance().getCachedDataSourceDataSources().containsKey(dataSourceName)) {
+            GlobalDataSourceRegistry.getInstance().getCachedDataSourceDataSources().put(dataSourceName, result);
         }
         return result;
     }
@@ -90,7 +112,7 @@ public final class DataSourcePoolCreator {
         for (Entry<String, Object> entry : dataSourceProps.getAllLocalProperties().entrySet()) {
             String fieldName = entry.getKey();
             Object fieldValue = entry.getValue();
-            if (isValidProperty(fieldName, fieldValue, poolMetaData) && !fieldName.equals(poolMetaData.getJdbcUrlMetaData().getJdbcUrlPropertiesFieldName())) {
+            if (isValidProperty(fieldName, fieldValue, poolMetaData) && !fieldName.equals(poolMetaData.getFieldMetaData().getJdbcUrlPropertiesFieldName())) {
                 dataSourceReflection.setField(fieldName, fieldValue);
             }
         }
@@ -102,11 +124,12 @@ public final class DataSourcePoolCreator {
     
     @SuppressWarnings("unchecked")
     private static void appendJdbcUrlProperties(final CustomDataSourceProperties customDataSourceProps, final DataSource targetDataSource, final DataSourcePoolMetaData poolMetaData) {
-        String jdbcUrlPropertiesFieldName = poolMetaData.getJdbcUrlMetaData().getJdbcUrlPropertiesFieldName();
+        String jdbcUrlPropertiesFieldName = poolMetaData.getFieldMetaData().getJdbcUrlPropertiesFieldName();
         if (null != jdbcUrlPropertiesFieldName && customDataSourceProps.getProperties().containsKey(jdbcUrlPropertiesFieldName)) {
             Map<String, Object> jdbcUrlProps = (Map<String, Object>) customDataSourceProps.getProperties().get(jdbcUrlPropertiesFieldName);
+            DataSourcePoolMetaDataReflection dataSourcePoolMetaDataReflection = new DataSourcePoolMetaDataReflection(targetDataSource, poolMetaData.getFieldMetaData());
             for (Entry<String, Object> entry : jdbcUrlProps.entrySet()) {
-                poolMetaData.getJdbcUrlMetaData().appendJdbcUrlProperties(entry.getKey(), entry.getValue().toString(), targetDataSource);
+                dataSourcePoolMetaDataReflection.getJdbcConnectionProperties().setProperty(entry.getKey(), entry.getValue().toString());
             }
         }
     }

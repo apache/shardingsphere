@@ -46,7 +46,7 @@ Support two type shadow algorithms.
 
 The shadow judgment first judges whether there is an intersection between SQL related tables and configured shadow tables.
 
-If there is an intersection, determine the shadow algorithm associated with the shadow table of the intersection in turn，and any one of them was successful. SQL statement executed shadow DB.
+If there is an intersection, determine the shadow algorithm associated with the shadow table of the intersection in turn, and any one of them was successful. SQL statement executed shadow DB.
 
 If shadow tables have no intersection, or shadow algorithms are unsuccessful, SQL statement executed production DB.
 
@@ -72,7 +72,7 @@ Shadow algorithm details, please refer to [List of built-in shadow algorithms](/
 
 Assume that the e-commerce website wants to perform pressure testing on the order business,
 
-the pressure testing related table `t_order` is a shadow table，the production data executed to the `ds` production DB, and the pressure testing data executed to the database `ds_shadow` shadow DB.
+the pressure testing related table `t_order` is a shadow table, the production data executed to the `ds` production DB, and the pressure testing data executed to the database `ds_shadow` shadow DB.
 
 ### Shadow DB configuration
 

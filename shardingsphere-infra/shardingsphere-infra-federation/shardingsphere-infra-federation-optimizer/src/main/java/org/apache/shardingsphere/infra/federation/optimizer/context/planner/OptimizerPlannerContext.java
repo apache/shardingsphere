@@ -22,6 +22,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
 
+import java.util.Map;
+
 /**
  * Optimize planner context.
  */
@@ -29,7 +31,7 @@ import org.apache.calcite.sql2rel.SqlToRelConverter;
 @Getter
 public final class OptimizerPlannerContext {
     
-    private final SqlValidator validator;
+    private final Map<String, SqlValidator> validators;
     
-    private final SqlToRelConverter converter;
+    private final Map<String, SqlToRelConverter> converters;
 }

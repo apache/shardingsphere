@@ -40,7 +40,7 @@ public final class ShowIndexStatementContext extends CommonSQLStatementContext<M
     
     public ShowIndexStatementContext(final MySQLShowIndexStatement sqlStatement) {
         super(sqlStatement);
-        tablesContext = new TablesContext(sqlStatement.getTable());
+        tablesContext = new TablesContext(sqlStatement.getTable(), getDatabaseType());
     }
     
     @Override

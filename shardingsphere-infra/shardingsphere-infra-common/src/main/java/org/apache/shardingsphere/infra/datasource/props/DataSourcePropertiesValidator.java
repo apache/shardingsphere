@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.datasource.props;
 
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
-import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyerFactory;
+import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourcesException;
 
 import javax.sql.DataSource;
@@ -57,17 +57,19 @@ public final class DataSourcePropertiesValidator {
         DataSource dataSource = null;
         try {
             dataSource = DataSourcePoolCreator.create(dataSourceProps);
+            checkFailFast(dataSource);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
             throw new InvalidDataSourcePropertiesException(dataSourceName, ex.getMessage());
         } finally {
             if (null != dataSource) {
-                try {
-                    DataSourcePoolDestroyerFactory.destroy(dataSource);
-                } catch (final SQLException ignored) {
-                }
+                new DataSourcePoolDestroyer(dataSource).asyncDestroy();
             }
         }
+    }
+    
+    private void checkFailFast(final DataSource dataSource) throws SQLException {
+        dataSource.getConnection();
     }
 }

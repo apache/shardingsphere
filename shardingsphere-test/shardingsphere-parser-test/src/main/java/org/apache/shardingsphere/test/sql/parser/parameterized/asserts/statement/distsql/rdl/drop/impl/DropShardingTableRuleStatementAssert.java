@@ -23,6 +23,13 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingT
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropShardingTableRuleStatementTestCase;
 
+import java.util.stream.Collectors;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+
 /**
  * Drop sharding table rule statement assert.
  */
@@ -37,5 +44,13 @@ public final class DropShardingTableRuleStatementAssert {
      * @param expected expected drop sharding table rule statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DropShardingTableRuleStatement actual, final DropShardingTableRuleStatementTestCase expected) {
+        if (null == expected) {
+            assertNull(assertContext.getText("Actual statement should not exist."), actual);
+        } else {
+            assertNotNull(assertContext.getText("Actual statement should exist."), actual);
+            assertThat(assertContext.getText("Sharding table rule assertion error: "), actual.getTableNames().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList()),
+                    is(expected.getTables()));
+            assertThat(assertContext.getText("Sharding table rule assertion error: "), actual.isContainsExistClause(), is(expected.isContainsExistClause()));
+        }
     }
 }

@@ -34,7 +34,7 @@ public final class ExpectedExpressionOrderByItem extends ExpectedOrderByItem {
     
     @XmlAttribute
     private String expression;
-
+    
     @XmlElement(name = "expr")
     private ExpectedExpression expr;
 }

@@ -32,6 +32,8 @@ public final class ExportableConstants {
     
     public static final String EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE_NAME = "auto_aware_data_source_name";
     
+    public static final String EXPORTABLE_KEY_ENABLED_DATA_SOURCE = "enabled_data_source";
+    
     public static final String EXPORTABLE_KEY_DATA_SOURCE = "data_source";
     
     public static final String EXPORTABLE_KEY_SINGLE_TABLES = "single_tables";

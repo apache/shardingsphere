@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.spring.namespace;
 
-import org.apache.shardingsphere.spring.namespace.fixture.ShardingSphereFixtureAlgorithm;
 import org.apache.shardingsphere.spring.namespace.fixture.FooShardingSphereFixtureAlgorithm;
+import org.apache.shardingsphere.spring.namespace.fixture.ShardingSphereFixtureAlgorithm;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
@@ -28,7 +28,6 @@ import javax.annotation.Resource;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 @ContextConfiguration(locations = "classpath:META-INF/spring/application-context.xml")
 public final class ShardingSphereAlgorithmSpringNamespaceTest extends AbstractJUnit4SpringContextTests {
@@ -42,14 +41,12 @@ public final class ShardingSphereAlgorithmSpringNamespaceTest extends AbstractJU
     @Test
     public void assertAlgorithmWithProps() {
         assertThat(algorithmWithProps.getType(), is("FIXTURE"));
-        assertThat(algorithmWithProps.getProps().getProperty("fixture-value"), is("foo"));
         assertThat(((FooShardingSphereFixtureAlgorithm) algorithmWithProps).getValue(), is("foo"));
     }
     
     @Test
     public void assertAlgorithmWithoutProps() {
         assertThat(algorithmWithoutProps.getType(), is("FIXTURE"));
-        assertTrue(algorithmWithoutProps.getProps().isEmpty());
         assertNull(((FooShardingSphereFixtureAlgorithm) algorithmWithoutProps).getValue());
     }
 }

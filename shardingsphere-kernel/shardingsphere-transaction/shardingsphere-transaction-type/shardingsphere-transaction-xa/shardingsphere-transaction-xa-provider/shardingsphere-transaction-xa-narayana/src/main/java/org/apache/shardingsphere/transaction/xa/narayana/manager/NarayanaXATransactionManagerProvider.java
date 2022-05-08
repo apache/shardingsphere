@@ -17,10 +17,14 @@
 
 package org.apache.shardingsphere.transaction.xa.narayana.manager;
 
+import com.arjuna.ats.arjuna.objectstore.StoreManager;
 import com.arjuna.ats.arjuna.recovery.RecoveryManager;
+import com.arjuna.ats.internal.arjuna.recovery.AtomicActionRecoveryModule;
 import com.arjuna.ats.internal.jta.recovery.arjunacore.XARecoveryModule;
 import com.arjuna.ats.jbossatx.jta.RecoveryManagerService;
 import com.arjuna.ats.jta.common.jtaPropertyManager;
+import com.arjuna.common.internal.util.propertyservice.BeanPopulator;
+import com.arjuna.common.util.propertyservice.PropertiesFactory;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.transaction.xa.spi.SingleXAResource;
@@ -30,7 +34,9 @@ import javax.sql.XADataSource;
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
+import java.lang.reflect.Field;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * Narayana transaction manager provider.
@@ -78,6 +84,48 @@ public final class NarayanaXATransactionManagerProvider implements XATransaction
     public void close() throws Exception {
         recoveryManagerService.stop();
         recoveryManagerService.destroy();
+        propertiesFactoryClean();
+        beanPopulatorClean();
+        atomicActionRecoveryClean();
+        xaRecoveryModuleClean();
+        storeManagerClean();
+    }
+    
+    private void propertiesFactoryClean() throws NoSuchFieldException, IllegalAccessException {
+        Field field = PropertiesFactory.class.getDeclaredField("delegatePropertiesFactory");
+        field.setAccessible(true);
+        field.set("delegatePropertiesFactory", null);
+    }
+    
+    private void beanPopulatorClean() throws NoSuchFieldException, IllegalAccessException {
+        Field field = BeanPopulator.class.getDeclaredField("beanInstances");
+        field.setAccessible(true);
+        ConcurrentMap map = (ConcurrentMap) field.get("beanInstances");
+        map.clear();
+    }
+    
+    private void atomicActionRecoveryClean() throws NoSuchFieldException, IllegalAccessException {
+        Field field = AtomicActionRecoveryModule.class.getDeclaredField("_recoveryStore");
+        field.setAccessible(true);
+        field.set("_recoveryStore", null);
+    }
+    
+    private void xaRecoveryModuleClean() throws NoSuchFieldException, IllegalAccessException {
+        Field field = XARecoveryModule.class.getDeclaredField("registeredXARecoveryModule");
+        field.setAccessible(true);
+        field.set("registeredXARecoveryModule", null);
+    }
+    
+    private void storeManagerClean() throws NoSuchFieldException, IllegalAccessException {
+        Field actionStoreField = StoreManager.class.getDeclaredField("actionStore");
+        actionStoreField.setAccessible(true);
+        actionStoreField.set("actionStore", null);
+        Field stateStoreField = StoreManager.class.getDeclaredField("stateStore");
+        stateStoreField.setAccessible(true);
+        stateStoreField.set("stateStore", null);
+        Field communicationStoreField = StoreManager.class.getDeclaredField("communicationStore");
+        communicationStoreField.setAccessible(true);
+        communicationStoreField.set("communicationStore", null);
     }
     
     @Override

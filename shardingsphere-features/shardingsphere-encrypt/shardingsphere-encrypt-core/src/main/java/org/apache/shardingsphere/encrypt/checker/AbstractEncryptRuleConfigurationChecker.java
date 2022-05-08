@@ -29,8 +29,8 @@ import org.apache.shardingsphere.infra.config.checker.RuleConfigurationChecker;
 public abstract class AbstractEncryptRuleConfigurationChecker<T extends RuleConfiguration> implements RuleConfigurationChecker<T> {
     
     @Override
-    public final void check(final String schemaName, final T config) {
-        Preconditions.checkState(!isEmptyEncryptors(config), "No available encrypt rule configuration in schema `%s`.", schemaName);
+    public final void check(final String databaseName, final T config) {
+        Preconditions.checkState(!isEmptyEncryptors(config), "No available encrypt rule configuration in database `%s`.", databaseName);
     }
     
     protected abstract boolean isEmptyEncryptors(T config);

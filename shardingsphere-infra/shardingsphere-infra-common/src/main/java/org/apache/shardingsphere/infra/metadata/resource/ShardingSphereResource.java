@@ -19,11 +19,10 @@ package org.apache.shardingsphere.infra.metadata.resource;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyerFactory;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -64,24 +63,11 @@ public final class ShardingSphereResource {
     }
     
     /**
-     * Close data sources.
-     * 
-     * @param dataSources data sources to be closed
-     * @throws SQLException SQL exception
-     */
-    public void close(final Collection<String> dataSources) throws SQLException {
-        for (String each : dataSources) {
-            close(this.dataSources.get(each));
-        }
-    }
-    
-    /**
      * Close data source.
      *
      * @param dataSource data source to be closed
-     * @throws SQLException SQL exception
      */
-    public void close(final DataSource dataSource) throws SQLException {
-        DataSourcePoolDestroyerFactory.destroy(dataSource);
+    public void close(final DataSource dataSource) {
+        new DataSourcePoolDestroyer(dataSource).asyncDestroy();
     }
 }

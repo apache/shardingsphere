@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlElement;
 @Getter
 @Setter
 public final class ShowProcedureCodeStatementTestCase extends SQLParserTestCase {
-
+    
     @XmlElement(name = "function")
     private ExpectedFunction function;
 }
