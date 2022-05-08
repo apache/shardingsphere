@@ -17,16 +17,18 @@
 
 package org.apache.shardingsphere.infra.rewrite.context;
 
-import org.apache.shardingsphere.spi.type.ordered.OrderedSPI;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.spi.type.ordered.OrderedSPI;
 
 /**
  * SQL rewrite context decorator.
  *
  * @param <T> type of rule
  */
+@SingletonSPI
 public interface SQLRewriteContextDecorator<T extends ShardingSphereRule> extends OrderedSPI<T> {
     
     /**
