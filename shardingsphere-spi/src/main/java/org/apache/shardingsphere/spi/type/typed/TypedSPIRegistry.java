@@ -71,8 +71,8 @@ public final class TypedSPIRegistry {
         return Optional.empty();
     }
     
-    private static boolean matchesType(final String type, final TypedSPI typedSPI) {
-        return typedSPI.getType().equalsIgnoreCase(type) || typedSPI.getTypeAliases().contains(type);
+    private static boolean matchesType(final String type, final TypedSPI instance) {
+        return instance.getType().equalsIgnoreCase(type) || instance.getTypeAliases().contains(type);
     }
     
     private static Properties convertToStringTypedProperties(final Properties props) {
