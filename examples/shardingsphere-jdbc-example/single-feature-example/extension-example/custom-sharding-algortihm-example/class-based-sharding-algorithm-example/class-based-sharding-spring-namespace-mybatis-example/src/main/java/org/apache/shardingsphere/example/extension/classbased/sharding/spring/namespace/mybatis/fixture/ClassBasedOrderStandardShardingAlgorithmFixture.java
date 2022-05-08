@@ -20,7 +20,6 @@ package org.apache.shardingsphere.example.extension.classbased.sharding.spring.n
 import com.google.common.base.Preconditions;
 import com.google.common.primitives.Ints;
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
@@ -33,13 +32,13 @@ public final class ClassBasedOrderStandardShardingAlgorithmFixture implements St
     private static final String SHARDING_COUNT = "sharding-count";
     
     @Getter
-    @Setter
     private Properties props;
     
     private Integer shardingCount;
     
     @Override
     public void init(final Properties props) {
+        this.props = props;
         Preconditions.checkArgument(props.containsKey(SHARDING_COUNT), "%s can not be null.", SHARDING_COUNT);
         shardingCount = Ints.tryParse(props.getProperty(SHARDING_COUNT));
         Preconditions.checkArgument(null != shardingCount, "%s is not valid.", SHARDING_COUNT);

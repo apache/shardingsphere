@@ -15,25 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.fixture;
+package org.apache.shardingsphere.data.pipeline.spi.ratelimit;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
+import org.apache.shardingsphere.data.pipeline.api.job.JobOperationType;
 
 import java.util.Properties;
 
 @Getter
-public final class FixtureShardingSphereAlgorithm implements ShardingSphereAlgorithm {
+public final class OutputJobRateLimitAlgorithmFixture implements JobRateLimitAlgorithm {
     
-    private String testValue;
+    private Properties props;
     
     @Override
     public void init(final Properties props) {
-        testValue = props.getProperty("key");
+        this.props = props;
     }
     
     @Override
     public String getType() {
-        return "FIXTURE";
+        return "FIXTURE_OUTPUT";
+    }
+    
+    @Override
+    public void intercept(final JobOperationType type, final Number data) {
     }
 }

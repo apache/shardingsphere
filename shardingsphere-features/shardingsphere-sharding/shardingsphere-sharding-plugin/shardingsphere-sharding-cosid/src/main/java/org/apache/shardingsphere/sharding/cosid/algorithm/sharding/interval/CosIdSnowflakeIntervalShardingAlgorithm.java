@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.sharding.cosid.algorithm.sharding.interval;
 
 import com.google.common.base.Strings;
-import lombok.Getter;
-import lombok.Setter;
 import me.ahoo.cosid.converter.Radix62IdConverter;
 import me.ahoo.cosid.snowflake.MillisecondSnowflakeId;
 import me.ahoo.cosid.snowflake.MillisecondSnowflakeIdStateParser;
@@ -38,10 +36,6 @@ public final class CosIdSnowflakeIntervalShardingAlgorithm extends AbstractCosId
     public static final String TYPE = CosIdAlgorithmConstants.TYPE_PREFIX + "INTERVAL_SNOWFLAKE";
     
     public static final String EPOCH_KEY = "epoch";
-    
-    @Getter
-    @Setter
-    private Properties props;
     
     private volatile SnowflakeIdStateParser snowflakeIdStateParser;
     

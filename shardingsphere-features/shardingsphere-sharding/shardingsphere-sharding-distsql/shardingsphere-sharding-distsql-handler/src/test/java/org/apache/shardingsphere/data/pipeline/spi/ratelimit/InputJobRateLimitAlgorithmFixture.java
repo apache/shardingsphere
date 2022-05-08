@@ -15,29 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.aware;
+package org.apache.shardingsphere.data.pipeline.spi.ratelimit;
+
+import lombok.Getter;
+import org.apache.shardingsphere.data.pipeline.api.job.JobOperationType;
 
 import java.util.Properties;
 
-/**
- * SPI properties aware.
- */
-public interface SPIPropertiesAware {
+@Getter
+public final class InputJobRateLimitAlgorithmFixture implements JobRateLimitAlgorithm {
     
-    /**
-     * Get properties.
-     *
-     * @return properties
-     */
-    default Properties getProps() {
-        return new Properties();
+    private Properties props;
+    
+    @Override
+    public void init(final Properties props) {
+        this.props = props;
     }
     
-    /**
-     * Set properties.
-     *
-     * @param props properties
-     */
-    default void setProps(Properties props) {
+    @Override
+    public String getType() {
+        return "FIXTURE_INPUT";
+    }
+    
+    @Override
+    public void intercept(final JobOperationType type, final Number data) {
     }
 }

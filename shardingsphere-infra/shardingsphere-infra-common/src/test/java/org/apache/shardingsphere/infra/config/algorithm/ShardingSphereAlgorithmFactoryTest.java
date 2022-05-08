@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.config.algorithm;
 
-import org.apache.shardingsphere.infra.config.fixture.FixtureShardingSphereAlgorithm;
+import org.apache.shardingsphere.infra.config.fixture.ShardingSphereAlgorithmFixture;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -40,7 +40,7 @@ public final class ShardingSphereAlgorithmFactoryTest {
         Properties props = new Properties();
         props.setProperty("key", "value");
         ShardingSphereAlgorithm actual = ShardingSphereAlgorithmFactory.createAlgorithm(new ShardingSphereAlgorithmConfiguration("FIXTURE", props), ShardingSphereAlgorithm.class);
-        assertThat(actual, instanceOf(FixtureShardingSphereAlgorithm.class));
-        assertThat(((FixtureShardingSphereAlgorithm) actual).getTestValue(), is("value"));
+        assertThat(actual, instanceOf(ShardingSphereAlgorithmFixture.class));
+        assertThat(((ShardingSphereAlgorithmFixture) actual).getTestValue(), is("value"));
     }
 }

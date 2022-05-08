@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.authority.provider.schema;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.provider.schema.builder.SchemaPrivilegeBuilder;
 import org.apache.shardingsphere.authority.spi.AuthorityProviderAlgorithm;
@@ -39,11 +38,15 @@ public final class SchemaPrivilegesPermittedAuthorityProviderAlgorithm implement
     
     public static final String PROP_USER_SCHEMA_MAPPINGS = "user-schema-mappings";
     
+    @Getter
+    private Properties props;
+    
     private final Map<ShardingSphereUser, ShardingSpherePrivileges> userPrivilegeMap = new ConcurrentHashMap<>();
     
-    @Getter
-    @Setter
-    private Properties props;
+    @Override
+    public void init(final Properties props) {
+        this.props = props;
+    }
     
     @Override
     public void init(final Map<String, ShardingSphereMetaData> metaDataMap, final Collection<ShardingSphereUser> users) {

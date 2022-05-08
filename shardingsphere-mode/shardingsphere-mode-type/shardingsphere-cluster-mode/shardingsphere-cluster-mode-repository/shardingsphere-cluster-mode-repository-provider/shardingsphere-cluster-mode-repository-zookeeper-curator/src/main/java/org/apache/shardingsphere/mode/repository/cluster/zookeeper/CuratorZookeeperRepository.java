@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mode.repository.cluster.zookeeper;
 
 import com.google.common.base.Strings;
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.CuratorFrameworkFactory.Builder;
@@ -69,8 +68,12 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     private ZookeeperInternalLockHolder internalLockHolder;
     
     @Getter
-    @Setter
     private Properties props = new Properties();
+    
+    @Override
+    public void init(final Properties props) {
+        this.props = props;
+    }
     
     @Override
     public void init(final ClusterPersistRepositoryConfiguration config) {

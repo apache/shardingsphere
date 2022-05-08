@@ -37,10 +37,10 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = YmlShadowDefaultSpringBootStarterTest.class)
+@SpringBootTest(classes = YamlShadowDefaultSpringBootStarterTest.class)
 @SpringBootApplication
 @ActiveProfiles("shadow-default")
-public class YmlShadowDefaultSpringBootStarterTest {
+public class YamlShadowDefaultSpringBootStarterTest {
     
     @Resource
     private AlgorithmProvidedShadowRuleConfiguration shadowRuleConfiguration;

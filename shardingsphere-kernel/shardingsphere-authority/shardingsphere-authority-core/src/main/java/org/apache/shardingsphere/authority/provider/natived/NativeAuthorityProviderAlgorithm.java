@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.authority.provider.natived;
 
+import lombok.Getter;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.provider.natived.builder.StoragePrivilegeBuilder;
 import org.apache.shardingsphere.authority.spi.AuthorityProviderAlgorithm;
@@ -28,6 +29,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -38,7 +40,15 @@ import java.util.concurrent.ConcurrentHashMap;
 @Deprecated
 public final class NativeAuthorityProviderAlgorithm implements AuthorityProviderAlgorithm {
     
+    @Getter
+    private Properties props;
+    
     private final Map<ShardingSphereUser, ShardingSpherePrivileges> userPrivilegeMap = new ConcurrentHashMap<>();
+    
+    @Override
+    public void init(final Properties props) {
+        this.props = props;
+    }
     
     @Override
     public void init(final Map<String, ShardingSphereMetaData> metaDataMap, final Collection<ShardingSphereUser> users) {

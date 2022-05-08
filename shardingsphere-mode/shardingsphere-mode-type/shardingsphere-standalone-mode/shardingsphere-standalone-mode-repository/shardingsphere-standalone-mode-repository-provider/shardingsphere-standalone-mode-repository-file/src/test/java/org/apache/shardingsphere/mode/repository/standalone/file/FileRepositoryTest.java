@@ -37,7 +37,7 @@ public final class FileRepositoryTest {
     public void setUp() {
         Properties props = new Properties();
         props.setProperty("path", "target");
-        fileRepository.setProps(props);
+        fileRepository.init(props);
     }
     
     @Test

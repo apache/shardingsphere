@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.sharding.cosid.algorithm.sharding.interval;
 
 import com.google.common.base.Strings;
-import lombok.Getter;
-import lombok.Setter;
 import me.ahoo.cosid.util.LocalDateTimeConvert;
 import org.apache.shardingsphere.sharding.cosid.algorithm.CosIdAlgorithmConstants;
 
@@ -40,10 +38,6 @@ public final class CosIdIntervalShardingAlgorithm extends AbstractCosIdIntervalS
     public static final String TIMESTAMP_SECOND_UNIT = "SECOND";
     
     public static final String TIMESTAMP_UNIT_KEY = "ts-unit";
-    
-    @Getter
-    @Setter
-    private Properties props;
     
     private volatile boolean isSecondTs;
     

@@ -69,12 +69,11 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     private static TimeService timeService = new TimeService();
     
     @Getter
-    @Setter
     private Properties props;
     
-    private volatile int maxVibrationOffset;
+    private int maxVibrationOffset;
     
-    private volatile int maxTolerateTimeDifferenceMilliseconds;
+    private int maxTolerateTimeDifferenceMilliseconds;
     
     private volatile int sequenceOffset = -1;
     
@@ -97,6 +96,7 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     
     @Override
     public void init(final Properties props) {
+        this.props = props;
         maxVibrationOffset = getMaxVibrationOffset(props);
         maxTolerateTimeDifferenceMilliseconds = getMaxTolerateTimeDifferenceMilliseconds(props);
     }

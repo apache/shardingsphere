@@ -22,7 +22,6 @@ import groovy.lang.Closure;
 import groovy.lang.MissingMethodException;
 import groovy.util.Expando;
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.expr.InlineExpressionParser;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
@@ -42,15 +41,15 @@ public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<
     private static final String ALLOW_RANGE_QUERY_KEY = "allow-range-query-with-inline-sharding";
     
     @Getter
-    @Setter
     private Properties props;
     
-    private volatile String algorithmExpression;
+    private String algorithmExpression;
     
-    private volatile boolean allowRangeQuery;
+    private boolean allowRangeQuery;
     
     @Override
     public void init(final Properties props) {
+        this.props = props;
         algorithmExpression = getAlgorithmExpression(props);
         allowRangeQuery = isAllowRangeQuery(props);
     }

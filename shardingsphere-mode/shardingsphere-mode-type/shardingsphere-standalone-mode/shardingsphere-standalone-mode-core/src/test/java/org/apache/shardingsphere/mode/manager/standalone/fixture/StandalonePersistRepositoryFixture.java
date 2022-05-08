@@ -23,10 +23,20 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 public final class StandalonePersistRepositoryFixture implements StandalonePersistRepository {
     
-    private Map<String, String> persistMap = new HashMap<>();
+    private final Map<String, String> persistMap = new HashMap<>();
+    
+    @Override
+    public void init(final Properties props) {
+    }
+    
+    @Override
+    public Properties getProps() {
+        return new Properties();
+    }
     
     @Override
     public String get(final String key) {

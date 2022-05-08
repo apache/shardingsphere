@@ -55,10 +55,14 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
     
     private static final int DEFAULT_CHUNK_SIZE = 1000;
     
+    @Getter
+    private Properties props;
+    
     private int chunkSize;
     
     @Override
     public void init(final Properties props) {
+        this.props = props;
         chunkSize = getChunkSize(props);
     }
     

@@ -29,6 +29,12 @@ public interface SPIPostProcessor {
      * 
      * @param props properties to be initialized
      */
-    default void init(Properties props) {
-    }
+    void init(Properties props);
+    
+    /**
+     * Get properties.
+     *
+     * @return properties
+     */
+    Properties getProps();
 }

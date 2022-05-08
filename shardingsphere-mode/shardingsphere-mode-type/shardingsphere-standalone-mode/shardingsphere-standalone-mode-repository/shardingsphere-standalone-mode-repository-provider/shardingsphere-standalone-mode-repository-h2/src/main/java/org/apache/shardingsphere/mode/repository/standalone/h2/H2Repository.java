@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.repository.standalone.h2;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepository;
@@ -50,6 +51,9 @@ public final class H2Repository implements StandalonePersistRepository {
     
     private static final String SEPARATOR = "/";
     
+    @Getter
+    private Properties props;
+    
     private String jdbcUrl;
     
     private String user;
@@ -59,7 +63,7 @@ public final class H2Repository implements StandalonePersistRepository {
     private Connection connection;
     
     @Override
-    public void setProps(final Properties props) {
+    public void init(final Properties props) {
         H2RepositoryProperties localRepositoryProps = new H2RepositoryProperties(props);
         jdbcUrl = Optional.ofNullable(Strings.emptyToNull(localRepositoryProps.getValue(H2RepositoryPropertyKey.JDBC_URL))).orElse(DEFAULT_JDBC_URL);
         user = Optional.ofNullable(Strings.emptyToNull(localRepositoryProps.getValue(H2RepositoryPropertyKey.USER))).orElse(DEFAULT_USER);

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.traffic.algorithm.traffic.segment;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.traffic.api.traffic.segment.SegmentTrafficAlgorithm;
 import org.apache.shardingsphere.traffic.api.traffic.segment.SegmentTrafficValue;
 
@@ -34,13 +33,13 @@ public final class SQLRegexTrafficAlgorithm implements SegmentTrafficAlgorithm {
     private static final String REGEX_PROPS_KEY = "regex";
     
     @Getter
-    @Setter
     private Properties props;
     
     private Pattern regex;
     
     @Override
     public void init(final Properties props) {
+        this.props = props;
         Preconditions.checkArgument(props.containsKey(REGEX_PROPS_KEY), "%s can not be null.", REGEX_PROPS_KEY);
         regex = Pattern.compile(props.getProperty(REGEX_PROPS_KEY));
     }
