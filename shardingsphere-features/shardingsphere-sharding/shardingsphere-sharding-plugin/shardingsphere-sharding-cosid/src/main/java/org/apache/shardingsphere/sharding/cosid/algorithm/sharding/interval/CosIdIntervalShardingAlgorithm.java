@@ -39,9 +39,9 @@ public final class CosIdIntervalShardingAlgorithm extends AbstractCosIdIntervalS
     
     public static final String TIMESTAMP_UNIT_KEY = "ts-unit";
     
-    private volatile boolean isSecondTs;
+    private boolean isSecondTs;
     
-    private volatile DateTimeFormatter dateTimeFormatter;
+    private DateTimeFormatter dateTimeFormatter;
     
     @Override
     public void init(final Properties props) {

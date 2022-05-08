@@ -38,7 +38,7 @@ public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Com
     @Getter
     private Properties props;
     
-    private volatile int shardingCount;
+    private int shardingCount;
     
     @Override
     public void init(final Properties props) {
