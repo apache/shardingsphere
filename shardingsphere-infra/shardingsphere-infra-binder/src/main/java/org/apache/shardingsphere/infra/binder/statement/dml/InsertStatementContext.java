@@ -299,6 +299,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
             generatedKeyContexts.put(cursor, new GeneratedKeyContextEngine(insertStatements.get(cursor), schema).createGenerateKeyContext(insertColumnNames,
                     valueExpressions.get(cursor), parameters).orElse(null));
         }
+        onDuplicateKeyUpdateValueContext = onDuplicateKeyUpdateValueContexts.get(0);
         insertValueContexts = insertValueContextsMap.get(0);
         insertSelectContext = getInsertSelectContext(metaDataMap, parameters, parametersOffset, defaultDatabaseName).orElse(null);
     }
