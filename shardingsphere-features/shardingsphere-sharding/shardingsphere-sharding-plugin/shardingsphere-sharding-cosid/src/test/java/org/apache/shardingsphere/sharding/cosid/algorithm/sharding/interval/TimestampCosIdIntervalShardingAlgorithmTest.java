@@ -25,6 +25,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 public final class TimestampCosIdIntervalShardingAlgorithmTest {
+    
     static Iterable<Object[]> preciseArgsProviderAsTimestamp() {
         return IntervalShardingAlgorithmDataFixture.preciseArgsProvider(ldt -> ldt.toInstant(IntervalShardingAlgorithmDataFixture.ZONE_OFFSET_SHANGHAI).toEpochMilli());
     }
