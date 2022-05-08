@@ -96,11 +96,6 @@ public final class ShardingSphereDatabaseLockManager implements ShardingSphereLo
     }
     
     @Override
-    public ShardingSphereLock getLock(final String lockName) {
-        return locks.get(lockName);
-    }
-    
-    @Override
     public boolean isLocked(final String lockName) {
         if (locks.isEmpty()) {
             return false;
@@ -113,7 +108,7 @@ public final class ShardingSphereDatabaseLockManager implements ShardingSphereLo
     }
     
     /**
-     * Locked.
+     * Database locked.
      *
      * @param event database locked event
      */
@@ -129,7 +124,7 @@ public final class ShardingSphereDatabaseLockManager implements ShardingSphereLo
     }
     
     /**
-     * Lock released.
+     * Database lock released.
      *
      * @param event database lock released event
      */
@@ -140,7 +135,7 @@ public final class ShardingSphereDatabaseLockManager implements ShardingSphereLo
     }
     
     /**
-     * Ack locked.
+     * Database ack locked.
      *
      * @param event database ack locked event
      */
@@ -150,7 +145,7 @@ public final class ShardingSphereDatabaseLockManager implements ShardingSphereLo
     }
     
     /**
-     * Ack lock released.
+     * Database ack lock released.
      *
      * @param event database ack lock released event
      */

@@ -25,8 +25,6 @@ import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.traffic.spi.TrafficAlgorithm;
 
-import java.util.Properties;
-
 /**
  * Traffic algorithm factory.
  */
@@ -54,6 +52,6 @@ public final class TrafficAlgorithmFactory {
      * @return contains traffic algorithm or not
      */
     public static boolean contains(final String trafficAlgorithmType) {
-        return TypedSPIRegistry.findRegisteredService(TrafficAlgorithm.class, trafficAlgorithmType, new Properties()).isPresent();
+        return TypedSPIRegistry.findRegisteredService(TrafficAlgorithm.class, trafficAlgorithmType, null).isPresent();
     }
 }

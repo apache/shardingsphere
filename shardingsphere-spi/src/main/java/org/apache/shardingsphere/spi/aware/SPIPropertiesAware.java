@@ -15,9 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.type.typed.fixture.stateful;
+package org.apache.shardingsphere.spi.aware;
 
-import org.apache.shardingsphere.spi.type.typed.StatefulTypedSPI;
+import java.util.Properties;
 
-public interface StatefulTypedSPIFixture extends StatefulTypedSPI {
+/**
+ * SPI properties aware.
+ */
+public interface SPIPropertiesAware {
+    
+    /**
+     * Get properties.
+     *
+     * @return properties
+     */
+    default Properties getProps() {
+        return new Properties();
+    }
+    
+    /**
+     * Set properties.
+     *
+     * @param props properties
+     */
+    default void setProps(Properties props) {
+    }
 }

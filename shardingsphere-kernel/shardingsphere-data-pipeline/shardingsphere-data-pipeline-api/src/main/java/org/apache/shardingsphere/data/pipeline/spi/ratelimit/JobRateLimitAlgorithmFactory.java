@@ -24,8 +24,6 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmF
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
-import java.util.Properties;
-
 /**
  * Job rate limit algorithm factory.
  */
@@ -53,6 +51,6 @@ public final class JobRateLimitAlgorithmFactory {
      * @return contains job rate limit algorithm or not
      */
     public static boolean contains(final String jobRateLimitAlgorithmType) {
-        return TypedSPIRegistry.findRegisteredService(JobRateLimitAlgorithm.class, jobRateLimitAlgorithmType, new Properties()).isPresent();
+        return TypedSPIRegistry.findRegisteredService(JobRateLimitAlgorithm.class, jobRateLimitAlgorithmType, null).isPresent();
     }
 }

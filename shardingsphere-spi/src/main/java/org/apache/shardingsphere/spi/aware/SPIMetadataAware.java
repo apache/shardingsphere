@@ -15,12 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.type.typed.fixture.stateless;
+package org.apache.shardingsphere.spi.aware;
 
-public final class StatelessTypedSPIFixtureImpl implements StatelessTypedSPIFixture {
+import java.util.Collection;
+
+/**
+ * SPI metadata aware.
+ */
+public interface SPIMetadataAware {
     
-    @Override
-    public String getType() {
-        return "Stateless_Fixture";
-    }
+    /**
+     * Get supported database types.
+     *
+     * @return supported database types
+     */
+    Collection<String> getSupportedDatabaseTypes();
+    
+    /**
+     * Get description.
+     *
+     * @return description
+     */
+    String getDescription();
 }

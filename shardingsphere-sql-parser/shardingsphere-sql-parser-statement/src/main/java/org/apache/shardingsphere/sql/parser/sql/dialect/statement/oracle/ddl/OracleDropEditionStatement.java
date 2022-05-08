@@ -15,28 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.type.typed.fixture.stateful;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Properties;
-
-@Getter
-@Setter
-public final class StatefulTypedSPIFixtureImpl implements StatefulTypedSPIFixture {
-    
-    private Properties props = new Properties();
-    
-    @Override
-    public String getType() {
-        return "Stateful_Fixture";
-    }
-    
-    @Override
-    public Collection<String> getTypeAliases() {
-        return Collections.singletonList("Stateful_Alias");
-    }
+/**
+ * Oracle drop edition statement.
+ */
+@ToString
+public final class OracleDropEditionStatement extends AbstractSQLStatement implements DDLStatement, OracleStatement {
 }

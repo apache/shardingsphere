@@ -26,8 +26,6 @@ import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.type.required.RequiredSPIRegistry;
 import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
-import java.util.Properties;
-
 /**
  * Key generate algorithm factory.
  */
@@ -64,6 +62,6 @@ public final class KeyGenerateAlgorithmFactory {
      * @return contains key generate algorithm or not
      */
     public static boolean contains(final String keyGenerateAlgorithmType) {
-        return TypedSPIRegistry.findRegisteredService(KeyGenerateAlgorithm.class, keyGenerateAlgorithmType, new Properties()).isPresent();
+        return TypedSPIRegistry.findRegisteredService(KeyGenerateAlgorithm.class, keyGenerateAlgorithmType, null).isPresent();
     }
 }

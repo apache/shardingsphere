@@ -15,26 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.type.typed;
+package org.apache.shardingsphere.spi.type.typed.fixture;
 
-import java.util.Collection;
+import org.apache.shardingsphere.spi.lifecycle.SPIPostProcessor;
+import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 
-/**
- * Typed sPI metadata aware.
- */
-public interface TypedSPIMetadataAware {
-    
-    /**
-     * Get supported database types.
-     *
-     * @return supported database types
-     */
-    Collection<String> getSupportedDatabaseTypes();
-    
-    /**
-     * Get description.
-     *
-     * @return description
-     */
-    String getDescription();
+public interface TypedSPIFixture extends TypedSPI, SPIPostProcessor {
 }

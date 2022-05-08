@@ -25,8 +25,6 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmF
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
-import java.util.Properties;
-
 /**
  * Encrypt algorithm factory.
  */
@@ -56,6 +54,6 @@ public final class EncryptAlgorithmFactory {
      * @return contains encrypt algorithm or not
      */
     public static boolean contains(final String encryptAlgorithmType) {
-        return TypedSPIRegistry.findRegisteredService(EncryptAlgorithm.class, encryptAlgorithmType, new Properties()).isPresent();
+        return TypedSPIRegistry.findRegisteredService(EncryptAlgorithm.class, encryptAlgorithmType, null).isPresent();
     }
 }

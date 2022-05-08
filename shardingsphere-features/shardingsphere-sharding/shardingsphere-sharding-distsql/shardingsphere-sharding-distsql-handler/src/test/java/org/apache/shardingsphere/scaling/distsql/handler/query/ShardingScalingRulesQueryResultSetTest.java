@@ -59,7 +59,7 @@ public final class ShardingScalingRulesQueryResultSetTest {
         assertThat(actual.get(2).toString(), containsString("\"batchSize\":100"));
         assertThat(actual.get(2).toString(), containsString("\"rateLimiter\":{\"type\":\"TPS\",\"props\":{\"tps\":\"2000\"}}"));
         assertThat(actual.get(3).toString(), containsString("\"type\":\"MEMORY\",\"props\":{\"block-queue-size\":\"10000\"}"));
-        assertThat(actual.get(4).toString(), containsString("\"type\":\"IDLE\",\"props\":{\"incremental-task-idle-minute-threshold\":\"30\"}"));
+        assertThat(actual.get(4).toString(), containsString("\"type\":\"IDLE\",\"props\":{\"incremental-task-idle-seconds-threshold\":\"1800\"}"));
         assertThat(actual.get(5).toString(), containsString("\"type\":\"DATA_MATCH\",\"props\":{\"chunk-size\":\"1000\"}"));
     }
     
@@ -75,7 +75,7 @@ public final class ShardingScalingRulesQueryResultSetTest {
         InputConfiguration inputConfig = createInputConfiguration("QPS", newProperties("qps", "50"));
         OutputConfiguration outputConfig = createOutputConfiguration("TPS", newProperties("tps", "2000"));
         ShardingSphereAlgorithmConfiguration streamChannel = createAlgorithm("MEMORY", newProperties("block-queue-size", "10000"));
-        ShardingSphereAlgorithmConfiguration completionDetector = createAlgorithm("IDLE", newProperties("incremental-task-idle-minute-threshold", "30"));
+        ShardingSphereAlgorithmConfiguration completionDetector = createAlgorithm("IDLE", newProperties("incremental-task-idle-seconds-threshold", "1800"));
         ShardingSphereAlgorithmConfiguration dataConsistencyChecker = createAlgorithm("DATA_MATCH", newProperties("chunk-size", "1000"));
         return new OnRuleAlteredActionConfiguration(inputConfig, outputConfig, streamChannel, completionDetector, dataConsistencyChecker);
     }
