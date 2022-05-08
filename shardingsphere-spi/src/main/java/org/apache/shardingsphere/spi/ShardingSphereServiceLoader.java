@@ -64,12 +64,12 @@ public final class ShardingSphereServiceLoader {
      * @return service instances
      */
     public static <T> Collection<T> getServiceInstances(final Class<T> serviceInterface) {
-        return null == serviceInterface.getAnnotation(SingletonSPI.class) ? newServiceInstances(serviceInterface) : getSingletonServiceInstances(serviceInterface);
+        return null == serviceInterface.getAnnotation(SingletonSPI.class) ? createNewServiceInstances(serviceInterface) : getSingletonServiceInstances(serviceInterface);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
     @SuppressWarnings("unchecked")
-    private static <T> Collection<T> newServiceInstances(final Class<T> serviceInterface) {
+    private static <T> Collection<T> createNewServiceInstances(final Class<T> serviceInterface) {
         if (!SERVICES.containsKey(serviceInterface)) {
             return Collections.emptyList();
         }
