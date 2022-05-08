@@ -18,27 +18,15 @@
 package org.apache.shardingsphere.traffic.algorithm.loadbalance;
 
 import org.apache.shardingsphere.infra.instance.definition.InstanceId;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
-import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class RoundRobinTrafficLoadBalanceAlgorithmTest {
-    
-    @Before
-    @After
-    public void reset() throws NoSuchFieldException, IllegalAccessException {
-        Field field = RoundRobinTrafficLoadBalanceAlgorithm.class.getDeclaredField("COUNTS");
-        field.setAccessible(true);
-        ((ConcurrentHashMap<?, ?>) field.get(RoundRobinTrafficLoadBalanceAlgorithm.class)).clear();
-    }
     
     @Test
     public void assertGetInstanceId() {

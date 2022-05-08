@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.instance.definition.InstanceId;
 import org.apache.shardingsphere.traffic.spi.TrafficLoadBalanceAlgorithm;
 
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -29,13 +28,10 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public final class RoundRobinTrafficLoadBalanceAlgorithm implements TrafficLoadBalanceAlgorithm {
     
-    private static final ConcurrentHashMap<String, AtomicInteger> COUNTS = new ConcurrentHashMap<>();
+    private final AtomicInteger count = new AtomicInteger(0);
     
     @Override
     public InstanceId getInstanceId(final String name, final List<InstanceId> instanceIds) {
-        AtomicInteger count = COUNTS.containsKey(name) ? COUNTS.get(name) : new AtomicInteger(0);
-        COUNTS.putIfAbsent(name, count);
-        count.compareAndSet(instanceIds.size(), 0);
         return instanceIds.get(Math.abs(count.getAndIncrement()) % instanceIds.size());
     }
     
