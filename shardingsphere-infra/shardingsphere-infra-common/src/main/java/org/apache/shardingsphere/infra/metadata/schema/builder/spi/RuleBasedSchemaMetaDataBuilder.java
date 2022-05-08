@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.metadata.schema.builder.spi;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.spi.type.ordered.OrderedSPI;
 
 import java.sql.SQLException;
@@ -31,6 +32,7 @@ import java.util.Map;
  * 
  * @param <T> type of ShardingSphere rule
  */
+@SingletonSPI
 public interface RuleBasedSchemaMetaDataBuilder<T extends TableContainedRule> extends OrderedSPI<T> {
     
     /**
