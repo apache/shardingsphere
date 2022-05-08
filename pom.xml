@@ -1037,7 +1037,7 @@
                 <configuration>
                     <java>
                         <eclipse>
-                            <file>${maven.multiModuleProjectDirectory}/src/resources/shardingsphere_eclipse_formatter.xml</file>
+                            <file>${maven.multiModuleProjectDirectory}/src/resources/spotless_shardingsphere_formatter.xml</file>
                         </eclipse>
                         <licenseHeader>
                             <file>${maven.multiModuleProjectDirectory}/src/resources/license-header</file>
