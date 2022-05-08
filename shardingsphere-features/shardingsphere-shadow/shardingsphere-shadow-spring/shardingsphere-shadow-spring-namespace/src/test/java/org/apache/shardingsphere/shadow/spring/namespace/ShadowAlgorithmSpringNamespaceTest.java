@@ -35,6 +35,7 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 @ContextConfiguration(locations = "classpath:META-INF/spring/shadow-algorithm-application-context.xml")
 public final class ShadowAlgorithmSpringNamespaceTest extends AbstractJUnit4SpringContextTests {
@@ -53,20 +54,20 @@ public final class ShadowAlgorithmSpringNamespaceTest extends AbstractJUnit4Spri
         ShadowAlgorithm userIdRegexMatchAlgorithm = shadowAlgorithms.get("user-id-regex-match-algorithm");
         assertThat(userIdRegexMatchAlgorithm, instanceOf(ColumnRegexMatchShadowAlgorithm.class));
         assertThat(userIdRegexMatchAlgorithm.getType(), is("REGEX_MATCH"));
-        assertThat(userIdRegexMatchAlgorithm.getProps().get("operation"), is("insert"));
-        assertThat(userIdRegexMatchAlgorithm.getProps().get("column"), is("user_id"));
-        assertThat(userIdRegexMatchAlgorithm.getProps().get("regex"), is("[1]"));
+        assertThat(userIdRegexMatchAlgorithm.getProps().getProperty("operation"), is("insert"));
+        assertThat(userIdRegexMatchAlgorithm.getProps().getProperty("column"), is("user_id"));
+        assertThat(userIdRegexMatchAlgorithm.getProps().getProperty("regex"), is("[1]"));
         ShadowAlgorithm userIdValueMatchAlgorithm = shadowAlgorithms.get("user-id-value-match-algorithm");
         assertThat(userIdValueMatchAlgorithm, instanceOf(ColumnValueMatchShadowAlgorithm.class));
         assertThat(userIdValueMatchAlgorithm.getType(), is("VALUE_MATCH"));
-        assertThat(userIdValueMatchAlgorithm.getProps().get("operation"), is("insert"));
-        assertThat(userIdValueMatchAlgorithm.getProps().get("column"), is("user_id"));
-        assertThat(userIdValueMatchAlgorithm.getProps().get("value"), is("1"));
+        assertThat(userIdValueMatchAlgorithm.getProps().getProperty("operation"), is("insert"));
+        assertThat(userIdValueMatchAlgorithm.getProps().getProperty("column"), is("user_id"));
+        assertThat(userIdValueMatchAlgorithm.getProps().getProperty("value"), is("1"));
         ShadowAlgorithm simpleHintAlgorithm = shadowAlgorithms.get("simple-hint-algorithm");
         assertThat(simpleHintAlgorithm, instanceOf(SimpleHintShadowAlgorithm.class));
         assertThat(simpleHintAlgorithm.getType(), is("SIMPLE_HINT"));
-        assertThat(simpleHintAlgorithm.getProps().get("shadow"), is(Boolean.TRUE.toString()));
-        assertThat(simpleHintAlgorithm.getProps().get("foo"), is("bar"));
+        assertTrue(Boolean.parseBoolean(simpleHintAlgorithm.getProps().getProperty("shadow")));
+        assertThat(simpleHintAlgorithm.getProps().getProperty("foo"), is("bar"));
     }
     
     private void assertShadowTables(final Map<String, ShadowTableConfiguration> shadowTables) {

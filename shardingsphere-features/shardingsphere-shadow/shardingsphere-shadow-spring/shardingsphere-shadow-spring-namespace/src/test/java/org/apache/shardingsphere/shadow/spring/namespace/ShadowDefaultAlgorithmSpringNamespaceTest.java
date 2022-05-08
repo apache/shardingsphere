@@ -51,8 +51,8 @@ public final class ShadowDefaultAlgorithmSpringNamespaceTest extends AbstractJUn
         ShadowAlgorithm simpleHintAlgorithm = shadowAlgorithms.get("simple-hint-algorithm");
         assertThat(simpleHintAlgorithm, instanceOf(SimpleHintShadowAlgorithm.class));
         assertThat(simpleHintAlgorithm.getType(), is("SIMPLE_HINT"));
-        assertThat(simpleHintAlgorithm.getProps().get("shadow"), is(Boolean.TRUE.toString()));
-        assertThat(simpleHintAlgorithm.getProps().get("foo"), is("bar"));
+        assertTrue(Boolean.parseBoolean(simpleHintAlgorithm.getProps().getProperty("shadow")));
+        assertThat(simpleHintAlgorithm.getProps().getProperty("foo"), is("bar"));
     }
     
     private void assertShadowDataSources(final Map<String, ShadowDataSourceConfiguration> dataSources) {
