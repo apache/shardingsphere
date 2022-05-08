@@ -62,11 +62,12 @@ public final class TypedSPIRegistry {
     public static <T extends TypedSPI> Optional<T> findRegisteredService(final Class<T> spiClass, final String type, final Properties props) {
         for (T each : ShardingSphereServiceLoader.getServiceInstances(spiClass)) {
             if (matchesType(type, each)) {
+                Properties stringTypeProps = convertToStringTypedProperties(props);
                 if (each instanceof SPIPostProcessor) {
-                    init((SPIPostProcessor) each, null == props ? new Properties() : props);
+                    ((SPIPostProcessor) each).init(stringTypeProps);
                 }
                 if (each instanceof SPIPropertiesAware) {
-                    ((SPIPropertiesAware) each).setProps(null == props ? new Properties() : props);
+                    ((SPIPropertiesAware) each).setProps(stringTypeProps);
                 }
                 return Optional.of(each);
             }
@@ -78,10 +79,13 @@ public final class TypedSPIRegistry {
         return typedSPI.getType().equalsIgnoreCase(type) || typedSPI.getTypeAliases().contains(type);
     }
     
-    private static <T extends SPIPostProcessor> void init(final T spiPostProcessor, final Properties props) {
-        Properties newProps = new Properties();
-        props.forEach((key, value) -> newProps.setProperty(key.toString(), null == value ? null : value.toString()));
-        spiPostProcessor.init(newProps);
+    private static Properties convertToStringTypedProperties(final Properties props) {
+        if (null == props) {
+            return new Properties();
+        }
+        Properties result = new Properties();
+        props.forEach((key, value) -> result.setProperty(key.toString(), null == value ? null : value.toString()));
+        return result;
     }
     
     /**
