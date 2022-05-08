@@ -66,6 +66,7 @@ public final class RuleAlteredJobContext {
     private final PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager();
     
     private final LazyInitializer<PipelineDataSourceWrapper> sourceDataSourceLazyInitializer = new LazyInitializer<PipelineDataSourceWrapper>() {
+        
         @Override
         protected PipelineDataSourceWrapper initialize() {
             return dataSourceManager.getDataSource(taskConfig.getDumperConfig().getDataSourceConfig());
@@ -73,6 +74,7 @@ public final class RuleAlteredJobContext {
     };
     
     private final LazyInitializer<PipelineTableMetaDataLoader> sourceMetaDataLoaderLazyInitializer = new LazyInitializer<PipelineTableMetaDataLoader>() {
+        
         @Override
         protected PipelineTableMetaDataLoader initialize() throws ConcurrentException {
             return new PipelineTableMetaDataLoader(sourceDataSourceLazyInitializer.get());

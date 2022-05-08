@@ -81,6 +81,7 @@ public final class MySQLClient {
                 .channel(NioSocketChannel.class)
                 .option(ChannelOption.AUTO_READ, true)
                 .handler(new ChannelInitializer<SocketChannel>() {
+                    
                     @Override
                     protected void initChannel(final SocketChannel socketChannel) {
                         socketChannel.pipeline().addLast(new ChannelAttrInitializer());

@@ -37,6 +37,7 @@ public final class ShardingSphereEventBus {
     }
     
     private static final class ShardingSphereEventBusHolder {
+        
         private static final EventBus INSTANCE = new EventBus();
     }
 }

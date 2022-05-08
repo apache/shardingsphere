@@ -100,6 +100,7 @@ public final class AgentRunner extends BlockJUnit4ClassRunner {
     @Override
     protected Statement withAfters(final FrameworkMethod method, final Object target, final Statement statement) {
         return super.withAfters(method, target, new Statement() {
+            
             @Override
             public void evaluate() throws Throwable {
                 try {

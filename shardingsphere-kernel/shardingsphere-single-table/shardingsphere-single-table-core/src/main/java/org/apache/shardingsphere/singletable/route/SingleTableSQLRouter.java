@@ -82,7 +82,7 @@ public final class SingleTableSQLRouter implements SQLRouter<SingleTableRule> {
         return result;
     }
     
-    private static Collection<QualifiedTable> getSingleTableNames(final SQLStatementContext<?> sqlStatementContext, final ShardingSphereMetaData metaData, 
+    private static Collection<QualifiedTable> getSingleTableNames(final SQLStatementContext<?> sqlStatementContext, final ShardingSphereMetaData metaData,
                                                                   final SingleTableRule rule, final RouteContext routeContext) {
         DatabaseType databaseType = sqlStatementContext.getDatabaseType();
         Collection<QualifiedTable> result = getQualifiedTables(metaData, sqlStatementContext.getTablesContext().getTables(), databaseType);
