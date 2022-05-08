@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.infra.executor.sql.prepare;
 
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.spi.type.ordered.OrderedSPI;
-import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 
 import java.util.Collection;
 
@@ -30,6 +31,7 @@ import java.util.Collection;
  * @param <T> type of input value
  * @param <R> type of ShardingSphere rule
  */
+@SingletonSPI
 public interface ExecutionPrepareDecorator<T, R extends ShardingSphereRule> extends OrderedSPI<R> {
     
     /**
