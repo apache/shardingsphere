@@ -249,7 +249,8 @@ public final class SelectStatementContextTest {
     }
     
     private SelectStatementContext createSelectStatementContext(final SelectStatement selectStatement) {
-        return new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mock(ShardingSphereMetaData.class)), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
+        return new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mock(ShardingSphereMetaData.class)),
+                Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
     }
     
     @Test
@@ -385,7 +386,8 @@ public final class SelectStatementContextTest {
         selectStatement.setWhere(whereSegment);
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
-        SelectStatementContext actual = new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, metaData), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
+        SelectStatementContext actual = new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, metaData),
+                Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
         assertThat(actual.getTablesContext().getTableNames(), is(Collections.emptySet()));
         assertThat(actual.getAllTables(), is(Lists.newLinkedList()));
         assertThat(actual.getGroupByContext().getItems(), is(Lists.newLinkedList()));
@@ -435,7 +437,8 @@ public final class SelectStatementContextTest {
         projectionsSegment.getProjections().add(projectionSegment);
         selectStatement.setProjections(projectionsSegment);
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-        SelectStatementContext actual = new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, metaData), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
+        SelectStatementContext actual = new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, metaData),
+                Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
         assertTrue(actual.isContainsSubquery());
     }
     
@@ -481,7 +484,8 @@ public final class SelectStatementContextTest {
         projectionsSegment.getProjections().add(projectionSegment);
         selectStatement.setProjections(projectionsSegment);
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-        SelectStatementContext actual = new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, metaData), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
+        SelectStatementContext actual = new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, metaData),
+                Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
         assertTrue(actual.isContainsSubquery());
     }
     
