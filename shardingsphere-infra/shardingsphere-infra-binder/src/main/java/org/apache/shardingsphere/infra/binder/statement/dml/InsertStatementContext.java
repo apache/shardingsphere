@@ -153,7 +153,8 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     }
     
     private Optional<OnDuplicateUpdateContext> getOnDuplicateKeyUpdateValueContext(final List<Object> parameters, final AtomicInteger parametersOffset) {
-        Optional<OnDuplicateKeyColumnsSegment> onDuplicateKeyColumnsSegment = InsertStatementHandler.getOnDuplicateKeyColumnsSegment(getSqlStatement());
+        List<InsertStatement> insertStatements = InsertStatementContextUtil.getInsertStatements(getSqlStatement());
+        Optional<OnDuplicateKeyColumnsSegment> onDuplicateKeyColumnsSegment = InsertStatementHandler.getOnDuplicateKeyColumnsSegment(insertStatements.get(0));
         if (!onDuplicateKeyColumnsSegment.isPresent()) {
             return Optional.empty();
         }
