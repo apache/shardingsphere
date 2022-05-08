@@ -20,12 +20,11 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
  - Careful consideration for each `pull request`; Small and frequent `pull request` with complete unit function is welcomed.
  - Conform to `Contributor Covenant Code of Conduct` below.
  - If using IDEA, you can import the recommended [Settings](https://shardingsphere.apache.org/community/data/shardingsphere-settings.jar).
+ - Through spotless unified code style, `mvn spotless:apply` performs code formatting.
 
 ## Contributor Covenant Code of Conduct
 
  - Use linux line separators.
- - Keep indents (including blank lines) consistent with the previous one.
- - Keep one blank line after class definition.
  - No meaningless blank lines. Please extract private methods to instead of blank lines if too long method body or different logic code fragments.
  - Use meaningful class, method and variable names, avoid to use abbreviate. 
  - Return values are named with `result`; Variables in the loop structure are named with `each`; Replace `each` with `entry` in map.
