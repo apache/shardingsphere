@@ -24,6 +24,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Single table route engine factory.
@@ -38,11 +39,13 @@ public final class SingleTableRouteEngineFactory {
      * @param sqlStatement sql statement
      * @return new instance of single table route engine
      */
-    public static SingleTableRouteEngine newInstance(final Collection<QualifiedTable> singleTableNames, final SQLStatement sqlStatement) {
+    public static Optional<SingleTableRouteEngine> newInstance(final Collection<QualifiedTable> singleTableNames, final SQLStatement sqlStatement) {
         // TODO Consider to add route logic for more statements 
-        if (singleTableNames.isEmpty() && sqlStatement instanceof DDLStatement) {
-            return new SingleTableDatabaseBroadcastRouteEngine();
+        if (!singleTableNames.isEmpty()) {
+            return Optional.of(new SingleTableStandardRouteEngine(singleTableNames, sqlStatement));
+        } else if (sqlStatement instanceof DDLStatement) {
+            return Optional.of(new SingleTableDatabaseBroadcastRouteEngine());
         }
-        return new SingleTableStandardRouteEngine(singleTableNames, sqlStatement);
+        return Optional.empty();
     }
 }

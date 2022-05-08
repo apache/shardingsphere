@@ -56,7 +56,7 @@ public final class SingleTableSQLRouter implements SQLRouter<SingleTableRule> {
             SQLStatementContext<?> sqlStatementContext = logicSQL.getSqlStatementContext();
             Collection<QualifiedTable> singleTableNames = getSingleTableNames(sqlStatementContext, metaData, rule, result);
             validateSameDataSource(sqlStatementContext, rule, result, props, singleTableNames);
-            SingleTableRouteEngineFactory.newInstance(singleTableNames, sqlStatementContext.getSqlStatement()).route(result, rule);
+            SingleTableRouteEngineFactory.newInstance(singleTableNames, sqlStatementContext.getSqlStatement()).ifPresent(optional -> optional.route(result, rule));
         }
         return result;
     }
@@ -67,7 +67,7 @@ public final class SingleTableSQLRouter implements SQLRouter<SingleTableRule> {
         SQLStatementContext<?> sqlStatementContext = logicSQL.getSqlStatementContext();
         Collection<QualifiedTable> singleTableNames = getSingleTableNames(sqlStatementContext, metaData, rule, routeContext);
         validateSameDataSource(sqlStatementContext, rule, routeContext, props, singleTableNames);
-        SingleTableRouteEngineFactory.newInstance(singleTableNames, sqlStatementContext.getSqlStatement()).route(routeContext, rule);
+        SingleTableRouteEngineFactory.newInstance(singleTableNames, sqlStatementContext.getSqlStatement()).ifPresent(optional -> optional.route(routeContext, rule));
     }
     
     private RouteUnit createSingleDataSourceRouteUnit(final SingleTableRule rule, final ShardingSphereMetaData metaData) {
