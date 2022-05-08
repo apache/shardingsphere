@@ -76,7 +76,7 @@ public final class SingleTableSQLRouter implements SQLRouter<SingleTableRule> {
         return new RouteUnit(new RouteMapper(logicDataSource, actualDataSource), Collections.emptyList());
     }
     
-    private static Collection<QualifiedTable> getSingleTableNames(final SQLStatementContext<?> sqlStatementContext, final ShardingSphereMetaData metaData, 
+    private static Collection<QualifiedTable> getSingleTableNames(final SQLStatementContext<?> sqlStatementContext, final ShardingSphereMetaData metaData,
                                                                   final SingleTableRule rule, final RouteContext routeContext) {
         DatabaseType databaseType = sqlStatementContext.getDatabaseType();
         Collection<QualifiedTable> result = getQualifiedTables(metaData, sqlStatementContext.getTablesContext().getTables(), databaseType);
@@ -96,7 +96,7 @@ public final class SingleTableSQLRouter implements SQLRouter<SingleTableRule> {
         return result;
     }
     
-    private static void validateSameDataSource(final SQLStatementContext<?> sqlStatementContext, final SingleTableRule rule, 
+    private static void validateSameDataSource(final SQLStatementContext<?> sqlStatementContext, final SingleTableRule rule,
                                                final RouteContext routeContext, final ConfigurationProperties props, final Collection<QualifiedTable> singleTableNames) {
         if (singleTableNames.isEmpty()) {
             return;

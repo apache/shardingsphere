@@ -80,7 +80,7 @@ public final class SingleTableStandardRouteEngine implements SingleTableRouteEng
     }
     
     private void route0(final RouteContext routeContext, final SingleTableRule rule) {
-        if (isDDLTableStatement() || rule.isAllTablesInSameDataSource(routeContext, singleTableNames)) {
+        if (isTableDDLStatement() || rule.isAllTablesInSameDataSource(routeContext, singleTableNames)) {
             Collection<QualifiedTable> existSingleTables = rule.getSingleTableNames(singleTableNames);
             if (!existSingleTables.isEmpty()) {
                 fillRouteContext(rule, routeContext, existSingleTables);
@@ -106,7 +106,7 @@ public final class SingleTableStandardRouteEngine implements SingleTableRouteEng
         routeContext.getOriginalDataNodes().addAll(newRouteContext.getOriginalDataNodes());
     }
     
-    private boolean isDDLTableStatement() {
+    private boolean isTableDDLStatement() {
         return sqlStatement instanceof CreateTableStatement || sqlStatement instanceof AlterTableStatement || sqlStatement instanceof DropTableStatement;
     }
     

@@ -21,7 +21,9 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.schema.QualifiedTable;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterSchemaStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateSchemaStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropSchemaStatement;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -40,12 +42,16 @@ public final class SingleTableRouteEngineFactory {
      * @return new instance of single table route engine
      */
     public static Optional<SingleTableRouteEngine> newInstance(final Collection<QualifiedTable> singleTableNames, final SQLStatement sqlStatement) {
-        // TODO Consider to add route logic for more statements 
+        // TODO Consider to add route logic for more statements
         if (!singleTableNames.isEmpty()) {
             return Optional.of(new SingleTableStandardRouteEngine(singleTableNames, sqlStatement));
-        } else if (sqlStatement instanceof DDLStatement) {
+        } else if (isSchemaDDLStatement(sqlStatement)) {
             return Optional.of(new SingleTableDatabaseBroadcastRouteEngine());
         }
         return Optional.empty();
+    }
+    
+    private static boolean isSchemaDDLStatement(final SQLStatement sqlStatement) {
+        return sqlStatement instanceof CreateSchemaStatement || sqlStatement instanceof AlterSchemaStatement || sqlStatement instanceof DropSchemaStatement;
     }
 }
