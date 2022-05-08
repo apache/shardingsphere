@@ -15,18 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.exception;
+package org.apache.shardingsphere.spi.fixture;
 
-/**
- * Service loader instantiation exception.
- */
-public final class ServiceLoaderInstantiationException extends ShardingSphereSPIException {
-    
-    private static final long serialVersionUID = 6261274443437676201L;
-    
-    private static final int ERROR_CODE = 2;
-    
-    public ServiceLoaderInstantiationException(final Class<?> clazz, final Exception cause) {
-        super(ERROR_CODE, String.format("Can not find public default constructor for SPI class `%s`.", clazz.getName()), cause);
-    }
+public interface EmptySPIFixture {
 }

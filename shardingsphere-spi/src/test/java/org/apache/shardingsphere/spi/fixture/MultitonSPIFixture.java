@@ -17,5 +17,5 @@
 
 package org.apache.shardingsphere.spi.fixture;
 
-public interface NonSingletonFixtureService {
+public interface MultitonSPIFixture {
 }
