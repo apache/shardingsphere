@@ -102,8 +102,8 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
             List<List<ExpressionSegment>> valueExpression = getAllValueExpressions(insertStatement);
             valueExpressions.put(cursor, valueExpression);
             insertValueContextsMap.put(cursor, getInsertValueContexts(parameters, parametersOffset, valueExpression));
-            parametersOffset.getAndAdd(valueExpression.size());
             onDuplicateKeyUpdateValueContexts.put(cursor, getOnDuplicateKeyUpdateValueContext(parameters, parametersOffset).orElse(null));
+            parametersOffset.getAndAdd(valueExpression.size());
             columnNamesMap.put(cursor, useDefaultColumns() ? schema.getAllColumnNames(insertStatement.getTable().getTableName().getIdentifier().getValue()) : insertColumnNames);
             generatedKeyContexts.put(cursor, new GeneratedKeyContextEngine(insertStatement, schema)
                     .createGenerateKeyContext(insertColumnNames, getAllValueExpressions(insertStatement), parameters).orElse(null));
