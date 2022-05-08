@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.rewrite.engine;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.infra.rewrite.engine.result.GenericSQLRewriteResult;
@@ -37,7 +37,7 @@ public final class GenericSQLRewriteEngineTest {
     @Test
     public void assertRewrite() {
         GenericSQLRewriteResult actual = new GenericSQLRewriteEngine().rewrite(
-                new SQLRewriteContext(DefaultSchema.LOGIC_NAME,
+                new SQLRewriteContext(DefaultDatabase.LOGIC_NAME,
                         mockSchemaMap(), mock(SQLStatementContext.class), "SELECT 1", Collections.emptyList()));
         assertThat(actual.getSqlRewriteUnit().getSql(), is("SELECT 1"));
         assertThat(actual.getSqlRewriteUnit().getParameters(), is(Collections.emptyList()));

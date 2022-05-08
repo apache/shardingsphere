@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.driver.jdbc.core.statement;
 
 import org.apache.shardingsphere.driver.jdbc.base.AbstractShardingSphereDataSourceForShardingTest;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.junit.Test;
 
 import java.sql.Connection;
@@ -122,7 +122,7 @@ public final class ShardingSphereStatementTest extends AbstractShardingSphereDat
         try (Statement statement = getShardingSphereDataSource().getConnection().createStatement()) {
             ResultSet resultSet = statement.executeQuery(sql);
             assertTrue(resultSet.next());
-            assertThat(resultSet.getString(1), is(DefaultSchema.LOGIC_NAME));
+            assertThat(resultSet.getString(1), is(DefaultDatabase.LOGIC_NAME));
         }
     }
 }

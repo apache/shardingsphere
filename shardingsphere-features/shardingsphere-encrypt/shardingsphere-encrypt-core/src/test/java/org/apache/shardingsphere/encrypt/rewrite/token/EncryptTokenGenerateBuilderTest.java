@@ -23,7 +23,7 @@ import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.aware.EncryptRuleAware;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.SQLTokenGenerator;
 import org.junit.Before;
 import org.junit.Test;
@@ -65,7 +65,7 @@ public final class EncryptTokenGenerateBuilderTest {
         when(selectStatementContext.getGroupByContext().getItems()).thenReturn(Collections.emptyList());
         when(selectStatementContext.getWhereSegments()).thenReturn(Collections.emptyList());
         EncryptTokenGenerateBuilder encryptTokenGenerateBuilder = new EncryptTokenGenerateBuilder(
-                encryptRule, selectStatementContext, Collections.emptyList(), DefaultSchema.LOGIC_NAME);
+                encryptRule, selectStatementContext, Collections.emptyList(), DefaultDatabase.LOGIC_NAME);
         Collection<SQLTokenGenerator> sqlTokenGenerators = encryptTokenGenerateBuilder.getSQLTokenGenerators();
         assertThat(sqlTokenGenerators.size(), is(2));
         Iterator<SQLTokenGenerator> iterator = sqlTokenGenerators.iterator();

@@ -21,7 +21,7 @@ import com.google.common.base.Strings;
 import org.apache.shardingsphere.driver.jdbc.adapter.AdaptedDatabaseMetaData;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.DatabaseMetaDataResultSet;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
@@ -227,11 +227,11 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     }
     
     private String getActualCatalog(final String catalog) {
-        return null != catalog && catalog.contains(DefaultSchema.LOGIC_NAME) ? dataSourcesMetaData.getDataSourceMetaData(getDataSourceName()).getCatalog() : catalog;
+        return null != catalog && catalog.contains(DefaultDatabase.LOGIC_NAME) ? dataSourcesMetaData.getDataSourceMetaData(getDataSourceName()).getCatalog() : catalog;
     }
     
     private String getActualSchema(final String schema) {
-        return null != schema && schema.contains(DefaultSchema.LOGIC_NAME) ? dataSourcesMetaData.getDataSourceMetaData(getDataSourceName()).getSchema() : schema;
+        return null != schema && schema.contains(DefaultDatabase.LOGIC_NAME) ? dataSourcesMetaData.getDataSourceMetaData(getDataSourceName()).getSchema() : schema;
     }
     
     private String getDataSourceName() {

@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CreateTableStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -58,7 +58,7 @@ public final class SingleTableSQLRouterTest {
     
     @Test
     public void assertCreateRouteContextWithSingleDataSource() {
-        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), DefaultSchema.LOGIC_NAME, mock(DatabaseType.class),
+        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class),
                 createSingleDataSourceMap(), Collections.emptyList(), new ConfigurationProperties(new Properties()));
         singleTableRule.getSingleTableDataNodes().put("t_order", Collections.singletonList(mockDataNode("ds_0")));
         ShardingSphereMetaData metaData = mockSingleDataSourceMetaData();
@@ -73,7 +73,7 @@ public final class SingleTableSQLRouterTest {
     
     @Test
     public void assertCreateRouteContextWithReadwriteSplittingDataSource() {
-        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), DefaultSchema.LOGIC_NAME, mock(DatabaseType.class),
+        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class),
                 createReadwriteSplittingDataSourceMap(), Collections.emptyList(), new ConfigurationProperties(new Properties()));
         singleTableRule.getSingleTableDataNodes().put("t_order", Collections.singletonList(mockDataNode("write_ds")));
         ShardingSphereMetaData metaData = mockReadwriteSplittingDataSourceMetaData();
@@ -88,7 +88,7 @@ public final class SingleTableSQLRouterTest {
     
     @Test
     public void assertCreateRouteContextWithMultiDataSource() {
-        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), DefaultSchema.LOGIC_NAME, mock(DatabaseType.class),
+        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class),
                 createMultiDataSourceMap(), Collections.emptyList(), new ConfigurationProperties(new Properties()));
         singleTableRule.getSingleTableDataNodes().put("t_order", Collections.singletonList(mockDataNode("ds_0")));
         ShardingSphereMetaData metaData = mockMultiDataSourceMetaData();
@@ -106,7 +106,7 @@ public final class SingleTableSQLRouterTest {
     
     private DataNode mockDataNode(final String dataSourceName) {
         DataNode result = new DataNode(dataSourceName, "t_order");
-        result.setSchemaName(DefaultSchema.LOGIC_NAME);
+        result.setSchemaName(DefaultDatabase.LOGIC_NAME);
         return result;
     }
     
@@ -132,7 +132,7 @@ public final class SingleTableSQLRouterTest {
         dataSourceMap.put("ds_0", mock(DataSource.class, RETURNS_DEEP_STUBS));
         dataSourceMap.put("ds_1", mock(DataSource.class, RETURNS_DEEP_STUBS));
         when(result.getResource().getDataSources()).thenReturn(dataSourceMap);
-        when(result.getDatabaseName()).thenReturn(DefaultSchema.LOGIC_NAME);
+        when(result.getDatabaseName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         return result;
     }
     

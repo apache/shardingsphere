@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.rewrite;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.engine.result.GenericSQLRewriteResult;
 import org.apache.shardingsphere.infra.rewrite.engine.result.RouteSQLRewriteResult;
@@ -52,7 +52,7 @@ public final class SQLRewriteEntryTest {
     
     @Test
     public void assertRewriteForGenericSQLRewriteResult() {
-        SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(DefaultSchema.LOGIC_NAME, mockSchemaMap(), props, Collections.emptyList());
+        SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(DefaultDatabase.LOGIC_NAME, mockSchemaMap(), props, Collections.emptyList());
         RouteContext routeContext = new RouteContext();
         GenericSQLRewriteResult sqlRewriteResult = (GenericSQLRewriteResult) sqlRewriteEntry.rewrite("SELECT ?", Collections.singletonList(1), mock(SQLStatementContext.class), routeContext);
         assertThat(sqlRewriteResult.getSqlRewriteUnit().getSql(), is("SELECT ?"));
@@ -61,7 +61,7 @@ public final class SQLRewriteEntryTest {
     
     @Test
     public void assertRewriteForRouteSQLRewriteResult() {
-        SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(DefaultSchema.LOGIC_NAME, mockSchemaMap(), props, Collections.emptyList());
+        SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(DefaultDatabase.LOGIC_NAME, mockSchemaMap(), props, Collections.emptyList());
         RouteContext routeContext = new RouteContext();
         RouteUnit firstRouteUnit = mock(RouteUnit.class);
         when(firstRouteUnit.getDataSourceMapper()).thenReturn(new RouteMapper("ds", "ds_0"));

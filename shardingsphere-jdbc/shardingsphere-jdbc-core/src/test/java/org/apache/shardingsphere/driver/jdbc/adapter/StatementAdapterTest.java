@@ -20,7 +20,7 @@ package org.apache.shardingsphere.driver.jdbc.adapter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
@@ -234,7 +234,7 @@ public final class StatementAdapterTest {
         ShardingSphereConnection connection = mock(ShardingSphereConnection.class, RETURNS_DEEP_STUBS);
         DataNodeContainedRule rule = mock(DataNodeContainedRule.class);
         when(rule.isNeedAccumulate(any())).thenReturn(true);
-        when(connection.getContextManager().getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME).getRuleMetaData().getRules()).thenReturn(Collections.singletonList(rule));
+        when(connection.getContextManager().getMetaDataContexts().getMetaData(DefaultDatabase.LOGIC_NAME).getRuleMetaData().getRules()).thenReturn(Collections.singletonList(rule));
         TrafficRule trafficRule = new TrafficRule(new DefaultTrafficRuleConfigurationBuilder().build());
         when(connection.getContextManager().getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(TrafficRule.class)).thenReturn(Optional.of(trafficRule));
         ShardingSphereStatement result = new ShardingSphereStatement(connection);
