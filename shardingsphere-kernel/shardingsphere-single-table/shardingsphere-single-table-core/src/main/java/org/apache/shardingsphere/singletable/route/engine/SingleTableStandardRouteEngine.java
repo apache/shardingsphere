@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.singletable.route;
+package org.apache.shardingsphere.singletable.route.engine;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.datanode.DataNode;
@@ -42,10 +42,10 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * Single table route engine.
+ * Single table standard route engine.
  */
 @RequiredArgsConstructor
-public final class SingleTableRouteEngine {
+public final class SingleTableStandardRouteEngine implements SingleTableRouteEngine {
     
     private final Collection<QualifiedTable> singleTableNames;
     
@@ -89,12 +89,12 @@ public final class SingleTableRouteEngine {
                 routeContext.getRouteUnits().add(routeUnit);
             }
         } else {
-            decorateRouteContextForFederate(routeContext);
+            decorateFederationRouteContext(routeContext);
             fillRouteContext(rule, routeContext, singleTableNames);
         }
     }
     
-    private void decorateRouteContextForFederate(final RouteContext routeContext) {
+    private void decorateFederationRouteContext(final RouteContext routeContext) {
         RouteContext newRouteContext = new RouteContext();
         for (RouteUnit each : routeContext.getRouteUnits()) {
             newRouteContext.putRouteUnit(each.getDataSourceMapper(), each.getTableMappers());
