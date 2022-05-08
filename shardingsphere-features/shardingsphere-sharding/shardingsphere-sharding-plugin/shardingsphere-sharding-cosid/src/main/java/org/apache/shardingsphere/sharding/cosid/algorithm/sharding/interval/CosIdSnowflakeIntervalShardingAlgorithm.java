@@ -37,7 +37,7 @@ public final class CosIdSnowflakeIntervalShardingAlgorithm extends AbstractCosId
     
     public static final String EPOCH_KEY = "epoch";
     
-    private volatile SnowflakeIdStateParser snowflakeIdStateParser;
+    private SnowflakeIdStateParser snowflakeIdStateParser;
     
     @Override
     public void init(final Properties props) {

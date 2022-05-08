@@ -61,9 +61,9 @@ public abstract class AbstractCosIdIntervalShardingAlgorithm<T extends Comparabl
     private Properties props;
     
     @Getter(AccessLevel.PROTECTED)
-    private volatile ZoneId zoneId;
+    private ZoneId zoneId;
     
-    private volatile IntervalTimeline intervalTimeline;
+    private IntervalTimeline intervalTimeline;
     
     @Override
     public void init(final Properties props) {
