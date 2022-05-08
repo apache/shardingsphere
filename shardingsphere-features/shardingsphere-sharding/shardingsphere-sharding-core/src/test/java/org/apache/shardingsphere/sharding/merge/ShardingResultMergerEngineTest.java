@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContex
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.merge.engine.merger.impl.TransparentResultMerger;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -84,11 +84,11 @@ public final class ShardingResultMergerEngineTest {
     private void assertNewInstanceWithSelectStatement(final SelectStatement selectStatement) {
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-        when(metaData.getSchemaByName(DefaultSchema.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
+        when(metaData.getSchemaByName(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
-        SelectStatementContext sqlStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData),
-                Collections.emptyList(), selectStatement, DefaultSchema.LOGIC_NAME);
-        assertThat(new ShardingResultMergerEngine().newInstance(DefaultSchema.LOGIC_NAME, DatabaseTypeRegistry.getActualDatabaseType("MySQL"), null, props,
+        SelectStatementContext sqlStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, metaData),
+                Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
+        assertThat(new ShardingResultMergerEngine().newInstance(DefaultDatabase.LOGIC_NAME, DatabaseTypeRegistry.getActualDatabaseType("MySQL"), null, props,
                 sqlStatementContext), instanceOf(ShardingDQLResultMerger.class));
     }
     
@@ -96,7 +96,7 @@ public final class ShardingResultMergerEngineTest {
     public void assertNewInstanceWithDALStatement() {
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
         CommonSQLStatementContext<PostgreSQLShowStatement> sqlStatementContext = new CommonSQLStatementContext<>(new PostgreSQLShowStatement());
-        assertThat(new ShardingResultMergerEngine().newInstance(DefaultSchema.LOGIC_NAME, DatabaseTypeRegistry.getActualDatabaseType("MySQL"), null, props,
+        assertThat(new ShardingResultMergerEngine().newInstance(DefaultDatabase.LOGIC_NAME, DatabaseTypeRegistry.getActualDatabaseType("MySQL"), null, props,
                 sqlStatementContext), instanceOf(ShardingDALResultMerger.class));
     }
     
@@ -108,14 +108,14 @@ public final class ShardingResultMergerEngineTest {
         insertStatement.setInsertColumns(insertColumnsSegment);
         InsertStatementContext sqlStatementContext = createInsertStatementContext(insertStatement);
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
-        assertThat(new ShardingResultMergerEngine().newInstance(DefaultSchema.LOGIC_NAME, DatabaseTypeRegistry.getActualDatabaseType("MySQL"), null, props,
+        assertThat(new ShardingResultMergerEngine().newInstance(DefaultDatabase.LOGIC_NAME, DatabaseTypeRegistry.getActualDatabaseType("MySQL"), null, props,
                 sqlStatementContext), instanceOf(TransparentResultMerger.class));
     }
     
     private InsertStatementContext createInsertStatementContext(final InsertStatement insertStatement) {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-        when(metaData.getSchemaByName(DefaultSchema.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
-        Map<String, ShardingSphereMetaData> metaDataMap = Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData);
-        return new InsertStatementContext(metaDataMap, Collections.emptyList(), insertStatement, DefaultSchema.LOGIC_NAME);
+        when(metaData.getSchemaByName(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
+        Map<String, ShardingSphereMetaData> metaDataMap = Collections.singletonMap(DefaultDatabase.LOGIC_NAME, metaData);
+        return new InsertStatementContext(metaDataMap, Collections.emptyList(), insertStatement, DefaultDatabase.LOGIC_NAME);
     }
 }

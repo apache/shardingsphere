@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.binder.statement.dcl.GrantStatementContex
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
@@ -105,7 +105,7 @@ public final class ShardingRouteEngineFactoryTest {
     @Before
     public void setUp() {
         when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
-        when(metaData.getSchemaByName(DefaultSchema.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
+        when(metaData.getSchemaByName(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
         tableNames = new ArrayList<>();
         when(tablesContext.getTableNames()).thenReturn(tableNames);
     }

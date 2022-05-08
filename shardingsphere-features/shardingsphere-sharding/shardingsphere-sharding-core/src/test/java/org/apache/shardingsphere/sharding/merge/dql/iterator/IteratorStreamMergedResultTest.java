@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.merge.dql.iterator;
 
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
@@ -49,7 +49,7 @@ public final class IteratorStreamMergedResultTest {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
-        selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), Collections.emptyList(), selectStatement, DefaultSchema.LOGIC_NAME);
+        selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, metaData), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
     }
     
     @Test
@@ -57,7 +57,7 @@ public final class IteratorStreamMergedResultTest {
         List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class, RETURNS_DEEP_STUBS), mock(QueryResult.class, RETURNS_DEEP_STUBS), mock(QueryResult.class, RETURNS_DEEP_STUBS));
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-        when(metaData.getDatabaseName()).thenReturn(DefaultSchema.LOGIC_NAME);
+        when(metaData.getDatabaseName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, metaData);
         assertFalse(actual.next());
     }
@@ -70,7 +70,7 @@ public final class IteratorStreamMergedResultTest {
         }
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-        when(metaData.getDatabaseName()).thenReturn(DefaultSchema.LOGIC_NAME);
+        when(metaData.getDatabaseName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, metaData);
         assertTrue(actual.next());
         assertTrue(actual.next());
@@ -84,7 +84,7 @@ public final class IteratorStreamMergedResultTest {
         when(queryResults.get(0).next()).thenReturn(true, false);
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-        when(metaData.getDatabaseName()).thenReturn(DefaultSchema.LOGIC_NAME);
+        when(metaData.getDatabaseName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, metaData);
         assertTrue(actual.next());
         assertFalse(actual.next());
@@ -96,7 +96,7 @@ public final class IteratorStreamMergedResultTest {
         when(queryResults.get(1).next()).thenReturn(true, false);
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-        when(metaData.getDatabaseName()).thenReturn(DefaultSchema.LOGIC_NAME);
+        when(metaData.getDatabaseName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, metaData);
         assertTrue(actual.next());
         assertFalse(actual.next());
@@ -108,7 +108,7 @@ public final class IteratorStreamMergedResultTest {
         when(queryResults.get(2).next()).thenReturn(true, false);
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-        when(metaData.getDatabaseName()).thenReturn(DefaultSchema.LOGIC_NAME);
+        when(metaData.getDatabaseName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, metaData);
         assertTrue(actual.next());
         assertFalse(actual.next());
@@ -123,7 +123,7 @@ public final class IteratorStreamMergedResultTest {
         when(queryResults.get(5).next()).thenReturn(true, false);
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-        when(metaData.getDatabaseName()).thenReturn(DefaultSchema.LOGIC_NAME);
+        when(metaData.getDatabaseName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, metaData);
         assertTrue(actual.next());
         assertTrue(actual.next());

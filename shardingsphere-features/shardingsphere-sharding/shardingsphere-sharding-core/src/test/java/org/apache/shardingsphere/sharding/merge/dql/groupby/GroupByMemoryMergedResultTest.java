@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.merge.dql.groupby;
 
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
@@ -112,10 +112,10 @@ public final class GroupByMemoryMergedResultTest {
         selectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, OrderDirection.ASC))));
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.DESC, OrderDirection.ASC))));
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-        when(metaData.getSchemaByName(DefaultSchema.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
-        when(metaData.getDatabaseName()).thenReturn(DefaultSchema.LOGIC_NAME);
+        when(metaData.getSchemaByName(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
+        when(metaData.getDatabaseName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         selectStatement.setProjections(projectionsSegment);
-        return new SelectStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), Collections.emptyList(), selectStatement, DefaultSchema.LOGIC_NAME);
+        return new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, metaData), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
     }
     
     private SelectStatementContext createSelectStatementContext(final ShardingSphereMetaData metaData) {
@@ -127,7 +127,7 @@ public final class GroupByMemoryMergedResultTest {
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.DESC, OrderDirection.ASC))));
         selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         selectStatement.setProjections(projectionsSegment);
-        return new SelectStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), Collections.emptyList(), selectStatement, DefaultSchema.LOGIC_NAME);
+        return new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, metaData), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
     }
     
     @Test
@@ -186,9 +186,9 @@ public final class GroupByMemoryMergedResultTest {
         when(schema.get("t_order")).thenReturn(tableMetaData);
         when(tableMetaData.getColumns()).thenReturn(Collections.emptyMap());
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-        when(metaData.getSchemaByName(DefaultSchema.LOGIC_NAME)).thenReturn(schema);
+        when(metaData.getSchemaByName(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
         when(metaData.getSchemas()).thenReturn(mockSchemas(schema));
-        when(metaData.getDatabaseName()).thenReturn(DefaultSchema.LOGIC_NAME);
+        when(metaData.getDatabaseName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         when(schema.getAllColumnNames("t_order")).thenReturn(Arrays.asList("order_id", "content"));
         ShardingDQLResultMerger merger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
         MergedResult actual = merger.merge(Arrays.asList(queryResult, queryResult, queryResult), createSelectStatementContext(metaData), metaData);
@@ -197,7 +197,7 @@ public final class GroupByMemoryMergedResultTest {
     
     private Map<String, ShardingSphereSchema> mockSchemas(final ShardingSphereSchema schema) {
         Map<String, ShardingSphereSchema> result = new LinkedHashMap<>();
-        result.put(DefaultSchema.LOGIC_NAME, schema);
+        result.put(DefaultDatabase.LOGIC_NAME, schema);
         return result;
     }
 }

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.driver.executor.batch;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.driver.executor.AbstractBaseExecutorTest;
@@ -62,7 +62,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
     @Override
     public void setUp() throws SQLException {
         super.setUp();
-        actual = spy(new BatchPreparedStatementExecutor(getConnection().getContextManager().getMetaDataContexts(), new JDBCExecutor(getExecutorEngine(), false), DefaultSchema.LOGIC_NAME));
+        actual = spy(new BatchPreparedStatementExecutor(getConnection().getContextManager().getMetaDataContexts(), new JDBCExecutor(getExecutorEngine(), false), DefaultDatabase.LOGIC_NAME));
         when(sqlStatementContext.getTablesContext()).thenReturn(mock(TablesContext.class));
     }
     

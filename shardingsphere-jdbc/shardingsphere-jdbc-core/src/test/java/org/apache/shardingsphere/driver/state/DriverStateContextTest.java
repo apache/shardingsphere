@@ -19,7 +19,7 @@ package org.apache.shardingsphere.driver.state;
 
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
@@ -63,13 +63,13 @@ public final class DriverStateContextTest {
         Map<String, ShardingSphereMetaData> result = new LinkedHashMap<>();
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, Answers.RETURNS_DEEP_STUBS);
         when(metaData.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
-        result.put(DefaultSchema.LOGIC_NAME, metaData);
+        result.put(DefaultDatabase.LOGIC_NAME, metaData);
         return result;
     }
     
     @Test
     public void assertGetConnectionWithOkState() {
-        Connection actual = DriverStateContext.getConnection(DefaultSchema.LOGIC_NAME, contextManager);
+        Connection actual = DriverStateContext.getConnection(DefaultDatabase.LOGIC_NAME, contextManager);
         assertThat(actual, instanceOf(ShardingSphereConnection.class));
     }
 }

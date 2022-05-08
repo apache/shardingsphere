@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementConte
 import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
@@ -583,8 +583,8 @@ public final class ShardingRuleTest {
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(sqlStatementContext.getTablesContext().findTableNamesByColumnSegment(Arrays.asList(leftDatabaseJoin, rightDatabaseJoin), schema)).thenReturn(createColumnTableNameMap());
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-        when(metaData.getDatabaseName()).thenReturn(DefaultSchema.LOGIC_NAME);
-        when(metaData.getSchemaByName(DefaultSchema.LOGIC_NAME)).thenReturn(schema);
+        when(metaData.getDatabaseName()).thenReturn(DefaultDatabase.LOGIC_NAME);
+        when(metaData.getSchemaByName(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
         assertFalse(createMaximumShardingRule().isAllBindingTables(metaData, sqlStatementContext, Arrays.asList("logic_Table", "sub_Logic_Table")));
     }
     
@@ -607,9 +607,9 @@ public final class ShardingRuleTest {
         when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
         when(sqlStatementContext.getDatabaseType()).thenReturn(new MySQLDatabaseType());
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        when(metaData.getDatabaseName()).thenReturn(DefaultSchema.LOGIC_NAME);
-        when(metaData.getSchemaByName(DefaultSchema.LOGIC_NAME).getAllColumnNames("LOGIC_TABLE")).thenReturn(Arrays.asList("user_id", "order_id"));
-        when(metaData.getSchemaByName(DefaultSchema.LOGIC_NAME).getAllColumnNames("SUB_LOGIC_TABLE")).thenReturn(Arrays.asList("uid", "order_id"));
+        when(metaData.getDatabaseName()).thenReturn(DefaultDatabase.LOGIC_NAME);
+        when(metaData.getSchemaByName(DefaultDatabase.LOGIC_NAME).getAllColumnNames("LOGIC_TABLE")).thenReturn(Arrays.asList("user_id", "order_id"));
+        when(metaData.getSchemaByName(DefaultDatabase.LOGIC_NAME).getAllColumnNames("SUB_LOGIC_TABLE")).thenReturn(Arrays.asList("uid", "order_id"));
         assertFalse(createMaximumShardingRule().isAllBindingTables(metaData, sqlStatementContext, Arrays.asList("LOGIC_TABLE", "SUB_LOGIC_TABLE")));
     }
     
@@ -635,8 +635,8 @@ public final class ShardingRuleTest {
         when(sqlStatementContext.getTablesContext().findTableNamesByColumnSegment(Arrays.asList(leftDatabaseJoin, rightDatabaseJoin), schema)).thenReturn(createColumnTableNameMap());
         when(sqlStatementContext.getTablesContext().findTableNamesByColumnSegment(Arrays.asList(leftTableJoin, rightTableJoin), schema)).thenReturn(createColumnTableNameMap());
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-        when(metaData.getDatabaseName()).thenReturn(DefaultSchema.LOGIC_NAME);
-        when(metaData.getSchemaByName(DefaultSchema.LOGIC_NAME)).thenReturn(schema);
+        when(metaData.getDatabaseName()).thenReturn(DefaultDatabase.LOGIC_NAME);
+        when(metaData.getSchemaByName(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
         assertTrue(createMaximumShardingRule().isAllBindingTables(metaData, sqlStatementContext, Arrays.asList("logic_Table", "sub_Logic_Table")));
     }
     

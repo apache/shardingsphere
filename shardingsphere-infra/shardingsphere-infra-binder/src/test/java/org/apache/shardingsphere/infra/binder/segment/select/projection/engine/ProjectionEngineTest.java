@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.Col
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ExpressionProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ParameterMarkerProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ShorthandProjection;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
@@ -71,16 +71,16 @@ public final class ProjectionEngineTest {
     
     @Test
     public void assertCreateProjectionWhenProjectionSegmentNotMatched() {
-        assertFalse(new ProjectionEngine(DefaultSchema.LOGIC_NAME,
-                Collections.singletonMap(DefaultSchema.LOGIC_NAME, schema), databaseType).createProjection(mock(TableSegment.class), null).isPresent());
+        assertFalse(new ProjectionEngine(DefaultDatabase.LOGIC_NAME,
+                Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema), databaseType).createProjection(mock(TableSegment.class), null).isPresent());
     }
     
     @Test
     public void assertCreateProjectionWhenProjectionSegmentInstanceOfShorthandProjectionSegment() {
         ShorthandProjectionSegment shorthandProjectionSegment = new ShorthandProjectionSegment(0, 0);
         shorthandProjectionSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("tbl")));
-        Optional<Projection> actual = new ProjectionEngine(DefaultSchema.LOGIC_NAME,
-                Collections.singletonMap(DefaultSchema.LOGIC_NAME, schema), databaseType).createProjection(mock(TableSegment.class), shorthandProjectionSegment);
+        Optional<Projection> actual = new ProjectionEngine(DefaultDatabase.LOGIC_NAME,
+                Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema), databaseType).createProjection(mock(TableSegment.class), shorthandProjectionSegment);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(ShorthandProjection.class));
     }
@@ -89,9 +89,9 @@ public final class ProjectionEngineTest {
     public void assertCreateProjectionWhenProjectionSegmentInstanceOfShorthandProjectionSegmentAndDuplicateTableSegment() {
         SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
         when(schema.getAllColumnNames("t_order")).thenReturn(Arrays.asList("order_id", "content"));
-        when(databaseType.getDefaultSchema(DefaultSchema.LOGIC_NAME)).thenReturn(DefaultSchema.LOGIC_NAME);
-        Optional<Projection> actual = new ProjectionEngine(DefaultSchema.LOGIC_NAME,
-                Collections.singletonMap(DefaultSchema.LOGIC_NAME, schema), databaseType).createProjection(table, new ShorthandProjectionSegment(0, 0));
+        when(databaseType.getDefaultSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(DefaultDatabase.LOGIC_NAME);
+        Optional<Projection> actual = new ProjectionEngine(DefaultDatabase.LOGIC_NAME,
+                Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema), databaseType).createProjection(table, new ShorthandProjectionSegment(0, 0));
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(ShorthandProjection.class));
         assertThat(((ShorthandProjection) actual.get()).getActualColumns().size(), is(2));
@@ -105,8 +105,8 @@ public final class ProjectionEngineTest {
     public void assertCreateProjectionWhenProjectionSegmentInstanceOfColumnProjectionSegment() {
         ColumnProjectionSegment columnProjectionSegment = new ColumnProjectionSegment(new ColumnSegment(0, 10, new IdentifierValue("name")));
         columnProjectionSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("alias")));
-        Optional<Projection> actual = new ProjectionEngine(DefaultSchema.LOGIC_NAME,
-                Collections.singletonMap(DefaultSchema.LOGIC_NAME, schema), databaseType).createProjection(mock(TableSegment.class), columnProjectionSegment);
+        Optional<Projection> actual = new ProjectionEngine(DefaultDatabase.LOGIC_NAME,
+                Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema), databaseType).createProjection(mock(TableSegment.class), columnProjectionSegment);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(ColumnProjection.class));
     }
@@ -114,8 +114,8 @@ public final class ProjectionEngineTest {
     @Test
     public void assertCreateProjectionWhenProjectionSegmentInstanceOfExpressionProjectionSegment() {
         ExpressionProjectionSegment expressionProjectionSegment = new ExpressionProjectionSegment(0, 10, "text");
-        Optional<Projection> actual = new ProjectionEngine(DefaultSchema.LOGIC_NAME,
-                Collections.singletonMap(DefaultSchema.LOGIC_NAME, schema), databaseType).createProjection(mock(TableSegment.class), expressionProjectionSegment);
+        Optional<Projection> actual = new ProjectionEngine(DefaultDatabase.LOGIC_NAME,
+                Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema), databaseType).createProjection(mock(TableSegment.class), expressionProjectionSegment);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(ExpressionProjection.class));
     }
@@ -123,8 +123,8 @@ public final class ProjectionEngineTest {
     @Test
     public void assertCreateProjectionWhenProjectionSegmentInstanceOfAggregationDistinctProjectionSegment() {
         AggregationDistinctProjectionSegment aggregationDistinctProjectionSegment = new AggregationDistinctProjectionSegment(0, 10, AggregationType.COUNT, "(1)", "distinctExpression");
-        Optional<Projection> actual = new ProjectionEngine(DefaultSchema.LOGIC_NAME,
-                Collections.singletonMap(DefaultSchema.LOGIC_NAME, schema), databaseType).createProjection(mock(TableSegment.class), aggregationDistinctProjectionSegment);
+        Optional<Projection> actual = new ProjectionEngine(DefaultDatabase.LOGIC_NAME,
+                Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema), databaseType).createProjection(mock(TableSegment.class), aggregationDistinctProjectionSegment);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(AggregationDistinctProjection.class));
     }
@@ -132,8 +132,8 @@ public final class ProjectionEngineTest {
     @Test
     public void assertCreateProjectionWhenProjectionSegmentInstanceOfAggregationProjectionSegment() {
         AggregationProjectionSegment aggregationProjectionSegment = new AggregationProjectionSegment(0, 10, AggregationType.COUNT, "(1)");
-        Optional<Projection> actual = new ProjectionEngine(DefaultSchema.LOGIC_NAME,
-                Collections.singletonMap(DefaultSchema.LOGIC_NAME, schema), databaseType).createProjection(mock(TableSegment.class), aggregationProjectionSegment);
+        Optional<Projection> actual = new ProjectionEngine(DefaultDatabase.LOGIC_NAME,
+                Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema), databaseType).createProjection(mock(TableSegment.class), aggregationProjectionSegment);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(AggregationProjection.class));
     }
@@ -141,8 +141,8 @@ public final class ProjectionEngineTest {
     @Test
     public void assertCreateProjectionWhenProjectionSegmentInstanceOfAggregationDistinctProjectionSegmentAndAggregationTypeIsAvg() {
         AggregationDistinctProjectionSegment aggregationDistinctProjectionSegment = new AggregationDistinctProjectionSegment(0, 10, AggregationType.AVG, "(1)", "distinctExpression");
-        Optional<Projection> actual = new ProjectionEngine(DefaultSchema.LOGIC_NAME,
-                Collections.singletonMap(DefaultSchema.LOGIC_NAME, schema), databaseType).createProjection(mock(TableSegment.class), aggregationDistinctProjectionSegment);
+        Optional<Projection> actual = new ProjectionEngine(DefaultDatabase.LOGIC_NAME,
+                Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema), databaseType).createProjection(mock(TableSegment.class), aggregationDistinctProjectionSegment);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(AggregationDistinctProjection.class));
     }
@@ -150,8 +150,8 @@ public final class ProjectionEngineTest {
     @Test
     public void assertCreateProjectionWhenProjectionSegmentInstanceOfAggregationProjectionSegmentAndAggregationTypeIsAvg() {
         AggregationProjectionSegment aggregationProjectionSegment = new AggregationProjectionSegment(0, 10, AggregationType.AVG, "(1)");
-        Optional<Projection> actual = new ProjectionEngine(DefaultSchema.LOGIC_NAME,
-                Collections.singletonMap(DefaultSchema.LOGIC_NAME, schema), databaseType).createProjection(mock(TableSegment.class), aggregationProjectionSegment);
+        Optional<Projection> actual = new ProjectionEngine(DefaultDatabase.LOGIC_NAME,
+                Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema), databaseType).createProjection(mock(TableSegment.class), aggregationProjectionSegment);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(AggregationProjection.class));
     }
@@ -160,8 +160,8 @@ public final class ProjectionEngineTest {
     public void assertCreateProjectionWhenProjectionSegmentInstanceOfParameterMarkerExpressionSegment() {
         ParameterMarkerExpressionSegment parameterMarkerExpressionSegment = new ParameterMarkerExpressionSegment(7, 7, 0);
         parameterMarkerExpressionSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("alias")));
-        Optional<Projection> actual = new ProjectionEngine(DefaultSchema.LOGIC_NAME,
-                Collections.singletonMap(DefaultSchema.LOGIC_NAME, schema), databaseType).createProjection(mock(TableSegment.class), parameterMarkerExpressionSegment);
+        Optional<Projection> actual = new ProjectionEngine(DefaultDatabase.LOGIC_NAME,
+                Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema), databaseType).createProjection(mock(TableSegment.class), parameterMarkerExpressionSegment);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(ParameterMarkerProjection.class));
         assertThat(actual.get().getAlias().orElse(null), is("alias"));

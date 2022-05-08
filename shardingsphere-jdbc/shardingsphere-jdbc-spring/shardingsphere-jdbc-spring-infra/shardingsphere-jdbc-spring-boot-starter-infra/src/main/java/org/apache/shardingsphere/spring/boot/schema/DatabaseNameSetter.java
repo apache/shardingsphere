@@ -20,7 +20,7 @@ package org.apache.shardingsphere.spring.boot.schema;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.StandardEnvironment;
 
@@ -47,6 +47,6 @@ public final class DatabaseNameSetter {
             return databaseName;
         }
         String schemaName = standardEnv.getProperty(SCHEMA_NAME_KEY);
-        return Strings.isNullOrEmpty(schemaName) ? DefaultSchema.LOGIC_NAME : schemaName;
+        return Strings.isNullOrEmpty(schemaName) ? DefaultDatabase.LOGIC_NAME : schemaName;
     }
 }

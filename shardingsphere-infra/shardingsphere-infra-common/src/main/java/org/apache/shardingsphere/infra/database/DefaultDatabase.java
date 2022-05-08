@@ -21,10 +21,10 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Default schema.
+ * Default database.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DefaultSchema {
+public final class DefaultDatabase {
     
     /**
      * Schema name.

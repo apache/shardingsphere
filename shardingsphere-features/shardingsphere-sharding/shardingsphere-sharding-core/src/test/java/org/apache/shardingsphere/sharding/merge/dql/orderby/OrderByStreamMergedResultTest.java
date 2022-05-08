@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.merge.dql.orderby;
 
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
@@ -70,7 +70,7 @@ public final class OrderByStreamMergedResultTest {
                 new IndexOrderByItemSegment(0, 0, 2, OrderDirection.ASC, OrderDirection.ASC))));
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-        selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), Collections.emptyList(), selectStatement, DefaultSchema.LOGIC_NAME);
+        selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, metaData), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
     }
     
     @Test
@@ -198,7 +198,7 @@ public final class OrderByStreamMergedResultTest {
         ColumnMetaData columnMetaData2 = new ColumnMetaData("col2", 0, false, false, false);
         TableMetaData tableMetaData = new TableMetaData("tbl", Arrays.asList(columnMetaData1, columnMetaData2), Collections.emptyList(), Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema(Collections.singletonMap("tbl", tableMetaData));
-        return new ShardingSphereMetaData(DefaultSchema.LOGIC_NAME, mock(ShardingSphereResource.class),
-                mock(ShardingSphereRuleMetaData.class), Collections.singletonMap(DefaultSchema.LOGIC_NAME, schema));
+        return new ShardingSphereMetaData(DefaultDatabase.LOGIC_NAME, mock(ShardingSphereResource.class),
+                mock(ShardingSphereRuleMetaData.class), Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema));
     }
 }
