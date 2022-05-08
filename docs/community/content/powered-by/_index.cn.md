@@ -228,7 +228,7 @@ chapter = true
 <ul>
     <li><a href="https://www.iflytek.com/" rel="nofollow">科大讯飞</a></li>
     <li><a href="https://www.oppo.com/" rel="nofollow">OPPO</a>：<a href="https://mp.weixin.qq.com/s/kLV5oqc9uHLg47TmaSTk4A" rel="nofollow">用户案例</a></li>
-    <li><a href="https://www.vivo.com/" rel="nofollow">VIVO</a></li>
+    <li><a href="https://www.vivo.com/" rel="nofollow">VIVO</a>：<a href="https://mp.weixin.qq.com/s/i6sI1C_Ye7-Ax9GtZNf9-g" rel="nofollow">用户案例</a></li>
     <li><a href="https://www.tcl.com/" rel="nofollow">TCL</a></li>
 </ul>
 
