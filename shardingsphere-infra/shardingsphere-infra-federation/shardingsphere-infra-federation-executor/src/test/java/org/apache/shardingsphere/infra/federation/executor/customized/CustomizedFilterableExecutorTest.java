@@ -18,9 +18,7 @@
 package org.apache.shardingsphere.infra.federation.executor.customized;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
-import org.apache.shardingsphere.infra.federation.executor.FederationContext;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContextFactory;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -36,7 +34,6 @@ import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.sql.ResultSet;
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
@@ -95,7 +92,6 @@ public class CustomizedFilterableExecutorTest {
     @Test
     @SneakyThrows
     public void assertSelectWhereSingleField() {
-        FederationContext federationContext = new FederationContext(false, new LogicSQL(null, SELECT_WHERE_SINGLE_FIELD, null), null);
-        ResultSet result = executor.executeQuery(null, null, federationContext);
+        //TODO add executor.executeQuery()
     }
 }
