@@ -15,18 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.exception;
+package org.apache.shardingsphere.singletable.route.engine;
 
-import org.junit.Test;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.route.context.RouteMapper;
+import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import java.util.Collections;
 
-public final class ServiceLoaderInstantiationExceptionTest {
+/**
+ * Single table databases broadcast route engine.
+ */
+public final class SingleTableDatabaseBroadcastRouteEngine implements SingleTableRouteEngine {
     
-    @Test
-    public void assertGetMessage() {
-        assertThat(new ServiceLoaderInstantiationException(Object.class, new RuntimeException()).getMessage(),
-                is("SPI-00002: Can not find public default constructor for SPI class `java.lang.Object`."));
+    @Override
+    public void route(final RouteContext routeContext, final SingleTableRule singleTableRule) {
+        for (String each : singleTableRule.getDataSourceNames()) {
+            routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList()));
+        }
     }
 }

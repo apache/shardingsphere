@@ -29,6 +29,7 @@ import org.junit.Before;
 
 @RequiredArgsConstructor
 public abstract class AbstractPreciseShardingValueParameterizedTest<T extends Comparable<?>> {
+    
     private final T input;
     
     private final String expected;

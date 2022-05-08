@@ -48,7 +48,7 @@ public final class HashModShardingAlgorithm implements StandardShardingAlgorithm
     
     private int getShardingCount(final Properties props) {
         Preconditions.checkArgument(props.containsKey(SHARDING_COUNT_KEY), "Sharding count cannot be null.");
-        return Integer.parseInt(props.get(SHARDING_COUNT_KEY).toString());
+        return Integer.parseInt(props.getProperty(SHARDING_COUNT_KEY));
     }
     
     @Override

@@ -15,16 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.builder;
+package org.apache.shardingsphere.singletable.route.engine;
 
-import org.apache.shardingsphere.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.spi.type.ordered.OrderedSPI;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 
 /**
- * Rule builder.
- * 
- * @param <T> type of rule configuration
+ * Single table route engine.
  */
-@SingletonSPI
-public interface RuleBuilder<T> extends OrderedSPI<T> {
+public interface SingleTableRouteEngine {
+    
+    /**
+     * Route.
+     *
+     * @param routeContext route context 
+     * @param singleTableRule single table rule
+     */
+    void route(RouteContext routeContext, SingleTableRule singleTableRule);
 }

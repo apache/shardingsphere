@@ -25,8 +25,6 @@ import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.traffic.spi.TrafficLoadBalanceAlgorithm;
 
-import java.util.Properties;
-
 /**
  * Traffic load balance algorithm factory.
  */
@@ -54,6 +52,6 @@ public final class TrafficLoadBalanceAlgorithmFactory {
      * @return contains traffic load balance algorithm or not
      */
     public static boolean contains(final String trafficLoadBalanceAlgorithmType) {
-        return TypedSPIRegistry.findRegisteredService(TrafficLoadBalanceAlgorithm.class, trafficLoadBalanceAlgorithmType, new Properties()).isPresent();
+        return TypedSPIRegistry.findRegisteredService(TrafficLoadBalanceAlgorithm.class, trafficLoadBalanceAlgorithmType).isPresent();
     }
 }

@@ -39,7 +39,7 @@ public final class ShadowRuleStatementConverterTest {
         assertThat(config.getDataSources().get("ruleName").getShadowDataSourceName(), is("shadow"));
         assertThat(config.getTables().size(), is(1));
         assertThat(config.getShadowAlgorithms().size(), is(1));
-        assertThat(config.getShadowAlgorithms().get("algorithmsName").getProps().get("foo"), is("bar"));
+        assertThat(config.getShadowAlgorithms().get("algorithmsName").getProps().getProperty("foo"), is("bar"));
     }
     
     private ShadowRuleSegment createTableRuleSegment() {

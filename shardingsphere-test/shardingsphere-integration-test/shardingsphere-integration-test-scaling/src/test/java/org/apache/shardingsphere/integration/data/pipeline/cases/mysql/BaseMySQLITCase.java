@@ -22,7 +22,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.cases.BaseITCase;
-import org.apache.shardingsphere.integration.data.pipeline.cases.IncrementTaskRunnable;
 import org.apache.shardingsphere.integration.data.pipeline.cases.command.ExtraSQLCommand;
 import org.apache.shardingsphere.integration.data.pipeline.cases.postgresql.BasePostgreSQLITCase;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
@@ -57,9 +56,10 @@ public abstract class BaseMySQLITCase extends BaseITCase {
             addResource(connection);
         }
         initShardingRule();
-        setIncreaseTaskThread(new Thread(new IncrementTaskRunnable(getJdbcTemplate(), getCommonSQLCommand())));
+        setIncreaseTaskThread(new Thread(new MySQLIncrementTaskRunnable(getJdbcTemplate(), getCommonSQLCommand())));
         getJdbcTemplate().execute(extraSQLCommand.getCreateTableOrder());
         getJdbcTemplate().execute(extraSQLCommand.getCreateTableOrderItem());
+        getIncreaseTaskThread().start();
         Pair<List<Object[]>, List<Object[]>> dataPair = TableCrudUtil.generateMySQLInsertDataList(3000);
         getJdbcTemplate().batchUpdate(extraSQLCommand.getInsertOrder(), dataPair.getLeft());
         getJdbcTemplate().batchUpdate(getCommonSQLCommand().getInsertOrderItem(), dataPair.getRight());

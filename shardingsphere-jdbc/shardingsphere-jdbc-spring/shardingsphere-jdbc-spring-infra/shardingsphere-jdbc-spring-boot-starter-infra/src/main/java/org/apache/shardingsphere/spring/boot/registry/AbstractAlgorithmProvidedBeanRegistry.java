@@ -33,6 +33,7 @@ import org.springframework.core.env.Environment;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -95,8 +96,19 @@ public abstract class AbstractAlgorithmProvidedBeanRegistry<T extends ShardingSp
     public final Object postProcessAfterInitialization(final Object bean, final String beanName) {
         if (bean instanceof ShardingSphereAlgorithm) {
             ShardingSphereAlgorithm algorithm = (ShardingSphereAlgorithm) bean;
-            algorithm.init(algorithm.getProps());
+            Properties stringTypeProps = convertToStringTypedProperties(algorithm.getProps());
+            algorithm.init(stringTypeProps);
+            algorithm.setProps(stringTypeProps);
         }
         return bean;
+    }
+    
+    private static Properties convertToStringTypedProperties(final Properties props) {
+        if (null == props) {
+            return new Properties();
+        }
+        Properties result = new Properties();
+        props.forEach((key, value) -> result.setProperty(key.toString(), null == value ? null : value.toString()));
+        return result;
     }
 }

@@ -58,6 +58,7 @@ public final class ExecuteEngineTest {
     
     private ExecuteCallback mockExecuteCallback() {
         return new ExecuteCallback() {
+            
             @Override
             public void onSuccess() {
                 
@@ -73,6 +74,7 @@ public final class ExecuteEngineTest {
     private LifecycleExecutor mockScalingExecutor() {
         
         return new LifecycleExecutor() {
+            
             @Override
             public void run() {
                 ThreadUtil.sleep(100L);

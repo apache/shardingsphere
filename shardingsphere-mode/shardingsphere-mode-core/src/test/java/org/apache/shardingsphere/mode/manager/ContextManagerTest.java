@@ -251,7 +251,7 @@ public final class ContextManagerTest {
         Properties props = new Properties();
         props.put("foo", "foo_value");
         contextManager.alterProperties(props);
-        assertThat(contextManager.getMetaDataContexts().getProps().getProps().get("foo"), is("foo_value"));
+        assertThat(contextManager.getMetaDataContexts().getProps().getProps().getProperty("foo"), is("foo_value"));
     }
     
     @Test

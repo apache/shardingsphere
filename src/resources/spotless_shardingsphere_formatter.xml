@@ -29,6 +29,7 @@
         <setting id="org.eclipse.jdt.core.formatter.comment.line_length" value="200"/>
         <setting id="org.eclipse.jdt.core.formatter.tabulation.char" value="space"/>
         <setting id="org.eclipse.jdt.core.formatter.indentation.size" value="1"/>
+        <setting id="org.eclipse.jdt.core.formatter.blank_lines_before_first_class_body_declaration" value="1"/>
         <setting id="org.eclipse.jdt.core.formatter.comment.format_javadoc_comments" value="false"/>
         <setting id="org.eclipse.jdt.core.formatter.join_wrapped_lines" value="false"/>
         <setting id="org.eclipse.jdt.core.formatter.insert_space_before_colon_in_conditional" value="insert"/>

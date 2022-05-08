@@ -33,6 +33,7 @@ import java.util.Optional;
 public enum ShardingStrategyType {
     
     STANDARD {
+        
         @Override
         public ShardingStrategyConfiguration createConfiguration(final String shardingAlgorithmName, final String shardingColumn) {
             return new StandardShardingStrategyConfiguration(shardingColumn, shardingAlgorithmName);
@@ -54,6 +55,7 @@ public enum ShardingStrategyType {
         }
     },
     NONE {
+        
         @Override
         public ShardingStrategyConfiguration createConfiguration(final String shardingAlgorithmName, final String shardingColumn) {
             return new NoneShardingStrategyConfiguration();
@@ -75,6 +77,7 @@ public enum ShardingStrategyType {
         }
     },
     HINT {
+        
         @Override
         public ShardingStrategyConfiguration createConfiguration(final String shardingAlgorithmName, final String shardingColumn) {
             return new HintShardingStrategyConfiguration(shardingAlgorithmName);
@@ -96,6 +99,7 @@ public enum ShardingStrategyType {
         }
     },
     COMPLEX {
+        
         @Override
         public ShardingStrategyConfiguration createConfiguration(final String shardingAlgorithmName, final String shardingColumn) {
             return new ComplexShardingStrategyConfiguration(shardingColumn, shardingAlgorithmName);

@@ -46,7 +46,7 @@ public final class SM4EncryptAlgorithmTest {
     }
     
     @Test
-    public void assertEncryptNullPlaintext() {
+    public void assertEncryptNullValue() {
         EncryptAlgorithm<Object, String> algorithm = EncryptAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("SM4", createECBProperties()));
         assertNull(algorithm.encrypt(null, mock(EncryptContext.class)));
     }
@@ -58,7 +58,7 @@ public final class SM4EncryptAlgorithmTest {
     }
     
     @Test
-    public void assertDecryptNullCiphertext() {
+    public void assertDecryptNullValue() {
         EncryptAlgorithm<Object, String> algorithm = EncryptAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("SM4", createECBProperties()));
         assertNull(algorithm.decrypt(null, mock(EncryptContext.class)));
     }

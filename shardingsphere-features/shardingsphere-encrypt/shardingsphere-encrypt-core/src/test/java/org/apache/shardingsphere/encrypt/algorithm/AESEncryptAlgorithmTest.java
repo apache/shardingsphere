@@ -46,21 +46,19 @@ public final class AESEncryptAlgorithmTest {
         return result;
     }
     
+    @Test(expected = IllegalArgumentException.class)
+    public void assertCreateNewInstanceWithoutAESKey() {
+        EncryptAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("AES", new Properties()));
+    }
+    
     @Test
     public void assertEncrypt() {
         Object actual = encryptAlgorithm.encrypt("test", mock(EncryptContext.class));
         assertThat(actual, is("dSpPiyENQGDUXMKFMJPGWA=="));
     }
     
-    @Test(expected = IllegalArgumentException.class)
-    public void assertEncryptWithoutKey() {
-        encryptAlgorithm.init(new Properties());
-        Object actual = encryptAlgorithm.encrypt("test", mock(EncryptContext.class));
-        assertThat(actual, is("dSpPiyENQGDUXMKFMJPGWA=="));
-    }
-    
     @Test
-    public void assertEncryptWithNullPlaintext() {
+    public void assertEncryptNullValue() {
         assertNull(encryptAlgorithm.encrypt(null, mock(EncryptContext.class)));
     }
     
@@ -70,15 +68,8 @@ public final class AESEncryptAlgorithmTest {
         assertThat(actual.toString(), is("test"));
     }
     
-    @Test(expected = IllegalArgumentException.class)
-    public void assertDecryptWithoutKey() {
-        encryptAlgorithm.init(new Properties());
-        Object actual = encryptAlgorithm.decrypt("dSpPiyENQGDUXMKFMJPGWA==", mock(EncryptContext.class));
-        assertThat(actual.toString(), is("test"));
-    }
-    
     @Test
-    public void assertDecryptWithNullCiphertext() {
+    public void assertDecryptNullValue() {
         assertNull(encryptAlgorithm.decrypt(null, mock(EncryptContext.class)));
     }
 }

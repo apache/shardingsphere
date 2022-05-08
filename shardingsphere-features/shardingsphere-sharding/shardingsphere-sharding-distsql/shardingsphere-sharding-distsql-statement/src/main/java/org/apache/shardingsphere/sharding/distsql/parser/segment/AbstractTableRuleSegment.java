@@ -44,6 +44,7 @@ public abstract class AbstractTableRuleSegment implements ASTNode {
      * Empty table rule segment.
      */
     public static class EmptyTableRuleSegment extends AbstractTableRuleSegment {
+        
         public EmptyTableRuleSegment() {
             super(null, null);
         }

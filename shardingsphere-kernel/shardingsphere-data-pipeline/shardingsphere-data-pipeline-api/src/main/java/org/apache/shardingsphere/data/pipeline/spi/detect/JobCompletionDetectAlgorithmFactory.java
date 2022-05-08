@@ -24,8 +24,6 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmF
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
-import java.util.Properties;
-
 /**
  * Job completion detect algorithm factory.
  */
@@ -54,6 +52,6 @@ public final class JobCompletionDetectAlgorithmFactory {
      * @return contains job completion detect algorithm or not
      */
     public static boolean contains(final String jobCompletionDetectAlgorithmType) {
-        return TypedSPIRegistry.findRegisteredService(JobCompletionDetectAlgorithm.class, jobCompletionDetectAlgorithmType, new Properties()).isPresent();
+        return TypedSPIRegistry.findRegisteredService(JobCompletionDetectAlgorithm.class, jobCompletionDetectAlgorithmType).isPresent();
     }
 }

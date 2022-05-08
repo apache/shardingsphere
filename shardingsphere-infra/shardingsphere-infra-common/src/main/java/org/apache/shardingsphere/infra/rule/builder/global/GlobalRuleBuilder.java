@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.rule.builder.RuleBuilder;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
 
 import java.util.Map;
 
@@ -29,6 +30,7 @@ import java.util.Map;
  * 
  * @param <T> type of rule configuration
  */
+@SingletonSPI
 public interface GlobalRuleBuilder<T extends RuleConfiguration> extends RuleBuilder<T> {
     
     /**

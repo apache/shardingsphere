@@ -17,5 +17,5 @@
 
 package org.apache.shardingsphere.spi.fixture;
 
-public final class SingletonFixtureServiceImpl implements SingletonFixtureService {
+public final class MultitonSPIFixtureImpl implements MultitonSPIFixture {
 }
