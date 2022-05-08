@@ -17,8 +17,5 @@
 
 package org.apache.shardingsphere.spi.fixture;
 
-import org.apache.shardingsphere.spi.annotation.SingletonSPI;
-
-@SingletonSPI
-public interface SingletonFixtureService {
+public interface EmptySPIFixture {
 }

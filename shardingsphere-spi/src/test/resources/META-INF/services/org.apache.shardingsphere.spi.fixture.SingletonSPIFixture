@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.spi.fixture.NonSingletonFixtureServiceImpl
+org.apache.shardingsphere.spi.fixture.SingletonSPIFixtureImpl
