@@ -44,6 +44,7 @@ public final class InsertStatementContextUtil {
     
     /**
      * Get InsertStatement collection from MultiInsertStatement.
+     * @param sqlStatement InsertStatement
      *
      * @return InsertStatement collection
      */
