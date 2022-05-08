@@ -49,17 +49,16 @@ public final class SingleTableSQLRouter implements SQLRouter<SingleTableRule> {
     
     @Override
     public RouteContext createRouteContext(final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final SingleTableRule rule, final ConfigurationProperties props) {
-        RouteContext result = new RouteContext();
         if (1 == metaData.getResource().getDataSources().size()) {
-            result.getRouteUnits().add(createSingleDataSourceRouteUnit(rule, metaData));
-        } else {
-            SQLStatementContext<?> sqlStatementContext = logicSQL.getSqlStatementContext();
-            Collection<QualifiedTable> singleTableNames = getSingleTableNames(sqlStatementContext, metaData, rule, result);
-            if (!singleTableNames.isEmpty()) {
-                validateSameDataSource(sqlStatementContext, rule, result, props, singleTableNames);
-            }
-            SingleTableRouteEngineFactory.newInstance(singleTableNames, sqlStatementContext.getSqlStatement()).ifPresent(optional -> optional.route(result, rule));
+            return createSingleDataSourceRouteContext(rule, metaData);
         }
+        RouteContext result = new RouteContext();
+        SQLStatementContext<?> sqlStatementContext = logicSQL.getSqlStatementContext();
+        Collection<QualifiedTable> singleTableNames = getSingleTableNames(sqlStatementContext, metaData, rule, result);
+        if (!singleTableNames.isEmpty()) {
+            validateSameDataSource(sqlStatementContext, rule, props, singleTableNames, result);
+        }
+        SingleTableRouteEngineFactory.newInstance(singleTableNames, sqlStatementContext.getSqlStatement()).ifPresent(optional -> optional.route(result, rule));
         return result;
     }
     
@@ -71,17 +70,19 @@ public final class SingleTableSQLRouter implements SQLRouter<SingleTableRule> {
         if (singleTableNames.isEmpty()) {
             return;
         }
-        validateSameDataSource(sqlStatementContext, rule, routeContext, props, singleTableNames);
+        validateSameDataSource(sqlStatementContext, rule, props, singleTableNames, routeContext);
         SingleTableRouteEngineFactory.newInstance(singleTableNames, sqlStatementContext.getSqlStatement()).ifPresent(optional -> optional.route(routeContext, rule));
     }
     
-    private RouteUnit createSingleDataSourceRouteUnit(final SingleTableRule rule, final ShardingSphereMetaData metaData) {
+    private RouteContext createSingleDataSourceRouteContext(final SingleTableRule rule, final ShardingSphereMetaData metaData) {
         String logicDataSource = rule.getDataSourceNames().iterator().next();
         String actualDataSource = metaData.getResource().getDataSources().keySet().iterator().next();
-        return new RouteUnit(new RouteMapper(logicDataSource, actualDataSource), Collections.emptyList());
+        RouteContext result = new RouteContext();
+        result.getRouteUnits().add(new RouteUnit(new RouteMapper(logicDataSource, actualDataSource), Collections.emptyList()));
+        return result;
     }
     
-    private static Collection<QualifiedTable> getSingleTableNames(final SQLStatementContext<?> sqlStatementContext, final ShardingSphereMetaData metaData,
+    private static Collection<QualifiedTable> getSingleTableNames(final SQLStatementContext<?> sqlStatementContext, final ShardingSphereMetaData metaData, 
                                                                   final SingleTableRule rule, final RouteContext routeContext) {
         DatabaseType databaseType = sqlStatementContext.getDatabaseType();
         Collection<QualifiedTable> result = getQualifiedTables(metaData, sqlStatementContext.getTablesContext().getTables(), databaseType);
@@ -102,7 +103,7 @@ public final class SingleTableSQLRouter implements SQLRouter<SingleTableRule> {
     }
     
     private static void validateSameDataSource(final SQLStatementContext<?> sqlStatementContext, final SingleTableRule rule,
-                                               final RouteContext routeContext, final ConfigurationProperties props, final Collection<QualifiedTable> singleTableNames) {
+                                               final ConfigurationProperties props, final Collection<QualifiedTable> singleTableNames, final RouteContext routeContext) {
         boolean sqlFederationEnabled = props.getValue(ConfigurationPropertyKey.SQL_FEDERATION_ENABLED);
         boolean allTablesInSameDataSource = sqlFederationEnabled
                 ? sqlStatementContext instanceof SelectStatementContext || rule.isSingleTablesInSameDataSource(singleTableNames)
