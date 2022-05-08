@@ -32,6 +32,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProce
 import org.springframework.core.env.Environment;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -54,6 +55,8 @@ public abstract class AbstractAlgorithmProvidedBeanRegistry<T extends ShardingSp
     
     private final Environment environment;
     
+    private final Map<String, Properties> propsMap = new HashMap<>();
+    
     @SuppressWarnings("unchecked")
     protected final void registerBean(final String prefix, final Class<T> algorithmClass, final BeanDefinitionRegistry registry) {
         if (!PropertyUtil.containPropertyPrefix(environment, prefix)) {
@@ -66,7 +69,7 @@ public abstract class AbstractAlgorithmProvidedBeanRegistry<T extends ShardingSp
         for (Entry<String, ShardingSphereAlgorithmConfiguration> entry : algorithmConfigs.entrySet()) {
             ShardingSphereAlgorithmConfiguration algorithmConfig = entry.getValue();
             BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(ShardingSphereAlgorithmFactory.createAlgorithm(algorithmConfig, algorithmClass).getClass());
-            builder.addPropertyValue(PROPS, algorithmConfig.getProps());
+            propsMap.put(entry.getKey(), algorithmConfig.getProps());
             registry.registerBeanDefinition(entry.getKey(), builder.getBeanDefinition());
         }
     }
@@ -94,6 +97,12 @@ public abstract class AbstractAlgorithmProvidedBeanRegistry<T extends ShardingSp
         return convertToStringTypedProperties(result);
     }
     
+    private Properties convertToStringTypedProperties(final Properties props) {
+        Properties result = new Properties();
+        props.forEach((key, value) -> result.setProperty(key.toString(), null == value ? null : value.toString()));
+        return result;
+    }
+    
     @Override
     public final void postProcessBeanFactory(final ConfigurableListableBeanFactory configurableListableBeanFactory) {
     }
@@ -105,21 +114,12 @@ public abstract class AbstractAlgorithmProvidedBeanRegistry<T extends ShardingSp
     
     @Override
     public final Object postProcessAfterInitialization(final Object bean, final String beanName) {
-        if (bean instanceof ShardingSphereAlgorithm) {
+        if (bean instanceof ShardingSphereAlgorithm && propsMap.containsKey(beanName)) {
             ShardingSphereAlgorithm algorithm = (ShardingSphereAlgorithm) bean;
-            Properties stringTypeProps = convertToStringTypedProperties(algorithm.getProps());
-            algorithm.init(stringTypeProps);
-            algorithm.setProps(stringTypeProps);
+            Properties props = propsMap.get(beanName);
+            algorithm.init(props);
+            algorithm.setProps(props);
         }
         return bean;
-    }
-    
-    private Properties convertToStringTypedProperties(final Properties props) {
-        if (null == props) {
-            return new Properties();
-        }
-        Properties result = new Properties();
-        props.forEach((key, value) -> result.setProperty(key.toString(), null == value ? null : value.toString()));
-        return result;
     }
 }
