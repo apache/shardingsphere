@@ -291,12 +291,11 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
         ShardingSphereSchema schema = getSchema(metaDataMap, defaultDatabaseName);
         List<InsertStatement> insertStatements = InsertStatementContextUtil.getInsertStatements(getSqlStatement());
         for (int cursor = 0; cursor < insertStatements.size(); cursor++) {
-            InsertStatement insertStatement = insertStatements.get(cursor);
             List<InsertValueContext> insertValueContext = getInsertValueContexts(parameters, parametersOffset, valueExpressions.get(cursor));
             insertValueContextsMap.put(cursor, insertValueContext);
             onDuplicateKeyUpdateValueContexts.put(cursor, getOnDuplicateKeyUpdateValueContext(parameters, parametersOffset).orElse(null));
             parametersOffset.getAndAdd(insertValueContext.size());
-            generatedKeyContexts.put(cursor, new GeneratedKeyContextEngine(insertStatement, schema).createGenerateKeyContext(insertColumnNames,
+            generatedKeyContexts.put(cursor, new GeneratedKeyContextEngine(insertStatements.get(cursor), schema).createGenerateKeyContext(insertColumnNames,
                     valueExpressions.get(cursor), parameters).orElse(null));
         }
         insertValueContexts = insertValueContextsMap.get(0);

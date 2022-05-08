@@ -32,10 +32,21 @@ import java.util.Optional;
  */
 public final class InsertStatementContextUtil {
     
+    /**
+     * Get first index on MultiInsertStatement.
+     * @param sqlStatementContext InsertStatementContext
+     * 
+     * @return column names collection
+     */
     public static SimpleTableSegment getTable(final InsertStatementContext sqlStatementContext) {
         return getInsertStatements(sqlStatementContext.getSqlStatement()).get(0).getTable();
     }
     
+    /**
+     * Get InsertStatement collection from MultiInsertStatement.
+     *
+     * @return InsertStatement collection
+     */
     public static List<InsertStatement> getInsertStatements(final InsertStatement sqlStatement) {
         Optional<InsertMultiTableElementSegment> optional = getInsertMultiTableElementSegment(sqlStatement);
         if (optional.isPresent()) {
