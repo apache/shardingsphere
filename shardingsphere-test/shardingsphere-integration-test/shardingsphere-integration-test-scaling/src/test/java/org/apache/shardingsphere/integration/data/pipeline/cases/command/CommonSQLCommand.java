@@ -51,12 +51,6 @@ public final class CommonSQLCommand {
     @XmlElement(name = "simple-insert-order")
     private String simpleInsertOrder;
     
-    @XmlElement(name = "update-order")
-    private String updateOrder;
-    
-    @XmlElement(name = "update-order-item")
-    private String updateOrderItem;
-    
     @XmlElement(name = "delete-order")
     private String deleteOrder;
     
