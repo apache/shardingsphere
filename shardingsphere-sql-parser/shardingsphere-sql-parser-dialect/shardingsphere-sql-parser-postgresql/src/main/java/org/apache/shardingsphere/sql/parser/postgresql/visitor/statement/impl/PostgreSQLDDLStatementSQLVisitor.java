@@ -831,6 +831,7 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     public ASTNode visitDropSchema(final DropSchemaContext ctx) {
         PostgreSQLDropSchemaStatement result = new PostgreSQLDropSchemaStatement();
         result.getSchemaNames().addAll(((CollectionValue<String>) visit(ctx.nameList())).getValue());
+        result.setContainsCascade(null != ctx.dropBehavior() && null != ctx.dropBehavior().CASCADE());
         return result;
     }
     
