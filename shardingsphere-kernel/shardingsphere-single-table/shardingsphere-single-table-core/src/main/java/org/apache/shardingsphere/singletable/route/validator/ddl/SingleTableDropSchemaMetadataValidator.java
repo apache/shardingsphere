@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.singletable.route.validator.SingleTableMetadataValidator;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropSchemaStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.DropSchemaStatementHandler;
 
 /**
@@ -34,13 +35,14 @@ public final class SingleTableDropSchemaMetadataValidator implements SingleTable
     @Override
     public void validate(final SingleTableRule rule, final SQLStatementContext<DropSchemaStatement> sqlStatementContext, final ShardingSphereMetaData metaData) {
         boolean containsCascade = DropSchemaStatementHandler.isContainsCascade(sqlStatementContext.getSqlStatement());
-        for (String each : sqlStatementContext.getSqlStatement().getSchemaNames()) {
-            ShardingSphereSchema schema = metaData.getSchemaByName(each);
+        for (IdentifierValue each : sqlStatementContext.getSqlStatement().getSchemaNames()) {
+            String schemaName = each.getValue();
+            ShardingSphereSchema schema = metaData.getSchemaByName(schemaName);
             if (null == schema) {
-                throw new ShardingSphereException("Schema %s does not exist.", each);
+                throw new ShardingSphereException("Schema %s does not exist.", schemaName);
             }
             if (!containsCascade && !schema.getAllTableNames().isEmpty()) {
-                throw new ShardingSphereException("Can not drop schema %s because it contains tables.", each);
+                throw new ShardingSphereException("Can not drop schema %s because it contains tables.", schemaName);
             }
         }
     }

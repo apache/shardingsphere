@@ -695,11 +695,10 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
     public ASTNode visitCreateSchema(final CreateSchemaContext ctx) {
         OpenGaussCreateSchemaStatement result = new OpenGaussCreateSchemaStatement();
         if (null != ctx.createSchemaClauses().colId()) {
-            result.setSchemaName(ctx.createSchemaClauses().colId().getText());
+            result.setSchemaName(new IdentifierValue(ctx.createSchemaClauses().colId().getText()));
         }
         if (null != ctx.createSchemaClauses().roleSpec() && null != ctx.createSchemaClauses().roleSpec().identifier()) {
-            IdentifierValue username = (IdentifierValue) visit(ctx.createSchemaClauses().roleSpec().identifier());
-            result.setUsername(username.getValue());
+            result.setUsername((IdentifierValue) visit(ctx.createSchemaClauses().roleSpec().identifier()));
         }
         return result;
     }
@@ -707,9 +706,9 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
     @Override
     public ASTNode visitAlterSchema(final AlterSchemaContext ctx) {
         OpenGaussAlterSchemaStatement result = new OpenGaussAlterSchemaStatement();
-        result.setSchemaName(((IdentifierValue) visit(ctx.name().get(0))).getValue());
+        result.setSchemaName((IdentifierValue) visit(ctx.name().get(0)));
         if (ctx.name().size() > 1) {
-            result.setRenameSchema(((IdentifierValue) visit(ctx.name().get(1))).getValue());
+            result.setRenameSchema((IdentifierValue) visit(ctx.name().get(1)));
         }
         return result;
     }
@@ -718,7 +717,7 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
     @Override
     public ASTNode visitDropSchema(final DropSchemaContext ctx) {
         OpenGaussDropSchemaStatement result = new OpenGaussDropSchemaStatement();
-        result.getSchemaNames().addAll(((CollectionValue<String>) visit(ctx.nameList())).getValue());
+        result.getSchemaNames().addAll(((CollectionValue<IdentifierValue>) visit(ctx.nameList())).getValue());
         result.setContainsCascade(null != ctx.dropBehavior() && null != ctx.dropBehavior().CASCADE());
         return result;
     }
@@ -726,12 +725,12 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitNameList(final NameListContext ctx) {
-        CollectionValue<String> result = new CollectionValue<>();
+        CollectionValue<IdentifierValue> result = new CollectionValue<>();
         if (null != ctx.nameList()) {
-            result.combine((CollectionValue<String>) visit(ctx.nameList()));
+            result.combine((CollectionValue<IdentifierValue>) visit(ctx.nameList()));
         }
         if (null != ctx.name()) {
-            result.getValue().add(((IdentifierValue) visit(ctx.name())).getValue());
+            result.getValue().add((IdentifierValue) visit(ctx.name()));
         }
         return result;
     }
