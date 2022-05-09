@@ -289,7 +289,6 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
         for (int cursor = 0; cursor < insertStatements.size(); cursor++) {
             List<InsertValueContext> insertValueContext = getInsertValueContexts(parameters, parametersOffset, valueExpressions.get(cursor));
             insertValueContextsMap.put(cursor, insertValueContext);
-            parametersOffset.getAndAdd(insertValueContext.size());
             generatedKeyContexts.put(cursor, new GeneratedKeyContextEngine(insertStatements.get(cursor), schema).createGenerateKeyContext(insertColumnNames,
                     valueExpressions.get(cursor), parameters).orElse(null));
         }
