@@ -19,7 +19,7 @@ package org.apache.shardingsphere.authority.provider.simple;
 
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.provider.natived.model.subject.SchemaAccessSubject;
-import org.apache.shardingsphere.authority.provider.simple.AllPrivilegesPermittedAuthorityProviderAlgorithm.AllPrivilegesPermittedShardingSpherePrivileges;
+import org.apache.shardingsphere.authority.provider.simple.model.privilege.AllPrivilegesPermittedShardingSpherePrivileges;
 import org.junit.Test;
 
 import java.util.Collections;

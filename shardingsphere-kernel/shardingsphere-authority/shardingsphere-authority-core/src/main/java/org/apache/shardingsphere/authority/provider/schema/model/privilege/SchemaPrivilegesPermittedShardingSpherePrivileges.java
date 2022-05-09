@@ -27,7 +27,7 @@ import java.util.Collection;
 import java.util.Set;
 
 /**
- * Schema privilegesPermittedShardingSpherePrivileges.
+ * Schema permitted privileges.
  */
 @RequiredArgsConstructor
 public final class SchemaPrivilegesPermittedShardingSpherePrivileges implements ShardingSpherePrivileges {

@@ -32,7 +32,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
- * Native Privileges.
+ * Native privileges.
  */
 @Getter
 @EqualsAndHashCode

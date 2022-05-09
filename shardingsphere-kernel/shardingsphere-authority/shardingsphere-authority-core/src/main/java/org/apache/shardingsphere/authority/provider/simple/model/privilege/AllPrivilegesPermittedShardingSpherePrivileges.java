@@ -15,24 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.registry;
+package org.apache.shardingsphere.authority.provider.simple.model.privilege;
 
-import org.apache.shardingsphere.authority.model.AuthorityRegistry;
+import org.apache.shardingsphere.authority.model.AccessSubject;
+import org.apache.shardingsphere.authority.model.PrivilegeType;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
-import org.apache.shardingsphere.authority.provider.simple.model.privilege.AllPrivilegesPermittedShardingSpherePrivileges;
-import org.apache.shardingsphere.infra.metadata.user.Grantee;
 
-import java.util.Optional;
+import java.util.Collection;
 
 /**
- * All permitted authority registry.
+ * All permitted privileges.
  */
-public final class AllPermittedAuthorityRegistry implements AuthorityRegistry {
-    
-    private static final ShardingSpherePrivileges INSTANCE = new AllPrivilegesPermittedShardingSpherePrivileges();
+public final class AllPrivilegesPermittedShardingSpherePrivileges implements ShardingSpherePrivileges {
     
     @Override
-    public Optional<ShardingSpherePrivileges> findPrivileges(final Grantee grantee) {
-        return Optional.of(INSTANCE);
+    public void setSuperPrivilege() {
+    }
+    
+    @Override
+    public boolean hasPrivileges(final String schema) {
+        return true;
+    }
+    
+    @Override
+    public boolean hasPrivileges(final Collection<PrivilegeType> privileges) {
+        return true;
+    }
+    
+    @Override
+    public boolean hasPrivileges(final AccessSubject accessSubject, final Collection<PrivilegeType> privileges) {
+        return true;
     }
 }
