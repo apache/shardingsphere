@@ -18,17 +18,20 @@
 package org.apache.shardingsphere.example.fixture;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.encrypt.spi.QueryAssistedEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 
 import java.util.Properties;
 
+@Getter
 public final class TestQueryAssistedShardingEncryptAlgorithm implements QueryAssistedEncryptAlgorithm<Object, String> {
     
-    @Getter
-    @Setter
     private Properties props;
+    
+    @Override
+    public void init(final Properties props) {
+        this.props = props;
+    }
     
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {

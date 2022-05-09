@@ -52,14 +52,14 @@ public final class ShowAuthorityRuleHandlerTest {
         List<Object> data = new ArrayList<>(handler.getRowData());
         assertThat(data.size(), is(3));
         assertThat(data.get(0), is("root@localhost"));
-        assertThat(data.get(1), is("ALL_PRIVILEGES_PERMITTED"));
+        assertThat(data.get(1), is("ALL_PERMITTED"));
         assertThat(data.get(2), is(""));
     }
     
     private ShardingSphereRuleMetaData getGlobalRuleMetaData() {
         ShardingSphereUser root = new ShardingSphereUser("root", "", "localhost");
         AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(
-                Collections.singletonList(root), new ShardingSphereAlgorithmConfiguration("ALL_PRIVILEGES_PERMITTED", new Properties()));
+                Collections.singletonList(root), new ShardingSphereAlgorithmConfiguration("ALL_PERMITTED", new Properties()));
         return new ShardingSphereRuleMetaData(Collections.singleton(ruleConfig), Collections.emptyList());
     }
 }

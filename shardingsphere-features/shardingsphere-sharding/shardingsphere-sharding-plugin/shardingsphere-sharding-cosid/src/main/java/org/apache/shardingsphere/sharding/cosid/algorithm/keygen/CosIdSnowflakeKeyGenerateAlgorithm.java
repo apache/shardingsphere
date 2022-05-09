@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sharding.cosid.algorithm.keygen;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import lombok.Setter;
 import me.ahoo.cosid.converter.Radix62IdConverter;
 import me.ahoo.cosid.snowflake.ClockSyncSnowflakeId;
 import me.ahoo.cosid.snowflake.MillisecondSnowflakeId;
@@ -47,14 +46,13 @@ public final class CosIdSnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgo
     public static final String EPOCH_KEY = "epoch";
     
     @Getter
-    @Setter
     private Properties props;
     
-    private volatile SnowflakeId snowflakeId;
+    private SnowflakeId snowflakeId;
     
-    private volatile boolean asString;
+    private boolean asString;
     
-    private volatile long epoch;
+    private long epoch;
     
     static {
         Calendar calendar = Calendar.getInstance();
@@ -68,6 +66,7 @@ public final class CosIdSnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgo
     
     @Override
     public void init(final Properties props) {
+        this.props = props;
         asString = getAsString(props);
         epoch = getEpoch(props);
     }
@@ -81,6 +80,14 @@ public final class CosIdSnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgo
     }
     
     @Override
+    public void setInstanceContext(final InstanceContext instanceContext) {
+        long workerId = instanceContext.getWorkerId();
+        MillisecondSnowflakeId millisecondSnowflakeId =
+                new MillisecondSnowflakeId(epoch, MillisecondSnowflakeId.DEFAULT_TIMESTAMP_BIT, MillisecondSnowflakeId.DEFAULT_MACHINE_BIT, MillisecondSnowflakeId.DEFAULT_SEQUENCE_BIT, workerId);
+        snowflakeId = new StringSnowflakeId(new ClockSyncSnowflakeId(millisecondSnowflakeId), Radix62IdConverter.PAD_START);
+    }
+    
+    @Override
     public Comparable<?> generateKey() {
         if (asString) {
             return getSnowflakeId().generateAsString();
@@ -91,14 +98,6 @@ public final class CosIdSnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgo
     private SnowflakeId getSnowflakeId() {
         Preconditions.checkNotNull(snowflakeId, "Instance context not set yet.");
         return snowflakeId;
-    }
-    
-    @Override
-    public void setInstanceContext(final InstanceContext instanceContext) {
-        long workerId = instanceContext.getWorkerId();
-        MillisecondSnowflakeId millisecondSnowflakeId =
-                new MillisecondSnowflakeId(epoch, MillisecondSnowflakeId.DEFAULT_TIMESTAMP_BIT, MillisecondSnowflakeId.DEFAULT_MACHINE_BIT, MillisecondSnowflakeId.DEFAULT_SEQUENCE_BIT, workerId);
-        snowflakeId = new StringSnowflakeId(new ClockSyncSnowflakeId(millisecondSnowflakeId), Radix62IdConverter.PAD_START);
     }
     
     @Override

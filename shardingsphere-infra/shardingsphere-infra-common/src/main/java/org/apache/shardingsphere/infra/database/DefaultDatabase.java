@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.fixture;
+package org.apache.shardingsphere.infra.database;
 
-import org.apache.shardingsphere.data.pipeline.spi.detect.JobCompletionDetectAlgorithm;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
-public final class FixtureJobCompletionDetectAlgorithm implements JobCompletionDetectAlgorithm<Object> {
+/**
+ * Default database.
+ */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class DefaultDatabase {
     
-    @Override
-    public boolean isAlmostCompleted(final Object parameter) {
-        return true;
-    }
-    
-    @Override
-    public String getType() {
-        return "FIXTURE";
-    }
+    /**
+     * Schema name.
+     */
+    public static final String LOGIC_NAME = "logic_db";
 }

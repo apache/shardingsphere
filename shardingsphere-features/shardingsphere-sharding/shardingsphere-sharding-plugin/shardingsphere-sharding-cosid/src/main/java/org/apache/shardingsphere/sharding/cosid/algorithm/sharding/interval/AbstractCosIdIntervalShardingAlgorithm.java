@@ -24,10 +24,10 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import me.ahoo.cosid.sharding.IntervalStep;
 import me.ahoo.cosid.sharding.IntervalTimeline;
-import org.apache.shardingsphere.sharding.cosid.algorithm.CosIdAlgorithmConstants;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
+import org.apache.shardingsphere.sharding.cosid.algorithm.CosIdAlgorithmConstants;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -57,13 +57,17 @@ public abstract class AbstractCosIdIntervalShardingAlgorithm<T extends Comparabl
     
     public static final String ZONE_ID_KEY = "zone-id";
     
-    @Getter(AccessLevel.PROTECTED)
-    private volatile ZoneId zoneId;
+    @Getter
+    private Properties props;
     
-    private volatile IntervalTimeline intervalTimeline;
+    @Getter(AccessLevel.PROTECTED)
+    private ZoneId zoneId;
+    
+    private IntervalTimeline intervalTimeline;
     
     @Override
     public void init(final Properties props) {
+        this.props = props;
         zoneId = getZoneId(props);
         intervalTimeline = getIntervalTimeline(props);
     }

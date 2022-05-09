@@ -19,7 +19,6 @@ package org.apache.shardingsphere.encrypt.sm.algorithm;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 import org.bouncycastle.crypto.digests.SM3Digest;
@@ -44,13 +43,13 @@ public final class SM3EncryptAlgorithm implements EncryptAlgorithm<Object, Strin
     private static final int SALT_LENGTH = 8;
     
     @Getter
-    @Setter
     private Properties props;
     
     private byte[] sm3Salt;
     
     @Override
     public void init(final Properties props) {
+        this.props = props;
         sm3Salt = createSm3Salt(props);
     }
     

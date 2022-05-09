@@ -21,8 +21,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Range;
 import com.google.common.primitives.Longs;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.util.HashMap;
 import java.util.List;
@@ -37,10 +35,6 @@ import java.util.stream.Collectors;
 public final class BoundaryBasedRangeShardingAlgorithm extends AbstractRangeShardingAlgorithm {
     
     private static final String SHARDING_RANGES_KEY = "sharding-ranges";
-    
-    @Getter
-    @Setter
-    private Properties props;
     
     @Override
     public Map<Integer, Range<Comparable<?>>> calculatePartitionRange(final Properties props) {

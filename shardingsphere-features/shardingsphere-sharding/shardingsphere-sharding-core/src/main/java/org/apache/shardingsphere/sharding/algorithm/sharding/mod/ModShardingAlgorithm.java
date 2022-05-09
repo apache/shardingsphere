@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sharding.algorithm.sharding.mod;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
@@ -37,13 +36,13 @@ public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Com
     private static final String SHARDING_COUNT_KEY = "sharding-count";
     
     @Getter
-    @Setter
     private Properties props;
     
-    private volatile int shardingCount;
+    private int shardingCount;
     
     @Override
     public void init(final Properties props) {
+        this.props = props;
         shardingCount = getShardingCount(props);
     }
     

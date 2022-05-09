@@ -17,14 +17,24 @@
 
 package org.apache.shardingsphere.data.pipeline.core.fixture;
 
+import lombok.Getter;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Properties;
 
+@Getter
 public final class DataConsistencyCalculateAlgorithmFixture implements DataConsistencyCalculateAlgorithm {
+    
+    private Properties props;
+    
+    @Override
+    public void init(final Properties props) {
+        this.props = props;
+    }
     
     @Override
     public Iterable<Object> calculate(final DataConsistencyCalculateParameter parameter) {

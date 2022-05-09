@@ -15,19 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database;
+package org.apache.shardingsphere.authority.model;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.metadata.user.Grantee;
+
+import java.util.Optional;
 
 /**
- * Default schema.
+ * Authority registry.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DefaultSchema {
+public interface AuthorityRegistry {
     
     /**
-     * Schema name.
+     * Find Privileges.
+     *
+     * @param grantee grantee
+     * @return found privileges
      */
-    public static final String LOGIC_NAME = "logic_db";
+    Optional<ShardingSpherePrivileges> findPrivileges(Grantee grantee);
 }

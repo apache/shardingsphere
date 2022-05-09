@@ -13,12 +13,12 @@ rules:
     users:
       - # Username, authorized host and password for compute node. Format: <username>@<hostname>:<password>, hostname is % or empty string means do not care about authorized host
     provider:
-      type: # authority provider for storage node, the default value is ALL_PRIVILEGES_PERMITTED
+      type: # authority provider for storage node, the default value is ALL_PERMITTED
 ```
 
 ## Example
 
-### ALL_PRIVILEGES_PERMITTED
+### ALL_PERMITTED
 ```yaml
 rules:
   - !AUTHORITY
@@ -26,10 +26,10 @@ rules:
       - root@localhost:root
       - my_user@:pwd
     provider:
-      type: ALL_PRIVILEGES_PERMITTED
+      type: ALL_PERMITTED
 ```
 
-### SCHEMA_PRIVILEGES_PERMITTED
+### SCHEMA_PERMITTED
 ```yaml
 rules:
   - !AUTHORITY
@@ -37,7 +37,7 @@ rules:
       - root@:root
       - my_user@:pwd
     provider:
-      type: SCHEMA_PRIVILEGES_PERMITTED
+      type: SCHEMA_PERMITTED
       props:
         user-schema-mappings: root@=sharding_db, root@=test_db, my_user@127.0.0.1=sharding_db
 ```

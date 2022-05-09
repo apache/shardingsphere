@@ -65,7 +65,7 @@ public final class MetaDataRefreshEngine {
         }
         Optional<MetaDataRefresher> schemaRefresher = MetaDataRefresherFactory.newInstance(sqlStatementClass);
         if (schemaRefresher.isPresent()) {
-            String schemaName = sqlStatementContext.getTablesContext().getSchemaName().orElse(sqlStatementContext.getDatabaseType().getDefaultSchema(metaData.getDatabaseName()));
+            String schemaName = sqlStatementContext.getTablesContext().getSchemaName().orElseGet(() -> sqlStatementContext.getDatabaseType().getDefaultSchema(metaData.getDatabaseName()));
             schemaRefresher.get().refresh(metaData, federationMetaData, optimizerPlanners, logicDataSourceNamesSupplier.get(), schemaName, sqlStatementContext.getSqlStatement(), props);
         } else {
             IGNORABLE_SQL_STATEMENT_CLASSES.add(sqlStatementClass);

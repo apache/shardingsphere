@@ -47,13 +47,13 @@ import static org.junit.Assert.assertTrue;
 public class PropertiesShadowSpringBootStarterTest {
     
     @Resource
-    private AlgorithmProvidedShadowRuleConfiguration shadowRuleConfiguration;
+    private AlgorithmProvidedShadowRuleConfiguration shadowRuleConfig;
     
     @Test
     public void assertShadowRuleConfiguration() {
-        assertShadowDataSources(shadowRuleConfiguration.getDataSources());
-        assertShadowTables(shadowRuleConfiguration.getTables());
-        assertShadowAlgorithms(shadowRuleConfiguration.getShadowAlgorithms());
+        assertShadowDataSources(shadowRuleConfig.getDataSources());
+        assertShadowTables(shadowRuleConfig.getTables());
+        assertShadowAlgorithms(shadowRuleConfig.getShadowAlgorithms());
     }
     
     private void assertShadowAlgorithms(final Map<String, ShadowAlgorithm> shadowAlgorithms) {

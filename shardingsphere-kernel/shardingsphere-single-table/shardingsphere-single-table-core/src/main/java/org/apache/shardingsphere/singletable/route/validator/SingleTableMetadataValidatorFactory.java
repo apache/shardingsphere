@@ -15,31 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.spi;
+package org.apache.shardingsphere.singletable.route.validator;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.singletable.route.validator.ddl.SingleTableDropSchemaMetadataValidator;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropSchemaStatement;
+
+import java.util.Optional;
 
 /**
- * Authority provide algorithm factory.
-*/
+ * Single table metadata validator factory.
+ */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class AuthorityProviderAlgorithmFactory {
-    
-    static {
-        ShardingSphereServiceLoader.register(AuthorityProviderAlgorithm.class);
-    }
+public final class SingleTableMetadataValidatorFactory {
     
     /**
-     * Create new instance of authority provide algorithm.
+     * New instance of single table metadata validator.
      * 
-     * @param authorityProviderConfig authority provider configuration
-     * @return new instance of authority provide algorithm
+     * @param sqlStatement SQL statement
+     * @return instance of sharding statement validator
      */
-    public static AuthorityProviderAlgorithm newInstance(final ShardingSphereAlgorithmConfiguration authorityProviderConfig) {
-        return ShardingSphereAlgorithmFactory.createAlgorithm(authorityProviderConfig, AuthorityProviderAlgorithm.class);
+    @SuppressWarnings("rawtypes")
+    public static Optional<SingleTableMetadataValidator> newInstance(final SQLStatement sqlStatement) {
+        if (sqlStatement instanceof DropSchemaStatement) {
+            return Optional.of(new SingleTableDropSchemaMetadataValidator());
+        }
+        return Optional.empty();
     }
 }

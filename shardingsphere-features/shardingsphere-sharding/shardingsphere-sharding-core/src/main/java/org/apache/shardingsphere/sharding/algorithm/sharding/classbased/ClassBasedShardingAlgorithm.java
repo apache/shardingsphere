@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sharding.algorithm.sharding.classbased;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingAlgorithm;
@@ -42,21 +41,21 @@ public final class ClassBasedShardingAlgorithm implements StandardShardingAlgori
     private static final String ALGORITHM_CLASS_NAME_KEY = "algorithmClassName";
     
     @Getter
-    @Setter
     private Properties props;
     
-    private volatile ClassBasedShardingAlgorithmStrategyType strategy;
+    private ClassBasedShardingAlgorithmStrategyType strategy;
     
-    private volatile String algorithmClassName;
+    private String algorithmClassName;
     
-    private volatile StandardShardingAlgorithm standardShardingAlgorithm;
+    private StandardShardingAlgorithm standardShardingAlgorithm;
     
-    private volatile ComplexKeysShardingAlgorithm complexKeysShardingAlgorithm;
+    private ComplexKeysShardingAlgorithm complexKeysShardingAlgorithm;
     
-    private volatile HintShardingAlgorithm hintShardingAlgorithm;
+    private HintShardingAlgorithm hintShardingAlgorithm;
     
     @Override
     public void init(final Properties props) {
+        this.props = props;
         strategy = getStrategy(props);
         algorithmClassName = getAlgorithmClassName(props);
         initAlgorithmInstance(props);

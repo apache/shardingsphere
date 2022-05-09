@@ -15,21 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.ratelimit;
+package org.apache.shardingsphere.authority.registry;
 
-import org.apache.shardingsphere.data.pipeline.api.job.JobOperationType;
+import org.apache.shardingsphere.authority.model.AuthorityRegistry;
+import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
+import org.apache.shardingsphere.authority.provider.simple.model.privilege.AllPrivilegesPermittedShardingSpherePrivileges;
+import org.apache.shardingsphere.infra.metadata.user.Grantee;
+
+import java.util.Optional;
 
 /**
- * Fixture input job rate limit algorithm for SPI.
+ * All permitted authority registry.
  */
-public final class FixtureInputJobRateLimitAlgorithm implements JobRateLimitAlgorithm {
+public final class AllPermittedAuthorityRegistry implements AuthorityRegistry {
+    
+    private static final ShardingSpherePrivileges INSTANCE = new AllPrivilegesPermittedShardingSpherePrivileges();
     
     @Override
-    public String getType() {
-        return "FIXTURE_INPUT";
-    }
-    
-    @Override
-    public void intercept(final JobOperationType type, final Number data) {
+    public Optional<ShardingSpherePrivileges> findPrivileges(final Grantee grantee) {
+        return Optional.of(INSTANCE);
     }
 }

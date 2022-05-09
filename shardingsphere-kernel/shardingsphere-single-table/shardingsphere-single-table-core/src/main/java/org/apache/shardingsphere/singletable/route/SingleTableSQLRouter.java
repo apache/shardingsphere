@@ -34,6 +34,8 @@ import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.singletable.constant.SingleTableOrder;
 import org.apache.shardingsphere.singletable.route.engine.SingleTableRouteEngineFactory;
+import org.apache.shardingsphere.singletable.route.validator.SingleTableMetadataValidator;
+import org.apache.shardingsphere.singletable.route.validator.SingleTableMetadataValidatorFactory;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
@@ -41,12 +43,14 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTable
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.Optional;
 
 /**
  * Single table SQL router.
  */
 public final class SingleTableSQLRouter implements SQLRouter<SingleTableRule> {
     
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     public RouteContext createRouteContext(final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final SingleTableRule rule, final ConfigurationProperties props) {
         if (1 == metaData.getResource().getDataSources().size()) {
@@ -54,6 +58,8 @@ public final class SingleTableSQLRouter implements SQLRouter<SingleTableRule> {
         }
         RouteContext result = new RouteContext();
         SQLStatementContext<?> sqlStatementContext = logicSQL.getSqlStatementContext();
+        Optional<SingleTableMetadataValidator> validator = SingleTableMetadataValidatorFactory.newInstance(sqlStatementContext.getSqlStatement());
+        validator.ifPresent(optional -> optional.validate(rule, sqlStatementContext, metaData));
         Collection<QualifiedTable> singleTableNames = getSingleTableNames(sqlStatementContext, metaData, rule, result);
         if (!singleTableNames.isEmpty()) {
             validateSameDataSource(sqlStatementContext, rule, props, singleTableNames, result);

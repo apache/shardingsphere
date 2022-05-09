@@ -26,7 +26,7 @@ import org.apache.shardingsphere.encrypt.fixture.CoreSchemaMetaDataAwareEncryptA
 import org.apache.shardingsphere.encrypt.fixture.CoreEncryptAlgorithmFixture;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.junit.Test;
 
@@ -93,7 +93,7 @@ public final class EncryptRuleTest {
     @Test
     public void assertGetEncryptValues() {
         List<Object> encryptAssistedQueryValues = new EncryptRule(createEncryptRuleConfiguration(), Collections.emptyMap())
-                .getEncryptValues(DefaultSchema.LOGIC_NAME, DefaultSchema.LOGIC_NAME, "t_encrypt", "pwd", Collections.singletonList(null));
+                .getEncryptValues(DefaultDatabase.LOGIC_NAME, DefaultDatabase.LOGIC_NAME, "t_encrypt", "pwd", Collections.singletonList(null));
         for (final Object value : encryptAssistedQueryValues) {
             assertNull(value);
         }
@@ -122,7 +122,7 @@ public final class EncryptRuleTest {
     @Test
     public void assertGetEncryptAssistedQueryValues() {
         List<Object> encryptAssistedQueryValues = new EncryptRule(createEncryptRuleConfiguration(), Collections.emptyMap())
-                .getEncryptAssistedQueryValues(DefaultSchema.LOGIC_NAME, DefaultSchema.LOGIC_NAME, "t_encrypt", "pwd", Collections.singletonList(null));
+                .getEncryptAssistedQueryValues(DefaultDatabase.LOGIC_NAME, DefaultDatabase.LOGIC_NAME, "t_encrypt", "pwd", Collections.singletonList(null));
         for (final Object value : encryptAssistedQueryValues) {
             assertNull(value);
         }

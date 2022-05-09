@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.schema.util;
 
 import com.google.common.collect.Lists;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
@@ -86,7 +86,7 @@ public final class IndexMetaDataUtilTest {
         IndexSegment indexSegment = new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue(INDEX_NAME)));
         Collection<QualifiedTable> actual = IndexMetaDataUtil.getTableNamesFromMetaData(buildMetaData(), Lists.newArrayList(indexSegment), new MySQLDatabaseType());
         assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next().getSchemaName(), is(DefaultSchema.LOGIC_NAME));
+        assertThat(actual.iterator().next().getSchemaName(), is(DefaultDatabase.LOGIC_NAME));
         assertThat(actual.iterator().next().getTableName(), is(TABLE_NAME));
     }
     
@@ -94,7 +94,7 @@ public final class IndexMetaDataUtilTest {
         TableMetaData tableMetaData = new TableMetaData(TABLE_NAME, Collections.emptyList(), Collections.singletonList(new IndexMetaData(INDEX_NAME)), Collections.emptyList());
         Map<String, TableMetaData> tables = new HashMap<>(1, 1);
         tables.put(TABLE_NAME, tableMetaData);
-        Map<String, ShardingSphereSchema> schemas = Collections.singletonMap(DefaultSchema.LOGIC_NAME, new ShardingSphereSchema(tables));
-        return new ShardingSphereMetaData(DefaultSchema.LOGIC_NAME, mock(ShardingSphereResource.class), mock(ShardingSphereRuleMetaData.class), schemas);
+        Map<String, ShardingSphereSchema> schemas = Collections.singletonMap(DefaultDatabase.LOGIC_NAME, new ShardingSphereSchema(tables));
+        return new ShardingSphereMetaData(DefaultDatabase.LOGIC_NAME, mock(ShardingSphereResource.class), mock(ShardingSphereRuleMetaData.class), schemas);
     }
 }

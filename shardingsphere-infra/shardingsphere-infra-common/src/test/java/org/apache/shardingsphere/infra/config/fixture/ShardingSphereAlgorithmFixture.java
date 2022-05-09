@@ -23,12 +23,15 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
 import java.util.Properties;
 
 @Getter
-public final class FixtureShardingSphereAlgorithm implements ShardingSphereAlgorithm {
+public final class ShardingSphereAlgorithmFixture implements ShardingSphereAlgorithm {
+    
+    private Properties props;
     
     private String testValue;
     
     @Override
     public void init(final Properties props) {
+        this.props = props;
         testValue = props.getProperty("key");
     }
     

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.route.engine.fixture;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -251,8 +251,8 @@ public abstract class AbstractRoutingEngineTest {
     protected SingleTableRule createSingleTableRule(final Collection<ShardingSphereRule> rules) {
         Map<String, DataSource> dataSourceMap = createDataSourceMapWithMain();
         SingleTableRule result = new SingleTableRule(new SingleTableRuleConfiguration(),
-                DefaultSchema.LOGIC_NAME, mock(DatabaseType.class), dataSourceMap, rules, new ConfigurationProperties(new Properties()));
-        result.put(dataSourceMap.keySet().iterator().next(), DefaultSchema.LOGIC_NAME, "t_category");
+                DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class), dataSourceMap, rules, new ConfigurationProperties(new Properties()));
+        result.put(dataSourceMap.keySet().iterator().next(), DefaultDatabase.LOGIC_NAME, "t_category");
         return result;
     }
 }

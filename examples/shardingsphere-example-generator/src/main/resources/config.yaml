@@ -27,6 +27,7 @@ modes:
 transactions: 
   - local
   - xa-atomikos
+  - xa-narayana
 
 # supported: sharding,readwrite-splitting,encrypt,shadow,db-discovery
 features: 

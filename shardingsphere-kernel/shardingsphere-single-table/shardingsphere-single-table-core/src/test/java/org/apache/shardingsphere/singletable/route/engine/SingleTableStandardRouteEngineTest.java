@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.singletable.route.engine;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.schema.QualifiedTable;
@@ -53,7 +53,7 @@ public final class SingleTableStandardRouteEngineTest {
     @Test
     public void assertRouteInSameDataSource() {
         SingleTableStandardRouteEngine singleTableRouteEngine = new SingleTableStandardRouteEngine(mockQualifiedTables(), null);
-        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), DefaultSchema.LOGIC_NAME, mock(DatabaseType.class),
+        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class),
                 createDataSourceMap(), Collections.emptyList(), new ConfigurationProperties(new Properties()));
         singleTableRule.getSingleTableDataNodes().put("t_order", Collections.singletonList(mockDataNode("ds_0", "t_order")));
         singleTableRule.getSingleTableDataNodes().put("t_order_item", Collections.singletonList(mockDataNode("ds_0", "t_order_item")));
@@ -75,18 +75,18 @@ public final class SingleTableStandardRouteEngineTest {
     
     private DataNode mockDataNode(final String dataSourceName, final String tableName) {
         DataNode result = new DataNode(dataSourceName, tableName);
-        result.setSchemaName(DefaultSchema.LOGIC_NAME);
+        result.setSchemaName(DefaultDatabase.LOGIC_NAME);
         return result;
     }
     
     private Collection<QualifiedTable> mockQualifiedTables() {
-        return Arrays.asList(new QualifiedTable(DefaultSchema.LOGIC_NAME, "t_order"), new QualifiedTable(DefaultSchema.LOGIC_NAME, "t_order_item"));
+        return Arrays.asList(new QualifiedTable(DefaultDatabase.LOGIC_NAME, "t_order"), new QualifiedTable(DefaultDatabase.LOGIC_NAME, "t_order_item"));
     }
     
     @Test
     public void assertRouteInDifferentDataSource() {
         SingleTableStandardRouteEngine singleTableRouteEngine = new SingleTableStandardRouteEngine(mockQualifiedTables(), null);
-        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), DefaultSchema.LOGIC_NAME, mock(DatabaseType.class),
+        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class),
                 createDataSourceMap(), Collections.emptyList(), new ConfigurationProperties(new Properties()));
         singleTableRule.getSingleTableDataNodes().put("t_order", Collections.singletonList(mockDataNode("ds_0", "t_order")));
         singleTableRule.getSingleTableDataNodes().put("t_order_item", Collections.singletonList(mockDataNode("ds_1", "t_order_item")));
@@ -110,7 +110,7 @@ public final class SingleTableStandardRouteEngineTest {
     @Test
     public void assertRouteWithoutSingleTableRule() {
         SingleTableStandardRouteEngine singleTableRouteEngine = new SingleTableStandardRouteEngine(mockQualifiedTables(), new MySQLCreateTableStatement());
-        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), DefaultSchema.LOGIC_NAME, mock(DatabaseType.class),
+        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class),
                 createDataSourceMap(), Collections.emptyList(), new ConfigurationProperties(new Properties()));
         RouteContext routeContext = new RouteContext();
         singleTableRouteEngine.route(routeContext, singleTableRule);
@@ -126,7 +126,7 @@ public final class SingleTableStandardRouteEngineTest {
     @Test
     public void assertRouteWithDefaultSingleTableRule() {
         SingleTableStandardRouteEngine singleTableRouteEngine = new SingleTableStandardRouteEngine(mockQualifiedTables(), new MySQLCreateTableStatement());
-        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration("ds_0"), DefaultSchema.LOGIC_NAME, mock(DatabaseType.class),
+        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration("ds_0"), DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class),
                 createDataSourceMap(), Collections.emptyList(), new ConfigurationProperties(new Properties()));
         RouteContext routeContext = new RouteContext();
         singleTableRouteEngine.route(routeContext, singleTableRule);

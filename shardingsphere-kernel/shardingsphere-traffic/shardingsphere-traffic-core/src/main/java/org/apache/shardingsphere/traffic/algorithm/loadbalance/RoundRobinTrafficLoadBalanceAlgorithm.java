@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.traffic.algorithm.loadbalance;
 
+import lombok.Getter;
 import org.apache.shardingsphere.infra.instance.definition.InstanceId;
 import org.apache.shardingsphere.traffic.spi.TrafficLoadBalanceAlgorithm;
 
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -29,6 +31,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 public final class RoundRobinTrafficLoadBalanceAlgorithm implements TrafficLoadBalanceAlgorithm {
     
     private final AtomicInteger count = new AtomicInteger(0);
+    
+    @Getter
+    private Properties props;
+    
+    @Override
+    public void init(final Properties props) {
+        this.props = props;
+    }
     
     @Override
     public InstanceId getInstanceId(final String name, final List<InstanceId> instanceIds) {

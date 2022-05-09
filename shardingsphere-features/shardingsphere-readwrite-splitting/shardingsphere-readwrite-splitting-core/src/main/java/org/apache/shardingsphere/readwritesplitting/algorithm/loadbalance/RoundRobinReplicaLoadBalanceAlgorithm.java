@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
 
 import java.util.List;
@@ -33,8 +32,12 @@ public final class RoundRobinReplicaLoadBalanceAlgorithm implements ReplicaLoadB
     private final AtomicInteger count = new AtomicInteger(0);
     
     @Getter
-    @Setter
     private Properties props;
+    
+    @Override
+    public void init(final Properties props) {
+        this.props = props;
+    }
     
     @Override
     public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames) {

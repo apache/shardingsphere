@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.spring.namespace.fixture;
 
-import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
@@ -35,7 +35,7 @@ public final class FixtureClusterPersistRepository implements ClusterPersistRepo
     
     @Override
     public void init(final ClusterPersistRepositoryConfiguration config) {
-        registryData.put("/metadata", DefaultSchema.LOGIC_NAME);
+        registryData.put("/metadata", DefaultDatabase.LOGIC_NAME);
     }
     
     @Override

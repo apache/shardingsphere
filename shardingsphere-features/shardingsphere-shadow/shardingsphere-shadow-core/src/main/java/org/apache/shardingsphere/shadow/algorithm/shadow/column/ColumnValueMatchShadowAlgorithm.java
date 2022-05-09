@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.shadow.algorithm.shadow.column;
 
 import com.google.common.base.Preconditions;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.util.Properties;
 
@@ -29,10 +27,6 @@ import java.util.Properties;
 public final class ColumnValueMatchShadowAlgorithm extends AbstractColumnMatchShadowAlgorithm {
     
     private static final String VALUE_PROPS_KEY = "value";
-    
-    @Getter
-    @Setter
-    private Properties props;
     
     private String shadowValue;
     
