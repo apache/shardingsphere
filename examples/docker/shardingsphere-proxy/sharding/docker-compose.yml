@@ -24,7 +24,6 @@ services:
     ports:
       - "5432:5432"
     container_name: shardingsphere-example-postgres
-    ## launch Postgres without password
     ## you could access Postgres like `psql -d your_database_name -h 127.0.0.1 -U root -p 5432 -W`
     environment:
      - TZ=Asia/Shanghai
@@ -35,8 +34,8 @@ services:
       - ../../../src/resources/manual_schema.sql:/docker-entrypoint-initdb.d/manual_schema.sql
 
   proxy:
-    ## get more versions of proxy here : https://hub.docker.com/r/apache/sharding-proxy/tags
-    image: "apache/sharding-proxy:latest"
+    ## get more versions of proxy here : https://hub.docker.com/r/apache/shardingsphere-proxy/tags
+    image: "apache/shardingsphere-proxy:latest"
     container_name: shardingsphere-example-proxy
     depends_on:
      - postgres
