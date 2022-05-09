@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.fixture;
+package org.apache.shardingsphere.spi.type.ordered.fixture;
 
-public interface FixtureCustomInterface {
+public interface OrderedInterfaceFixture {
 }
