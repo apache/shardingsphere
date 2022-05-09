@@ -719,6 +719,7 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
     public ASTNode visitDropSchema(final DropSchemaContext ctx) {
         OpenGaussDropSchemaStatement result = new OpenGaussDropSchemaStatement();
         result.getSchemaNames().addAll(((CollectionValue<String>) visit(ctx.nameList())).getValue());
+        result.setContainsCascade(null != ctx.dropBehavior() && null != ctx.dropBehavior().CASCADE());
         return result;
     }
     
