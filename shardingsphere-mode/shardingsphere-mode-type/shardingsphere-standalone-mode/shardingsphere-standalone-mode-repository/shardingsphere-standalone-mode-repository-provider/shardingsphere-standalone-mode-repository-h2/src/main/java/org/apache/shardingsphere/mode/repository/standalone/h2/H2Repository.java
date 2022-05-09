@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mode.repository.standalone.h2;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepository;
@@ -50,9 +49,6 @@ public final class H2Repository implements StandalonePersistRepository {
     private static final String DEFAULT_PASSWORD = "";
     
     private static final String SEPARATOR = "/";
-    
-    @Getter
-    private Properties props;
     
     private String jdbcUrl;
     
