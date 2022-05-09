@@ -36,7 +36,6 @@ import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtil;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import java.util.Optional;
-import java.util.Properties;
 
 /**
  * Set variable statement handler.
@@ -75,10 +74,9 @@ public final class SetVariableHandler extends UpdatableRALBackendHandler<SetVari
     private void handleConfigurationProperty(final ConfigurationPropertyKey propertyKey, final String value) {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         Optional<MetaDataPersistService> metaDataPersistService = metaDataContexts.getMetaDataPersistService();
-        Properties props = metaDataContexts.getProps().getProps();
-        props.put(propertyKey.getKey(), getValue(propertyKey, value));
+        metaDataContexts.getProps().setValue(propertyKey, getValue(propertyKey, value));
         if (metaDataPersistService.isPresent() && null != metaDataPersistService.get().getPropsService()) {
-            metaDataPersistService.get().getPropsService().persist(props, true);
+            metaDataPersistService.get().getPropsService().persist(metaDataContexts.getProps().getProps(), true);
         }
     }
     

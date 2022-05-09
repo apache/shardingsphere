@@ -72,4 +72,24 @@ public abstract class TypedProperties<E extends Enum<?> & TypedPropertyKey> {
     public final <T> T getValue(final E key) {
         return (T) cache.get(key).getValue();
     }
+    
+    /**
+     * Set property value.
+     *
+     * @param key property key
+     * @param value property value
+     */
+    public final void setValue(final E key, final Object value) {
+        props.put(key.getKey(), value);
+        reload(key);
+    }
+    
+    private void reload(final E typedPropertyKey) {
+        Object value = props.get(typedPropertyKey.getKey());
+        try {
+            cache.put(typedPropertyKey, new TypedPropertyValue(typedPropertyKey, value.toString()));
+        } catch (final TypedPropertyValueException ex) {
+            throw new ShardingSphereConfigurationException(ex.getMessage());
+        }
+    }
 }
