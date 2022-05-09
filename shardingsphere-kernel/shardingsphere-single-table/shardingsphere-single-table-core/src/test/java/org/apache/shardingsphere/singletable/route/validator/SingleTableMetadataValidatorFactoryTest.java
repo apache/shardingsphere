@@ -32,31 +32,25 @@ public final class SingleTableMetadataValidatorFactoryTest {
     @Test
     @SuppressWarnings("rawtypes")
     public void assertNewInstanceForPostgreSQL() {
-        
         SQLStatement statement = new PostgreSQLDropSchemaStatement();
         Optional<SingleTableMetadataValidator> actual = SingleTableMetadataValidatorFactory.newInstance(statement);
         assertTrue(actual.isPresent());
-        
     }
     
     @Test
     @SuppressWarnings("rawtypes")
     public void assertNewInstanceForSQLServer() {
-        
         SQLStatement statement = new SQLServerDropSchemaStatement();
         Optional<SingleTableMetadataValidator> actual = SingleTableMetadataValidatorFactory.newInstance(statement);
         assertTrue(actual.isPresent());
-        
     }
     
     @Test
     @SuppressWarnings("rawtypes")
     public void assertNewInstanceForOpenGauss() {
-        
         SQLStatement statement = new OpenGaussDropSchemaStatement();
         Optional<SingleTableMetadataValidator> actual = SingleTableMetadataValidatorFactory.newInstance(statement);
         assertTrue(actual.isPresent());
-        
     }
     
 }
