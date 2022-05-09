@@ -18,32 +18,22 @@
 package org.apache.shardingsphere.proxy.fixture;
 
 import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.locks.Lock;
 
-public final class FixtureClusterPersistRepository implements ClusterPersistRepository {
+public final class ClusterPersistRepositoryFixture implements ClusterPersistRepository {
     
     private static final Map<String, String> REGISTRY_DATA = new LinkedHashMap<>();
     
     @Override
     public void init(final ClusterPersistRepositoryConfiguration config) {
-    }
-    
-    @Override
-    public void init(final Properties props) {
-    }
-    
-    @Override
-    public Properties getProps() {
-        return new Properties();
     }
     
     @Override

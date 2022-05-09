@@ -24,22 +24,12 @@ import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEve
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Properties;
 import java.util.concurrent.locks.Lock;
 
 public final class ClusterPersistRepositoryFixture implements ClusterPersistRepository {
     
     @Override
     public void init(final ClusterPersistRepositoryConfiguration config) {
-    }
-    
-    @Override
-    public void init(final Properties props) {
-    }
-    
-    @Override
-    public Properties getProps() {
-        return new Properties();
     }
     
     @Override
