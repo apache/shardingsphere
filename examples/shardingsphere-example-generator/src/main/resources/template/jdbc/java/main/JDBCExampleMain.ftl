@@ -31,5 +31,8 @@ public final class ExampleMain {
         DataSource dataSource = config.createDataSource();
         ExampleService exampleService = new ExampleService(dataSource);
         exampleService.run();
+    <#if transaction=="xa-narayana">
+        System.exit(1);
+    </#if>
     }
 }
