@@ -46,6 +46,6 @@ public final class ProxyExampleGenerator implements ExampleGenerator {
     }
     
     public String getType() {
-        return "PROXY";
+        return "proxy";
     }
 }

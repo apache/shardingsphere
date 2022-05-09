@@ -17,7 +17,7 @@
 
 # supported: JDBC, PROXY
 products:
-  - JDBC
+  - jdbc
 
 # supported: memory,cluster-zookeeper,cluster-etcd,standalone-file
 modes: 
