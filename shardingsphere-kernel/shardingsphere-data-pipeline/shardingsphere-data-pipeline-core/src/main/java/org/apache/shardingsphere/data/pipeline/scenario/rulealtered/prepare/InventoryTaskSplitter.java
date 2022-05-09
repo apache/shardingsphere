@@ -145,41 +145,53 @@ public final class InventoryTaskSplitter {
             // Do NOT filter FinishedPosition here, since whole inventory tasks are required in job progress when persisting to register center.
             return result;
         }
-        PipelineTableMetaData tableMetaData = metaDataLoader.getTableMetaData(schemaName, dumperConfig.getActualTableName());
-        if (isSpiltByPrimaryKeyRange(tableMetaData, dumperConfig.getActualTableName())) {
-            String primaryKey = tableMetaData.getPrimaryKeyColumns().get(0);
-            dumperConfig.setPrimaryKey(primaryKey);
-            return getPositionByPrimaryKeyRange(jobContext, dataSource, dumperConfig);
+        String actualTableName = dumperConfig.getActualTableName();
+        PipelineTableMetaData tableMetaData = metaDataLoader.getTableMetaData(schemaName, actualTableName);
+        checkPrimaryKey(tableMetaData, actualTableName);
+        String primaryKey = tableMetaData.getPrimaryKeyColumns().get(0);
+        dumperConfig.setPrimaryKey(primaryKey);
+        int columnType = tableMetaData.getColumnMetaData(primaryKey).getDataType();
+        if (isIntegerColumn(columnType)) {
+            return getPositionByIntegerPrimaryKeyRange(jobContext, dataSource, dumperConfig);
+        } else if (isStringColumn(columnType)) {
+            return getPositionByStringPrimaryKeyRange();
+        } else {
+            throw new PipelineJobCreationException(String.format("Can not split range for table %s, reason: primary key is not integer or string type", actualTableName));
         }
-        throw new PipelineJobCreationException("Can not split by primary key range for table " + dumperConfig.getActualTableName());
     }
     
-    private boolean isSpiltByPrimaryKeyRange(final PipelineTableMetaData tableMetaData, final String tableName) {
+    private void checkPrimaryKey(final PipelineTableMetaData tableMetaData, final String tableName) {
         if (null == tableMetaData) {
-            log.warn("Can't split range for table {}, reason: can not get table metadata ", tableName);
-            return false;
+            throw new PipelineJobCreationException(String.format("Can not split range for table %s, reason: can not get table metadata ", tableName));
         }
         List<String> primaryKeys = tableMetaData.getPrimaryKeyColumns();
         if (null == primaryKeys || primaryKeys.isEmpty()) {
-            log.warn("Can't split range for table {}, reason: no primary key", tableName);
-            return false;
+            throw new PipelineJobCreationException(String.format("Can not split range for table %s, reason: no primary key", tableName));
         }
         if (primaryKeys.size() > 1) {
-            log.warn("Can't split range for table {}, reason: primary key is union primary", tableName);
-            return false;
+            throw new PipelineJobCreationException(String.format("Can not split range for table %s, reason: primary key is union primary", tableName));
         }
-        if (isNotIntegerPrimary(tableMetaData.getColumnMetaData(primaryKeys.get(0)).getDataType())) {
-            log.warn("Can't split range for table {}, reason: primary key is not integer number", tableName);
-            return false;
-        }
-        return true;
     }
     
-    private boolean isNotIntegerPrimary(final int columnType) {
-        return Types.INTEGER != columnType && Types.BIGINT != columnType && Types.SMALLINT != columnType && Types.TINYINT != columnType;
+    private boolean isIntegerColumn(final int columnType) {
+        return Types.INTEGER == columnType || Types.BIGINT == columnType || Types.SMALLINT == columnType || Types.TINYINT == columnType;
     }
     
-    private Collection<IngestPosition<?>> getPositionByPrimaryKeyRange(final RuleAlteredJobContext jobContext, final DataSource dataSource, final InventoryDumperConfiguration dumperConfig) {
+    private boolean isStringColumn(final int columnType) {
+        switch (columnType) {
+            case Types.CHAR:
+            case Types.VARCHAR:
+            case Types.LONGVARCHAR:
+            case Types.NCHAR:
+            case Types.NVARCHAR:
+            case Types.LONGNVARCHAR:
+                return true;
+            default:
+                return false;
+        }
+    }
+    
+    private Collection<IngestPosition<?>> getPositionByIntegerPrimaryKeyRange(final RuleAlteredJobContext jobContext, final DataSource dataSource, final InventoryDumperConfiguration dumperConfig) {
         Collection<IngestPosition<?>> result = new LinkedList<>();
         RuleAlteredJobConfiguration jobConfig = jobContext.getJobConfig();
         String sql = PipelineSQLBuilderFactory.newInstance(jobConfig.getSourceDatabaseType())
@@ -187,6 +199,7 @@ public final class InventoryTaskSplitter {
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement ps = connection.prepareStatement(sql)) {
+            // TODO query minimum value less than 0
             long beginId = 0;
             for (int i = 0; i < Integer.MAX_VALUE; i++) {
                 ps.setLong(1, beginId);
@@ -212,6 +225,12 @@ public final class InventoryTaskSplitter {
         } catch (final SQLException ex) {
             throw new PipelineJobPrepareFailedException(String.format("Split task for table %s by primary key %s error", dumperConfig.getActualTableName(), dumperConfig.getPrimaryKey()), ex);
         }
+        return result;
+    }
+    
+    private Collection<IngestPosition<?>> getPositionByStringPrimaryKeyRange() {
+        Collection<IngestPosition<?>> result = new LinkedList<>();
+        result.add(new PrimaryKeyPosition("!", "~"));
         return result;
     }
 }
