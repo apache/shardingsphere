@@ -65,7 +65,9 @@ public final class PostgreSQLManualScalingIT extends BasePostgreSQLITCase {
         getJdbcTemplate().execute(getCommonSQLCommand().getAutoAlterTableRule());
         Map<String, Object> showScalingResMap = getJdbcTemplate().queryForMap("SHOW SCALING LIST");
         String jobId = String.valueOf(showScalingResMap.get("id"));
-        getIncreaseTaskThread().join(60 * 1000L);
+        if (null != getIncreaseTaskThread()) {
+            getIncreaseTaskThread().join(60 * 1000L);
+        }
         checkMatchConsistency(getJdbcTemplate(), jobId);
     }
 }
