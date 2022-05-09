@@ -15,9 +15,9 @@
 # limitations under the License.
 #
 
-# supported: jdbc,proxy
+# supported: JDBC, PROXY
 products:
-  - jdbc
+  - JDBC
 
 # supported: memory,cluster-zookeeper,cluster-etcd,standalone-file
 modes: 
