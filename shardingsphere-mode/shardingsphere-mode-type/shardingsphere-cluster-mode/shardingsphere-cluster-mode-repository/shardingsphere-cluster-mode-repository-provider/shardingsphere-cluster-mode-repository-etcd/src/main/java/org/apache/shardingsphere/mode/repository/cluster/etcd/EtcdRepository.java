@@ -65,13 +65,8 @@ public final class EtcdRepository implements ClusterPersistRepository {
     private EtcdInternalLockHolder etcdInternalLockHolder;
     
     @Override
-    public void init(final Properties props) {
-        this.props = props;
-    }
-    
-    @Override
     public void init(final ClusterPersistRepositoryConfiguration config) {
-        etcdProps = new EtcdProperties(props);
+        etcdProps = new EtcdProperties(config.getProps());
         client = Client.builder().endpoints(Util.toURIs(Splitter.on(",").trimResults().splitToList(config.getServerLists())))
                 .namespace(ByteSequence.from(config.getNamespace(), StandardCharsets.UTF_8))
                 .maxInboundMessageSize((int) 32e9)
