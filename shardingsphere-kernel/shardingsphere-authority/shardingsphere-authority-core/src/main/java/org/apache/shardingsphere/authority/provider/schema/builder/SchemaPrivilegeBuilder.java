@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
-import org.apache.shardingsphere.authority.provider.schema.SchemaPrivilegesPermittedAuthorityProviderAlgorithm;
+import org.apache.shardingsphere.authority.provider.schema.SchemaPermittedPrivilegesProviderAlgorithm;
 import org.apache.shardingsphere.authority.provider.schema.model.privilege.SchemaPermittedPrivileges;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
@@ -49,7 +49,7 @@ public final class SchemaPrivilegeBuilder {
      * @return privileges
      */
     public static Map<ShardingSphereUser, ShardingSpherePrivileges> build(final Collection<ShardingSphereUser> users, final Properties props) {
-        String mappingProp = props.getProperty(SchemaPrivilegesPermittedAuthorityProviderAlgorithm.PROP_USER_SCHEMA_MAPPINGS, "");
+        String mappingProp = props.getProperty(SchemaPermittedPrivilegesProviderAlgorithm.PROP_USER_SCHEMA_MAPPINGS, "");
         checkSchemas(mappingProp);
         return buildPrivileges(users, mappingProp);
     }

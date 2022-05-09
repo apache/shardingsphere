@@ -30,9 +30,9 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * Schema privileges permitted authority provider algorithm.
+ * Schema permitted privileges provider algorithm.
  */
-public final class SchemaPrivilegesPermittedAuthorityProviderAlgorithm implements AuthorityProviderAlgorithm {
+public final class SchemaPermittedPrivilegesProviderAlgorithm implements AuthorityProviderAlgorithm {
     
     public static final String PROP_USER_SCHEMA_MAPPINGS = "user-schema-mappings";
     
