@@ -18,18 +18,16 @@
 package org.apache.shardingsphere.authority.provider.schema;
 
 import lombok.Getter;
-import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
+import org.apache.shardingsphere.authority.model.AuthorityRegistry;
 import org.apache.shardingsphere.authority.provider.schema.builder.SchemaPrivilegeBuilder;
+import org.apache.shardingsphere.authority.registry.UserPrivilegeMapAuthorityRegistry;
 import org.apache.shardingsphere.authority.spi.AuthorityProviderAlgorithm;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Schema privileges permitted authority provider algorithm.
@@ -41,26 +39,14 @@ public final class SchemaPrivilegesPermittedAuthorityProviderAlgorithm implement
     @Getter
     private Properties props;
     
-    private final Map<ShardingSphereUser, ShardingSpherePrivileges> userPrivilegeMap = new ConcurrentHashMap<>();
-    
     @Override
     public void init(final Properties props) {
         this.props = props;
     }
     
     @Override
-    public void init(final Map<String, ShardingSphereMetaData> metaDataMap, final Collection<ShardingSphereUser> users) {
-        userPrivilegeMap.putAll(SchemaPrivilegeBuilder.build(users, props));
-    }
-    
-    @Override
-    public void refresh(final Map<String, ShardingSphereMetaData> metaDataMap, final Collection<ShardingSphereUser> users) {
-        userPrivilegeMap.putAll(SchemaPrivilegeBuilder.build(users, props));
-    }
-    
-    @Override
-    public Optional<ShardingSpherePrivileges> findPrivileges(final Grantee grantee) {
-        return userPrivilegeMap.keySet().stream().filter(each -> each.getGrantee().equals(grantee)).findFirst().map(userPrivilegeMap::get);
+    public AuthorityRegistry buildAuthorityRegistry(final Map<String, ShardingSphereMetaData> metaDataMap, final Collection<ShardingSphereUser> users) {
+        return new UserPrivilegeMapAuthorityRegistry(SchemaPrivilegeBuilder.build(users, props));
     }
     
     @Override
