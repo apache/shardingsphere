@@ -18,11 +18,9 @@
 package org.apache.shardingsphere.mode.manager.standalone;
 
 import org.apache.shardingsphere.infra.config.mode.PersistRepositoryConfiguration;
-import org.apache.shardingsphere.mode.manager.standalone.fixture.StandalonePersistRepositoryFixture;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepository;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepositoryFactory;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.exception.ServiceProviderNotFoundException;
 import org.junit.Test;
 
@@ -33,10 +31,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 public final class StandalonePersistRepositoryFactoryTest {
-    
-    static {
-        ShardingSphereServiceLoader.register(StandalonePersistRepositoryFixture.class);
-    }
     
     @Test
     public void assertNewInstanceWithNoConfig() {
