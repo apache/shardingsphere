@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.authority.registry;
 
-import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
-import org.apache.shardingsphere.authority.provider.simple.AllPrivilegesPermittedAuthorityProviderAlgorithm.AllPrivilegesPermittedShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.model.AuthorityRegistry;
+import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
+import org.apache.shardingsphere.authority.provider.simple.model.privilege.AllPrivilegesPermittedShardingSpherePrivileges;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 
 import java.util.Optional;

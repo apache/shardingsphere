@@ -35,7 +35,7 @@ public interface AuthorityProviderAlgorithm extends ShardingSphereAlgorithm {
      * 
      * @param metaDataMap meta data map
      * @param users users
-     * @return authority registry
+     * @return built authority registry
      */
     AuthorityRegistry buildAuthorityRegistry(Map<String, ShardingSphereMetaData> metaDataMap, Collection<ShardingSphereUser> users);
 }

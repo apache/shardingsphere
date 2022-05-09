@@ -15,18 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.provider.simple;
+package org.apache.shardingsphere.authority.provider.simple.model.privilege;
 
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.provider.natived.model.subject.SchemaAccessSubject;
-import org.apache.shardingsphere.authority.provider.simple.AllPrivilegesPermittedAuthorityProviderAlgorithm.AllPrivilegesPermittedShardingSpherePrivileges;
 import org.junit.Test;
 
 import java.util.Collections;
 
 import static org.junit.Assert.assertTrue;
 
-public final class AllPrivilegesPermittedAuthorityProviderAlgorithmTest {
+public final class AllPermittedPrivilegesProviderAlgorithmTest {
     
     @Test
     public void assertFindPrivileges() {

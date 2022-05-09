@@ -15,28 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.provider.schema;
+package org.apache.shardingsphere.authority.provider.simple;
 
 import lombok.Getter;
 import org.apache.shardingsphere.authority.model.AuthorityRegistry;
-import org.apache.shardingsphere.authority.provider.schema.builder.SchemaPrivilegeBuilder;
-import org.apache.shardingsphere.authority.registry.UserPrivilegeMapAuthorityRegistry;
+import org.apache.shardingsphere.authority.registry.AllPermittedAuthorityRegistry;
 import org.apache.shardingsphere.authority.spi.AuthorityProviderAlgorithm;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
 /**
- * Schema privileges permitted authority provider algorithm.
+ * All permitted privileges provider algorithm.
  */
-public final class SchemaPrivilegesPermittedAuthorityProviderAlgorithm implements AuthorityProviderAlgorithm {
+@Getter
+public final class AllPermittedPrivilegesProviderAlgorithm implements AuthorityProviderAlgorithm {
     
-    public static final String PROP_USER_SCHEMA_MAPPINGS = "user-schema-mappings";
-    
-    @Getter
     private Properties props;
     
     @Override
@@ -46,11 +44,16 @@ public final class SchemaPrivilegesPermittedAuthorityProviderAlgorithm implement
     
     @Override
     public AuthorityRegistry buildAuthorityRegistry(final Map<String, ShardingSphereMetaData> metaDataMap, final Collection<ShardingSphereUser> users) {
-        return new UserPrivilegeMapAuthorityRegistry(SchemaPrivilegeBuilder.build(users, props));
+        return new AllPermittedAuthorityRegistry();
     }
     
     @Override
     public String getType() {
-        return "SCHEMA_PRIVILEGES_PERMITTED";
+        return "ALL_PERMITTED";
+    }
+    
+    @Override
+    public Collection<String> getTypeAliases() {
+        return Collections.singleton("ALL_PRIVILEGES_PERMITTED");
     }
 }

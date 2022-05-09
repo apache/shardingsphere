@@ -53,7 +53,7 @@ public final class MetaDataContextsBuilderTest {
         props.setProperty(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE.getKey(), "1");
         ShardingSphereUser user = new ShardingSphereUser("root", "root", "");
         AuthorityRuleConfiguration authorityRuleConfig = new AuthorityRuleConfiguration(Collections.singleton(user),
-                new ShardingSphereAlgorithmConfiguration("ALL_PRIVILEGES_PERMITTED", new Properties()));
+                new ShardingSphereAlgorithmConfiguration("ALL_PERMITTED", new Properties()));
         MetaDataContextsBuilder builder = new MetaDataContextsBuilder(Collections.singleton(authorityRuleConfig), props);
         builder.addDatabase("logic_db", DatabaseTypeRegistry.getDefaultDatabaseType(),
                 new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.singletonList(new FixtureRuleConfiguration())), props);
