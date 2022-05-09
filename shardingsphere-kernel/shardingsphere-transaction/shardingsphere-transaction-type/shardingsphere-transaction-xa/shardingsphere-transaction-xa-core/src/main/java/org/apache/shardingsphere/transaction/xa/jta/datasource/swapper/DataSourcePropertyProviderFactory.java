@@ -19,33 +19,30 @@ package org.apache.shardingsphere.transaction.xa.jta.datasource.swapper;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.transaction.xa.jta.datasource.swapper.impl.DefaultDataSourcePropertyProvider;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.type.required.RequiredSPIRegistry;
+import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
 import javax.sql.DataSource;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ServiceLoader;
 
 /**
- * Data source property provider loader.
+ * Data source property provider factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DataSourcePropertyProviderLoader {
-    
-    private static final Map<String, DataSourcePropertyProvider> DATA_SOURCE_PROPERTY_PROVIDERS = new HashMap<>();
+public final class DataSourcePropertyProviderFactory {
     
     static {
-        ServiceLoader.load(DataSourcePropertyProvider.class).forEach(each -> DATA_SOURCE_PROPERTY_PROVIDERS.put(each.getDataSourceClassName(), each));
+        ShardingSphereServiceLoader.register(DataSourcePropertyProvider.class);
     }
     
     /**
-     * Get data source property provider.
+     * Create new instance of data source property provider.
      *
      * @param dataSource data source
-     * @return data source property provider
+     * @return new instance of data source property provider
      */
-    public static DataSourcePropertyProvider getProvider(final DataSource dataSource) {
-        String dataSourceClassName = dataSource.getClass().getName();
-        return DATA_SOURCE_PROPERTY_PROVIDERS.containsKey(dataSourceClassName) ? DATA_SOURCE_PROPERTY_PROVIDERS.get(dataSourceClassName) : new DefaultDataSourcePropertyProvider();
+    public static DataSourcePropertyProvider newInstance(final DataSource dataSource) {
+        return TypedSPIRegistry.findRegisteredService(
+                DataSourcePropertyProvider.class, dataSource.getClass().getName()).orElseGet(() -> RequiredSPIRegistry.getRegisteredService(DataSourcePropertyProvider.class));
     }
 }
