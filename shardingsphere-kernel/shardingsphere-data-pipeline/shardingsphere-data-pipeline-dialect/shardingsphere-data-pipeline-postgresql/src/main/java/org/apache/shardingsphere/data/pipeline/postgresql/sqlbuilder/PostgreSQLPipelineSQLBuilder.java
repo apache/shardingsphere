@@ -33,7 +33,8 @@ public final class PostgreSQLPipelineSQLBuilder extends AbstractPipelineSQLBuild
     
     @Override
     public String buildCreateSchemaSQL(final String schemaName) {
-        return "CREATE SCHEMA IF NOT EXISTS " + quote(schemaName);
+        // TODO remove first, add when kernel fixed bug.
+        return "CREATE SCHEMA IF NOT EXISTS " + schemaName;
     }
     
     @Override
