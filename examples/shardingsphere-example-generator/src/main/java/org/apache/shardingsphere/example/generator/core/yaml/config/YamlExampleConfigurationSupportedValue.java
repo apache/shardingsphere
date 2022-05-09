@@ -30,7 +30,7 @@ import java.util.Set;
 @Getter
 public enum YamlExampleConfigurationSupportedValue {
     
-    PRODUCTS("products", Sets.newHashSet("JDBC", "PROXY")),
+    PRODUCTS("products", Sets.newHashSet("jdbc", "proxy")),
     
     MODES("modes", Sets.newHashSet("memory", "proxy", "cluster-zookeeper", "cluster-etcd", "standalone-file")),
     
