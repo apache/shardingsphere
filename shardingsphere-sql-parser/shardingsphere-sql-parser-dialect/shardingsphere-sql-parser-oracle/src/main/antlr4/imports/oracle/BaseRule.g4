@@ -284,6 +284,10 @@ editionName
     : identifier
     ;
 
+outlineName
+    : identifier
+    ;
+
 containerName
     : identifier
     ;

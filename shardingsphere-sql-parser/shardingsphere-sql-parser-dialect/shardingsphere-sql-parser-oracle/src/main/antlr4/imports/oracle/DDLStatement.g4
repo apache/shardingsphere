@@ -80,6 +80,10 @@ dropEdition
     : DROP EDITION editionName CASCADE?
     ;
 
+dropOutline
+    : DROP OUTLINE outlineName
+    ;
+
 truncateTable
     : TRUNCATE TABLE tableName materializedViewLogClause? dropReuseClause? CASCADE?
     ;

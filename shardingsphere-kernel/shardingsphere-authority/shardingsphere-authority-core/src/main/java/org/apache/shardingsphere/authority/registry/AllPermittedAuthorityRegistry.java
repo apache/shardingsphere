@@ -15,7 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.fixture;
+package org.apache.shardingsphere.authority.registry;
 
-public interface FixtureCustomInterface {
+import org.apache.shardingsphere.authority.model.AuthorityRegistry;
+import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
+import org.apache.shardingsphere.authority.provider.simple.model.privilege.AllPrivilegesPermittedShardingSpherePrivileges;
+import org.apache.shardingsphere.infra.metadata.user.Grantee;
+
+import java.util.Optional;
+
+/**
+ * All permitted authority registry.
+ */
+public final class AllPermittedAuthorityRegistry implements AuthorityRegistry {
+    
+    private static final ShardingSpherePrivileges INSTANCE = new AllPrivilegesPermittedShardingSpherePrivileges();
+    
+    @Override
+    public Optional<ShardingSpherePrivileges> findPrivileges(final Grantee grantee) {
+        return Optional.of(INSTANCE);
+    }
 }

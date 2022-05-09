@@ -15,7 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.fixture;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-public final class FixtureCustomInterfaceImpl implements FixtureCustomInterface {
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+
+/**
+ * Drop outline statement test case.
+ */
+public final class DropOutlineStatementTestCase extends SQLParserTestCase {
 }
