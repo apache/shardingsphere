@@ -41,12 +41,12 @@ public final class StandalonePersistRepositoryFactoryTest {
     @Test
     public void assertNewInstanceWithNoConfig() {
         StandalonePersistRepository standalonePersistRepository = StandalonePersistRepositoryFactory.newInstance(null);
-        assertThat(standalonePersistRepository.getType(), is("File"));
+        assertThat(standalonePersistRepository.getType(), is("FIXTURE"));
     }
     
     @Test
     public void assertNewInstanceWithConfig() {
-        PersistRepositoryConfiguration config = new StandalonePersistRepositoryConfiguration("File", new Properties());
+        PersistRepositoryConfiguration config = new StandalonePersistRepositoryConfiguration("FIXTURE", new Properties());
         StandalonePersistRepository standalonePersistRepository = StandalonePersistRepositoryFactory.newInstance(config);
         assertNotNull(standalonePersistRepository);
     }

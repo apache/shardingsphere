@@ -67,6 +67,6 @@ public final class StandalonePersistRepositoryFixture implements StandalonePersi
     
     @Override
     public String getType() {
-        return "File";
+        return "FIXTURE";
     }
 }
