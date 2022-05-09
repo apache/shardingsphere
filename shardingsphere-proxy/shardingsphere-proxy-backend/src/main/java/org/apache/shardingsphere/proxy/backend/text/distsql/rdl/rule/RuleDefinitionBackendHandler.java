@@ -31,7 +31,6 @@ import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionUpdater;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionUpdaterFactory;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.version.MetadataVersionPreparedEvent;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
@@ -47,7 +46,6 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterSharding
 import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingTableRuleStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
@@ -149,8 +147,8 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
             if (!newVersion.isPresent()) {
                 throw new RuntimeException(String.format("Unable to get a new version for database: %s", shardingSphereMetaData.getDatabaseName()));
             }
-            persistRuleConfigurationChange(metaDataPersistService.get(), newVersion.get(), shardingSphereMetaData, currentRuleConfig, getAlteredRuleConfig(sqlStatement, updater, currentRuleConfig, preprocessor));
-            
+            persistRuleConfigurationChange(metaDataPersistService.get(), newVersion.get(), shardingSphereMetaData, currentRuleConfig,
+                    getAlteredRuleConfig(sqlStatement, updater, currentRuleConfig, preprocessor));
         }
     }
     
@@ -170,10 +168,10 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
     
     private RuleConfiguration getAlteredRuleConfig(final T sqlStatement, final RuleDefinitionAlterUpdater updater, final RuleConfiguration currentRuleConfig,
                                                    final RuleDefinitionAlterPreprocessor preprocessor) {
-            RuleConfiguration toBeAlteredRuleConfig = updater.buildToBeAlteredRuleConfiguration(sqlStatement);
-            RuleConfiguration result = preprocessor.preprocess(currentRuleConfig, toBeAlteredRuleConfig);
-            updater.updateCurrentRuleConfiguration(result, toBeAlteredRuleConfig);
-            return result;
+        RuleConfiguration toBeAlteredRuleConfig = updater.buildToBeAlteredRuleConfiguration(sqlStatement);
+        RuleConfiguration result = preprocessor.preprocess(currentRuleConfig, toBeAlteredRuleConfig);
+        updater.updateCurrentRuleConfiguration(result, toBeAlteredRuleConfig);
+        return result;
     }
     
     private boolean getRefreshStatus(final SQLStatement sqlStatement, final RuleConfiguration currentRuleConfig, final RuleDefinitionUpdater updater) {
