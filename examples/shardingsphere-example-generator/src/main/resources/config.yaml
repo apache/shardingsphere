@@ -28,6 +28,7 @@ transactions:
   - local
   - xa-atomikos
   - xa-narayana
+  - xa-bitronix
 
 # supported: sharding,readwrite-splitting,encrypt,shadow,db-discovery
 features: 
