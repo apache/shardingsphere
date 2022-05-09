@@ -55,11 +55,10 @@ public abstract class BasePostgreSQLITCase extends BaseITCase {
             addResource(connection);
         }
         initShardingRule();
+        setIncreaseTaskThread(new Thread(new PostgreSQLIncrementTaskRunnable(getJdbcTemplate(), getCommonSQLCommand())));
         getJdbcTemplate().execute(extraSQLCommand.getCreateTableOrder());
         getJdbcTemplate().execute(extraSQLCommand.getCreateTableOrderItem());
-        if (null != getIncreaseTaskThread()) {
-            getIncreaseTaskThread().start();
-        }
+        getIncreaseTaskThread().start();
         Pair<List<Object[]>, List<Object[]>> dataPair = TableCrudUtil.generatePostgresSQLInsertDataList(3000);
         getJdbcTemplate().batchUpdate(getExtraSQLCommand().getInsertOrder(), dataPair.getLeft());
         getJdbcTemplate().batchUpdate(getCommonSQLCommand().getInsertOrderItem(), dataPair.getRight());
