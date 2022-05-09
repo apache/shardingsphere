@@ -72,6 +72,7 @@ public final class EncryptConditionEngine {
         SUPPORTED_COMPARE_OPERATOR.add("<");
         SUPPORTED_COMPARE_OPERATOR.add(">=");
         SUPPORTED_COMPARE_OPERATOR.add("<=");
+        SUPPORTED_COMPARE_OPERATOR.add("IS");
     }
     
     /**
@@ -109,6 +110,9 @@ public final class EncryptConditionEngine {
     
     private void addEncryptConditions(final Collection<EncryptCondition> encryptConditions, final ExpressionSegment expression, final Map<String, String> expressionTableNames) {
         for (ColumnSegment each : ColumnExtractor.extract(expression)) {
+            if (nullOnRight(expression)) {
+                continue;
+            }
             String tableName = expressionTableNames.getOrDefault(each.getExpression(), "");
             Optional<EncryptColumn> encryptColumn = encryptRule.findEncryptColumn(tableName, each.getIdentifier().getValue());
             Optional<EncryptCondition> encryptCondition = encryptColumn.isPresent() ? createEncryptCondition(expression, tableName) : Optional.empty();
@@ -147,6 +151,17 @@ public final class EncryptConditionEngine {
         return (compareRightValue instanceof SimpleExpressionSegment && !(compareRightValue instanceof SubqueryExpressionSegment))
                 ? Optional.of(createEncryptEqualCondition(tableName, expression, compareRightValue))
                 : Optional.empty();
+    }
+    
+    private boolean nullOnRight(final ExpressionSegment expression) {
+        if (!(expression instanceof BinaryOperationExpression)) {
+            return false;
+        }
+        BinaryOperationExpression expressionSegment = (BinaryOperationExpression) expression;
+        if (!(expressionSegment.getLeft() instanceof ColumnSegment)) {
+            return false;
+        }
+        return ColumnExtractor.nullOnRight((BinaryOperationExpression) expression);
     }
     
     private EncryptEqualCondition createEncryptEqualCondition(final String tableName, final BinaryOperationExpression expression, final ExpressionSegment compareRightValue) {

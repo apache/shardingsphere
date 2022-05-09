@@ -27,6 +27,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpres
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -45,7 +46,7 @@ public final class ColumnExtractor {
     public static Collection<ColumnSegment> extract(final ExpressionSegment expression) {
         Collection<ColumnSegment> result = new LinkedList<>();
         if (expression instanceof BinaryOperationExpression) {
-            if (((BinaryOperationExpression) expression).getLeft() instanceof ColumnSegment) {
+            if (((BinaryOperationExpression) expression).getLeft() instanceof ColumnSegment && !nullOnRight((BinaryOperationExpression) expression)) {
                 result.add((ColumnSegment) ((BinaryOperationExpression) expression).getLeft());
             }
             if (((BinaryOperationExpression) expression).getRight() instanceof ColumnSegment) {
@@ -59,6 +60,19 @@ public final class ColumnExtractor {
             result.add((ColumnSegment) ((BetweenExpression) expression).getLeft());
         }
         return result;
+    }
+    
+    /**
+     * Check `IS NULL` or `IS NOT NULL` on right.
+     *
+     * @param expression BinaryOperationExpression
+     * @return true if `IS NULL` or `IS NOT NULL` on right
+     */
+    public static boolean nullOnRight(final BinaryOperationExpression expression) {
+        ColumnSegment left = (ColumnSegment) expression.getLeft();
+        String columnName = String.format("%s%s ", left.getOwner().isPresent() ? left.getOwner().get() + "." : "", left.getIdentifier().getValue());
+        String rightValue = expression.getText().replace(columnName, "");
+        return Arrays.asList("IS NULL", "IS NOT NULL").contains(rightValue.toUpperCase());
     }
     
     /**
