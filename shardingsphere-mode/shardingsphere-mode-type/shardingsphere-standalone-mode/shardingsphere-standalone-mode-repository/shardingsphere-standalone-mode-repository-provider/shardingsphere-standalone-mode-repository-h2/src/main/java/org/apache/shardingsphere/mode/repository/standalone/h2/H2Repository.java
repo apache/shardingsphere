@@ -64,11 +64,11 @@ public final class H2Repository implements StandalonePersistRepository {
         jdbcUrl = Optional.ofNullable(Strings.emptyToNull(localRepositoryProps.getValue(H2RepositoryPropertyKey.JDBC_URL))).orElse(DEFAULT_JDBC_URL);
         user = Optional.ofNullable(Strings.emptyToNull(localRepositoryProps.getValue(H2RepositoryPropertyKey.USER))).orElse(DEFAULT_USER);
         password = Optional.ofNullable(Strings.emptyToNull(localRepositoryProps.getValue(H2RepositoryPropertyKey.PASSWORD))).orElse(DEFAULT_PASSWORD);
-        init();
+        initTable();
     }
     
     @SneakyThrows
-    private void init() {
+    private void initTable() {
         connection = DriverManager.getConnection(jdbcUrl, user, password);
         try (Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS REPOSITORY");
