@@ -15,12 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.provider.database;
+package org.apache.shardingsphere.authority.provider.natived.model.privilege.database;
 
 import org.apache.shardingsphere.authority.model.PrivilegeType;
-import org.apache.shardingsphere.authority.provider.natived.model.privilege.database.DatabasePrivileges;
-import org.apache.shardingsphere.authority.provider.natived.model.privilege.database.SchemaPrivileges;
-import org.apache.shardingsphere.authority.provider.natived.model.privilege.database.TablePrivileges;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -30,9 +27,9 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
 
 public final class DatabasePrivilegesTest {
     
@@ -48,10 +45,10 @@ public final class DatabasePrivilegesTest {
         assertThat(privileges.getGlobalPrivileges(), instanceOf(Collection.class));
         assertTrue(privileges.getGlobalPrivileges().isEmpty());
         privileges.getGlobalPrivileges().add(PrivilegeType.SELECT);
-        assertTrue(privileges.getGlobalPrivileges().containsAll(Collections.singletonList(PrivilegeType.SELECT)));
-        assertFalse(privileges.getGlobalPrivileges().containsAll(Collections.singletonList(PrivilegeType.DELETE)));
+        assertTrue(privileges.getGlobalPrivileges().contains(PrivilegeType.SELECT));
+        assertFalse(privileges.getGlobalPrivileges().contains(PrivilegeType.DELETE));
         privileges.getGlobalPrivileges().add(PrivilegeType.DELETE);
-        assertTrue(privileges.getGlobalPrivileges().containsAll(Collections.singletonList(PrivilegeType.DELETE)));
+        assertTrue(privileges.getGlobalPrivileges().contains(PrivilegeType.DELETE));
     }
     
     @Test
@@ -59,10 +56,10 @@ public final class DatabasePrivilegesTest {
         assertThat(privileges.getSpecificPrivileges(), instanceOf(Map.class));
         assertThat(privileges.getSpecificPrivileges().get("schema1"), instanceOf(SchemaPrivileges.class));
         assertThat(privileges.getSpecificPrivileges().get("schema1").getSpecificPrivileges().get("table1"), instanceOf(TablePrivileges.class));
-        assertTrue(privileges.getSpecificPrivileges().get("schema1").getSpecificPrivileges().get("table1").getPrivileges().containsAll(Collections.singletonList(PrivilegeType.SELECT)));
-        assertFalse(privileges.getSpecificPrivileges().get("schema1").getSpecificPrivileges().get("table1").getPrivileges().containsAll(Collections.singletonList(PrivilegeType.DELETE)));
-        assertTrue(privileges.getSpecificPrivileges().get("schema2").getSpecificPrivileges().get("table3").getPrivileges().containsAll(Collections.singletonList(PrivilegeType.DELETE)));
-        assertFalse(privileges.getSpecificPrivileges().get("schema2").getSpecificPrivileges().get("table3").getPrivileges().containsAll(Collections.singletonList(PrivilegeType.UPDATE)));
+        assertTrue(privileges.getSpecificPrivileges().get("schema1").getSpecificPrivileges().get("table1").getPrivileges().contains(PrivilegeType.SELECT));
+        assertFalse(privileges.getSpecificPrivileges().get("schema1").getSpecificPrivileges().get("table1").getPrivileges().contains(PrivilegeType.DELETE));
+        assertTrue(privileges.getSpecificPrivileges().get("schema2").getSpecificPrivileges().get("table3").getPrivileges().contains(PrivilegeType.DELETE));
+        assertFalse(privileges.getSpecificPrivileges().get("schema2").getSpecificPrivileges().get("table3").getPrivileges().contains(PrivilegeType.UPDATE));
     }
     
     @Test
