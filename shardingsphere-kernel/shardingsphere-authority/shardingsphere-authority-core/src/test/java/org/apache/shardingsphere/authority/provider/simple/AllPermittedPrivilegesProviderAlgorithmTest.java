@@ -26,7 +26,7 @@ import java.util.Collections;
 
 import static org.junit.Assert.assertTrue;
 
-public final class AllPrivilegesPermittedAuthorityProviderAlgorithmTest {
+public final class AllPermittedPrivilegesProviderAlgorithmTest {
     
     @Test
     public void assertFindPrivileges() {

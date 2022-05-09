@@ -29,10 +29,10 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * All privileges permitted authority provider algorithm.
+ * All permitted privileges provider algorithm.
  */
 @Getter
-public final class AllPrivilegesPermittedAuthorityProviderAlgorithm implements AuthorityProviderAlgorithm {
+public final class AllPermittedPrivilegesProviderAlgorithm implements AuthorityProviderAlgorithm {
     
     private Properties props;
     
