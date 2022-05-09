@@ -41,6 +41,6 @@ public final class QueryHeaderBuilderFactory {
      * @return new instance of query header builder
      */
     public static QueryHeaderBuilder newInstance(final DatabaseType databaseType) {
-        return TypedSPIRegistry.findRegisteredService(QueryHeaderBuilder.class, databaseType.getName()).orElseGet(() -> RequiredSPIRegistry.getRegisteredService(QueryHeaderBuilder.class));
+        return TypedSPIRegistry.findRegisteredService(QueryHeaderBuilder.class, databaseType.getType()).orElseGet(() -> RequiredSPIRegistry.getRegisteredService(QueryHeaderBuilder.class));
     }
 }

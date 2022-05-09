@@ -31,13 +31,13 @@ public abstract class DockerDatabaseContainer extends DockerITContainer {
     private final DatabaseType databaseType;
     
     public DockerDatabaseContainer(final DatabaseType databaseType, final String dockerImageName) {
-        super(databaseType.getName().toLowerCase(), dockerImageName);
+        super(databaseType.getType().toLowerCase(), dockerImageName);
         this.databaseType = databaseType;
     }
     
     @Override
     protected void configure() {
-        withClasspathResourceMapping(String.format("/env/%s/initdb.sql", databaseType.getName().toLowerCase()), "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY);
+        withClasspathResourceMapping(String.format("/env/%s/initdb.sql", databaseType.getType().toLowerCase()), "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY);
     }
     
     /**

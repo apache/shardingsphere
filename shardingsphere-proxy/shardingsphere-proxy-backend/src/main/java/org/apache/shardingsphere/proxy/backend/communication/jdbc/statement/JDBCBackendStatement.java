@@ -78,7 +78,7 @@ public final class JDBCBackendStatement implements ExecutorJDBCStatementManager 
     private void setFetchSize(final Statement statement) throws SQLException {
         DatabaseType databaseType = ProxyContext.getInstance().getContextManager().getMetaDataContexts()
                 .getMetaData(null == databaseName ? SQLStatementDatabaseHolder.get() : databaseName).getResource().getDatabaseType();
-        Optional<StatementMemoryStrictlyFetchSizeSetter> fetchSizeSetter = StatementMemoryStrictlyFetchSizeSetterFactory.newInstance(databaseType.getName());
+        Optional<StatementMemoryStrictlyFetchSizeSetter> fetchSizeSetter = StatementMemoryStrictlyFetchSizeSetterFactory.newInstance(databaseType.getType());
         if (fetchSizeSetter.isPresent()) {
             fetchSizeSetter.get().setFetchSize(statement);
         }

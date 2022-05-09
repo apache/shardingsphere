@@ -245,7 +245,7 @@ public class ShardingSchemaMetaDataBuilderTest {
     @Test
     public void assertLoadTablesH2() throws SQLException {
         when(props.getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED)).thenReturn(false);
-        when(databaseType.getName()).thenReturn("H2");
+        when(databaseType.getType()).thenReturn("H2");
         Collection<String> tableNames = new LinkedList<>();
         tableNames.add(TABLE_NAME);
         Collection<ShardingSphereRule> rules = Collections.singletonList(shardingRule);
@@ -257,7 +257,7 @@ public class ShardingSchemaMetaDataBuilderTest {
     @Test
     public void assertLoadTablesMySQL() throws SQLException {
         when(props.getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED)).thenReturn(false);
-        when(databaseType.getName()).thenReturn("MySQL");
+        when(databaseType.getType()).thenReturn("MySQL");
         Collection<String> tableNames = new LinkedList<>();
         tableNames.add(TABLE_NAME);
         Collection<ShardingSphereRule> rules = Collections.singletonList(shardingRule);
@@ -273,7 +273,7 @@ public class ShardingSchemaMetaDataBuilderTest {
         ShardingSchemaMetaDataBuilder loader = (ShardingSchemaMetaDataBuilder) RuleBasedSchemaMetaDataBuilderFactory.newInstance(rules).get(shardingRule);
         when(props.getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED)).thenReturn(false);
         DatabaseType databaseType = mock(OracleDatabaseType.class);
-        when(databaseType.getName()).thenReturn("Oracle");
+        when(databaseType.getType()).thenReturn("Oracle");
         Map<String, SchemaMetaData> actual = loader.load(Collections.singletonList(TABLE_NAME),
                 shardingRule, new SchemaBuilderMaterials(databaseType, Collections.singletonMap("ds", dataSource), rules, props, "sharding_db"));
         assertThat(actual.get("sharding_db").getTables().keySet().iterator().next(), is("T_ORDER_0"));
@@ -295,7 +295,7 @@ public class ShardingSchemaMetaDataBuilderTest {
     @Test
     public void assertLoadTablesPGSQL() throws SQLException {
         when(props.getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED)).thenReturn(false);
-        when(databaseType.getName()).thenReturn("PostgreSQL");
+        when(databaseType.getType()).thenReturn("PostgreSQL");
         Collection<String> tableNames = new LinkedList<>();
         tableNames.add(TABLE_NAME);
         Collection<ShardingSphereRule> rules = Collections.singletonList(shardingRule);
@@ -325,7 +325,7 @@ public class ShardingSchemaMetaDataBuilderTest {
     @Test
     public void assertLoadTablesSQLServer() throws SQLException {
         when(props.getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED)).thenReturn(false);
-        when(databaseType.getName()).thenReturn("SQLServer");
+        when(databaseType.getType()).thenReturn("SQLServer");
         Collection<String> tableNames = new LinkedList<>();
         tableNames.add(TABLE_NAME);
         Collection<ShardingSphereRule> rules = Collections.singletonList(shardingRule);
@@ -347,7 +347,7 @@ public class ShardingSchemaMetaDataBuilderTest {
     @Test
     public void assertLoadTablesDefault() throws SQLException {
         when(props.getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED)).thenReturn(false);
-        when(databaseType.getName()).thenReturn("default");
+        when(databaseType.getType()).thenReturn("default");
         when(databaseType.formatTableNamePattern("t_order_0")).thenReturn("t_order_0");
         Collection<String> tableNames = new LinkedList<>();
         tableNames.add(TABLE_NAME);
