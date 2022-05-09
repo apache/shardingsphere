@@ -24,7 +24,7 @@ import java.util.Collections;
 import java.util.Map;
 
 /**
- * Sharding example scenario.
+ * DB discovery example scenario.
  */
 public final class DBDiscoveryExampleScenario implements FeatureExampleScenario {
     
