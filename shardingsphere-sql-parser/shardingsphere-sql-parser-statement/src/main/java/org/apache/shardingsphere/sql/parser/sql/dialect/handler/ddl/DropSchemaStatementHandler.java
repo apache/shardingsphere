@@ -19,35 +19,32 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateSchemaStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropSchemaStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.SQLStatementHandler;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateSchemaStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropSchemaStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLCreateSchemaStatement;
-
-import java.util.Optional;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLDropSchemaStatement;
 
 /**
- * Create schema statement handler for different dialect SQL statements.
+ * Drop schema statement handler for different dialect SQL statements.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class CreateSchemaStatementHandler implements SQLStatementHandler {
+public final class DropSchemaStatementHandler implements SQLStatementHandler {
     
     /**
-     * Get username.
+     * Judge whether sql statement is contains cascade or not.
      *
-     * @param createSchemaStatement create schema statement
-     * @return username
+     * @param dropSchemaStatement drop schema statement
+     * @return whether sql statement is contains cascade or not
      */
-    public static Optional<IdentifierValue> getUsername(final CreateSchemaStatement createSchemaStatement) {
-        if (createSchemaStatement instanceof PostgreSQLStatement) {
-            return ((PostgreSQLCreateSchemaStatement) createSchemaStatement).getUsername();
+    public static boolean isContainsCascade(final DropSchemaStatement dropSchemaStatement) {
+        if (dropSchemaStatement instanceof PostgreSQLStatement) {
+            return ((PostgreSQLDropSchemaStatement) dropSchemaStatement).isContainsCascade();
         }
-        if (createSchemaStatement instanceof OpenGaussStatement) {
-            return ((OpenGaussCreateSchemaStatement) createSchemaStatement).getUsername();
+        if (dropSchemaStatement instanceof OpenGaussStatement) {
+            return ((OpenGaussDropSchemaStatement) dropSchemaStatement).isContainsCascade();
         }
-        return Optional.empty();
+        return false;
     }
 }

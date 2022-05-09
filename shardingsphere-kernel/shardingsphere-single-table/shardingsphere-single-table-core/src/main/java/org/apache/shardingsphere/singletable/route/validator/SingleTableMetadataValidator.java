@@ -15,33 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl;
+package org.apache.shardingsphere.singletable.route.validator;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterSchemaStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
-
-import java.util.Optional;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.singletable.rule.SingleTableRule;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * OpenGauss alter schema statement.
+ * Single table metadata validator.
+ *
+ * @param <T> type of SQL statement
  */
-@Getter
-@Setter
-@ToString
-public final class OpenGaussAlterSchemaStatement extends AlterSchemaStatement implements OpenGaussStatement {
-    
-    private IdentifierValue renameSchema;
+public interface SingleTableMetadataValidator<T extends SQLStatement> {
     
     /**
-     * Get rename schema.
+     * Validate single table meta data.
      * 
-     * @return rename schema
+     * @param rule single table rule
+     * @param sqlStatementContext SQL statement context
+     * @param metaData ShardingSphere meta data
      */
-    public Optional<IdentifierValue> getRenameSchema() {
-        return Optional.ofNullable(renameSchema);
-    }
+    void validate(SingleTableRule rule, SQLStatementContext<T> sqlStatementContext, ShardingSphereMetaData metaData);
 }
