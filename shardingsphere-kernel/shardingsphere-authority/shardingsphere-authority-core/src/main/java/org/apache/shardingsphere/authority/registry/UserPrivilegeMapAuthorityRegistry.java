@@ -15,27 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.spi;
+package org.apache.shardingsphere.authority.registry;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.authority.model.AuthorityRegistry;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
+import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 
-import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 
 /**
- * Authority provide algorithm.
-*/
-public interface AuthorityProviderAlgorithm extends ShardingSphereAlgorithm {
+ * User privilege map authority registry.
+ */
+@RequiredArgsConstructor
+public final class UserPrivilegeMapAuthorityRegistry implements AuthorityRegistry {
     
-    /**
-     * Build authority registry.
-     * 
-     * @param metaDataMap meta data map
-     * @param users users
-     * @return authority registry
-     */
-    AuthorityRegistry buildAuthorityRegistry(Map<String, ShardingSphereMetaData> metaDataMap, Collection<ShardingSphereUser> users);
+    private final Map<ShardingSphereUser, ? extends ShardingSpherePrivileges> userPrivilegeMap;
+    
+    @Override
+    public Optional<ShardingSpherePrivileges> findPrivileges(final Grantee grantee) {
+        return userPrivilegeMap.keySet().stream().filter(each -> each.getGrantee().equals(grantee)).findFirst().map(userPrivilegeMap::get);
+    }
 }

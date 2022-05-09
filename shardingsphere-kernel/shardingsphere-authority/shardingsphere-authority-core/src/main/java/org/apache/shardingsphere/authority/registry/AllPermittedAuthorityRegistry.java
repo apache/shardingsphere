@@ -15,27 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.spi;
+package org.apache.shardingsphere.authority.registry;
 
+import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
+import org.apache.shardingsphere.authority.provider.simple.AllPrivilegesPermittedAuthorityProviderAlgorithm.AllPrivilegesPermittedShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.model.AuthorityRegistry;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.metadata.user.Grantee;
 
-import java.util.Collection;
-import java.util.Map;
+import java.util.Optional;
 
 /**
- * Authority provide algorithm.
-*/
-public interface AuthorityProviderAlgorithm extends ShardingSphereAlgorithm {
+ * All permitted authority registry.
+ */
+public final class AllPermittedAuthorityRegistry implements AuthorityRegistry {
     
-    /**
-     * Build authority registry.
-     * 
-     * @param metaDataMap meta data map
-     * @param users users
-     * @return authority registry
-     */
-    AuthorityRegistry buildAuthorityRegistry(Map<String, ShardingSphereMetaData> metaDataMap, Collection<ShardingSphereUser> users);
+    private static final ShardingSpherePrivileges INSTANCE = new AllPrivilegesPermittedShardingSpherePrivileges();
+    
+    @Override
+    public Optional<ShardingSpherePrivileges> findPrivileges(final Grantee grantee) {
+        return Optional.of(INSTANCE);
+    }
 }

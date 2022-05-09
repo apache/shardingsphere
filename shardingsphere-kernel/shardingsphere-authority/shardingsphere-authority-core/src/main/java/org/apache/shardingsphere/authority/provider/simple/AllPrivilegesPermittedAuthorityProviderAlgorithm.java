@@ -19,16 +19,16 @@ package org.apache.shardingsphere.authority.provider.simple;
 
 import lombok.Getter;
 import org.apache.shardingsphere.authority.model.AccessSubject;
+import org.apache.shardingsphere.authority.model.AuthorityRegistry;
 import org.apache.shardingsphere.authority.model.PrivilegeType;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
+import org.apache.shardingsphere.authority.registry.AllPermittedAuthorityRegistry;
 import org.apache.shardingsphere.authority.spi.AuthorityProviderAlgorithm;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -47,16 +47,8 @@ public final class AllPrivilegesPermittedAuthorityProviderAlgorithm implements A
     }
     
     @Override
-    public void init(final Map<String, ShardingSphereMetaData> metaDataMap, final Collection<ShardingSphereUser> users) {
-    }
-    
-    @Override
-    public void refresh(final Map<String, ShardingSphereMetaData> metaDataMap, final Collection<ShardingSphereUser> users) {
-    }
-    
-    @Override
-    public Optional<ShardingSpherePrivileges> findPrivileges(final Grantee grantee) {
-        return Optional.of(INSTANCE);
+    public AuthorityRegistry buildAuthorityRegistry(final Map<String, ShardingSphereMetaData> metaDataMap, final Collection<ShardingSphereUser> users) {
+        return new AllPermittedAuthorityRegistry();
     }
     
     @Override
@@ -64,7 +56,7 @@ public final class AllPrivilegesPermittedAuthorityProviderAlgorithm implements A
         return "ALL_PRIVILEGES_PERMITTED";
     }
     
-    private static final class AllPrivilegesPermittedShardingSpherePrivileges implements ShardingSpherePrivileges {
+    public static final class AllPrivilegesPermittedShardingSpherePrivileges implements ShardingSpherePrivileges {
         
         @Override
         public void setSuperPrivilege() {
