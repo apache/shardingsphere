@@ -31,7 +31,7 @@ public final class DataSourceEnvironment {
      * @return driver class name
      */
     public static String getDriverClassName(final DatabaseType databaseType) {
-        switch (databaseType.getName()) {
+        switch (databaseType.getType()) {
             case "H2":
                 return "org.h2.Driver";
             case "MySQL":
@@ -43,7 +43,7 @@ public final class DataSourceEnvironment {
             case "Oracle":
                 return "oracle.jdbc.driver.OracleDriver";
             default:
-                throw new UnsupportedOperationException(databaseType.getName());
+                throw new UnsupportedOperationException(databaseType.getType());
         }
     }
     
@@ -56,7 +56,7 @@ public final class DataSourceEnvironment {
      * @return URL
      */
     public static String getURL(final DatabaseType databaseType, final String host, final int port) {
-        switch (databaseType.getName()) {
+        switch (databaseType.getType()) {
             case "H2":
                 return "jdbc:h2:mem:test_db;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL;USER=root;PASSWORD=root";
             case "MySQL":
@@ -68,7 +68,7 @@ public final class DataSourceEnvironment {
             case "Oracle":
                 return String.format("jdbc:oracle:thin:@%s:%s", host, port);
             default:
-                throw new UnsupportedOperationException(databaseType.getName());
+                throw new UnsupportedOperationException(databaseType.getType());
         }
     }
     
@@ -82,7 +82,7 @@ public final class DataSourceEnvironment {
      * @return URL
      */
     public static String getURL(final DatabaseType databaseType, final String host, final int port, final String dataSourceName) {
-        switch (databaseType.getName()) {
+        switch (databaseType.getType()) {
             case "H2":
                 return String.format("jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL;USER=root;PASSWORD=root", dataSourceName);
             case "MySQL":
@@ -94,7 +94,7 @@ public final class DataSourceEnvironment {
             case "Oracle":
                 return String.format("jdbc:oracle:thin:@%s:%s/%s", host, port, dataSourceName);
             default:
-                throw new UnsupportedOperationException(databaseType.getName());
+                throw new UnsupportedOperationException(databaseType.getType());
         }
     }
 }

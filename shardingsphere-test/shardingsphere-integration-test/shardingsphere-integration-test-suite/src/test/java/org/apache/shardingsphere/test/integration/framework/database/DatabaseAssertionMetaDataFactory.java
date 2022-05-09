@@ -38,7 +38,7 @@ public final class DatabaseAssertionMetaDataFactory {
      */
     @SuppressWarnings("SwitchStatementWithTooFewBranches")
     public static Optional<DatabaseAssertionMetaData> newInstance(final DatabaseType databaseType) {
-        switch (databaseType.getName()) {
+        switch (databaseType.getType()) {
             case "PostgreSQL":
                 return Optional.of(new PostgreSQLDatabaseAssertionMetaData());
             default:

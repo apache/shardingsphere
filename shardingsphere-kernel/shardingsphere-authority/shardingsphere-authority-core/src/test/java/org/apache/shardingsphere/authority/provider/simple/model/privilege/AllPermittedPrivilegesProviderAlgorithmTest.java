@@ -33,5 +33,5 @@ public final class AllPermittedPrivilegesProviderAlgorithmTest {
         assertTrue(actual.hasPrivileges("testSchema"));
         assertTrue(actual.hasPrivileges(Collections.emptyList()));
         assertTrue(actual.hasPrivileges(new SchemaAccessSubject("testSchema"), Collections.emptyList()));
-    }    
+    }
 }
