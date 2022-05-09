@@ -90,7 +90,7 @@ jobs:
         with:
           name: it-image
           path: /tmp/shardingsphere-proxy-test.tar
-
+  
   scaling-mysql-it-test:
     if: (github.event_name != 'schedule' && github.repository == 'apache/shardingsphere')
     name: scaling-mysql-it-test
@@ -120,7 +120,7 @@ jobs:
         run: docker load -i /tmp/shardingsphere-proxy-test.tar
       - name: Run Integration Test
         run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling/pom.xml -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Dit.cluster.env.type=DOCKER -Dit.env.mysql.version=${{ env.mysql_version }} -Dit.env.postgresql.version=
-
+  
   scaling-postgresql-it-test:
     if: (github.event_name != 'schedule' && github.repository == 'apache/shardingsphere')
     name: scaling-postgres-it-test
@@ -150,7 +150,7 @@ jobs:
         run: docker load -i /tmp/shardingsphere-proxy-test.tar
       - name: Run Integration Test
         run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling/pom.xml -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Dit.cluster.env.type=DOCKER -Dit.env.postgresql.version=${{ env.postgresql_version }} -Dit.env.mysql.version=
-
+  
   scaling-daily-it-test:
     if: (github.event_name == 'schedule' && github.repository == 'apache/shardingsphere')
     name: scaling-daily-it-test

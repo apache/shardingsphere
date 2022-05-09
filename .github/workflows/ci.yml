@@ -87,7 +87,7 @@ jobs:
           echo "mvnw exited"
       - name: Build examples with Maven
         run: ./mvnw -B -f examples/pom.xml clean package -DskipTests
-
+  
   unix:
     if: (github.event_name == 'schedule' && github.repository == 'apache/shardingsphere') || (github.event_name != 'schedule')
     name: JDK ${{ matrix.java.version }} - on ${{ matrix.os }}
@@ -129,7 +129,7 @@ jobs:
         run: echo y | ./mvnw -B clean install ${{ matrix.java.maven_args }}
       - name: Build examples with Maven
         run: echo y | ./mvnw -B -f examples/pom.xml clean package -DskipTests
-
+  
   macos:
     if: (github.event_name == 'schedule' && github.repository == 'apache/shardingsphere')
     name: macos
@@ -161,7 +161,7 @@ jobs:
         run: echo y | ./mvnw -B clean install ${{ matrix.java.maven_args }}
       - name: Build examples with Maven
         run: echo y | ./mvnw -B -f examples/pom.xml clean package -DskipTests
-
+  
   shardingsphere-example-generator:
     if: (github.event_name == 'schedule' && github.repository == 'apache/shardingsphere') || (github.event_name != 'schedule')
     name: shardingsphere example generator
