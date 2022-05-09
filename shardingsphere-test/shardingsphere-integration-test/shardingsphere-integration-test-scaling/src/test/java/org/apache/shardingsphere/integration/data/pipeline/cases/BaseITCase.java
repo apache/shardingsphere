@@ -23,6 +23,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
@@ -62,6 +63,7 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+@Slf4j
 @Getter(AccessLevel.PROTECTED)
 public abstract class BaseITCase {
     
@@ -157,8 +159,9 @@ public abstract class BaseITCase {
      */
     protected void checkMatchConsistency(final JdbcTemplate jdbcTemplate, final String jobId) throws InterruptedException {
         Map<String, String> actualStatusMap = new HashMap<>(2, 1);
+        List<Map<String, Object>> showScalingStatusResMap;
         for (int i = 0; i < 100; i++) {
-            List<Map<String, Object>> showScalingStatusResMap = jdbcTemplate.queryForList(String.format("SHOW SCALING STATUS %s", jobId));
+            showScalingStatusResMap = jdbcTemplate.queryForList(String.format("SHOW SCALING STATUS %s", jobId));
             boolean finished = true;
             for (Map<String, Object> entry : showScalingStatusResMap) {
                 String status = entry.get("status").toString();
@@ -178,6 +181,7 @@ public abstract class BaseITCase {
                 TimeUnit.SECONDS.sleep(2);
             }
         }
+        log.warn("actualStatusMap: {}", actualStatusMap);
         assertThat(actualStatusMap.values().stream().filter(StringUtils::isNotBlank).collect(Collectors.toSet()).size(), is(1));
         jdbcTemplate.execute(String.format("STOP SCALING SOURCE WRITING %s", jobId));
         List<Map<String, Object>> checkScalingResults = jdbcTemplate.queryForList(String.format("CHECK SCALING %s BY TYPE (NAME=DATA_MATCH)", jobId));
