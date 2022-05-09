@@ -30,7 +30,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChanne
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
-import org.apache.shardingsphere.data.pipeline.api.ingest.position.PrimaryKeyPosition;
+import org.apache.shardingsphere.data.pipeline.api.ingest.position.IntegerPrimaryKeyPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.FinishedRecord;
@@ -174,16 +174,16 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
     }
     
     private long getPositionBeginValue(final IngestPosition<?> position) {
-        return position instanceof PrimaryKeyPosition ? ((PrimaryKeyPosition) position).getBeginValue() : 0;
+        return position instanceof IntegerPrimaryKeyPosition ? ((IntegerPrimaryKeyPosition) position).getBeginValue() : 0;
     }
     
     private long getPositionEndValue(final IngestPosition<?> position) {
-        return position instanceof PrimaryKeyPosition ? ((PrimaryKeyPosition) position).getEndValue() : Integer.MAX_VALUE;
+        return position instanceof IntegerPrimaryKeyPosition ? ((IntegerPrimaryKeyPosition) position).getEndValue() : Integer.MAX_VALUE;
     }
     
     private IngestPosition<?> newPosition(final ResultSet rs) throws SQLException {
         return null == inventoryDumperConfig.getPrimaryKey() ? new PlaceholderPosition()
-                : new PrimaryKeyPosition(rs.getLong(inventoryDumperConfig.getPrimaryKey()), ((PrimaryKeyPosition) inventoryDumperConfig.getPosition()).getEndValue());
+                : new IntegerPrimaryKeyPosition(rs.getLong(inventoryDumperConfig.getPrimaryKey()), ((IntegerPrimaryKeyPosition) inventoryDumperConfig.getPosition()).getEndValue());
     }
     
     protected abstract PreparedStatement createPreparedStatement(Connection connection, String sql) throws SQLException;

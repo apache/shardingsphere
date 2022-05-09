@@ -17,43 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.api.ingest.position;
 
-import com.google.common.base.Preconditions;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
 /**
- * Use primary key as position.
+ * Primary key position.
  */
-@RequiredArgsConstructor
-@Getter
-public final class PrimaryKeyPosition implements IngestPosition<PrimaryKeyPosition> {
-    
-    private final long beginValue;
-    
-    private final long endValue;
-    
-    /**
-     * Init by string data.
-     *
-     * @param data string data
-     * @return primary key position
-     */
-    public static PrimaryKeyPosition init(final String data) {
-        String[] array = data.split(",");
-        Preconditions.checkArgument(array.length == 2, "Unknown primary key position: " + data);
-        return new PrimaryKeyPosition(Long.parseLong(array[0]), Long.parseLong(array[1]));
-    }
-    
-    @Override
-    public int compareTo(final PrimaryKeyPosition position) {
-        if (null == position) {
-            return 1;
-        }
-        return Long.compare(beginValue, position.beginValue);
-    }
-    
-    @Override
-    public String toString() {
-        return String.format("%d,%d", beginValue, endValue);
-    }
+public interface PrimaryKeyPosition<T> {
 }

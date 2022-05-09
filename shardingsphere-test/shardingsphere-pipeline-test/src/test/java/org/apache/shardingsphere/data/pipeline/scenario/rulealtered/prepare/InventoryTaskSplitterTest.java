@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.scenario.rulealtered.prepare;
 
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.ingest.position.PrimaryKeyPosition;
+import org.apache.shardingsphere.data.pipeline.api.ingest.position.IntegerPrimaryKeyPosition;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCreationException;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
@@ -71,8 +71,8 @@ public final class InventoryTaskSplitterTest {
         initEmptyTablePrimaryEnvironment(taskConfig.getDumperConfig());
         List<InventoryTask> actual = inventoryTaskSplitter.splitInventoryData(jobContext);
         assertThat(actual.size(), is(1));
-        assertThat(((PrimaryKeyPosition) actual.get(0).getProgress().getPosition()).getBeginValue(), is(0L));
-        assertThat(((PrimaryKeyPosition) actual.get(0).getProgress().getPosition()).getEndValue(), is(0L));
+        assertThat(((IntegerPrimaryKeyPosition) actual.get(0).getProgress().getPosition()).getBeginValue(), is(0L));
+        assertThat(((IntegerPrimaryKeyPosition) actual.get(0).getProgress().getPosition()).getEndValue(), is(0L));
     }
     
     @Test
@@ -81,8 +81,8 @@ public final class InventoryTaskSplitterTest {
         initIntPrimaryEnvironment(taskConfig.getDumperConfig());
         List<InventoryTask> actual = inventoryTaskSplitter.splitInventoryData(jobContext);
         assertThat(actual.size(), is(10));
-        assertThat(((PrimaryKeyPosition) actual.get(9).getProgress().getPosition()).getBeginValue(), is(91L));
-        assertThat(((PrimaryKeyPosition) actual.get(9).getProgress().getPosition()).getEndValue(), is(100L));
+        assertThat(((IntegerPrimaryKeyPosition) actual.get(9).getProgress().getPosition()).getBeginValue(), is(91L));
+        assertThat(((IntegerPrimaryKeyPosition) actual.get(9).getProgress().getPosition()).getEndValue(), is(100L));
     }
     
     @Test(expected = PipelineJobCreationException.class)

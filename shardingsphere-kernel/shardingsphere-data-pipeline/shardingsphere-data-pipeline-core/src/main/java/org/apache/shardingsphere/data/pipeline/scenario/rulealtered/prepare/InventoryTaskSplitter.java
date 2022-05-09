@@ -24,6 +24,7 @@ import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAltere
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
+import org.apache.shardingsphere.data.pipeline.api.ingest.position.IntegerPrimaryKeyPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PrimaryKeyPosition;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
@@ -214,13 +215,13 @@ public final class InventoryTaskSplitter {
                         log.info("getPositionByPrimaryKeyRange, endId is 0, break, tableName={}, primaryKey={}, beginId={}", dumperConfig.getActualTableName(), dumperConfig.getPrimaryKey(), beginId);
                         break;
                     }
-                    result.add(new PrimaryKeyPosition(beginId, endId));
+                    result.add(new IntegerPrimaryKeyPosition(beginId, endId));
                     beginId = endId + 1;
                 }
             }
             // fix empty table missing inventory task
             if (0 == result.size()) {
-                result.add(new PrimaryKeyPosition(0, 0));
+                result.add(new IntegerPrimaryKeyPosition(0, 0));
             }
         } catch (final SQLException ex) {
             throw new PipelineJobPrepareFailedException(String.format("Split task for table %s by primary key %s error", dumperConfig.getActualTableName(), dumperConfig.getPrimaryKey()), ex);
@@ -230,7 +231,7 @@ public final class InventoryTaskSplitter {
     
     private Collection<IngestPosition<?>> getPositionByStringPrimaryKeyRange() {
         Collection<IngestPosition<?>> result = new LinkedList<>();
-        result.add(new PrimaryKeyPosition("!", "~"));
+        result.add(new IntegerPrimaryKeyPosition("!", "~"));
         return result;
     }
 }

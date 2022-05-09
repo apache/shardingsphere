@@ -23,7 +23,7 @@ import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfig
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
-import org.apache.shardingsphere.data.pipeline.api.ingest.position.PrimaryKeyPosition;
+import org.apache.shardingsphere.data.pipeline.api.ingest.position.IntegerPrimaryKeyPosition;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
@@ -69,7 +69,7 @@ public final class InventoryTaskTest {
         inventoryDumperConfig.setLogicTableName("t_non_exist");
         IngestPosition<?> position = taskConfig.getDumperConfig().getPosition();
         if (null == position) {
-            position = new PrimaryKeyPosition(0, 1000);
+            position = new IntegerPrimaryKeyPosition(0, 1000);
         }
         inventoryDumperConfig.setPosition(position);
         PipelineDataSourceWrapper dataSource = DATA_SOURCE_MANAGER.getDataSource(inventoryDumperConfig.getDataSourceConfig());
@@ -92,7 +92,7 @@ public final class InventoryTaskTest {
         inventoryDumperConfig.setPrimaryKey("order_id");
         IngestPosition<?> position = taskConfig.getDumperConfig().getPosition();
         if (null == position) {
-            position = new PrimaryKeyPosition(0, 1000);
+            position = new IntegerPrimaryKeyPosition(0, 1000);
         }
         inventoryDumperConfig.setPosition(position);
         PipelineDataSourceWrapper dataSource = DATA_SOURCE_MANAGER.getDataSource(inventoryDumperConfig.getDataSourceConfig());
