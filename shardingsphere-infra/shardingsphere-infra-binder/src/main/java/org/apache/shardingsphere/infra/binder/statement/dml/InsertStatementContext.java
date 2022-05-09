@@ -81,8 +81,6 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     
     private OnDuplicateUpdateContext onDuplicateKeyUpdateValueContext;
     
-    private Map<Integer, OnDuplicateUpdateContext> onDuplicateKeyUpdateValueContexts = new LinkedHashMap<>();
-    
     private Map<Integer, GeneratedKeyContext> generatedKeyContexts = new LinkedHashMap<>();
     
     public InsertStatementContext(final Map<String, ShardingSphereMetaData> metaDataMap, final List<Object> parameters,
@@ -102,15 +100,13 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
             List<List<ExpressionSegment>> valueExpression = getAllValueExpressions(insertStatement);
             valueExpressions.put(cursor, valueExpression);
             insertValueContextsMap.put(cursor, getInsertValueContexts(parameters, parametersOffset, valueExpression));
-            onDuplicateKeyUpdateValueContexts.put(cursor, getOnDuplicateKeyUpdateValueContext(parameters, parametersOffset).orElse(null));
-            parametersOffset.getAndAdd(valueExpression.size());
             columnNamesMap.put(cursor, useDefaultColumns() ? schema.getAllColumnNames(insertStatement.getTable().getTableName().getIdentifier().getValue()) : insertColumnNames);
             generatedKeyContexts.put(cursor, new GeneratedKeyContextEngine(insertStatement, schema)
                     .createGenerateKeyContext(insertColumnNames, getAllValueExpressions(insertStatement), parameters).orElse(null));
         }
-        onDuplicateKeyUpdateValueContext = onDuplicateKeyUpdateValueContexts.get(0);
         insertValueContexts = insertValueContextsMap.get(0);
         columnNames = columnNamesMap.get(0);
+        onDuplicateKeyUpdateValueContext = getOnDuplicateKeyUpdateValueContext(parameters, parametersOffset).orElse(null);
         insertSelectContext = getInsertSelectContext(metaDataMap, parameters, parametersOffset, defaultDatabaseName).orElse(null);
     }
     
@@ -153,8 +149,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     }
     
     private Optional<OnDuplicateUpdateContext> getOnDuplicateKeyUpdateValueContext(final List<Object> parameters, final AtomicInteger parametersOffset) {
-        List<InsertStatement> insertStatements = InsertStatementContextUtil.getInsertStatements(getSqlStatement());
-        Optional<OnDuplicateKeyColumnsSegment> onDuplicateKeyColumnsSegment = InsertStatementHandler.getOnDuplicateKeyColumnsSegment(insertStatements.get(0));
+        Optional<OnDuplicateKeyColumnsSegment> onDuplicateKeyColumnsSegment = InsertStatementHandler.getOnDuplicateKeyColumnsSegment(getSqlStatement());
         if (!onDuplicateKeyColumnsSegment.isPresent()) {
             return Optional.empty();
         }
@@ -195,10 +190,10 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
      * @return on duplicate key update parameters
      */
     public List<Object> getOnDuplicateKeyUpdateParameters() {
-        if (null == onDuplicateKeyUpdateValueContexts.get(0)) {
+        if (null == onDuplicateKeyUpdateValueContext) {
             return new ArrayList<>(0);
         }
-        return onDuplicateKeyUpdateValueContexts.get(0).getParameters();
+        return onDuplicateKeyUpdateValueContext.getParameters();
     }
     
     /**
@@ -294,13 +289,12 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
         for (int cursor = 0; cursor < insertStatements.size(); cursor++) {
             List<InsertValueContext> insertValueContext = getInsertValueContexts(parameters, parametersOffset, valueExpressions.get(cursor));
             insertValueContextsMap.put(cursor, insertValueContext);
-            onDuplicateKeyUpdateValueContexts.put(cursor, getOnDuplicateKeyUpdateValueContext(parameters, parametersOffset).orElse(null));
             parametersOffset.getAndAdd(insertValueContext.size());
             generatedKeyContexts.put(cursor, new GeneratedKeyContextEngine(insertStatements.get(cursor), schema).createGenerateKeyContext(insertColumnNames,
                     valueExpressions.get(cursor), parameters).orElse(null));
         }
-        onDuplicateKeyUpdateValueContext = onDuplicateKeyUpdateValueContexts.get(0);
         insertValueContexts = insertValueContextsMap.get(0);
+        onDuplicateKeyUpdateValueContext = getOnDuplicateKeyUpdateValueContext(parameters, parametersOffset).orElse(null);
         insertSelectContext = getInsertSelectContext(metaDataMap, parameters, parametersOffset, defaultDatabaseName).orElse(null);
     }
 }
