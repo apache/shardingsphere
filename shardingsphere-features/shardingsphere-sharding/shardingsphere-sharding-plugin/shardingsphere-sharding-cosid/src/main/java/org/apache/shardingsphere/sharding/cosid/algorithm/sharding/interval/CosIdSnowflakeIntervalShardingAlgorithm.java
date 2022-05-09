@@ -46,7 +46,7 @@ public final class CosIdSnowflakeIntervalShardingAlgorithm extends AbstractCosId
     }
     
     private SnowflakeIdStateParser getSnowflakeIdStateParser(final Properties props) {
-        long epoch = Long.parseLong(props.getProperty(EPOCH_KEY, CosIdSnowflakeKeyGenerateAlgorithm.DEFAULT_EPOCH + ""));
+        long epoch = Long.parseLong(props.getOrDefault(EPOCH_KEY, CosIdSnowflakeKeyGenerateAlgorithm.DEFAULT_EPOCH).toString());
         return new MillisecondSnowflakeIdStateParser(
                 epoch, MillisecondSnowflakeId.DEFAULT_TIMESTAMP_BIT, MillisecondSnowflakeId.DEFAULT_MACHINE_BIT, MillisecondSnowflakeId.DEFAULT_SEQUENCE_BIT, getZoneId());
     }

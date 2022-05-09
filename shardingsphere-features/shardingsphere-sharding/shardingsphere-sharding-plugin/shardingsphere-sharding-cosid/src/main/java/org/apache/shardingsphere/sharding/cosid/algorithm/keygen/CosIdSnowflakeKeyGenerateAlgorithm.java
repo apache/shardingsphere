@@ -72,11 +72,11 @@ public final class CosIdSnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgo
     }
     
     private boolean getAsString(final Properties props) {
-        return Boolean.parseBoolean(props.getProperty(AS_STRING_KEY, Boolean.FALSE.toString()));
+        return Boolean.parseBoolean(props.getOrDefault(AS_STRING_KEY, Boolean.FALSE.toString()).toString());
     }
     
     private long getEpoch(final Properties props) {
-        return Long.parseLong(props.getProperty(EPOCH_KEY, DEFAULT_EPOCH + ""));
+        return Long.parseLong(props.getOrDefault(EPOCH_KEY, DEFAULT_EPOCH).toString());
     }
     
     @Override
