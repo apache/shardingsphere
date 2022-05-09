@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql.prepare.datasource;
 
+import com.google.common.base.Splitter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeEntry;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
@@ -45,7 +46,9 @@ public final class PostgreSQLDataSourcePreparer extends AbstractDataSourcePrepar
         List<String> createLogicalTableSQLs = listCreateLogicalTableSQL(parameter);
         try (Connection targetConnection = getTargetCachedDataSource(parameter.getTaskConfig(), parameter.getDataSourceManager()).getConnection()) {
             for (String createLogicalTableSQL : createLogicalTableSQLs) {
-                executeTargetTableSQL(targetConnection, createLogicalTableSQL);
+                for (String each : Splitter.on(";").trimResults().splitToList(createLogicalTableSQL)) {
+                    executeTargetTableSQL(targetConnection, each);
+                }
             }
         } catch (final SQLException ex) {
             throw new PipelineJobPrepareFailedException("prepare target tables failed.", ex);
