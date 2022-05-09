@@ -59,7 +59,7 @@ public final class ShardingSphereProxyDockerContainer extends DockerITContainer 
         withClasspathResourceMapping("/env/logback.xml", "/opt/shardingsphere-proxy/conf/logback.xml", BindMode.READ_ONLY);
         if (ITEnvTypeEnum.NATIVE == IntegrationTestEnvironment.getInstance().getItEnvType()) {
             addFixedExposedPort(3307, 3307);
-            addFixedExposedPort(3308, 5005);
+            addFixedExposedPort(5005, 3308);
         }
     }
 }
