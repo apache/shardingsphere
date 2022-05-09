@@ -26,15 +26,15 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
-public final class DataSourcePropertyProviderLoaderTest {
+public final class DataSourcePropertyProviderFactoryTest {
     
     @Test
     public void assertGetProviderByDefault() {
-        assertThat(DataSourcePropertyProviderLoader.getProvider(new MockedDataSource()), instanceOf(DefaultDataSourcePropertyProvider.class));
+        assertThat(DataSourcePropertyProviderFactory.newInstance(new MockedDataSource()), instanceOf(DefaultDataSourcePropertyProvider.class));
     }
     
     @Test
     public void assertGetProviderBySPI() {
-        assertThat(DataSourcePropertyProviderLoader.getProvider(new HikariDataSource()), instanceOf(HikariCPPropertyProvider.class));
+        assertThat(DataSourcePropertyProviderFactory.newInstance(new HikariDataSource()), instanceOf(HikariCPPropertyProvider.class));
     }
 }

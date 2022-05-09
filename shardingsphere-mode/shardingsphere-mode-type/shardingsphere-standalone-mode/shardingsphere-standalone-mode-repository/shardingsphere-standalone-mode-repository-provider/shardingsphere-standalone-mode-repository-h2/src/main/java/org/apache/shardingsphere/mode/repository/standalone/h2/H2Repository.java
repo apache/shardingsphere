@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mode.repository.standalone.h2;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepository;
@@ -51,9 +50,6 @@ public final class H2Repository implements StandalonePersistRepository {
     
     private static final String SEPARATOR = "/";
     
-    @Getter
-    private Properties props;
-    
     private String jdbcUrl;
     
     private String user;
@@ -68,11 +64,11 @@ public final class H2Repository implements StandalonePersistRepository {
         jdbcUrl = Optional.ofNullable(Strings.emptyToNull(localRepositoryProps.getValue(H2RepositoryPropertyKey.JDBC_URL))).orElse(DEFAULT_JDBC_URL);
         user = Optional.ofNullable(Strings.emptyToNull(localRepositoryProps.getValue(H2RepositoryPropertyKey.USER))).orElse(DEFAULT_USER);
         password = Optional.ofNullable(Strings.emptyToNull(localRepositoryProps.getValue(H2RepositoryPropertyKey.PASSWORD))).orElse(DEFAULT_PASSWORD);
-        init();
+        initTable();
     }
     
     @SneakyThrows
-    private void init() {
+    private void initTable() {
         connection = DriverManager.getConnection(jdbcUrl, user, password);
         try (Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS REPOSITORY");

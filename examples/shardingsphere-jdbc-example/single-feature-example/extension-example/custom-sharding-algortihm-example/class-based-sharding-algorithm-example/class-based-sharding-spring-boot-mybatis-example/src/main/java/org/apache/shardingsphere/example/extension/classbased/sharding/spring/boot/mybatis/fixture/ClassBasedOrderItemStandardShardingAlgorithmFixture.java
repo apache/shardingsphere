@@ -58,9 +58,4 @@ public final class ClassBasedOrderItemStandardShardingAlgorithmFixture implement
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Long> shardingValue) {
         return availableTargetNames;
     }
-    
-    @Override
-    public String getType() {
-        return null;
-    }
 }
