@@ -30,7 +30,7 @@ import java.util.Set;
  * Schema permitted privileges.
  */
 @RequiredArgsConstructor
-public final class SchemaPrivilegesPermittedShardingSpherePrivileges implements ShardingSpherePrivileges {
+public final class SchemaPermittedPrivileges implements ShardingSpherePrivileges {
     
     private final Set<String> schemas;
     

@@ -22,7 +22,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.provider.schema.SchemaPrivilegesPermittedAuthorityProviderAlgorithm;
-import org.apache.shardingsphere.authority.provider.schema.model.privilege.SchemaPrivilegesPermittedShardingSpherePrivileges;
+import org.apache.shardingsphere.authority.provider.schema.model.privilege.SchemaPermittedPrivileges;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 
@@ -68,7 +68,7 @@ public final class SchemaPrivilegeBuilder {
     private static Map<ShardingSphereUser, ShardingSpherePrivileges> buildPrivileges(final Collection<ShardingSphereUser> users, final String mappingProp) {
         Map<ShardingSphereUser, Set<String>> userSchemaMappings = convertSchemas(mappingProp);
         Map<ShardingSphereUser, ShardingSpherePrivileges> result = new HashMap<>(users.size(), 1);
-        users.forEach(each -> result.put(each, new SchemaPrivilegesPermittedShardingSpherePrivileges(getUserSchemas(each, userSchemaMappings))));
+        users.forEach(each -> result.put(each, new SchemaPermittedPrivileges(getUserSchemas(each, userSchemaMappings))));
         return result;
     }
     
