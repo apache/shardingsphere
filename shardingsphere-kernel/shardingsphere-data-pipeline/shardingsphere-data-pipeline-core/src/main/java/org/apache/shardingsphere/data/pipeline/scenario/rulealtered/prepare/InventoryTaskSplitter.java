@@ -23,9 +23,9 @@ import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumper
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
-import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IntegerPrimaryKeyPosition;
-import org.apache.shardingsphere.data.pipeline.api.ingest.position.PrimaryKeyPosition;
+import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
+import org.apache.shardingsphere.data.pipeline.api.ingest.position.StringPrimaryKeyPosition;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
@@ -137,7 +137,7 @@ public final class InventoryTaskSplitter {
         if (null != initProgress && initProgress.getStatus() != JobStatus.PREPARING_FAILURE) {
             Collection<IngestPosition<?>> result = initProgress.getInventoryPosition(dumperConfig.getActualTableName()).values();
             for (IngestPosition<?> each : result) {
-                if (each instanceof PrimaryKeyPosition) {
+                if (each instanceof IntegerPrimaryKeyPosition || each instanceof StringPrimaryKeyPosition) {
                     String primaryKey = metaDataLoader.getTableMetaData(schemaName, dumperConfig.getActualTableName()).getPrimaryKeyColumns().get(0);
                     dumperConfig.setPrimaryKey(primaryKey);
                     break;
@@ -231,7 +231,7 @@ public final class InventoryTaskSplitter {
     
     private Collection<IngestPosition<?>> getPositionByStringPrimaryKeyRange() {
         Collection<IngestPosition<?>> result = new LinkedList<>();
-        result.add(new IntegerPrimaryKeyPosition("!", "~"));
+        result.add(new StringPrimaryKeyPosition("!", "~"));
         return result;
     }
 }

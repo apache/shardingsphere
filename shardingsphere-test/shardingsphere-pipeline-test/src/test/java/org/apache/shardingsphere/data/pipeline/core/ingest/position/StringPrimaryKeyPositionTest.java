@@ -17,33 +17,33 @@
 
 package org.apache.shardingsphere.data.pipeline.core.ingest.position;
 
-import org.apache.shardingsphere.data.pipeline.api.ingest.position.IntegerPrimaryKeyPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PrimaryKeyPositionFactory;
+import org.apache.shardingsphere.data.pipeline.api.ingest.position.StringPrimaryKeyPosition;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class IntegerPrimaryKeyPositionTest {
+public final class StringPrimaryKeyPositionTest {
     
     @Test
     public void assertCompareTo() {
-        IntegerPrimaryKeyPosition position1 = new IntegerPrimaryKeyPosition(1, 100);
-        IntegerPrimaryKeyPosition position2 = new IntegerPrimaryKeyPosition(101, 200);
+        StringPrimaryKeyPosition position1 = new StringPrimaryKeyPosition("abc", "def");
+        StringPrimaryKeyPosition position2 = new StringPrimaryKeyPosition("hi", "jk");
         assertThat(position1.compareTo(null), is(1));
         assertTrue(position1.compareTo(position2) < 0);
     }
     
     @Test
     public void assertInit() {
-        IntegerPrimaryKeyPosition position = (IntegerPrimaryKeyPosition) PrimaryKeyPositionFactory.newInstance("i,1,100");
-        assertThat(position.getBeginValue(), is(1L));
-        assertThat(position.getEndValue(), is(100L));
+        StringPrimaryKeyPosition position = (StringPrimaryKeyPosition) PrimaryKeyPositionFactory.newInstance("s,hi,jk");
+        assertThat(position.getBeginValue(), is("hi"));
+        assertThat(position.getEndValue(), is("jk"));
     }
     
     @Test
     public void assertToString() {
-        assertThat(new IntegerPrimaryKeyPosition(1, 100).toString(), is("i,1,100"));
+        assertThat(new StringPrimaryKeyPosition("hi", "jk").toString(), is("s,hi,jk"));
     }
 }
