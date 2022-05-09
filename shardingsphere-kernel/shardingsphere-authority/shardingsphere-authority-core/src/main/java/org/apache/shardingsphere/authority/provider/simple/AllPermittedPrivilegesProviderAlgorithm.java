@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
@@ -48,6 +49,11 @@ public final class AllPermittedPrivilegesProviderAlgorithm implements AuthorityP
     
     @Override
     public String getType() {
-        return "ALL_PRIVILEGES_PERMITTED";
+        return "ALL_PERMITTED";
+    }
+    
+    @Override
+    public Collection<String> getTypeAliases() {
+        return Collections.singleton("ALL_PRIVILEGES_PERMITTED");
     }
 }

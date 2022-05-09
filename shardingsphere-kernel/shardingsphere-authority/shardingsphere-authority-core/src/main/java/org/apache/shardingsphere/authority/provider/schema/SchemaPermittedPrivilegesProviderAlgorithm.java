@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
@@ -51,6 +52,11 @@ public final class SchemaPermittedPrivilegesProviderAlgorithm implements Authori
     
     @Override
     public String getType() {
-        return "SCHEMA_PRIVILEGES_PERMITTED";
+        return "SCHEMA_PERMITTED";
+    }
+    
+    @Override
+    public Collection<String> getTypeAliases() {
+        return Collections.singleton("SCHEMA_PRIVILEGES_PERMITTED");
     }
 }

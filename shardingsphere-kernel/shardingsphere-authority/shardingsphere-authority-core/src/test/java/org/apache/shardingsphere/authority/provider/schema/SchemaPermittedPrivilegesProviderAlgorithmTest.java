@@ -44,7 +44,7 @@ public final class SchemaPermittedPrivilegesProviderAlgorithmTest {
     
     private SchemaPermittedPrivilegesProviderAlgorithm createAuthorityProviderAlgorithm() {
         return (SchemaPermittedPrivilegesProviderAlgorithm) AuthorityProviderAlgorithmFactory.newInstance(
-                new ShardingSphereAlgorithmConfiguration("SCHEMA_PRIVILEGES_PERMITTED", createProperties()));
+                new ShardingSphereAlgorithmConfiguration("SCHEMA_PERMITTED", createProperties()));
     }
     
     private Properties createProperties() {

@@ -32,7 +32,7 @@ rules:
     users:
       - root@%:root
     provider:
-      type: ALL_PRIVILEGES_PERMITTED
+      type: ALL_PERMITTED
   - !TRANSACTION
     defaultType: XA
     providerType: Atomikos
