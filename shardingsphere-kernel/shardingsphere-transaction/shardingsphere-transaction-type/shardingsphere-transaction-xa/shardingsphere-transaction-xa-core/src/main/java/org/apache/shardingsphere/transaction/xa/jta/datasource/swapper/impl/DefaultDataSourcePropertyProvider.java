@@ -40,11 +40,6 @@ public final class DefaultDataSourcePropertyProvider implements DataSourceProper
     }
     
     @Override
-    public String getType() {
-        return "";
-    }
-    
-    @Override
     public boolean isDefault() {
         return true;
     }
