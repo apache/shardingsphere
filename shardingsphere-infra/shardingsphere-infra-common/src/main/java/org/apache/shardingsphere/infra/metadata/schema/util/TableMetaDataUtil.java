@@ -78,12 +78,18 @@ public class TableMetaDataUtil {
     }
     
     private static void addOneActualTableDataNode(final SchemaBuilderMaterials materials, final Map<String, Collection<String>> dataSourceTableGroups, final DataNodes dataNodes, final String table) {
-        Optional<DataNode> optional = dataNodes.getDataNodes(table).stream().filter(each -> materials.getDataSourceMap().containsKey(each.getDataSourceName().contains(".")
-                ? each.getDataSourceName().split("\\.")[0]
-                : each.getDataSourceName())).findFirst();
-        String dataSourceName = optional.map(DataNode::getDataSourceName).orElseGet(() -> materials.getDataSourceMap().keySet().iterator().next());
-        String tableName = optional.map(DataNode::getTableName).orElse(table);
+        Optional<DataNode> dataNode = dataNodes.getDataNodes(table).stream().filter(each -> isSameDataSourceNameSchemaName(materials, each)).findFirst();
+        String dataSourceName = dataNode.map(DataNode::getDataSourceName).orElseGet(() -> materials.getDataSourceMap().keySet().iterator().next());
+        String tableName = dataNode.map(DataNode::getTableName).orElse(table);
         addDataSourceTableGroups(dataSourceName, tableName, dataSourceTableGroups);
+    }
+    
+    private static boolean isSameDataSourceNameSchemaName(final SchemaBuilderMaterials materials, final DataNode dataNode) {
+        String dataSourceName = dataNode.getDataSourceName().contains(".") ? dataNode.getDataSourceName().split("\\.")[0] : dataNode.getDataSourceName();
+        if (!materials.getDataSourceMap().containsKey(dataSourceName)) {
+            return false;
+        }
+        return null == dataNode.getSchemaName() || dataNode.getSchemaName().equalsIgnoreCase(materials.getDefaultSchemaName());
     }
     
     private static void addAllActualTableDataNode(final SchemaBuilderMaterials materials, final Map<String, Collection<String>> dataSourceTableGroups, final DataNodes dataNodes, final String table) {
