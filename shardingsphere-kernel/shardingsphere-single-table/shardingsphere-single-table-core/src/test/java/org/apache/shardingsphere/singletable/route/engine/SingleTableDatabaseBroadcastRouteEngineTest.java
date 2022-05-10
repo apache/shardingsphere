@@ -27,7 +27,12 @@ import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 import org.junit.Test;
 
 import javax.sql.DataSource;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
