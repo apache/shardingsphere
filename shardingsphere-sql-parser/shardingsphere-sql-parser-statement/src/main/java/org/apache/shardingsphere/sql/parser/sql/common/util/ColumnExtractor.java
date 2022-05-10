@@ -69,11 +69,14 @@ public final class ColumnExtractor {
      * @return true if `IS NULL` or `IS NOT NULL` on right
      */
     public static boolean nullOnRight(final BinaryOperationExpression expression) {
-        ColumnSegment left = (ColumnSegment) expression.getLeft();
-        String columnName = String.format("%s%s ", left.getOwner().isPresent() ? left.getOwner().get() + "." : "", left.getIdentifier().getValue());
-        if (null == expression.getText()) {
+        if (null == expression.getLeft() || null == expression.getText()) {
             return false;
         }
+        ColumnSegment left = (ColumnSegment) expression.getLeft();
+        if (null == left.getOwner() || null == left.getIdentifier()) {
+            return false;
+        }
+        String columnName = String.format("%s%s ", left.getOwner().isPresent() ? left.getOwner().get() + "." : "", left.getIdentifier().getValue());
         String rightValue = expression.getText().replace(columnName, "");
         return Arrays.asList("IS NULL", "IS NOT NULL").contains(rightValue.toUpperCase());
     }
