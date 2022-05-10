@@ -22,6 +22,8 @@ import org.junit.Test;
 
 import java.util.Optional;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class ExecuteProcessReporterFactoryTest {
@@ -30,6 +32,6 @@ public final class ExecuteProcessReporterFactoryTest {
     public void assertFindInstance() {
         Optional<ExecuteProcessReporter> actual = ExecuteProcessReporterFactory.getInstance();
         assertTrue(actual.isPresent());
-        assertTrue(actual.get() instanceof ExecuteProcessReporterFixture);
+        assertThat(actual.get(), instanceOf(ExecuteProcessReporterFixture.class));
     }
 }
