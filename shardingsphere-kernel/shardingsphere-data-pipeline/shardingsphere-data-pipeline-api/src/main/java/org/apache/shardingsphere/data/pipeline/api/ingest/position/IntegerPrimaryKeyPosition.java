@@ -17,19 +17,39 @@
 
 package org.apache.shardingsphere.data.pipeline.api.ingest.position;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
 /**
  * Integer primary key position.
  */
-@RequiredArgsConstructor
-@Getter
-public final class IntegerPrimaryKeyPosition implements IngestPosition<IntegerPrimaryKeyPosition> {
+public final class IntegerPrimaryKeyPosition extends PrimaryKeyPosition<Long> implements IngestPosition<IntegerPrimaryKeyPosition> {
     
     private final long beginValue;
     
     private final long endValue;
+    
+    public IntegerPrimaryKeyPosition(final long beginValue, final long endValue) {
+        this.beginValue = beginValue;
+        this.endValue = endValue;
+    }
+    
+    @Override
+    public Long getBeginValue() {
+        return beginValue;
+    }
+    
+    @Override
+    public Long getEndValue() {
+        return endValue;
+    }
+    
+    @Override
+    protected Long convert(final String value) {
+        return Long.parseLong(value);
+    }
+    
+    @Override
+    protected char getType() {
+        return 'i';
+    }
     
     @Override
     public int compareTo(final IntegerPrimaryKeyPosition position) {
@@ -37,10 +57,5 @@ public final class IntegerPrimaryKeyPosition implements IngestPosition<IntegerPr
             return 1;
         }
         return Long.compare(beginValue, position.beginValue);
-    }
-    
-    @Override
-    public String toString() {
-        return String.format("i,%d,%d", beginValue, endValue);
     }
 }
