@@ -98,7 +98,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         Optional<TransactionRule> transactionRule =
                 metaDataContexts.getGlobalRuleMetaData().getRules().stream().filter(each -> each instanceof TransactionRule).map(each -> (TransactionRule) each).findFirst();
         Optional<TransactionConfigurationFileGenerator> fileGenerator = transactionRule.isPresent()
-                ? TransactionConfigurationFileGeneratorFactory.newInstance(transactionRule.get().getProviderType())
+                ? TransactionConfigurationFileGeneratorFactory.findInstance(transactionRule.get().getProviderType())
                 : Optional.empty();
         if (!databaseName.isPresent() || !fileGenerator.isPresent()) {
             return transactionRule.isPresent() ? transactionRule.get().getProps() : new Properties();
@@ -188,7 +188,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         Optional<TransactionRule> transactionRule = metaDataContexts.getGlobalRuleMetaData().getRules()
                 .stream().filter(each -> each instanceof TransactionRule).map(each -> (TransactionRule) each).findFirst();
         if (transactionRule.isPresent()) {
-            Optional<TransactionConfigurationFileGenerator> fileGenerator = TransactionConfigurationFileGeneratorFactory.newInstance(transactionRule.get().getProviderType());
+            Optional<TransactionConfigurationFileGenerator> fileGenerator = TransactionConfigurationFileGeneratorFactory.findInstance(transactionRule.get().getProviderType());
             fileGenerator.ifPresent(optional -> optional.generateFile(transactionProps, instanceContext));
         }
     }
