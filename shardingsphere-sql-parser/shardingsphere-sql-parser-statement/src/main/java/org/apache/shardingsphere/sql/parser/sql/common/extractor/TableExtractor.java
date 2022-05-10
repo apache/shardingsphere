@@ -206,9 +206,15 @@ public final class TableExtractor {
     /**
      * Extract table that should be rewrite from insert statement.
      *
-     * @param insertStatement insert statement
+     * @param insertStatements insert statement
      */
-    public void extractTablesFromInsert(final InsertStatement insertStatement) {
+    public void extractTablesFromInsert(final Collection<InsertStatement> insertStatements) {
+        for (InsertStatement insertStatement : insertStatements) {
+            extractTablesFromInsert(insertStatement);
+        }
+    }
+    
+    private void extractTablesFromInsert(final InsertStatement insertStatement) {
         if (null != insertStatement.getTable()) {
             extractTablesFromTableSegment(insertStatement.getTable());
         }
@@ -219,27 +225,6 @@ public final class TableExtractor {
         }
         if (insertStatement.getInsertSelect().isPresent()) {
             extractTablesFromSelect(insertStatement.getInsertSelect().get().getSelect());
-        }
-    }
-    
-    /**
-     * Extract table that should be rewrite from insert statement.
-     *
-     * @param insertStatements insert statement collection
-     */
-    public void extractTablesFromInsert(final Collection<InsertStatement> insertStatements) {
-        for (InsertStatement insertStatement : insertStatements) {
-            if (null != insertStatement.getTable()) {
-                extractTablesFromTableSegment(insertStatement.getTable());
-            }
-            if (!insertStatement.getColumns().isEmpty()) {
-                for (ColumnSegment each : insertStatement.getColumns()) {
-                    extractTablesFromExpression(each);
-                }
-            }
-            if (insertStatement.getInsertSelect().isPresent()) {
-                extractTablesFromSelect(insertStatement.getInsertSelect().get().getSelect());
-            }
         }
     }
     

@@ -26,6 +26,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.PrepareStatement;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 
 /**
@@ -49,7 +50,7 @@ public final class PrepareStatementContext extends CommonSQLStatementContext<Pre
     private Collection<SimpleTableSegment> extractTablesFromPreparedStatement(final PrepareStatement sqlStatement) {
         TableExtractor tableExtractor = new TableExtractor();
         sqlStatement.getSelect().ifPresent(tableExtractor::extractTablesFromSelect);
-        sqlStatement.getInsert().ifPresent(tableExtractor::extractTablesFromInsert);
+        sqlStatement.getInsert().ifPresent(each -> tableExtractor.extractTablesFromInsert(Collections.singleton(each)));
         sqlStatement.getUpdate().ifPresent(tableExtractor::extractTablesFromUpdate);
         sqlStatement.getDelete().ifPresent(tableExtractor::extractTablesFromDelete);
         return new LinkedList<>(tableExtractor.getRewriteTables());
