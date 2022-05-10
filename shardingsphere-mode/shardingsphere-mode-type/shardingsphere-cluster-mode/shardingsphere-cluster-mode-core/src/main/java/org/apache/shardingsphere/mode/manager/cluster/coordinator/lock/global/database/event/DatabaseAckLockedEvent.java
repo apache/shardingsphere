@@ -32,7 +32,7 @@ public final class DatabaseAckLockedEvent implements GovernanceEvent {
     private final String lockedInstance;
     
     public DatabaseAckLockedEvent(final String ackLockedName) {
-        String[] databaseInstance = LockNodeUtil.parseDatabaseLockName(ackLockedName);
+        String[] databaseInstance = LockNodeUtil.parseAckLockName(ackLockedName);
         this.database = databaseInstance[0];
         this.lockedInstance = databaseInstance[1];
     }

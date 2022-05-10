@@ -15,8 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.service;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global;
 
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.database.service.DatabaseLockNodeService;
 import org.junit.Test;
 
 import java.util.Optional;

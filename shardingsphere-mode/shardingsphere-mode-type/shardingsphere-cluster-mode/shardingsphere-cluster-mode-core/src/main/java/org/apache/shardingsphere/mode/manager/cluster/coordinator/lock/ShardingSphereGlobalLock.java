@@ -15,49 +15,42 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock;
 
-import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
-import org.apache.shardingsphere.infra.lock.LockType;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
-import org.apache.shardingsphere.mode.persist.PersistRepository;
-
-import java.util.Collection;
 
 /**
- * Lock manager of ShardingSphere.
+ * Global lock of ShardingSphere.
  */
-public interface ShardingSphereLockManager {
+public interface ShardingSphereGlobalLock extends ShardingSphereLock {
     
     /**
-     * Init locks state.
-     *
-     * @param repository persist repository
-     * @param instance instance
-     * @param computeNodeInstances compute node instances
-     */
-    void initLocksState(PersistRepository repository, ComputeNodeInstance instance, Collection<ComputeNodeInstance> computeNodeInstances);
-    
-    /**
-     * Get or create lock.
+     * Ack locked.
      *
      * @param lockName lock name
-     * @return lock
+     * @param instanceId instance id
      */
-    ShardingSphereLock getOrCreateLock(String lockName);
+    void ackLock(String lockName, String instanceId);
     
     /**
-     * Is locked.
+     * Release ack lock.
      *
      * @param lockName lock name
-     * @return is locked or not
+     * @param instanceId instance id
      */
-    boolean isLocked(String lockName);
+    void releaseAckLock(String lockName, String instanceId);
     
     /**
-     * Get lock type.
+     * Add locked instance id.
      *
-     * @return lock type
+     * @param instanceId instance id
      */
-    LockType getLockType();
+    void addLockedInstance(String instanceId);
+    
+    /**
+     * Remove locked instance id.
+     *
+     * @param instanceId instance id
+     */
+    void removeLockedInstance(String instanceId);
 }

@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.general;
 
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
-import org.apache.shardingsphere.infra.lock.ShardingSphereGlobalLock;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.ShardingSphereGlobalLock;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockRegistryService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.ShardingSphereDistributeGlobalLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.ShardingSphereSequencedSemaphoreLock;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.service.GlobalLockRegistryService;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.GlobalLockRegistryService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.TimeoutMilliseconds;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 

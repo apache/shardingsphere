@@ -15,12 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.lock;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.general.service;
 
-/**
- * Lock type.
- */
-public enum LockType {
+import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class GeneralStandardLockNodeServiceTest {
     
-    STANDARD, GENERAL, DATABASE
+    private static final GeneralLockNodeService SERVICE = new GeneralLockNodeService();
+    
+    @Test
+    public void assertGetSequenceNodePath() {
+        assertThat(SERVICE.getSequenceNodePath(), is("/lock/global/general/sequence"));
+    }
+    
+    @Test
+    public void assertGetLockLevel() {
+        assertThat(SERVICE.getLockLevel(), is("general"));
+    }
 }

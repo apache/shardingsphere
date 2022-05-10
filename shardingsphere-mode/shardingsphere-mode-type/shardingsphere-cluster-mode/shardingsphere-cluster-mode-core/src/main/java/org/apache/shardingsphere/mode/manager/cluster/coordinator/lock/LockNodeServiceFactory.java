@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock;
 
-import org.apache.shardingsphere.infra.lock.LockType;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockType;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
 import java.util.EnumMap;

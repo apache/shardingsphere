@@ -15,40 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.lock;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util;
 
 /**
- * Global lock of ShardingSphere.
+ * Lock state.
  */
-public interface ShardingSphereGlobalLock extends ShardingSphereLock {
+public enum LockState {
     
-    /**
-     * Ack locked.
-     *
-     * @param lockName lock name
-     * @param instanceId instance id
-     */
-    void ackLock(String lockName, String instanceId);
-    
-    /**
-     * Release ack lock.
-     *
-     * @param lockName lock name
-     * @param instanceId instance id
-     */
-    void releaseAckLock(String lockName, String instanceId);
-    
-    /**
-     * Add locked instance id.
-     *
-     * @param instanceId instance id
-     */
-    void addLockedInstance(String instanceId);
-    
-    /**
-     * Remove locked instance id.
-     *
-     * @param instanceId instance id
-     */
-    void removeLockedInstance(String instanceId);
+    LOCKED, UNLOCKED, LOCKING
 }

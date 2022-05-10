@@ -65,7 +65,7 @@ public final class GeneralLocksChangedWatcherTest {
         Optional<GovernanceEvent> addGovernanceEvent = watcher.createGovernanceEvent(addDataChangedEvent);
         assertTrue(addGovernanceEvent.isPresent());
         assertThat(addGovernanceEvent.get(), instanceOf(GeneralLockedEvent.class));
-        assertThat(((GeneralLockedEvent) addGovernanceEvent.get()).getLockName(), is("lock_name"));
+        assertThat(((GeneralLockedEvent) addGovernanceEvent.get()).getLockedName(), is("lock_name"));
     }
     
     @Test
@@ -74,7 +74,7 @@ public final class GeneralLocksChangedWatcherTest {
         Optional<GovernanceEvent> deleteGovernanceEvent = watcher.createGovernanceEvent(deleteDataChangedEvent);
         assertTrue(deleteGovernanceEvent.isPresent());
         assertThat(deleteGovernanceEvent.get(), instanceOf(GeneralLockReleasedEvent.class));
-        assertThat(((GeneralLockReleasedEvent) deleteGovernanceEvent.get()).getLockName(), is("lock_name"));
+        assertThat(((GeneralLockReleasedEvent) deleteGovernanceEvent.get()).getLockedName(), is("lock_name"));
     }
     
     @Test

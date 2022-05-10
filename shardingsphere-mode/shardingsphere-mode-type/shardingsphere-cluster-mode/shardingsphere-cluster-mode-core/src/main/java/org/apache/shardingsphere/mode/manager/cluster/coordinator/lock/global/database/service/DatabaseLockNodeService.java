@@ -15,30 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.database.service;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-
-import java.util.Collection;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.AbstractGlobalLockNodeService;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockType;
 
 /**
- * ShardingSphere lock manager factory.
+ * Database lock node service.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingSphereLockManagerFactory {
+public final class DatabaseLockNodeService extends AbstractGlobalLockNodeService {
     
-    static {
-        ShardingSphereServiceLoader.register(ShardingSphereLockManager.class);
+    @Override
+    public String getSequenceNodePath() {
+        return PATH_DELIMITER + LOCK_ROOT + PATH_DELIMITER + LOCK_SCOPE_GLOBAL + PATH_DELIMITER + getLockLevel() + PATH_DELIMITER + "sequence";
     }
     
-    /**
-     * Create new instances of ShardingSphere lock manager.
-     * 
-     * @return new instances of ShardingSphere lock manager
-     */
-    public static Collection<ShardingSphereLockManager> newInstances() {
-        return ShardingSphereServiceLoader.getServiceInstances(ShardingSphereLockManager.class);
+    @Override
+    protected String getLockLevel() {
+        return "database";
+    }
+    
+    @Override
+    public LockType getLockType() {
+        return LockType.DATABASE;
     }
 }

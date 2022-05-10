@@ -15,12 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.lock;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.general.service;
+
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.AbstractGlobalLockNodeService;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockType;
 
 /**
- * Lock state.
+ * General lock node service.
  */
-public enum LockState {
+public final class GeneralLockNodeService extends AbstractGlobalLockNodeService {
     
-    LOCKED, UNLOCKED, LOCKING
+    @Override
+    public String getSequenceNodePath() {
+        return PATH_DELIMITER + LOCK_ROOT + PATH_DELIMITER + LOCK_SCOPE_GLOBAL + PATH_DELIMITER + getLockLevel() + PATH_DELIMITER + "sequence";
+    }
+    
+    @Override
+    protected String getLockLevel() {
+        return "general";
+    }
+    
+    @Override
+    public LockType getLockType() {
+        return LockType.GENERAL;
+    }
 }

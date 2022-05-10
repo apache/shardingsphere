@@ -20,9 +20,9 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
-import org.apache.shardingsphere.infra.lock.ShardingSphereGlobalLock;
-import org.apache.shardingsphere.infra.lock.LockState;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.ShardingSphereGlobalLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockRegistryService;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockState;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.TimeoutMilliseconds;
 
 import java.util.Collection;

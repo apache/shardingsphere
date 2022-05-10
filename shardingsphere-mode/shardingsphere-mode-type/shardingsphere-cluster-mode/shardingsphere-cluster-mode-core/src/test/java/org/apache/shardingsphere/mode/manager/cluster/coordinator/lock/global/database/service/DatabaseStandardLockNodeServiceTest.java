@@ -15,27 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.service;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.database.service;
 
-import org.apache.shardingsphere.infra.lock.LockType;
+import org.junit.Test;
 
-/**
- * General lock node service.
- */
-public final class GeneralLockNodeService extends AbstractGlobalLockNodeService {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class DatabaseStandardLockNodeServiceTest {
     
-    @Override
-    public String getSequenceNodePath() {
-        return PATH_DELIMITER + LOCK_ROOT + PATH_DELIMITER + LOCK_SCOPE_GLOBAL + PATH_DELIMITER + getLockLevel() + PATH_DELIMITER + "sequence";
+    private static final DatabaseLockNodeService SERVICE = new DatabaseLockNodeService();
+    
+    @Test
+    public void assertGetSequenceNodePath() {
+        assertThat(SERVICE.getSequenceNodePath(), is("/lock/global/database/sequence"));
     }
     
-    @Override
-    protected String getLockLevel() {
-        return "general";
-    }
-    
-    @Override
-    public LockType getLockType() {
-        return LockType.GENERAL;
+    @Test
+    public void assertGetLockLevel() {
+        assertThat(SERVICE.getLockLevel(), is("database"));
     }
 }
