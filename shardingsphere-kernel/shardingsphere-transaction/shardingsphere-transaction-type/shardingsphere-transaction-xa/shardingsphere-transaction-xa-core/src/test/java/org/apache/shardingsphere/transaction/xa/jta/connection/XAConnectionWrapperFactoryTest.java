@@ -27,7 +27,7 @@ import static org.junit.Assert.assertThat;
 public final class XAConnectionWrapperFactoryTest {
     
     @Test
-    public void assertCreateH2XAConnection() {
+    public void assertGetInstance() {
         assertThat(XAConnectionWrapperFactory.getInstance(DatabaseTypeFactory.getInstance("H2")), instanceOf(H2XAConnectionWrapper.class));
     }
 }
