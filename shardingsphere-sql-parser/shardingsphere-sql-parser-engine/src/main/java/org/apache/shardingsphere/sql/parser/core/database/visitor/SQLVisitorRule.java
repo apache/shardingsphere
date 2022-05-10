@@ -500,6 +500,8 @@ public enum SQLVisitorRule {
 
     ALTER_OUTLINE("AlterOutline", SQLStatementType.DDL),
 
+    ALTER_ANALYTIC_VIEW("AlterAnalyticView", SQLStatementType.DDL),
+
     DROP_EDITION("DropEdition", SQLStatementType.DDL);
     
     private final String name;

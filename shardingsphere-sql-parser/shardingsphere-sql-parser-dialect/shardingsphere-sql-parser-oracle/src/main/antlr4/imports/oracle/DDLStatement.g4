@@ -2267,3 +2267,7 @@ externalParameter
 property
     : (INDICATOR (STRUCT | TDO)? | LENGTH | DURATION | MAXLEN | CHARSETID | CHARSETFORM)
     ;
+
+alterAnalyticView
+    : ALTER ANALYTIC VIEW analyticViewName (RENAME TO analyticViewName | COMPILE)
+    ;

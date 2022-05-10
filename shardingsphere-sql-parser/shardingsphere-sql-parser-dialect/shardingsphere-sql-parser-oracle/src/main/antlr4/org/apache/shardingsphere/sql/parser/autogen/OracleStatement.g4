@@ -83,5 +83,6 @@ execute
     | dropEdition
     | dropOutline
     | alterOutline
+    | alterAnalyticView
     ) SEMI_?
     ;
