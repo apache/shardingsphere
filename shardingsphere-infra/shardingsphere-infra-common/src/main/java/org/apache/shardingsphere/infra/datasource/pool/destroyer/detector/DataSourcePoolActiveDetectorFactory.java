@@ -31,12 +31,12 @@ public final class DataSourcePoolActiveDetectorFactory {
     }
     
     /**
-     * Find instance of data source pool active detector.
+     * Get instance of data source pool active detector.
      * 
      * @param dataSourceClassName data source class name
-     * @return found instance
+     * @return got instance
      */
-    public static DataSourcePoolActiveDetector findInstance(final String dataSourceClassName) {
+    public static DataSourcePoolActiveDetector getInstance(final String dataSourceClassName) {
         return TypedSPIRegistry.findRegisteredService(DataSourcePoolActiveDetector.class, dataSourceClassName).orElse(RequiredSPIRegistry.getRegisteredService(DataSourcePoolActiveDetector.class));
     }
 }
