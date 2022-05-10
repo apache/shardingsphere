@@ -17,37 +17,29 @@
 
 package org.apache.shardingsphere.sql.parser.core.database.parser;
 
-import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.spi.DatabaseTypedSQLParserFacade;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ServiceLoader;
-
 /**
- * Database type based SQL parser facade registry.
+ * Database type based SQL parser facade factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DatabaseTypedSQLParserFacadeRegistry {
-    
-    private static final Map<String, DatabaseTypedSQLParserFacade> FACADES = new HashMap<>();
+public final class DatabaseTypedSQLParserFacadeFactory {
     
     static {
-        for (DatabaseTypedSQLParserFacade each : ServiceLoader.load(DatabaseTypedSQLParserFacade.class)) {
-            FACADES.put(each.getDatabaseType(), each);
-        }
+        ShardingSphereServiceLoader.register(DatabaseTypedSQLParserFacade.class);
     }
     
     /**
-     * Get database type based SQL parser facade.
+     * Get instance of database type based SQL parser facade.
      * 
      * @param databaseType database type
-     * @return database type based SQL parser facade
+     * @return instance of database type based SQL parser facade
      */
-    public static DatabaseTypedSQLParserFacade getFacade(final String databaseType) {
-        Preconditions.checkArgument(FACADES.containsKey(databaseType), "Cannot support database type '%s'", databaseType);
-        return FACADES.get(databaseType);
+    public static DatabaseTypedSQLParserFacade getInstance(final String databaseType) {
+        return TypedSPIRegistry.getRegisteredService(DatabaseTypedSQLParserFacade.class, databaseType);
     }
 }
