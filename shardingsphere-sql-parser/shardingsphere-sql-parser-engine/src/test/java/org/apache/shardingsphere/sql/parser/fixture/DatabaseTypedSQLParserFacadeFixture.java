@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.spi.DatabaseTypedSQLParserFacade;
 public final class DatabaseTypedSQLParserFacadeFixture implements DatabaseTypedSQLParserFacade {
     
     @Override
-    public String getDatabaseType() {
+    public String getType() {
         return "Fixture";
     }
     
