@@ -738,47 +738,27 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
     @Override
     public ASTNode visitSelectClause(final SelectClauseContext ctx) {
         SQLServerSelectStatement result = new SQLServerSelectStatement();
-        result.setProjections((ProjectionsSegment) visit(ctx.selectList()));
-        if (null != ctx.duplicateSpecification()) {
-            result.getProjections().setDistinctRow(isDistinct(ctx));
-        }
         if (null != ctx.top()) {
             RowNumberValueSegment rowNumber = (RowNumberValueSegment) visit(ctx.top());
+            result.setProjections(new ProjectionsSegment(ctx.top().getStart().getStartIndex(), ctx.getStop().getStopIndex()));
+            result.getProjections().getProjections().addAll(getProjectionSegments(ctx.selectList()));
             result.getProjections().getProjections().add(new TopProjectionSegment(ctx.top().getStart().getStartIndex(), ctx.top().getStop().getStopIndex(), rowNumber, null));
+        } else {
+            result.setProjections((ProjectionsSegment) visit(ctx.selectList()));
+        }
+        if (null != ctx.duplicateSpecification()) {
+            result.getProjections().setDistinctRow(isDistinct(ctx));
         }
         return result;
     }
     
-    // @Override
-    // public ASTNode visitSelectClausee(final SelectClauseContext ctx) {
-    // SQLServerSelectStatement result = new SQLServerSelectStatement();
-    // result.setProjections((ProjectionsSegment) visit(ctx.projections()));
-    // if (null != ctx.selectWithClause() && null != ctx.selectWithClause().cteClauseSet()) {
-    // Collection<CommonTableExpressionSegment> commonTableExpressionSegments = getCommonTableExpressionSegmentsUsingCteClauseSet(ctx.selectWithClause().cteClauseSet());
-    // WithSegment withSegment = new WithSegment(ctx.selectWithClause().start.getStartIndex(), ctx.selectWithClause().stop.getStopIndex(), commonTableExpressionSegments);
-    // result.setWithSegment(withSegment);
-    // }
-    // if (null != ctx.duplicateSpecification()) {
-    // result.getProjections().setDistinctRow(isDistinct(ctx));
-    // }
-    // if (null != ctx.fromClause()) {
-    // TableSegment tableSource = (TableSegment) visit(ctx.fromClause().tableReferences());
-    // result.setFrom(tableSource);
-    // }
-    // if (null != ctx.whereClause()) {
-    // result.setWhere((WhereSegment) visit(ctx.whereClause()));
-    // }
-    // if (null != ctx.groupByClause()) {
-    // result.setGroupBy((GroupBySegment) visit(ctx.groupByClause()));
-    // }
-    // if (null != ctx.havingClause()) {
-    // result.setHaving((HavingSegment) visit(ctx.havingClause()));
-    // }
-    // if (null != ctx.orderByClause()) {
-    // result = visitOrderBy(result, ctx.orderByClause());
-    // }
-    // return result;
-    // }
+    private Collection<ProjectionSegment> getProjectionSegments(final SelectListContext ctx) {
+        Collection<ProjectionSegment> result = new LinkedList<>();
+        for (SelectListItemContext each : ctx.selectListItem()) {
+            result.add((ProjectionSegment) visit(each));
+        }
+        return result;
+    }
     
     @Override
     public ASTNode visitSelectList(final SelectListContext ctx) {
