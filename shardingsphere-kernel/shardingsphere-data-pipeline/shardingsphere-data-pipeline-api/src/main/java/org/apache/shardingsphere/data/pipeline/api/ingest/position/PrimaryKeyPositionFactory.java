@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.api.ingest.position;
 
 import com.google.common.base.Preconditions;
+import lombok.NonNull;
 
 /**
  * Primary key position factory.
@@ -44,6 +45,23 @@ public final class PrimaryKeyPositionFactory {
                 return new StringPrimaryKeyPosition(beginValue, endValue);
             default:
                 throw new IllegalArgumentException("Unknown primary key position type: " + type);
+        }
+    }
+    
+    /**
+     * New instance by begin value and end value.
+     *
+     * @param beginValue begin value
+     * @param endValue end value
+     * @return ingest position
+     */
+    public static IngestPosition<?> newInstance(final @NonNull Object beginValue, final @NonNull Object endValue) {
+        if (beginValue instanceof Number) {
+            return new IntegerPrimaryKeyPosition(((Number) beginValue).longValue(), ((Number) endValue).longValue());
+        } else if (beginValue instanceof CharSequence) {
+            return new StringPrimaryKeyPosition(beginValue.toString(), endValue.toString());
+        } else {
+            throw new IllegalArgumentException("Unknown begin value type: " + beginValue.getClass().getName());
         }
     }
 }

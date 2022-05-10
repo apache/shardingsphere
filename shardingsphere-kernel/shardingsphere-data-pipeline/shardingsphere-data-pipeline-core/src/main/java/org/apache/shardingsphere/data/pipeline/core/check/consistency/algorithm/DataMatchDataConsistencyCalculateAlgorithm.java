@@ -142,16 +142,19 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
         
         @SneakyThrows
         @Override
-        public boolean equals(final Object o) {
+        public boolean equals(final @NonNull Object o) {
             if (this == o) {
                 return true;
             }
             if (!(o instanceof CalculatedResult)) {
+                log.warn("CalculatedResult type not match, o.className={}", o.getClass().getName());
                 return false;
             }
             final CalculatedResult that = (CalculatedResult) o;
             boolean equalsFirst = new EqualsBuilder().append(getRecordCount(), that.getRecordCount()).append(getMaxUniqueKeyValue(), that.getMaxUniqueKeyValue()).isEquals();
             if (!equalsFirst) {
+                log.warn("recordCount or maxUniqueKeyValue not match, recordCount1={}, recordCount2={}, maxUniqueKeyValue1={}, maxUniqueKeyValue2={}",
+                        getRecordCount(), that.getRecordCount(), getMaxUniqueKeyValue(), that.getMaxUniqueKeyValue());
                 return false;
             }
             Iterator<Collection<Object>> thisIterator = this.records.iterator();
@@ -160,7 +163,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
                 Collection<Object> thisNext = thisIterator.next();
                 Collection<Object> thatNext = thatIterator.next();
                 if (thisNext.size() != thatNext.size()) {
-                    log.info("record column size not match, size1={}, size2={}, record1={}, record2={}", thisNext.size(), thatNext.size(), thisNext, thatNext);
+                    log.warn("record column size not match, size1={}, size2={}, record1={}, record2={}", thisNext.size(), thatNext.size(), thisNext, thatNext);
                     return false;
                 }
                 Iterator<Object> thisNextIterator = thisNext.iterator();
@@ -172,7 +175,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
                         return ((SQLXML) thisResult).getString().equals(((SQLXML) thatResult).getString());
                     }
                     if (!new EqualsBuilder().append(thisResult, thatResult).isEquals()) {
-                        log.info("record column value not match, value1={}, value2={}, record1={}, record2={}", thisResult, thatResult, thisNext, thatNext);
+                        log.warn("record column value not match, value1={}, value2={}, record1={}, record2={}", thisResult, thatResult, thisNext, thatNext);
                         return false;
                     }
                 }
