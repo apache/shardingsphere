@@ -94,6 +94,9 @@ public final class TextProtocolBackendHandlerFactory {
         databaseType.handleRollbackOnly(connectionSession.getTransactionStatus().isRollbackOnly(), sqlStatement);
         checkUnsupportedSQLStatement(sqlStatement);
         if (sqlStatement instanceof DistSQLStatement) {
+            if (connectionSession.getTransactionStatus().isInTransaction()) {
+                throw new UnsupportedOperationException("Dist sql is not supported within a transaction");
+            }
             return DistSQLBackendHandlerFactory.newInstance(databaseType, (DistSQLStatement) sqlStatement, connectionSession);
         }
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap(),
