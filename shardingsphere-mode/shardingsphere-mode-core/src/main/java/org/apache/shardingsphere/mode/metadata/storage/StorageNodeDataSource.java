@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.storage;
+package org.apache.shardingsphere.mode.metadata.storage;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

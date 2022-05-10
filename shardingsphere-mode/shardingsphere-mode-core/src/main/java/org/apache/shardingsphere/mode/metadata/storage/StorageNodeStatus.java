@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.storage;
+package org.apache.shardingsphere.mode.metadata.storage;
 
 /**
- * Storage node role.
+ * Storage node status.
  */
-public enum StorageNodeRole {
+public enum StorageNodeStatus {
     
-    PRIMARY, MEMBER
+    DISABLED, ENABLED
 }

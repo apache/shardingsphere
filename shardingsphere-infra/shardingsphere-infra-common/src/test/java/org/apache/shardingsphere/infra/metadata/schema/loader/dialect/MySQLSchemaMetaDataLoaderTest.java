@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.loader.dialect;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.metadata.schema.loader.spi.DialectSchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.loader.spi.DialectTableMetaDataLoaderFactory;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
@@ -108,7 +108,7 @@ public final class MySQLSchemaMetaDataLoaderTest {
     }
     
     private DialectSchemaMetaDataLoader getDialectTableMetaDataLoader() {
-        Optional<DialectSchemaMetaDataLoader> result = DialectTableMetaDataLoaderFactory.newInstance(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
+        Optional<DialectSchemaMetaDataLoader> result = DialectTableMetaDataLoaderFactory.newInstance(DatabaseTypeFactory.getInstance("MySQL"));
         assertTrue(result.isPresent());
         return result.get();
     }

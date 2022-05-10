@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.protocol;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.proxy.frontend.fixture.DatabaseProtocolFrontendEngineFixture;
 import org.apache.shardingsphere.proxy.frontend.fixture.FixtureDatabaseType;
 import org.apache.shardingsphere.spi.exception.ServiceProviderNotFoundException;
@@ -35,6 +35,6 @@ public final class DatabaseProtocolFrontendEngineFactoryTest {
     
     @Test(expected = ServiceProviderNotFoundException.class)
     public void assertNewInstanceWhenUnsupported() {
-        DatabaseProtocolFrontendEngineFactory.newInstance(DatabaseTypeRegistry.getActualDatabaseType("Oracle"));
+        DatabaseProtocolFrontendEngineFactory.newInstance(DatabaseTypeFactory.getInstance("Oracle"));
     }
 }

@@ -15,19 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.event.impl;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.schema.QualifiedDatabase;
-import org.apache.shardingsphere.infra.rule.event.DataSourceStatusChangedEvent;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Primary data source changed event.
+ * Alter outline test case.
  */
-@RequiredArgsConstructor
-@Getter
-public final class PrimaryDataSourceChangedEvent implements DataSourceStatusChangedEvent {
-    
-    private final QualifiedDatabase qualifiedDatabase;
+public final class AlterOutlineStatementTestCase extends SQLParserTestCase {
 }

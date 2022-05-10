@@ -19,12 +19,12 @@ package org.apache.shardingsphere.mode.manager.cluster;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
+import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
@@ -56,9 +56,9 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.HashMap;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -133,7 +133,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         Properties props = metaDataPersistService.getPropsService().load();
         MetaDataContextsBuilder result = new MetaDataContextsBuilder(globalRuleConfigs, props);
         Map<String, ? extends DatabaseConfiguration> databaseConfigMap = getDatabaseConfigMap(databaseNames, metaDataPersistService, parameter);
-        DatabaseType databaseType = DatabaseTypeFactory.getDatabaseType(databaseConfigMap, new ConfigurationProperties(props));
+        DatabaseType databaseType = DatabaseTypeEngine.getDatabaseType(databaseConfigMap, new ConfigurationProperties(props));
         for (Entry<String, ? extends DatabaseConfiguration> entry : databaseConfigMap.entrySet()) {
             if (databaseType.getSystemSchemas().contains(entry.getKey())) {
                 continue;

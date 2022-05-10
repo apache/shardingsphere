@@ -19,15 +19,10 @@ package org.apache.shardingsphere.infra.database.type;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
-import javax.sql.DataSource;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Optional;
 
 /**
  * Database type factory.
@@ -35,29 +30,26 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DatabaseTypeFactory {
     
+    static {
+        ShardingSphereServiceLoader.register(DatabaseType.class);
+    }
+    
     /**
-     * Get database type.
+     * Get instance of database type.
      * 
-     * @param databaseConfigs database configs
-     * @param props props
-     * @return database type
+     * @param name name of database type
+     * @return instance of database type
      */
-    public static DatabaseType getDatabaseType(final Map<String, ? extends DatabaseConfiguration> databaseConfigs, final ConfigurationProperties props) {
-        Optional<DatabaseType> configuredDatabaseType = findConfiguredDatabaseType(props);
-        if (configuredDatabaseType.isPresent()) {
-            return configuredDatabaseType.get();
-        }
-        Collection<DataSource> dataSources = databaseConfigs.values().stream()
-                .filter(DatabaseTypeFactory::isComplete).findFirst().map(optional -> optional.getDataSources().values()).orElseGet(Collections::emptyList);
-        return DatabaseTypeRecognizer.getDatabaseType(dataSources);
+    public static DatabaseType getInstance(final String name) {
+        return TypedSPIRegistry.getRegisteredService(DatabaseType.class, name);
     }
     
-    private static Optional<DatabaseType> findConfiguredDatabaseType(final ConfigurationProperties props) {
-        String configuredDatabaseType = props.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE);
-        return configuredDatabaseType.isEmpty() ? Optional.empty() : Optional.of(DatabaseTypeRegistry.getTrunkDatabaseType(configuredDatabaseType));
-    }
-    
-    private static boolean isComplete(final DatabaseConfiguration databaseConfig) {
-        return !databaseConfig.getRuleConfigurations().isEmpty() && !databaseConfig.getDataSources().isEmpty();
+    /**
+     * Get instances of database type.
+     * 
+     * @return instances of database type
+     */
+    public static Collection<DatabaseType> getInstances() {
+        return ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class);
     }
 }
