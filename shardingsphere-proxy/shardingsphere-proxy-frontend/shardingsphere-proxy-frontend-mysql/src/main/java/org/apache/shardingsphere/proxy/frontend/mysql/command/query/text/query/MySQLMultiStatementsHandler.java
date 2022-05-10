@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRecognizer;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.executor.check.SQLCheckEngine;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
@@ -108,7 +108,7 @@ public final class MySQLMultiStatementsHandler implements TextProtocolBackendHan
     
     private ShardingSphereSQLParserEngine getSQLParserEngine() {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        return new ShardingSphereSQLParserEngine(DatabaseTypeRecognizer.getTrunkDatabaseTypeName(metaDataContexts.getMetaData(connectionSession.getDatabaseName()).getResource().getDatabaseType()),
+        return new ShardingSphereSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(metaDataContexts.getMetaData(connectionSession.getDatabaseName()).getResource().getDatabaseType()),
                 metaDataContexts.getGlobalRuleMetaData().findSingleRule(SQLParserRule.class).orElseThrow(() -> new IllegalStateException("SQLParserRule not found")).toParserConfiguration());
     }
     

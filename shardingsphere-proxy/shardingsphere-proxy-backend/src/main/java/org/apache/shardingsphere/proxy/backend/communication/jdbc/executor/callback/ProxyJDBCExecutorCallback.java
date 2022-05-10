@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.executor.call
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRecognizer;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.sane.JDBCSaneQueryResultEngineFactory;
@@ -111,7 +111,7 @@ public abstract class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<Exe
             return configuredDatabaseType.get();
         }
         if (ProxyContext.getInstance().getContextManager().getMetaDataContexts().getAllDatabaseNames().isEmpty()) {
-            return DatabaseTypeRecognizer.getTrunkDatabaseType("MySQL");
+            return DatabaseTypeEngine.getTrunkDatabaseType("MySQL");
         }
         String schemaName = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getAllDatabaseNames().iterator().next();
         return ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(schemaName).getResource().getDatabaseType();
@@ -119,6 +119,6 @@ public abstract class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<Exe
     
     private static Optional<DatabaseType> findConfiguredDatabaseType() {
         String configuredDatabaseType = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE);
-        return configuredDatabaseType.isEmpty() ? Optional.empty() : Optional.of(DatabaseTypeRecognizer.getTrunkDatabaseType(configuredDatabaseType));
+        return configuredDatabaseType.isEmpty() ? Optional.empty() : Optional.of(DatabaseTypeEngine.getTrunkDatabaseType(configuredDatabaseType));
     }
 }

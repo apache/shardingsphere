@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.binder.segment.select.pagination.Paginati
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRecognizer;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.engine.merger.ResultMerger;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
@@ -126,7 +126,7 @@ public final class ShardingDQLResultMerger implements ResultMerger {
         if (!paginationContext.isHasPagination() || 1 == queryResults.size()) {
             return mergedResult;
         }
-        String trunkDatabaseName = DatabaseTypeRecognizer.getTrunkDatabaseType(databaseType.getType()).getType();
+        String trunkDatabaseName = DatabaseTypeEngine.getTrunkDatabaseType(databaseType.getType()).getType();
         if ("MySQL".equals(trunkDatabaseName) || "PostgreSQL".equals(trunkDatabaseName) || "openGauss".equals(trunkDatabaseName)) {
             return new LimitDecoratorMergedResult(mergedResult, paginationContext);
         }

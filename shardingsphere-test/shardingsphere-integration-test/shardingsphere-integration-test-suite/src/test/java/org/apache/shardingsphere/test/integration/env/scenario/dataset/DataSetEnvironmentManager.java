@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.integration.env.scenario.dataset;
 import com.google.common.base.Joiner;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRecognizer;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorServiceManager;
@@ -87,7 +87,7 @@ public final class DataSetEnvironmentManager {
             }
             String insertSQL;
             try (Connection connection = dataSourceMap.get(dataNode.getDataSourceName()).getConnection()) {
-                DatabaseType databaseType = DatabaseTypeRecognizer.getDatabaseType(connection.getMetaData().getURL());
+                DatabaseType databaseType = DatabaseTypeEngine.getDatabaseType(connection.getMetaData().getURL());
                 insertSQL = generateInsertSQL(databaseType.getQuoteCharacter().wrap(dataNode.getTableName()), dataSetMetaData.getColumns(), databaseType.getType());
             }
             fillDataTasks.add(new InsertTask(dataSourceMap.get(dataNode.getDataSourceName()), insertSQL, sqlValueGroups));
@@ -214,7 +214,7 @@ public final class DataSetEnvironmentManager {
         public Void call() throws SQLException {
             try (Connection connection = dataSource.getConnection()) {
                 for (String each : tableNames) {
-                    DatabaseType databaseType = DatabaseTypeRecognizer.getDatabaseType(connection.getMetaData().getURL());
+                    DatabaseType databaseType = DatabaseTypeEngine.getDatabaseType(connection.getMetaData().getURL());
                     try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("DELETE FROM %s", databaseType.getQuoteCharacter().wrap(each)))) {
                         preparedStatement.execute();
                     }
