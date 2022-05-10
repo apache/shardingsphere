@@ -23,6 +23,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.core.record.RecordUtil;
+import org.apache.shardingsphere.data.pipeline.core.util.PipelineJdbcUtils;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 
@@ -72,15 +73,17 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
     }
     
     @Override
-    public String buildInventoryDumpFirstSQL(final String schemaName, final String tableName, final String uniqueKey) {
+    public String buildInventoryDumpSQL(final String schemaName, final String tableName, final String uniqueKey, final int uniqueKeyDataType, final boolean firstQuery) {
+        String decoratedTableName = decorate(schemaName, tableName);
         String quotedUniqueKey = quote(uniqueKey);
-        return "SELECT * FROM " + decorate(schemaName, tableName) + " WHERE " + quotedUniqueKey + " >= ? AND " + quotedUniqueKey + " <= ? ORDER BY " + quotedUniqueKey + " ASC LIMIT ?";
-    }
-    
-    @Override
-    public String buildInventoryDumpLaterSQL(final String schemaName, final String tableName, final String uniqueKey) {
-        String quotedUniqueKey = quote(uniqueKey);
-        return "SELECT * FROM " + decorate(schemaName, tableName) + " WHERE " + quotedUniqueKey + " > ? AND " + quotedUniqueKey + " <= ? ORDER BY " + quotedUniqueKey + " ASC LIMIT ?";
+        if (PipelineJdbcUtils.isIntegerColumn(uniqueKeyDataType)) {
+            return "SELECT * FROM " + decoratedTableName + " WHERE " + quotedUniqueKey + " " + (firstQuery ? ">=" : ">") + " ?"
+                    + " AND " + quotedUniqueKey + " <= ? ORDER BY " + quotedUniqueKey + " ASC LIMIT ?";
+        } else if (PipelineJdbcUtils.isStringColumn(uniqueKeyDataType)) {
+            return "SELECT * FROM " + decoratedTableName + " ORDER BY " + quotedUniqueKey + " ASC";
+        } else {
+            throw new IllegalArgumentException("Unknown uniqueKeyDataType: " + uniqueKeyDataType);
+        }
     }
     
     protected String decorate(final String schemaName, final String tableName) {

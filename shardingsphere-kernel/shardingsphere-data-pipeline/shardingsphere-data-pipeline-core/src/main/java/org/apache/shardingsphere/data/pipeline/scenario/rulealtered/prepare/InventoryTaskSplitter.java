@@ -38,6 +38,7 @@ import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTabl
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineTableMetaData;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
+import org.apache.shardingsphere.data.pipeline.core.util.PipelineJdbcUtils;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreator;
@@ -51,7 +52,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Types;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -124,6 +124,7 @@ public final class InventoryTaskSplitter {
             splitDumperConfig.setActualTableName(dumperConfig.getActualTableName());
             splitDumperConfig.setLogicTableName(dumperConfig.getLogicTableName());
             splitDumperConfig.setPrimaryKey(dumperConfig.getPrimaryKey());
+            splitDumperConfig.setUniqueKeyDataType(dumperConfig.getUniqueKeyDataType());
             splitDumperConfig.setBatchSize(batchSize);
             splitDumperConfig.setRateLimitAlgorithm(rateLimitAlgorithm);
             result.add(splitDumperConfig);
@@ -135,27 +136,29 @@ public final class InventoryTaskSplitter {
                                                                 final DataSource dataSource, final PipelineTableMetaDataLoader metaDataLoader) {
         JobProgress initProgress = jobContext.getInitProgress();
         String schemaName = dumperConfig.getSchemaName(new LogicTableName(dumperConfig.getLogicTableName()));
+        String actualTableName = dumperConfig.getActualTableName();
+        PipelineTableMetaData tableMetaData = metaDataLoader.getTableMetaData(schemaName, actualTableName);
         if (null != initProgress && initProgress.getStatus() != JobStatus.PREPARING_FAILURE) {
             Collection<IngestPosition<?>> result = initProgress.getInventoryPosition(dumperConfig.getActualTableName()).values();
             for (IngestPosition<?> each : result) {
                 if (each instanceof PrimaryKeyPosition) {
-                    String primaryKey = metaDataLoader.getTableMetaData(schemaName, dumperConfig.getActualTableName()).getPrimaryKeyColumns().get(0);
+                    String primaryKey = tableMetaData.getPrimaryKeyColumns().get(0);
                     dumperConfig.setPrimaryKey(primaryKey);
+                    dumperConfig.setUniqueKeyDataType(tableMetaData.getColumnMetaData(primaryKey).getDataType());
                     break;
                 }
             }
             // Do NOT filter FinishedPosition here, since whole inventory tasks are required in job progress when persisting to register center.
             return result;
         }
-        String actualTableName = dumperConfig.getActualTableName();
-        PipelineTableMetaData tableMetaData = metaDataLoader.getTableMetaData(schemaName, actualTableName);
         checkPrimaryKey(tableMetaData, actualTableName);
         String primaryKey = tableMetaData.getPrimaryKeyColumns().get(0);
         dumperConfig.setPrimaryKey(primaryKey);
-        int columnType = tableMetaData.getColumnMetaData(primaryKey).getDataType();
-        if (isIntegerColumn(columnType)) {
+        int primaryKeyDataType = tableMetaData.getColumnMetaData(primaryKey).getDataType();
+        dumperConfig.setUniqueKeyDataType(primaryKeyDataType);
+        if (PipelineJdbcUtils.isIntegerColumn(primaryKeyDataType)) {
             return getPositionByIntegerPrimaryKeyRange(jobContext, dataSource, dumperConfig);
-        } else if (isStringColumn(columnType)) {
+        } else if (PipelineJdbcUtils.isStringColumn(primaryKeyDataType)) {
             return getPositionByStringPrimaryKeyRange();
         } else {
             throw new PipelineJobCreationException(String.format("Can not split range for table %s, reason: primary key is not integer or string type", actualTableName));
@@ -172,24 +175,6 @@ public final class InventoryTaskSplitter {
         }
         if (primaryKeys.size() > 1) {
             throw new PipelineJobCreationException(String.format("Can not split range for table %s, reason: primary key is union primary", tableName));
-        }
-    }
-    
-    private boolean isIntegerColumn(final int columnType) {
-        return Types.INTEGER == columnType || Types.BIGINT == columnType || Types.SMALLINT == columnType || Types.TINYINT == columnType;
-    }
-    
-    private boolean isStringColumn(final int columnType) {
-        switch (columnType) {
-            case Types.CHAR:
-            case Types.VARCHAR:
-            case Types.LONGVARCHAR:
-            case Types.NCHAR:
-            case Types.NVARCHAR:
-            case Types.LONGNVARCHAR:
-                return true;
-            default:
-                return false;
         }
     }
     

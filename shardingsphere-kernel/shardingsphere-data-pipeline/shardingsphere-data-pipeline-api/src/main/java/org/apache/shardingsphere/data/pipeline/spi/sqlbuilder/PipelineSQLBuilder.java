@@ -49,19 +49,11 @@ public interface PipelineSQLBuilder extends TypedSPI {
      * @param schemaName schema name
      * @param tableName table name
      * @param uniqueKey unique key
+     * @param uniqueKeyDataType unique key data type
+     * @param firstQuery whether it's the first time query
      * @return inventory dump SQL
      */
-    String buildInventoryDumpFirstSQL(String schemaName, String tableName, String uniqueKey);
-    
-    /**
-     * Build inventory dump later SQL.
-     *
-     * @param schemaName schema name
-     * @param tableName table name
-     * @param uniqueKey unique key
-     * @return inventory dump SQL
-     */
-    String buildInventoryDumpLaterSQL(String schemaName, String tableName, String uniqueKey);
+    String buildInventoryDumpSQL(String schemaName, String tableName, String uniqueKey, int uniqueKeyDataType, boolean firstQuery);
     
     /**
      * Build insert SQL.

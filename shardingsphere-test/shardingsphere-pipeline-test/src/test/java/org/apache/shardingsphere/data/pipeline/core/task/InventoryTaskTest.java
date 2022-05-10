@@ -38,6 +38,7 @@ import org.junit.Test;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 
 import static org.junit.Assert.assertFalse;
 
@@ -90,6 +91,7 @@ public final class InventoryTaskTest {
         inventoryDumperConfig.setActualTableName("t_order");
         inventoryDumperConfig.setLogicTableName("t_order");
         inventoryDumperConfig.setPrimaryKey("order_id");
+        inventoryDumperConfig.setUniqueKeyDataType(Types.INTEGER);
         IngestPosition<?> position = taskConfig.getDumperConfig().getPosition();
         if (null == position) {
             position = new IntegerPrimaryKeyPosition(0, 1000);
