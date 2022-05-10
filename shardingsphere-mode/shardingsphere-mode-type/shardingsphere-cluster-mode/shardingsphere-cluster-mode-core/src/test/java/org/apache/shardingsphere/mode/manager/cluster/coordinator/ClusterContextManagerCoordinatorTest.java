@@ -359,8 +359,8 @@ public final class ClusterContextManagerCoordinatorTest {
         });
         lockAndAwaitDefaultTime(lock);
         long currentTime = System.currentTimeMillis();
-        assertTrue(currentTime > startTime + 50L);
-        assertTrue(currentTime < startTime + 5000L);
+        assertTrue(currentTime >= startTime + 50L);
+        assertTrue(currentTime <= startTime + 5000L);
         ShowProcessListManager.getInstance().getLocks().remove(showProcessListId);
     }
     
