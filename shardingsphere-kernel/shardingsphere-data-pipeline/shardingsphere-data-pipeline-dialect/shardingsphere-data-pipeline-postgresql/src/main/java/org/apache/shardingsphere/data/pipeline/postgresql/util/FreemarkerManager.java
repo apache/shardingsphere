@@ -70,7 +70,7 @@ public final class FreemarkerManager {
     @SneakyThrows
     private Configuration createTemplateConfiguration() {
         Configuration result = new Configuration(Configuration.VERSION_2_3_31);
-        result.setClassForTemplateLoading(this.getClass(), "/template");
+        result.setClassForTemplateLoading(getClass(), "/template");
         result.setDefaultEncoding("UTF-8");
         return result;
     }
