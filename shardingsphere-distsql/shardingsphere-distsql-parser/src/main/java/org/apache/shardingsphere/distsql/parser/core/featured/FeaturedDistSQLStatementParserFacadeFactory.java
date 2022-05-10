@@ -39,7 +39,7 @@ public final class FeaturedDistSQLStatementParserFacadeFactory {
      * Get instance of featured dist SQL statement parser facade.
      * 
      * @param type feature type
-     * @return instance of featured dist SQL statement parser facade
+     * @return got instance
      */
     public static FeaturedDistSQLStatementParserFacade getInstance(final String type) {
         return TypedSPIRegistry.getRegisteredService(FeaturedDistSQLStatementParserFacade.class, type);
@@ -48,7 +48,7 @@ public final class FeaturedDistSQLStatementParserFacadeFactory {
     /**
      * Get all instances of featured dist SQL statement parser facade.
      * 
-     * @return all instances of featured dist SQL statement parser facade
+     * @return got instances
      */
     public static Collection<FeaturedDistSQLStatementParserFacade> getAllInstances() {
         return ShardingSphereServiceLoader.getServiceInstances(FeaturedDistSQLStatementParserFacade.class);

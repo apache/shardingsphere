@@ -40,7 +40,7 @@ public final class ShardingRuleConfigurationCheckerTest {
     @Test
     public void assertValidCheck() {
         ShardingRuleConfiguration config = getValidConfiguration();
-        Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.newInstance(config);
+        Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.findInstance(config);
         assertTrue(checker.isPresent());
         assertThat(checker.get(), instanceOf(ShardingRuleConfigurationChecker.class));
         checker.get().check("test", config);
@@ -58,7 +58,7 @@ public final class ShardingRuleConfigurationCheckerTest {
     @Test(expected = IllegalStateException.class)
     public void assertInvalidCheck() {
         ShardingRuleConfiguration config = getInvalidConfiguration();
-        Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.newInstance(config);
+        Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.findInstance(config);
         assertTrue(checker.isPresent());
         assertThat(checker.get(), instanceOf(ShardingRuleConfigurationChecker.class));
         checker.get().check("test", config);

@@ -35,12 +35,12 @@ public final class DatetimeLoadingSQLProviderFactory {
     }
     
     /**
-     * Create new instance of datetime loading SQL provider.
+     * Get instance of datetime loading SQL provider.
      * 
      * @param databaseType database type
-     * @return new instance of datetime loading SQL provider
+     * @return got instance
      */
-    public static DatetimeLoadingSQLProvider newInstance(final DatabaseType databaseType) {
+    public static DatetimeLoadingSQLProvider getInstance(final DatabaseType databaseType) {
         return TypedSPIRegistry.getRegisteredService(DatetimeLoadingSQLProvider.class, DatabaseTypeEngine.getTrunkDatabaseTypeName(databaseType));
     }
 }

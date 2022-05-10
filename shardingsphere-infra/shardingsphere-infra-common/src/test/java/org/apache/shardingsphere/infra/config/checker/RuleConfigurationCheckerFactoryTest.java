@@ -31,7 +31,7 @@ public final class RuleConfigurationCheckerFactoryTest {
     @SuppressWarnings("rawtypes")
     @Test
     public void assertNewInstance() {
-        Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.newInstance(new TestRuleConfiguration());
+        Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.findInstance(new TestRuleConfiguration());
         assertTrue(checker.isPresent());
         assertTrue(checker.get() instanceof RuleConfigurationCheckerFixture);
     }
@@ -39,7 +39,7 @@ public final class RuleConfigurationCheckerFactoryTest {
     @SuppressWarnings("rawtypes")
     @Test
     public void assertNewInstanceWithoutChecker() {
-        Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.newInstance(new TestRuleConfigurationWithoutChecker());
+        Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.findInstance(new TestRuleConfigurationWithoutChecker());
         assertFalse(checker.isPresent());
     }
 }

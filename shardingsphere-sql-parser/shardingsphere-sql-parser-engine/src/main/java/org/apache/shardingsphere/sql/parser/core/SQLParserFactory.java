@@ -41,12 +41,12 @@ import java.nio.CharBuffer;
 public final class SQLParserFactory {
     
     /**
-     * New instance of SQL parser.
+     * Create new instance of SQL parser.
      * 
      * @param sql SQL
      * @param lexerClass lexer class
      * @param parserClass parser class
-     * @return SQL parser
+     * @return created instance
      */
     public static SQLParser newInstance(final String sql, final Class<? extends SQLLexer> lexerClass, final Class<? extends SQLParser> parserClass) {
         return createSQLParser(createTokenStream(sql, lexerClass), parserClass);

@@ -142,7 +142,7 @@ public final class DataConsistencyChecker {
     }
     
     private long count(final DataSource dataSource, final String tableName, final DatabaseType databaseType) {
-        String sql = PipelineSQLBuilderFactory.newInstance(databaseType.getType()).buildCountSQL(tableNameSchemaNameMapping.getSchemaName(tableName), tableName);
+        String sql = PipelineSQLBuilderFactory.getInstance(databaseType.getType()).buildCountSQL(tableNameSchemaNameMapping.getSchemaName(tableName), tableName);
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql);

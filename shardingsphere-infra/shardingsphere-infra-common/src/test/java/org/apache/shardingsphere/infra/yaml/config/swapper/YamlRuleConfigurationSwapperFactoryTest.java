@@ -36,20 +36,20 @@ public final class YamlRuleConfigurationSwapperFactoryTest {
     public void newInstanceMapByRuleConfigurations() {
         RuleConfigurationFixture ruleConfigurationFixture = new RuleConfigurationFixture();
         Map<RuleConfiguration, YamlRuleConfigurationSwapper> yamlRuleConfigurationSwapperMap = YamlRuleConfigurationSwapperFactory
-                .newInstanceMapByRuleConfigurations(Collections.singletonList(ruleConfigurationFixture));
+                .getInstanceMapByRuleConfigurations(Collections.singletonList(ruleConfigurationFixture));
         assertTrue(yamlRuleConfigurationSwapperMap.get(ruleConfigurationFixture) instanceof YamlRuleConfigurationSwapperFixture);
     }
     
     @Test
     public void newInstanceMapByRuleConfigurationClasses() {
         Map<Class<?>, YamlRuleConfigurationSwapper> yamlRuleConfigurationSwapperMap = YamlRuleConfigurationSwapperFactory
-                .newInstanceMapByRuleConfigurationClasses(Collections.singletonList(RuleConfigurationFixture.class));
+                .getInstanceMapByRuleConfigurationClasses(Collections.singletonList(RuleConfigurationFixture.class));
         assertTrue(yamlRuleConfigurationSwapperMap.get(RuleConfigurationFixture.class) instanceof YamlRuleConfigurationSwapperFixture);
     }
     
     @Test
     public void newInstances() {
-        Collection<YamlRuleConfigurationSwapper> yamlRuleConfigurationSwappers = YamlRuleConfigurationSwapperFactory.newInstances();
+        Collection<YamlRuleConfigurationSwapper> yamlRuleConfigurationSwappers = YamlRuleConfigurationSwapperFactory.getAllInstances();
         assertThat(yamlRuleConfigurationSwappers.size(), is(1));
         assertTrue(yamlRuleConfigurationSwappers.stream().findFirst().isPresent());
         assertTrue(yamlRuleConfigurationSwappers.stream().findFirst().get() instanceof YamlRuleConfigurationSwapperFixture);

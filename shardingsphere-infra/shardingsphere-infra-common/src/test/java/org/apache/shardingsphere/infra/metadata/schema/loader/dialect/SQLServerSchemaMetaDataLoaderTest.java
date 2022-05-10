@@ -119,7 +119,7 @@ public final class SQLServerSchemaMetaDataLoaderTest {
     }
     
     private DialectSchemaMetaDataLoader getDialectTableMetaDataLoader() {
-        Optional<DialectSchemaMetaDataLoader> result = DialectTableMetaDataLoaderFactory.newInstance(DatabaseTypeFactory.getInstance("SQLServer"));
+        Optional<DialectSchemaMetaDataLoader> result = DialectTableMetaDataLoaderFactory.findInstance(DatabaseTypeFactory.getInstance("SQLServer"));
         assertTrue(result.isPresent());
         return result.get();
     }

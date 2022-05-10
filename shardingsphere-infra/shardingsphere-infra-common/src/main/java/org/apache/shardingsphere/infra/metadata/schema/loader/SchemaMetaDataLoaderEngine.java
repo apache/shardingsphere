@@ -59,7 +59,7 @@ public final class SchemaMetaDataLoaderEngine {
      * @throws SQLException SQL exception
      */
     public static Map<String, SchemaMetaData> load(final Collection<TableMetaDataLoaderMaterial> materials, final DatabaseType databaseType) throws SQLException {
-        Optional<DialectSchemaMetaDataLoader> dialectTableMetaDataLoader = DialectTableMetaDataLoaderFactory.newInstance(databaseType);
+        Optional<DialectSchemaMetaDataLoader> dialectTableMetaDataLoader = DialectTableMetaDataLoaderFactory.findInstance(databaseType);
         if (dialectTableMetaDataLoader.isPresent()) {
             try {
                 return loadByDialect(dialectTableMetaDataLoader.get(), materials);

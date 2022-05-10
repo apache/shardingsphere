@@ -34,11 +34,11 @@ public final class ShardingSphereLockManagerFactory {
     }
     
     /**
-     * Create new instances of ShardingSphere lock manager.
+     * Get all instances of ShardingSphere lock manager.
      * 
-     * @return new instances of ShardingSphere lock manager
+     * @return got instances
      */
-    public static Collection<ShardingSphereLockManager> newInstances() {
+    public static Collection<ShardingSphereLockManager> getAllInstances() {
         return ShardingSphereServiceLoader.getServiceInstances(ShardingSphereLockManager.class);
     }
 }

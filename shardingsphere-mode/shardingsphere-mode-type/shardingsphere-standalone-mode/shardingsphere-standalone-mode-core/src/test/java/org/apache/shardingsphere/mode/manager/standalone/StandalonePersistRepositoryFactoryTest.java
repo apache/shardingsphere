@@ -34,20 +34,20 @@ public final class StandalonePersistRepositoryFactoryTest {
     
     @Test
     public void assertNewInstanceWithNoConfig() {
-        StandalonePersistRepository standalonePersistRepository = StandalonePersistRepositoryFactory.newInstance(null);
+        StandalonePersistRepository standalonePersistRepository = StandalonePersistRepositoryFactory.getInstance(null);
         assertThat(standalonePersistRepository.getType(), is("FIXTURE"));
     }
     
     @Test
     public void assertNewInstanceWithConfig() {
         PersistRepositoryConfiguration config = new StandalonePersistRepositoryConfiguration("FIXTURE", new Properties());
-        StandalonePersistRepository standalonePersistRepository = StandalonePersistRepositoryFactory.newInstance(config);
+        StandalonePersistRepository standalonePersistRepository = StandalonePersistRepositoryFactory.getInstance(config);
         assertNotNull(standalonePersistRepository);
     }
     
     @Test(expected = ServiceProviderNotFoundException.class)
     public void assertNewInstanceWhenTypeIsNotExist() {
         PersistRepositoryConfiguration config = new StandalonePersistRepositoryConfiguration("NOT_EXISTED", new Properties());
-        StandalonePersistRepositoryFactory.newInstance(config);
+        StandalonePersistRepositoryFactory.getInstance(config);
     }
 }

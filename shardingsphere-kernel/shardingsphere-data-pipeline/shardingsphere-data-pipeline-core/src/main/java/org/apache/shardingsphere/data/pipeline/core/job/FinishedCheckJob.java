@@ -39,7 +39,7 @@ import java.util.Map;
 @Slf4j
 public final class FinishedCheckJob implements SimpleJob {
     
-    private final RuleAlteredJobAPI ruleAlteredJobAPI = PipelineJobAPIFactory.newInstance();
+    private final RuleAlteredJobAPI ruleAlteredJobAPI = PipelineJobAPIFactory.getInstance();
     
     // TODO only one proxy node could do data consistency check in proxy cluster
     @Override

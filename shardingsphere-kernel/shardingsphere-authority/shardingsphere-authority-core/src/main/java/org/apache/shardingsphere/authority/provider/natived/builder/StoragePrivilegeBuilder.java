@@ -78,7 +78,7 @@ public final class StoragePrivilegeBuilder {
     
     private static Map<ShardingSphereUser, NativePrivileges> buildPrivilegesInStorage(final ShardingSphereMetaData metaData, final Collection<ShardingSphereUser> users) {
         DatabaseType databaseType = DatabaseTypeEngine.getDatabaseType(metaData.getResource().getAllInstanceDataSources());
-        Optional<StoragePrivilegeHandler> handler = StoragePrivilegeHandlerFactory.newInstance(databaseType.getType());
+        Optional<StoragePrivilegeHandler> handler = StoragePrivilegeHandlerFactory.findInstance(databaseType.getType());
         if (!handler.isPresent()) {
             return buildPrivilegesInCache(users);
         }

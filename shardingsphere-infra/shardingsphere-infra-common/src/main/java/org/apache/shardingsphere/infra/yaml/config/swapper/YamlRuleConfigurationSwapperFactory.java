@@ -37,34 +37,34 @@ public final class YamlRuleConfigurationSwapperFactory {
     }
     
     /**
-     * Create new instance of YAML rule configuration swapper.
+     * Get instance map of YAML rule configuration swapper.
      * 
      * @param ruleConfigs rule configurations
-     * @return new instance map of rule configuration and YAML rule configuration swapper
+     * @return instance map of rule configuration and YAML rule configuration swapper
      */
     @SuppressWarnings("rawtypes")
-    public static Map<RuleConfiguration, YamlRuleConfigurationSwapper> newInstanceMapByRuleConfigurations(final Collection<RuleConfiguration> ruleConfigs) {
+    public static Map<RuleConfiguration, YamlRuleConfigurationSwapper> getInstanceMapByRuleConfigurations(final Collection<RuleConfiguration> ruleConfigs) {
         return OrderedSPIRegistry.getRegisteredServices(YamlRuleConfigurationSwapper.class, ruleConfigs);
     }
     
     /**
-     * Create new instance of YAML rule configuration swapper.
+     * Get instance map of YAML rule configuration swapper.
      *
      * @param ruleConfigTypes rule configurations types
-     * @return new instance of rule configurations type and YAML rule configuration swapper
+     * @return got instance map
      */
     @SuppressWarnings("rawtypes")
-    public static Map<Class<?>, YamlRuleConfigurationSwapper> newInstanceMapByRuleConfigurationClasses(final Collection<Class<?>> ruleConfigTypes) {
+    public static Map<Class<?>, YamlRuleConfigurationSwapper> getInstanceMapByRuleConfigurationClasses(final Collection<Class<?>> ruleConfigTypes) {
         return OrderedSPIRegistry.getRegisteredServicesByClass(YamlRuleConfigurationSwapper.class, ruleConfigTypes);
     }
     
     /**
-     * Create new instances of all YAML rule configuration swappers.
+     * Get all instances of all YAML rule configuration swappers.
      *
-     * @return new instances of all YAML rule configuration swappers
+     * @return got instances
      */
     @SuppressWarnings("rawtypes")
-    public static Collection<YamlRuleConfigurationSwapper> newInstances() {
+    public static Collection<YamlRuleConfigurationSwapper> getAllInstances() {
         return ShardingSphereServiceLoader.getServiceInstances(YamlRuleConfigurationSwapper.class);
     }
 }

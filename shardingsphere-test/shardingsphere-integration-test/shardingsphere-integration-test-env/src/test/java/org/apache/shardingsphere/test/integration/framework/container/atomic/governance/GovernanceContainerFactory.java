@@ -31,7 +31,7 @@ public final class GovernanceContainerFactory {
      * Create new instance of governance container.
      * 
      * @param type governance center type
-     * @return new instance of governance container
+     * @return created instance
      */
     @SuppressWarnings("SwitchStatementWithTooFewBranches")
     public static GovernanceContainer newInstance(final String type) {

@@ -28,11 +28,11 @@ public final class ContextManagerBuilderFactoryTest {
     
     @Test
     public void assertNewInstanceWithModeConfiguration() {
-        assertThat(ContextManagerBuilderFactory.newInstance(new ModeConfiguration("Test", null, true)), instanceOf(FixtureContextManagerBuilder.class));
+        assertThat(ContextManagerBuilderFactory.getInstance(new ModeConfiguration("Test", null, true)), instanceOf(FixtureContextManagerBuilder.class));
     }
     
     @Test
     public void assertNewInstanceWithoutModeConfiguration() {
-        assertThat(ContextManagerBuilderFactory.newInstance(null), instanceOf(FixtureContextManagerBuilder.class));
+        assertThat(ContextManagerBuilderFactory.getInstance(null), instanceOf(FixtureContextManagerBuilder.class));
     }
 }

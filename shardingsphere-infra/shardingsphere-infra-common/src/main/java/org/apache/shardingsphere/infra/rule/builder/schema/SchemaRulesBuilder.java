@@ -70,13 +70,13 @@ public final class SchemaRulesBuilder {
     @SuppressWarnings("rawtypes")
     private static Map<RuleConfiguration, SchemaRuleBuilder> getDistributedRuleBuilderMap(final Collection<RuleConfiguration> ruleConfigs) {
         Collection<RuleConfiguration> distributedRuleConfigs = ruleConfigs.stream().filter(each -> isAssignableFrom(each, DistributedRuleConfiguration.class)).collect(Collectors.toList());
-        return SchemaRuleBuilderFactory.newInstance(distributedRuleConfigs, Comparator.reverseOrder());
+        return SchemaRuleBuilderFactory.getInstanceMap(distributedRuleConfigs, Comparator.reverseOrder());
     }
     
     @SuppressWarnings("rawtypes")
     private static Map<RuleConfiguration, SchemaRuleBuilder> getEnhancedRuleBuilderMap(final Collection<RuleConfiguration> ruleConfigs) {
         Collection<RuleConfiguration> enhancedRuleConfigs = ruleConfigs.stream().filter(each -> isAssignableFrom(each, EnhancedRuleConfiguration.class)).collect(Collectors.toList());
-        return SchemaRuleBuilderFactory.newInstance(enhancedRuleConfigs);
+        return SchemaRuleBuilderFactory.getInstanceMap(enhancedRuleConfigs);
     }
     
     private static boolean isAssignableFrom(final RuleConfiguration ruleConfig, final Class<? extends RuleConfiguration> ruleConfigClass) {
@@ -86,7 +86,7 @@ public final class SchemaRulesBuilder {
     @SuppressWarnings("rawtypes")
     private static Map<RuleConfiguration, SchemaRuleBuilder> getMissedDefaultRuleBuilderMap(final Collection<SchemaRuleBuilder> configuredBuilders) {
         Map<RuleConfiguration, SchemaRuleBuilder> result = new LinkedHashMap<>();
-        Map<SchemaRuleBuilder, DefaultSchemaRuleConfigurationBuilder> defaultBuilders = DefaultSchemaRuleConfigurationBuilderFactory.newInstance(getMissedDefaultRuleBuilders(configuredBuilders));
+        Map<SchemaRuleBuilder, DefaultSchemaRuleConfigurationBuilder> defaultBuilders = DefaultSchemaRuleConfigurationBuilderFactory.getInstances(getMissedDefaultRuleBuilders(configuredBuilders));
         // TODO consider about order for new put items
         for (Entry<SchemaRuleBuilder, DefaultSchemaRuleConfigurationBuilder> entry : defaultBuilders.entrySet()) {
             result.put(entry.getValue().build(), entry.getKey());
@@ -97,6 +97,6 @@ public final class SchemaRulesBuilder {
     @SuppressWarnings({"unchecked", "rawtypes"})
     private static Collection<SchemaRuleBuilder> getMissedDefaultRuleBuilders(final Collection<SchemaRuleBuilder> configuredBuilders) {
         Collection<Class<SchemaRuleBuilder>> configuredBuilderClasses = configuredBuilders.stream().map(each -> (Class<SchemaRuleBuilder>) each.getClass()).collect(Collectors.toSet());
-        return SchemaRuleBuilderFactory.newInstance().stream().filter(each -> !configuredBuilderClasses.contains(each.getClass())).collect(Collectors.toList());
+        return SchemaRuleBuilderFactory.getInstances().stream().filter(each -> !configuredBuilderClasses.contains(each.getClass())).collect(Collectors.toList());
     }
 }

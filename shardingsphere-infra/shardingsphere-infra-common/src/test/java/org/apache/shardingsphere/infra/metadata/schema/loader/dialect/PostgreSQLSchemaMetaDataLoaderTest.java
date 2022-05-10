@@ -154,7 +154,7 @@ public final class PostgreSQLSchemaMetaDataLoaderTest {
     }
     
     private DialectSchemaMetaDataLoader getDialectTableMetaDataLoader() {
-        Optional<DialectSchemaMetaDataLoader> result = DialectTableMetaDataLoaderFactory.newInstance(DatabaseTypeFactory.getInstance("PostgreSQL"));
+        Optional<DialectSchemaMetaDataLoader> result = DialectTableMetaDataLoaderFactory.findInstance(DatabaseTypeFactory.getInstance("PostgreSQL"));
         assertTrue(result.isPresent());
         return result.get();
     }

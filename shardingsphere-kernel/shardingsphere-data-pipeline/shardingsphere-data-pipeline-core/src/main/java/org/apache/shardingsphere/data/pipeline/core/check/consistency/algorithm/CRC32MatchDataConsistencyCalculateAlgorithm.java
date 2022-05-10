@@ -53,7 +53,7 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithm implements DataCo
     
     @Override
     public Iterable<Object> calculate(final DataConsistencyCalculateParameter parameter) {
-        PipelineSQLBuilder sqlBuilder = PipelineSQLBuilderFactory.newInstance(parameter.getDatabaseType());
+        PipelineSQLBuilder sqlBuilder = PipelineSQLBuilderFactory.getInstance(parameter.getDatabaseType());
         return Collections.unmodifiableList(parameter.getColumnNames().stream().map(each -> calculateCRC32(sqlBuilder, parameter, each)).collect(Collectors.toList()));
     }
     

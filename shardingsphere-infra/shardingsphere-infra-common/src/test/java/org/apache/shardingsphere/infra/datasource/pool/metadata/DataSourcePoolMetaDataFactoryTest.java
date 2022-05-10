@@ -29,7 +29,7 @@ public final class DataSourcePoolMetaDataFactoryTest {
     
     @Test
     public void assertNewInstance() {
-        assertTrue(DataSourcePoolMetaDataFactory.newInstance(MockedDataSource.class.getName()).isPresent());
-        assertThat(DataSourcePoolMetaDataFactory.newInstance(MockedDataSource.class.getName()).get(), instanceOf(MockedDataSourcePoolMetaData.class));
+        assertTrue(DataSourcePoolMetaDataFactory.findInstance(MockedDataSource.class.getName()).isPresent());
+        assertThat(DataSourcePoolMetaDataFactory.findInstance(MockedDataSource.class.getName()).get(), instanceOf(MockedDataSourcePoolMetaData.class));
     }
 }

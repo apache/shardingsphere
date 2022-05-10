@@ -108,7 +108,7 @@ public final class MySQLSchemaMetaDataLoaderTest {
     }
     
     private DialectSchemaMetaDataLoader getDialectTableMetaDataLoader() {
-        Optional<DialectSchemaMetaDataLoader> result = DialectTableMetaDataLoaderFactory.newInstance(DatabaseTypeFactory.getInstance("MySQL"));
+        Optional<DialectSchemaMetaDataLoader> result = DialectTableMetaDataLoaderFactory.findInstance(DatabaseTypeFactory.getInstance("MySQL"));
         assertTrue(result.isPresent());
         return result.get();
     }

@@ -35,7 +35,7 @@ public final class TransactionConfigurationFileGeneratorFactory {
      * Create new instance of transaction configuration file generator.
      *
      * @param transactionProviderType transaction provider type
-     * @return new instance of transaction configuration file generator
+     * @return created instance
      */
     public static Optional<TransactionConfigurationFileGenerator> newInstance(final String transactionProviderType) {
         return null == transactionProviderType ? Optional.empty() : TypedSPIRegistry.findRegisteredService(TransactionConfigurationFileGenerator.class, transactionProviderType);

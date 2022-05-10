@@ -152,7 +152,7 @@ public final class RALBackendHandlerFactory {
      * @param databaseType database type
      * @param sqlStatement RAL statement
      * @param connectionSession connection session
-     * @return RAL backend handler
+     * @return created instance
      * @throws SQLException SQL exception
      */
     public static TextProtocolBackendHandler newInstance(final DatabaseType databaseType, final RALStatement sqlStatement, final ConnectionSession connectionSession) throws SQLException {

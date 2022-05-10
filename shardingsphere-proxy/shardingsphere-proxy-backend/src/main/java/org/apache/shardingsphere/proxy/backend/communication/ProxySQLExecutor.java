@@ -166,7 +166,7 @@ public final class ProxySQLExecutor {
     
     private List<ExecuteResult> getSaneExecuteResults(final ExecutionContext executionContext, final SQLException originalException) throws SQLException {
         DatabaseType databaseType = ProxyContext.getInstance().getMetaData(backendConnection.getConnectionSession().getDatabaseName()).getResource().getDatabaseType();
-        Optional<ExecuteResult> executeResult = JDBCSaneQueryResultEngineFactory.newInstance(databaseType).getSaneQueryResult(executionContext.getSqlStatementContext().getSqlStatement());
+        Optional<ExecuteResult> executeResult = JDBCSaneQueryResultEngineFactory.getInstance(databaseType).getSaneQueryResult(executionContext.getSqlStatementContext().getSqlStatement());
         if (executeResult.isPresent()) {
             return Collections.singletonList(executeResult.get());
         }

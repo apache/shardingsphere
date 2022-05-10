@@ -30,11 +30,11 @@ public final class DataSourcePoolActiveDetectorFactoryTest {
     
     @Test
     public void assertNewDefaultInstance() {
-        assertThat(DataSourcePoolActiveDetectorFactory.newInstance(MockedDataSource.class.getName()), instanceOf(DefaultDataSourcePoolActiveDetector.class));
+        assertThat(DataSourcePoolActiveDetectorFactory.findInstance(MockedDataSource.class.getName()), instanceOf(DefaultDataSourcePoolActiveDetector.class));
     }
     
     @Test
     public void assertNewHikariInstance() {
-        assertThat(DataSourcePoolActiveDetectorFactory.newInstance(HikariDataSource.class.getName()), instanceOf(HikariDataSourcePoolActiveDetector.class));
+        assertThat(DataSourcePoolActiveDetectorFactory.findInstance(HikariDataSource.class.getName()), instanceOf(HikariDataSourcePoolActiveDetector.class));
     }
 }

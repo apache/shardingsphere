@@ -30,11 +30,11 @@ public final class XATransactionManagerProviderFactoryTest {
     
     @Test
     public void assertNewDefaultInstance() {
-        assertThat(XATransactionManagerProviderFactory.newInstance(null), instanceOf(AtomikosTransactionManagerProvider.class));
+        assertThat(XATransactionManagerProviderFactory.getInstance(null), instanceOf(AtomikosTransactionManagerProvider.class));
     }
     
     @Test
     public void assertNewInstance() {
-        assertThat(XATransactionManagerProviderFactory.newInstance("Atomikos"), instanceOf(AtomikosTransactionManagerProvider.class));
+        assertThat(XATransactionManagerProviderFactory.getInstance("Atomikos"), instanceOf(AtomikosTransactionManagerProvider.class));
     }
 }

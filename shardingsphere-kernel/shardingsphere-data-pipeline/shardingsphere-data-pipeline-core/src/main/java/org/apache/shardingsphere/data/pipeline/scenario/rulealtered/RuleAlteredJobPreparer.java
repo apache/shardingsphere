@@ -141,7 +141,7 @@ public final class RuleAlteredJobPreparer {
     }
     
     private void checkSourceDataSource(final RuleAlteredJobContext jobContext) {
-        DataSourceChecker dataSourceChecker = DataSourceCheckerFactory.newInstance(jobContext.getJobConfig().getSourceDatabaseType());
+        DataSourceChecker dataSourceChecker = DataSourceCheckerFactory.getInstance(jobContext.getJobConfig().getSourceDatabaseType());
         Collection<PipelineDataSourceWrapper> sourceDataSources = Collections.singleton(jobContext.getSourceDataSource());
         dataSourceChecker.checkConnection(sourceDataSources);
         dataSourceChecker.checkPrivilege(sourceDataSources);
@@ -149,7 +149,7 @@ public final class RuleAlteredJobPreparer {
     }
     
     private void checkTargetDataSource(final RuleAlteredJobContext jobContext, final PipelineDataSourceWrapper targetDataSource) {
-        DataSourceChecker dataSourceChecker = DataSourceCheckerFactory.newInstance(jobContext.getJobConfig().getTargetDatabaseType());
+        DataSourceChecker dataSourceChecker = DataSourceCheckerFactory.getInstance(jobContext.getJobConfig().getTargetDatabaseType());
         Collection<PipelineDataSourceWrapper> targetDataSources = Collections.singletonList(targetDataSource);
         dataSourceChecker.checkConnection(targetDataSources);
         ImporterConfiguration importerConfig = jobContext.getTaskConfig().getImporterConfig();

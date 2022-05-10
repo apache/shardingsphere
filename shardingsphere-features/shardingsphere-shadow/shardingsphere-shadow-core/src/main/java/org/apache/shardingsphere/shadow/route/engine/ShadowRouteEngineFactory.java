@@ -45,7 +45,7 @@ public final class ShadowRouteEngineFactory {
      * Create new instance of shadow route engine.
      *
      * @param logicSQL logic SQL
-     * @return new instance of shadow route engine
+     * @return created instance
      */
     public static ShadowRouteEngine newInstance(final LogicSQL logicSQL) {
         SQLStatement sqlStatement = logicSQL.getSqlStatementContext().getSqlStatement();
