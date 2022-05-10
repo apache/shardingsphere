@@ -20,7 +20,7 @@ package org.apache.shardingsphere.datetime.database.provider;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRecognizer;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
@@ -41,6 +41,6 @@ public final class DatetimeLoadingSQLProviderFactory {
      * @return new instance of datetime loading SQL provider
      */
     public static DatetimeLoadingSQLProvider newInstance(final DatabaseType databaseType) {
-        return TypedSPIRegistry.getRegisteredService(DatetimeLoadingSQLProvider.class, DatabaseTypeRecognizer.getTrunkDatabaseTypeName(databaseType));
+        return TypedSPIRegistry.getRegisteredService(DatetimeLoadingSQLProvider.class, DatabaseTypeEngine.getTrunkDatabaseTypeName(databaseType));
     }
 }

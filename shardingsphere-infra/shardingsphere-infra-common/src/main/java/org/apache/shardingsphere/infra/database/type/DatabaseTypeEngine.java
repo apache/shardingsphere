@@ -33,10 +33,10 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Database type recognizer.
+ * Database type engine.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DatabaseTypeRecognizer {
+public final class DatabaseTypeEngine {
     
     private static final String DEFAULT_DATABASE_TYPE = "MySQL";
     
@@ -63,7 +63,7 @@ public final class DatabaseTypeRecognizer {
             Preconditions.checkState(null == result || result == databaseType, "Database type inconsistent with '%s' and '%s'", result, databaseType);
             result = databaseType;
         }
-        return null == result ? DatabaseTypeRecognizer.getDefaultDatabaseType() : result;
+        return null == result ? DatabaseTypeEngine.getDefaultDatabaseType() : result;
     }
     
     private static DatabaseType getDatabaseType(final DataSource dataSource) {
@@ -87,13 +87,13 @@ public final class DatabaseTypeRecognizer {
             return configuredDatabaseType.get();
         }
         Collection<DataSource> dataSources = databaseConfigs.values().stream()
-                .filter(DatabaseTypeRecognizer::isComplete).findFirst().map(optional -> optional.getDataSources().values()).orElseGet(Collections::emptyList);
+                .filter(DatabaseTypeEngine::isComplete).findFirst().map(optional -> optional.getDataSources().values()).orElseGet(Collections::emptyList);
         return getDatabaseType(dataSources);
     }
     
     private static Optional<DatabaseType> findConfiguredDatabaseType(final ConfigurationProperties props) {
         String configuredDatabaseType = props.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE);
-        return configuredDatabaseType.isEmpty() ? Optional.empty() : Optional.of(DatabaseTypeRecognizer.getTrunkDatabaseType(configuredDatabaseType));
+        return configuredDatabaseType.isEmpty() ? Optional.empty() : Optional.of(DatabaseTypeEngine.getTrunkDatabaseType(configuredDatabaseType));
     }
     
     private static boolean isComplete(final DatabaseConfiguration databaseConfig) {
