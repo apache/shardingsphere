@@ -15,7 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.fixture;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-public interface FixtureCustomInterface {
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
+
+/**
+ * Oracle drop outline statement.
+ */
+@ToString
+public final class OracleDropOutlineStatement extends AbstractSQLStatement implements DDLStatement, OracleStatement {
 }

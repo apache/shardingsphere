@@ -496,6 +496,8 @@ public enum SQLVisitorRule {
     
     DROP_ACCESS_METHOD("DropAccessMethod", SQLStatementType.DDL),
     
+    DROP_OUTLINE("DropOutline", SQLStatementType.DDL),
+    
     DROP_EDITION("DropEdition", SQLStatementType.DDL);
     
     private final String name;

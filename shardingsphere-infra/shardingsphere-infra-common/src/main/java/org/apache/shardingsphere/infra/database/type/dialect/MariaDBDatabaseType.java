@@ -34,18 +34,13 @@ import java.util.Optional;
 public final class MariaDBDatabaseType implements BranchDatabaseType {
     
     @Override
-    public String getName() {
-        return "MariaDB";
-    }
-    
-    @Override
     public QuoteCharacter getQuoteCharacter() {
         return QuoteCharacter.BACK_QUOTE;
     }
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
-        return Collections.singleton(String.format("jdbc:%s:", getName().toLowerCase()));
+        return Collections.singleton(String.format("jdbc:%s:", getType().toLowerCase()));
     }
     
     @Override
@@ -71,5 +66,10 @@ public final class MariaDBDatabaseType implements BranchDatabaseType {
     @Override
     public Collection<String> getSystemSchemas() {
         return Collections.emptyList();
+    }
+    
+    @Override
+    public String getType() {
+        return "MariaDB";
     }
 }

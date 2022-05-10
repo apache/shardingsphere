@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.LinkedHashMap;
 
-
 /**
  * Alter sharding table rule statement preprocessor.
  */

@@ -40,6 +40,6 @@ public final class XAConnectionWrapperFactory {
      * @return new instance of XA connection wrapper
      */
     public static XAConnectionWrapper newInstance(final DatabaseType databaseType) {
-        return TypedSPIRegistry.getRegisteredService(XAConnectionWrapper.class, databaseType.getName());
+        return TypedSPIRegistry.getRegisteredService(XAConnectionWrapper.class, databaseType.getType());
     }
 }

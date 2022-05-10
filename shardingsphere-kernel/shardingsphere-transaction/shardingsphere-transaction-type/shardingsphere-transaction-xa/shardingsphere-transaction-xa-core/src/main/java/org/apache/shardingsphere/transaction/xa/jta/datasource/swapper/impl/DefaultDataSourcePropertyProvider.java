@@ -25,11 +25,6 @@ import org.apache.shardingsphere.transaction.xa.jta.datasource.swapper.DataSourc
 public final class DefaultDataSourcePropertyProvider implements DataSourcePropertyProvider {
     
     @Override
-    public String getDataSourceClassName() {
-        return "";
-    }
-    
-    @Override
     public String getURLPropertyName() {
         return "url";
     }
@@ -42,5 +37,10 @@ public final class DefaultDataSourcePropertyProvider implements DataSourceProper
     @Override
     public String getPasswordPropertyName() {
         return "password";
+    }
+    
+    @Override
+    public boolean isDefault() {
+        return true;
     }
 }

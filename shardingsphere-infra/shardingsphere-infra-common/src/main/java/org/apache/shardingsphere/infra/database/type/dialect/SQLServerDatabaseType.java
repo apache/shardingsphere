@@ -33,11 +33,6 @@ import java.util.Optional;
 public final class SQLServerDatabaseType implements DatabaseType {
     
     @Override
-    public String getName() {
-        return "SQLServer";
-    }
-    
-    @Override
     public QuoteCharacter getQuoteCharacter() {
         return QuoteCharacter.BRACKETS;
     }
@@ -65,5 +60,10 @@ public final class SQLServerDatabaseType implements DatabaseType {
     @Override
     public Collection<String> getSystemSchemas() {
         return Collections.emptyList();
+    }
+    
+    @Override
+    public String getType() {
+        return "SQLServer";
     }
 }

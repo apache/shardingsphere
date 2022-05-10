@@ -86,7 +86,7 @@ public final class AdditionalDMLIT extends BaseDMLIT {
     @Test
     public void assertExecuteUpdateWithColumnIndexes() throws SQLException, ParseException {
         // TODO fix replica_query
-        if ("PostgreSQL".equals(getDatabaseType().getName()) || "replica_query".equals(getScenario())) {
+        if ("PostgreSQL".equals(getDatabaseType().getType()) || "replica_query".equals(getScenario())) {
             return;
         }
         int actualUpdateCount;
@@ -114,7 +114,7 @@ public final class AdditionalDMLIT extends BaseDMLIT {
     @Test
     public void assertExecuteUpdateWithColumnNames() throws SQLException, ParseException {
         // TODO fix replica_query
-        if ("PostgreSQL".equals(getDatabaseType().getName()) || "replica_query".equals(getScenario())) {
+        if ("PostgreSQL".equals(getDatabaseType().getType()) || "replica_query".equals(getScenario())) {
             return;
         }
         int actualUpdateCount;
@@ -206,7 +206,7 @@ public final class AdditionalDMLIT extends BaseDMLIT {
     @Test
     public void assertExecuteWithColumnIndexes() throws SQLException, ParseException {
         // TODO fix replica_query
-        if ("PostgreSQL".equals(getDatabaseType().getName()) || "replica_query".equals(getScenario())) {
+        if ("PostgreSQL".equals(getDatabaseType().getType()) || "replica_query".equals(getScenario())) {
             return;
         }
         int actualUpdateCount;
@@ -236,7 +236,7 @@ public final class AdditionalDMLIT extends BaseDMLIT {
     @Test
     public void assertExecuteWithColumnNames() throws SQLException, ParseException {
         // TODO fix replica_query
-        if ("PostgreSQL".equals(getDatabaseType().getName()) || "replica_query".equals(getScenario())) {
+        if ("PostgreSQL".equals(getDatabaseType().getType()) || "replica_query".equals(getScenario())) {
             return;
         }
         int actualUpdateCount;
