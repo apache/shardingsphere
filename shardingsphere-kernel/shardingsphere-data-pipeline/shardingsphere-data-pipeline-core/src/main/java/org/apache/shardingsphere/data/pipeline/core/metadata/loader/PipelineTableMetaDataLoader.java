@@ -67,7 +67,7 @@ public final class PipelineTableMetaDataLoader {
     }
     
     private boolean isSchemaAvailable() {
-        return DatabaseTypeRegistry.getActualDatabaseType(dataSource.getDatabaseType().getName()).isSchemaAvailable();
+        return DatabaseTypeRegistry.getActualDatabaseType(dataSource.getDatabaseType().getType()).isSchemaAvailable();
     }
     
     private Map<TableName, PipelineTableMetaData> loadTableMetaData0(final Connection connection, final String schemaName, final String tableNamePattern) throws SQLException {

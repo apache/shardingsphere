@@ -45,7 +45,7 @@ public final class ImporterFactory {
      */
     @SneakyThrows(ReflectiveOperationException.class)
     public static Importer createImporter(final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager, final PipelineChannel channel) {
-        String databaseType = importerConfig.getDataSourceConfig().getDatabaseType().getName();
+        String databaseType = importerConfig.getDataSourceConfig().getDatabaseType().getType();
         ScalingEntry scalingEntry = ScalingEntryFactory.getInstance(databaseType);
         Constructor<? extends Importer> constructor = scalingEntry.getImporterClass().getConstructor(ImporterConfiguration.class, PipelineDataSourceManager.class, PipelineChannel.class);
         return constructor.newInstance(importerConfig, dataSourceManager, channel);

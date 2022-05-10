@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRecognizer;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.infra.rule.identifier.type.InstanceAwareRule;
@@ -44,9 +44,9 @@ import org.apache.shardingsphere.transaction.spi.TransactionConfigurationFileGen
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.HashMap;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -77,7 +77,7 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
         Properties props = metaDataPersistService.getPropsService().load();
         MetaDataContextsBuilder builder = new MetaDataContextsBuilder(globalRuleConfigs, props);
         Map<String, ? extends DatabaseConfiguration> databaseConfigMap = getDatabaseConfigMap(databaseNames, metaDataPersistService, parameter);
-        DatabaseType databaseType = DatabaseTypeFactory.getDatabaseType(databaseConfigMap, new ConfigurationProperties(props));
+        DatabaseType databaseType = DatabaseTypeRecognizer.getDatabaseType(databaseConfigMap, new ConfigurationProperties(props));
         for (Entry<String, ? extends DatabaseConfiguration> entry : databaseConfigMap.entrySet()) {
             if (databaseType.getSystemSchemas().contains(entry.getKey())) {
                 continue;

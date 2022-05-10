@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.schedule;
+package org.apache.shardingsphere.mode.metadata.storage.event;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.metadata.schema.QualifiedDatabase;
+import org.apache.shardingsphere.infra.rule.event.DataSourceStatusChangedEvent;
 
-import java.util.function.Consumer;
-
+/**
+ * Data source name disabled event.
+ */
 @RequiredArgsConstructor
 @Getter
-public final class CronJob {
+public final class DataSourceNameDisabledEvent implements DataSourceStatusChangedEvent {
     
-    private final String jobName;
+    private final QualifiedDatabase qualifiedDatabase;
     
-    @SuppressWarnings("rawtypes")
-    private final Consumer job;
-    
-    private final String cron;
+    private final boolean isDisabled;
 }

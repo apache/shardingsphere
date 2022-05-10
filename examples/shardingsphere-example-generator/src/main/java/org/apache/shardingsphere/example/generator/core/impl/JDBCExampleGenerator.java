@@ -47,6 +47,6 @@ public final class JDBCExampleGenerator implements ExampleGenerator {
     
     @Override
     public String getType() {
-        return "JDBC";
+        return "jdbc";
     }
 }

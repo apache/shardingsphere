@@ -56,7 +56,7 @@ import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDa
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHeartBeatConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 </#if>
-<#if transaction=="xa-narayana">
+<#if transaction!="local">
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 </#if>
 
@@ -121,7 +121,7 @@ public final class Configuration {
     
     private Collection<RuleConfiguration> createRuleConfiguration() {
         Collection<RuleConfiguration> result = new LinkedList<>();
-    <#if transaction=="xa-narayana">
+    <#if transaction!="local">
         result.add(createTransactionRuleConfiguration());
     </#if>
     <#if feature?contains("db-discovery")>
@@ -145,10 +145,14 @@ public final class Configuration {
 <#list feature?split(",") as item>
     <#include "${item}.ftl">
 </#list>
-     <#if transaction=="xa-narayana">
+     <#if transaction!="local">
      
      private TransactionRuleConfiguration createTransactionRuleConfiguration() {
+     <#if transaction=="xa-narayana">
         return new TransactionRuleConfiguration("XA", "Narayana", new Properties());
+     <#elseif transaction=="xa-bitronix">
+        return new TransactionRuleConfiguration("XA", "Bitronix", new Properties());
+     </#if>
      }
     </#if>
     

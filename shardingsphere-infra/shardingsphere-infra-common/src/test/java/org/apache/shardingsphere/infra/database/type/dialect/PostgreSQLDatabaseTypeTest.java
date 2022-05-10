@@ -37,7 +37,7 @@ public final class PostgreSQLDatabaseTypeTest {
     
     @Test
     public void assertGetName() {
-        assertThat(new PostgreSQLDatabaseType().getName(), is("PostgreSQL"));
+        assertThat(new PostgreSQLDatabaseType().getType(), is("PostgreSQL"));
     }
     
     @Test

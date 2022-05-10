@@ -58,77 +58,17 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.javadoc.skip=true -Drat.skip=true -Dcheckstyle.skip=true -Djacoco.skip=true
+  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.javadoc.skip=true -Drat.skip=true -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Djacoco.skip=true
 
 jobs:
-  scaling-build-it-image:
-    name: scaling-build-it-image
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    steps:
-      - uses: actions/checkout@v2
-      - name: Maven resolve ranges
-        run: ./mvnw versions:resolve-ranges -ntp -Dincludes='org.springframework:*,org.springframework.boot:*'
-      - name: Cache Maven Repos
-        uses: actions/cache@v3
-        with:
-          path: ~/.m2/repository
-          key: shardingsphere-it-cache-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
-      - name: Set up JDK 8
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: 8
-      - name: Build IT image
-        run: ./mvnw -B clean install -am -pl shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling -Pit.env.docker -DskipTests
-      - name: Save IT image
-        run: docker save -o /tmp/shardingsphere-proxy-test.tar apache/shardingsphere-proxy-test:latest
-      - name: Upload IT image
-        uses: actions/upload-artifact@v3
-        with:
-          name: it-image
-          path: /tmp/shardingsphere-proxy-test.tar
-  
-  scaling-mysql-it-test:
+  scaling-it-test:
     if: (github.event_name != 'schedule' && github.repository == 'apache/shardingsphere')
-    name: scaling-mysql-it-test
-    runs-on: ubuntu-latest
-    env:
-      mysql_version: mysql:5.7
-    timeout-minutes: 30
-    needs: scaling-build-it-image
-    steps:
-      - uses: actions/checkout@v3
-      - name: Cache Maven Repos
-        uses: actions/cache@v3
-        with:
-          path: ~/.m2/repository
-          key: shardingsphere-it-cache-${{ github.sha }}
-      - name: Set up JDK 8
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: 8
-      - name: Download IT image
-        uses: actions/download-artifact@v3
-        with:
-          name: it-image
-          path: /tmp/
-      - name: Load IT image
-        run: docker load -i /tmp/shardingsphere-proxy-test.tar
-      - name: Run Integration Test
-        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling/pom.xml -Dcheckstyle.skip=true -Dit.cluster.env.type=DOCKER -Dit.env.mysql.version=${{ env.mysql_version }} -Dit.env.postgresql.version=
-  
-  scaling-postgresql-it-test:
-    if: (github.event_name != 'schedule' && github.repository == 'apache/shardingsphere')
-    name: scaling-postgres-it-test
+    name: scaling-it-test
     runs-on: ubuntu-latest
     env:
       postgresql_version: postgres:12-alpine
+      mysql_version: mysql:5.7
     timeout-minutes: 30
-    needs: scaling-build-it-image
     steps:
       - uses: actions/checkout@v3
       - name: Cache Maven Repos
@@ -141,15 +81,10 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: 8
-      - name: Download IT image
-        uses: actions/download-artifact@v3
-        with:
-          name: it-image
-          path: /tmp/
-      - name: Load IT image
-        run: docker load -i /tmp/shardingsphere-proxy-test.tar
-      - name: Run Integration Test
-        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling/pom.xml -Dcheckstyle.skip=true -Dit.cluster.env.type=DOCKER -Dit.env.postgresql.version=${{ env.postgresql_version }} -Dit.env.mysql.version=
+      - name: Build Scaling IT image
+        run: ./mvnw -B clean install -am -pl shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling -Pit.env.docker -DskipTests -Dspotless.apply.skip=true -Dcheckstyle.skip=true
+      - name: Run Scaling Integration Test
+        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling/pom.xml -Dit.cluster.env.type=DOCKER -Dit.env.mysql.version=${{ env.mysql_version }} -Dit.env.postgresql.version=${{ env.postgresql_version }} -Dspotless.apply.skip=true -Dcheckstyle.skip=true
   
   scaling-daily-it-test:
     if: (github.event_name == 'schedule' && github.repository == 'apache/shardingsphere')
@@ -159,7 +94,6 @@ jobs:
       postgresql_version: postgres:10-alpine,postgres:11-alpine,postgres:12-alpine,postgres:13-alpine,postgres:14-alpine
       mysql_version: mysql:5.7,mysql:8.0
     timeout-minutes: 60
-    needs: scaling-build-it-image
     steps:
       - uses: actions/checkout@v3
       - name: Cache Maven Repos
@@ -172,12 +106,7 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: 8
-      - name: Download IT image
-        uses: actions/download-artifact@v3
-        with:
-          name: it-image
-          path: /tmp/
-      - name: Load IT image
-        run: docker load -i /tmp/shardingsphere-proxy-test.tar
-      - name: Run Integration Test
-        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling/pom.xml -Dcheckstyle.skip=true -Dit.cluster.env.type=DOCKER -Dit.env.postgresql.version=${{ env.postgresql_version }} -Dit.env.mysql.version=${{ env.mysql_version }}
+      - name: Build Scaling IT image
+        run: ./mvnw -B clean install -am -pl shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling -Pit.env.docker -DskipTests -Dcheckstyle.skip=true -Dspotless.apply.skip=true
+      - name: Run Scaling Daily Integration Test
+        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling/pom.xml -Dit.cluster.env.type=DOCKER -Dit.env.postgresql.version=${{ env.postgresql_version }} -Dit.env.mysql.version=${{ env.mysql_version }} -Dspotless.apply.skip=true -Dcheckstyle.skip=true

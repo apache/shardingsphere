@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.event.impl;
+package org.apache.shardingsphere.mode.metadata.storage.event;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

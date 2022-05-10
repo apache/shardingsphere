@@ -689,7 +689,7 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
     public ASTNode visitDropEdition(final DropEditionContext ctx) {
         return new OracleDropEditionStatement();
     }
-
+    
     @Override
     public ASTNode visitDropOutline(final DropOutlineContext ctx) {
         return new OracleDropOutlineStatement();

@@ -35,7 +35,7 @@ public final class MariaDBDatabaseTypeTest {
     
     @Test
     public void assertGetName() {
-        assertThat(new MariaDBDatabaseType().getName(), is("MariaDB"));
+        assertThat(new MariaDBDatabaseType().getType(), is("MariaDB"));
     }
     
     @Test
@@ -51,7 +51,7 @@ public final class MariaDBDatabaseTypeTest {
     
     @Test
     public void assertGetTrunkDatabaseType() {
-        assertThat(new MariaDBDatabaseType().getTrunkDatabaseType().getName(), is("MySQL"));
+        assertThat(new MariaDBDatabaseType().getTrunkDatabaseType().getType(), is("MySQL"));
     }
     
     @Test

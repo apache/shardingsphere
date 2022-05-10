@@ -31,7 +31,7 @@ import static org.mockito.Mockito.mock;
 public final class FixtureDatabaseType implements DatabaseType {
     
     @Override
-    public String getName() {
+    public String getType() {
         return "FixtureDB";
     }
     
