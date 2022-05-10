@@ -46,7 +46,7 @@ public final class ColumnExtractor {
     public static Collection<ColumnSegment> extract(final ExpressionSegment expression) {
         Collection<ColumnSegment> result = new LinkedList<>();
         if (expression instanceof BinaryOperationExpression) {
-            if (((BinaryOperationExpression) expression).getLeft() instanceof ColumnSegment && !nullOnRight((BinaryOperationExpression) expression)) {
+            if (((BinaryOperationExpression) expression).getLeft() instanceof ColumnSegment && !isNullOnTheRightOfExpressionSegment((BinaryOperationExpression) expression)) {
                 result.add((ColumnSegment) ((BinaryOperationExpression) expression).getLeft());
             }
             if (((BinaryOperationExpression) expression).getRight() instanceof ColumnSegment) {
@@ -66,9 +66,9 @@ public final class ColumnExtractor {
      * Check `IS NULL` or `IS NOT NULL` on right.
      *
      * @param expression BinaryOperationExpression
-     * @return true if `IS NULL` or `IS NOT NULL` on right
+     * @return true if `IS NULL` or `IS NOT NULL` on the right of BinaryOperationExpression.
      */
-    public static boolean nullOnRight(final BinaryOperationExpression expression) {
+    public static boolean isNullOnTheRightOfExpressionSegment(final BinaryOperationExpression expression) {
         if (null == expression.getLeft() || null == expression.getText()) {
             return false;
         }

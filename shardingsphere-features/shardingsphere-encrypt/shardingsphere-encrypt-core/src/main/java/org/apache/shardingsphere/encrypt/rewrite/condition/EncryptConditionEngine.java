@@ -110,7 +110,7 @@ public final class EncryptConditionEngine {
     
     private void addEncryptConditions(final Collection<EncryptCondition> encryptConditions, final ExpressionSegment expression, final Map<String, String> expressionTableNames) {
         for (ColumnSegment each : ColumnExtractor.extract(expression)) {
-            if (nullOnRight(expression)) {
+            if (isNullOnTheRightOfExpressionSegment(expression)) {
                 continue;
             }
             String tableName = expressionTableNames.getOrDefault(each.getExpression(), "");
@@ -153,7 +153,7 @@ public final class EncryptConditionEngine {
                 : Optional.empty();
     }
     
-    private boolean nullOnRight(final ExpressionSegment expression) {
+    private boolean isNullOnTheRightOfExpressionSegment(final ExpressionSegment expression) {
         if (!(expression instanceof BinaryOperationExpression)) {
             return false;
         }
@@ -161,7 +161,7 @@ public final class EncryptConditionEngine {
         if (!(expressionSegment.getLeft() instanceof ColumnSegment)) {
             return false;
         }
-        return ColumnExtractor.nullOnRight((BinaryOperationExpression) expression);
+        return ColumnExtractor.isNullOnTheRightOfExpressionSegment((BinaryOperationExpression) expression);
     }
     
     private EncryptEqualCondition createEncryptEqualCondition(final String tableName, final BinaryOperationExpression expression, final ExpressionSegment compareRightValue) {
