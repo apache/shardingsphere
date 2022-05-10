@@ -29,8 +29,9 @@ import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExe
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
-import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IntegerPrimaryKeyPosition;
+import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
+import org.apache.shardingsphere.data.pipeline.api.ingest.position.PrimaryKeyPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.FinishedRecord;
@@ -103,14 +104,19 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
     
     private void dump() {
         String schemaName = inventoryDumperConfig.getSchemaName(new LogicTableName(inventoryDumperConfig.getLogicTableName()));
-        String sql = pipelineSQLBuilder.buildInventoryDumpSQL(schemaName, inventoryDumperConfig.getActualTableName(), inventoryDumperConfig.getPrimaryKey());
+        String firstSQL = pipelineSQLBuilder.buildInventoryDumpFirstSQL(schemaName, inventoryDumperConfig.getActualTableName(), inventoryDumperConfig.getPrimaryKey());
+        String laterSQL = pipelineSQLBuilder.buildInventoryDumpLaterSQL(schemaName, inventoryDumperConfig.getActualTableName(), inventoryDumperConfig.getPrimaryKey());
         IngestPosition<?> position = inventoryDumperConfig.getPosition();
-        log.info("inventory dump, sql={}, position={}", sql, position);
+        log.info("inventory dump, firstSQL={}, laterSQL={}, position={}", firstSQL, laterSQL, position);
+        if (position instanceof FinishedPosition) {
+            log.info("It is already finished, ignore");
+            return;
+        }
+        Object startUniqueKeyValue = getPositionBeginValue(position);
         try (Connection conn = dataSource.getConnection()) {
             int round = 1;
-            Number startUniqueKeyValue = getPositionBeginValue(position) - 1;
             Optional<Number> maxUniqueKeyValue;
-            while ((maxUniqueKeyValue = dump0(conn, sql, startUniqueKeyValue, round++)).isPresent()) {
+            while ((maxUniqueKeyValue = dump0(conn, 1 == round ? firstSQL : laterSQL, startUniqueKeyValue, round++)).isPresent()) {
                 startUniqueKeyValue = maxUniqueKeyValue.get();
                 if (!isRunning()) {
                     log.info("inventory dump, running is false, break");
@@ -132,7 +138,7 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
         return tableMetaDataLazyInitializer.get();
     }
     
-    private Optional<Number> dump0(final Connection conn, final String sql, final Number startUniqueKeyValue, final int round) throws SQLException {
+    private Optional<Number> dump0(final Connection conn, final String sql, final Object startUniqueKeyValue, final int round) throws SQLException {
         if (null != rateLimitAlgorithm) {
             rateLimitAlgorithm.intercept(JobOperationType.SELECT, 1);
         }
@@ -173,12 +179,12 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
         }
     }
     
-    private long getPositionBeginValue(final IngestPosition<?> position) {
-        return position instanceof IntegerPrimaryKeyPosition ? ((IntegerPrimaryKeyPosition) position).getBeginValue() : 0;
+    private Object getPositionBeginValue(final IngestPosition<?> position) {
+        return ((PrimaryKeyPosition<?>) position).getBeginValue();
     }
     
     private long getPositionEndValue(final IngestPosition<?> position) {
-        return position instanceof IntegerPrimaryKeyPosition ? ((IntegerPrimaryKeyPosition) position).getEndValue() : Integer.MAX_VALUE;
+        return ((IntegerPrimaryKeyPosition) position).getEndValue();
     }
     
     private IngestPosition<?> newPosition(final ResultSet rs) throws SQLException {

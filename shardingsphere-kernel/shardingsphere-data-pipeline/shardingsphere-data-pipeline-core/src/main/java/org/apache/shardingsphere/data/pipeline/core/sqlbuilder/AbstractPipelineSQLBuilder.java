@@ -72,7 +72,13 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
     }
     
     @Override
-    public String buildInventoryDumpSQL(final String schemaName, final String tableName, final String uniqueKey) {
+    public String buildInventoryDumpFirstSQL(final String schemaName, final String tableName, final String uniqueKey) {
+        String quotedUniqueKey = quote(uniqueKey);
+        return "SELECT * FROM " + decorate(schemaName, tableName) + " WHERE " + quotedUniqueKey + " >= ? AND " + quotedUniqueKey + " <= ? ORDER BY " + quotedUniqueKey + " ASC LIMIT ?";
+    }
+    
+    @Override
+    public String buildInventoryDumpLaterSQL(final String schemaName, final String tableName, final String uniqueKey) {
         String quotedUniqueKey = quote(uniqueKey);
         return "SELECT * FROM " + decorate(schemaName, tableName) + " WHERE " + quotedUniqueKey + " > ? AND " + quotedUniqueKey + " <= ? ORDER BY " + quotedUniqueKey + " ASC LIMIT ?";
     }
