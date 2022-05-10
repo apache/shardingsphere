@@ -20,11 +20,17 @@ package org.apache.shardingsphere.infra.database.type;
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * Database type recognizer.
@@ -54,5 +60,31 @@ public final class DatabaseTypeRecognizer {
         } catch (final SQLException ex) {
             throw new IllegalArgumentException(ex.getMessage(), ex);
         }
+    }
+    
+    /**
+     * Get database type.
+     *
+     * @param databaseConfigs database configs
+     * @param props props
+     * @return database type
+     */
+    public static DatabaseType getDatabaseType(final Map<String, ? extends DatabaseConfiguration> databaseConfigs, final ConfigurationProperties props) {
+        Optional<DatabaseType> configuredDatabaseType = findConfiguredDatabaseType(props);
+        if (configuredDatabaseType.isPresent()) {
+            return configuredDatabaseType.get();
+        }
+        Collection<DataSource> dataSources = databaseConfigs.values().stream()
+                .filter(DatabaseTypeRecognizer::isComplete).findFirst().map(optional -> optional.getDataSources().values()).orElseGet(Collections::emptyList);
+        return DatabaseTypeRecognizer.getDatabaseType(dataSources);
+    }
+    
+    private static Optional<DatabaseType> findConfiguredDatabaseType(final ConfigurationProperties props) {
+        String configuredDatabaseType = props.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE);
+        return configuredDatabaseType.isEmpty() ? Optional.empty() : Optional.of(DatabaseTypeRegistry.getTrunkDatabaseType(configuredDatabaseType));
+    }
+    
+    private static boolean isComplete(final DatabaseConfiguration databaseConfig) {
+        return !databaseConfig.getRuleConfigurations().isEmpty() && !databaseConfig.getDataSources().isEmpty();
     }
 }
