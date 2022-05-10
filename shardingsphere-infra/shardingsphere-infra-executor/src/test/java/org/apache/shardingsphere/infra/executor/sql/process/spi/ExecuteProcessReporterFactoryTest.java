@@ -27,7 +27,7 @@ import static org.junit.Assert.assertTrue;
 public final class ExecuteProcessReporterFactoryTest {
     
     @Test
-    public void assertNewInstance() {
+    public void assertFindInstance() {
         Optional<ExecuteProcessReporter> actual = ExecuteProcessReporterFactory.getInstance();
         assertTrue(actual.isPresent());
         assertTrue(actual.get() instanceof ExecuteProcessReporterFixture);
