@@ -44,7 +44,7 @@ public final class SQLVisitorFactory {
      * @return parse tree visitor
      */
     public static <T> ParseTreeVisitor<T> newInstance(final String databaseType, final String visitorType, final SQLVisitorRule visitorRule, final Properties props) {
-        SQLVisitorFacade facade = SQLVisitorFacadeRegistry.getInstance().getSQLVisitorFacade(databaseType, visitorType);
+        SQLVisitorFacade facade = SQLVisitorFacadeFactory.getInstance(databaseType, visitorType);
         return createParseTreeVisitor(facade, visitorRule.getType(), props);
     }
     
