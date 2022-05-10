@@ -51,7 +51,7 @@ public final class ShardingSphereProxyDockerContainer extends DockerITContainer 
         } else {
             setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(3307), ""), "root", "root")));
         }
-        withLogConsumer(new Slf4jLogConsumer(log));
+        withLogConsumer(new Slf4jLogConsumer(log).withSeparateOutputStreams());
     }
     
     private void mapConfigurationFiles() {
@@ -59,7 +59,7 @@ public final class ShardingSphereProxyDockerContainer extends DockerITContainer 
         withClasspathResourceMapping("/env/logback.xml", "/opt/shardingsphere-proxy/conf/logback.xml", BindMode.READ_ONLY);
         if (ITEnvTypeEnum.NATIVE == IntegrationTestEnvironment.getInstance().getItEnvType()) {
             addFixedExposedPort(3307, 3307);
-            addFixedExposedPort(3308, 5005);
+            addFixedExposedPort(5005, 3308);
         }
     }
 }
