@@ -33,31 +33,31 @@ public final class XADataSourceDefinitionFactoryTest {
     
     @Test
     public void assertCreateXAPropertiesForH2() {
-        assertThat(XADataSourceDefinitionFactory.getXADataSourceDefinition(DatabaseTypeFactory.getInstance("H2")), instanceOf(H2XADataSourceDefinition.class));
+        assertThat(XADataSourceDefinitionFactory.getInstance(DatabaseTypeFactory.getInstance("H2")), instanceOf(H2XADataSourceDefinition.class));
     }
     
     @Test
     public void assertCreateXAPropertiesForMySQL() {
-        assertThat(XADataSourceDefinitionFactory.getXADataSourceDefinition(DatabaseTypeFactory.getInstance("MySQL")), instanceOf(MySQLXADataSourceDefinition.class));
+        assertThat(XADataSourceDefinitionFactory.getInstance(DatabaseTypeFactory.getInstance("MySQL")), instanceOf(MySQLXADataSourceDefinition.class));
     }
     
     @Test
     public void assertCreateXAPropertiesForMariaDB() {
-        assertThat(XADataSourceDefinitionFactory.getXADataSourceDefinition(DatabaseTypeFactory.getInstance("MariaDB")), instanceOf(MariaDBXADataSourceDefinition.class));
+        assertThat(XADataSourceDefinitionFactory.getInstance(DatabaseTypeFactory.getInstance("MariaDB")), instanceOf(MariaDBXADataSourceDefinition.class));
     }
     
     @Test
     public void assertCreateXAPropertiesForPostgreSQL() {
-        assertThat(XADataSourceDefinitionFactory.getXADataSourceDefinition(DatabaseTypeFactory.getInstance("PostgreSQL")), instanceOf(PostgreSQLXADataSourceDefinition.class));
+        assertThat(XADataSourceDefinitionFactory.getInstance(DatabaseTypeFactory.getInstance("PostgreSQL")), instanceOf(PostgreSQLXADataSourceDefinition.class));
     }
     
     @Test
     public void assertCreateXAPropertiesForOracle() {
-        assertThat(XADataSourceDefinitionFactory.getXADataSourceDefinition(DatabaseTypeFactory.getInstance("Oracle")), instanceOf(OracleXADataSourceDefinition.class));
+        assertThat(XADataSourceDefinitionFactory.getInstance(DatabaseTypeFactory.getInstance("Oracle")), instanceOf(OracleXADataSourceDefinition.class));
     }
     
     @Test
     public void assertCreateXAPropertiesForSQLServer() {
-        assertThat(XADataSourceDefinitionFactory.getXADataSourceDefinition(DatabaseTypeFactory.getInstance("SQLServer")), instanceOf(SQLServerXADataSourceDefinition.class));
+        assertThat(XADataSourceDefinitionFactory.getInstance(DatabaseTypeFactory.getInstance("SQLServer")), instanceOf(SQLServerXADataSourceDefinition.class));
     }
 }
