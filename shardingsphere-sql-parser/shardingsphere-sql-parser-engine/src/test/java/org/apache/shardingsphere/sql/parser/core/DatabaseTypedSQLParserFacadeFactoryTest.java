@@ -31,11 +31,11 @@ import static org.junit.Assert.assertThat;
 public final class DatabaseTypedSQLParserFacadeFactoryTest {
     
     @Test
-    public void assertGetFacade() {
-        DatabaseTypedSQLParserFacade actual = DatabaseTypedSQLParserFacadeFactory.getInstance("Fixture");
+    public void assertGetInstance() {
+        DatabaseTypedSQLParserFacade actual = DatabaseTypedSQLParserFacadeFactory.getInstance("FIXTURE");
         assertThat(actual.getClass(), equalTo(DatabaseTypedSQLParserFacadeFixture.class));
         assertThat(actual.getLexerClass(), equalTo(LexerFixture.class));
         assertThat(actual.getParserClass(), equalTo(ParserFixture.class));
-        assertThat(actual.getType(), is("Fixture"));
+        assertThat(actual.getType(), is("FIXTURE"));
     }
 }
