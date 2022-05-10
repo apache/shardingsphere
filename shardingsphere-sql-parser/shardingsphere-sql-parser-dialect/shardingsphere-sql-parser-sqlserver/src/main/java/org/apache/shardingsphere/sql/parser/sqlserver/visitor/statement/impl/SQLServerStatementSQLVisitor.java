@@ -81,7 +81,6 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Pre
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ProjectionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.QualifiedShorthandContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.QualifiedShorthandProjClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.QueryExprClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.QueryExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.QueryExprItemContext;
@@ -94,6 +93,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Sel
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SelectListContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SelectListItemContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SetAssignmentsClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ShorthandIdentifierContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SimpleExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SingleTableClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SpecialFunctionContext;
@@ -688,25 +688,27 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
     @Override
     public ASTNode visitQueryExprClause(final QueryExprClauseContext ctx) {
         // TODO :Unsupported for union | except | intersect SQL.
-        SQLServerSelectStatement result = new SQLServerSelectStatement();
+        SQLServerSelectStatement result = (SQLServerSelectStatement) visitQueryExpr(ctx.queryExpr());
         if (null != ctx.selectWithClause() && null != ctx.selectWithClause().cteClauseSet()) {
             Collection<CommonTableExpressionSegment> commonTableExpressionSegments = getCommonTableExpressionSegmentsUsingCteClauseSet(ctx.selectWithClause().cteClauseSet());
             WithSegment withSegment = new WithSegment(ctx.selectWithClause().start.getStartIndex(), ctx.selectWithClause().stop.getStopIndex(), commonTableExpressionSegments);
             result.setWithSegment(withSegment);
         }
-        result = visitQueryExpr(result, ctx.queryExpr());
         if (null != ctx.orderByClause()) {
             visitOrderBy(result, ctx.orderByClause());
         }
         return result;
     }
     
-    private SQLServerSelectStatement visitQueryExpr(final SQLServerSelectStatement selectStatement, final QueryExprContext ctx) {
-        return (SQLServerSelectStatement) visit(ctx.queryExprItem());
+    @Override
+    public ASTNode visitQueryExpr(final QueryExprContext ctx) {
+        // TODO :Unsupported for joinedQueryExprItem*
+        return visit(ctx.queryExprItem());
     }
     
     @Override
     public ASTNode visitQueryExprItem(final QueryExprItemContext ctx) {
+        // TODO :Convert to ternary operator
         if (null != ctx.querySpecification()) {
             return visit(ctx.querySpecification());
         } else {
@@ -714,38 +716,9 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
         }
     }
     
-    private SQLServerSelectStatement visitQuerySpecification(final SQLServerSelectStatement selectStatement, final QuerySpecificationContext ctx) {
-        SQLServerSelectStatement result = selectStatement;
-        
-    }
-    
-    private SQLServerSelectStatement visitSelectClause(final SQLServerSelectStatement selectStatement, final SelectClauseContext ctx) {
-        SQLServerSelectStatement result = selectStatement;
-        if (null != ctx.duplicateSpecification()) {
-            result.getProjections().setDistinctRow(isDistinct(ctx));
-        }
-        if (null != ctx.top()) {
-            RowNumberValueSegment rowNumber = (RowNumberValueSegment) visit(ctx.top());
-            return new TopProjectionSegment(ctx.top().getStart().getStartIndex(), ctx.top().getStop().getStopIndex(), rowNumber,
-                    alias == null ? null : alias.getIdentifier().getValue());
-        }
-//        result.setProjections((ProjectionsSegment) visit(ctx.projections()));
-        result.setProjections((ProjectionsSegment) visit(ctx.selectList()));
-        return result;
-    }
-    
     @Override
-    public ASTNode visitSelectClause(final SelectClauseContext ctx) {
-        SQLServerSelectStatement result = new SQLServerSelectStatement();
-        result.setProjections((ProjectionsSegment) visit(ctx.projections()));
-        if (null != ctx.selectWithClause() && null != ctx.selectWithClause().cteClauseSet()) {
-            Collection<CommonTableExpressionSegment> commonTableExpressionSegments = getCommonTableExpressionSegmentsUsingCteClauseSet(ctx.selectWithClause().cteClauseSet());
-            WithSegment withSegment = new WithSegment(ctx.selectWithClause().start.getStartIndex(), ctx.selectWithClause().stop.getStopIndex(), commonTableExpressionSegments);
-            result.setWithSegment(withSegment);
-        }
-        if (null != ctx.duplicateSpecification()) {
-            result.getProjections().setDistinctRow(isDistinct(ctx));
-        }
+    public ASTNode visitQuerySpecification(final QuerySpecificationContext ctx) {
+        SQLServerSelectStatement result = (SQLServerSelectStatement) visit(ctx.selectClause());
         if (null != ctx.fromClause()) {
             TableSegment tableSource = (TableSegment) visit(ctx.fromClause().tableReferences());
             result.setFrom(tableSource);
@@ -759,11 +732,53 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
         if (null != ctx.havingClause()) {
             result.setHaving((HavingSegment) visit(ctx.havingClause()));
         }
-        if (null != ctx.orderByClause()) {
-            result = visitOrderBy(result, ctx.orderByClause());
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitSelectClause(final SelectClauseContext ctx) {
+        SQLServerSelectStatement result = new SQLServerSelectStatement();
+        result.setProjections((ProjectionsSegment) visit(ctx.selectList()));
+        if (null != ctx.duplicateSpecification()) {
+            result.getProjections().setDistinctRow(isDistinct(ctx));
+        }
+        if (null != ctx.top()) {
+            RowNumberValueSegment rowNumber = (RowNumberValueSegment) visit(ctx.top());
+            result.getProjections().getProjections().add(new TopProjectionSegment(ctx.top().getStart().getStartIndex(), ctx.top().getStop().getStopIndex(), rowNumber, null));
         }
         return result;
     }
+    
+    // @Override
+    // public ASTNode visitSelectClausee(final SelectClauseContext ctx) {
+    // SQLServerSelectStatement result = new SQLServerSelectStatement();
+    // result.setProjections((ProjectionsSegment) visit(ctx.projections()));
+    // if (null != ctx.selectWithClause() && null != ctx.selectWithClause().cteClauseSet()) {
+    // Collection<CommonTableExpressionSegment> commonTableExpressionSegments = getCommonTableExpressionSegmentsUsingCteClauseSet(ctx.selectWithClause().cteClauseSet());
+    // WithSegment withSegment = new WithSegment(ctx.selectWithClause().start.getStartIndex(), ctx.selectWithClause().stop.getStopIndex(), commonTableExpressionSegments);
+    // result.setWithSegment(withSegment);
+    // }
+    // if (null != ctx.duplicateSpecification()) {
+    // result.getProjections().setDistinctRow(isDistinct(ctx));
+    // }
+    // if (null != ctx.fromClause()) {
+    // TableSegment tableSource = (TableSegment) visit(ctx.fromClause().tableReferences());
+    // result.setFrom(tableSource);
+    // }
+    // if (null != ctx.whereClause()) {
+    // result.setWhere((WhereSegment) visit(ctx.whereClause()));
+    // }
+    // if (null != ctx.groupByClause()) {
+    // result.setGroupBy((GroupBySegment) visit(ctx.groupByClause()));
+    // }
+    // if (null != ctx.havingClause()) {
+    // result.setHaving((HavingSegment) visit(ctx.havingClause()));
+    // }
+    // if (null != ctx.orderByClause()) {
+    // result = visitOrderBy(result, ctx.orderByClause());
+    // }
+    // return result;
+    // }
     
     @Override
     public ASTNode visitSelectList(final SelectListContext ctx) {
@@ -778,38 +793,56 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
     
     @Override
     public ASTNode visitSelectListItem(final SelectListItemContext ctx) {
-        Collection<ProjectionSegment> projections = new LinkedList<>();
         if (null != ctx.unqualifiedShorthand()) {
-            projections.add(new ShorthandProjectionSegment(ctx.unqualifiedShorthand().getStart().getStartIndex(), ctx.unqualifiedShorthand().getStop().getStopIndex()));
+            return new ShorthandProjectionSegment(ctx.unqualifiedShorthand().getStart().getStartIndex(), ctx.unqualifiedShorthand().getStop().getStopIndex());
         }
         // FIXME :The stop index of project is the stop index of projection, instead of alias.
         if (null != ctx.qualifiedShorthand()) {
             QualifiedShorthandContext shorthand = ctx.qualifiedShorthand();
             ShorthandProjectionSegment result = new ShorthandProjectionSegment(shorthand.getStart().getStartIndex(), shorthand.getStop().getStopIndex());
-            IdentifierValue identifier = new IdentifierValue(shorthand.identifier().getText());
-            result.setOwner(new OwnerSegment(shorthand.identifier().getStart().getStartIndex(), shorthand.identifier().getStop().getStopIndex(), identifier));
+            IdentifierValue identifier = new IdentifierValue(shorthand.shorthandIdentifier().getText());
+            result.setOwner(new OwnerSegment(shorthand.shorthandIdentifier().getStart().getStartIndex(), shorthand.shorthandIdentifier().getStop().getStopIndex(), identifier));
             return result;
         }
-        AliasSegment alias = null == ctx.alias() ? null : (AliasSegment) visit(ctx.alias());
-        if (null != ctx.top()) {
-            RowNumberValueSegment rowNumber = (RowNumberValueSegment) visit(ctx.top());
-            return new TopProjectionSegment(ctx.top().getStart().getStartIndex(), ctx.top().getStop().getStopIndex(), rowNumber,
-                    alias == null ? null : alias.getIdentifier().getValue());
+        if (null != ctx.dotProjectionClause()) {
+            ColumnSegment column = new ColumnSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.dotProjectionClause().columnName().name()));
+            if (null != ctx.dotProjectionClause().shorthandIdentifier()) {
+                ShorthandIdentifierContext shorthandIdentifier = ctx.dotProjectionClause().shorthandIdentifier();
+                IdentifierValue identifier = new IdentifierValue(shorthandIdentifier.getText());
+                column.setOwner(new OwnerSegment(shorthandIdentifier.getStart().getStartIndex(), shorthandIdentifier.getStop().getStopIndex(), identifier));
+            }
+            return new ColumnProjectionSegment(column);
         }
-        if (null != ctx.columnName()) {
-            ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
-            ColumnProjectionSegment result = new ColumnProjectionSegment(column);
-            result.setAlias(alias);
-            return result;
+        if (null != ctx.udtColumnProjectionClause()) {
+            ColumnSegment column = (ColumnSegment) visit(ctx.udtColumnProjectionClause().columnName());
+            return new ColumnProjectionSegment(column);
         }
-        return createProjection(ctx, alias);
+        if (null != ctx.exprProjectionClause()) {
+            // TODO :alias is optional. please change createProjection accordingly.
+            AliasSegment alias = null == ctx.exprProjectionClause().alias() ? null : (AliasSegment) visit(ctx.exprProjectionClause().alias());
+            return createProjection(ctx.exprProjectionClause().expr(), alias);
+        }
+        AliasSegment alias = null == ctx.aliasAssignExprProjClause().alias() ? null : (AliasSegment) visit(ctx.aliasAssignExprProjClause().alias());
+        return createProjection(ctx.aliasAssignExprProjClause().expr(), alias);
+        // AliasSegment alias = null == ctx.alias() ? null : (AliasSegment) visit(ctx.alias());
+        // if (null != ctx.top()) {
+        // RowNumberValueSegment rowNumber = (RowNumberValueSegment) visit(ctx.top());
+        // return new TopProjectionSegment(ctx.top().getStart().getStartIndex(), ctx.top().getStop().getStopIndex(), rowNumber,
+        // alias == null ? null : alias.getIdentifier().getValue());
+        // }
+        // if (null != ctx.columnName()) {
+        // ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
+        // ColumnProjectionSegment result = new ColumnProjectionSegment(column);
+        // result.setAlias(alias);
+        // return result;
+        // }
     }
     
     private Collection<CommonTableExpressionSegment> getCommonTableExpressionSegmentsUsingCteClauseSet(final CteClauseSetContext ctx) {
         Collection<CommonTableExpressionSegment> result = new LinkedList<>();
         for (CteClauseContext each : ctx.cteClause()) {
-            SubquerySegment subquery = new SubquerySegment(each.subquery().aggregationClause().start.getStartIndex(),
-                    each.subquery().aggregationClause().stop.getStopIndex(), (SQLServerSelectStatement) visit(each.subquery()));
+            SubquerySegment subquery = new SubquerySegment(each.subquery().select().start.getStartIndex(),
+                    each.subquery().select().stop.getStopIndex(), (SQLServerSelectStatement) visit(each.subquery()));
             IdentifierValue identifier = (IdentifierValue) visit(each.identifier());
             CommonTableExpressionSegment commonTableExpression = new CommonTableExpressionSegment(each.start.getStartIndex(), each.stop.getStopIndex(), identifier, subquery);
             if (null != each.columnNames()) {
@@ -1146,30 +1179,30 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
         return new BooleanLiteralValue(null != ctx.DISTINCT());
     }
     
-    @Override
-    public ASTNode visitProjection(final ProjectionContext ctx) {
-        // FIXME :The stop index of project is the stop index of projection, instead of alias.
-        if (null != ctx.qualifiedShorthand()) {
-            QualifiedShorthandContext shorthand = ctx.qualifiedShorthand();
-            ShorthandProjectionSegment result = new ShorthandProjectionSegment(shorthand.getStart().getStartIndex(), shorthand.getStop().getStopIndex());
-            IdentifierValue identifier = new IdentifierValue(shorthand.identifier().getText());
-            result.setOwner(new OwnerSegment(shorthand.identifier().getStart().getStartIndex(), shorthand.identifier().getStop().getStopIndex(), identifier));
-            return result;
-        }
-        AliasSegment alias = null == ctx.alias() ? null : (AliasSegment) visit(ctx.alias());
-        if (null != ctx.top()) {
-            RowNumberValueSegment rowNumber = (RowNumberValueSegment) visit(ctx.top());
-            return new TopProjectionSegment(ctx.top().getStart().getStartIndex(), ctx.top().getStop().getStopIndex(), rowNumber,
-                    alias == null ? null : alias.getIdentifier().getValue());
-        }
-        if (null != ctx.columnName()) {
-            ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
-            ColumnProjectionSegment result = new ColumnProjectionSegment(column);
-            result.setAlias(alias);
-            return result;
-        }
-        return createProjection(ctx, alias);
-    }
+    // @Override
+    // public ASTNode visitProjection(final ProjectionContext ctx) {
+    // // FIXME :The stop index of project is the stop index of projection, instead of alias.
+    // if (null != ctx.qualifiedShorthand()) {
+    // QualifiedShorthandContext shorthand = ctx.qualifiedShorthand();
+    // ShorthandProjectionSegment result = new ShorthandProjectionSegment(shorthand.getStart().getStartIndex(), shorthand.getStop().getStopIndex());
+    // IdentifierValue identifier = new IdentifierValue(shorthand.identifier().getText());
+    // result.setOwner(new OwnerSegment(shorthand.identifier().getStart().getStartIndex(), shorthand.identifier().getStop().getStopIndex(), identifier));
+    // return result;
+    // }
+    // AliasSegment alias = null == ctx.alias() ? null : (AliasSegment) visit(ctx.alias());
+    // if (null != ctx.top()) {
+    // RowNumberValueSegment rowNumber = (RowNumberValueSegment) visit(ctx.top());
+    // return new TopProjectionSegment(ctx.top().getStart().getStartIndex(), ctx.top().getStop().getStopIndex(), rowNumber,
+    // alias == null ? null : alias.getIdentifier().getValue());
+    // }
+    // if (null != ctx.columnName()) {
+    // ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
+    // ColumnProjectionSegment result = new ColumnProjectionSegment(column);
+    // result.setAlias(alias);
+    // return result;
+    // }
+    // return createProjection(ctx, alias);
+    // }
     
     @Override
     public ASTNode visitTop(final TopContext ctx) {
@@ -1246,6 +1279,59 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
         return result;
     }
     
+    private ASTNode createProjection(final ExprContext ctx, final AliasSegment alias) {
+        ASTNode projection = visit(ctx);
+        if (projection instanceof AggregationProjectionSegment) {
+            ((AggregationProjectionSegment) projection).setAlias(alias);
+            return projection;
+        }
+        if (projection instanceof ExpressionProjectionSegment) {
+            ((ExpressionProjectionSegment) projection).setAlias(alias);
+            return projection;
+        }
+        if (projection instanceof FunctionSegment) {
+            FunctionSegment segment = (FunctionSegment) projection;
+            ExpressionProjectionSegment result = new ExpressionProjectionSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getText(), segment);
+            result.setAlias(alias);
+            return result;
+        }
+        if (projection instanceof CommonExpressionSegment) {
+            CommonExpressionSegment segment = (CommonExpressionSegment) projection;
+            ExpressionProjectionSegment result = new ExpressionProjectionSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getText());
+            result.setAlias(alias);
+            return result;
+        }
+        // FIXME :For DISTINCT()
+        if (projection instanceof ColumnSegment) {
+            ColumnProjectionSegment result = new ColumnProjectionSegment((ColumnSegment) projection);
+            result.setAlias(alias);
+            return result;
+        }
+        if (projection instanceof SubqueryExpressionSegment) {
+            SubqueryExpressionSegment subqueryExpressionSegment = (SubqueryExpressionSegment) projection;
+            String text = ctx.start.getInputStream().getText(new Interval(subqueryExpressionSegment.getStartIndex(), subqueryExpressionSegment.getStopIndex()));
+            SubqueryProjectionSegment result = new SubqueryProjectionSegment(((SubqueryExpressionSegment) projection).getSubquery(), text);
+            result.setAlias(alias);
+            return result;
+        }
+        if (projection instanceof BinaryOperationExpression) {
+            int startIndex = ((BinaryOperationExpression) projection).getStartIndex();
+            int stopIndex = null != alias ? alias.getStopIndex() : ((BinaryOperationExpression) projection).getStopIndex();
+            ExpressionProjectionSegment result = new ExpressionProjectionSegment(startIndex, stopIndex, ((BinaryOperationExpression) projection).getText());
+            result.setAlias(alias);
+            return result;
+        }
+        if (projection instanceof ParameterMarkerExpressionSegment) {
+            ParameterMarkerExpressionSegment result = (ParameterMarkerExpressionSegment) projection;
+            result.setAlias(alias);
+            return projection;
+        }
+        LiteralExpressionSegment column = (LiteralExpressionSegment) projection;
+        ExpressionProjectionSegment result = new ExpressionProjectionSegment(column.getStartIndex(), column.getStopIndex(), String.valueOf(column.getLiterals()));
+        result.setAlias(alias);
+        return result;
+    }
+    
     @Override
     public ASTNode visitFromClause(final FromClauseContext ctx) {
         return visit(ctx.tableReferences());
@@ -1312,7 +1398,7 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
     
     @Override
     public ASTNode visitSubquery(final SubqueryContext ctx) {
-        return visit(ctx.aggregationClause());
+        return visit(ctx.select());
     }
     
     @Override

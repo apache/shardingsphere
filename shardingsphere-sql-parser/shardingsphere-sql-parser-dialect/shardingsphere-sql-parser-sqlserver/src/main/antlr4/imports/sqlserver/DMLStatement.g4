@@ -116,7 +116,7 @@ qualifiedShorthand
     ;
 
 shorthandIdentifier
-    : tableName | viewName | AS? alias
+    : tableName | viewName | alias
     ;
 
 dotProjectionClause
@@ -132,7 +132,7 @@ exprProjectionClause
     ;
 
 aliasAssignExprProjClause
-    : (AS? alias) EQ_ expr
+    : alias EQ_ expr
     ;
 
 propertyName
@@ -172,7 +172,7 @@ projection
     ;
 
 top
-    : TOP LP_? topNum RP_? PERCENT? (WITH TIES)? (ROW_NUMBER LP_ RP_ OVER LP_ orderByClause RP_)?
+    : TOP LP_? topNum RP_? PERCENT? (WITH TIES)?
     ;
 
 topNum
