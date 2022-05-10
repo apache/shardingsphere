@@ -31,22 +31,31 @@ import java.util.Map;
  */
 public final class PostgreDDLGenerator implements DialectDDLGenerator {
     
-    // TODO support version, partitions, index etc.
+    private static final String NEW_LINE = "\n"; 
+    
+    // TODO support partitions etc.
     @Override
     public String generateDDLSQL(final String tableName, final String schemaName, final DataSource dataSource) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             int majorVersion = connection.getMetaData().getDatabaseMajorVersion();
             int minorVersion = connection.getMetaData().getDatabaseMinorVersion();
-            Map<String, Object> context = new PostgresTablePropertiesLoader(connection, tableName, schemaName, majorVersion, minorVersion).loadTableProperties();
-            new PostgresColumnPropertiesLoader(connection, majorVersion, minorVersion).loadColumnProperties(context);
-            new PostgresConstraintsLoader(connection, majorVersion, minorVersion).loadConstraints(context);
-            return doGenerateDDLSQL(context, majorVersion, minorVersion);
+            Map<String, Object> context = loadGenerateContext(tableName, schemaName, connection, majorVersion, minorVersion);
+            String tableSql = generateCreateTableSql(context, majorVersion, minorVersion);
+            String indexSql = new PostgresIndexLoader(connection, majorVersion, minorVersion).loadIndexSql(context);
+            return tableSql + NEW_LINE + indexSql;
         }
     }
     
-    private String doGenerateDDLSQL(final Map<String, Object> context, final int majorVersion, final int minorVersion) {
+    private Map<String, Object> loadGenerateContext(final String tableName, final String schemaName, final Connection connection, final int majorVersion, final int minorVersion) {
+        Map<String, Object> result = new PostgresTablePropertiesLoader(connection, tableName, schemaName, majorVersion, minorVersion).loadTableProperties();
+        new PostgresColumnPropertiesLoader(connection, majorVersion, minorVersion).loadColumnProperties(result);
+        new PostgresConstraintsLoader(connection, majorVersion, minorVersion).loadConstraints(result);
+        return result;
+    }
+    
+    private String generateCreateTableSql(final Map<String, Object> context, final int majorVersion, final int minorVersion) {
         formatColumnList(context);
-        return FreemarkerManager.getSqlByPgVersion(context, "table/%s/create.ftl", majorVersion, minorVersion);
+        return FreemarkerManager.getSqlByPgVersion(context, "table/%s/create.ftl", majorVersion, minorVersion).trim();
     }
     
     @SuppressWarnings("unchecked")
