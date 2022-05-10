@@ -15,26 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.provider.simple;
+package org.apache.shardingsphere.authority.model;
 
-import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
-import org.apache.shardingsphere.authority.provider.natived.model.subject.SchemaAccessSubject;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
-import org.junit.Test;
 
-import java.util.Collections;
 import java.util.Optional;
 
-import static org.junit.Assert.assertTrue;
-
-public final class AllPrivilegesProviderAlgorithmTest {
+/**
+ * Authority registry.
+ */
+public interface AuthorityRegistry {
     
-    @Test
-    public void assertFindPrivileges() {
-        Optional<ShardingSpherePrivileges> actual = new AllPrivilegesPermittedAuthorityProviderAlgorithm().findPrivileges(new Grantee("TestUser", "testHost"));
-        assertTrue(actual.isPresent());
-        assertTrue(actual.get().hasPrivileges("testSchema"));
-        assertTrue(actual.get().hasPrivileges(Collections.emptyList()));
-        assertTrue(actual.get().hasPrivileges(new SchemaAccessSubject("testSchema"), Collections.emptyList()));
-    }
+    /**
+     * Find Privileges.
+     *
+     * @param grantee grantee
+     * @return found privileges
+     */
+    Optional<ShardingSpherePrivileges> findPrivileges(Grantee grantee);
 }

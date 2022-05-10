@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 @Getter
 public final class CRC32MatchDataConsistencyCalculateAlgorithm implements DataConsistencyCalculateAlgorithm {
     
-    private static final Collection<String> SUPPORTED_DATABASE_TYPES = Collections.singletonList(new MySQLDatabaseType().getName());
+    private static final Collection<String> SUPPORTED_DATABASE_TYPES = Collections.singletonList(new MySQLDatabaseType().getType());
     
     private Properties props;
     

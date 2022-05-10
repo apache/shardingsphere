@@ -15,24 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.provider.schema.model.privilege;
+package org.apache.shardingsphere.authority.provider.simple.model.privilege;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.authority.model.AccessSubject;
 import org.apache.shardingsphere.authority.model.PrivilegeType;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
-import org.apache.shardingsphere.authority.provider.natived.model.subject.SchemaAccessSubject;
 
 import java.util.Collection;
-import java.util.Set;
 
 /**
- * Schema privilegesPermittedShardingSpherePrivileges.
+ * All permitted privileges.
  */
-@RequiredArgsConstructor
-public final class SchemaPrivilegesPermittedShardingSpherePrivileges implements ShardingSpherePrivileges {
-    
-    private final Set<String> schemas;
+public final class AllPrivilegesPermittedShardingSpherePrivileges implements ShardingSpherePrivileges {
     
     @Override
     public void setSuperPrivilege() {
@@ -40,7 +34,7 @@ public final class SchemaPrivilegesPermittedShardingSpherePrivileges implements 
     
     @Override
     public boolean hasPrivileges(final String schema) {
-        return schemas.contains(schema);
+        return true;
     }
     
     @Override
@@ -50,6 +44,6 @@ public final class SchemaPrivilegesPermittedShardingSpherePrivileges implements 
     
     @Override
     public boolean hasPrivileges(final AccessSubject accessSubject, final Collection<PrivilegeType> privileges) {
-        return accessSubject instanceof SchemaAccessSubject && hasPrivileges(((SchemaAccessSubject) accessSubject).getSchema());
+        return true;
     }
 }

@@ -83,7 +83,7 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
         }
         this.inventoryDumperConfig = inventoryDumperConfig;
         this.channel = channel;
-        pipelineSQLBuilder = PipelineSQLBuilderFactory.newInstance(inventoryDumperConfig.getDataSourceConfig().getDatabaseType().getName());
+        pipelineSQLBuilder = PipelineSQLBuilderFactory.newInstance(inventoryDumperConfig.getDataSourceConfig().getDatabaseType().getType());
         this.dataSource = dataSource;
         batchSize = inventoryDumperConfig.getBatchSize();
         rateLimitAlgorithm = inventoryDumperConfig.getRateLimitAlgorithm();

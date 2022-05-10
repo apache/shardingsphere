@@ -34,7 +34,7 @@ public final class DefaultAuthorityRuleConfigurationBuilder implements DefaultGl
     
     @Override
     public AuthorityRuleConfiguration build() {
-        return new AuthorityRuleConfiguration(createDefaultUsers(), new ShardingSphereAlgorithmConfiguration("ALL_PRIVILEGES_PERMITTED", new Properties()));
+        return new AuthorityRuleConfiguration(createDefaultUsers(), new ShardingSphereAlgorithmConfiguration("ALL_PERMITTED", new Properties()));
     }
     
     private Collection<ShardingSphereUser> createDefaultUsers() {

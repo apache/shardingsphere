@@ -40,6 +40,6 @@ public final class XADataSourceDefinitionFactory {
      * @return XA data source definition
      */
     public static XADataSourceDefinition getXADataSourceDefinition(final DatabaseType databaseType) {
-        return TypedSPIRegistry.getRegisteredService(XADataSourceDefinition.class, databaseType.getName());
+        return TypedSPIRegistry.getRegisteredService(XADataSourceDefinition.class, databaseType.getType());
     }
 }

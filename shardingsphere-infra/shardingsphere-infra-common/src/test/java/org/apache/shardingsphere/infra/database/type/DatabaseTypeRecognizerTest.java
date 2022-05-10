@@ -38,54 +38,54 @@ public final class DatabaseTypeRecognizerTest {
     public void assertGetH2DatabaseType() throws SQLException {
         DataSource datasource = mockDataSource(DatabaseTypeRegistry.getActualDatabaseType("H2"));
         Collection<DataSource> dataSources = Collections.singleton(datasource);
-        assertThat(DatabaseTypeRecognizer.getDatabaseType(dataSources).getName(), is("H2"));
+        assertThat(DatabaseTypeRecognizer.getDatabaseType(dataSources).getType(), is("H2"));
     }
     
     @Test
     public void assertGetMariaDBDatabaseType() throws SQLException {
         DataSource datasource = mockDataSource(DatabaseTypeRegistry.getActualDatabaseType("MariaDB"));
         Collection<DataSource> dataSources = Collections.singleton(datasource);
-        assertThat(DatabaseTypeRecognizer.getDatabaseType(dataSources).getName(), is("MariaDB"));
+        assertThat(DatabaseTypeRecognizer.getDatabaseType(dataSources).getType(), is("MariaDB"));
     }
     
     @Test
     public void assertGetMySQLDatabaseType() throws SQLException {
         DataSource datasource = mockDataSource(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
         Collection<DataSource> dataSources = Collections.singleton(datasource);
-        assertThat(DatabaseTypeRecognizer.getDatabaseType(dataSources).getName(), is("MySQL"));
+        assertThat(DatabaseTypeRecognizer.getDatabaseType(dataSources).getType(), is("MySQL"));
     }
     
     @Test
     public void assertGetOracleDatabaseType() throws SQLException {
         DataSource datasource = mockDataSource(DatabaseTypeRegistry.getActualDatabaseType("Oracle"));
         Collection<DataSource> dataSources = Collections.singleton(datasource);
-        assertThat(DatabaseTypeRecognizer.getDatabaseType(dataSources).getName(), is("Oracle"));
+        assertThat(DatabaseTypeRecognizer.getDatabaseType(dataSources).getType(), is("Oracle"));
     }
     
     @Test
     public void assertGetPostgreSQLDatabaseType() throws SQLException {
         DataSource datasource = mockDataSource(DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL"));
         Collection<DataSource> dataSources = Collections.singleton(datasource);
-        assertThat(DatabaseTypeRecognizer.getDatabaseType(dataSources).getName(), is("PostgreSQL"));
+        assertThat(DatabaseTypeRecognizer.getDatabaseType(dataSources).getType(), is("PostgreSQL"));
     }
     
     @Test
     public void assertGetSQL92DatabaseType() throws SQLException {
         DataSource datasource = mockDataSource(DatabaseTypeRegistry.getActualDatabaseType("SQL92"));
         Collection<DataSource> dataSources = Collections.singleton(datasource);
-        assertThat(DatabaseTypeRecognizer.getDatabaseType(dataSources).getName(), is("SQL92"));
+        assertThat(DatabaseTypeRecognizer.getDatabaseType(dataSources).getType(), is("SQL92"));
     }
     
     @Test
     public void assertGetSQLServerDatabaseType() throws SQLException {
         DataSource datasource = mockDataSource(DatabaseTypeRegistry.getActualDatabaseType("SQLServer"));
         Collection<DataSource> dataSources = Collections.singleton(datasource);
-        assertThat(DatabaseTypeRecognizer.getDatabaseType(dataSources).getName(), is("SQLServer"));
+        assertThat(DatabaseTypeRecognizer.getDatabaseType(dataSources).getType(), is("SQLServer"));
     }
     
     @Test
     public void assertGetDefaultDatabaseType() {
-        assertThat(DatabaseTypeRecognizer.getDatabaseType(Collections.emptyList()).getName(), is("MySQL"));
+        assertThat(DatabaseTypeRecognizer.getDatabaseType(Collections.emptyList()).getType(), is("MySQL"));
     }
     
     @Test
@@ -93,7 +93,7 @@ public final class DatabaseTypeRecognizerTest {
         DataSource datasource1 = mockDataSource(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
         DataSource datasource2 = mockDataSource(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
         Collection<DataSource> sameDataSources = Arrays.asList(datasource1, datasource2);
-        assertThat(DatabaseTypeRecognizer.getDatabaseType(sameDataSources).getName(), is("MySQL"));
+        assertThat(DatabaseTypeRecognizer.getDatabaseType(sameDataSources).getType(), is("MySQL"));
     }
     
     @Test(expected = IllegalStateException.class)
@@ -108,7 +108,7 @@ public final class DatabaseTypeRecognizerTest {
     public void assertCantGetConnectionFromDataSource() throws SQLException {
         DataSource mockDataSource = mock(DataSource.class);
         when(mockDataSource.getConnection()).thenThrow(SQLException.class);
-        DatabaseTypeRecognizer.getDatabaseType(Arrays.asList(mockDataSource));
+        DatabaseTypeRecognizer.getDatabaseType(Collections.singletonList(mockDataSource));
     }
     
     private DataSource mockDataSource(final DatabaseType databaseType) throws SQLException {
@@ -116,7 +116,7 @@ public final class DatabaseTypeRecognizerTest {
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(result.getConnection()).thenReturn(connection);
         String url;
-        switch (databaseType.getName()) {
+        switch (databaseType.getType()) {
             case "H2":
                 url = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL";
                 break;
@@ -139,9 +139,24 @@ public final class DatabaseTypeRecognizerTest {
                 url = "jdbc:microsoft:sqlserver://127.0.0.1;DatabaseName=test";
                 break;
             default:
-                throw new IllegalStateException("Unexpected value: " + databaseType.getName());
+                throw new IllegalStateException("Unexpected value: " + databaseType.getType());
         }
         when(connection.getMetaData().getURL()).thenReturn(url);
         return result;
+    }
+    
+    @Test
+    public void assertGetDatabaseTypeByStandardURL() {
+        assertThat(DatabaseTypeRecognizer.getDatabaseType("jdbc:mysql://localhost:3306/test").getType(), is("MySQL"));
+    }
+    
+    @Test
+    public void assertGetDatabaseTypeByURLAlias() {
+        assertThat(DatabaseTypeRecognizer.getDatabaseType("jdbc:mysqlx://localhost:3306/test").getType(), is("MySQL"));
+    }
+    
+    @Test
+    public void assertGetDatabaseTypeSQL92() {
+        assertThat(DatabaseTypeRecognizer.getDatabaseType("jdbc:sqlite:test").getType(), is("SQL92"));
     }
 }

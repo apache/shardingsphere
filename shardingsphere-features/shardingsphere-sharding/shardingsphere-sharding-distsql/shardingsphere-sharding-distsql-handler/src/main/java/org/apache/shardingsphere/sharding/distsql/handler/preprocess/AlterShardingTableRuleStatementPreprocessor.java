@@ -19,7 +19,12 @@ package org.apache.shardingsphere.sharding.distsql.handler.preprocess;
 
 import org.apache.shardingsphere.infra.distsql.preprocess.RuleDefinitionAlterPreprocessor;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingTableRuleStatement;
+
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.LinkedHashMap;
 
 /**
  * Alter sharding table rule statement preprocessor.
@@ -29,19 +34,26 @@ public final class AlterShardingTableRuleStatementPreprocessor implements RuleDe
     @Override
     public ShardingRuleConfiguration preprocess(final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeAlteredRuleConfig) {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        result.setShardingAlgorithms(toBeAlteredRuleConfig.getShardingAlgorithms());
-        result.setAutoTables(toBeAlteredRuleConfig.getAutoTables());
+        result.setShardingAlgorithms(new HashMap<>(currentRuleConfig.getShardingAlgorithms()));
+        result.setAutoTables(new LinkedList<>(currentRuleConfig.getAutoTables()));
         result.setDefaultShardingColumn(currentRuleConfig.getDefaultShardingColumn());
         result.setDefaultTableShardingStrategy(currentRuleConfig.getDefaultTableShardingStrategy());
-        result.setBindingTableGroups(currentRuleConfig.getBindingTableGroups());
+        result.setBindingTableGroups(new LinkedList<>(currentRuleConfig.getBindingTableGroups()));
         result.setDefaultDatabaseShardingStrategy(currentRuleConfig.getDefaultDatabaseShardingStrategy());
-        result.setTables(toBeAlteredRuleConfig.getTables());
-        result.setBroadcastTables(currentRuleConfig.getBroadcastTables());
-        result.setDefaultKeyGenerateStrategy(currentRuleConfig.getDefaultKeyGenerateStrategy());
-        result.setKeyGenerators(toBeAlteredRuleConfig.getKeyGenerators());
+        result.setTables(new LinkedList<>(currentRuleConfig.getTables()));
+        result.setBroadcastTables(new LinkedList<>(currentRuleConfig.getBroadcastTables()));
+        result.setDefaultKeyGenerateStrategy(getKeyGenerateStrategyConfiguration(currentRuleConfig));
+        result.setKeyGenerators(new HashMap<>(currentRuleConfig.getKeyGenerators()));
         result.setScalingName(currentRuleConfig.getScalingName());
-        result.setScaling(currentRuleConfig.getScaling());
+        result.setScaling(new LinkedHashMap<>(currentRuleConfig.getScaling()));
         return result;
+    }
+    
+    private KeyGenerateStrategyConfiguration getKeyGenerateStrategyConfiguration(final ShardingRuleConfiguration currentRuleConfig) {
+        if (null == currentRuleConfig.getDefaultKeyGenerateStrategy()) {
+            return null;
+        }
+        return new KeyGenerateStrategyConfiguration(currentRuleConfig.getDefaultKeyGenerateStrategy().getColumn(), currentRuleConfig.getDefaultKeyGenerateStrategy().getKeyGeneratorName());
     }
     
     @Override

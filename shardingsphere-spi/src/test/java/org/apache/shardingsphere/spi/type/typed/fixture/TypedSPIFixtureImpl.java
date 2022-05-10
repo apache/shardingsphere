@@ -26,11 +26,11 @@ import java.util.Properties;
 @Getter
 public final class TypedSPIFixtureImpl implements TypedSPIFixture {
     
-    private Properties props;
+    private String value;
     
     @Override
     public void init(final Properties props) {
-        this.props = props;
+        value = props.getProperty("key");
     }
     
     @Override

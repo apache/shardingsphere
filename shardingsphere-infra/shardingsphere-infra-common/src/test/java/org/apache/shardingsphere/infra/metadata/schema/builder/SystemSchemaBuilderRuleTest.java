@@ -30,14 +30,14 @@ public final class SystemSchemaBuilderRuleTest {
     
     @Test
     public void assertValueOfSchemaPathSuccess() {
-        SystemSchemaBuilderRule actual = SystemSchemaBuilderRule.valueOf(new MySQLDatabaseType().getName(), "information_schema");
+        SystemSchemaBuilderRule actual = SystemSchemaBuilderRule.valueOf(new MySQLDatabaseType().getType(), "information_schema");
         assertThat(actual, is(SystemSchemaBuilderRule.MYSQL_INFORMATION_SCHEMA));
         assertThat(actual.getTables(), is(Sets.newHashSet("columns", "engines", "parameters", "routines", "schemata", "tables", "views")));
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertValueOfSchemaPathFailure() {
-        SystemSchemaBuilderRule.valueOf(new MySQLDatabaseType().getName(), "test");
+        SystemSchemaBuilderRule.valueOf(new MySQLDatabaseType().getType(), "test");
     }
     
     @Test
