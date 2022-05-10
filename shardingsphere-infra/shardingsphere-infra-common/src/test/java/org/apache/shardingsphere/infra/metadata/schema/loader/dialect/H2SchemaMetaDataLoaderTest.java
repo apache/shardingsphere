@@ -147,7 +147,7 @@ public final class H2SchemaMetaDataLoaderTest {
     }
     
     private DialectSchemaMetaDataLoader getDialectTableMetaDataLoader() {
-        Optional<DialectSchemaMetaDataLoader> result = DialectTableMetaDataLoaderFactory.newInstance(DatabaseTypeFactory.getInstance("H2"));
+        Optional<DialectSchemaMetaDataLoader> result = DialectTableMetaDataLoaderFactory.findInstance(DatabaseTypeFactory.getInstance("H2"));
         assertTrue(result.isPresent());
         return result.get();
     }

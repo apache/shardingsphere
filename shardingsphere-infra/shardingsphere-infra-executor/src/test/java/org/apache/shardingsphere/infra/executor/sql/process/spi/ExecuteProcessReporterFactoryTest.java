@@ -28,7 +28,7 @@ public final class ExecuteProcessReporterFactoryTest {
     
     @Test
     public void assertNewInstance() {
-        Optional<ExecuteProcessReporter> actual = ExecuteProcessReporterFactory.newInstance();
+        Optional<ExecuteProcessReporter> actual = ExecuteProcessReporterFactory.getInstance();
         assertTrue(actual.isPresent());
         assertTrue(actual.get() instanceof ExecuteProcessReporterFixture);
     }

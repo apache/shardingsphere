@@ -32,7 +32,7 @@ public final class ClusterPersistRepositoryFactoryTest {
     @Test
     public void assertNewInstance() {
         ClusterPersistRepositoryConfiguration config = new ClusterPersistRepositoryConfiguration("TEST", "", "", new Properties());
-        ClusterPersistRepository clusterPersistRepository = ClusterPersistRepositoryFactory.newInstance(config);
+        ClusterPersistRepository clusterPersistRepository = ClusterPersistRepositoryFactory.getInstance(config);
         assertThat(clusterPersistRepository.getType(), is("TEST"));
     }
 }

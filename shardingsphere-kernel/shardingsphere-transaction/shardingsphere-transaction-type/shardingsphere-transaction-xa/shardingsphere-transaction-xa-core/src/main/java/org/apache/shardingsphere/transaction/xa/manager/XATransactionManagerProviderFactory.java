@@ -37,12 +37,12 @@ public final class XATransactionManagerProviderFactory {
     }
     
     /**
-     * Create new instance of XA transaction manager provider.
+     * Get instance of XA transaction manager provider.
      *
      * @param type XA transaction manager provider type
-     * @return new instance of XA transaction manager provider
+     * @return got instance
      */
-    public static XATransactionManagerProvider newInstance(final String type) {
+    public static XATransactionManagerProvider getInstance(final String type) {
         return null == type
                 ? RequiredSPIRegistry.getRegisteredService(XATransactionManagerProvider.class)
                 : TypedSPIRegistry.getRegisteredService(XATransactionManagerProvider.class, type, new Properties());

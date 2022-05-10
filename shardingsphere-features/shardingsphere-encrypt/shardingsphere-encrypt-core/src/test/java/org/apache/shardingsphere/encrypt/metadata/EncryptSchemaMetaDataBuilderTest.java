@@ -382,6 +382,6 @@ public final class EncryptSchemaMetaDataBuilderTest {
     }
     
     private EncryptSchemaMetaDataBuilder getEncryptMetaDataBuilder(final EncryptRule encryptRule, final Collection<ShardingSphereRule> rules) {
-        return (EncryptSchemaMetaDataBuilder) RuleBasedSchemaMetaDataBuilderFactory.newInstance(rules).get(encryptRule);
+        return (EncryptSchemaMetaDataBuilder) RuleBasedSchemaMetaDataBuilderFactory.getInstances(rules).get(encryptRule);
     }
 }

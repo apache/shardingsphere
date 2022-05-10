@@ -33,12 +33,12 @@ public final class RuleAlteredJobConfigurationPreparerFactory {
     }
     
     /**
-     * Create new instance of rule altered job configuration preparer.
+     * Get instance of rule altered job configuration preparer.
      * 
-     * @return new instance of rule altered job configuration preparer
+     * @return got instance
      */
     // TODO RuleAlteredJobConfigurationPreparer should be TypedSPI or OrderedSPI
-    public static RuleAlteredJobConfigurationPreparer newInstance() {
+    public static RuleAlteredJobConfigurationPreparer getInstance() {
         return RequiredSPIRegistry.getRegisteredService(RuleAlteredJobConfigurationPreparer.class);
     }
 }

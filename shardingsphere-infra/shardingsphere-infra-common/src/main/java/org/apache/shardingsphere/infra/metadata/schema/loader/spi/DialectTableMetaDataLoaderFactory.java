@@ -36,12 +36,12 @@ public final class DialectTableMetaDataLoaderFactory {
     }
     
     /**
-     * Create new instance of dialect table meta data loader.
+     * Find instance of dialect table meta data loader.
      * 
      * @param databaseType database type
-     * @return new instance of dialect table meta data loader
+     * @return found instance
      */
-    public static Optional<DialectSchemaMetaDataLoader> newInstance(final DatabaseType databaseType) {
+    public static Optional<DialectSchemaMetaDataLoader> findInstance(final DatabaseType databaseType) {
         return TypedSPIRegistry.findRegisteredService(DialectSchemaMetaDataLoader.class, databaseType.getType());
     }
 }

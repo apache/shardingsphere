@@ -28,6 +28,6 @@ public final class XAConnectionWrapperFactoryTest {
     
     @Test
     public void assertCreateH2XAConnection() {
-        assertThat(XAConnectionWrapperFactory.newInstance(DatabaseTypeFactory.getInstance("H2")), instanceOf(H2XAConnectionWrapper.class));
+        assertThat(XAConnectionWrapperFactory.getInstance(DatabaseTypeFactory.getInstance("H2")), instanceOf(H2XAConnectionWrapper.class));
     }
 }

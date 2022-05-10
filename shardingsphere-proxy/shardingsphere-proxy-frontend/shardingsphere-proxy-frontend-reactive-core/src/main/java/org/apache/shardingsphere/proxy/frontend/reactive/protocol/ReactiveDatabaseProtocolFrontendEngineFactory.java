@@ -39,7 +39,7 @@ public final class ReactiveDatabaseProtocolFrontendEngineFactory {
      * Create new instance of reactive database protocol frontend engine.
      *
      * @param databaseType database type
-     * @return new instance of reactive database protocol frontend engine
+     * @return created instance
      */
     public static ReactiveDatabaseProtocolFrontendEngine newInstance(final String databaseType) {
         return TypedSPIRegistry.getRegisteredService(ReactiveDatabaseProtocolFrontendEngine.class, databaseType, new Properties());

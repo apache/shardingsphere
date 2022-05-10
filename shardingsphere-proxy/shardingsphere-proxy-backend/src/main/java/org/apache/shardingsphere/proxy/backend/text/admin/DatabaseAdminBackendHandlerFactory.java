@@ -50,7 +50,7 @@ public final class DatabaseAdminBackendHandlerFactory {
      * @param databaseType database type
      * @param sqlStatementContext SQL statement context
      * @param connectionSession connection session
-     * @return new instance of database admin backend handler
+     * @return created instance
      */
     public static Optional<TextProtocolBackendHandler> newInstance(final DatabaseType databaseType, final SQLStatementContext<?> sqlStatementContext, final ConnectionSession connectionSession) {
         Optional<DatabaseAdminExecutorFactory> executorFactory = TypedSPIRegistry.findRegisteredService(DatabaseAdminExecutorFactory.class, databaseType.getType());
@@ -68,7 +68,7 @@ public final class DatabaseAdminBackendHandlerFactory {
      * @param sqlStatementContext SQL statement context
      * @param connectionSession connection session
      * @param sql SQL being executed
-     * @return new instance of database admin backend handler
+     * @return created instance
      */
     public static Optional<TextProtocolBackendHandler> newInstance(final DatabaseType databaseType, final SQLStatementContext<?> sqlStatementContext,
                                                                    final ConnectionSession connectionSession, final String sql) {

@@ -33,11 +33,11 @@ public final class DatetimeServiceFactory {
     }
     
     /**
-     * Create new instance of datetime service.
+     * Get instance of datetime service.
      * 
-     * @return new instance of datetime service
+     * @return got instance
      */
-    public static DatetimeService newInstance() {
+    public static DatetimeService getInstance() {
         return RequiredSPIRegistry.getRegisteredService(DatetimeService.class);
     }
 }

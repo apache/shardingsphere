@@ -39,7 +39,7 @@ public final class ReadwriteSplittingRuleConfigurationCheckerTest {
     @Test
     public void assertValidCheck() {
         ReadwriteSplittingRuleConfiguration config = createValidConfiguration();
-        Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.newInstance(config);
+        Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.findInstance(config);
         assertTrue(checker.isPresent());
         assertThat(checker.get(), instanceOf(ReadwriteSplittingRuleConfigurationChecker.class));
         checker.get().check("test", config);
@@ -64,7 +64,7 @@ public final class ReadwriteSplittingRuleConfigurationCheckerTest {
     @Test(expected = IllegalStateException.class)
     public void assertInvalidCheck() {
         ReadwriteSplittingRuleConfiguration config = createInvalidConfiguration();
-        Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.newInstance(config);
+        Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.findInstance(config);
         assertTrue(checker.isPresent());
         assertThat(checker.get(), instanceOf(ReadwriteSplittingRuleConfigurationChecker.class));
         checker.get().check("test", config);

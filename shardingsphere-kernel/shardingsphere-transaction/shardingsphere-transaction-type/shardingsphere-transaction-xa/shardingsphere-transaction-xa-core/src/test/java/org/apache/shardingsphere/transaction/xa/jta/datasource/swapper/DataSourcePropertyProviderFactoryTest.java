@@ -30,11 +30,11 @@ public final class DataSourcePropertyProviderFactoryTest {
     
     @Test
     public void assertGetProviderByDefault() {
-        assertThat(DataSourcePropertyProviderFactory.newInstance(new MockedDataSource()), instanceOf(DefaultDataSourcePropertyProvider.class));
+        assertThat(DataSourcePropertyProviderFactory.getInstance(new MockedDataSource()), instanceOf(DefaultDataSourcePropertyProvider.class));
     }
     
     @Test
     public void assertGetProviderBySPI() {
-        assertThat(DataSourcePropertyProviderFactory.newInstance(new HikariDataSource()), instanceOf(HikariCPPropertyProvider.class));
+        assertThat(DataSourcePropertyProviderFactory.getInstance(new HikariDataSource()), instanceOf(HikariCPPropertyProvider.class));
     }
 }

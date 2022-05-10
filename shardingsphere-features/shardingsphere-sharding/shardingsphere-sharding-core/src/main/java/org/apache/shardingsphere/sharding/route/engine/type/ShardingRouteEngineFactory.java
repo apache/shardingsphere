@@ -81,7 +81,7 @@ public final class ShardingRouteEngineFactory {
      * @param sqlStatementContext SQL statement context
      * @param shardingConditions shardingConditions
      * @param props ShardingSphere properties
-     * @return new instance of routing engine
+     * @return created instance
      */
     public static ShardingRouteEngine newInstance(final ShardingRule shardingRule, final ShardingSphereMetaData metaData, final SQLStatementContext<?> sqlStatementContext,
                                                   final ShardingConditions shardingConditions, final ConfigurationProperties props) {

@@ -45,7 +45,7 @@ public final class AlgorithmProvidedDatabaseDiscoveryRuleBuilderTest {
                 Collections.singletonMap("ha_heartbeat",
                         new DatabaseDiscoveryHeartBeatConfiguration(new Properties())),
                 Collections.singletonMap("discoveryTypeName", new CoreDatabaseDiscoveryProviderAlgorithmFixture()));
-        SchemaRuleBuilder builder = SchemaRuleBuilderFactory.newInstance(Collections.singletonList(algorithmProvidedRuleConfig)).get(algorithmProvidedRuleConfig);
+        SchemaRuleBuilder builder = SchemaRuleBuilderFactory.getInstanceMap(Collections.singletonList(algorithmProvidedRuleConfig)).get(algorithmProvidedRuleConfig);
         assertThat(builder.build(algorithmProvidedRuleConfig, "", Collections.singletonMap("name", mock(DataSource.class)), Collections.emptyList(), new ConfigurationProperties(new Properties())),
                 instanceOf(DatabaseDiscoveryRule.class));
     }

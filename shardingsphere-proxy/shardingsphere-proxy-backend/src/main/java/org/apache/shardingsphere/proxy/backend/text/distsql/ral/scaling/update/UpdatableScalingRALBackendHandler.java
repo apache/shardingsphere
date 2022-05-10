@@ -37,7 +37,7 @@ public final class UpdatableScalingRALBackendHandler implements TextProtocolBack
     @SuppressWarnings("unchecked")
     @Override
     public ResponseHeader execute() {
-        RALUpdaterFactory.newInstance(sqlStatement.getClass()).executeUpdate(sqlStatement);
+        RALUpdaterFactory.getInstance(sqlStatement.getClass()).executeUpdate(sqlStatement);
         return new UpdateResponseHeader(sqlStatement);
     }
 }

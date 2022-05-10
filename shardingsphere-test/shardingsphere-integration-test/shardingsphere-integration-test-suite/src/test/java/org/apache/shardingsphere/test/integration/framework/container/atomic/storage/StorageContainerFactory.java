@@ -35,7 +35,7 @@ public final class StorageContainerFactory {
      * 
      * @param databaseType database type
      * @param scenario scenario
-     * @return new instance of storage container
+     * @return created instance
      */
     public static StorageContainer newInstance(final DatabaseType databaseType, final String scenario) {
         switch (databaseType.getType()) {

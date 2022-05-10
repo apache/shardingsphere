@@ -40,7 +40,7 @@ public final class DialectTableMetaDataLoaderFactoryTest {
     @Test
     public void assertNewInstanceWithH2TableMetaDataLoader() {
         H2DatabaseType h2DatabaseType = new H2DatabaseType();
-        Optional<DialectSchemaMetaDataLoader> h2TableMetaDataLoader = DialectTableMetaDataLoaderFactory.newInstance(h2DatabaseType);
+        Optional<DialectSchemaMetaDataLoader> h2TableMetaDataLoader = DialectTableMetaDataLoaderFactory.findInstance(h2DatabaseType);
         assertTrue(h2TableMetaDataLoader.isPresent());
         assertTrue(h2TableMetaDataLoader.get() instanceof H2SchemaMetaDataLoader);
     }
@@ -48,7 +48,7 @@ public final class DialectTableMetaDataLoaderFactoryTest {
     @Test
     public void assertNewInstanceWithOracleTableMetaDataLoader() {
         OracleDatabaseType oracleDatabaseType = new OracleDatabaseType();
-        Optional<DialectSchemaMetaDataLoader> oracleTableMetaDataLoader = DialectTableMetaDataLoaderFactory.newInstance(oracleDatabaseType);
+        Optional<DialectSchemaMetaDataLoader> oracleTableMetaDataLoader = DialectTableMetaDataLoaderFactory.findInstance(oracleDatabaseType);
         assertTrue(oracleTableMetaDataLoader.isPresent());
         assertTrue(oracleTableMetaDataLoader.get() instanceof OracleSchemaMetaDataLoader);
     }
@@ -56,7 +56,7 @@ public final class DialectTableMetaDataLoaderFactoryTest {
     @Test
     public void assertNewInstanceWithSQLServerTableMetaDataLoader() {
         SQLServerDatabaseType sqlServerDatabaseType = new SQLServerDatabaseType();
-        Optional<DialectSchemaMetaDataLoader> sQLServerTableMetaDataLoader = DialectTableMetaDataLoaderFactory.newInstance(sqlServerDatabaseType);
+        Optional<DialectSchemaMetaDataLoader> sQLServerTableMetaDataLoader = DialectTableMetaDataLoaderFactory.findInstance(sqlServerDatabaseType);
         assertTrue(sQLServerTableMetaDataLoader.isPresent());
         assertTrue(sQLServerTableMetaDataLoader.get() instanceof SQLServerSchemaMetaDataLoader);
     }
@@ -64,7 +64,7 @@ public final class DialectTableMetaDataLoaderFactoryTest {
     @Test
     public void assertNewInstanceWithOpenGaussDatabaseType() {
         OpenGaussDatabaseType openGaussDatabaseType = new OpenGaussDatabaseType();
-        Optional<DialectSchemaMetaDataLoader> openGaussTableMetaDataLoader = DialectTableMetaDataLoaderFactory.newInstance(openGaussDatabaseType);
+        Optional<DialectSchemaMetaDataLoader> openGaussTableMetaDataLoader = DialectTableMetaDataLoaderFactory.findInstance(openGaussDatabaseType);
         assertTrue(openGaussTableMetaDataLoader.isPresent());
         assertTrue(openGaussTableMetaDataLoader.get() instanceof OpenGaussSchemaMetaDataLoader);
     }
@@ -72,7 +72,7 @@ public final class DialectTableMetaDataLoaderFactoryTest {
     @Test
     public void assertNewInstanceWithMySQLTableMetaDataLoader() {
         MySQLDatabaseType mySQLDatabaseType = new MySQLDatabaseType();
-        Optional<DialectSchemaMetaDataLoader> mySQLTableMetaDataLoader = DialectTableMetaDataLoaderFactory.newInstance(mySQLDatabaseType);
+        Optional<DialectSchemaMetaDataLoader> mySQLTableMetaDataLoader = DialectTableMetaDataLoaderFactory.findInstance(mySQLDatabaseType);
         assertTrue(mySQLTableMetaDataLoader.isPresent());
         assertTrue(mySQLTableMetaDataLoader.get() instanceof MySQLSchemaMetaDataLoader);
     }
@@ -80,7 +80,7 @@ public final class DialectTableMetaDataLoaderFactoryTest {
     @Test
     public void assertNewInstanceWithPostgreSQLTableMetaDataLoader() {
         PostgreSQLDatabaseType postgreSQLDatabaseType = new PostgreSQLDatabaseType();
-        Optional<DialectSchemaMetaDataLoader> postgreSQLTableMetaDataLoader = DialectTableMetaDataLoaderFactory.newInstance(postgreSQLDatabaseType);
+        Optional<DialectSchemaMetaDataLoader> postgreSQLTableMetaDataLoader = DialectTableMetaDataLoaderFactory.findInstance(postgreSQLDatabaseType);
         assertTrue(postgreSQLTableMetaDataLoader.isPresent());
         assertTrue(postgreSQLTableMetaDataLoader.get() instanceof PostgreSQLSchemaMetaDataLoader);
     }

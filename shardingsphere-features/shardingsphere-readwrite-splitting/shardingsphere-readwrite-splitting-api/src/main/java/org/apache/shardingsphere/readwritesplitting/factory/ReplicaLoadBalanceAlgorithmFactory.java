@@ -39,7 +39,7 @@ public final class ReplicaLoadBalanceAlgorithmFactory {
     /**
      * Create new instance of replica load-balance algorithm.
      *
-     * @return new instance of replica load-balance algorithm
+     * @return created instance
      */
     public static ReplicaLoadBalanceAlgorithm newInstance() {
         return RequiredSPIRegistry.getRegisteredService(ReplicaLoadBalanceAlgorithm.class);
@@ -49,7 +49,7 @@ public final class ReplicaLoadBalanceAlgorithmFactory {
      * Create new instance of replica load-balance algorithm.
      * 
      * @param replicaLoadBalanceAlgorithmConfig replica load-balance algorithm configuration
-     * @return new instance of replica load-balance algorithm
+     * @return created instance
      */
     public static ReplicaLoadBalanceAlgorithm newInstance(final ShardingSphereAlgorithmConfiguration replicaLoadBalanceAlgorithmConfig) {
         return ShardingSphereAlgorithmFactory.createAlgorithm(replicaLoadBalanceAlgorithmConfig, ReplicaLoadBalanceAlgorithm.class);

@@ -29,13 +29,13 @@ public final class QueryHeaderBuilderFactoryTest {
     
     @Test
     public void assertNewInstance() {
-        QueryHeaderBuilder actual = QueryHeaderBuilderFactory.newInstance(new PostgreSQLDatabaseType());
+        QueryHeaderBuilder actual = QueryHeaderBuilderFactory.getInstance(new PostgreSQLDatabaseType());
         assertTrue(actual instanceof PostgreSQLQueryHeaderBuilder);
     }
     
     @Test
     public void assertNewInstanceWithUnsupportedDatabaseType() {
-        QueryHeaderBuilder actual = QueryHeaderBuilderFactory.newInstance(new OracleDatabaseType());
+        QueryHeaderBuilder actual = QueryHeaderBuilderFactory.getInstance(new OracleDatabaseType());
         assertTrue(actual instanceof MySQLQueryHeaderBuilder);
     }
 }

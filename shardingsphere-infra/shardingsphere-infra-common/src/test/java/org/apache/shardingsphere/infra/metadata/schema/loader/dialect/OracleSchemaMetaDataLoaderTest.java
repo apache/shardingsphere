@@ -227,7 +227,7 @@ public final class OracleSchemaMetaDataLoaderTest {
     }
     
     private DialectSchemaMetaDataLoader getDialectTableMetaDataLoader() {
-        Optional<DialectSchemaMetaDataLoader> result = DialectTableMetaDataLoaderFactory.newInstance(DatabaseTypeFactory.getInstance("Oracle"));
+        Optional<DialectSchemaMetaDataLoader> result = DialectTableMetaDataLoaderFactory.findInstance(DatabaseTypeFactory.getInstance("Oracle"));
         assertTrue(result.isPresent());
         return result.get();
     }
