@@ -39,12 +39,12 @@ public final class DatabaseTypeRegistryTest {
     
     @Test
     public void assertGetActualDatabaseType() {
-        assertThat(DatabaseTypeRegistry.getActualDatabaseType("MySQL").getType(), is("MySQL"));
+        assertThat(DatabaseTypeFactory.getInstance("MySQL").getType(), is("MySQL"));
     }
     
     @Test(expected = ServiceProviderNotFoundException.class)
     public void assertGetActualDatabaseTypeWithNotExistedDatabaseType() {
-        DatabaseTypeRegistry.getActualDatabaseType("Invalid");
+        DatabaseTypeFactory.getInstance("Invalid");
     }
     
     @Test

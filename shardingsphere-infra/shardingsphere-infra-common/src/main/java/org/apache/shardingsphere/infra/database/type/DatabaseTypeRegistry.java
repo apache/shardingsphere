@@ -20,9 +20,6 @@ package org.apache.shardingsphere.infra.database.type;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import java.util.Collection;
-import java.util.stream.Collectors;
-
 /**
  * Database type registry.
  */
@@ -48,18 +45,8 @@ public final class DatabaseTypeRegistry {
      * @return trunk database type
      */
     public static DatabaseType getTrunkDatabaseType(final String name) {
-        DatabaseType databaseType = DatabaseTypeFactory.newInstance(name);
-        return databaseType instanceof BranchDatabaseType ? ((BranchDatabaseType) databaseType).getTrunkDatabaseType() : getActualDatabaseType(name);
-    }
-    
-    /**
-     * Get actual database type.
-     *
-     * @param name database name 
-     * @return actual database type
-     */
-    public static DatabaseType getActualDatabaseType(final String name) {
-        return DatabaseTypeFactory.newInstance(name);
+        DatabaseType databaseType = DatabaseTypeFactory.getInstance(name);
+        return databaseType instanceof BranchDatabaseType ? ((BranchDatabaseType) databaseType).getTrunkDatabaseType() : databaseType;
     }
     
     /**
@@ -68,15 +55,6 @@ public final class DatabaseTypeRegistry {
      * @return default database type
      */
     public static DatabaseType getDefaultDatabaseType() {
-        return DatabaseTypeFactory.newInstance(DEFAULT_DATABASE_TYPE);
-    }
-    
-    /**
-     * Get all database type names.
-     *
-     * @return database type names
-     */
-    public static Collection<String> getDatabaseTypeNames() {
-        return DatabaseTypeFactory.newInstances().stream().map(DatabaseType::getType).collect(Collectors.toList());
+        return DatabaseTypeFactory.getInstance(DEFAULT_DATABASE_TYPE);
     }
 }

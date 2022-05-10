@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.integration.framework.param.array;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
@@ -37,7 +37,7 @@ public final class MemoryParameterizedArrayGenerator {
     
     private static final Collection<String> ADAPTERS = Collections.singleton("jdbc");
     
-    private static final Collection<DatabaseType> DATABASE_TYPES = Collections.singleton(DatabaseTypeRegistry.getActualDatabaseType("H2"));
+    private static final Collection<DatabaseType> DATABASE_TYPES = Collections.singleton(DatabaseTypeFactory.getInstance("H2"));
     
     private static final IntegrationTestEnvironment ENV = IntegrationTestEnvironment.getInstance();
     

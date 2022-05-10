@@ -51,7 +51,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractStreamingDataConsistencyCalculateAlgorithm {
     
-    private static final Collection<String> SUPPORTED_DATABASE_TYPES = DatabaseTypeFactory.newInstances().stream().map(DatabaseType::getType).collect(Collectors.toList());
+    private static final Collection<String> SUPPORTED_DATABASE_TYPES = DatabaseTypeFactory.getInstances().stream().map(DatabaseType::getType).collect(Collectors.toList());
     
     private static final String CHUNK_SIZE_KEY = "chunk-size";
     

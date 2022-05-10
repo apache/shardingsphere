@@ -21,7 +21,7 @@ import com.atomikos.jdbc.AtomikosDataSourceBean;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.core.ResourceDataSource;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -57,9 +57,9 @@ public final class XAShardingSphereTransactionManagerTest {
     
     @Before
     public void setUp() {
-        Collection<ResourceDataSource> resourceDataSources = createResourceDataSources(DatabaseTypeRegistry.getActualDatabaseType("H2"));
+        Collection<ResourceDataSource> resourceDataSources = createResourceDataSources(DatabaseTypeFactory.getInstance("H2"));
         TransactionRule transactionRule = new TransactionRule(new TransactionRuleConfiguration("XA", "Atomikos", new Properties()));
-        xaTransactionManager.init(DatabaseTypeRegistry.getActualDatabaseType("H2"), resourceDataSources, transactionRule);
+        xaTransactionManager.init(DatabaseTypeFactory.getInstance("H2"), resourceDataSources, transactionRule);
     }
     
     @After

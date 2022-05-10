@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.transaction.xa.jta.connection;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.transaction.xa.jta.connection.dialect.H2XAConnectionWrapper;
 import org.junit.Test;
 
@@ -28,6 +28,6 @@ public final class XAConnectionWrapperFactoryTest {
     
     @Test
     public void assertCreateH2XAConnection() {
-        assertThat(XAConnectionWrapperFactory.newInstance(DatabaseTypeRegistry.getActualDatabaseType("H2")), instanceOf(H2XAConnectionWrapper.class));
+        assertThat(XAConnectionWrapperFactory.newInstance(DatabaseTypeFactory.getInstance("H2")), instanceOf(H2XAConnectionWrapper.class));
     }
 }

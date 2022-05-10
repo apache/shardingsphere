@@ -45,7 +45,7 @@ public final class DatabaseTypeRecognizer {
      * @return database type
      */
     public static DatabaseType getDatabaseType(final String url) {
-        return DatabaseTypeFactory.newInstances().stream().filter(each -> matchURLs(url, each)).findAny().orElseGet(() -> DatabaseTypeFactory.newInstance("SQL92"));
+        return DatabaseTypeFactory.getInstances().stream().filter(each -> matchURLs(url, each)).findAny().orElseGet(() -> DatabaseTypeFactory.getInstance("SQL92"));
     }
     
     /**
