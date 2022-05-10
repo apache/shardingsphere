@@ -46,7 +46,7 @@ public final class ShardingDistSQLStatementParserFacade implements FeaturedDistS
     }
     
     @Override
-    public String getFeatureType() {
+    public String getType() {
         return "sharding";
     }
 }
