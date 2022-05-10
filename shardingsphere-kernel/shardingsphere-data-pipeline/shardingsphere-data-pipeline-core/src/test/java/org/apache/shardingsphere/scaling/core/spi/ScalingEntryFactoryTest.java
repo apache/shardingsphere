@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.scaling.core.spi;
 
-import org.apache.shardingsphere.data.pipeline.core.fixture.H2ScalingEntryFixture;
+import org.apache.shardingsphere.scaling.core.spi.fixture.ScalingEntryFixture;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
@@ -26,6 +26,6 @@ public final class ScalingEntryFactoryTest {
     
     @Test
     public void assertGetInstance() {
-        assertTrue(ScalingEntryFactory.getInstance("H2") instanceof H2ScalingEntryFixture);
+        assertTrue(ScalingEntryFactory.getInstance("FIXTURE") instanceof ScalingEntryFixture);
     }
 }
