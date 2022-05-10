@@ -21,6 +21,8 @@ import org.apache.shardingsphere.infra.datasource.pool.metadata.fixture.MockedDa
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
 
+import java.util.Optional;
+
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -28,8 +30,9 @@ import static org.junit.Assert.assertTrue;
 public final class DataSourcePoolMetaDataFactoryTest {
     
     @Test
-    public void assertNewInstance() {
-        assertTrue(DataSourcePoolMetaDataFactory.findInstance(MockedDataSource.class.getName()).isPresent());
-        assertThat(DataSourcePoolMetaDataFactory.findInstance(MockedDataSource.class.getName()).get(), instanceOf(MockedDataSourcePoolMetaData.class));
+    public void assertFindInstance() {
+        Optional<DataSourcePoolMetaData> actual = DataSourcePoolMetaDataFactory.findInstance(MockedDataSource.class.getName());
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), instanceOf(MockedDataSourcePoolMetaData.class));
     }
 }
