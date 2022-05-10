@@ -183,7 +183,7 @@ public final class RuleAlteredJobPreparer {
         }
         String databaseType = taskConfig.getJobConfig().getSourceDatabaseType();
         DataSource dataSource = dataSourceManager.getDataSource(taskConfig.getDumperConfig().getDataSourceConfig());
-        return PositionInitializerFactory.getPositionInitializer(databaseType).init(dataSource);
+        return PositionInitializerFactory.getInstance(databaseType).init(dataSource);
     }
     
     /**
@@ -201,7 +201,7 @@ public final class RuleAlteredJobPreparer {
     
     private void cleanup0(final RuleAlteredJobConfiguration jobConfig) throws SQLException {
         DatabaseType databaseType = DatabaseTypeFactory.getInstance(jobConfig.getSourceDatabaseType());
-        PositionInitializer positionInitializer = PositionInitializerFactory.getPositionInitializer(databaseType.getType());
+        PositionInitializer positionInitializer = PositionInitializerFactory.getInstance(databaseType.getType());
         ShardingSpherePipelineDataSourceConfiguration sourceDataSourceConfig = (ShardingSpherePipelineDataSourceConfiguration) PipelineDataSourceConfigurationFactory
                 .newInstance(jobConfig.getSource().getType(), jobConfig.getSource().getParameter());
         for (DataSourceProperties each : new YamlDataSourceConfigurationSwapper().getDataSourcePropertiesMap(sourceDataSourceConfig.getRootConfig()).values()) {
