@@ -128,7 +128,7 @@ Total: 193 companies.
     <li><a href="https://www.hello-inc.com/" rel="nofollow">Hello Inc</a></li>
     <li><a href="https://www.trawe.cn/" rel="nofollow">Trawe</a></li>
     <li><a href="https://www.souche.com/" rel="nofollow">SouChe</a></li>
-    <li><a href="http://www.f6car.com/" rel="nofollow">F6 Car</a>: <a href="hhttps://blog.devgenius.io/f6-automobile-technologys-multi-million-rows-of-data-sharding-strategy-based-on-apache-18c15114b9c6?source=friends_link&sk=3f691f3e95ea8a90d4d144468ec60534" rel="nofollow">User Case</a></li>
+    <li><a href="http://www.f6car.com/" rel="nofollow">F6 Car</a>: <a href="https://blog.devgenius.io/f6-automobile-technologys-multi-million-rows-of-data-sharding-strategy-based-on-apache-18c15114b9c6?source=friends_link&sk=3f691f3e95ea8a90d4d144468ec60534" rel="nofollow">User Case</a></li>
     <li><a href="http://www.juneyao.com/" rel="nofollow">JuneYao</a></li>
     <li><a href="https://4pyun.com/" rel="nofollow">4pyun</a></li>
     <li><a href="http://www.supersoco.com/" rel="nofollow">Super SOCO</a></li>
@@ -182,7 +182,7 @@ Total: 193 companies.
 <ul>
     <li><a href="https://y.tencentmusic.com" rel="nofollow">Tencent Music</a></li>
     <li><a href="https://www.bilibili.com/" rel="nofollow">Bilibili</a></li>
-    <li><a href="https://www.iqiyi.com/" rel="nofollow">Iqiyi</a>: <a href="https://blog.devgenius.io/apache-shardingsphere-enterprise-applications-e8cd903b11c4?source=friends_link&sk=2b41a413d47e42d35b204445351b5985" rel="nofollow">User Case</a></li>
+    <li><a href="https://www.iqiyi.com/" rel="nofollow">Iqiyi</a></li>
     <li><a href="https://www.yy.com/" rel="nofollow">YY</a></li>
     <li><a href="https://www.douyu.com/" rel="nofollow">DOUYU.COM</a></li>
     <li><a href="https://www.soulapp.cn/" rel="nofollow">Soul App</a></li>
@@ -193,7 +193,7 @@ Total: 193 companies.
 
 ### News
 <ul>
-    <li><a href="https://ss.sohu.com/" rel="nofollow">Sohu News</a></li>: <a href="https://blog.devgenius.io/apache-shardingsphere-enterprise-applications-e8cd903b11c4?source=friends_link&sk=2b41a413d47e42d35b204445351b5985" rel="nofollow">User Case</a></li>
+    <li><a href="https://ss.sohu.com/" rel="nofollow">Sohu News</a></li>
     <li><a href="https://www.tianya.cn/" rel="nofollow">TianYa</a></li>
     <li><a href="https://www.autohome.com.cn/" rel="nofollow">AutoHome</a></li>
     <li><a href="https://auto.ifeng.com/" rel="nofollow">Auto Ifeng</a></li>
@@ -279,7 +279,7 @@ Total: 193 companies.
 
 ### Health Care
 <ul>
-    <li><a href="https://www.keep.com/" rel="nofollow">Keep</a></li>: <a href="https://blog.devgenius.io/apache-shardingsphere-enterprise-applications-e8cd903b11c4?source=friends_link&sk=2b41a413d47e42d35b204445351b5985" rel="nofollow">User Case</a></li>
+    <li><a href="https://www.keep.com/" rel="nofollow">Keep</a></li>
     <li><a href="http://www.dxy.cn/" rel="nofollow">DXY</a></li>
     <li><a href="https://www.ddky.com/" rel="nofollow">DDKY</a></li>
     <li><a href="https://www.myweimai.com/" rel="nofollow">MyWeiMai</a></li>
