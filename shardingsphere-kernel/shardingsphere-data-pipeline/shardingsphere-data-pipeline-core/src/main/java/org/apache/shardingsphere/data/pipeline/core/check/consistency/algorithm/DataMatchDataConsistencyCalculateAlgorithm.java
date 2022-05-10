@@ -81,8 +81,8 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
         PipelineSQLBuilder sqlBuilder = PipelineSQLBuilderFactory.newInstance(parameter.getDatabaseType());
         String uniqueKey = parameter.getUniqueKey();
         CalculatedResult previousCalculatedResult = (CalculatedResult) parameter.getPreviousCalculatedResult();
-        Number startUniqueKeyValue = null != previousCalculatedResult ? previousCalculatedResult.getMaxUniqueKeyValue() : -1;
-        String sql = sqlBuilder.buildChunkedQuerySQL(parameter.getTableNameSchemaNameMapping().getSchemaName(logicTableName), logicTableName, uniqueKey, startUniqueKeyValue);
+        Object startUniqueKeyValue = null != previousCalculatedResult ? previousCalculatedResult.getMaxUniqueKeyValue() : -1;
+        String sql = sqlBuilder.buildChunkedQuerySQL(parameter.getTableNameSchemaNameMapping().getSchemaName(logicTableName), logicTableName, uniqueKey);
         try {
             return query(parameter.getDataSource(), sql, uniqueKey, startUniqueKeyValue, chunkSize);
         } catch (final SQLException ex) {
@@ -90,14 +90,14 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
         }
     }
     
-    private Optional<Object> query(final DataSource dataSource, final String sql, final String uniqueKey, final Number startUniqueKeyValue, final int chunkSize) throws SQLException {
+    private Optional<Object> query(final DataSource dataSource, final String sql, final String uniqueKey, final Object startUniqueKeyValue, final int chunkSize) throws SQLException {
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setObject(1, startUniqueKeyValue);
             preparedStatement.setInt(2, chunkSize);
             Collection<Collection<Object>> records = new LinkedList<>();
-            Number maxUniqueKeyValue = null;
+            Object maxUniqueKeyValue = null;
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
@@ -107,7 +107,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
                         record.add(resultSet.getObject(columnIndex));
                     }
                     records.add(record);
-                    maxUniqueKeyValue = (Number) resultSet.getObject(uniqueKey);
+                    maxUniqueKeyValue = resultSet.getObject(uniqueKey);
                 }
             }
             return records.isEmpty() ? Optional.empty() : Optional.of(new CalculatedResult(maxUniqueKeyValue, records.size(), records));
@@ -134,7 +134,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
     private static final class CalculatedResult {
         
         @NonNull
-        private final Number maxUniqueKeyValue;
+        private final Object maxUniqueKeyValue;
         
         private final int recordCount;
         
