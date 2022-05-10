@@ -60,7 +60,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-schedule-core</artifactId>
+            <artifactId>shardingsphere-mode-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
