@@ -119,9 +119,10 @@ public interface PipelineSQLBuilder extends TypedSPI {
      * @param schemaName schema name
      * @param tableName table name
      * @param uniqueKey unique key, it may be primary key, not null
+     * @param firstQuery first query
      * @return query SQL
      */
-    String buildChunkedQuerySQL(String schemaName, String tableName, String uniqueKey);
+    String buildChunkedQuerySQL(String schemaName, String tableName, String uniqueKey, boolean firstQuery);
     
     /**
      * Build check empty SQL.

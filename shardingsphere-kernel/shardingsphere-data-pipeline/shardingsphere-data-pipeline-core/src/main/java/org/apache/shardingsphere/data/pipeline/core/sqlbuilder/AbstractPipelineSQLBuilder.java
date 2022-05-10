@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.core.sqlbuilder;
 
-import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import lombok.NonNull;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
@@ -80,7 +80,8 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
             return "SELECT * FROM " + decoratedTableName + " WHERE " + quotedUniqueKey + " " + (firstQuery ? ">=" : ">") + " ?"
                     + " AND " + quotedUniqueKey + " <= ? ORDER BY " + quotedUniqueKey + " ASC LIMIT ?";
         } else if (PipelineJdbcUtils.isStringColumn(uniqueKeyDataType)) {
-            return "SELECT * FROM " + decoratedTableName + " ORDER BY " + quotedUniqueKey + " ASC";
+            return "SELECT * FROM " + decoratedTableName + " WHERE " + quotedUniqueKey + " " + (firstQuery ? ">=" : ">") + " ?"
+                    + " ORDER BY " + quotedUniqueKey + " ASC LIMIT ?";
         } else {
             throw new IllegalArgumentException("Unknown uniqueKeyDataType: " + uniqueKeyDataType);
         }
@@ -182,9 +183,12 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
     }
     
     @Override
-    public String buildChunkedQuerySQL(final String schemaName, final String tableName, final String uniqueKey) {
-        Preconditions.checkNotNull(uniqueKey, "uniqueKey is null");
-        return "SELECT * FROM " + decorate(schemaName, tableName) + " WHERE " + quote(uniqueKey) + " > ? ORDER BY " + quote(uniqueKey) + " ASC LIMIT ?";
+    public String buildChunkedQuerySQL(final @NonNull String schemaName, final @NonNull String tableName, final @NonNull String uniqueKey, final boolean firstQuery) {
+        if (firstQuery) {
+            return "SELECT * FROM " + decorate(schemaName, tableName) + " ORDER BY " + quote(uniqueKey) + " ASC LIMIT ?";
+        } else {
+            return "SELECT * FROM " + decorate(schemaName, tableName) + " WHERE " + quote(uniqueKey) + " > ? ORDER BY " + quote(uniqueKey) + " ASC LIMIT ?";
+        }
     }
     
     @Override

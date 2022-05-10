@@ -30,7 +30,6 @@ import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilde
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -40,8 +39,10 @@ import java.sql.SQLXML;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Data match data consistency calculate algorithm.
@@ -60,6 +61,10 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
     
     private int chunkSize;
     
+    private final Map<String, String> firstSQLCache = new ConcurrentHashMap<>();
+    
+    private final Map<String, String> laterSQLCache = new ConcurrentHashMap<>();
+    
     @Override
     public void init(final Properties props) {
         this.props = props;
@@ -77,25 +82,17 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
     
     @Override
     protected Optional<Object> calculateChunk(final DataConsistencyCalculateParameter parameter) {
-        String logicTableName = parameter.getLogicTableName();
-        PipelineSQLBuilder sqlBuilder = PipelineSQLBuilderFactory.newInstance(parameter.getDatabaseType());
-        String uniqueKey = parameter.getUniqueKey();
         CalculatedResult previousCalculatedResult = (CalculatedResult) parameter.getPreviousCalculatedResult();
-        Object startUniqueKeyValue = null != previousCalculatedResult ? previousCalculatedResult.getMaxUniqueKeyValue() : -1;
-        String sql = sqlBuilder.buildChunkedQuerySQL(parameter.getTableNameSchemaNameMapping().getSchemaName(logicTableName), logicTableName, uniqueKey);
-        try {
-            return query(parameter.getDataSource(), sql, uniqueKey, startUniqueKeyValue, chunkSize);
-        } catch (final SQLException ex) {
-            throw new PipelineDataConsistencyCheckFailedException(String.format("table %s data check failed.", logicTableName), ex);
-        }
-    }
-    
-    private Optional<Object> query(final DataSource dataSource, final String sql, final String uniqueKey, final Object startUniqueKeyValue, final int chunkSize) throws SQLException {
+        String sql = getQuerySQL(parameter);
         try (
-                Connection connection = dataSource.getConnection();
+                Connection connection = parameter.getDataSource().getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setObject(1, startUniqueKeyValue);
-            preparedStatement.setInt(2, chunkSize);
+            if (null == previousCalculatedResult) {
+                preparedStatement.setInt(1, chunkSize);
+            } else {
+                preparedStatement.setObject(1, previousCalculatedResult.getMaxUniqueKeyValue());
+                preparedStatement.setInt(2, chunkSize);
+            }
             Collection<Collection<Object>> records = new LinkedList<>();
             Object maxUniqueKeyValue = null;
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -107,10 +104,25 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
                         record.add(resultSet.getObject(columnIndex));
                     }
                     records.add(record);
-                    maxUniqueKeyValue = resultSet.getObject(uniqueKey);
+                    maxUniqueKeyValue = resultSet.getObject(parameter.getUniqueKey());
                 }
             }
             return records.isEmpty() ? Optional.empty() : Optional.of(new CalculatedResult(maxUniqueKeyValue, records.size(), records));
+        } catch (final SQLException ex) {
+            throw new PipelineDataConsistencyCheckFailedException(String.format("table %s data check failed.", parameter.getLogicTableName()), ex);
+        }
+    }
+    
+    private String getQuerySQL(final DataConsistencyCalculateParameter parameter) {
+        PipelineSQLBuilder sqlBuilder = PipelineSQLBuilderFactory.newInstance(parameter.getDatabaseType());
+        String logicTableName = parameter.getLogicTableName();
+        String schemaName = parameter.getTableNameSchemaNameMapping().getSchemaName(logicTableName);
+        String uniqueKey = parameter.getUniqueKey();
+        String cacheKey = schemaName.toLowerCase() + "." + logicTableName.toLowerCase();
+        if (null == parameter.getPreviousCalculatedResult()) {
+            return firstSQLCache.computeIfAbsent(cacheKey, s -> sqlBuilder.buildChunkedQuerySQL(schemaName, logicTableName, uniqueKey, true));
+        } else {
+            return laterSQLCache.computeIfAbsent(cacheKey, s -> sqlBuilder.buildChunkedQuerySQL(schemaName, logicTableName, uniqueKey, false));
         }
     }
     

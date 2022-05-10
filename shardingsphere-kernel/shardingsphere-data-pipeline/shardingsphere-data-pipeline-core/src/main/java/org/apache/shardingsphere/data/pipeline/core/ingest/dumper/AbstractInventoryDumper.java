@@ -124,9 +124,6 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
                     log.info("inventory dump, running is false, break");
                     break;
                 }
-                if (PipelineJdbcUtils.isStringColumn(uniqueKeyDataType)) {
-                    break;
-                }
             }
             log.info("inventory dump done, round={}, maxUniqueKeyValue={}", round, maxUniqueKeyValue);
         } catch (final SQLException ex) {
@@ -154,6 +151,11 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
                 preparedStatement.setObject(1, startUniqueKeyValue);
                 preparedStatement.setObject(2, getPositionEndValue(dumperConfig.getPosition()));
                 preparedStatement.setInt(3, batchSize);
+            } else if (PipelineJdbcUtils.isStringColumn(uniqueKeyDataType)) {
+                preparedStatement.setObject(1, startUniqueKeyValue);
+                preparedStatement.setInt(2, batchSize);
+            } else {
+                throw new IllegalArgumentException("Unsupported uniqueKeyDataType: " + uniqueKeyDataType);
             }
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 ResultSetMetaData metaData = resultSet.getMetaData();
