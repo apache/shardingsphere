@@ -249,11 +249,6 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
     }
     
     @Override
-    public Optional<String> findActualTableByCatalog(final String catalog, final String logicTable) {
-        return Optional.empty();
-    }
-    
-    @Override
     public Collection<String> getAllTables() {
         return new HashSet<>(tableNames.values());
     }
