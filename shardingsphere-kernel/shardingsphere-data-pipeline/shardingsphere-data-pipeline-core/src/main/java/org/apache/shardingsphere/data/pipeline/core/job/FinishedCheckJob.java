@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.job;
 
+import io.vertx.core.impl.ConcurrentHashSet;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPI;
@@ -35,11 +36,14 @@ import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Slf4j
 public final class FinishedCheckJob implements SimpleJob {
     
     private final RuleAlteredJobAPI ruleAlteredJobAPI = PipelineJobAPIFactory.newInstance();
+    
+    private final Set<String> onCheckJobIds = new ConcurrentHashSet<>();
     
     // TODO only one proxy node could do data consistency check in proxy cluster
     @Override
@@ -50,9 +54,14 @@ public final class FinishedCheckJob implements SimpleJob {
                 continue;
             }
             String jobId = jobInfo.getJobId();
+            if (onCheckJobIds.contains(jobId)) {
+                log.info("check not completed for job {}, ignore", jobId);
+                continue;
+            }
             if (isNotAllowDataCheck(jobId)) {
                 continue;
             }
+            onCheckJobIds.add(jobId);
             try {
                 // TODO refactor: dispatch to different job types
                 RuleAlteredJobConfiguration jobConfig = YamlEngine.unmarshal(jobInfo.getJobParameter(), RuleAlteredJobConfiguration.class, true);
@@ -93,6 +102,8 @@ public final class FinishedCheckJob implements SimpleJob {
             } catch (final Exception ex) {
                 // CHECKSTYLE:ON
                 log.error("scaling job {} finish check failed!", jobId, ex);
+            } finally {
+                onCheckJobIds.remove(jobId);
             }
         }
     }
