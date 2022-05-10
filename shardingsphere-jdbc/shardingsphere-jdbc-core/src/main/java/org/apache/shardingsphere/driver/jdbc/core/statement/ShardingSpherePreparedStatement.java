@@ -175,8 +175,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         parameterSets = new ArrayList<>();
         Optional<SQLParserRule> sqlParserRule = metaDataContexts.getGlobalRuleMetaData().findSingleRule(SQLParserRule.class);
         Preconditions.checkState(sqlParserRule.isPresent());
-        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(
-                DatabaseTypeRecognizer.getTrunkDatabaseTypeName(metaDataContexts.getMetaData(connection.getDatabaseName()).getResource().getDatabaseType()), sqlParserRule.get().toParserConfiguration());
+        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeRecognizer.getTrunkDatabaseTypeName(
+                metaDataContexts.getMetaData(connection.getDatabaseName()).getResource().getDatabaseType()), sqlParserRule.get().toParserConfiguration());
         sqlStatement = sqlParserEngine.parse(sql, true);
         sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getMetaDataMap(), sqlStatement, connection.getDatabaseName());
         parameterMetaData = new ShardingSphereParameterMetaData(sqlStatement);
