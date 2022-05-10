@@ -63,20 +63,6 @@ public final class DatabaseTypeRegistry {
     }
     
     /**
-     * Get database type by URL.
-     * 
-     * @param url database URL
-     * @return database type
-     */
-    public static DatabaseType getDatabaseTypeByURL(final String url) {
-        return DatabaseTypeFactory.newInstances().stream().filter(each -> matchURLs(url, each)).findAny().orElseGet(() -> DatabaseTypeFactory.newInstance("SQL92"));
-    }
-    
-    private static boolean matchURLs(final String url, final DatabaseType databaseType) {
-        return databaseType.getJdbcUrlPrefixes().stream().anyMatch(url::startsWith);
-    }
-    
-    /**
      * Get default database type.
      * 
      * @return default database type

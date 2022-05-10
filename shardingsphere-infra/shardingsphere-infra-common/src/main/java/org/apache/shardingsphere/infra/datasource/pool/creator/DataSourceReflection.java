@@ -21,7 +21,7 @@ import com.google.common.base.CaseFormat;
 import com.google.common.collect.Sets;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRecognizer;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaDataFactory;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaDataReflection;
@@ -165,7 +165,7 @@ public final class DataSourceReflection {
         if (null == jdbcUrl || null == jdbcConnectionProps) {
             return;
         }
-        DataSourceMetaData dataSourceMetaData = DatabaseTypeRegistry.getDatabaseTypeByURL(jdbcUrl).getDataSourceMetaData(jdbcUrl, null);
+        DataSourceMetaData dataSourceMetaData = DatabaseTypeRecognizer.getDatabaseType(jdbcUrl).getDataSourceMetaData(jdbcUrl, null);
         Properties queryProps = dataSourceMetaData.getQueryProperties();
         for (Entry<Object, Object> entry : dataSourceMetaData.getDefaultQueryProperties().entrySet()) {
             String defaultPropertyKey = entry.getKey().toString();
