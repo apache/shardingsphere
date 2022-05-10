@@ -15,39 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.core.database.parser;
+package org.apache.shardingsphere.sql.parser.core.database.visitor;
 
-import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.spi.DatabaseTypedSQLParserFacade;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ServiceLoader;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.sql.parser.spi.SQLVisitorFacade;
 
 /**
- * Database type based SQL parser facade registry.
+ * SQL visitor facade factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DatabaseTypedSQLParserFacadeRegistry {
-    
-    private static final Map<String, DatabaseTypedSQLParserFacade> FACADES = new HashMap<>();
+public final class SQLVisitorFacadeFactory {
     
     static {
-        for (DatabaseTypedSQLParserFacade each : ServiceLoader.load(DatabaseTypedSQLParserFacade.class)) {
-            FACADES.put(each.getDatabaseType(), each);
-        }
+        ShardingSphereServiceLoader.register(SQLVisitorFacade.class);
     }
     
     /**
-     * Get database type based SQL parser facade.
+     * Get instance of visitor facade.
      * 
      * @param databaseType database type
-     * @return database type based SQL parser facade
+     * @param visitorType visitor type
+     * @return instance of visitor facade
      */
-    public static DatabaseTypedSQLParserFacade getFacade(final String databaseType) {
-        Preconditions.checkArgument(FACADES.containsKey(databaseType), "Cannot support database type '%s'", databaseType);
-        return FACADES.get(databaseType);
+    public static SQLVisitorFacade getInstance(final String databaseType, final String visitorType) {
+        return TypedSPIRegistry.getRegisteredService(SQLVisitorFacade.class, String.join(".", databaseType, visitorType));
     }
 }

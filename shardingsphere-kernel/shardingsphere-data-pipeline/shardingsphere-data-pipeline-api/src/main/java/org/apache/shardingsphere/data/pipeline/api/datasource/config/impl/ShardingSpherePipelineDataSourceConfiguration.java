@@ -26,7 +26,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrlAppender;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRecognizer;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
@@ -57,7 +57,7 @@ public final class ShardingSpherePipelineDataSourceConfiguration implements Pipe
         this.parameter = parameter;
         rootConfig = YamlEngine.unmarshal(parameter, YamlRootConfiguration.class, true);
         Map<String, Object> props = rootConfig.getDataSources().values().iterator().next();
-        databaseType = DatabaseTypeRecognizer.getDatabaseType(getJdbcUrl(props));
+        databaseType = DatabaseTypeEngine.getDatabaseType(getJdbcUrl(props));
     }
     
     public ShardingSpherePipelineDataSourceConfiguration(final YamlRootConfiguration rootConfig) {
@@ -65,7 +65,7 @@ public final class ShardingSpherePipelineDataSourceConfiguration implements Pipe
         this.parameter = YamlEngine.marshal(parameterConfig);
         this.rootConfig = rootConfig;
         Map<String, Object> props = rootConfig.getDataSources().values().iterator().next();
-        databaseType = DatabaseTypeRecognizer.getDatabaseType(getJdbcUrl(props));
+        databaseType = DatabaseTypeEngine.getDatabaseType(getJdbcUrl(props));
     }
     
     private String getJdbcUrl(final Map<String, Object> props) {

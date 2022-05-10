@@ -84,6 +84,15 @@ dropOutline
     : DROP OUTLINE outlineName
     ;
 
+alterOutline
+    : ALTER OUTLINE (PUBLIC | PRIVATE)? outlineName
+    ( REBUILD
+    | RENAME TO outlineName
+    | CHANGE CATEGORY TO categoryName
+    | (ENABLE | DISABLE)
+    )+
+    ;
+
 truncateTable
     : TRUNCATE TABLE tableName materializedViewLogClause? dropReuseClause? CASCADE?
     ;

@@ -15,25 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.event.impl;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.DataSourceStatusChangedEvent;
-import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * Data source disabled event.
+ * Alter outline statement.
  */
-@RequiredArgsConstructor
-@Getter
-public final class DataSourceDisabledEvent implements DataSourceStatusChangedEvent {
-    
-    private final String databaseName;
-    
-    private final String groupName;
-    
-    private final String dataSourceName;
-    
-    private final StorageNodeDataSource storageNodeDataSource;
+@ToString
+public abstract class AlterOutlineStatement extends AbstractSQLStatement implements DDLStatement {
 }

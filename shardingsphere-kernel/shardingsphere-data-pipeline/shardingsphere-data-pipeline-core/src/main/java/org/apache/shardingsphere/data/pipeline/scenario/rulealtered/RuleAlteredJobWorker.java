@@ -42,7 +42,7 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrlAppender;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRecognizer;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.lock.LockContext;
@@ -259,7 +259,7 @@ public final class RuleAlteredJobWorker {
             log.warn("disableSSLForMySQL, could not get jdbcUrl, jdbcUrlKey={}", jdbcUrlKey);
             return;
         }
-        DatabaseType databaseType = DatabaseTypeRecognizer.getDatabaseType(jdbcUrl);
+        DatabaseType databaseType = DatabaseTypeEngine.getDatabaseType(jdbcUrl);
         if (!(databaseType instanceof MySQLDatabaseType)) {
             return;
         }

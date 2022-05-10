@@ -161,7 +161,7 @@ public abstract class BaseITCase {
         Map<String, String> actualStatusMap = new HashMap<>(2, 1);
         for (int i = 0; i < 100; i++) {
             List<Map<String, Object>> showScalingStatusResMap = jdbcTemplate.queryForList(String.format("SHOW SCALING STATUS %s", jobId));
-            log.warn("actualStatusMap: {}", actualStatusMap);
+            log.info("actualStatusMap: {}", actualStatusMap);
             boolean finished = true;
             for (Map<String, Object> entry : showScalingStatusResMap) {
                 String status = entry.get("status").toString();

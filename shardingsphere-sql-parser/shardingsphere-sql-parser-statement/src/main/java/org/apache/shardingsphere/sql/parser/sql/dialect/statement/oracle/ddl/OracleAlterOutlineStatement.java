@@ -15,21 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.schedule;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterOutlineStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
-import java.util.function.Consumer;
-
-@RequiredArgsConstructor
-@Getter
-public final class CronJob {
-    
-    private final String jobName;
-    
-    @SuppressWarnings("rawtypes")
-    private final Consumer job;
-    
-    private final String cron;
+/**
+ * Oracle alter outline statement.
+ */
+@ToString
+public final class OracleAlterOutlineStatement extends AlterOutlineStatement implements OracleStatement {
 }

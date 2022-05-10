@@ -15,21 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.event.impl;
+package org.apache.shardingsphere.mode.metadata.storage.event;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.schema.QualifiedDatabase;
 import org.apache.shardingsphere.infra.rule.event.DataSourceStatusChangedEvent;
+import org.apache.shardingsphere.mode.metadata.storage.StorageNodeDataSource;
 
 /**
- * Data source name disabled event.
+ * Data source disabled event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class DataSourceNameDisabledEvent implements DataSourceStatusChangedEvent {
+public final class DataSourceDisabledEvent implements DataSourceStatusChangedEvent {
     
-    private final QualifiedDatabase qualifiedDatabase;
+    private final String databaseName;
     
-    private final boolean isDisabled;
+    private final String groupName;
+    
+    private final String dataSourceName;
+    
+    private final StorageNodeDataSource storageNodeDataSource;
 }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.transaction.xa.jta.connection.dialect;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.transaction.xa.fixture.DataSourceUtils;
 import org.apache.shardingsphere.transaction.xa.jta.connection.XAConnectionWrapperFactory;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.XADataSourceFactory;
@@ -40,7 +40,7 @@ import static org.mockito.Mockito.when;
 
 public final class MariaDBXAConnectionWrapperTest {
     
-    private final DatabaseType databaseType = DatabaseTypeRegistry.getActualDatabaseType("MariaDB");
+    private final DatabaseType databaseType = DatabaseTypeFactory.getInstance("MariaDB");
     
     @Test
     public void assertWrap() throws SQLException {

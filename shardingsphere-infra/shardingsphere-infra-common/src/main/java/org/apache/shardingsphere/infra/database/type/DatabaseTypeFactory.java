@@ -35,21 +35,21 @@ public final class DatabaseTypeFactory {
     }
     
     /**
-     * Create new instance of database type.
+     * Get instance of database type.
      * 
      * @param name name of database type
-     * @return new instance of database type
+     * @return instance of database type
      */
-    public static DatabaseType newInstance(final String name) {
+    public static DatabaseType getInstance(final String name) {
         return TypedSPIRegistry.getRegisteredService(DatabaseType.class, name);
     }
     
     /**
-     * Create new instances of database type.
+     * Get instances of database type.
      * 
-     * @return new instances of database type
+     * @return instances of database type
      */
-    public static Collection<DatabaseType> newInstances() {
+    public static Collection<DatabaseType> getInstances() {
         return ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class);
     }
 }
