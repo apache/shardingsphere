@@ -82,5 +82,6 @@ execute
     | dropPackage
     | dropEdition
     | dropOutline
+    | alterOutline
     ) SEMI_?
     ;
