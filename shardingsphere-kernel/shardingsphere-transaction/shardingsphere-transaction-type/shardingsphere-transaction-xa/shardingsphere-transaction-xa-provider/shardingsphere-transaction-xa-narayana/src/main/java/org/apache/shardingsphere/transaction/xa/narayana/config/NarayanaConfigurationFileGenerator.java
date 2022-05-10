@@ -27,7 +27,7 @@ import com.arjuna.ats.internal.jta.recovery.arjunacore.JTATransactionLogXAResour
 import com.arjuna.ats.internal.jta.recovery.arjunacore.XARecoveryModule;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRecognizer;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
@@ -176,7 +176,7 @@ public final class NarayanaConfigurationFileGenerator implements TransactionConf
     }
     
     private String getDataSourceClassNameByJdbcUrl(final String jdbcUrl) {
-        DatabaseType type = DatabaseTypeRegistry.getDatabaseTypeByURL(jdbcUrl);
+        DatabaseType type = DatabaseTypeRecognizer.getDatabaseType(jdbcUrl);
         if (type instanceof MySQLDatabaseType || type instanceof OpenGaussDatabaseType || type instanceof PostgreSQLDatabaseType) {
             if (type.getDataSourceClassName().isPresent()) {
                 return type.getDataSourceClassName().get();

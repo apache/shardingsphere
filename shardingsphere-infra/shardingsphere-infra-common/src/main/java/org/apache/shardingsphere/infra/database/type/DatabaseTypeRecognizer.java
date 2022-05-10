@@ -40,6 +40,16 @@ public final class DatabaseTypeRecognizer {
     
     /**
      * Get database type.
+     *
+     * @param url database URL
+     * @return database type
+     */
+    public static DatabaseType getDatabaseType(final String url) {
+        return DatabaseTypeFactory.newInstances().stream().filter(each -> matchURLs(url, each)).findAny().orElseGet(() -> DatabaseTypeFactory.newInstance("SQL92"));
+    }
+    
+    /**
+     * Get database type.
      * 
      * @param dataSources data sources
      * @return database type
@@ -56,7 +66,7 @@ public final class DatabaseTypeRecognizer {
     
     private static DatabaseType getDatabaseType(final DataSource dataSource) {
         try (Connection connection = dataSource.getConnection()) {
-            return DatabaseTypeRegistry.getDatabaseTypeByURL(connection.getMetaData().getURL());
+            return getDatabaseType(connection.getMetaData().getURL());
         } catch (final SQLException ex) {
             throw new IllegalArgumentException(ex.getMessage(), ex);
         }
@@ -76,7 +86,7 @@ public final class DatabaseTypeRecognizer {
         }
         Collection<DataSource> dataSources = databaseConfigs.values().stream()
                 .filter(DatabaseTypeRecognizer::isComplete).findFirst().map(optional -> optional.getDataSources().values()).orElseGet(Collections::emptyList);
-        return DatabaseTypeRecognizer.getDatabaseType(dataSources);
+        return getDatabaseType(dataSources);
     }
     
     private static Optional<DatabaseType> findConfiguredDatabaseType(final ConfigurationProperties props) {
@@ -86,5 +96,9 @@ public final class DatabaseTypeRecognizer {
     
     private static boolean isComplete(final DatabaseConfiguration databaseConfig) {
         return !databaseConfig.getRuleConfigurations().isEmpty() && !databaseConfig.getDataSources().isEmpty();
+    }
+    
+    private static boolean matchURLs(final String url, final DatabaseType databaseType) {
+        return databaseType.getJdbcUrlPrefixes().stream().anyMatch(url::startsWith);
     }
 }

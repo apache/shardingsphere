@@ -144,4 +144,19 @@ public final class DatabaseTypeRecognizerTest {
         when(connection.getMetaData().getURL()).thenReturn(url);
         return result;
     }
+    
+    @Test
+    public void assertGetDatabaseTypeByStandardURL() {
+        assertThat(DatabaseTypeRecognizer.getDatabaseType("jdbc:mysql://localhost:3306/test").getType(), is("MySQL"));
+    }
+    
+    @Test
+    public void assertGetDatabaseTypeByURLAlias() {
+        assertThat(DatabaseTypeRecognizer.getDatabaseType("jdbc:mysqlx://localhost:3306/test").getType(), is("MySQL"));
+    }
+    
+    @Test
+    public void assertGetDatabaseTypeSQL92() {
+        assertThat(DatabaseTypeRecognizer.getDatabaseType("jdbc:sqlite:test").getType(), is("SQL92"));
+    }
 }

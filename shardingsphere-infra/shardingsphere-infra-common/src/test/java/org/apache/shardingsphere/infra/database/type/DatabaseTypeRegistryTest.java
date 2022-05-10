@@ -58,21 +58,6 @@ public final class DatabaseTypeRegistryTest {
     }
     
     @Test
-    public void assertGetDatabaseTypeByStandardURL() {
-        assertThat(DatabaseTypeRegistry.getDatabaseTypeByURL("jdbc:mysql://localhost:3306/test").getType(), is("MySQL"));
-    }
-    
-    @Test
-    public void assertGetDatabaseTypeByURLAlias() {
-        assertThat(DatabaseTypeRegistry.getDatabaseTypeByURL("jdbc:mysqlx://localhost:3306/test").getType(), is("MySQL"));
-    }
-    
-    @Test
-    public void assertGetDatabaseTypeSQL92() {
-        assertThat(DatabaseTypeRegistry.getDatabaseTypeByURL("jdbc:sqlite:test").getType(), is("SQL92"));
-    }
-    
-    @Test
     public void assertGetDefaultDatabaseType() {
         assertThat(DatabaseTypeRegistry.getDefaultDatabaseType().getType(), is("MySQL"));
     }
