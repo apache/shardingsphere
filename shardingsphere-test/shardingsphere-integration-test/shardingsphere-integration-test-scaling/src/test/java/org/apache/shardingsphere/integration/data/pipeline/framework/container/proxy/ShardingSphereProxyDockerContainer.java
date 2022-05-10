@@ -51,7 +51,7 @@ public final class ShardingSphereProxyDockerContainer extends DockerITContainer 
         } else {
             setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(3307), ""), "root", "root")));
         }
-        withLogConsumer(new Slf4jLogConsumer(log));
+        withLogConsumer(new Slf4jLogConsumer(log).withSeparateOutputStreams());
     }
     
     private void mapConfigurationFiles() {
