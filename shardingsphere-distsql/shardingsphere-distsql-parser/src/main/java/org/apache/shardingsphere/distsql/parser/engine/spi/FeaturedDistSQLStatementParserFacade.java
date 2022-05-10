@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.distsql.parser.engine.spi;
 
 import org.apache.shardingsphere.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserFacade;
 
@@ -26,7 +25,7 @@ import org.apache.shardingsphere.sql.parser.spi.SQLParserFacade;
  * Featured dist SQL statement parser facade.
  */
 @SingletonSPI
-public interface FeaturedDistSQLStatementParserFacade extends SQLParserFacade, TypedSPI {
+public interface FeaturedDistSQLStatementParserFacade extends SQLParserFacade {
     
     /**
      * Get visitor class.
