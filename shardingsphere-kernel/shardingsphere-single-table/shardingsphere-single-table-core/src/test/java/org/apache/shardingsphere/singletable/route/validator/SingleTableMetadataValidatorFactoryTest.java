@@ -52,5 +52,4 @@ public final class SingleTableMetadataValidatorFactoryTest {
         Optional<SingleTableMetadataValidator> actual = SingleTableMetadataValidatorFactory.newInstance(statement);
         assertTrue(actual.isPresent());
     }
-    
 }
