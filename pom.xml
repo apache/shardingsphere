@@ -1031,6 +1031,52 @@
                 </executions>
             </plugin>
             <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <version>${spotless-maven-plugin.version}</version>
+                <configuration>
+                    <java>
+                        <eclipse>
+                            <file>${maven.multiModuleProjectDirectory}/src/resources/spotless_shardingsphere_formatter.xml</file>
+                        </eclipse>
+                        <licenseHeader>
+                            <file>${maven.multiModuleProjectDirectory}/src/resources/license-header</file>
+                        </licenseHeader>
+                    </java>
+                    <pom>
+                        <sortPom>
+                            <encoding>UTF-8</encoding>
+                            <nrOfIndentSpace>4</nrOfIndentSpace>
+                            <keepBlankLines>true</keepBlankLines>
+                            <indentBlankLines>true</indentBlankLines>
+                            <indentSchemaLocation>true</indentSchemaLocation>
+                            <spaceBeforeCloseEmptyElement>true</spaceBeforeCloseEmptyElement>
+                            <sortModules>false</sortModules>
+                            <sortExecutions>false</sortExecutions>
+                            <predefinedSortOrder>custom_1</predefinedSortOrder>
+                            <expandEmptyElements>false</expandEmptyElements>
+                            <sortProperties>false</sortProperties>
+                        </sortPom>
+                        <replace>
+                            <name>Leading blank line</name>
+                            <search>--&gt;
+&lt;project</search>
+                            <replacement>--&gt;
+
+&lt;project</replacement>
+                        </replace>
+                    </pom>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>apply</goal>
+                        </goals>
+                        <phase>compile</phase>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <version>${maven-checkstyle-plugin.version}</version>
                 <configuration>
@@ -1297,59 +1343,6 @@
                         </plugin>
                     </plugins>
                 </pluginManagement>
-            </build>
-        </profile>
-        <profile>
-            <id>code.format</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>com.diffplug.spotless</groupId>
-                        <artifactId>spotless-maven-plugin</artifactId>
-                        <version>${spotless-maven-plugin.version}</version>
-                        <configuration>
-                            <java>
-                                <eclipse>
-                                    <file>${maven.multiModuleProjectDirectory}/src/resources/spotless_shardingsphere_formatter.xml</file>
-                                </eclipse>
-                                <licenseHeader>
-                                    <file>${maven.multiModuleProjectDirectory}/src/resources/license-header</file>
-                                </licenseHeader>
-                            </java>
-                            <pom>
-                                <sortPom>
-                                    <encoding>UTF-8</encoding>
-                                    <nrOfIndentSpace>4</nrOfIndentSpace>
-                                    <keepBlankLines>true</keepBlankLines>
-                                    <indentBlankLines>true</indentBlankLines>
-                                    <indentSchemaLocation>true</indentSchemaLocation>
-                                    <spaceBeforeCloseEmptyElement>true</spaceBeforeCloseEmptyElement>
-                                    <sortModules>false</sortModules>
-                                    <sortExecutions>false</sortExecutions>
-                                    <predefinedSortOrder>custom_1</predefinedSortOrder>
-                                    <expandEmptyElements>false</expandEmptyElements>
-                                    <sortProperties>false</sortProperties>
-                                </sortPom>
-                                <replace>
-                                    <name>Leading blank line</name>
-                                    <search>--&gt;
-&lt;project</search>
-                                    <replacement>--&gt;
-
-&lt;project</replacement>
-                                </replace>
-                            </pom>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>apply</goal>
-                                </goals>
-                                <phase>compile</phase>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
             </build>
         </profile>
     </profiles>

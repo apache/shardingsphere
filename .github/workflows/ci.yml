@@ -83,7 +83,7 @@ jobs:
       - name: Build with Maven
         shell: cmd
         run: |
-          .\mvnw -B clean -D"maven.javadoc.skip"=true -D"rat.skip"=true install < nul
+          .\mvnw -B clean -D"maven.javadoc.skip"=true -D"rat.skip"=true -D"spotless.apply.skip"=true install < nul
           echo "mvnw exited"
       - name: Build examples with Maven
         run: ./mvnw -B -f examples/pom.xml clean package -DskipTests
@@ -99,15 +99,15 @@ jobs:
         java:
           - {
             version: 8,
-            maven_args: "-Dmaven.javadoc.skip=true -Drat.skip=true -Dcheckstyle.skip=true"
+            maven_args: "-Dmaven.javadoc.skip=true -Drat.skip=true -Dcheckstyle.skip=true -Dspotless.apply.skip=true"
           }
           - {
             version: 11,
-            maven_args: "-Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true"
+            maven_args: "-Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true -Dspotless.apply.skip=true"
           }
           - {
             version: 17,
-            maven_args: "-Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true"
+            maven_args: "-Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true -Dspotless.apply.skip=true"
           }
     steps:
       - uses: actions/checkout@v2
@@ -141,7 +141,7 @@ jobs:
         java:
           - {
             version: 8,
-            maven_args: "-Dmaven.javadoc.skip=true -Drat.skip=true -Dcheckstyle.skip=true"
+            maven_args: "-Dmaven.javadoc.skip=true -Drat.skip=true -Dcheckstyle.skip=true -Dspotless.apply.skip=true"
           }
     steps:
       - name: Cache Maven Repos
@@ -183,6 +183,6 @@ jobs:
           distribution: 'temurin'
           java-version: 8
       - name: Build Project
-        run: ./mvnw -B clean install -Dmaven.javadoc.skip=true -Drat.skip=true -Dcheckstyle.skip=true -DskipITs -DskipTests
+        run: ./mvnw -B clean install -Dmaven.javadoc.skip=true -Drat.skip=true -Dcheckstyle.skip=true -DskipITs -DskipTests -Dspotless.apply.skip=true
       - name: Run Example generator
         run: echo y | ./mvnw -B test -f examples/shardingsphere-example-generator/pom.xml -Pexample-generator

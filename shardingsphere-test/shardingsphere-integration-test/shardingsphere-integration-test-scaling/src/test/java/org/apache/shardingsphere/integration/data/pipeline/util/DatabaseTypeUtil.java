@@ -28,7 +28,7 @@ public final class DatabaseTypeUtil {
      * @return true if database type is MySQL, false otherwise
      */
     public static boolean isMySQL(final DatabaseType databaseType) {
-        return databaseType.getName().equals("MySQL");
+        return databaseType.getType().equals("MySQL");
     }
     
     /**
@@ -38,6 +38,6 @@ public final class DatabaseTypeUtil {
      * @return true if database type is PostgreSQL, false otherwise
      */
     public static boolean isPostgreSQL(final DatabaseType databaseType) {
-        return databaseType.getName().equals("PostgreSQL");
+        return databaseType.getType().equals("PostgreSQL");
     }
 }

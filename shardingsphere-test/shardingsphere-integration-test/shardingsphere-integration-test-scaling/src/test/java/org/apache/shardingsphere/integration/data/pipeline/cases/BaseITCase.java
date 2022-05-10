@@ -133,9 +133,9 @@ public abstract class BaseITCase {
     private String getActualJdbcUrlTemplate(final String databaseName) {
         final DockerDatabaseContainer databaseContainer = composedContainer.getDatabaseContainer();
         if (ENV.getItEnvType() == ITEnvTypeEnum.DOCKER) {
-            return String.format("jdbc:%s://%s:%s/%s", databaseContainer.getDatabaseType().getName().toLowerCase(), "db.host", databaseContainer.getPort(), databaseName);
+            return String.format("jdbc:%s://%s:%s/%s", databaseContainer.getDatabaseType().getType().toLowerCase(), "db.host", databaseContainer.getPort(), databaseName);
         } else {
-            return String.format("jdbc:%s://%s:%s/%s", databaseContainer.getDatabaseType().getName().toLowerCase(), "127.0.0.1", databaseContainer.getFirstMappedPort(), databaseName);
+            return String.format("jdbc:%s://%s:%s/%s", databaseContainer.getDatabaseType().getType().toLowerCase(), "127.0.0.1", databaseContainer.getFirstMappedPort(), databaseName);
         }
     }
     

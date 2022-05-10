@@ -53,7 +53,7 @@ public final class DatabaseAdminBackendHandlerFactory {
      * @return new instance of database admin backend handler
      */
     public static Optional<TextProtocolBackendHandler> newInstance(final DatabaseType databaseType, final SQLStatementContext<?> sqlStatementContext, final ConnectionSession connectionSession) {
-        Optional<DatabaseAdminExecutorFactory> executorFactory = TypedSPIRegistry.findRegisteredService(DatabaseAdminExecutorFactory.class, databaseType.getName());
+        Optional<DatabaseAdminExecutorFactory> executorFactory = TypedSPIRegistry.findRegisteredService(DatabaseAdminExecutorFactory.class, databaseType.getType());
         if (!executorFactory.isPresent()) {
             return Optional.empty();
         }
@@ -72,7 +72,7 @@ public final class DatabaseAdminBackendHandlerFactory {
      */
     public static Optional<TextProtocolBackendHandler> newInstance(final DatabaseType databaseType, final SQLStatementContext<?> sqlStatementContext,
                                                                    final ConnectionSession connectionSession, final String sql) {
-        Optional<DatabaseAdminExecutorFactory> executorFactory = TypedSPIRegistry.findRegisteredService(DatabaseAdminExecutorFactory.class, databaseType.getName());
+        Optional<DatabaseAdminExecutorFactory> executorFactory = TypedSPIRegistry.findRegisteredService(DatabaseAdminExecutorFactory.class, databaseType.getType());
         if (!executorFactory.isPresent()) {
             return Optional.empty();
         }

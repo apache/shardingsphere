@@ -66,7 +66,7 @@ public class TableMetaDataUtil {
     
     private static void checkDataSourceTypeIncludeInstanceAndSetDatabaseTableMap(final DatabaseType databaseType, final DataNodes dataNodes, final String tableName) {
         for (DataNode dataNode : dataNodes.getDataNodes(tableName)) {
-            if (databaseType.getName() != null && !databaseType.getName().equals("MySQL") && dataNode.getDataSourceName().contains(".")) {
+            if (databaseType.getType() != null && !databaseType.getType().equals("MySQL") && dataNode.getDataSourceName().contains(".")) {
                 throw new ShardingSphereException("Unsupported jdbc: '%s', actualDataNode:'%s', database type is not mysql, but actual data is three-tier structure",
                         databaseType.getJdbcUrlPrefixes(), dataNode.getDataSourceName());
             }

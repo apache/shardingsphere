@@ -123,7 +123,7 @@ public final class ScenarioDataPath {
      * @return init SQL resource path
      */
     public String getInitSQLResourcePath(final Type type, final DatabaseType databaseType) {
-        return String.join("/", getBasicPath(type), INIT_SQL_PATH, databaseType.getName().toLowerCase());
+        return String.join("/", getBasicPath(type), INIT_SQL_PATH, databaseType.getType().toLowerCase());
     }
     
     private String getBasicPath(final Type type) {
