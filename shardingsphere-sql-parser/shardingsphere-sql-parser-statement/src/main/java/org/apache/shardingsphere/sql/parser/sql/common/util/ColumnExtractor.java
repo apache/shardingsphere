@@ -72,7 +72,7 @@ public final class ColumnExtractor {
         ColumnSegment left = (ColumnSegment) expression.getLeft();
         String columnName = String.format("%s%s ", left.getOwner().isPresent() ? left.getOwner().get() + "." : "", left.getIdentifier().getValue());
         if (null == expression.getText()) {
-            return  false;
+            return false;
         }
         String rightValue = expression.getText().replace(columnName, "");
         return Arrays.asList("IS NULL", "IS NOT NULL").contains(rightValue.toUpperCase());
