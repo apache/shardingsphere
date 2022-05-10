@@ -39,24 +39,24 @@ import java.util.Calendar;
 
 @AllArgsConstructor
 public final class FederationResultSet extends AbstractUnsupportedOperationResultSet {
-
+    
     private MergedResult mergedResult;
-
+    
     @Override
     public boolean next() throws SQLException {
         return mergedResult.next();
     }
-
+    
     @Override
     public void close() throws SQLException {
-
+        
     }
-
+    
     @Override
     public boolean wasNull() throws SQLException {
         return false;
     }
-
+    
     @Override
     public String getString(final int columnIndex) throws SQLException {
         return null;
@@ -86,7 +86,7 @@ public final class FederationResultSet extends AbstractUnsupportedOperationResul
     public byte getByte(final String columnLabel) throws SQLException {
         return 0;
     }
-
+    
     @Override
     public short getShort(final int columnIndex) throws SQLException {
         return 0;
@@ -256,42 +256,42 @@ public final class FederationResultSet extends AbstractUnsupportedOperationResul
     public InputStream getBinaryStream(final String columnLabel) throws SQLException {
         return null;
     }
-
+    
     @Override
     public SQLWarning getWarnings() throws SQLException {
         return null;
     }
-
+    
     @Override
     public void clearWarnings() throws SQLException {
-
+        
     }
-
+    
     @Override
     public ResultSetMetaData getMetaData() throws SQLException {
         return null;
     }
-
+    
     @Override
     public Object getObject(final int columnIndex) throws SQLException {
         return null;
     }
-
+    
     @Override
     public Object getObject(final String columnLabel) throws SQLException {
         return null;
     }
-
+    
     @Override
     public int findColumn(final String columnLabel) throws SQLException {
         return 0;
     }
-
+    
     @Override
     public Reader getCharacterStream(final int columnIndex) throws SQLException {
         return null;
     }
-
+    
     @Override
     public Reader getCharacterStream(final String columnLabel) throws SQLException {
         return null;
@@ -299,39 +299,39 @@ public final class FederationResultSet extends AbstractUnsupportedOperationResul
     
     @Override
     public void setFetchDirection(final int direction) throws SQLException {
-
+        
     }
-
+    
     @Override
     public int getFetchDirection() throws SQLException {
         return 0;
     }
-
+    
     @Override
     public void setFetchSize(final int rows) throws SQLException {
-
+        
     }
-
+    
     @Override
     public int getFetchSize() throws SQLException {
         return 0;
     }
-
+    
     @Override
     public int getType() throws SQLException {
         return 0;
     }
-
+    
     @Override
     public int getConcurrency() throws SQLException {
         return 0;
     }
-
+    
     @Override
     public Statement getStatement() throws SQLException {
         return null;
     }
-
+    
     @Override
     public Blob getBlob(final int columnIndex) throws SQLException {
         return null;
@@ -356,42 +356,42 @@ public final class FederationResultSet extends AbstractUnsupportedOperationResul
     public Array getArray(final int columnIndex) throws SQLException {
         return null;
     }
-
+    
     @Override
     public Array getArray(final String columnLabel) throws SQLException {
         return null;
     }
-
+    
     @Override
     public URL getURL(final int columnIndex) throws SQLException {
         return null;
     }
-
+    
     @Override
     public URL getURL(final String columnLabel) throws SQLException {
         return null;
     }
-
+    
     @Override
     public boolean isClosed() throws SQLException {
         return false;
     }
-
+    
     @Override
     public SQLXML getSQLXML(final int columnIndex) throws SQLException {
         return null;
     }
-
+    
     @Override
     public SQLXML getSQLXML(final String columnLabel) throws SQLException {
         return null;
     }
-
+    
     @Override
     public String getNString(final int columnIndex) throws SQLException {
         return null;
     }
-
+    
     @Override
     public String getNString(final String columnLabel) throws SQLException {
         return null;

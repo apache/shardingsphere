@@ -35,9 +35,9 @@ import org.apache.shardingsphere.infra.federation.optimizer.ShardingSphereOptimi
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.enumerable.EnumerableMergedResult;
+import org.apache.shardingsphere.infra.parser.ParserConfiguration;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
-import org.apache.shardingsphere.parser.rule.SQLParserRule;
-import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
+import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.Connection;
@@ -54,10 +54,10 @@ public final class CustomizedFilterableExecutor implements FederationExecutor {
     private final String schemaName;
     
     private final ShardingSphereOptimizer optimizer;
-
+    
     private ResultSet federationResultSet;
     
-    private final SQLParserRule sqlParserRule = new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build());
+    private final ParserConfiguration parserConfiguration = new ParserConfiguration(new CacheOption(1, 1, 1), new CacheOption(1, 1, 1), false);
     
     public CustomizedFilterableExecutor(final String databaseName, final String schemaName, final OptimizerContext context) {
         this.databaseName = databaseName;
@@ -70,7 +70,7 @@ public final class CustomizedFilterableExecutor implements FederationExecutor {
                                   final JDBCExecutorCallback<? extends ExecuteResult> callback, final FederationContext federationContext) throws SQLException {
         String sql = federationContext.getLogicSQL().getSql();
         ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(
-                DatabaseTypeRegistry.getTrunkDatabaseTypeName(new H2DatabaseType()), sqlParserRule);
+                DatabaseTypeRegistry.getTrunkDatabaseTypeName(new H2DatabaseType()), parserConfiguration);
         SQLStatement sqlStatement = sqlParserEngine.parse(sql, false);
         Enumerable<Object[]> enumerableResult = execute(sqlStatement);
         MergedResult mergedResult = new EnumerableMergedResult(enumerableResult);

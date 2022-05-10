@@ -37,7 +37,7 @@ import java.util.Calendar;
 public final class EnumerableMergedResult implements MergedResult {
     
     private final Enumerable<Object[]> enumerableResult;
-
+    
     private boolean wasNull;
     
     @Override
@@ -63,7 +63,7 @@ public final class EnumerableMergedResult implements MergedResult {
     public InputStream getInputStream(final int columnIndex, final String type) throws SQLException {
         return getInputStream(enumerableResult.enumerator().current()[columnIndex - 1]);
     }
-
+    
     @SneakyThrows(IOException.class)
     private InputStream getInputStream(final Object value) {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -73,7 +73,7 @@ public final class EnumerableMergedResult implements MergedResult {
         objectOutputStream.close();
         return new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
     }
-
+    
     @Override
     public boolean wasNull() throws SQLException {
         return wasNull;

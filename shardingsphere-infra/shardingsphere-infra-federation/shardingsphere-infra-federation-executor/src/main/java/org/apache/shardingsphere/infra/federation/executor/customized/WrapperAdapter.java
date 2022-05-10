@@ -24,7 +24,7 @@ import java.sql.Wrapper;
  * Adapter for {@code java.sql.Wrapper}.
  */
 public abstract class WrapperAdapter implements Wrapper {
-
+    
     @SuppressWarnings("unchecked")
     @Override
     public final <T> T unwrap(final Class<T> iface) throws SQLException {
