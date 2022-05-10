@@ -23,7 +23,7 @@ import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.InventoryDumper
 import org.apache.shardingsphere.scaling.core.job.check.EnvironmentChecker;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
 
-public final class FixtureScalingEntry implements ScalingEntry {
+public final class H2ScalingEntryFixture implements ScalingEntry {
     
     @Override
     public Class<? extends InventoryDumper> getInventoryDumperClass() {
