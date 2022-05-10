@@ -19,9 +19,6 @@ package org.apache.shardingsphere.infra.database.type;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.typed.TypedSPI;
-import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -33,10 +30,6 @@ import java.util.stream.Collectors;
 public final class DatabaseTypeRegistry {
     
     private static final String DEFAULT_DATABASE_TYPE = "MySQL";
-    
-    static {
-        ShardingSphereServiceLoader.register(DatabaseType.class);
-    }
     
     /**
      * Get name of trunk database type.
@@ -55,7 +48,7 @@ public final class DatabaseTypeRegistry {
      * @return trunk database type
      */
     public static DatabaseType getTrunkDatabaseType(final String name) {
-        DatabaseType databaseType = TypedSPIRegistry.getRegisteredService(DatabaseType.class, name);
+        DatabaseType databaseType = DatabaseTypeFactory.newInstance(name);
         return databaseType instanceof BranchDatabaseType ? ((BranchDatabaseType) databaseType).getTrunkDatabaseType() : getActualDatabaseType(name);
     }
     
@@ -66,7 +59,7 @@ public final class DatabaseTypeRegistry {
      * @return actual database type
      */
     public static DatabaseType getActualDatabaseType(final String name) {
-        return TypedSPIRegistry.getRegisteredService(DatabaseType.class, name);
+        return DatabaseTypeFactory.newInstance(name);
     }
     
     /**
@@ -76,8 +69,7 @@ public final class DatabaseTypeRegistry {
      * @return database type
      */
     public static DatabaseType getDatabaseTypeByURL(final String url) {
-        Collection<DatabaseType> databaseType = ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class);
-        return databaseType.stream().filter(each -> matchURLs(url, each)).findAny().orElseGet(() -> TypedSPIRegistry.getRegisteredService(DatabaseType.class, "SQL92"));
+        return DatabaseTypeFactory.newInstances().stream().filter(each -> matchURLs(url, each)).findAny().orElseGet(() -> DatabaseTypeFactory.newInstance("SQL92"));
     }
     
     private static boolean matchURLs(final String url, final DatabaseType databaseType) {
@@ -90,7 +82,7 @@ public final class DatabaseTypeRegistry {
      * @return default database type
      */
     public static DatabaseType getDefaultDatabaseType() {
-        return TypedSPIRegistry.getRegisteredService(DatabaseType.class, DEFAULT_DATABASE_TYPE);
+        return DatabaseTypeFactory.newInstance(DEFAULT_DATABASE_TYPE);
     }
     
     /**
@@ -99,6 +91,6 @@ public final class DatabaseTypeRegistry {
      * @return database type names
      */
     public static Collection<String> getDatabaseTypeNames() {
-        return ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class).stream().map(TypedSPI::getType).collect(Collectors.toList());
+        return DatabaseTypeFactory.newInstances().stream().map(DatabaseType::getType).collect(Collectors.toList());
     }
 }
