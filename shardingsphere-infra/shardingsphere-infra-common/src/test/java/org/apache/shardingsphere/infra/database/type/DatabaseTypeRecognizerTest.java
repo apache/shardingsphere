@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.database.type;
 
+import org.apache.shardingsphere.infra.database.type.dialect.MariaDBDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -84,7 +86,7 @@ public final class DatabaseTypeRecognizerTest {
     }
     
     @Test
-    public void assertGetDefaultDatabaseType() {
+    public void assertGetDatabaseTypeWithEmptyDataSources() {
         assertThat(DatabaseTypeRecognizer.getDatabaseType(Collections.emptyList()).getType(), is("MySQL"));
     }
     
@@ -158,5 +160,30 @@ public final class DatabaseTypeRecognizerTest {
     @Test
     public void assertGetDatabaseTypeSQL92() {
         assertThat(DatabaseTypeRecognizer.getDatabaseType("jdbc:sqlite:test").getType(), is("SQL92"));
+    }
+    
+    @Test
+    public void assertGetTrunkDatabaseTypeWithTrunkDatabaseType() {
+        assertThat(DatabaseTypeRecognizer.getTrunkDatabaseType("MySQL").getType(), is("MySQL"));
+    }
+    
+    @Test
+    public void assertGetTrunkDatabaseTypeWithBranchDatabaseType() {
+        assertThat(DatabaseTypeRecognizer.getTrunkDatabaseType("H2").getType(), is("MySQL"));
+    }
+    
+    @Test
+    public void assertGetTrunkDatabaseTypeNameWithTrunkDatabaseType() {
+        assertThat(DatabaseTypeRecognizer.getTrunkDatabaseTypeName(new MySQLDatabaseType()), is("MySQL"));
+    }
+    
+    @Test
+    public void assertGetTrunkDatabaseTypeNameWithBranchDatabaseType() {
+        assertThat(DatabaseTypeRecognizer.getTrunkDatabaseTypeName(new MariaDBDatabaseType()), is("MySQL"));
+    }
+    
+    @Test
+    public void assertGetDefaultDatabaseType() {
+        assertThat(DatabaseTypeRecognizer.getDefaultDatabaseType().getType(), is("MySQL"));
     }
 }

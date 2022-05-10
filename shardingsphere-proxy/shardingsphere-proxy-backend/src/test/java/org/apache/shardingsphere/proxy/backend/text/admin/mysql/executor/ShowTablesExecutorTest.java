@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRecognizer;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
@@ -85,7 +85,7 @@ public final class ShowTablesExecutorTest {
     
     @Test
     public void assertShowTablesExecutorWithoutFilter() throws SQLException {
-        ShowTablesExecutor showTablesExecutor = new ShowTablesExecutor(new MySQLShowTablesStatement(), DatabaseTypeRegistry.getDefaultDatabaseType());
+        ShowTablesExecutor showTablesExecutor = new ShowTablesExecutor(new MySQLShowTablesStatement(), DatabaseTypeRecognizer.getDefaultDatabaseType());
         showTablesExecutor.execute(mockConnectionSession());
         assertThat(showTablesExecutor.getQueryResultMetaData().getColumnCount(), is(2));
         showTablesExecutor.getMergedResult().next();

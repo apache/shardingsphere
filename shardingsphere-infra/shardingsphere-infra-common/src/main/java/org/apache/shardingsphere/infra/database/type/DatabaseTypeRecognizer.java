@@ -38,6 +38,8 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DatabaseTypeRecognizer {
     
+    private static final String DEFAULT_DATABASE_TYPE = "MySQL";
+    
     /**
      * Get database type.
      *
@@ -61,7 +63,7 @@ public final class DatabaseTypeRecognizer {
             Preconditions.checkState(null == result || result == databaseType, "Database type inconsistent with '%s' and '%s'", result, databaseType);
             result = databaseType;
         }
-        return null == result ? DatabaseTypeRegistry.getDefaultDatabaseType() : result;
+        return null == result ? DatabaseTypeRecognizer.getDefaultDatabaseType() : result;
     }
     
     private static DatabaseType getDatabaseType(final DataSource dataSource) {
@@ -91,7 +93,7 @@ public final class DatabaseTypeRecognizer {
     
     private static Optional<DatabaseType> findConfiguredDatabaseType(final ConfigurationProperties props) {
         String configuredDatabaseType = props.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE);
-        return configuredDatabaseType.isEmpty() ? Optional.empty() : Optional.of(DatabaseTypeRegistry.getTrunkDatabaseType(configuredDatabaseType));
+        return configuredDatabaseType.isEmpty() ? Optional.empty() : Optional.of(DatabaseTypeRecognizer.getTrunkDatabaseType(configuredDatabaseType));
     }
     
     private static boolean isComplete(final DatabaseConfiguration databaseConfig) {
@@ -100,5 +102,35 @@ public final class DatabaseTypeRecognizer {
     
     private static boolean matchURLs(final String url, final DatabaseType databaseType) {
         return databaseType.getJdbcUrlPrefixes().stream().anyMatch(url::startsWith);
+    }
+    
+    /**
+     * Get trunk database type.
+     *
+     * @param name database name 
+     * @return trunk database type
+     */
+    public static DatabaseType getTrunkDatabaseType(final String name) {
+        DatabaseType databaseType = DatabaseTypeFactory.getInstance(name);
+        return databaseType instanceof BranchDatabaseType ? ((BranchDatabaseType) databaseType).getTrunkDatabaseType() : databaseType;
+    }
+    
+    /**
+     * Get name of trunk database type.
+     *
+     * @param databaseType database type
+     * @return name of trunk database type
+     */
+    public static String getTrunkDatabaseTypeName(final DatabaseType databaseType) {
+        return databaseType instanceof BranchDatabaseType ? ((BranchDatabaseType) databaseType).getTrunkDatabaseType().getType() : databaseType.getType();
+    }
+    
+    /**
+     * Get default database type.
+     *
+     * @return default database type
+     */
+    public static DatabaseType getDefaultDatabaseType() {
+        return DatabaseTypeFactory.getInstance(DEFAULT_DATABASE_TYPE);
     }
 }
