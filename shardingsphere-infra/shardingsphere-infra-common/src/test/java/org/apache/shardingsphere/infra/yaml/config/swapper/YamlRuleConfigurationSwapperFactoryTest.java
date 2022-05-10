@@ -26,32 +26,34 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class YamlRuleConfigurationSwapperFactoryTest {
     
+    @SuppressWarnings("rawtypes")
     @Test
-    public void newInstanceMapByRuleConfigurations() {
+    public void assertGetInstanceMapByRuleConfigurations() {
         RuleConfigurationFixture ruleConfigurationFixture = new RuleConfigurationFixture();
-        Map<RuleConfiguration, YamlRuleConfigurationSwapper> yamlRuleConfigurationSwapperMap = YamlRuleConfigurationSwapperFactory
-                .getInstanceMapByRuleConfigurations(Collections.singletonList(ruleConfigurationFixture));
-        assertTrue(yamlRuleConfigurationSwapperMap.get(ruleConfigurationFixture) instanceof YamlRuleConfigurationSwapperFixture);
+        Map<RuleConfiguration, YamlRuleConfigurationSwapper> actual = YamlRuleConfigurationSwapperFactory.getInstanceMapByRuleConfigurations(Collections.singletonList(ruleConfigurationFixture));
+        assertThat(actual.get(ruleConfigurationFixture), instanceOf(YamlRuleConfigurationSwapperFixture.class));
     }
     
+    @SuppressWarnings("rawtypes")
     @Test
-    public void newInstanceMapByRuleConfigurationClasses() {
-        Map<Class<?>, YamlRuleConfigurationSwapper> yamlRuleConfigurationSwapperMap = YamlRuleConfigurationSwapperFactory
-                .getInstanceMapByRuleConfigurationClasses(Collections.singletonList(RuleConfigurationFixture.class));
-        assertTrue(yamlRuleConfigurationSwapperMap.get(RuleConfigurationFixture.class) instanceof YamlRuleConfigurationSwapperFixture);
+    public void assertGetInstanceMapByRuleConfigurationClasses() {
+        Map<Class<?>, YamlRuleConfigurationSwapper> actual = YamlRuleConfigurationSwapperFactory.getInstanceMapByRuleConfigurationClasses(Collections.singletonList(RuleConfigurationFixture.class));
+        assertThat(actual.get(RuleConfigurationFixture.class), instanceOf(YamlRuleConfigurationSwapperFixture.class));
     }
     
+    @SuppressWarnings("rawtypes")
     @Test
-    public void newInstances() {
-        Collection<YamlRuleConfigurationSwapper> yamlRuleConfigurationSwappers = YamlRuleConfigurationSwapperFactory.getAllInstances();
-        assertThat(yamlRuleConfigurationSwappers.size(), is(1));
-        assertTrue(yamlRuleConfigurationSwappers.stream().findFirst().isPresent());
-        assertTrue(yamlRuleConfigurationSwappers.stream().findFirst().get() instanceof YamlRuleConfigurationSwapperFixture);
+    public void assertGetAllInstances() {
+        Collection<YamlRuleConfigurationSwapper> actual = YamlRuleConfigurationSwapperFactory.getAllInstances();
+        assertThat(actual.size(), is(1));
+        assertTrue(actual.stream().findFirst().isPresent());
+        assertThat(actual.stream().findFirst().get(), instanceOf(YamlRuleConfigurationSwapperFixture.class));
     }
 }

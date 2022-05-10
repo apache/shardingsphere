@@ -17,31 +17,20 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.loader.spi;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
+import org.apache.shardingsphere.infra.metadata.schema.loader.dialect.H2SchemaMetaDataLoader;
+import org.junit.Test;
 
 import java.util.Optional;
 
-/**
- * Dialect table meta data loader factory.
- */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DialectTableMetaDataLoaderFactory {
+import static org.junit.Assert.assertTrue;
+
+public final class DialectSchemaMetaDataLoaderFactoryTest {
     
-    static {
-        ShardingSphereServiceLoader.register(DialectSchemaMetaDataLoader.class);
-    }
-    
-    /**
-     * Find instance of dialect table meta data loader.
-     * 
-     * @param databaseType database type
-     * @return found instance
-     */
-    public static Optional<DialectSchemaMetaDataLoader> findInstance(final DatabaseType databaseType) {
-        return TypedSPIRegistry.findRegisteredService(DialectSchemaMetaDataLoader.class, databaseType.getType());
+    @Test
+    public void assertFindInstance() {
+        Optional<DialectSchemaMetaDataLoader> actual = DialectSchemaMetaDataLoaderFactory.findInstance(new H2DatabaseType());
+        assertTrue(actual.isPresent());
+        assertTrue(actual.get() instanceof H2SchemaMetaDataLoader);
     }
 }

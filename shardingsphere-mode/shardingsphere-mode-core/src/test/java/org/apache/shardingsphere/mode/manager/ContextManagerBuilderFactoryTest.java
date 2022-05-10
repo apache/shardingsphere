@@ -27,12 +27,12 @@ import static org.junit.Assert.assertThat;
 public final class ContextManagerBuilderFactoryTest {
     
     @Test
-    public void assertNewInstanceWithModeConfiguration() {
+    public void assertGetInstanceWithModeConfiguration() {
         assertThat(ContextManagerBuilderFactory.getInstance(new ModeConfiguration("Test", null, true)), instanceOf(FixtureContextManagerBuilder.class));
     }
     
     @Test
-    public void assertNewInstanceWithoutModeConfiguration() {
+    public void assertGetInstanceWithoutModeConfiguration() {
         assertThat(ContextManagerBuilderFactory.getInstance(null), instanceOf(FixtureContextManagerBuilder.class));
     }
 }

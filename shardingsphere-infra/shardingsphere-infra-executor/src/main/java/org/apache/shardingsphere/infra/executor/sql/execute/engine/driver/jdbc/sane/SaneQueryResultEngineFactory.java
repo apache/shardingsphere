@@ -15,29 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.spi;
+package org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.sane;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
-import java.util.Optional;
-
 /**
- * Transaction configuration file generator factory.
+ * Sane query result engine factory.
  */
-public final class TransactionConfigurationFileGeneratorFactory {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class SaneQueryResultEngineFactory {
     
     static {
-        ShardingSphereServiceLoader.register(TransactionConfigurationFileGenerator.class);
+        ShardingSphereServiceLoader.register(SaneQueryResultEngine.class);
     }
     
     /**
-     * Find instance of transaction configuration file generator.
-     *
-     * @param transactionProviderType transaction provider type
-     * @return found instance
+     * Get instance of sane query result engine.
+     * 
+     * @param databaseType database type
+     * @return got instance
      */
-    public static Optional<TransactionConfigurationFileGenerator> findInstance(final String transactionProviderType) {
-        return null == transactionProviderType ? Optional.empty() : TypedSPIRegistry.findRegisteredService(TransactionConfigurationFileGenerator.class, transactionProviderType);
+    public static SaneQueryResultEngine getInstance(final DatabaseType databaseType) {
+        return TypedSPIRegistry.findRegisteredService(SaneQueryResultEngine.class, databaseType.getType()).orElseGet(DefaultSaneQueryResultEngine::new);
     }
 }

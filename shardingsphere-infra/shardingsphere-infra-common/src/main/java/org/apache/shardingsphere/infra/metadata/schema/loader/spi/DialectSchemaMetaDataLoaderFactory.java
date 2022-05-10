@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.sane;
+package org.apache.shardingsphere.infra.metadata.schema.loader.spi;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -23,23 +23,25 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
+import java.util.Optional;
+
 /**
- * JDBC sane query result engine factory.
+ * Dialect schema meta data loader factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class JDBCSaneQueryResultEngineFactory {
+public final class DialectSchemaMetaDataLoaderFactory {
     
     static {
-        ShardingSphereServiceLoader.register(SaneQueryResultEngine.class);
+        ShardingSphereServiceLoader.register(DialectSchemaMetaDataLoader.class);
     }
     
     /**
-     * Get instance of JDBC sane query result engine.
+     * Find instance of dialect schema meta data loader.
      * 
      * @param databaseType database type
-     * @return got instance
+     * @return found instance
      */
-    public static SaneQueryResultEngine getInstance(final DatabaseType databaseType) {
-        return TypedSPIRegistry.findRegisteredService(SaneQueryResultEngine.class, databaseType.getType()).orElseGet(DefaultSaneQueryResultEngine::new);
+    public static Optional<DialectSchemaMetaDataLoader> findInstance(final DatabaseType databaseType) {
+        return TypedSPIRegistry.findRegisteredService(DialectSchemaMetaDataLoader.class, databaseType.getType());
     }
 }
