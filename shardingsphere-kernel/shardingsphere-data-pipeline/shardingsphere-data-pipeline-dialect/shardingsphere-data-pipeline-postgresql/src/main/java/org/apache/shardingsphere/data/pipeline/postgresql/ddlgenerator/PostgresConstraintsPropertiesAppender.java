@@ -29,22 +29,22 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Postgres constraints loader.
+ * Postgres constraints properties appender.
  */
-public final class PostgresConstraintsLoader extends PostgresAbstractLoader {
+public final class PostgresConstraintsPropertiesAppender extends AbstractPostgresDDLAdapter {
     
     private static final Integer PG_CONSTRAINTS_INCLUDE_VERSION = 11;
     
-    public PostgresConstraintsLoader(final Connection connection, final int majorVersion, final int minorVersion) {
+    public PostgresConstraintsPropertiesAppender(final Connection connection, final int majorVersion, final int minorVersion) {
         super(connection, majorVersion, minorVersion);
     }
     
     /**
-     * Load constraints.
+     * Append constraints properties.
      * 
-     * @param context load context
+     * @param context create table sql context
      */
-    public void loadConstraints(final Map<String, Object> context) {
+    public void append(final Map<String, Object> context) {
         loadPrimaryOrUniqueConstraint(context, "primary_key", "p");
         loadPrimaryOrUniqueConstraint(context, "unique_constraint", "u");
         context.put("foreign_key", fetchForeignKeys(context));

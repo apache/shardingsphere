@@ -35,10 +35,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Postgres abstract loader.
+ * Abstract postgres ddl adapter.
  */
 @Getter
-public abstract class PostgresAbstractLoader {
+public abstract class AbstractPostgresDDLAdapter {
     
     private static final String SECURITY_LABEL_SPLIT = "=";
     
@@ -48,7 +48,7 @@ public abstract class PostgresAbstractLoader {
     
     private final int minorVersion;
     
-    protected PostgresAbstractLoader(final Connection connection, final int majorVersion, final int minorVersion) {
+    protected AbstractPostgresDDLAdapter(final Connection connection, final int majorVersion, final int minorVersion) {
         this.connection = connection;
         this.majorVersion = majorVersion;
         this.minorVersion = minorVersion;
