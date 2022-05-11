@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator;
 
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryFactory;
 import org.junit.Test;
@@ -31,8 +30,6 @@ public final class ClusterPersistRepositoryFactoryTest {
     
     @Test
     public void assertNewInstance() {
-        ClusterPersistRepositoryConfiguration config = new ClusterPersistRepositoryConfiguration("TEST", "", "", new Properties());
-        ClusterPersistRepository clusterPersistRepository = ClusterPersistRepositoryFactory.newInstance(config);
-        assertThat(clusterPersistRepository.getType(), is("TEST"));
+        assertThat(ClusterPersistRepositoryFactory.getInstance(new ClusterPersistRepositoryConfiguration("FIXTURE", "", "", new Properties())).getType(), is("FIXTURE"));
     }
 }

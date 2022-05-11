@@ -40,7 +40,7 @@ public final class DatabaseProtocolFrontendEngineFactory {
      * Create new instance of database protocol frontend engine.
      *
      * @param databaseType database type
-     * @return new instance of database protocol frontend engine
+     * @return created instance
      */
     public static DatabaseProtocolFrontendEngine newInstance(final DatabaseType databaseType) {
         return TypedSPIRegistry.getRegisteredService(DatabaseProtocolFrontendEngine.class, databaseType.getType(), new Properties());

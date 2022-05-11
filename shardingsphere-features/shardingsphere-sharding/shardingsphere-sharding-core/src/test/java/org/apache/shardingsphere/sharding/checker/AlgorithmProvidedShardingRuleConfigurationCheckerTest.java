@@ -43,7 +43,7 @@ public final class AlgorithmProvidedShardingRuleConfigurationCheckerTest {
         when(config.getTables()).thenReturn(Collections.singleton(mock(ShardingTableRuleConfiguration.class)));
         when(config.getAutoTables()).thenReturn(Collections.singleton(mock(ShardingAutoTableRuleConfiguration.class)));
         when(config.getDefaultTableShardingStrategy()).thenReturn(mock(ShardingStrategyConfiguration.class));
-        Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.newInstance(config);
+        Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.findInstance(config);
         assertTrue(checker.isPresent());
         assertThat(checker.get(), instanceOf(AlgorithmProvidedShardingRuleConfigurationChecker.class));
         checker.get().check("test", config);
@@ -55,7 +55,7 @@ public final class AlgorithmProvidedShardingRuleConfigurationCheckerTest {
         AlgorithmProvidedShardingRuleConfiguration config = mock(AlgorithmProvidedShardingRuleConfiguration.class);
         when(config.getTables()).thenReturn(Collections.emptyList());
         when(config.getAutoTables()).thenReturn(Collections.emptyList());
-        Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.newInstance(config);
+        Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.findInstance(config);
         assertTrue(checker.isPresent());
         assertThat(checker.get(), instanceOf(AlgorithmProvidedShardingRuleConfigurationChecker.class));
         checker.get().check("test", config);

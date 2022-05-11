@@ -15,31 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.sane;
+package org.apache.shardingsphere.sql.parser.core.database.parser;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.sql.parser.spi.DatabaseTypedSQLParserFacade;
 
 /**
- * JDBC sane query result engine factory.
+ * Database type based SQL parser facade factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class JDBCSaneQueryResultEngineFactory {
+public final class DatabaseTypedSQLParserFacadeFactory {
     
     static {
-        ShardingSphereServiceLoader.register(SaneQueryResultEngine.class);
+        ShardingSphereServiceLoader.register(DatabaseTypedSQLParserFacade.class);
     }
     
     /**
-     * Get new instance of JDBC sane query result engine.
+     * Get instance of database type based SQL parser facade.
      * 
      * @param databaseType database type
-     * @return new instance of JDBC sane query result engine
+     * @return got instance
      */
-    public static SaneQueryResultEngine newInstance(final DatabaseType databaseType) {
-        return TypedSPIRegistry.findRegisteredService(SaneQueryResultEngine.class, databaseType.getType()).orElseGet(DefaultSaneQueryResultEngine::new);
+    public static DatabaseTypedSQLParserFacade getInstance(final String databaseType) {
+        return TypedSPIRegistry.getRegisteredService(DatabaseTypedSQLParserFacade.class, databaseType);
     }
 }

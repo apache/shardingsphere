@@ -175,7 +175,7 @@ public final class MySQLIncrementalDumper extends AbstractIncrementalDumper<Binl
     }
     
     private Serializable handleValue(final PipelineColumnMetaData columnMetaData, final Serializable value) {
-        Optional<MySQLDataTypeHandler> dataTypeHandler = MySQLDataTypeHandlerFactory.newInstance(columnMetaData.getDataTypeName());
+        Optional<MySQLDataTypeHandler> dataTypeHandler = MySQLDataTypeHandlerFactory.findInstance(columnMetaData.getDataTypeName());
         return dataTypeHandler.isPresent() ? dataTypeHandler.get().handle(value) : value;
     }
     

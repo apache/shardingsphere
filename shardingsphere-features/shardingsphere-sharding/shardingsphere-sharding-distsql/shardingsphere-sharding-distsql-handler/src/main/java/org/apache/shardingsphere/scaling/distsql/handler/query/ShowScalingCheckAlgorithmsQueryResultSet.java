@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
  */
 public final class ShowScalingCheckAlgorithmsQueryResultSet implements DistSQLResultSet {
     
-    private static final RuleAlteredJobAPI RULE_ALTERED_JOB_API = PipelineJobAPIFactory.newInstance();
+    private static final RuleAlteredJobAPI RULE_ALTERED_JOB_API = PipelineJobAPIFactory.getInstance();
     
     private Iterator<Collection<Object>> data;
     

@@ -38,7 +38,7 @@ public final class DatabaseTypeFactory {
      * Get instance of database type.
      * 
      * @param name name of database type
-     * @return instance of database type
+     * @return got instance
      */
     public static DatabaseType getInstance(final String name) {
         return TypedSPIRegistry.getRegisteredService(DatabaseType.class, name);
@@ -47,7 +47,7 @@ public final class DatabaseTypeFactory {
     /**
      * Get instances of database type.
      * 
-     * @return instances of database type
+     * @return got instances
      */
     public static Collection<DatabaseType> getInstances() {
         return ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class);

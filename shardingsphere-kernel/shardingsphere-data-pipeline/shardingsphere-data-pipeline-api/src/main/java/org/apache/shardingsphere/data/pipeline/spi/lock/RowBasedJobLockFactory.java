@@ -33,11 +33,11 @@ public final class RowBasedJobLockFactory {
     }
     
     /**
-     * Create new instance of row based job lock.
+     * Get instance of row based job lock.
      * 
-     * @return new instance of row based job lock
+     * @return got instance
      */
-    public static RowBasedJobLock newInstance() {
+    public static RowBasedJobLock getInstance() {
         return RequiredSPIRegistry.getRegisteredService(RowBasedJobLock.class);
     }
 }

@@ -539,7 +539,7 @@ public final class ContextManager implements AutoCloseable {
     }
     
     private void persistTransactionConfiguration(final DatabaseConfiguration databaseConfig, final MetaDataPersistService metaDataPersistService) {
-        Optional<TransactionConfigurationFileGenerator> fileGenerator = TransactionConfigurationFileGeneratorFactory.newInstance(getTransactionRule().getProviderType());
+        Optional<TransactionConfigurationFileGenerator> fileGenerator = TransactionConfigurationFileGeneratorFactory.findInstance(getTransactionRule().getProviderType());
         if (fileGenerator.isPresent()) {
             Properties transactionProps = fileGenerator.get().getTransactionProps(getTransactionRule().getProps(), databaseConfig, instanceContext.getModeConfiguration().getType());
             metaDataPersistService.persistTransactionRule(transactionProps, true);
@@ -620,7 +620,7 @@ public final class ContextManager implements AutoCloseable {
     }
     
     private ShardingSphereTransactionManagerEngine createNewEngine(final DatabaseType databaseType, final Map<String, DataSource> dataSources) {
-        Optional<TransactionConfigurationFileGenerator> fileGenerator = TransactionConfigurationFileGeneratorFactory.newInstance(getTransactionRule().getProviderType());
+        Optional<TransactionConfigurationFileGenerator> fileGenerator = TransactionConfigurationFileGeneratorFactory.findInstance(getTransactionRule().getProviderType());
         fileGenerator.ifPresent(optional -> optional.generateFile(getTransactionRule().getProps(), instanceContext));
         ShardingSphereTransactionManagerEngine result = new ShardingSphereTransactionManagerEngine();
         result.init(databaseType, dataSources, getTransactionRule());

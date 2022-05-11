@@ -28,14 +28,12 @@ import static org.junit.Assert.assertTrue;
 public final class QueryHeaderBuilderFactoryTest {
     
     @Test
-    public void assertNewInstance() {
-        QueryHeaderBuilder actual = QueryHeaderBuilderFactory.newInstance(new PostgreSQLDatabaseType());
-        assertTrue(actual instanceof PostgreSQLQueryHeaderBuilder);
+    public void assertGetInstance() {
+        assertTrue(QueryHeaderBuilderFactory.getInstance(new PostgreSQLDatabaseType()) instanceof PostgreSQLQueryHeaderBuilder);
     }
     
     @Test
-    public void assertNewInstanceWithUnsupportedDatabaseType() {
-        QueryHeaderBuilder actual = QueryHeaderBuilderFactory.newInstance(new OracleDatabaseType());
-        assertTrue(actual instanceof MySQLQueryHeaderBuilder);
+    public void assertGetInstanceWithUnsupportedDatabaseType() {
+        assertTrue(QueryHeaderBuilderFactory.getInstance(new OracleDatabaseType()) instanceof MySQLQueryHeaderBuilder);
     }
 }

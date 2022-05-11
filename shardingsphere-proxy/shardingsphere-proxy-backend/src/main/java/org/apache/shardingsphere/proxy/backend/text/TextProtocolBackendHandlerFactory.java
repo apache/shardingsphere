@@ -76,7 +76,7 @@ public final class TextProtocolBackendHandlerFactory {
      * @param sql SQL to be executed
      * @param sqlStatementSupplier optional SQL statement supplier
      * @param connectionSession connection session
-     * @return text protocol backend handler
+     * @return created instance
      * @throws SQLException SQL exception
      */
     @SuppressWarnings("unchecked")

@@ -38,7 +38,7 @@ public final class JobCompletionDetectAlgorithmFactory {
      * Create new instance of job completion detect algorithm.
      *
      * @param jobCompletionDetectAlgorithmConfig job completion detect algorithm configuration
-     * @return new instance of job completion detect algorithm
+     * @return created instance
      */
     @SuppressWarnings("rawtypes")
     public static JobCompletionDetectAlgorithm newInstance(final ShardingSphereAlgorithmConfiguration jobCompletionDetectAlgorithmConfig) {

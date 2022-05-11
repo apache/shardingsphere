@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.core;
 
-import org.apache.shardingsphere.sql.parser.core.database.parser.DatabaseTypedSQLParserFacadeRegistry;
+import org.apache.shardingsphere.sql.parser.core.database.parser.DatabaseTypedSQLParserFacadeFactory;
 import org.apache.shardingsphere.sql.parser.fixture.DatabaseTypedSQLParserFacadeFixture;
 import org.apache.shardingsphere.sql.parser.fixture.LexerFixture;
 import org.apache.shardingsphere.sql.parser.fixture.ParserFixture;
@@ -28,14 +28,14 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class DatabaseTypedSQLParserFacadeRegistryTest {
+public final class DatabaseTypedSQLParserFacadeFactoryTest {
     
     @Test
-    public void assertGetFacade() {
-        DatabaseTypedSQLParserFacade databaseTypedSQLParserFacade = DatabaseTypedSQLParserFacadeRegistry.getFacade("Fixture");
-        assertThat(databaseTypedSQLParserFacade.getClass(), equalTo(DatabaseTypedSQLParserFacadeFixture.class));
-        assertThat(databaseTypedSQLParserFacade.getLexerClass(), equalTo(LexerFixture.class));
-        assertThat(databaseTypedSQLParserFacade.getParserClass(), equalTo(ParserFixture.class));
-        assertThat(databaseTypedSQLParserFacade.getDatabaseType(), is("Fixture"));
+    public void assertGetInstance() {
+        DatabaseTypedSQLParserFacade actual = DatabaseTypedSQLParserFacadeFactory.getInstance("FIXTURE");
+        assertThat(actual.getClass(), equalTo(DatabaseTypedSQLParserFacadeFixture.class));
+        assertThat(actual.getLexerClass(), equalTo(LexerFixture.class));
+        assertThat(actual.getParserClass(), equalTo(ParserFixture.class));
+        assertThat(actual.getType(), is("FIXTURE"));
     }
 }

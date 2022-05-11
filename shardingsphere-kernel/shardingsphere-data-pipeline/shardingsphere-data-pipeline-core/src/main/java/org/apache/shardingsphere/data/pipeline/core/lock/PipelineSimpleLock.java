@@ -84,7 +84,7 @@ public final class PipelineSimpleLock {
         log.info("releaseLock, lockName={}", lockName);
         if (lockNameLockedMap.getOrDefault(lockName, false)) {
             lockNameLockedMap.remove(lockName);
-            lockContext.getGlobalLock(lockName).releaseLock(lockName);
+            lockContext.getGlobalLock(lockName).releaseLock(decorateLockName(lockName));
         }
     }
     

@@ -15,39 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.core.database.parser;
+package org.apache.shardingsphere.infra.metadata.schema.loader.spi;
 
-import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.spi.DatabaseTypedSQLParserFacade;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ServiceLoader;
+import java.util.Optional;
 
 /**
- * Database type based SQL parser facade registry.
+ * Dialect schema meta data loader factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DatabaseTypedSQLParserFacadeRegistry {
-    
-    private static final Map<String, DatabaseTypedSQLParserFacade> FACADES = new HashMap<>();
+public final class DialectSchemaMetaDataLoaderFactory {
     
     static {
-        for (DatabaseTypedSQLParserFacade each : ServiceLoader.load(DatabaseTypedSQLParserFacade.class)) {
-            FACADES.put(each.getDatabaseType(), each);
-        }
+        ShardingSphereServiceLoader.register(DialectSchemaMetaDataLoader.class);
     }
     
     /**
-     * Get database type based SQL parser facade.
+     * Find instance of dialect schema meta data loader.
      * 
      * @param databaseType database type
-     * @return database type based SQL parser facade
+     * @return found instance
      */
-    public static DatabaseTypedSQLParserFacade getFacade(final String databaseType) {
-        Preconditions.checkArgument(FACADES.containsKey(databaseType), "Cannot support database type '%s'", databaseType);
-        return FACADES.get(databaseType);
+    public static Optional<DialectSchemaMetaDataLoader> findInstance(final DatabaseType databaseType) {
+        return TypedSPIRegistry.findRegisteredService(DialectSchemaMetaDataLoader.class, databaseType.getType());
     }
 }

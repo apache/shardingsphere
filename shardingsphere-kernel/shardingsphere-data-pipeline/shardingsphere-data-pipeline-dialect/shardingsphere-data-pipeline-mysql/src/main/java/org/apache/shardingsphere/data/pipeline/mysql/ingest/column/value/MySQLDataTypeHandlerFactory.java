@@ -35,12 +35,12 @@ public final class MySQLDataTypeHandlerFactory {
     }
     
     /**
-     * Create new instance of MySQL data type handler.
+     * Find instance of MySQL data type handler.
      * 
      * @param dataTypeName data type name
-     * @return new instance of MySQL data type handler
+     * @return got instance
      */
-    public static Optional<MySQLDataTypeHandler> newInstance(final String dataTypeName) {
+    public static Optional<MySQLDataTypeHandler> findInstance(final String dataTypeName) {
         return TypedSPIRegistry.findRegisteredService(MySQLDataTypeHandler.class, dataTypeName);
     }
 }

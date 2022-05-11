@@ -15,33 +15,42 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.loader.spi;
+package org.apache.shardingsphere.distsql.parser.core.featured;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.distsql.parser.engine.spi.FeaturedDistSQLStatementParserFacade;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
-import java.util.Optional;
+import java.util.Collection;
 
 /**
- * Dialect table meta data loader factory.
+ * Featured dist SQL statement parser facade factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DialectTableMetaDataLoaderFactory {
+public final class FeaturedDistSQLStatementParserFacadeFactory {
     
     static {
-        ShardingSphereServiceLoader.register(DialectSchemaMetaDataLoader.class);
+        ShardingSphereServiceLoader.register(FeaturedDistSQLStatementParserFacade.class);
     }
     
     /**
-     * Create new instance of dialect table meta data loader.
+     * Get instance of featured dist SQL statement parser facade.
      * 
-     * @param databaseType database type
-     * @return new instance of dialect table meta data loader
+     * @param type feature type
+     * @return got instance
      */
-    public static Optional<DialectSchemaMetaDataLoader> newInstance(final DatabaseType databaseType) {
-        return TypedSPIRegistry.findRegisteredService(DialectSchemaMetaDataLoader.class, databaseType.getType());
+    public static FeaturedDistSQLStatementParserFacade getInstance(final String type) {
+        return TypedSPIRegistry.getRegisteredService(FeaturedDistSQLStatementParserFacade.class, type);
+    }
+    
+    /**
+     * Get all instances of featured dist SQL statement parser facade.
+     * 
+     * @return got instances
+     */
+    public static Collection<FeaturedDistSQLStatementParserFacade> getAllInstances() {
+        return ShardingSphereServiceLoader.getServiceInstances(FeaturedDistSQLStatementParserFacade.class);
     }
 }

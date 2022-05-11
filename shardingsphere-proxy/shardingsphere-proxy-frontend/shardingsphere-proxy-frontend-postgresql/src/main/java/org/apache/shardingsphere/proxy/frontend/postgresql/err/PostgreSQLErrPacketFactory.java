@@ -40,10 +40,10 @@ import java.sql.SQLException;
 public final class PostgreSQLErrPacketFactory {
     
     /**
-     * New instance of PostgreSQL ERR packet.
+     * Create new instance of PostgreSQL ERR packet.
      * 
      * @param cause cause
-     * @return instance of PostgreSQL ERR packet
+     * @return created instance
      */
     public static PostgreSQLErrorResponsePacket newInstance(final Exception cause) {
         if (cause instanceof PSQLException && null != ((PSQLException) cause).getServerErrorMessage()) {

@@ -36,7 +36,7 @@ public final class AlgorithmProvidedEncryptRuleBuilderTest {
     @Test
     public void assertBuild() {
         AlgorithmProvidedEncryptRuleConfiguration ruleConfig = new AlgorithmProvidedEncryptRuleConfiguration();
-        SchemaRuleBuilder builder = SchemaRuleBuilderFactory.newInstance(Collections.singletonList(ruleConfig)).get(ruleConfig);
+        SchemaRuleBuilder builder = SchemaRuleBuilderFactory.getInstanceMap(Collections.singletonList(ruleConfig)).get(ruleConfig);
         assertThat(builder.build(ruleConfig, "", Collections.emptyMap(), Collections.emptyList(), new ConfigurationProperties(new Properties())), instanceOf(EncryptRule.class));
     }
 }

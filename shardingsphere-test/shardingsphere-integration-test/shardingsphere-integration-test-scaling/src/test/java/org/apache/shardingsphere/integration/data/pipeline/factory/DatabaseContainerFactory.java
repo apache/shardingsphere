@@ -35,7 +35,7 @@ public final class DatabaseContainerFactory {
      *
      * @param databaseType database type
      * @param dockerImageName database ver
-     * @return new instance of storage container
+     * @return created instance
      */
     public static DockerDatabaseContainer newInstance(final DatabaseType databaseType, final String dockerImageName) {
         switch (databaseType.getType()) {

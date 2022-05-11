@@ -45,7 +45,7 @@ public final class PostgreSQLCommandPacketFactory {
      *
      * @param commandPacketType command packet type for PostgreSQL
      * @param payload packet payload for PostgreSQL
-     * @return command packet for PostgreSQL
+     * @return created instance
      */
     public static PostgreSQLCommandPacket newInstance(final PostgreSQLCommandPacketType commandPacketType, final PostgreSQLPacketPayload payload) {
         if (!PostgreSQLCommandPacketType.isExtendedProtocolPacketType(commandPacketType)) {

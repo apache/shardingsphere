@@ -59,7 +59,7 @@ public final class DistSQLBackendHandlerFactory {
         }
         if (sqlStatement instanceof RDLStatement) {
             checkLockedDatabase(connectionSession);
-            return RDLBackendHandlerFactory.newInstance(databaseType, (RDLStatement) sqlStatement, connectionSession);
+            return RDLBackendHandlerFactory.newInstance((RDLStatement) sqlStatement, connectionSession);
         }
         if (sqlStatement instanceof RALStatement) {
             if (sqlStatement instanceof CommonDistSQLStatement || sqlStatement instanceof QueryableRALStatement || sqlStatement instanceof QueryableScalingRALStatement

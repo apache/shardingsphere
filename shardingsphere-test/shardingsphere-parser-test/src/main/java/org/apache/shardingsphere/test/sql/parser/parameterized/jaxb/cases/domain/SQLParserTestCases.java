@@ -396,10 +396,10 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "drop-outline")
     private final List<DropOutlineStatementTestCase> dropOutlineTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "alter-outline")
     private final List<AlterOutlineStatementTestCase> alterOutlineTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "create-index")
     private final List<CreateIndexStatementTestCase> createIndexTestCases = new LinkedList<>();
     

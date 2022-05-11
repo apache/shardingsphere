@@ -66,7 +66,7 @@ public final class RuleAlteredJobAPIImplTest {
     @BeforeClass
     public static void beforeClass() {
         PipelineContextUtil.mockModeConfigAndContextManager();
-        ruleAlteredJobAPI = PipelineJobAPIFactory.newInstance();
+        ruleAlteredJobAPI = PipelineJobAPIFactory.getInstance();
     }
     
     @Test

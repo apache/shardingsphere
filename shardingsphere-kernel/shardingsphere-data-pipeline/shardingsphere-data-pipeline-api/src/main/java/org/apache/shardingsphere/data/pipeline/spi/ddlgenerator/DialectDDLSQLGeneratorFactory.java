@@ -36,12 +36,12 @@ public final class DialectDDLSQLGeneratorFactory {
     }
     
     /**
-     * Create new instance of dialect DDL SQL generator.
+     * Find instance of dialect DDL SQL generator.
      *
      * @param databaseType database type
-     * @return new instance of dialect DDL SQL generator
+     * @return found instance
      */
-    public static Optional<DialectDDLGenerator> newInstance(final DatabaseType databaseType) {
+    public static Optional<DialectDDLGenerator> findInstance(final DatabaseType databaseType) {
         return TypedSPIRegistry.findRegisteredService(DialectDDLGenerator.class, databaseType.getType());
     }
 }

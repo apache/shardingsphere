@@ -37,6 +37,6 @@ public final class DriverStateContext {
      * @return connection
      */
     public static Connection getConnection(final String databaseName, final ContextManager contextManager) {
-        return DriverStateFactory.newInstance(contextManager.getInstanceContext().getInstance().getState().getCurrentState()).getConnection(databaseName, contextManager);
+        return DriverStateFactory.getInstance(contextManager.getInstanceContext().getInstance().getState().getCurrentState()).getConnection(databaseName, contextManager);
     }
 }

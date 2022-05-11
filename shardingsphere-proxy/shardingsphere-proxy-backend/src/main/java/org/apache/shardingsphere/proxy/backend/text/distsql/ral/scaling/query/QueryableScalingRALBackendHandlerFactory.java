@@ -43,7 +43,7 @@ public final class QueryableScalingRALBackendHandlerFactory {
      * 
      * @param sqlStatement queryable RAL statement
      * @param connectionSession connection session
-     * @return queryable RAL backend handler
+     * @return created instance
      */
     public static TextProtocolBackendHandler newInstance(final QueryableScalingRALStatement sqlStatement, final ConnectionSession connectionSession) {
         DistSQLResultSet resultSet = TypedSPIRegistry.getRegisteredService(DistSQLResultSet.class, sqlStatement.getClass().getCanonicalName(), new Properties());

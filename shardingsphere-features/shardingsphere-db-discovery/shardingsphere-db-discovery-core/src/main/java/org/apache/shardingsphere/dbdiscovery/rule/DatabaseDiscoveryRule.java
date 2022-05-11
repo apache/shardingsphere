@@ -116,7 +116,7 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
     }
     
     private void initAware() {
-        DynamicDataSourceStrategyFactory.newInstance().ifPresent(optional -> optional.init(this));
+        DynamicDataSourceStrategyFactory.findInstance().ifPresent(optional -> optional.init(this));
     }
     
     /**

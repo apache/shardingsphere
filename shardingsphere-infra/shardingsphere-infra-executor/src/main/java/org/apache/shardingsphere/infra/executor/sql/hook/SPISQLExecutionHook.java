@@ -28,7 +28,7 @@ import java.util.Map;
  */
 public final class SPISQLExecutionHook implements SQLExecutionHook {
     
-    private final Collection<SQLExecutionHook> sqlExecutionHooks = SQLExecutionHookFactory.newInstances();
+    private final Collection<SQLExecutionHook> sqlExecutionHooks = SQLExecutionHookFactory.getAllInstances();
     
     @Override
     public void start(final String dataSourceName, final String sql, final List<Object> parameters,

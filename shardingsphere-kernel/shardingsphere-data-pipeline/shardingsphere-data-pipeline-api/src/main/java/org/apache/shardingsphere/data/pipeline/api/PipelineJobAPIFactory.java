@@ -30,11 +30,11 @@ public final class PipelineJobAPIFactory {
     }
     
     /**
-     * Create new instance of pipeline job API.
+     * Get instance of pipeline job API.
      *
-     * @return new instance of pipeline job API
+     * @return got instance
      */
-    public static RuleAlteredJobAPI newInstance() {
+    public static RuleAlteredJobAPI getInstance() {
         return RequiredSPIRegistry.getRegisteredService(RuleAlteredJobAPI.class);
     }
 }

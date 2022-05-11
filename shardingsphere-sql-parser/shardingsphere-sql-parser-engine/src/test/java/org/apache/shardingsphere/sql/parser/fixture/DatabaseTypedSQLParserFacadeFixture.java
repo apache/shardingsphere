@@ -24,11 +24,6 @@ import org.apache.shardingsphere.sql.parser.spi.DatabaseTypedSQLParserFacade;
 public final class DatabaseTypedSQLParserFacadeFixture implements DatabaseTypedSQLParserFacade {
     
     @Override
-    public String getDatabaseType() {
-        return "Fixture";
-    }
-    
-    @Override
     public Class<? extends SQLLexer> getLexerClass() {
         return LexerFixture.class;
     }
@@ -36,5 +31,10 @@ public final class DatabaseTypedSQLParserFacadeFixture implements DatabaseTypedS
     @Override
     public Class<? extends SQLParser> getParserClass() {
         return ParserFixture.class;
+    }
+    
+    @Override
+    public String getType() {
+        return "FIXTURE";
     }
 }

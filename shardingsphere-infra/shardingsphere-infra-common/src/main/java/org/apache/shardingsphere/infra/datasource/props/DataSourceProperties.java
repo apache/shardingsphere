@@ -49,7 +49,7 @@ public final class DataSourceProperties {
     
     public DataSourceProperties(final String dataSourceClassName, final Map<String, Object> props) {
         this.dataSourceClassName = dataSourceClassName;
-        Optional<DataSourcePoolMetaData> poolMetaData = DataSourcePoolMetaDataFactory.newInstance(dataSourceClassName);
+        Optional<DataSourcePoolMetaData> poolMetaData = DataSourcePoolMetaDataFactory.findInstance(dataSourceClassName);
         Map<String, String> propertySynonyms = poolMetaData.isPresent() ? poolMetaData.get().getPropertySynonyms() : Collections.emptyMap();
         connectionPropertySynonyms = new ConnectionPropertySynonyms(props, propertySynonyms);
         poolPropertySynonyms = new PoolPropertySynonyms(props, propertySynonyms);
