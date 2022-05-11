@@ -462,9 +462,10 @@
                 <subquery>
                     <select>
                         <projections start-index="22" stop-index="160">
-                            <top-projection alias="rownum_" start-index="22" stop-index="72">
+                            <top-projection start-index="22" stop-index="28">
                                 <top-value value="3" parameter-index="0" start-index="27" stop-index="27" />
                             </top-projection>
+                            <expression-projection text="row_number() OVER (ORDER BY i.item_id DESC)" alias="rownum_" start-index="30" stop-index="83" />
                             <column-projection name="item_id" start-index="86" stop-index="94">
                                 <owner name="i" start-index="86" stop-index="86" />
                             </column-projection>
@@ -585,9 +586,10 @@
                 <subquery>
                     <select>
                         <projections start-index="22" stop-index="178">
-                            <top-projection alias="rownum_" start-index="22" stop-index="90">
+                            <top-projection start-index="22" stop-index="46">
                                 <top-value value="3" parameter-index="0" start-index="27" stop-index="27" />
                             </top-projection>
+                            <expression-projection text="row_number() OVER (ORDER BY i.item_id DESC)" alias="rownum_" start-index="48" stop-index="101" />
                             <column-projection name="item_id" start-index="104" stop-index="112">
                                 <owner name="i" start-index="104" stop-index="104" />
                             </column-projection>
@@ -926,9 +928,10 @@
                 <subquery>
                     <select>
                         <projections start-index="22" stop-index="160">
-                            <top-projection alias="rownum_" start-index="22" stop-index="72">
+                            <top-projection start-index="22" stop-index="28">
                                 <top-value value="3" parameter-index="0" start-index="27" stop-index="27" />
                             </top-projection>
+                            <expression-projection text="row_number() OVER (ORDER BY i.item_id DESC)" alias="rownum_" start-index="30" stop-index="83" />
                             <column-projection name="item_id" start-index="86" stop-index="94">
                                 <owner name="i" start-index="86" stop-index="86" />
                             </column-projection>
@@ -1065,9 +1068,10 @@
                 <subquery>
                     <select>
                         <projections start-index="22" stop-index="178">
-                            <top-projection alias="rownum_" start-index="22" stop-index="90">
+                            <top-projection start-index="22" stop-index="46">
                                 <top-value value="3" parameter-index="0" start-index="27" stop-index="27" />
                             </top-projection>
+                            <expression-projection text="row_number() OVER (ORDER BY i.item_id DESC)" alias="rownum_" start-index="48" stop-index="101" />
                             <column-projection name="item_id" start-index="104" stop-index="112">
                                 <owner name="i" start-index="104" stop-index="104" />
                             </column-projection>
@@ -1204,9 +1208,10 @@
                 <subquery>
                     <select>
                         <projections start-index="22" stop-index="160">
-                            <top-projection alias="rownum_" start-index="22" stop-index="72">
+                            <top-projection start-index="22" stop-index="28">
                                 <top-value value="3" parameter-index="0" start-index="27" stop-index="27" />
                             </top-projection>
+                            <expression-projection text="row_number() OVER (ORDER BY i.item_id DESC)" alias="rownum_" start-index="30" stop-index="83" />
                             <column-projection name="item_id" start-index="86" stop-index="94">
                                 <owner name="i" start-index="86" stop-index="86" />
                             </column-projection>
@@ -1343,9 +1348,10 @@
                 <subquery>
                     <select>
                         <projections start-index="22" stop-index="178">
-                            <top-projection alias="rownum_" start-index="22" stop-index="90">
+                            <top-projection start-index="22" stop-index="46">
                                 <top-value value="3" parameter-index="0" start-index="27" stop-index="27" />
                             </top-projection>
+                            <expression-projection text="row_number() OVER (ORDER BY i.item_id DESC)" alias="rownum_" start-index="48" stop-index="101" />
                             <column-projection name="item_id" start-index="104" stop-index="112">
                                 <owner name="i" start-index="104" stop-index="104" />
                             </column-projection>

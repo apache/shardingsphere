@@ -741,8 +741,8 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
         if (null != ctx.top()) {
             RowNumberValueSegment rowNumber = (RowNumberValueSegment) visit(ctx.top());
             result.setProjections(new ProjectionsSegment(ctx.top().getStart().getStartIndex(), ctx.getStop().getStopIndex()));
-            result.getProjections().getProjections().addAll(getProjectionSegments(ctx.selectList()));
             result.getProjections().getProjections().add(new TopProjectionSegment(ctx.top().getStart().getStartIndex(), ctx.top().getStop().getStopIndex(), rowNumber, null));
+            result.getProjections().getProjections().addAll(getProjectionSegments(ctx.selectList()));
         } else {
             result.setProjections((ProjectionsSegment) visit(ctx.selectList()));
         }
