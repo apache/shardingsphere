@@ -46,7 +46,7 @@ public final class DatabaseDiscoveryDistSQLStatementParserFacade implements Feat
     }
     
     @Override
-    public String getFeatureType() {
+    public String getType() {
         return "database-discovery";
     }
 }

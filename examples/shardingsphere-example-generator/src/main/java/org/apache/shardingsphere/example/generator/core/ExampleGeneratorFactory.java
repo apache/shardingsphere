@@ -23,14 +23,14 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.example.generator.core.yaml.config.YamlExampleConfiguration;
 import org.apache.shardingsphere.example.generator.core.yaml.config.YamlExampleConfigurationValidator;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Collection;
 import java.util.Objects;
-import java.util.ServiceLoader;
 
 /**
  * Example generator factory.
@@ -40,6 +40,10 @@ public final class ExampleGeneratorFactory {
     private static final String CONFIG_FILE = "/config.yaml";
     
     private final Configuration templateConfig;
+    
+    static {
+        ShardingSphereServiceLoader.register(ExampleGenerator.class);
+    }
     
     public ExampleGeneratorFactory() throws IOException {
         templateConfig = createTemplateConfiguration();
@@ -61,11 +65,8 @@ public final class ExampleGeneratorFactory {
     public void generate() throws TemplateException, IOException {
         YamlExampleConfiguration exampleConfig = swapConfigToObject();
         YamlExampleConfigurationValidator.validate(exampleConfig);
-        Collection<String> products = exampleConfig.getProducts();
-        for (ExampleGenerator each : ServiceLoader.load(ExampleGenerator.class)) {
-            if (products.contains(each.getType())) {
-                each.generate(templateConfig, exampleConfig);
-            }
+        for (String each : exampleConfig.getProducts()) {
+            TypedSPIRegistry.getRegisteredService(ExampleGenerator.class, each).generate(templateConfig, exampleConfig);
         }
     }
     

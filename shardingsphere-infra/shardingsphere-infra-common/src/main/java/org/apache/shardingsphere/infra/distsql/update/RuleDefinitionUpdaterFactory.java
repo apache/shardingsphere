@@ -34,13 +34,13 @@ public final class RuleDefinitionUpdaterFactory {
     }
     
     /**
-     * Create new instance of rule definition updater.
+     * Get instance of rule definition updater.
      * 
      * @param sqlStatement SQL statement
-     * @return new instance of rule definition updater
+     * @return got instance
      */
     @SuppressWarnings("rawtypes")
-    public static RuleDefinitionUpdater newInstance(final SQLStatement sqlStatement) {
+    public static RuleDefinitionUpdater getInstance(final SQLStatement sqlStatement) {
         return TypedSPIRegistry.getRegisteredService(RuleDefinitionUpdater.class, sqlStatement.getClass().getCanonicalName());
     }
 }

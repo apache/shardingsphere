@@ -17,70 +17,53 @@
 
 package org.apache.shardingsphere.proxy.arguments;
 
-import lombok.Getter;
-import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoader;
-import org.apache.shardingsphere.proxy.backend.config.YamlProxyConfiguration;
+import lombok.RequiredArgsConstructor;
 
-import java.io.IOException;
+import java.util.Optional;
 
 /**
  * Bootstrap arguments.
  */
-@Getter
+@RequiredArgsConstructor
 public final class BootstrapArguments {
     
     private static final String DEFAULT_CONFIG_PATH = "/conf/";
     
-    private static final int DEFAULT_PORT = 3307;
+    private final String[] args;
     
-    private final int port;
-    
-    private final String configurationPath;
-    
-    public BootstrapArguments(final String[] args) {
-        port = getPort(args);
-        configurationPath = getConfigurationPath(args);
-    }
-    
-    private int getPort(final String[] args) {
+    /**
+     * Get port.
+     * 
+     * @return port
+     */
+    public Optional<Integer> getPort() {
         if (0 == args.length) {
-            return getProxyDefaultPort(DEFAULT_CONFIG_PATH);
+            return Optional.empty();
         }
         try {
-            return Integer.parseInt(args[0]);
+            return Optional.of(Integer.parseInt(args[0]));
         } catch (final NumberFormatException ex) {
             throw new IllegalArgumentException(String.format("Invalid port `%s`.", args[0]));
         }
     }
     
-    private String getConfigurationPath(final String[] args) {
+    /**
+     * Get configuration path.
+     * 
+     * @return configuration path
+     */
+    public String getConfigurationPath() {
         return args.length < 2 ? DEFAULT_CONFIG_PATH : paddingWithSlash(args[1]);
     }
     
-    private String paddingWithSlash(final String arg) {
-        StringBuilder result = new StringBuilder(arg);
-        if (!arg.startsWith("/")) {
+    private String paddingWithSlash(final String pathArg) {
+        StringBuilder result = new StringBuilder(pathArg);
+        if (!pathArg.startsWith("/")) {
             result.insert(0, '/');
         }
-        if (!arg.endsWith("/")) {
+        if (!pathArg.endsWith("/")) {
             result.append('/');
         }
         return result.toString();
-    }
-    
-    private static int getProxyDefaultPort(final String configurationPath) {
-        YamlProxyConfiguration yamlConfig;
-        try {
-            yamlConfig = ProxyConfigurationLoader.load(configurationPath);
-            return yamlConfig.getServerConfiguration().getProps().get(ConfigurationPropertyKey.PROXY_DEFAULT_PORT.getKey()) == null
-                    ? Integer.parseInt(ConfigurationPropertyKey.PROXY_DEFAULT_PORT.getDefaultValue())
-                    : Integer.parseInt(
-                            yamlConfig.getServerConfiguration().getProps().get(ConfigurationPropertyKey.PROXY_DEFAULT_PORT.getKey()).toString());
-        } catch (IOException e) {
-            return DEFAULT_PORT;
-        } catch (NullPointerException e) {
-            return DEFAULT_PORT;
-        }
     }
 }

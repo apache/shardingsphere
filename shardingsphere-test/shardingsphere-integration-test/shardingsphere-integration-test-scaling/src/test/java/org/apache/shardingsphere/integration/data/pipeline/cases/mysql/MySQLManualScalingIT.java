@@ -22,7 +22,6 @@ import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -61,11 +60,6 @@ public final class MySQLManualScalingIT extends BaseMySQLITCase {
             result.add(new ScalingParameterized(DATABASE, version, "env/scenario/manual/mysql"));
         }
         return result;
-    }
-    
-    @Before
-    public void initEnv() {
-        getIncreaseTaskThread().start();
     }
     
     @Test

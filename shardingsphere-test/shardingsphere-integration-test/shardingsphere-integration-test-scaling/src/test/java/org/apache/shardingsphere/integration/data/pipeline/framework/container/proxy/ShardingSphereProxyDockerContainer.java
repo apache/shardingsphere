@@ -25,6 +25,7 @@ import org.apache.shardingsphere.integration.data.pipeline.util.DatabaseTypeUtil
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.DockerITContainer;
 import org.testcontainers.containers.BindMode;
+import org.testcontainers.containers.output.Slf4jLogConsumer;
 
 import java.sql.DriverManager;
 
@@ -45,19 +46,20 @@ public final class ShardingSphereProxyDockerContainer extends DockerITContainer 
     protected void configure() {
         withExposedPorts(3307);
         mapConfigurationFiles();
-        if (DatabaseTypeUtil.isPostgreSQL(databaseType)) {
+        if (DatabaseTypeUtil.isPostgreSQL(databaseType) || DatabaseTypeUtil.isOpenGauss(databaseType)) {
             setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(3307), "postgres"), "root", "root")));
         } else {
             setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(3307), ""), "root", "root")));
         }
+        withLogConsumer(new Slf4jLogConsumer(log).withSeparateOutputStreams());
     }
     
     private void mapConfigurationFiles() {
-        withClasspathResourceMapping(String.format("/env/%s/server.yaml", databaseType.getName().toLowerCase()), "/opt/shardingsphere-proxy/conf/server.yaml", BindMode.READ_ONLY);
+        withClasspathResourceMapping(String.format("/env/%s/server.yaml", databaseType.getType().toLowerCase()), "/opt/shardingsphere-proxy/conf/server.yaml", BindMode.READ_ONLY);
         withClasspathResourceMapping("/env/logback.xml", "/opt/shardingsphere-proxy/conf/logback.xml", BindMode.READ_ONLY);
         if (ITEnvTypeEnum.NATIVE == IntegrationTestEnvironment.getInstance().getItEnvType()) {
             addFixedExposedPort(3307, 3307);
-            addFixedExposedPort(3308, 5005);
+            addFixedExposedPort(5005, 3308);
         }
     }
 }

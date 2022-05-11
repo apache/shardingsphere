@@ -37,7 +37,7 @@ public final class RawSQLExecutorCallback implements ExecutorCallback<RawSQLExec
     private final Collection<RawExecutorCallback> callbacks;
     
     public RawSQLExecutorCallback() {
-        callbacks = RawExecutorCallbackFactory.newInstances();
+        callbacks = RawExecutorCallbackFactory.getAllInstances();
         Preconditions.checkState(!callbacks.isEmpty(), "No raw executor callback implementation found.");
     }
     

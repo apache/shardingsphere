@@ -46,7 +46,7 @@ public final class FileRepository implements StandalonePersistRepository {
     private String path;
     
     @Override
-    public void setProps(final Properties props) {
+    public void init(final Properties props) {
         FileRepositoryProperties localRepositoryProps = new FileRepositoryProperties(props);
         path = Optional.ofNullable(
                 Strings.emptyToNull(localRepositoryProps.getValue(FileRepositoryPropertyKey.PATH)))

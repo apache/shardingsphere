@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.metadata.persist.node;
 
-import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.junit.Test;
 
 import java.util.Optional;
@@ -30,7 +30,7 @@ public class DatabaseMetaDataNodeTest {
     
     @Test
     public void assertGetRulePath() {
-        assertThat(DatabaseMetaDataNode.getRulePath(DefaultSchema.LOGIC_NAME, "0"), is("/metadata/logic_db/versions/0/rules"));
+        assertThat(DatabaseMetaDataNode.getRulePath(DefaultDatabase.LOGIC_NAME, "0"), is("/metadata/logic_db/versions/0/rules"));
     }
     
     @Test
@@ -114,6 +114,6 @@ public class DatabaseMetaDataNodeTest {
     
     @Test
     public void assertGetMetaDataDataSourcePath() {
-        assertThat(DatabaseMetaDataNode.getMetaDataDataSourcePath(DefaultSchema.LOGIC_NAME, "0"), is("/metadata/logic_db/versions/0/dataSources"));
+        assertThat(DatabaseMetaDataNode.getMetaDataDataSourcePath(DefaultDatabase.LOGIC_NAME, "0"), is("/metadata/logic_db/versions/0/dataSources"));
     }
 }

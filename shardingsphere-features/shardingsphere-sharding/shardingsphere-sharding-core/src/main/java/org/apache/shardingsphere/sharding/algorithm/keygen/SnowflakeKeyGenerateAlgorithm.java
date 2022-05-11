@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereInstanceAwareAlgorithm;
+import org.apache.shardingsphere.infra.config.algorithm.InstanceAwareAlgorithm;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
@@ -39,7 +39,7 @@ import java.util.Properties;
  *     12 bits auto increment offset in one mills
  * </pre>
  */
-public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm, ShardingSphereInstanceAwareAlgorithm {
+public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm, InstanceAwareAlgorithm {
     
     public static final long EPOCH;
     
@@ -69,12 +69,11 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     private static TimeService timeService = new TimeService();
     
     @Getter
-    @Setter
     private Properties props;
     
-    private volatile int maxVibrationOffset;
+    private int maxVibrationOffset;
     
-    private volatile int maxTolerateTimeDifferenceMilliseconds;
+    private int maxTolerateTimeDifferenceMilliseconds;
     
     private volatile int sequenceOffset = -1;
     
@@ -97,6 +96,7 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     
     @Override
     public void init(final Properties props) {
+        this.props = props;
         maxVibrationOffset = getMaxVibrationOffset(props);
         maxTolerateTimeDifferenceMilliseconds = getMaxTolerateTimeDifferenceMilliseconds(props);
     }

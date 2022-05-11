@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.mode.repository.cluster.zookeeper;
 
 import com.google.common.base.Strings;
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.CuratorFrameworkFactory.Builder;
@@ -51,7 +49,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 
@@ -62,19 +59,15 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     
     private final Map<String, CuratorCache> caches = new HashMap<>();
     
-    private CuratorFramework client;
-    
     private final Builder builder = CuratorFrameworkFactory.builder();
+    
+    private CuratorFramework client;
     
     private ZookeeperInternalLockHolder internalLockHolder;
     
-    @Getter
-    @Setter
-    private Properties props = new Properties();
-    
     @Override
     public void init(final ClusterPersistRepositoryConfiguration config) {
-        ZookeeperProperties zookeeperProps = new ZookeeperProperties(props);
+        ZookeeperProperties zookeeperProps = new ZookeeperProperties(config.getProps());
         client = buildCuratorClient(config, zookeeperProps);
         internalLockHolder = new ZookeeperInternalLockHolder(client);
         initCuratorClient(zookeeperProps);
@@ -282,29 +275,6 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     @Override
     public Lock getStandardLock(final String lockName) {
         return internalLockHolder.getStandardLock(lockName);
-    }
-    
-    @Override
-    public boolean tryLock(final String key, final long time, final TimeUnit unit) {
-        try {
-            return internalLockHolder.getGlobalLock(key).tryLock(time, unit);
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            CuratorZookeeperExceptionHandler.handleException(ex);
-            return false;
-        }
-    }
-    
-    @Override
-    public void releaseLock(final String key) {
-        try {
-            internalLockHolder.getGlobalLock(key).unlock();
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            CuratorZookeeperExceptionHandler.handleException(ex);
-        }
     }
     
     @Override

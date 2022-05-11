@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.schema.loader.common.TableMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.loader.spi.DialectSchemaMetaDataLoader;
-import org.apache.shardingsphere.infra.metadata.schema.loader.spi.DialectTableMetaDataLoaderFactory;
+import org.apache.shardingsphere.infra.metadata.schema.loader.spi.DialectSchemaMetaDataLoaderFactory;
 import org.apache.shardingsphere.infra.metadata.schema.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 
@@ -59,7 +59,7 @@ public final class SchemaMetaDataLoaderEngine {
      * @throws SQLException SQL exception
      */
     public static Map<String, SchemaMetaData> load(final Collection<TableMetaDataLoaderMaterial> materials, final DatabaseType databaseType) throws SQLException {
-        Optional<DialectSchemaMetaDataLoader> dialectTableMetaDataLoader = DialectTableMetaDataLoaderFactory.newInstance(databaseType);
+        Optional<DialectSchemaMetaDataLoader> dialectTableMetaDataLoader = DialectSchemaMetaDataLoaderFactory.findInstance(databaseType);
         if (dialectTableMetaDataLoader.isPresent()) {
             try {
                 return loadByDialect(dialectTableMetaDataLoader.get(), materials);

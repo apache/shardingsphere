@@ -102,17 +102,9 @@ public final class OrderedSPIRegistry {
         return getRegisteredServices(spiClass, Comparator.naturalOrder());
     }
     
-    /**
-     * Get registered services.
-     *
-     * @param spiClass class of ordered SPI
-     * @param <T> type of ordered SPI class
-     * @param comparator comparator
-     * @return registered services
-     */
-    public static <T extends OrderedSPI<?>> Collection<T> getRegisteredServices(final Class<T> spiClass, final Comparator<Integer> comparator) {
+    private static <T extends OrderedSPI<?>> Collection<T> getRegisteredServices(final Class<T> spiClass, final Comparator<Integer> comparator) {
         Map<Integer, T> result = new TreeMap<>(comparator);
-        for (T each : ShardingSphereServiceLoader.getSingletonServiceInstances(spiClass)) {
+        for (T each : ShardingSphereServiceLoader.getServiceInstances(spiClass)) {
             Preconditions.checkArgument(!result.containsKey(each.getOrder()), "Found same order `%s` with `%s` and `%s`", each.getOrder(), result.get(each.getOrder()), each);
             result.put(each.getOrder(), each);
         }

@@ -19,13 +19,16 @@ package org.apache.shardingsphere.example.generator.scenario;
 
 import org.apache.shardingsphere.example.generator.scenario.feature.FeatureExampleScenario;
 import org.apache.shardingsphere.example.generator.scenario.framework.FrameworkExampleScenario;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.Map;
-import java.util.ServiceLoader;
+import java.util.stream.Collectors;
 
 /**
  * Example scenario factory.
@@ -36,31 +39,23 @@ public final class ExampleScenarioFactory {
     
     private final FrameworkExampleScenario frameworkScenario;
     
+    static {
+        ShardingSphereServiceLoader.register(FeatureExampleScenario.class);
+        ShardingSphereServiceLoader.register(FrameworkExampleScenario.class);
+    }
+    
     public ExampleScenarioFactory(final String feature, final String framework) {
         featureScenarios = getFeatureScenarios(feature);
         frameworkScenario = getFrameworkScenario(framework);
     }
     
     private Collection<FeatureExampleScenario> getFeatureScenarios(final String feature) {
-        Collection<FeatureExampleScenario> result = new LinkedList<>();
-        if (null == feature) {
-            return result;
-        }
-        for (FeatureExampleScenario each : ServiceLoader.load(FeatureExampleScenario.class)) {
-            if (feature.contains(each.getType())) {
-                result.add(each);
-            }
-        }
-        return result;
+        return null == feature ? Collections.emptyList() : 
+                Arrays.stream(feature.split(",")).map(each -> TypedSPIRegistry.getRegisteredService(FeatureExampleScenario.class, each.trim())).collect(Collectors.toList());
     }
     
     private FrameworkExampleScenario getFrameworkScenario(final String framework) {
-        for (FrameworkExampleScenario each : ServiceLoader.load(FrameworkExampleScenario.class)) {
-            if (each.getType().equals(framework)) {
-                return each;
-            }
-        }
-        throw new UnsupportedOperationException(String.format("Can not support example scenario with framework `%s`.", framework));
+        return TypedSPIRegistry.getRegisteredService(FrameworkExampleScenario.class, framework);
     }
     
     /**

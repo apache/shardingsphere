@@ -19,7 +19,6 @@ package org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractWalEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.DeleteRowEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.PlaceholderEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.UpdateRowEvent;
@@ -31,9 +30,9 @@ import org.postgresql.replication.LogSequenceNumber;
 import java.nio.ByteBuffer;
 import java.sql.SQLException;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -82,8 +81,7 @@ public final class TestDecodingPluginTest {
     @Test
     public void assertDecodeUnknownTableType() {
         ByteBuffer data = ByteBuffer.wrap("unknown".getBytes());
-        AbstractWalEvent actual = new TestDecodingPlugin(null).decode(data, logSequenceNumber);
-        assertTrue(actual instanceof PlaceholderEvent);
+        assertThat(new TestDecodingPlugin(null).decode(data, logSequenceNumber), instanceOf(PlaceholderEvent.class));
     }
     
     @Test(expected = IngestException.class)

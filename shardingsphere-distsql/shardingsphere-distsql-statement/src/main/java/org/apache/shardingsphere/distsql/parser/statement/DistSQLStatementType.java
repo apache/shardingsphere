@@ -29,6 +29,7 @@ import java.util.Collections;
 public enum DistSQLStatementType {
     
     RQL {
+        
         /**
          * Get operation types.
          * @return operation types
@@ -38,6 +39,7 @@ public enum DistSQLStatementType {
         }
     },
     RDL {
+        
         /**
          * Get operation types.
          * @return operation types
@@ -48,6 +50,7 @@ public enum DistSQLStatementType {
         }
     },
     RAL {
+        
         /**
          * Get operation types.
          * @return operation types

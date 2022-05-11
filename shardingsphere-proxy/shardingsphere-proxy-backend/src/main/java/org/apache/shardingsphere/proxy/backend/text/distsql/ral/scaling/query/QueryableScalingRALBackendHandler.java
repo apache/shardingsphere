@@ -24,7 +24,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.DatabaseRequiredBackendHandler;
 
 import java.sql.Types;
 import java.util.ArrayList;
@@ -34,7 +34,7 @@ import java.util.List;
 /**
  * Queryable scaling RAL backend handler.
  */
-public final class QueryableScalingRALBackendHandler extends SchemaRequiredBackendHandler<RALStatement> {
+public final class QueryableScalingRALBackendHandler extends DatabaseRequiredBackendHandler<RALStatement> {
     
     private final DistSQLResultSet resultSet;
     
@@ -44,11 +44,11 @@ public final class QueryableScalingRALBackendHandler extends SchemaRequiredBacke
     }
     
     @Override
-    protected ResponseHeader execute(final String schemaName, final RALStatement sqlStatement) {
-        resultSet.init(ProxyContext.getInstance().getMetaData(schemaName), sqlStatement);
+    protected ResponseHeader execute(final String databaseName, final RALStatement sqlStatement) {
+        resultSet.init(ProxyContext.getInstance().getMetaData(databaseName), sqlStatement);
         List<QueryHeader> queryHeaders = new ArrayList<>();
         for (String each : resultSet.getColumnNames()) {
-            queryHeaders.add(new QueryHeader(schemaName, "", each, each, Types.CHAR, "CHAR", 255, 0, false, false, false, false));
+            queryHeaders.add(new QueryHeader(databaseName, "", each, each, Types.CHAR, "CHAR", 255, 0, false, false, false, false));
         }
         return new QueryResponseHeader(queryHeaders);
     }

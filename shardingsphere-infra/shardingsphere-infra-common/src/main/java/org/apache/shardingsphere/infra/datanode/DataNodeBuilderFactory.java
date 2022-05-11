@@ -37,13 +37,13 @@ public final class DataNodeBuilderFactory {
     }
     
     /**
-     * Create new instance of data node builder.
+     * Get instances of data node builder.
      * 
      * @param rules rules
-     * @return new instance of data node builder
+     * @return got instances
      */
     @SuppressWarnings("rawtypes")
-    public static Map<ShardingSphereRule, DataNodeBuilder> newInstance(final Collection<ShardingSphereRule> rules) {
+    public static Map<ShardingSphereRule, DataNodeBuilder> getInstances(final Collection<ShardingSphereRule> rules) {
         return OrderedSPIRegistry.getRegisteredServices(DataNodeBuilder.class, rules);
     }
 }

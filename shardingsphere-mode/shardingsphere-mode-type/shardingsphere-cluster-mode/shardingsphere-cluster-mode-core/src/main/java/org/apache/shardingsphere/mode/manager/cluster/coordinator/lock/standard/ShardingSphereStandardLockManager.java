@@ -20,9 +20,8 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.standard
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.lock.LockType;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
-import org.apache.shardingsphere.mode.manager.ShardingSphereLockManager;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeService;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeServiceFactory;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.InterMutexReentrantLock;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.ShardingSphereLockManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.standard.service.StandardLockRegistryService;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
@@ -33,16 +32,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public final class ShardingSphereStandardLockManager implements ShardingSphereLockManager {
     
-    private final Map<String, ShardingSphereStandardLock> locks;
-    
-    private final LockNodeService lockNodeService;
+    private final Map<String, ShardingSphereStandardLock> locks = new ConcurrentHashMap<>();
     
     private ClusterPersistRepository clusterRepository;
-    
-    public ShardingSphereStandardLockManager() {
-        locks = new ConcurrentHashMap<>();
-        lockNodeService = LockNodeServiceFactory.getInstance().getLockNodeService(getLockType());
-    }
     
     @Override
     public void initLocksState(final PersistRepository repository, final ComputeNodeInstance instance, final Collection<ComputeNodeInstance> computeNodeInstances) {
@@ -50,7 +42,7 @@ public final class ShardingSphereStandardLockManager implements ShardingSphereLo
     }
     
     private ShardingSphereStandardLock createGeneralLock() {
-        return new ShardingSphereStandardLock(new StandardLockRegistryService(clusterRepository), lockNodeService);
+        return new ShardingSphereStandardLock(new InterMutexReentrantLock(new StandardLockRegistryService(clusterRepository)));
     }
     
     @Override
@@ -65,18 +57,13 @@ public final class ShardingSphereStandardLockManager implements ShardingSphereLo
     }
     
     @Override
-    public ShardingSphereLock getLock(final String lockName) {
-        return locks.get(lockName);
-    }
-    
-    @Override
     public boolean isLocked(final String lockName) {
         if (locks.isEmpty()) {
             return false;
         }
         ShardingSphereLock lock = locks.get(lockName);
         if (null != lock) {
-            return lock.isLocked();
+            return lock.isLocked(lockName);
         }
         return false;
     }

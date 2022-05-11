@@ -56,10 +56,10 @@ import java.sql.SQLException;
 public final class MySQLErrPacketFactory {
     
     /**
-     * New instance of MySQL ERR packet.
+     * Create new instance of MySQL ERR packet.
      *
      * @param cause cause
-     * @return instance of MySQL ERR packet
+     * @return created instance
      */
     public static MySQLErrPacket newInstance(final Exception cause) {
         if (cause instanceof SQLException) {

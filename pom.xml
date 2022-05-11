@@ -104,8 +104,6 @@
         <opentelemetry.version>1.3.0</opentelemetry.version>
         <opentelemetry-autoconfigure.version>1.3.0-alpha</opentelemetry-autoconfigure.version>
         
-        <bcprov-jdk15on.version>1.70</bcprov-jdk15on.version>
-        
         <slf4j.version>1.7.7</slf4j.version>
         <logback.version>1.2.10</logback.version>
         
@@ -577,12 +575,6 @@
             </dependency>
             
             <dependency>
-                <groupId>org.bouncycastle</groupId>
-                <artifactId>bcprov-jdk15on</artifactId>
-                <version>${bcprov-jdk15on.version}</version>
-            </dependency>
-            
-            <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
                 <version>${slf4j.version}</version>
@@ -769,6 +761,10 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jul-to-slf4j</artifactId>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
@@ -1045,7 +1041,7 @@
                 <configuration>
                     <java>
                         <eclipse>
-                            <file>${maven.multiModuleProjectDirectory}/src/resources/shardingsphere_eclipse_formatter.xml</file>
+                            <file>${maven.multiModuleProjectDirectory}/src/resources/spotless_shardingsphere_formatter.xml</file>
                         </eclipse>
                         <licenseHeader>
                             <file>${maven.multiModuleProjectDirectory}/src/resources/license-header</file>

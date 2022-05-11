@@ -170,6 +170,8 @@ public enum SQLVisitorRule {
     
     ALTER_VIEW("AlterView", SQLStatementType.DDL),
     
+    DROP_PACKAGE("DropPackage", SQLStatementType.DDL),
+    
     DROP_VIEW("DropView", SQLStatementType.DDL),
     
     ANALYZE("Analyze", SQLStatementType.DDL),
@@ -492,7 +494,15 @@ public enum SQLVisitorRule {
     
     DROP_OPERATOR_FAMILY("DropOperatorFamily", SQLStatementType.DDL),
     
-    DROP_ACCESS_METHOD("DropAccessMethod", SQLStatementType.DDL);
+    DROP_ACCESS_METHOD("DropAccessMethod", SQLStatementType.DDL),
+    
+    DROP_OUTLINE("DropOutline", SQLStatementType.DDL),
+    
+    ALTER_OUTLINE("AlterOutline", SQLStatementType.DDL),
+    
+    ALTER_ANALYTIC_VIEW("AlterAnalyticView", SQLStatementType.DDL),
+    
+    DROP_EDITION("DropEdition", SQLStatementType.DDL);
     
     private final String name;
     

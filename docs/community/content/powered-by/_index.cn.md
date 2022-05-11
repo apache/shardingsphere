@@ -13,7 +13,7 @@ chapter = true
 
 ## 谁在使用 ShardingSphere?
 
-共计 192 家公司。
+共计 194 家公司。
 
 ### 基础软件
 <ul>
@@ -103,6 +103,7 @@ chapter = true
     <li><a href="https://aifanfan.baidu.com/" rel="nofollow">百度爱番番</a></li>
     <li><a href="https://www.tuya.com/cn" rel="nofollow">涂鸦</a></li>
     <li><a href="https://www.itrus.com.cn/" rel="nofollow">天威诚信</a></li>
+    <li><a href="https://www.advancegroup.com.cn/" rel="nofollow">领创集团</a>：<a href="https://mp.weixin.qq.com/s/4iSewGT6-bOmDH56ukyBsQ" rel="nofollow">用户案例</a></li>
     <li><a href="http://www.zhenxinsafe.com/" rel="nofollow">真信认知科技</a></li>
     <li><a href="http://www.cloudansys.com/" rel="nofollow">云庐科技</a></li>
     <li><a href="http://www.compasshz.com/" rel="nofollow">康帕斯科技</a></li>
@@ -141,7 +142,7 @@ chapter = true
     <li><a href="https://www.ishansong.com/" rel="nofollow">闪送</a></li>
     <li><a href="http://www.yundaex.com/cn/index.php" rel="nofollow">韵达科技</a></li>
     <li><a href="http://www.huochebang.com/" rel="nofollow">货车帮</a></li>
-    <li><a href="https://www.huimin.cn" rel="nofollow">中商惠民</a>：<a href="https://mp.weixin.qq.com/s/UoMHNdPFj_kfwC-RAYazAg" rel="nofollow">用户案例</a></li></li>
+    <li><a href="https://www.huimin.cn" rel="nofollow">中商惠民</a>：<a href="https://mp.weixin.qq.com/s/UoMHNdPFj_kfwC-RAYazAg" rel="nofollow">用户案例</a></li>
     <li><a href="http://www.yl-scm.com/" rel="nofollow">云路供应链</a></li>
     <li><a href="https://www.newbeescm.com/" rel="nofollow">蜂网</a></li>
     <li><a href="https://www.dianwoda.com/" rel="nofollow">点我达</a></li>   
@@ -160,6 +161,20 @@ chapter = true
     <li><a href="http://www.yaduo.com/" rel="nofollow">亚朵</a></li>
 </ul>
 
+### 互联网文娱
+<ul>
+    <li><a href="https://www.ximalaya.com/" rel="nofollow">喜马拉雅</a>：<a href="https://mp.weixin.qq.com/s/hQpNb-SkDLtfo2sAo5Z_TA" rel="nofollow">用户案例</a></li>
+    <li><a href="https://y.tencentmusic.com" rel="nofollow">腾讯音乐</a></li>
+    <li><a href="https://www.bilibili.com/" rel="nofollow">哔哩哔哩</a></li>
+    <li><a href="https://www.iqiyi.com/" rel="nofollow">爱奇艺</a></li>
+    <li><a href="https://www.yy.com/" rel="nofollow">欢聚时代(YY)</a></li>
+    <li><a href="https://www.douyu.com/" rel="nofollow">斗鱼</a></li>
+    <li><a href="https://www.soulapp.cn/" rel="nofollow">Soul App</a></li>
+    <li><a href="https://www.bbgameonline.com/" rel="nofollow">BBGame</a></li>
+    <li><a href="https://www.elelive.net/" rel="nofollow">小象直播</a></li>
+    <li><a href="http://read.zhulang.com/" rel="nofollow">连尚文学</a></li>
+</ul>
+
 ### 互联网教育
 <ul>
     <li><a href="http://www.100tal.com/" rel="nofollow">好未来</a></li>
@@ -175,19 +190,6 @@ chapter = true
     <li><a href="http://www.swydedu.com/" rel="nofollow">数维原动</a></li>
     <li><a href="https://www.codemao.cn/" rel="nofollow">编程猫</a></li>
     <li><a href="https://www.yxt.com/" rel="nofollow">云学堂</a></li>
-</ul>
-
-### 互联网文娱
-<ul>
-    <li><a href="https://y.tencentmusic.com" rel="nofollow">腾讯音乐</a></li>
-    <li><a href="https://www.bilibili.com/" rel="nofollow">哔哩哔哩</a></li>
-    <li><a href="https://www.iqiyi.com/" rel="nofollow">爱奇艺</a></li>
-    <li><a href="https://www.yy.com/" rel="nofollow">欢聚时代(YY)</a></li>
-    <li><a href="https://www.douyu.com/" rel="nofollow">斗鱼</a></li>
-    <li><a href="https://www.soulapp.cn/" rel="nofollow">Soul App</a></li>
-    <li><a href="https://www.bbgameonline.com/" rel="nofollow">BBGame</a></li>
-    <li><a href="https://www.elelive.net/" rel="nofollow">小象直播</a></li>
-    <li><a href="http://read.zhulang.com/" rel="nofollow">连尚文学</a></li>
 </ul>
 
 ### 新闻资讯
@@ -227,7 +229,7 @@ chapter = true
 <ul>
     <li><a href="https://www.iflytek.com/" rel="nofollow">科大讯飞</a></li>
     <li><a href="https://www.oppo.com/" rel="nofollow">OPPO</a>：<a href="https://mp.weixin.qq.com/s/kLV5oqc9uHLg47TmaSTk4A" rel="nofollow">用户案例</a></li>
-    <li><a href="https://www.vivo.com/" rel="nofollow">VIVO</a></li>
+    <li><a href="https://www.vivo.com/" rel="nofollow">VIVO</a>：<a href="https://mp.weixin.qq.com/s/i6sI1C_Ye7-Ax9GtZNf9-g" rel="nofollow">用户案例</a></li>
     <li><a href="https://www.tcl.com/" rel="nofollow">TCL</a></li>
 </ul>
 

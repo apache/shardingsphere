@@ -18,13 +18,12 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.general;
 
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
-import org.apache.shardingsphere.infra.lock.ShardingSphereGlobalLock;
-import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.InterMutexLock;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.InterMutexReentrantLock;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.ShardingSphereGlobalLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeService;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockRegistryService;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.ShardingSphereDistributeGlobalLock;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.ShardingSphereSequencedSemaphoreLock;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.service.GlobalLockRegistryService;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.GlobalLockRegistryService;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.standard.service.StandardLockRegistryService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.TimeoutMilliseconds;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
@@ -37,16 +36,15 @@ public final class ShardingSphereGeneralLock implements ShardingSphereGlobalLock
     
     private final LockNodeService lockNodeService;
     
-    private final ShardingSphereLock sequencedSemaphoreLock;
+    private final InterMutexReentrantLock sequencedLock;
     
-    private final ShardingSphereDistributeGlobalLock innerDistributeGlobalLock;
+    private final InterMutexLock innerLock;
     
     public ShardingSphereGeneralLock(final ClusterPersistRepository clusterRepository, final LockNodeService lockNodeService, final ComputeNodeInstance currentInstance,
                                      final Collection<ComputeNodeInstance> computeNodeInstances) {
-        LockRegistryService lockRegistryService = new GlobalLockRegistryService(clusterRepository);
         this.lockNodeService = lockNodeService;
-        innerDistributeGlobalLock = new ShardingSphereDistributeGlobalLock(lockRegistryService, currentInstance, computeNodeInstances);
-        sequencedSemaphoreLock = new ShardingSphereSequencedSemaphoreLock(lockRegistryService, lockNodeService);
+        sequencedLock = new InterMutexReentrantLock(new StandardLockRegistryService(clusterRepository));
+        innerLock = new InterMutexLock(new GlobalLockRegistryService(clusterRepository), currentInstance, computeNodeInstances);
     }
     
     @Override
@@ -60,44 +58,43 @@ public final class ShardingSphereGeneralLock implements ShardingSphereGlobalLock
     }
     
     private synchronized boolean innerTryLock(final String lockName, final long timeoutMillis) {
-        boolean isAcquired = sequencedSemaphoreLock.tryLock(lockName, TimeoutMilliseconds.MIN_TRY_LOCK);
-        if (!isAcquired) {
+        if (!sequencedLock.tryLock(lockNodeService.getSequenceNodePath(), TimeoutMilliseconds.MIN_TRY_LOCK)) {
             return false;
         }
         try {
-            return innerDistributeGlobalLock.tryLock(lockNodeService.generateLocksName(lockName), timeoutMillis);
+            return innerLock.tryLock(lockNodeService.generateLocksName(lockName), timeoutMillis);
         } finally {
-            sequencedSemaphoreLock.releaseLock(lockName);
+            sequencedLock.releaseLock(lockNodeService.getSequenceNodePath());
         }
     }
     
     @Override
     public void releaseLock(final String lockName) {
-        innerDistributeGlobalLock.releaseLock(lockNodeService.generateLocksName(lockName));
+        innerLock.releaseLock(lockNodeService.generateLocksName(lockName));
     }
     
     @Override
-    public boolean isLocked() {
-        return innerDistributeGlobalLock.isLocked();
+    public boolean isLocked(final String lockName) {
+        return innerLock.isLocked(lockName);
     }
     
     @Override
     public void ackLock(final String lockName, final String instanceId) {
-        innerDistributeGlobalLock.ackLock(lockNodeService.generateAckLockName(lockName, instanceId), instanceId);
+        innerLock.ackLock(lockNodeService.generateAckLockName(lockName, instanceId), instanceId);
     }
     
     @Override
     public void releaseAckLock(final String lockName, final String instanceId) {
-        innerDistributeGlobalLock.releaseAckLock(lockNodeService.generateAckLockName(lockName, instanceId), instanceId);
+        innerLock.releaseAckLock(lockNodeService.generateAckLockName(lockName, instanceId), instanceId);
     }
     
     @Override
     public void addLockedInstance(final String instanceId) {
-        innerDistributeGlobalLock.addLockedInstance(instanceId);
+        innerLock.addLockedInstance(instanceId);
     }
     
     @Override
     public void removeLockedInstance(final String instanceId) {
-        innerDistributeGlobalLock.removeLockedInstance(instanceId);
+        innerLock.removeLockedInstance(instanceId);
     }
 }

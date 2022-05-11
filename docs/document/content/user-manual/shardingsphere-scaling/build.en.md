@@ -73,7 +73,7 @@ rules:
       completionDetector: # Completion detect algorithm. If it's not configured, then system won't continue to do next steps automatically.
         type: # Algorithm type. Options: IDLE
         props: # Algorithm properties
-          incremental-task-idle-minute-threshold: # If incremental tasks is idle more than so much minutes, then it could be considered as almost completed. Available for types: IDLE
+          incremental-task-idle-seconds-threshold: # If incremental tasks is idle more than so much seconds, then it could be considered as almost completed. Available for types: IDLE
       dataConsistencyChecker: # Data consistency check algorithm. If it's not configured, then system will skip this step.
         type: # Algorithm type. Options: DATA_MATCH, CRC32_MATCH
         props: # Algorithm properties
@@ -106,7 +106,7 @@ rules:
       completionDetector:
         type: IDLE
         props:
-          incremental-task-idle-minute-threshold: 30
+          incremental-task-idle-seconds-threshold: 1800
       dataConsistencyChecker:
         type: DATA_MATCH
         props:
@@ -152,7 +152,7 @@ OUTPUT(
   BATCH_SIZE=1000
 ),
 STREAM_CHANNEL(TYPE(NAME=MEMORY, PROPERTIES("block-queue-size"=10000))),
-COMPLETION_DETECTOR(TYPE(NAME=IDLE, PROPERTIES("incremental-task-idle-minute-threshold"=30))),
+COMPLETION_DETECTOR(TYPE(NAME=IDLE, PROPERTIES("incremental-task-idle-seconds-threshold"=1800))),
 DATA_CONSISTENCY_CHECKER(TYPE(NAME=DATA_MATCH, PROPERTIES("chunk-size"=1000)))
 );
 ```

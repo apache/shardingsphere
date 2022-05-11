@@ -17,18 +17,20 @@
 
 package org.apache.shardingsphere.infra.route;
 
+import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.spi.type.ordered.OrderedSPI;
-import org.apache.shardingsphere.infra.binder.LogicSQL;
 
 /**
  * SQL Router.
  * 
  * @param <T> type of rule
  */
+@SingletonSPI
 public interface SQLRouter<T extends ShardingSphereRule> extends OrderedSPI<T> {
     
     /**

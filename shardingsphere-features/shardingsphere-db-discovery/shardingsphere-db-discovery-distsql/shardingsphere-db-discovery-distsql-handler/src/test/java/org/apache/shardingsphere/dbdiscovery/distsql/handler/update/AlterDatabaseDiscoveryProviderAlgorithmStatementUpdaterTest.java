@@ -98,6 +98,6 @@ public final class AlterDatabaseDiscoveryProviderAlgorithmStatementUpdaterTest {
         updater.updateCurrentRuleConfiguration(currentConfig, databaseDiscoveryRuleConfig);
         assertThat(currentConfig.getDiscoveryTypes().size(), is(1));
         assertThat(currentConfig.getDiscoveryTypes().get("discovery_type").getType(), is("DISTSQL.FIXTURE"));
-        assertThat(currentConfig.getDiscoveryTypes().get("discovery_type").getProps().get("key"), is("value_1"));
+        assertThat(currentConfig.getDiscoveryTypes().get("discovery_type").getProps().getProperty("key"), is("value_1"));
     }
 }

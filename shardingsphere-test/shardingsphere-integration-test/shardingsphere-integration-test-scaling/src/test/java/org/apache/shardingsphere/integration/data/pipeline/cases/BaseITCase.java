@@ -23,6 +23,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
@@ -62,10 +63,11 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+@Slf4j
 @Getter(AccessLevel.PROTECTED)
 public abstract class BaseITCase {
     
-    protected static final String ADD_RESOURCE_TEMPLATE = "ADD RESOURCE %s (URL='%s',USER=root,PASSWORD=root)";
+    protected static final String ADD_RESOURCE_TEMPLATE = "ADD RESOURCE %s (URL='%s',USER=%s,PASSWORD=%s)";
     
     protected static final JdbcUrlAppender JDBC_URL_APPENDER = new JdbcUrlAppender();
     
@@ -120,20 +122,24 @@ public abstract class BaseITCase {
     }
     
     protected void addResource(final Connection connection) throws SQLException {
+        addResource(connection, "root", "root");
+    }
+    
+    protected void addResource(final Connection connection, final String username, final String password) throws SQLException {
         Properties queryProps = createQueryProperties();
-        connection.createStatement().execute(String.format(ADD_RESOURCE_TEMPLATE, "ds_0", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_0"), queryProps)));
-        connection.createStatement().execute(String.format(ADD_RESOURCE_TEMPLATE, "ds_1", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_1"), queryProps)));
-        connection.createStatement().execute(String.format(ADD_RESOURCE_TEMPLATE, "ds_2", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_2"), queryProps)));
-        connection.createStatement().execute(String.format(ADD_RESOURCE_TEMPLATE, "ds_3", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_3"), queryProps)));
-        connection.createStatement().execute(String.format(ADD_RESOURCE_TEMPLATE, "ds_4", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_4"), queryProps)));
+        connection.createStatement().execute(String.format(ADD_RESOURCE_TEMPLATE, "ds_0", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_0"), queryProps), username, password));
+        connection.createStatement().execute(String.format(ADD_RESOURCE_TEMPLATE, "ds_1", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_1"), queryProps), username, password));
+        connection.createStatement().execute(String.format(ADD_RESOURCE_TEMPLATE, "ds_2", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_2"), queryProps), username, password));
+        connection.createStatement().execute(String.format(ADD_RESOURCE_TEMPLATE, "ds_3", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_3"), queryProps), username, password));
+        connection.createStatement().execute(String.format(ADD_RESOURCE_TEMPLATE, "ds_4", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_4"), queryProps), username, password));
     }
     
     private String getActualJdbcUrlTemplate(final String databaseName) {
         final DockerDatabaseContainer databaseContainer = composedContainer.getDatabaseContainer();
         if (ENV.getItEnvType() == ITEnvTypeEnum.DOCKER) {
-            return String.format("jdbc:%s://%s:%s/%s", databaseContainer.getDatabaseType().getName().toLowerCase(), "db.host", databaseContainer.getPort(), databaseName);
+            return String.format("jdbc:%s://%s:%s/%s", databaseContainer.getDatabaseType().getType().toLowerCase(), "db.host", databaseContainer.getPort(), databaseName);
         } else {
-            return String.format("jdbc:%s://%s:%s/%s", databaseContainer.getDatabaseType().getName().toLowerCase(), "127.0.0.1", databaseContainer.getFirstMappedPort(), databaseName);
+            return String.format("jdbc:%s://%s:%s/%s", databaseContainer.getDatabaseType().getType().toLowerCase(), "127.0.0.1", databaseContainer.getFirstMappedPort(), databaseName);
         }
     }
     
@@ -143,9 +149,13 @@ public abstract class BaseITCase {
             // TODO sleep to wait for sharding algorithm table created,otherwise the next sql will fail.
             TimeUnit.SECONDS.sleep(1);
         }
-        getJdbcTemplate().execute(getCommonSQLCommand().getCreateShardingTable());
-        getJdbcTemplate().execute("CREATE SHARDING BINDING TABLE RULES (t_order,t_order_item)");
-        getJdbcTemplate().execute("CREATE SHARDING SCALING RULE scaling_manual (DATA_CONSISTENCY_CHECKER(TYPE(NAME=DATA_MATCH)))");
+        jdbcTemplate.execute(getCommonSQLCommand().getCreateShardingTable());
+        jdbcTemplate.execute("CREATE SHARDING BINDING TABLE RULES (t_order,t_order_item)");
+        jdbcTemplate.execute("CREATE SHARDING SCALING RULE scaling_manual (DATA_CONSISTENCY_CHECKER(TYPE(NAME=DATA_MATCH)))");
+    }
+    
+    protected void createSchema(final String schemaName) {
+        jdbcTemplate.execute(String.format("CREATE SCHEMA %s", schemaName));
     }
     
     /**
@@ -159,6 +169,7 @@ public abstract class BaseITCase {
         Map<String, String> actualStatusMap = new HashMap<>(2, 1);
         for (int i = 0; i < 100; i++) {
             List<Map<String, Object>> showScalingStatusResMap = jdbcTemplate.queryForList(String.format("SHOW SCALING STATUS %s", jobId));
+            log.info("actualStatusMap: {}", actualStatusMap);
             boolean finished = true;
             for (Map<String, Object> entry : showScalingStatusResMap) {
                 String status = entry.get("status").toString();
@@ -174,9 +185,8 @@ public abstract class BaseITCase {
             }
             if (finished) {
                 break;
-            } else {
-                TimeUnit.SECONDS.sleep(2);
             }
+            TimeUnit.SECONDS.sleep(2);
         }
         assertThat(actualStatusMap.values().stream().filter(StringUtils::isNotBlank).collect(Collectors.toSet()).size(), is(1));
         jdbcTemplate.execute(String.format("STOP SCALING SOURCE WRITING %s", jobId));

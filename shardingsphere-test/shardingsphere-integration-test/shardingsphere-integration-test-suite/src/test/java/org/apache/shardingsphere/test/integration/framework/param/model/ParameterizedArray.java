@@ -59,6 +59,6 @@ public interface ParameterizedArray {
      * @return key of parameterized array
      */
     default String getKey() {
-        return String.join("-", getScenario(), getAdapter(), getDatabaseType().getName());
+        return String.join("-", getScenario(), getAdapter(), getDatabaseType().getType());
     }
 }

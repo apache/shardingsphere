@@ -37,13 +37,13 @@ public final class SQLCheckerFactory {
     }
     
     /**
-     * Create new instance of SQL checker.
+     * Get instance of SQL checker.
      * 
      * @param rules rules
-     * @return new instance of SQL checker
+     * @return got instance
      */
     @SuppressWarnings("rawtypes")
-    public static Map<ShardingSphereRule, SQLChecker> newInstance(final Collection<ShardingSphereRule> rules) {
+    public static Map<ShardingSphereRule, SQLChecker> getInstance(final Collection<ShardingSphereRule> rules) {
         return OrderedSPIRegistry.getRegisteredServices(SQLChecker.class, rules);
     }
 }

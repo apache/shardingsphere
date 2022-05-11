@@ -19,7 +19,7 @@ package org.apache.shardingsphere.integration.data.pipeline.env.config;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
@@ -93,7 +93,7 @@ public final class SourceConfiguration {
     @SneakyThrows(SQLException.class)
     public static DataSource createHostDataSource(final Map<String, YamlTableRuleConfiguration> tableRules) {
         ShardingSpherePipelineDataSourceConfiguration config = getHostConfiguration(tableRules);
-        return new ShardingSphereDataSource(DefaultSchema.LOGIC_NAME,
+        return new ShardingSphereDataSource(DefaultDatabase.LOGIC_NAME,
                 null, new YamlDataSourceConfigurationSwapper().swapToDataSources(config.getRootConfig().getDataSources()),
                 new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(config.getRootConfig().getRules()), null);
     }

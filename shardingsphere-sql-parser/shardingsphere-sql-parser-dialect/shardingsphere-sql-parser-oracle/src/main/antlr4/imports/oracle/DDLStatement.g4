@@ -60,6 +60,10 @@ dropTable
     : DROP TABLE tableName (CASCADE CONSTRAINTS)? (PURGE)?
     ;
 
+dropPackage
+    : DROP PACKAGE BODY? packageName
+    ;
+
 dropTrigger
     : DROP TRIGGER triggerName
     ;
@@ -70,6 +74,23 @@ dropIndex
 
 dropView
     : DROP VIEW viewName (CASCADE CONSTRAINTS)?
+    ;
+
+dropEdition
+    : DROP EDITION editionName CASCADE?
+    ;
+
+dropOutline
+    : DROP OUTLINE outlineName
+    ;
+
+alterOutline
+    : ALTER OUTLINE (PUBLIC | PRIVATE)? outlineName
+    ( REBUILD
+    | RENAME TO outlineName
+    | CHANGE CATEGORY TO categoryName
+    | (ENABLE | DISABLE)
+    )+
     ;
 
 truncateTable
@@ -2245,4 +2266,8 @@ externalParameter
 
 property
     : (INDICATOR (STRUCT | TDO)? | LENGTH | DURATION | MAXLEN | CHARSETID | CHARSETFORM)
+    ;
+
+alterAnalyticView
+    : ALTER ANALYTIC VIEW analyticViewName (RENAME TO analyticViewName | COMPILE)
     ;

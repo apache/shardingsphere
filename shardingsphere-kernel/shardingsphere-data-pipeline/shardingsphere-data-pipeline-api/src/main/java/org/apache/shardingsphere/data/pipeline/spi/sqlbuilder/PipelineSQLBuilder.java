@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.spi.sqlbuilder;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
-import org.apache.shardingsphere.spi.type.typed.StatefulTypedSPI;
+import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 
 import java.util.Collection;
 import java.util.List;
@@ -31,17 +31,29 @@ import java.util.Set;
 /**
  * Pipeline SQL builder.
  */
-public interface PipelineSQLBuilder extends StatefulTypedSPI {
+public interface PipelineSQLBuilder extends TypedSPI {
     
     /**
-     * Build inventory dump SQL.
+     * Build create schema SQL.
+     *
+     * @param schemaName schema name
+     * @return create schema SQL
+     */
+    default String buildCreateSchemaSQL(String schemaName) {
+        throw new UnsupportedOperationException();
+    }
+    
+    /**
+     * Build inventory dump first SQL.
      *
      * @param schemaName schema name
      * @param tableName table name
      * @param uniqueKey unique key
+     * @param uniqueKeyDataType unique key data type
+     * @param firstQuery whether it's the first time query
      * @return inventory dump SQL
      */
-    String buildInventoryDumpSQL(String schemaName, String tableName, String uniqueKey);
+    String buildInventoryDumpSQL(String schemaName, String tableName, String uniqueKey, int uniqueKeyDataType, boolean firstQuery);
     
     /**
      * Build insert SQL.
@@ -107,10 +119,10 @@ public interface PipelineSQLBuilder extends StatefulTypedSPI {
      * @param schemaName schema name
      * @param tableName table name
      * @param uniqueKey unique key, it may be primary key, not null
-     * @param startUniqueValue start unique value, not null
+     * @param firstQuery first query
      * @return query SQL
      */
-    String buildChunkedQuerySQL(String schemaName, String tableName, String uniqueKey, Number startUniqueValue);
+    String buildChunkedQuerySQL(String schemaName, String tableName, String uniqueKey, boolean firstQuery);
     
     /**
      * Build check empty SQL.

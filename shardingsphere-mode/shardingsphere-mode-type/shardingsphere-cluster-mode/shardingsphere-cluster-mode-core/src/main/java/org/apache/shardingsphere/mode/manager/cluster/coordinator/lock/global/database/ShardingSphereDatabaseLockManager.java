@@ -21,15 +21,16 @@ import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.lock.LockType;
-import org.apache.shardingsphere.infra.lock.ShardingSphereGlobalLock;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.ShardingSphereGlobalLock;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
-import org.apache.shardingsphere.mode.manager.ShardingSphereLockManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeServiceFactory;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.ShardingSphereLockManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.database.event.DatabaseAckLockReleasedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.database.event.DatabaseAckLockedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.database.event.DatabaseLockReleasedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.database.event.DatabaseLockedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeType;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
@@ -55,7 +56,7 @@ public final class ShardingSphereDatabaseLockManager implements ShardingSphereLo
     
     public ShardingSphereDatabaseLockManager() {
         locks = new ConcurrentHashMap<>();
-        lockNodeService = LockNodeServiceFactory.getInstance().getLockNodeService(getLockType());
+        lockNodeService = LockNodeServiceFactory.getInstance().getLockNodeService(LockNodeType.DATABASE);
     }
     
     @Override
@@ -76,7 +77,7 @@ public final class ShardingSphereDatabaseLockManager implements ShardingSphereLo
         }
         for (String each : allGlobalLock) {
             Optional<String> databaseLock = lockNodeService.parseLocksNodePath(each);
-            databaseLock.ifPresent(optional -> locks.put(optional, crateDatabaseLock()));
+            databaseLock.ifPresent(databaseName -> locks.put(databaseName, crateDatabaseLock()));
         }
     }
     
@@ -96,24 +97,19 @@ public final class ShardingSphereDatabaseLockManager implements ShardingSphereLo
     }
     
     @Override
-    public ShardingSphereLock getLock(final String lockName) {
-        return locks.get(lockName);
-    }
-    
-    @Override
     public boolean isLocked(final String lockName) {
         if (locks.isEmpty()) {
             return false;
         }
         ShardingSphereGlobalLock lock = locks.get(lockName);
         if (null != lock) {
-            return lock.isLocked();
+            return lock.isLocked(lockName);
         }
         return false;
     }
     
     /**
-     * Locked.
+     * Database locked.
      *
      * @param event database locked event
      */
@@ -129,7 +125,7 @@ public final class ShardingSphereDatabaseLockManager implements ShardingSphereLo
     }
     
     /**
-     * Lock released.
+     * Database lock released.
      *
      * @param event database lock released event
      */
@@ -140,7 +136,7 @@ public final class ShardingSphereDatabaseLockManager implements ShardingSphereLo
     }
     
     /**
-     * Ack locked.
+     * Database ack locked.
      *
      * @param event database ack locked event
      */
@@ -150,7 +146,7 @@ public final class ShardingSphereDatabaseLockManager implements ShardingSphereLo
     }
     
     /**
-     * Ack lock released.
+     * Database ack lock released.
      *
      * @param event database ack lock released event
      */

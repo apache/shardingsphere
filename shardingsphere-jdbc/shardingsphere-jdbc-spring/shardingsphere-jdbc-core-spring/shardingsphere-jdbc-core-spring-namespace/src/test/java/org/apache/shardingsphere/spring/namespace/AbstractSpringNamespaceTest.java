@@ -19,7 +19,7 @@ package org.apache.shardingsphere.spring.namespace;
 
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
@@ -49,8 +49,8 @@ public abstract class AbstractSpringNamespaceTest extends AbstractJUnit4SpringCo
     
     @Test
     public void assertShardingSphereDataSource() {
-        assertDataSources(dataSource.getContextManager().getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME).getResource().getDataSources());
-        assertSchemaRules(dataSource.getContextManager().getMetaDataContexts().getMetaData(DefaultSchema.LOGIC_NAME).getRuleMetaData().getRules());
+        assertDataSources(dataSource.getContextManager().getMetaDataContexts().getMetaData(DefaultDatabase.LOGIC_NAME).getResource().getDataSources());
+        assertSchemaRules(dataSource.getContextManager().getMetaDataContexts().getMetaData(DefaultDatabase.LOGIC_NAME).getRuleMetaData().getRules());
         assertGlobalRules(dataSource.getContextManager().getMetaDataContexts().getGlobalRuleMetaData().getRules());
     }
     

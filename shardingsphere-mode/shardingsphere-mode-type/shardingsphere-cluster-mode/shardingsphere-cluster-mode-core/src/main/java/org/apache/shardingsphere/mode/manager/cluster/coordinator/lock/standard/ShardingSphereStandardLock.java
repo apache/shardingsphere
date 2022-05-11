@@ -19,8 +19,10 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.standard
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.InterMutexReentrantLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeService;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockRegistryService;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeServiceFactory;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeType;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.TimeoutMilliseconds;
 
 /**
@@ -29,9 +31,9 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.Time
 @RequiredArgsConstructor
 public final class ShardingSphereStandardLock implements ShardingSphereLock {
     
-    private final LockRegistryService lockRegistryService;
+    private final LockNodeService lockNodeService = LockNodeServiceFactory.getInstance().getLockNodeService(LockNodeType.STANDARD);
     
-    private final LockNodeService lockNodeService;
+    private final InterMutexReentrantLock interLock;
     
     @Override
     public boolean tryLock(final String lockName) {
@@ -40,16 +42,16 @@ public final class ShardingSphereStandardLock implements ShardingSphereLock {
     
     @Override
     public boolean tryLock(final String lockName, final long timeoutMillis) {
-        return lockRegistryService.tryLock(lockNodeService.generateLocksName(lockName), TimeoutMilliseconds.MAX_TRY_LOCK);
+        return interLock.tryLock(lockNodeService.generateLocksName(lockName), TimeoutMilliseconds.MAX_TRY_LOCK);
     }
     
     @Override
     public void releaseLock(final String lockName) {
-        lockRegistryService.releaseLock(lockNodeService.generateLocksName(lockName));
+        interLock.releaseLock(lockNodeService.generateLocksName(lockName));
     }
     
     @Override
-    public boolean isLocked() {
+    public boolean isLocked(final String lockName) {
         throw new UnsupportedOperationException();
     }
 }

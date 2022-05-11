@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.job;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPIFactory;
+import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPI;
 import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
 import org.apache.shardingsphere.data.pipeline.core.util.JobConfigurationBuilder;
@@ -59,9 +59,9 @@ public final class FinishedCheckJobTest {
     
     @Test
     public void assertExecuteAllDisabledJob() {
-        Optional<String> jobId = PipelineJobAPIFactory.newInstance().start(JobConfigurationBuilder.createJobConfiguration());
+        Optional<String> jobId = RuleAlteredJobAPIFactory.getInstance().start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
-        List<JobInfo> jobInfos = PipelineJobAPIFactory.newInstance().list();
+        List<JobInfo> jobInfos = RuleAlteredJobAPIFactory.getInstance().list();
         jobInfos.forEach(each -> each.setActive(false));
         when(ruleAlteredJobAPI.list()).thenReturn(jobInfos);
         finishedCheckJob.execute(null);
@@ -69,9 +69,9 @@ public final class FinishedCheckJobTest {
     
     @Test
     public void assertExecuteActiveJob() {
-        Optional<String> jobId = PipelineJobAPIFactory.newInstance().start(JobConfigurationBuilder.createJobConfiguration());
+        Optional<String> jobId = RuleAlteredJobAPIFactory.getInstance().start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
-        List<JobInfo> jobInfos = PipelineJobAPIFactory.newInstance().list();
+        List<JobInfo> jobInfos = RuleAlteredJobAPIFactory.getInstance().list();
         jobInfos.forEach(each -> each.setActive(true));
         when(ruleAlteredJobAPI.list()).thenReturn(jobInfos);
         finishedCheckJob.execute(null);

@@ -52,7 +52,7 @@ public final class XAShardingSphereTransactionManager implements ShardingSphereT
     
     @Override
     public void init(final DatabaseType databaseType, final Collection<ResourceDataSource> resourceDataSources, final TransactionRule transactionRule) {
-        xaTransactionManagerProvider = XATransactionManagerProviderFactory.newInstance(transactionRule.getProviderType());
+        xaTransactionManagerProvider = XATransactionManagerProviderFactory.getInstance(transactionRule.getProviderType());
         xaTransactionManagerProvider.init();
         resourceDataSources.forEach(each -> cachedDataSources.put(each.getOriginalName(), newXATransactionDataSource(databaseType, each)));
     }

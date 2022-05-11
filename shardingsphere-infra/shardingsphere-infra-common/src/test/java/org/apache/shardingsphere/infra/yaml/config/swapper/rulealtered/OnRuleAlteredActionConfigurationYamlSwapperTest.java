@@ -55,7 +55,7 @@ public final class OnRuleAlteredActionConfigurationYamlSwapperTest {
         streamChannelProps.setProperty("block-queue-size", "10000");
         yamlConfig.setStreamChannel(new YamlShardingSphereAlgorithmConfiguration("MEMORY", streamChannelProps));
         Properties completionDetectorProps = new Properties();
-        completionDetectorProps.setProperty("incremental-task-idle-minute-threshold", "30");
+        completionDetectorProps.setProperty("incremental-task-idle-seconds-threshold", "1800");
         yamlConfig.setCompletionDetector(new YamlShardingSphereAlgorithmConfiguration("IDLE", completionDetectorProps));
         Properties dataConsistencyCheckerProps = new Properties();
         dataConsistencyCheckerProps.setProperty("chunk-size", "1000");

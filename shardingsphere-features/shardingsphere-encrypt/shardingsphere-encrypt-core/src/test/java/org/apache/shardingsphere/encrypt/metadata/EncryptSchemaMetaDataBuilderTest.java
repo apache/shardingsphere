@@ -188,7 +188,7 @@ public final class EncryptSchemaMetaDataBuilderTest {
     
     private void loadByH2(final EncryptSchemaMetaDataBuilder loader, final Collection<String> tableNames, final Collection<ShardingSphereRule> rules,
                           final EncryptRule encryptRule) throws SQLException {
-        when(databaseType.getName()).thenReturn("H2");
+        when(databaseType.getType()).thenReturn("H2");
         Map<String, SchemaMetaData> actual = loader.load(tableNames, encryptRule,
                 new SchemaBuilderMaterials(databaseType, Collections.singletonMap("logic_db", dataSource), rules, props, "logic_db"));
         assertResult(actual, "logic_db");
@@ -203,7 +203,7 @@ public final class EncryptSchemaMetaDataBuilderTest {
     
     private void loadByMySQL(final EncryptSchemaMetaDataBuilder loader, final Collection<String> tableNames, final Collection<ShardingSphereRule> rules,
                              final EncryptRule encryptRule) throws SQLException {
-        when(databaseType.getName()).thenReturn("MySQL");
+        when(databaseType.getType()).thenReturn("MySQL");
         Map<String, SchemaMetaData> actual = loader.load(tableNames, encryptRule,
                 new SchemaBuilderMaterials(databaseType, Collections.singletonMap("logic_db", dataSource), rules, props, "logic_db"));
         assertResult(actual, "logic_db");
@@ -218,7 +218,7 @@ public final class EncryptSchemaMetaDataBuilderTest {
     
     private void loadByOracle(final EncryptSchemaMetaDataBuilder loader, final Collection<String> tableNames, final Collection<ShardingSphereRule> rules,
                               final EncryptRule encryptRule) throws SQLException {
-        when(databaseType.getName()).thenReturn("Oracle");
+        when(databaseType.getType()).thenReturn("Oracle");
         Map<String, SchemaMetaData> actual = loader.load(tableNames, encryptRule,
                 new SchemaBuilderMaterials(databaseType, Collections.singletonMap("logic_db", dataSource), rules, props, "logic_db"));
         assertResult(actual, "logic_db");
@@ -233,7 +233,7 @@ public final class EncryptSchemaMetaDataBuilderTest {
     
     private void loadByPostgreSQL(final EncryptSchemaMetaDataBuilder loader, final Collection<String> tableNames, final Collection<ShardingSphereRule> rules,
                                   final EncryptRule encryptRule) throws SQLException {
-        when(databaseType.getName()).thenReturn("PostgreSQL");
+        when(databaseType.getType()).thenReturn("PostgreSQL");
         ResultSet roleTableGrantsResultSet = mockRoleTableGrantsResultSet();
         when(dataSource.getConnection().prepareStatement(startsWith("SELECT table_name FROM information_schema.role_table_grants")).executeQuery()).thenReturn(roleTableGrantsResultSet);
         ResultSet schemaMetaData = mockSchemaMetaData();
@@ -266,7 +266,7 @@ public final class EncryptSchemaMetaDataBuilderTest {
     
     private void loadBySQLServer(final EncryptSchemaMetaDataBuilder loader, final Collection<String> tableNames, final Collection<ShardingSphereRule> rules,
                                  final EncryptRule encryptRule) throws SQLException {
-        when(databaseType.getName()).thenReturn("SQLServer");
+        when(databaseType.getType()).thenReturn("SQLServer");
         Map<String, SchemaMetaData> actual = loader.load(tableNames, encryptRule,
                 new SchemaBuilderMaterials(databaseType, Collections.singletonMap("logic_db", dataSource), rules, props, "logic_db"));
         assertResult(actual, "logic_db");
@@ -382,6 +382,6 @@ public final class EncryptSchemaMetaDataBuilderTest {
     }
     
     private EncryptSchemaMetaDataBuilder getEncryptMetaDataBuilder(final EncryptRule encryptRule, final Collection<ShardingSphereRule> rules) {
-        return (EncryptSchemaMetaDataBuilder) RuleBasedSchemaMetaDataBuilderFactory.newInstance(rules).get(encryptRule);
+        return (EncryptSchemaMetaDataBuilder) RuleBasedSchemaMetaDataBuilderFactory.getInstances(rules).get(encryptRule);
     }
 }

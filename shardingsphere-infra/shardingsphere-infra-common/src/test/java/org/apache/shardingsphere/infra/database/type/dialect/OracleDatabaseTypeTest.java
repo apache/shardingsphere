@@ -36,7 +36,7 @@ public final class OracleDatabaseTypeTest {
     
     @Test
     public void assertGetName() {
-        assertThat(new OracleDatabaseType().getName(), is("Oracle"));
+        assertThat(new OracleDatabaseType().getType(), is("Oracle"));
     }
     
     @Test

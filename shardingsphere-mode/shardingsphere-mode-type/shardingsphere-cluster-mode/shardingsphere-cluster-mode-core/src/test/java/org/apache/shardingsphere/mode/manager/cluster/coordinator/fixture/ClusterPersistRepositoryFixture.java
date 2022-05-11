@@ -24,7 +24,6 @@ import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEve
 
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 
 public final class ClusterPersistRepositoryFixture implements ClusterPersistRepository {
@@ -65,15 +64,6 @@ public final class ClusterPersistRepositoryFixture implements ClusterPersistRepo
     }
     
     @Override
-    public boolean tryLock(final String key, final long time, final TimeUnit unit) {
-        return false;
-    }
-    
-    @Override
-    public void releaseLock(final String key) {
-    }
-    
-    @Override
     public void watchSessionConnection(final InstanceContext instanceContext) {
     }
     
@@ -93,6 +83,6 @@ public final class ClusterPersistRepositoryFixture implements ClusterPersistRepo
     
     @Override
     public String getType() {
-        return "TEST";
+        return "FIXTURE";
     }
 }

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.dbdiscovery.mysql.type;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
 import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
@@ -36,13 +35,17 @@ import java.util.Properties;
  * Normal replication database discovery provider algorithm for MySQL.
  */
 @Getter
-@Setter
 @Slf4j
 public final class MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm implements DatabaseDiscoveryProviderAlgorithm {
     
     private static final String SHOW_SLAVE_STATUS = "SHOW SLAVE STATUS";
     
-    private Properties props = new Properties();
+    private Properties props;
+    
+    @Override
+    public void init(final Properties props) {
+        this.props = props;
+    }
     
     @Override
     public void checkEnvironment(final String databaseName, final DataSource dataSource) throws SQLException {

@@ -56,6 +56,6 @@ public final class DatabaseProtocolFrontendEngineFixture implements DatabaseProt
     
     @Override
     public String getType() {
-        return new FixtureDatabaseType().getName();
+        return new FixtureDatabaseType().getType();
     }
 }

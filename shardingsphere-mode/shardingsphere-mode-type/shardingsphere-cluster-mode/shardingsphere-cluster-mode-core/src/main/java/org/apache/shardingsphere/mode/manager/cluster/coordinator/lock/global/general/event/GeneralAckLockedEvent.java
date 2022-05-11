@@ -27,13 +27,13 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.Gover
 @Getter
 public final class GeneralAckLockedEvent implements GovernanceEvent {
     
-    private final String lockName;
+    private final String ackLockedName;
     
     private final String lockedInstance;
     
     public GeneralAckLockedEvent(final String ackLockName) {
-        String[] databaseInstance = LockNodeUtil.parseDatabaseLockName(ackLockName);
-        lockName = databaseInstance[0];
+        String[] databaseInstance = LockNodeUtil.parseAckLockName(ackLockName);
+        ackLockedName = databaseInstance[0];
         lockedInstance = databaseInstance[1];
     }
 }

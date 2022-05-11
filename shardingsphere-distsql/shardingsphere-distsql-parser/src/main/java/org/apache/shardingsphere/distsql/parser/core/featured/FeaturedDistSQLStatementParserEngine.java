@@ -28,22 +28,10 @@ import org.apache.shardingsphere.sql.parser.core.SQLParserFactory;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ServiceLoader;
-
 /**
  * Featured dist SQL statement parser engine.
  */
 public final class FeaturedDistSQLStatementParserEngine {
-    
-    private static final Map<String, FeaturedDistSQLStatementParserFacade> FACADES = new HashMap<>();
-    
-    static {
-        for (FeaturedDistSQLStatementParserFacade each : ServiceLoader.load(FeaturedDistSQLStatementParserFacade.class)) {
-            FACADES.put(each.getFeatureType(), each);
-        }
-    }
     
     /**
      * Parse SQL.
@@ -57,10 +45,10 @@ public final class FeaturedDistSQLStatementParserEngine {
     }
     
     private FeaturedDistSQLParseASTNode parseToASTNode(final String sql) {
-        for (FeaturedDistSQLStatementParserFacade each : FACADES.values()) {
+        for (FeaturedDistSQLStatementParserFacade each : FeaturedDistSQLStatementParserFacadeFactory.getAllInstances()) {
             try {
                 ParseASTNode parseASTNode = (ParseASTNode) SQLParserFactory.newInstance(sql, each.getLexerClass(), each.getParserClass()).parse();
-                return new FeaturedDistSQLParseASTNode(each.getFeatureType(), parseASTNode);
+                return new FeaturedDistSQLParseASTNode(each.getType(), parseASTNode);
             } catch (final ParseCancellationException | SQLParsingException ignored) {
             }
         }
@@ -70,7 +58,7 @@ public final class FeaturedDistSQLStatementParserEngine {
     @SneakyThrows(ReflectiveOperationException.class)
     @SuppressWarnings("rawtypes")
     private SQLStatement getSQLStatement(final String sql, final String featureType, final ParseASTNode parseASTNode) {
-        SQLVisitor visitor = FACADES.get(featureType).getVisitorClass().getDeclaredConstructor().newInstance();
+        SQLVisitor visitor = FeaturedDistSQLStatementParserFacadeFactory.getInstance(featureType).getVisitorClass().getDeclaredConstructor().newInstance();
         if (parseASTNode.getRootNode() instanceof ErrorNode) {
             throw new SQLParsingException("Unsupported SQL of `%s`", sql);
         }

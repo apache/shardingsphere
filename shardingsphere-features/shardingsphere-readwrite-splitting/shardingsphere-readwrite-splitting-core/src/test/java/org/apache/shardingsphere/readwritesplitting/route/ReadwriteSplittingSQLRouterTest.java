@@ -77,7 +77,7 @@ public final class ReadwriteSplittingSQLRouterTest {
     public void setUp() {
         rule = new ReadwriteSplittingRule(new ReadwriteSplittingRuleConfiguration(Collections.singleton(
                 new ReadwriteSplittingDataSourceRuleConfiguration(DATASOURCE_NAME, "Static", createProperties(), "")), Collections.emptyMap()));
-        sqlRouter = (ReadwriteSplittingSQLRouter) SQLRouterFactory.newInstance(Collections.singleton(rule)).get(rule);
+        sqlRouter = (ReadwriteSplittingSQLRouter) SQLRouterFactory.getInstances(Collections.singleton(rule)).get(rule);
     }
     
     private Properties createProperties() {
@@ -93,6 +93,10 @@ public final class ReadwriteSplittingSQLRouterTest {
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.singleton(rule));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData("logic_schema", mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS), ruleMetaData, Collections.emptyMap());
         RouteContext actual = sqlRouter.createRouteContext(logicSQL, metaData, rule, new ConfigurationProperties(new Properties()));
+        assertThat(actual.getRouteUnits().size(), is(1));
+        RouteUnit routeUnit = actual.getRouteUnits().iterator().next();
+        assertThat(routeUnit.getDataSourceMapper().getLogicName(), is(DATASOURCE_NAME));
+        assertThat(routeUnit.getDataSourceMapper().getActualName(), is(WRITE_DATASOURCE));
         Iterator<String> routedDataSourceNames = actual.getActualDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is(WRITE_DATASOURCE));
     }
@@ -118,6 +122,10 @@ public final class ReadwriteSplittingSQLRouterTest {
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.singleton(rule));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData("logic_schema", mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS), ruleMetaData, Collections.emptyMap());
         RouteContext actual = sqlRouter.createRouteContext(logicSQL, metaData, rule, new ConfigurationProperties(new Properties()));
+        assertThat(actual.getRouteUnits().size(), is(1));
+        RouteUnit routeUnit = actual.getRouteUnits().iterator().next();
+        assertThat(routeUnit.getDataSourceMapper().getLogicName(), is(DATASOURCE_NAME));
+        assertThat(routeUnit.getDataSourceMapper().getActualName(), is(READ_DATASOURCE));
         Iterator<String> routedDataSourceNames = actual.getActualDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is(READ_DATASOURCE));
     }
