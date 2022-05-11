@@ -30,6 +30,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.ge
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.general.event.GeneralAckLockedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.general.event.GeneralLockReleasedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.general.event.GeneralLockedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeType;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
@@ -55,7 +56,7 @@ public final class ShardingSphereGeneralLockManager implements ShardingSphereLoc
     
     public ShardingSphereGeneralLockManager() {
         locks = new ConcurrentHashMap<>();
-        lockNodeService = LockNodeServiceFactory.getInstance().getLockNodeService(getLockType());
+        lockNodeService = LockNodeServiceFactory.getInstance().getLockNodeService(LockNodeType.GENERAL);
     }
     
     @Override
@@ -102,7 +103,7 @@ public final class ShardingSphereGeneralLockManager implements ShardingSphereLoc
         }
         ShardingSphereGlobalLock lock = locks.get(lockName);
         if (null != lock) {
-            return lock.isLocked();
+            return lock.isLocked(lockName);
         }
         return false;
     }

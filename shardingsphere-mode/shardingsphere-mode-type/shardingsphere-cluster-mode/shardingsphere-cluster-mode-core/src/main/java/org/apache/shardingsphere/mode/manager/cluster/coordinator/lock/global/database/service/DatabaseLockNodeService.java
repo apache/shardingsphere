@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.database.service;
 
-import org.apache.shardingsphere.infra.lock.LockType;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.AbstractGlobalLockNodeService;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeType;
 
 /**
  * Database lock node service.
@@ -36,7 +36,7 @@ public final class DatabaseLockNodeService extends AbstractGlobalLockNodeService
     }
     
     @Override
-    public LockType getLockType() {
-        return LockType.DATABASE;
+    public LockNodeType getType() {
+        return LockNodeType.DATABASE;
     }
 }

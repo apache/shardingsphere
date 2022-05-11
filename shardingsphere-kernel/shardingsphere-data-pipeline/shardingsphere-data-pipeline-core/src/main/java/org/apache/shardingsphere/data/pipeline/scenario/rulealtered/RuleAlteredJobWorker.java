@@ -323,7 +323,7 @@ public final class RuleAlteredJobWorker {
         log.info("restoreSourceWriting, databaseName={}", databaseName);
         LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
         ShardingSphereLock lock = lockContext.getGlobalLock(databaseName);
-        if (null != lock && lock.isLocked()) {
+        if (null != lock && lock.isLocked(databaseName)) {
             log.info("Source writing is still stopped on database '{}', restore it now", databaseName);
             lock.releaseLock(databaseName);
         }

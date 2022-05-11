@@ -15,41 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeService;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockRegistryService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.TimeoutMilliseconds;
 
 /**
- * Sharding sphere sequenced semaphore lock.
+ * Inter mutex reentrant lock.
  */
 @RequiredArgsConstructor
-public final class ShardingSphereSequencedSemaphoreLock implements ShardingSphereLock {
+public final class InterMutexReentrantLock implements ShardingSphereLock {
     
-    private final LockRegistryService lockService;
-    
-    private final LockNodeService lockNode;
+    private final LockRegistryService lockRegistryService;
     
     @Override
     public boolean tryLock(final String lockName) {
-        return tryLock(lockName, TimeoutMilliseconds.DEFAULT_REGISTRY);
+        return tryLock(lockName, TimeoutMilliseconds.MAX_TRY_LOCK);
     }
     
     @Override
     public boolean tryLock(final String lockName, final long timeoutMillis) {
-        return lockService.tryLock(lockNode.getSequenceNodePath(), timeoutMillis);
+        return lockRegistryService.tryLock(lockName, TimeoutMilliseconds.MAX_TRY_LOCK);
     }
     
     @Override
     public void releaseLock(final String lockName) {
-        lockService.releaseLock(lockNode.getSequenceNodePath());
+        lockRegistryService.releaseLock(lockName);
     }
     
     @Override
-    public boolean isLocked() {
+    public boolean isLocked(final String lockName) {
         throw new UnsupportedOperationException();
     }
 }
