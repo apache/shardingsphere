@@ -51,9 +51,10 @@ public abstract class BaseOpenGaussITCase extends BaseITCase {
     protected void initTableAndData() {
         Properties queryProps = createQueryProperties();
         try (Connection connection = DriverManager.getConnection(JDBC_URL_APPENDER.appendQueryProperties(getComposedContainer().getProxyJdbcUrl("sharding_db"), queryProps), "root", "root")) {
-            addResource(connection, "gaussdb", "Enmo@123");
+            addResource(connection, "gaussdb", "Root@123");
         }
         initShardingRule();
+        createSchema("test");
         setIncreaseTaskThread(new Thread(new PostgreSQLIncrementTaskRunnable(getJdbcTemplate(), extraSQLCommand)));
         getJdbcTemplate().execute(extraSQLCommand.getCreateTableOrder());
         getJdbcTemplate().execute(extraSQLCommand.getCreateTableOrderItem());

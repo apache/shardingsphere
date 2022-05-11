@@ -65,7 +65,7 @@ public final class OpenGaussManualScalingIT extends BaseOpenGaussITCase {
         getJdbcTemplate().execute(getCommonSQLCommand().getAutoAlterTableRule());
         Map<String, Object> showScalingResMap = getJdbcTemplate().queryForMap("SHOW SCALING LIST");
         String jobId = String.valueOf(showScalingResMap.get("id"));
-        if (getIncreaseTaskThread() != null) {
+        if (null == getIncreaseTaskThread()) {
             getIncreaseTaskThread().join(60 * 1000L);
         }
         checkMatchConsistency(getJdbcTemplate(), jobId);

@@ -149,9 +149,13 @@ public abstract class BaseITCase {
             // TODO sleep to wait for sharding algorithm table created,otherwise the next sql will fail.
             TimeUnit.SECONDS.sleep(1);
         }
-        getJdbcTemplate().execute(getCommonSQLCommand().getCreateShardingTable());
-        getJdbcTemplate().execute("CREATE SHARDING BINDING TABLE RULES (t_order,t_order_item)");
-        getJdbcTemplate().execute("CREATE SHARDING SCALING RULE scaling_manual (DATA_CONSISTENCY_CHECKER(TYPE(NAME=DATA_MATCH)))");
+        jdbcTemplate.execute(getCommonSQLCommand().getCreateShardingTable());
+        jdbcTemplate.execute("CREATE SHARDING BINDING TABLE RULES (t_order,t_order_item)");
+        jdbcTemplate.execute("CREATE SHARDING SCALING RULE scaling_manual (DATA_CONSISTENCY_CHECKER(TYPE(NAME=DATA_MATCH)))");
+    }
+    
+    protected void createSchema(final String schemaName) {
+        jdbcTemplate.execute(String.format("CREATE SCHEMA %s", schemaName));
     }
     
     /**

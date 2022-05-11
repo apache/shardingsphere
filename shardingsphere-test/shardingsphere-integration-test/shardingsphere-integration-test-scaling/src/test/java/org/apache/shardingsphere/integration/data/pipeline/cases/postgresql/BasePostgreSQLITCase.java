@@ -53,6 +53,7 @@ public abstract class BasePostgreSQLITCase extends BaseITCase {
             addResource(connection);
         }
         initShardingRule();
+        createSchema("test");
         setIncreaseTaskThread(new Thread(new PostgreSQLIncrementTaskRunnable(getJdbcTemplate(), extraSQLCommand)));
         getJdbcTemplate().execute(extraSQLCommand.getCreateTableOrder());
         getJdbcTemplate().execute(extraSQLCommand.getCreateTableOrderItem());
