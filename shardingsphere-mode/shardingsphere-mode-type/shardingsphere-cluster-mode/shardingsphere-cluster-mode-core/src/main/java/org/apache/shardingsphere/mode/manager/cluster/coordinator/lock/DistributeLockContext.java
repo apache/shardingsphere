@@ -49,7 +49,7 @@ public final class DistributeLockContext implements LockContext {
     }
     
     private void loadLockManager() {
-        for (ShardingSphereLockManager each : ShardingSphereLockManagerFactory.newInstances()) {
+        for (ShardingSphereLockManager each : ShardingSphereLockManagerFactory.getAllInstances()) {
             if (lockManagers.containsKey(each.getLockType())) {
                 continue;
             }

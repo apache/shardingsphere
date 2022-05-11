@@ -65,7 +65,7 @@ public final class ConditionValueCompareOperatorGenerator implements ConditionVa
             return generate(conditionValue.get(), column, operator);
         }
         if (ExpressionConditionUtils.isNowExpression(valueExpression)) {
-            return generate(DatetimeServiceFactory.newInstance().getDatetime(), column, operator);
+            return generate(DatetimeServiceFactory.getInstance().getDatetime(), column, operator);
         }
         return Optional.empty();
     }

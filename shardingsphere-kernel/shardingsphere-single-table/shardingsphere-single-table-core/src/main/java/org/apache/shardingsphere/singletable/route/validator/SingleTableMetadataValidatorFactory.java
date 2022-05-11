@@ -35,7 +35,7 @@ public final class SingleTableMetadataValidatorFactory {
      * New instance of single table metadata validator.
      * 
      * @param sqlStatement SQL statement
-     * @return instance of sharding statement validator
+     * @return created instance
      */
     @SuppressWarnings("rawtypes")
     public static Optional<SingleTableMetadataValidator> newInstance(final SQLStatement sqlStatement) {

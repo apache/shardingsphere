@@ -99,7 +99,7 @@ public final class ReadwriteSplittingRuleConfigurationYamlSwapperTest {
     }
     
     private ReadwriteSplittingRuleConfigurationYamlSwapper getReadwriteSplittingRuleConfigurationYamlSwapper() {
-        Optional<ReadwriteSplittingRuleConfigurationYamlSwapper> optional = YamlRuleConfigurationSwapperFactory.newInstances().stream()
+        Optional<ReadwriteSplittingRuleConfigurationYamlSwapper> optional = YamlRuleConfigurationSwapperFactory.getAllInstances().stream()
                 .filter(each -> each instanceof ReadwriteSplittingRuleConfigurationYamlSwapper)
                 .map(each -> (ReadwriteSplittingRuleConfigurationYamlSwapper) each)
                 .findFirst();

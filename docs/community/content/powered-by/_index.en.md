@@ -18,7 +18,7 @@ Total: 193 companies.
 ### Infra Software
 <ul>
     <li><a href="http://www.sphere-ex.com/" rel="nofollow">SphereEx</a></li>
-    <li><a href="https://www.opengauss.org/en/" rel="nofollow">Huawei openGauss</a></li>
+    <li><a href="https://www.opengauss.org/en/" rel="nofollow">Huawei openGauss</a>: <a href="https://dev.to/apache_shardingsphere/apache-shardingsphere-opengauss-breaking-the-distributed-database-performance-record-with-10-million-tpmc-28an" rel="nofollow">User Case</a></li>
     <li><a href="https://www.mogdb.io/" rel="nofollow">ENMOTECH MogDB</a></li>
 </ul>
 
@@ -64,8 +64,8 @@ Total: 193 companies.
 
 ### Internet
 <ul>
-    <li><a href="http://www.dangdang.com/" rel="nofollow">DangDang</a></li>
-    <li><a href="https://www.zhuanzhuan.com/" rel="nofollow">ZhuanZhuan</a></li>
+    <li><a href="http://www.dangdang.com/" rel="nofollow">DangDang</a>: <a href="https://shardingsphere.medium.com/asias-e-commerce-giant-dangdang-increases-order-processing-speed-by-30-saves-over-ten-million-113a976e0165?source=friends_link&sk=7d07d737a28da0729167f1437cda3ffb" rel="nofollow">User Case</a></li>
+    <li><a href="https://www.zhuanzhuan.com/" rel="nofollow">ZhuanZhuan</a>: <a href="https://blog.devgenius.io/apache-shardingsphereenterprise-applications-zhuanzhuans-transaction-system-with-100s-of-6ade71faa9e6?source=friends_link&sk=41a289d26d2c97620ca9a7bd0c846537" rel="nofollow">User Case</a></li>
     <li><a href="https://www.dewu.com/" rel="nofollow">Poizon</a></li>
     <li><a href="http://game.163.com/" rel="nofollow">Game 163</a></li>
     <li><a href="https://www.vip.com/" rel="nofollow">VipShop</a></li>
@@ -128,7 +128,7 @@ Total: 193 companies.
     <li><a href="https://www.hello-inc.com/" rel="nofollow">Hello Inc</a></li>
     <li><a href="https://www.trawe.cn/" rel="nofollow">Trawe</a></li>
     <li><a href="https://www.souche.com/" rel="nofollow">SouChe</a></li>
-    <li><a href="http://www.f6car.com/" rel="nofollow">F6 Car</a></li>
+    <li><a href="http://www.f6car.com/" rel="nofollow">F6 Car</a>: <a href="https://blog.devgenius.io/f6-automobile-technologys-multi-million-rows-of-data-sharding-strategy-based-on-apache-18c15114b9c6?source=friends_link&sk=3f691f3e95ea8a90d4d144468ec60534" rel="nofollow">User Case</a></li>
     <li><a href="http://www.juneyao.com/" rel="nofollow">JuneYao</a></li>
     <li><a href="https://4pyun.com/" rel="nofollow">4pyun</a></li>
     <li><a href="http://www.supersoco.com/" rel="nofollow">Super SOCO</a></li>
@@ -216,7 +216,7 @@ Total: 193 companies.
 ### Public Utilities
 <ul>
     <li><a href="http://www.electricpower.com.cn/" rel="nofollow">China Electric Power</a></li>
-    <li><a href="https://hulucc.com/" rel="nofollow">HULU STORY</a></li>    
+    <li><a href="https://hulucc.com/" rel="nofollow">HULU STORY</a></li>:  <a href="https://shardingsphere.medium.com/e-hualu-x-shardingsphere-hulu-storys-data-processing-shortcut-5c18d5efa811?source=friends_link&sk=aa07f51aa502be1fd1a847d8d880ac1f" rel="nofollow">User Case</a></li>   
     <li><a href="http://dnr.gxzf.gov.cn/" rel="nofollow">Guangxi Province Natural Resources Information Center</a></li>
     <li><a href="http://www.ascf.com.cn/" rel="nofollow">AreoSpace</a></li>
     <li><a href="http://www.chiscdc.com/" rel="nofollow">CHISCDC</a></li>

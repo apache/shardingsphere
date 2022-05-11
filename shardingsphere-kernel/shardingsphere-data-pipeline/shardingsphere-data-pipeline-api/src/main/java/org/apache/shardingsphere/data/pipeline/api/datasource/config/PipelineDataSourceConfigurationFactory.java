@@ -29,11 +29,11 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.Standa
 public final class PipelineDataSourceConfigurationFactory {
     
     /**
-     * Get new instance of pipeline data source configuration.
+     * Create new instance of pipeline data source configuration.
      *
      * @param type type of pipeline data source configuration
      * @param parameter parameter of pipeline data source configuration
-     * @return new instance of pipeline data source configuration
+     * @return created instance
      */
     public static PipelineDataSourceConfiguration newInstance(final String type, final String parameter) {
         switch (type) {

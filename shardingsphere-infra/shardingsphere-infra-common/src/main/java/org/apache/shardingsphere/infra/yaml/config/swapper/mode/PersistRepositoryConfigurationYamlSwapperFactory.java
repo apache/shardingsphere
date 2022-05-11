@@ -36,12 +36,12 @@ public final class PersistRepositoryConfigurationYamlSwapperFactory {
     }
     
     /**
-     * Create new instance of persist repository configuration YAML swapper.
+     * Get instance of persist repository configuration YAML swapper.
      * 
      * @param type swapper type
-     * @return new instance of persist repository configuration YAML swapper
+     * @return got instance
      */
-    public static PersistRepositoryConfigurationYamlSwapper newInstance(final String type) {
+    public static PersistRepositoryConfigurationYamlSwapper getInstance(final String type) {
         return TypedSPIRegistry.getRegisteredService(PersistRepositoryConfigurationYamlSwapper.class, type);
     }
     
@@ -49,7 +49,7 @@ public final class PersistRepositoryConfigurationYamlSwapperFactory {
      * Find instance of persist repository configuration YAML swapper.
      *
      * @param type swapper type
-     * @return found of persist repository configuration YAML swapper
+     * @return found instance
      */
     public static Optional<PersistRepositoryConfigurationYamlSwapper> findInstance(final String type) {
         return TypedSPIRegistry.findRegisteredService(PersistRepositoryConfigurationYamlSwapper.class, type);

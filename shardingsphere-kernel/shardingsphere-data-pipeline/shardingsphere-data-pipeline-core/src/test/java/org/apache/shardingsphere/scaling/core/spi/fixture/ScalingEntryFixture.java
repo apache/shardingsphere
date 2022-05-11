@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.fixture;
+package org.apache.shardingsphere.scaling.core.spi.fixture;
 
 import org.apache.shardingsphere.data.pipeline.spi.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.IncrementalDumper;
@@ -23,30 +23,30 @@ import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.InventoryDumper
 import org.apache.shardingsphere.scaling.core.job.check.EnvironmentChecker;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
 
-public final class FixtureScalingEntry implements ScalingEntry {
+public final class ScalingEntryFixture implements ScalingEntry {
     
     @Override
     public Class<? extends InventoryDumper> getInventoryDumperClass() {
-        return FixtureInventoryDumper.class;
+        return InventoryDumper.class;
     }
     
     @Override
     public Class<? extends IncrementalDumper> getIncrementalDumperClass() {
-        return FixtureIncrementalDumper.class;
+        return IncrementalDumper.class;
     }
     
     @Override
     public Class<? extends Importer> getImporterClass() {
-        return FixtureImporter.class;
+        return Importer.class;
     }
     
     @Override
     public Class<? extends EnvironmentChecker> getEnvironmentCheckerClass() {
-        return FixtureEnvironmentChecker.class;
+        return EnvironmentChecker.class;
     }
     
     @Override
     public String getType() {
-        return "H2";
+        return "FIXTURE";
     }
 }

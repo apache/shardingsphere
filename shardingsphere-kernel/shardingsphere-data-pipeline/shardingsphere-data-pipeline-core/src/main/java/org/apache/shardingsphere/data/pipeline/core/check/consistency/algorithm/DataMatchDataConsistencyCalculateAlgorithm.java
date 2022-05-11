@@ -80,7 +80,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
     @Override
     protected Optional<Object> calculateChunk(final DataConsistencyCalculateParameter parameter) {
         String logicTableName = parameter.getLogicTableName();
-        PipelineSQLBuilder sqlBuilder = PipelineSQLBuilderFactory.newInstance(parameter.getDatabaseType());
+        PipelineSQLBuilder sqlBuilder = PipelineSQLBuilderFactory.getInstance(parameter.getDatabaseType());
         String uniqueKey = parameter.getUniqueKey();
         CalculatedResult previousCalculatedResult = (CalculatedResult) parameter.getPreviousCalculatedResult();
         Number startUniqueKeyValue = null != previousCalculatedResult ? previousCalculatedResult.getMaxUniqueKeyValue() : -1;

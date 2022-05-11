@@ -85,7 +85,7 @@ public final class DatabaseDiscoveryRuleConfigurationYamlSwapperTest {
     }
     
     private DatabaseDiscoveryRuleConfigurationYamlSwapper getHARuleConfigurationYamlSwapper() {
-        Optional<DatabaseDiscoveryRuleConfigurationYamlSwapper> optional = YamlRuleConfigurationSwapperFactory.newInstances().stream()
+        Optional<DatabaseDiscoveryRuleConfigurationYamlSwapper> optional = YamlRuleConfigurationSwapperFactory.getAllInstances().stream()
                 .filter(each -> each instanceof DatabaseDiscoveryRuleConfigurationYamlSwapper)
                 .map(each -> (DatabaseDiscoveryRuleConfigurationYamlSwapper) each)
                 .findFirst();

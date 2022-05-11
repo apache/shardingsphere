@@ -36,12 +36,12 @@ public final class DataSourcePropertyProviderFactory {
     }
     
     /**
-     * Create new instance of data source property provider.
+     * Get instance of data source property provider.
      *
      * @param dataSource data source
-     * @return new instance of data source property provider
+     * @return got instance
      */
-    public static DataSourcePropertyProvider newInstance(final DataSource dataSource) {
+    public static DataSourcePropertyProvider getInstance(final DataSource dataSource) {
         return TypedSPIRegistry.findRegisteredService(
                 DataSourcePropertyProvider.class, dataSource.getClass().getName()).orElseGet(() -> RequiredSPIRegistry.getRegisteredService(DataSourcePropertyProvider.class));
     }

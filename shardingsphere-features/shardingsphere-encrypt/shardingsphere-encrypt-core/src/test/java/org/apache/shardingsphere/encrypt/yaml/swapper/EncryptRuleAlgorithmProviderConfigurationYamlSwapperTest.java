@@ -76,6 +76,6 @@ public final class EncryptRuleAlgorithmProviderConfigurationYamlSwapperTest {
     }
     
     private EncryptRuleAlgorithmProviderConfigurationYamlSwapper getSwapper() {
-        return (EncryptRuleAlgorithmProviderConfigurationYamlSwapper) YamlRuleConfigurationSwapperFactory.newInstanceMapByRuleConfigurations(Collections.singletonList(ruleConfig)).get(ruleConfig);
+        return (EncryptRuleAlgorithmProviderConfigurationYamlSwapper) YamlRuleConfigurationSwapperFactory.getInstanceMapByRuleConfigurations(Collections.singletonList(ruleConfig)).get(ruleConfig);
     }
 }
