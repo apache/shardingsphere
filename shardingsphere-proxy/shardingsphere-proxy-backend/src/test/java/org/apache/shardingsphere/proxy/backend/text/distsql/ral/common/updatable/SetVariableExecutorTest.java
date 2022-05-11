@@ -37,8 +37,6 @@ import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -65,9 +63,9 @@ public final class SetVariableExecutorTest {
     
     @Test
     public void assertExecuteWithConfigurationKey() throws SQLException {
-        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        ContextManager contextManager = new ContextManager();
         MetaDataContexts metaDataContexts = new MetaDataContexts(null);
-        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
+        contextManager.init(metaDataContexts, null, null);
         ProxyContext.getInstance().init(contextManager);
         SetVariableStatement statement = new SetVariableStatement("proxy_frontend_flush_threshold", "1024");
         new SetVariableHandler().init(getParameter(statement, connectionSession)).execute();
