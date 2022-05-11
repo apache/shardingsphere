@@ -21,16 +21,16 @@ import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.type.required.RequiredSPIRegistry;
 
 /**
- * Pipeline job API factory.
+ * Rule altered job API factory.
  */
-public final class PipelineJobAPIFactory {
+public final class RuleAlteredJobAPIFactory {
     
     static {
         ShardingSphereServiceLoader.register(RuleAlteredJobAPI.class);
     }
     
     /**
-     * Get instance of pipeline job API.
+     * Get instance of rule altered job API.
      *
      * @return got instance
      */

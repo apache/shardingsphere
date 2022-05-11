@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPIFactory;
+import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
@@ -171,7 +171,7 @@ public final class RuleAlteredJobWorker {
         }
         Optional<RuleAlteredJobConfiguration> jobConfigOptional = createJobConfig(event);
         if (jobConfigOptional.isPresent()) {
-            PipelineJobAPIFactory.getInstance().start(jobConfigOptional.get());
+            RuleAlteredJobAPIFactory.getInstance().start(jobConfigOptional.get());
         } else {
             log.info("Switch rule configuration immediately.");
             ScalingTaskFinishedEvent taskFinishedEvent = new ScalingTaskFinishedEvent(event.getDatabaseName(), event.getActiveVersion(), event.getNewVersion());
@@ -283,8 +283,8 @@ public final class RuleAlteredJobWorker {
     
     private boolean hasUncompletedJobOfSameDatabaseName(final String databaseName) {
         boolean result = false;
-        for (JobInfo each : PipelineJobAPIFactory.getInstance().list()) {
-            if (PipelineJobAPIFactory.getInstance().getProgress(each.getJobId()).values().stream()
+        for (JobInfo each : RuleAlteredJobAPIFactory.getInstance().list()) {
+            if (RuleAlteredJobAPIFactory.getInstance().getProgress(each.getJobId()).values().stream()
                     .allMatch(progress -> null != progress && progress.getStatus().equals(JobStatus.FINISHED))) {
                 continue;
             }
