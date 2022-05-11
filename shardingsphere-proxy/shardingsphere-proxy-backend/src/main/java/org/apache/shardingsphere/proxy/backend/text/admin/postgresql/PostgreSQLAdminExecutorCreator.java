@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.admin.postgresql;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.AbstractDatabaseMetadataExecutor.DefaultDatabaseMetadataExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutor;
-import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutorFactory;
+import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutorCreator;
 import org.apache.shardingsphere.proxy.backend.text.admin.postgresql.executor.PostgreSQLSetCharsetExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.postgresql.executor.SelectDatabaseExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.postgresql.executor.SelectTableExecutor;
@@ -40,9 +40,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Admin executor factory for PostgreSQL.
+ * Database admin executor creator for PostgreSQL.
  */
-public final class PostgreSQLAdminExecutorFactory implements DatabaseAdminExecutorFactory {
+public final class PostgreSQLAdminExecutorCreator implements DatabaseAdminExecutorCreator {
     
     private static final String PG_TABLESPACE = "pg_tablespace";
     
@@ -57,12 +57,12 @@ public final class PostgreSQLAdminExecutorFactory implements DatabaseAdminExecut
     private static final String PG_PREFIX = "pg_";
     
     @Override
-    public Optional<DatabaseAdminExecutor> newInstance(final SQLStatementContext<?> sqlStatementContext) {
+    public Optional<DatabaseAdminExecutor> create(final SQLStatementContext<?> sqlStatementContext) {
         return Optional.empty();
     }
     
     @Override
-    public Optional<DatabaseAdminExecutor> newInstance(final SQLStatementContext<?> sqlStatementContext, final String sql, final String schemaName) {
+    public Optional<DatabaseAdminExecutor> create(final SQLStatementContext<?> sqlStatementContext, final String sql, final String schemaName) {
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         if (sqlStatement instanceof SelectStatement) {
             Collection<String> selectedTableNames = getSelectedTableNames((SelectStatement) sqlStatement);

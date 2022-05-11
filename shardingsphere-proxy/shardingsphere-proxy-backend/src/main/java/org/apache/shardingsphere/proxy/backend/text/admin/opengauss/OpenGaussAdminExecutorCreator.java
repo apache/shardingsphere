@@ -19,31 +19,31 @@ package org.apache.shardingsphere.proxy.backend.text.admin.opengauss;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutor;
-import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutorFactory;
-import org.apache.shardingsphere.proxy.backend.text.admin.postgresql.PostgreSQLAdminExecutorFactory;
+import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutorCreator;
+import org.apache.shardingsphere.proxy.backend.text.admin.postgresql.PostgreSQLAdminExecutorCreator;
 
 import java.util.Optional;
 
 /**
- * Admin executor factory for openGauss.
+ * Database admin executor creator for openGauss.
  */
-public final class OpenGaussAdminExecutorFactory implements DatabaseAdminExecutorFactory {
+public final class OpenGaussAdminExecutorCreator implements DatabaseAdminExecutorCreator {
     
     private static final String OG_DATABASE = "pg_database";
     
-    private final PostgreSQLAdminExecutorFactory delegated = new PostgreSQLAdminExecutorFactory();
+    private final PostgreSQLAdminExecutorCreator delegated = new PostgreSQLAdminExecutorCreator();
     
     @Override
-    public Optional<DatabaseAdminExecutor> newInstance(final SQLStatementContext<?> sqlStatementContext) {
-        return delegated.newInstance(sqlStatementContext);
+    public Optional<DatabaseAdminExecutor> create(final SQLStatementContext<?> sqlStatementContext) {
+        return delegated.create(sqlStatementContext);
     }
     
     @Override
-    public Optional<DatabaseAdminExecutor> newInstance(final SQLStatementContext<?> sqlStatementContext, final String sql, final String schemaName) {
+    public Optional<DatabaseAdminExecutor> create(final SQLStatementContext<?> sqlStatementContext, final String sql, final String schemaName) {
         if (sqlStatementContext.getTablesContext().getTableNames().contains(OG_DATABASE)) {
             return Optional.of(new OpenGaussSelectDatabaseExecutor(sql));
         }
-        return delegated.newInstance(sqlStatementContext, sql, schemaName);
+        return delegated.create(sqlStatementContext, sql, schemaName);
     }
     
     @Override

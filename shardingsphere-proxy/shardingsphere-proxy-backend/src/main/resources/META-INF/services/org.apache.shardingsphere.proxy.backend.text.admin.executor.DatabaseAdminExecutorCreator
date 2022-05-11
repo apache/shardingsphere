@@ -15,6 +15,6 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.proxy.backend.text.admin.mysql.MySQLAdminExecutorFactory
-org.apache.shardingsphere.proxy.backend.text.admin.postgresql.PostgreSQLAdminExecutorFactory
-org.apache.shardingsphere.proxy.backend.text.admin.opengauss.OpenGaussAdminExecutorFactory
+org.apache.shardingsphere.proxy.backend.text.admin.mysql.MySQLAdminExecutorCreator
+org.apache.shardingsphere.proxy.backend.text.admin.postgresql.PostgreSQLAdminExecutorCreator
+org.apache.shardingsphere.proxy.backend.text.admin.opengauss.OpenGaussAdminExecutorCreator

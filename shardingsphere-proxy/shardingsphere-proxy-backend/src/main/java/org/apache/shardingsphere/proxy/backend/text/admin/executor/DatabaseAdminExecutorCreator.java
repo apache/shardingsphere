@@ -24,27 +24,26 @@ import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 import java.util.Optional;
 
 /**
- * Database admin executor factory.
+ * Database admin executor creator.
  */
 @SingletonSPI
-public interface DatabaseAdminExecutorFactory extends TypedSPI {
+public interface DatabaseAdminExecutorCreator extends TypedSPI {
     
     /**
-     * Create an instance of database admin executor,
-     * and this executor requires a connection containing a schema to be used.
+     * Create database admin executor, and this executor requires a connection containing a schema to be used.
      *
      * @param sqlStatementContext SQL statement context
      * @return created instance
      */
-    Optional<DatabaseAdminExecutor> newInstance(SQLStatementContext<?> sqlStatementContext);
+    Optional<DatabaseAdminExecutor> create(SQLStatementContext<?> sqlStatementContext);
     
     /**
-     * Create an executor of database admin executor.
+     * Create database admin executor.
      *
      * @param sqlStatementContext SQL statement context
      * @param sql SQL
      * @param schemaName schema name
      * @return created instance
      */
-    Optional<DatabaseAdminExecutor> newInstance(SQLStatementContext<?> sqlStatementContext, String sql, String schemaName);
+    Optional<DatabaseAdminExecutor> create(SQLStatementContext<?> sqlStatementContext, String sql, String schemaName);
 }

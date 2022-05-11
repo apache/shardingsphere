@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutor;
-import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutorFactory;
+import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutorCreator;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminQueryExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseSetCharsetExecutor;
 import org.apache.shardingsphere.proxy.backend.text.encoding.DatabaseSetCharsetBackendHandler;
@@ -40,7 +40,7 @@ import java.util.Optional;
 public final class DatabaseAdminBackendHandlerFactory {
     
     static {
-        ShardingSphereServiceLoader.register(DatabaseAdminExecutorFactory.class);
+        ShardingSphereServiceLoader.register(DatabaseAdminExecutorCreator.class);
     }
     
     /**
@@ -53,11 +53,11 @@ public final class DatabaseAdminBackendHandlerFactory {
      * @return created instance
      */
     public static Optional<TextProtocolBackendHandler> newInstance(final DatabaseType databaseType, final SQLStatementContext<?> sqlStatementContext, final ConnectionSession connectionSession) {
-        Optional<DatabaseAdminExecutorFactory> executorFactory = TypedSPIRegistry.findRegisteredService(DatabaseAdminExecutorFactory.class, databaseType.getType());
+        Optional<DatabaseAdminExecutorCreator> executorFactory = TypedSPIRegistry.findRegisteredService(DatabaseAdminExecutorCreator.class, databaseType.getType());
         if (!executorFactory.isPresent()) {
             return Optional.empty();
         }
-        Optional<DatabaseAdminExecutor> executor = executorFactory.get().newInstance(sqlStatementContext);
+        Optional<DatabaseAdminExecutor> executor = executorFactory.get().create(sqlStatementContext);
         return executor.map(optional -> createTextProtocolBackendHandler(sqlStatementContext, connectionSession, optional));
     }
     
@@ -72,11 +72,11 @@ public final class DatabaseAdminBackendHandlerFactory {
      */
     public static Optional<TextProtocolBackendHandler> newInstance(final DatabaseType databaseType, final SQLStatementContext<?> sqlStatementContext,
                                                                    final ConnectionSession connectionSession, final String sql) {
-        Optional<DatabaseAdminExecutorFactory> executorFactory = TypedSPIRegistry.findRegisteredService(DatabaseAdminExecutorFactory.class, databaseType.getType());
+        Optional<DatabaseAdminExecutorCreator> executorFactory = TypedSPIRegistry.findRegisteredService(DatabaseAdminExecutorCreator.class, databaseType.getType());
         if (!executorFactory.isPresent()) {
             return Optional.empty();
         }
-        Optional<DatabaseAdminExecutor> executor = executorFactory.get().newInstance(sqlStatementContext, sql, connectionSession.getDatabaseName());
+        Optional<DatabaseAdminExecutor> executor = executorFactory.get().create(sqlStatementContext, sql, connectionSession.getDatabaseName());
         return executor.map(optional -> createTextProtocolBackendHandler(sqlStatementContext, connectionSession, optional));
     }
     
