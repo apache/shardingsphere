@@ -15,12 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.lock;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.database.service;
 
-/**
- * Lock state.
- */
-public enum LockState {
+import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class DatabaseStandardLockNodeServiceTest {
     
-    LOCKED, UNLOCKED, LOCKING
+    private static final DatabaseLockNodeService SERVICE = new DatabaseLockNodeService();
+    
+    @Test
+    public void assertGetSequenceNodePath() {
+        assertThat(SERVICE.getSequenceNodePath(), is("/lock/global/database/sequence"));
+    }
+    
+    @Test
+    public void assertGetLockLevel() {
+        assertThat(SERVICE.getLockLevel(), is("database"));
+    }
 }

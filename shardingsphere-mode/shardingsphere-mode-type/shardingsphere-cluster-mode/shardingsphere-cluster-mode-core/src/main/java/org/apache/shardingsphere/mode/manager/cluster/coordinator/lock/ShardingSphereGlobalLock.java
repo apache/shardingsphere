@@ -15,7 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.lock;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock;
+
+import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 
 /**
  * Global lock of ShardingSphere.

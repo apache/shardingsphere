@@ -24,7 +24,7 @@ import java.util.Optional;
 
 public final class StandardLockNodeService implements LockNodeService {
     
-    protected static final String LOCK_SCOPE_STANDARD = "standard";
+    private static final String LOCK_SCOPE_STANDARD = "standard";
     
     @Override
     public String getSequenceNodePath() {

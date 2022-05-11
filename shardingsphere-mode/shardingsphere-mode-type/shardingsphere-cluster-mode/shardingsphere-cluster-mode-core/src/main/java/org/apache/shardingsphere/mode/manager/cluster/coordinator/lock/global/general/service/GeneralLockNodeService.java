@@ -15,14 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.service;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.general.service;
 
 import org.apache.shardingsphere.infra.lock.LockType;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.AbstractGlobalLockNodeService;
 
 /**
- * Database lock node service.
+ * General lock node service.
  */
-public final class DatabaseLockNodeService extends AbstractGlobalLockNodeService {
+public final class GeneralLockNodeService extends AbstractGlobalLockNodeService {
     
     @Override
     public String getSequenceNodePath() {
@@ -31,11 +32,11 @@ public final class DatabaseLockNodeService extends AbstractGlobalLockNodeService
     
     @Override
     protected String getLockLevel() {
-        return "database";
+        return "general";
     }
     
     @Override
     public LockType getLockType() {
-        return LockType.DATABASE;
+        return LockType.GENERAL;
     }
 }
