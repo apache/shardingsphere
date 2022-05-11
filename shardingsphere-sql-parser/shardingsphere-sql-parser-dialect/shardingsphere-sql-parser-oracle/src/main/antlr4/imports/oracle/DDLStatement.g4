@@ -2271,3 +2271,7 @@ property
 alterAnalyticView
     : ALTER ANALYTIC VIEW analyticViewName (RENAME TO analyticViewName | COMPILE)
     ;
+
+alterAttributeDimension
+    : ALTER ATTRIBUTE DIMENSION (schemaName DOT_)? attributeDimensionName (RENAME TO attributeDimensionName | COMPILE)
+    ;
