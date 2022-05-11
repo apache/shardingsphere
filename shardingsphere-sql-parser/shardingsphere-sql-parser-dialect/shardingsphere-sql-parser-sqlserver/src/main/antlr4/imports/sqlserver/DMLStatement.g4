@@ -151,24 +151,8 @@ argument
     : identifier
     ;
 
-aggregationClause
-    : selectClause ((UNION (ALL)? | EXCEPT | INTERSECT) selectClause)*
-    ;
-
-selectClausee
-    : selectWithClause? SELECT duplicateSpecification? projections fromClause? whereClause? groupByClause? havingClause? orderByClause? forClause?
-    ;
-
 duplicateSpecification
     : ALL | DISTINCT
-    ;
-
-projections
-    : (unqualifiedShorthand | projection) (COMMA_ projection)*
-    ;
-
-projection
-    : (top | columnName | expr) (AS? alias)? | qualifiedShorthand
     ;
 
 top
@@ -181,10 +165,6 @@ topNum
 
 unqualifiedShorthand
     : ASTERISK_
-    ;
-
-qualifiedShorthandd
-    : identifier DOT_ASTERISK_
     ;
 
 fromClause
