@@ -40,4 +40,14 @@ public final class DatabaseTypeUtil {
     public static boolean isPostgreSQL(final DatabaseType databaseType) {
         return databaseType.getType().equals("PostgreSQL");
     }
+    
+    /**
+     * Check openGauss database type.
+     *
+     * @param databaseType database type
+     * @return true if database type is openGauss, false otherwise
+     */
+    public static boolean isOpenGauss(final DatabaseType databaseType) {
+        return databaseType.getType().equals("openGauss");
+    }
 }

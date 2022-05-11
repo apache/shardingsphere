@@ -46,7 +46,7 @@ public final class ShardingSphereProxyDockerContainer extends DockerITContainer 
     protected void configure() {
         withExposedPorts(3307);
         mapConfigurationFiles();
-        if (DatabaseTypeUtil.isPostgreSQL(databaseType)) {
+        if (DatabaseTypeUtil.isPostgreSQL(databaseType) || DatabaseTypeUtil.isOpenGauss(databaseType)) {
             setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(3307), "postgres"), "root", "root")));
         } else {
             setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(3307), ""), "root", "root")));
