@@ -177,7 +177,7 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
         public Map<String, Collection<String>> getDataSourceMapper() {
             return Collections.singletonMap("logic_ds", null);
         }
-    
+        
         @Override
         public String getType() {
             return "mock";
