@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.data.pipeline.cases.mysql;
+package org.apache.shardingsphere.integration.data.pipeline.cases.openguass;
 
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.cases.BaseITCase;
 import org.apache.shardingsphere.integration.data.pipeline.cases.command.ExtraSQLCommand;
-import org.apache.shardingsphere.integration.data.pipeline.cases.postgresql.BasePostgreSQLITCase;
+import org.apache.shardingsphere.integration.data.pipeline.cases.postgresql.PostgreSQLIncrementTaskRunnable;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
 import org.apache.shardingsphere.integration.data.pipeline.util.TableCrudUtil;
 
@@ -35,32 +35,30 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
 
-public abstract class BaseMySQLITCase extends BaseITCase {
+public abstract class BaseOpenGaussITCase extends BaseITCase {
     
-    protected static final DatabaseType DATABASE = new MySQLDatabaseType();
+    protected static final DatabaseType DATABASE = new OpenGaussDatabaseType();
     
     private final ExtraSQLCommand extraSQLCommand;
     
-    public BaseMySQLITCase(final ScalingParameterized parameterized) {
+    public BaseOpenGaussITCase(final ScalingParameterized parameterized) {
         super(parameterized);
-        extraSQLCommand = JAXB.unmarshal(Objects.requireNonNull(BasePostgreSQLITCase.class.getClassLoader().getResource(parameterized.getParentPath() + "/sql.xml")), ExtraSQLCommand.class);
+        extraSQLCommand = JAXB.unmarshal(Objects.requireNonNull(BaseOpenGaussITCase.class.getClassLoader().getResource(parameterized.getParentPath() + "/sql.xml")), ExtraSQLCommand.class);
         initTableAndData();
     }
     
     @SneakyThrows({SQLException.class, InterruptedException.class})
     protected void initTableAndData() {
         Properties queryProps = createQueryProperties();
-        // TODO if use jdbcurl like "jdbc:mysql:localhost:3307/sharding_db", will throw exception show "Datasource or ShardingSphere rule does not exist"
-        try (Connection connection = DriverManager.getConnection(JDBC_URL_APPENDER.appendQueryProperties(getComposedContainer().getProxyJdbcUrl(""), queryProps), "root", "root")) {
-            connection.createStatement().execute("USE sharding_db");
-            addResource(connection);
+        try (Connection connection = DriverManager.getConnection(JDBC_URL_APPENDER.appendQueryProperties(getComposedContainer().getProxyJdbcUrl("sharding_db"), queryProps), "root", "root")) {
+            addResource(connection, "gaussdb", "Enmo@123");
         }
         initShardingRule();
-        setIncreaseTaskThread(new Thread(new MySQLIncrementTaskRunnable(getJdbcTemplate(), extraSQLCommand)));
+        setIncreaseTaskThread(new Thread(new PostgreSQLIncrementTaskRunnable(getJdbcTemplate(), extraSQLCommand)));
         getJdbcTemplate().execute(extraSQLCommand.getCreateTableOrder());
         getJdbcTemplate().execute(extraSQLCommand.getCreateTableOrderItem());
         getIncreaseTaskThread().start();
-        Pair<List<Object[]>, List<Object[]>> dataPair = TableCrudUtil.generateMySQLInsertDataList(3000);
+        Pair<List<Object[]>, List<Object[]>> dataPair = TableCrudUtil.generatePostgresSQLInsertDataList(3000);
         getJdbcTemplate().batchUpdate(extraSQLCommand.getFullInsertOrder(), dataPair.getLeft());
         getJdbcTemplate().batchUpdate(extraSQLCommand.getInsertOrderItem(), dataPair.getRight());
     }
@@ -69,8 +67,8 @@ public abstract class BaseMySQLITCase extends BaseITCase {
     protected Properties createQueryProperties() {
         Properties result = new Properties();
         result.put("useSSL", Boolean.FALSE.toString());
-        result.put("rewriteBatchedStatements", Boolean.TRUE.toString());
         result.put("serverTimezone", "UTC");
+        result.put("preferQueryMode", "extendedForPrepared");
         return result;
     }
 }

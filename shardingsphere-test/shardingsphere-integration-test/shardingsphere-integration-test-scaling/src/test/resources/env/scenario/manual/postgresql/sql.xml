@@ -35,11 +35,31 @@
         )
     </create-table-order-item>
     
-    <add-resource>
-        ADD RESOURCE %s (URL="jdbc:postgresql://%s/%s?serverTimezone=UTC&amp;useSSL=false",USER=root,PASSWORD=root)
-    </add-resource>
+    <full-insert-order>
+        INSERT INTO t_order(id, order_id, user_id, t_varchar) VALUES (?,?,?,?)
+    </full-insert-order>
     
     <insert-order>
-        INSERT INTO t_order(id, order_id, user_id, t_varchar) VALUES (?, ?, ?, ?)
+        INSERT INTO t_order ( id, order_id, user_id) VALUES (?, ?, ?)
     </insert-order>
+    
+    <insert-order-item>
+        INSERT INTO t_order_item(item_id,order_id,user_id,status) VALUES(?,?,?,?)
+    </insert-order-item>
+    
+    <update-order-by-id>
+        UPDATE t_order SET t_varchar = ? WHERE id = ?
+    </update-order-by-id>
+    
+    <update-order-item-by-id>
+        UPDATE t_order_item SET status = ? WHERE item_id = ?
+    </update-order-item-by-id>
+    
+    <delete-order-by-id>
+        DELETE FROM t_order WHERE id = ?
+    </delete-order-by-id>
+    
+    <delete-order-item-by-id>
+        DELETE FROM t_order_item WHERE item_id = ?
+    </delete-order-item-by-id>
 </command>

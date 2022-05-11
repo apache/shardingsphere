@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.data.pipeline.cases.postgresql;
+package org.apache.shardingsphere.integration.data.pipeline.cases.openguass;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
@@ -37,18 +37,18 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 @RunWith(Parameterized.class)
-public final class PostgreSQLManualScalingIT extends BasePostgreSQLITCase {
+public final class OpenGaussManualScalingIT extends BaseOpenGaussITCase {
     
     private static final IntegrationTestEnvironment ENV = IntegrationTestEnvironment.getInstance();
     
-    public PostgreSQLManualScalingIT(final ScalingParameterized parameterized) {
+    public OpenGaussManualScalingIT(final ScalingParameterized parameterized) {
         super(parameterized);
     }
     
     @Parameters(name = "{0}")
     public static Collection<ScalingParameterized> getParameters() {
         Collection<ScalingParameterized> result = new LinkedList<>();
-        for (String dockerImageName : ENV.getPostgresVersions()) {
+        for (String dockerImageName : ENV.getOpenGaussVersions()) {
             if (Strings.isNullOrEmpty(dockerImageName)) {
                 continue;
             }
@@ -65,7 +65,9 @@ public final class PostgreSQLManualScalingIT extends BasePostgreSQLITCase {
         getJdbcTemplate().execute(getCommonSQLCommand().getAutoAlterTableRule());
         Map<String, Object> showScalingResMap = getJdbcTemplate().queryForMap("SHOW SCALING LIST");
         String jobId = String.valueOf(showScalingResMap.get("id"));
-        getIncreaseTaskThread().join(60 * 1000L);
+        if (getIncreaseTaskThread() != null) {
+            getIncreaseTaskThread().join(60 * 1000L);
+        }
         checkMatchConsistency(getJdbcTemplate(), jobId);
     }
 }

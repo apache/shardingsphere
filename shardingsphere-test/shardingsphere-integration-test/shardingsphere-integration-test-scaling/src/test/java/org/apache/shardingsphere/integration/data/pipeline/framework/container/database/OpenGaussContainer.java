@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.integration.data.pipeline.framework.container.database;
 
-import com.google.common.collect.Lists;
-import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrlAppender;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.integration.data.pipeline.env.enums.ITEnvTypeEnum;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.proxy.JDBCConnectionWaitStrategy;
@@ -28,44 +26,37 @@ import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
 import org.testcontainers.containers.BindMode;
 
 import java.sql.DriverManager;
-import java.util.Properties;
 
-public final class MySQLContainer extends DockerDatabaseContainer {
+public final class OpenGaussContainer extends DockerDatabaseContainer {
     
-    private static final DatabaseType DATABASE_TYPE = new MySQLDatabaseType();
+    private static final DatabaseType DATABASE_TYPE = new OpenGaussDatabaseType();
     
-    public MySQLContainer(final String dockerImageName) {
+    public OpenGaussContainer(final String dockerImageName) {
         super(DATABASE_TYPE, dockerImageName);
     }
     
     @Override
     protected void configure() {
         super.configure();
-        withCommand("--sql_mode=", "--default-authentication-plugin=mysql_native_password");
-        setEnv(Lists.newArrayList("LANG=C.UTF-8", "MYSQL_ROOT_PASSWORD=root", "MYSQL_ROOT_HOST=%"));
-        withClasspathResourceMapping("/env/mysql/my.cnf", "/etc/mysql/my.cnf", BindMode.READ_ONLY);
-        withExposedPorts(getPort());
+        withCommand("--max_connections=600");
+        addEnv("GS_PASSWORD", "Enmo@123");
+        withClasspathResourceMapping("/env/postgresql/postgresql.conf", "/usr/local/opengauss/share/postgresql/postgresql.conf.sample", BindMode.READ_ONLY);
+        withPrivilegedMode(true);
+        withExposedPorts(5432);
         if (ITEnvTypeEnum.NATIVE == IntegrationTestEnvironment.getInstance().getItEnvType()) {
-            addFixedExposedPort(3306, 3306);
+            addFixedExposedPort(5432, 5432);
         }
-        setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(DATABASE_TYPE, "localhost", getFirstMappedPort()), "root", "root")));
+        setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(DATABASE_TYPE, "localhost", getFirstMappedPort(), "postgres"),
+                "gaussdb", "Enmo@123")));
     }
     
     @Override
     public String getJdbcUrl(final String host, final int port, final String databaseName) {
-        String jdbcUrl = DataSourceEnvironment.getURL(DATABASE_TYPE, host, port, databaseName);
-        return new JdbcUrlAppender().appendQueryProperties(jdbcUrl, createQueryProperties());
-    }
-    
-    private Properties createQueryProperties() {
-        Properties result = new Properties();
-        result.put("useSSL", Boolean.FALSE.toString());
-        result.put("rewriteBatchedStatements", Boolean.TRUE.toString());
-        return result;
+        return DataSourceEnvironment.getURL(DATABASE_TYPE, host, port, databaseName);
     }
     
     @Override
     public int getPort() {
-        return 3306;
+        return 5432;
     }
 }
