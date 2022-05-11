@@ -29,7 +29,6 @@ import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdmin
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminQueryExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseSetCharsetExecutor;
 import org.apache.shardingsphere.proxy.backend.text.encoding.DatabaseSetCharsetBackendHandler;
-import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
 import java.util.Optional;
 
@@ -68,7 +67,7 @@ public final class DatabaseAdminBackendHandlerFactory {
      */
     public static Optional<TextProtocolBackendHandler> newInstance(final DatabaseType databaseType, final SQLStatementContext<?> sqlStatementContext,
                                                                    final ConnectionSession connectionSession, final String sql) {
-        Optional<DatabaseAdminExecutorCreator> executorFactory = TypedSPIRegistry.findRegisteredService(DatabaseAdminExecutorCreator.class, databaseType.getType());
+        Optional<DatabaseAdminExecutorCreator> executorFactory = DatabaseAdminExecutorCreatorFactory.findInstance(databaseType);
         if (!executorFactory.isPresent()) {
             return Optional.empty();
         }
