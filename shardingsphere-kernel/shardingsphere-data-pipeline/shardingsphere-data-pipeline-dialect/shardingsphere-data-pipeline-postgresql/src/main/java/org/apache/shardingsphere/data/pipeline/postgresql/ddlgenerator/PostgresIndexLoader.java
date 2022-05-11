@@ -35,8 +35,6 @@ public final class PostgresIndexLoader extends PostgresAbstractLoader {
     
     private static final Integer PG_INDEX_INCLUDE_VERSION = 11;
     
-    private static final String NEW_LINE = "\n";
-    
     public PostgresIndexLoader(final Connection connection, final int majorVersion, final int minorVersion) {
         super(connection, majorVersion, minorVersion);
     }
@@ -77,7 +75,7 @@ public final class PostgresIndexLoader extends PostgresAbstractLoader {
     
     private String doGenerateIndexSql(final Map<String, Object> indexData) {
         String result = FreemarkerManager.getSqlByPgVersion(indexData, "indexes/%s/create.ftl", getMajorVersion(), getMinorVersion());
-        result += NEW_LINE;
+        result += System.lineSeparator();
         result += FreemarkerManager.getSqlByPgVersion(indexData, "indexes/%s/alter.ftl", getMajorVersion(), getMinorVersion());
         return result;
     }

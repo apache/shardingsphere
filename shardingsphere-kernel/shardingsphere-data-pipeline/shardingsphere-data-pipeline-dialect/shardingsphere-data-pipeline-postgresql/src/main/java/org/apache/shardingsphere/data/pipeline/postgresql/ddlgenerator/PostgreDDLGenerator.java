@@ -31,8 +31,6 @@ import java.util.Map;
  */
 public final class PostgreDDLGenerator implements DialectDDLGenerator {
     
-    private static final String NEW_LINE = "\n"; 
-    
     // TODO support partitions etc.
     @Override
     public String generateDDLSQL(final String tableName, final String schemaName, final DataSource dataSource) throws SQLException {
@@ -42,7 +40,7 @@ public final class PostgreDDLGenerator implements DialectDDLGenerator {
             Map<String, Object> context = loadGenerateContext(tableName, schemaName, connection, majorVersion, minorVersion);
             String tableSql = generateCreateTableSql(context, majorVersion, minorVersion);
             String indexSql = new PostgresIndexLoader(connection, majorVersion, minorVersion).loadIndexSql(context);
-            return tableSql + NEW_LINE + indexSql;
+            return tableSql + System.lineSeparator() + indexSql;
         }
     }
     
