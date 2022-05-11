@@ -33,9 +33,9 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
- * Postgres column properties loader.
+ * Postgres column properties appender.
  */
-public final class PostgresColumnPropertiesLoader extends PostgresAbstractLoader {
+public final class PostgresColumnPropertiesAppender extends AbstractPostgresDDLAdapter {
     
     private static final Pattern LENGTH_PRECISION_PATTERN = Pattern.compile("(\\d+),(\\d+)");
     
@@ -45,17 +45,17 @@ public final class PostgresColumnPropertiesLoader extends PostgresAbstractLoader
     
     private static final String ATT_OPTION_SPLIT = "=";
     
-    public PostgresColumnPropertiesLoader(final Connection connection, final int majorVersion, final int minorVersion) {
+    public PostgresColumnPropertiesAppender(final Connection connection, final int majorVersion, final int minorVersion) {
         super(connection, majorVersion, minorVersion);
     }
     
     /**
-     * Load column properties.
+     * Append column properties.
      * 
-     * @param context load context
+     * @param context create table sql context
      */
     @SneakyThrows
-    public void loadColumnProperties(final Map<String, Object> context) {
+    public void append(final Map<String, Object> context) {
         Collection<Map<String, Object>> typeAndInheritedColumns = getTypeAndInheritedColumns(context);
         Collection<Map<String, Object>> allColumns = executeByTemplate(context, "columns/%s/properties.ftl");
         for (Map<String, Object> each : allColumns) {

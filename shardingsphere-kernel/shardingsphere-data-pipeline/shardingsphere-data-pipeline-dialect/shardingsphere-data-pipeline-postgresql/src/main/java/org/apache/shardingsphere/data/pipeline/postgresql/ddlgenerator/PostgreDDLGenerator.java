@@ -37,23 +37,27 @@ public final class PostgreDDLGenerator implements DialectDDLGenerator {
         try (Connection connection = dataSource.getConnection()) {
             int majorVersion = connection.getMetaData().getDatabaseMajorVersion();
             int minorVersion = connection.getMetaData().getDatabaseMinorVersion();
-            Map<String, Object> context = loadGenerateContext(tableName, schemaName, connection, majorVersion, minorVersion);
-            String tableSql = generateCreateTableSql(context, majorVersion, minorVersion);
-            String indexSql = new PostgresIndexLoader(connection, majorVersion, minorVersion).loadIndexSql(context);
+            Map<String, Object> materials = loadMaterials(tableName, schemaName, connection, majorVersion, minorVersion);
+            String tableSql = generateCreateTableSql(materials, majorVersion, minorVersion);
+            String indexSql = generateCreateIndexSql(materials, majorVersion, minorVersion, connection);
             return tableSql + System.lineSeparator() + indexSql;
         }
     }
     
-    private Map<String, Object> loadGenerateContext(final String tableName, final String schemaName, final Connection connection, final int majorVersion, final int minorVersion) {
+    private Map<String, Object> loadMaterials(final String tableName, final String schemaName, final Connection connection, final int majorVersion, final int minorVersion) {
         Map<String, Object> result = new PostgresTablePropertiesLoader(connection, tableName, schemaName, majorVersion, minorVersion).loadTableProperties();
-        new PostgresColumnPropertiesLoader(connection, majorVersion, minorVersion).loadColumnProperties(result);
-        new PostgresConstraintsLoader(connection, majorVersion, minorVersion).loadConstraints(result);
+        new PostgresColumnPropertiesAppender(connection, majorVersion, minorVersion).append(result);
+        new PostgresConstraintsPropertiesAppender(connection, majorVersion, minorVersion).append(result);
+        formatColumnList(result);
         return result;
     }
     
-    private String generateCreateTableSql(final Map<String, Object> context, final int majorVersion, final int minorVersion) {
-        formatColumnList(context);
-        return FreemarkerManager.getSqlByPgVersion(context, "table/%s/create.ftl", majorVersion, minorVersion).trim();
+    private String generateCreateTableSql(final Map<String, Object> materials, final int majorVersion, final int minorVersion) {
+        return FreemarkerManager.getSqlByPgVersion(materials, "table/%s/create.ftl", majorVersion, minorVersion).trim();
+    }
+    
+    private String generateCreateIndexSql(final Map<String, Object> materials, final int majorVersion, final int minorVersion, final Connection connection) {
+        return new PostgresIndexSqlGenerator(connection, majorVersion, minorVersion).generate(materials);
     }
     
     @SuppressWarnings("unchecked")

@@ -29,24 +29,24 @@ import java.util.LinkedList;
 import java.util.Map;
 
 /**
- * Postgres index loader.
+ * Postgres index sql generator.
  */
-public final class PostgresIndexLoader extends PostgresAbstractLoader {
+public final class PostgresIndexSqlGenerator extends AbstractPostgresDDLAdapter {
     
     private static final Integer PG_INDEX_INCLUDE_VERSION = 11;
     
-    public PostgresIndexLoader(final Connection connection, final int majorVersion, final int minorVersion) {
+    public PostgresIndexSqlGenerator(final Connection connection, final int majorVersion, final int minorVersion) {
         super(connection, majorVersion, minorVersion);
     }
     
     /**
-     * Load index sql.
+     * Generate create index sql.
      * 
      * @param context context
      * @return index sql
      */
     @SneakyThrows
-    public String loadIndexSql(final Map<String, Object> context) {
+    public String generate(final Map<String, Object> context) {
         StringBuilder result = new StringBuilder();
         Collection<Map<String, Object>> indexNodes = getIndexNodes(context);
         for (Map<String, Object> each : indexNodes) {
