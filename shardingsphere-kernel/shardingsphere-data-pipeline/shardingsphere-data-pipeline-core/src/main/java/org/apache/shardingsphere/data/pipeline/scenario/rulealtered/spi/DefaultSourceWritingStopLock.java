@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.scenario.rulealtered.spi;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPIFactory;
+import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPI;
 import org.apache.shardingsphere.data.pipeline.spi.lock.RowBasedJobLock;
 
@@ -28,7 +28,7 @@ import org.apache.shardingsphere.data.pipeline.spi.lock.RowBasedJobLock;
 @Slf4j
 public final class DefaultSourceWritingStopLock implements RowBasedJobLock {
     
-    private final RuleAlteredJobAPI ruleAlteredJobAPI = PipelineJobAPIFactory.getInstance();
+    private final RuleAlteredJobAPI ruleAlteredJobAPI = RuleAlteredJobAPIFactory.getInstance();
     
     @Override
     public void lock(final String databaseName, final String jobId) {

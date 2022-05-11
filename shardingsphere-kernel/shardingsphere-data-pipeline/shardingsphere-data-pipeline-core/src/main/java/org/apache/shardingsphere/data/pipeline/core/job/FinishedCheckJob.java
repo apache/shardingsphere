@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.job;
 
 import io.vertx.core.impl.ConcurrentHashSet;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPIFactory;
+import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPI;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.detect.RuleAlteredJobAlmostCompletedParameter;
@@ -41,7 +41,7 @@ import java.util.Set;
 @Slf4j
 public final class FinishedCheckJob implements SimpleJob {
     
-    private final RuleAlteredJobAPI ruleAlteredJobAPI = PipelineJobAPIFactory.getInstance();
+    private final RuleAlteredJobAPI ruleAlteredJobAPI = RuleAlteredJobAPIFactory.getInstance();
     
     private final Set<String> onCheckJobIds = new ConcurrentHashSet<>();
     
