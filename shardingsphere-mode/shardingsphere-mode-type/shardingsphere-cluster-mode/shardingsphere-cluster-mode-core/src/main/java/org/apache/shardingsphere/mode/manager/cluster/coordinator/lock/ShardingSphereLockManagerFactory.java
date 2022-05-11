@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
