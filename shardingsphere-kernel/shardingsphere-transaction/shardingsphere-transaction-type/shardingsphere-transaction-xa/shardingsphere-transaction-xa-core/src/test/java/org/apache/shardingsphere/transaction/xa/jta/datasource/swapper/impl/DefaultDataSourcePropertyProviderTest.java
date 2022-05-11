@@ -25,11 +25,6 @@ import static org.junit.Assert.assertThat;
 public final class DefaultDataSourcePropertyProviderTest {
     
     @Test
-    public void assertGetDataSourceClassName() {
-        assertThat(new DefaultDataSourcePropertyProvider().getDataSourceClassName(), is(""));
-    }
-    
-    @Test
     public void assertGetURLPropertyName() {
         assertThat(new DefaultDataSourcePropertyProvider().getURLPropertyName(), is("url"));
     }

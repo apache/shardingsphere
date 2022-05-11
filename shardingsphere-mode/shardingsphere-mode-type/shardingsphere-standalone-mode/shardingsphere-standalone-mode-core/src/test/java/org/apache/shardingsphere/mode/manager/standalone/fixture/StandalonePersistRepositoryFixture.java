@@ -34,11 +34,6 @@ public final class StandalonePersistRepositoryFixture implements StandalonePersi
     }
     
     @Override
-    public Properties getProps() {
-        return new Properties();
-    }
-    
-    @Override
     public String get(final String key) {
         return persistMap.get(key);
     }
@@ -72,6 +67,6 @@ public final class StandalonePersistRepositoryFixture implements StandalonePersi
     
     @Override
     public String getType() {
-        return "File";
+        return "FIXTURE";
     }
 }

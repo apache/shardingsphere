@@ -42,6 +42,7 @@ import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEve
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.sql.Types;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
@@ -152,6 +153,7 @@ public final class GovernanceRepositoryAPIImplTest {
         dumperConfig.setActualTableName("t_order");
         dumperConfig.setLogicTableName("t_order");
         dumperConfig.setPrimaryKey("order_id");
+        dumperConfig.setUniqueKeyDataType(Types.INTEGER);
         dumperConfig.setShardingItem(0);
         PipelineDataSourceWrapper dataSource = mock(PipelineDataSourceWrapper.class);
         PipelineTableMetaDataLoader metaDataLoader = new PipelineTableMetaDataLoader(dataSource);

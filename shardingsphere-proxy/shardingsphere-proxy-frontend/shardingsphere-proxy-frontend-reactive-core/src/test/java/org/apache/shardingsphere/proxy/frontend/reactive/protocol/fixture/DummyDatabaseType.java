@@ -29,7 +29,7 @@ import java.util.Optional;
 public final class DummyDatabaseType implements DatabaseType {
     
     @Override
-    public String getName() {
+    public String getType() {
         return "Dummy";
     }
     

@@ -38,9 +38,4 @@ public final class ClassBasedHintShardingAlgorithmFixture implements HintShardin
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final HintShardingValue<Integer> shardingValue) {
         return availableTargetNames;
     }
-    
-    @Override
-    public String getType() {
-        return null;
-    }
 }

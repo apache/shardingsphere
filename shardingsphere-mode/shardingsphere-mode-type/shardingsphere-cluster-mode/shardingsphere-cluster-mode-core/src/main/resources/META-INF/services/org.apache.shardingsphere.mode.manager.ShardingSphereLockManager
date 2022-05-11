@@ -15,6 +15,6 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.database.ShardingSphereDatabaseLockManager
 org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.general.ShardingSphereGeneralLockManager
+org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.database.ShardingSphereDatabaseLockManager
 org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.standard.ShardingSphereStandardLockManager

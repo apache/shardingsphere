@@ -34,18 +34,13 @@ import java.util.Optional;
 public final class OracleDatabaseType implements DatabaseType {
     
     @Override
-    public String getName() {
-        return "Oracle";
-    }
-    
-    @Override
     public QuoteCharacter getQuoteCharacter() {
         return QuoteCharacter.QUOTE;
     }
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
-        return Collections.singleton(String.format("jdbc:%s:", getName().toLowerCase()));
+        return Collections.singleton(String.format("jdbc:%s:", getType().toLowerCase()));
     }
     
     @Override
@@ -81,5 +76,10 @@ public final class OracleDatabaseType implements DatabaseType {
     @Override
     public Collection<String> getSystemSchemas() {
         return Collections.emptyList();
+    }
+    
+    @Override
+    public String getType() {
+        return "Oracle";
     }
 }

@@ -17,9 +17,7 @@
 
 package org.apache.shardingsphere.spi.type.ordered.fixture;
 
-import org.apache.shardingsphere.spi.fixture.FixtureCustomInterfaceImpl;
-
-public final class OrderedSPIFixtureImpl implements OrderedSPIFixture<FixtureCustomInterfaceImpl> {
+public final class OrderedSPIFixtureImpl implements OrderedSPIFixture<OrderedInterfaceFixtureImpl> {
     
     @Override
     public int getOrder() {
@@ -27,7 +25,7 @@ public final class OrderedSPIFixtureImpl implements OrderedSPIFixture<FixtureCus
     }
     
     @Override
-    public Class<FixtureCustomInterfaceImpl> getTypeClass() {
-        return FixtureCustomInterfaceImpl.class;
+    public Class<OrderedInterfaceFixtureImpl> getTypeClass() {
+        return OrderedInterfaceFixtureImpl.class;
     }
 }

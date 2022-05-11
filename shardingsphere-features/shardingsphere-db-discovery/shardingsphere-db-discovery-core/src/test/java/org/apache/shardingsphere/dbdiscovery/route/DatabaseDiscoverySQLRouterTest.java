@@ -74,7 +74,7 @@ public final class DatabaseDiscoverySQLRouterTest {
                 Collections.singletonMap("ha_heartbeat", new DatabaseDiscoveryHeartBeatConfiguration(new Properties())),
                 Collections.singletonMap("CORE.FIXTURE", algorithmConfig));
         rule = new DatabaseDiscoveryRule(DATA_SOURCE_NAME, Collections.singletonMap(PRIMARY_DATA_SOURCE, mock(DataSource.class)), config);
-        sqlRouter = (DatabaseDiscoverySQLRouter) SQLRouterFactory.newInstance(Collections.singleton(rule)).get(rule);
+        sqlRouter = (DatabaseDiscoverySQLRouter) SQLRouterFactory.getInstances(Collections.singleton(rule)).get(rule);
     }
     
     @Test

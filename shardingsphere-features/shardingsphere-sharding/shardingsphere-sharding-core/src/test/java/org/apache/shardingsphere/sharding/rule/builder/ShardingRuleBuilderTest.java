@@ -44,7 +44,7 @@ public final class ShardingRuleBuilderTest {
     @Before
     public void setUp() {
         ruleConfig = new ShardingRuleConfiguration();
-        builder = SchemaRuleBuilderFactory.newInstance(Collections.singletonList(ruleConfig)).get(ruleConfig);
+        builder = SchemaRuleBuilderFactory.getInstanceMap(Collections.singletonList(ruleConfig)).get(ruleConfig);
     }
     
     @SuppressWarnings("unchecked")

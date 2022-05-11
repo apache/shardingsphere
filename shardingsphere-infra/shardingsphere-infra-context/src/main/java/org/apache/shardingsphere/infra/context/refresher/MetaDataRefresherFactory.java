@@ -36,13 +36,13 @@ public final class MetaDataRefresherFactory {
     }
     
     /**
-     * Create new instance of meta data refresher.
+     * Find instance of meta data refresher.
      * 
      * @param sqlStatementClass SQL statement class
-     * @return new instance of meta data refresher
+     * @return found instance
      */
     @SuppressWarnings("rawtypes")
-    public static Optional<MetaDataRefresher> newInstance(final Class<? extends SQLStatement> sqlStatementClass) {
+    public static Optional<MetaDataRefresher> findInstance(final Class<? extends SQLStatement> sqlStatementClass) {
         return TypedSPIRegistry.findRegisteredService(MetaDataRefresher.class, sqlStatementClass.getSuperclass().getName());
     }
 }

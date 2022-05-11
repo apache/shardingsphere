@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl;
 
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussAlterSchemaStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLAlterSchemaStatement;
 import org.junit.Test;
@@ -32,18 +33,18 @@ public final class AlterSchemaStatementHandlerTest {
     @Test
     public void assertGetUsernameForPostgreSQL() {
         PostgreSQLAlterSchemaStatement alterSchemaStatement = new PostgreSQLAlterSchemaStatement();
-        alterSchemaStatement.setRenameSchema("new_schema");
-        Optional<String> actual = AlterSchemaStatementHandler.getRenameSchema(alterSchemaStatement);
+        alterSchemaStatement.setRenameSchema(new IdentifierValue("new_schema"));
+        Optional<IdentifierValue> actual = AlterSchemaStatementHandler.getRenameSchema(alterSchemaStatement);
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), is("new_schema"));
+        assertThat(actual.get().getValue(), is("new_schema"));
     }
     
     @Test
     public void assertGetUsernameForOpenGauss() {
         OpenGaussAlterSchemaStatement alterSchemaStatement = new OpenGaussAlterSchemaStatement();
-        alterSchemaStatement.setRenameSchema("new_schema");
-        Optional<String> actual = AlterSchemaStatementHandler.getRenameSchema(alterSchemaStatement);
+        alterSchemaStatement.setRenameSchema(new IdentifierValue("new_schema"));
+        Optional<IdentifierValue> actual = AlterSchemaStatementHandler.getRenameSchema(alterSchemaStatement);
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), is("new_schema"));
+        assertThat(actual.get().getValue(), is("new_schema"));
     }
 }

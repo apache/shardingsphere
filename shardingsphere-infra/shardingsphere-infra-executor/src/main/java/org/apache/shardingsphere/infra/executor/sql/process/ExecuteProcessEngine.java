@@ -46,7 +46,7 @@ public final class ExecuteProcessEngine {
      */
     public static void initialize(final LogicSQL logicSQL, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ConfigurationProperties props) {
         SQLStatementContext<?> context = logicSQL.getSqlStatementContext();
-        Optional<ExecuteProcessReporter> reporter = ExecuteProcessReporterFactory.newInstance();
+        Optional<ExecuteProcessReporter> reporter = ExecuteProcessReporterFactory.getInstance();
         if (reporter.isPresent() && ExecuteProcessStrategyEvaluator.evaluate(context, executionGroupContext, props)) {
             ExecutorDataMap.getValue().put(ExecuteProcessConstants.EXECUTE_ID.name(), executionGroupContext.getExecutionID());
             reporter.get().report(logicSQL, executionGroupContext, ExecuteProcessConstants.EXECUTE_STATUS_START);
@@ -57,7 +57,7 @@ public final class ExecuteProcessEngine {
      * Clean.
      */
     public static void clean() {
-        Optional<ExecuteProcessReporter> reporter = ExecuteProcessReporterFactory.newInstance();
+        Optional<ExecuteProcessReporter> reporter = ExecuteProcessReporterFactory.getInstance();
         if (reporter.isPresent() && ExecutorDataMap.getValue().containsKey(ExecuteProcessConstants.EXECUTE_ID.name())) {
             reporter.get().reportClean(ExecutorDataMap.getValue().get(ExecuteProcessConstants.EXECUTE_ID.name()).toString());
         }
@@ -71,7 +71,7 @@ public final class ExecuteProcessEngine {
      * @param executionUnit execution unit
      */
     public static void finish(final String executionID, final SQLExecutionUnit executionUnit) {
-        Optional<ExecuteProcessReporter> reporter = ExecuteProcessReporterFactory.newInstance();
+        Optional<ExecuteProcessReporter> reporter = ExecuteProcessReporterFactory.getInstance();
         reporter.ifPresent(optional -> optional.report(executionID, executionUnit, ExecuteProcessConstants.EXECUTE_STATUS_DONE));
     }
     
@@ -81,7 +81,7 @@ public final class ExecuteProcessEngine {
      * @param executionID execution ID
      */
     public static void finish(final String executionID) {
-        Optional<ExecuteProcessReporter> reporter = ExecuteProcessReporterFactory.newInstance();
+        Optional<ExecuteProcessReporter> reporter = ExecuteProcessReporterFactory.getInstance();
         if (reporter.isPresent() && ExecutorDataMap.getValue().containsKey(ExecuteProcessConstants.EXECUTE_ID.name())) {
             reporter.get().report(executionID, ExecuteProcessConstants.EXECUTE_STATUS_DONE);
         }

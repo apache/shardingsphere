@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.integration.framework.container.atomic.storage.impl;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.DockerStorageContainer;
 
 import java.util.Collections;
@@ -28,7 +28,7 @@ import java.util.Collections;
 public final class MySQLContainer extends DockerStorageContainer {
     
     public MySQLContainer(final String scenario) {
-        super(DatabaseTypeRegistry.getActualDatabaseType("MySQL"), "mysql/mysql-server:5.7", scenario);
+        super(DatabaseTypeFactory.getInstance("MySQL"), "mysql/mysql-server:5.7", scenario);
     }
     
     @Override

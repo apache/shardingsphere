@@ -34,12 +34,12 @@ public final class DriverStateFactory {
     }
     
     /**
-     * Create new instance of driver state.
+     * Get instance of driver state.
      * 
      * @param type state type 
-     * @return new instance of driver state
+     * @return got instance
      */
-    public static DriverState newInstance(final StateType type) {
+    public static DriverState getInstance(final StateType type) {
         return TypedSPIRegistry.getRegisteredService(DriverState.class, type.name());
     }
 }

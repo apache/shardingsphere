@@ -51,7 +51,7 @@ public final class DumperFactory {
     @SneakyThrows(ReflectiveOperationException.class)
     public static InventoryDumper createInventoryDumper(final InventoryDumperConfiguration inventoryDumperConfig, final PipelineChannel channel,
                                                         final DataSource sourceDataSource, final PipelineTableMetaDataLoader sourceMetaDataLoader) {
-        ScalingEntry scalingEntry = ScalingEntryFactory.getInstance(inventoryDumperConfig.getDataSourceConfig().getDatabaseType().getName());
+        ScalingEntry scalingEntry = ScalingEntryFactory.getInstance(inventoryDumperConfig.getDataSourceConfig().getDatabaseType().getType());
         Constructor<? extends InventoryDumper> constructor = scalingEntry.getInventoryDumperClass()
                 .getConstructor(InventoryDumperConfiguration.class, PipelineChannel.class, DataSource.class, PipelineTableMetaDataLoader.class);
         return constructor.newInstance(inventoryDumperConfig, channel, sourceDataSource, sourceMetaDataLoader);
@@ -69,7 +69,7 @@ public final class DumperFactory {
     @SneakyThrows(ReflectiveOperationException.class)
     public static IncrementalDumper createIncrementalDumper(final DumperConfiguration dumperConfig, final IngestPosition<?> position,
                                                             final PipelineChannel channel, final PipelineTableMetaDataLoader sourceMetaDataLoader) {
-        String databaseType = dumperConfig.getDataSourceConfig().getDatabaseType().getName();
+        String databaseType = dumperConfig.getDataSourceConfig().getDatabaseType().getType();
         ScalingEntry scalingEntry = ScalingEntryFactory.getInstance(databaseType);
         Constructor<? extends IncrementalDumper> constructor = scalingEntry.getIncrementalDumperClass()
                 .getConstructor(DumperConfiguration.class, IngestPosition.class, PipelineChannel.class, PipelineTableMetaDataLoader.class);

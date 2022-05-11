@@ -15,4 +15,4 @@
   ~ limitations under the License.
   -->
 
-SELECT tablename::REGCLASS::OID AS tid FROM pg_catalog.pg_tables WHERE schemaname = '${schemaName}' and tablename = '${tableName}';
+SELECT '${schemaName}.${tableName}'::REGCLASS::OID AS tid;

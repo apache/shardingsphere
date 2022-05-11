@@ -354,4 +354,5 @@ The text of each license is also included at licenses/LICENSE-[project].txt.
     animal-sniffer-annotations 1.18: https://github.com/mojohaus/animal-sniffer, MIT
     bcprov-jdk15on 1.70: https://www.bouncycastle.org, MIT
     checker-qual 3.5.0: https://github.com/typetools/checker-framework/blob/master/checker-qual, MIT
+    jul-to-slf4j 1.7.7: https://www.slf4j.org, MIT
     slf4j 1.7.7: https://www.slf4j.org , MIT

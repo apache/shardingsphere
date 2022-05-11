@@ -23,7 +23,7 @@ chapter = true
  - 应尽量将设计精细化拆分；做到小幅度修改，多次数提交，但应保证提交的完整性。
  - 确保遵守编码规范。
  - 如果您使用 IDEA，可导入推荐的 [Settings](https://shardingsphere.apache.org/community/data/shardingsphere-settings.jar)。
- - 通过 Spotless 统一代码风格，执行 Maven 命令时添加 `-Pcode.format`。
+ - 通过 Spotless 统一代码风格，执行 `mvn spotless:apply` 格式化代码。
  
 ## 编码规范
 

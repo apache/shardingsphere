@@ -34,7 +34,7 @@ public interface DatabaseAdminExecutorFactory extends TypedSPI {
      * and this executor requires a connection containing a schema to be used.
      *
      * @param sqlStatementContext SQL statement context
-     * @return instance of database admin executor
+     * @return created instance
      */
     Optional<DatabaseAdminExecutor> newInstance(SQLStatementContext<?> sqlStatementContext);
     
@@ -44,7 +44,7 @@ public interface DatabaseAdminExecutorFactory extends TypedSPI {
      * @param sqlStatementContext SQL statement context
      * @param sql SQL
      * @param schemaName schema name
-     * @return instance of database admin executor
+     * @return created instance
      */
     Optional<DatabaseAdminExecutor> newInstance(SQLStatementContext<?> sqlStatementContext, String sql, String schemaName);
 }

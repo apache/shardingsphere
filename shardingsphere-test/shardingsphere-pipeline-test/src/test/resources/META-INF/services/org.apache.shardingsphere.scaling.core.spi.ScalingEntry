@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.data.pipeline.core.fixture.FixtureScalingEntry
+org.apache.shardingsphere.data.pipeline.core.fixture.H2ScalingEntryFixture

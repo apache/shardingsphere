@@ -35,16 +35,16 @@ public final class DatabaseContainerFactory {
      *
      * @param databaseType database type
      * @param dockerImageName database ver
-     * @return new instance of storage container
+     * @return created instance
      */
     public static DockerDatabaseContainer newInstance(final DatabaseType databaseType, final String dockerImageName) {
-        switch (databaseType.getName()) {
+        switch (databaseType.getType()) {
             case "MySQL":
                 return new MySQLContainer(dockerImageName);
             case "PostgreSQL":
                 return new PostgreSQLContainer(dockerImageName);
             default:
-                throw new RuntimeException(String.format("Database [%s] is unknown.", databaseType.getName()));
+                throw new RuntimeException(String.format("Database [%s] is unknown.", databaseType.getType()));
         }
     }
 }

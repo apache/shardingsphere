@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 
 /**
- * Non reentrant lock implemented ShardingSphereLock.
+ * Non-reentrant lock implemented ShardingSphereLock.
  */
 @RequiredArgsConstructor
 public final class ShardingSphereNonReentrantLock implements ShardingSphereLock {

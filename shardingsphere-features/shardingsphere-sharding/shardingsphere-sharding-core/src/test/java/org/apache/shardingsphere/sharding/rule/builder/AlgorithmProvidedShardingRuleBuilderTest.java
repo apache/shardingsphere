@@ -44,7 +44,7 @@ public final class AlgorithmProvidedShardingRuleBuilderTest {
     @Before
     public void setUp() {
         ruleConfig = new AlgorithmProvidedShardingRuleConfiguration();
-        builder = SchemaRuleBuilderFactory.newInstance(Collections.singletonList(ruleConfig)).get(ruleConfig);
+        builder = SchemaRuleBuilderFactory.getInstanceMap(Collections.singletonList(ruleConfig)).get(ruleConfig);
     }
     
     @SuppressWarnings("unchecked")

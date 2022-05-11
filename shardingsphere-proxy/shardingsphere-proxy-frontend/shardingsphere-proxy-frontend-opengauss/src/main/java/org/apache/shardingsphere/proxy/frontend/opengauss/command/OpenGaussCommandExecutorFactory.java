@@ -66,7 +66,7 @@ public final class OpenGaussCommandExecutorFactory {
      * @param commandPacket command packet for PostgreSQL/openGauss
      * @param connectionSession connection session
      * @param connectionContext PostgreSQL connection context
-     * @return command executor
+     * @return created instance
      * @throws SQLException SQL exception
      */
     public static CommandExecutor newInstance(final CommandPacketType commandPacketType, final PostgreSQLCommandPacket commandPacket,

@@ -38,13 +38,13 @@ public final class RuleConfigurationCheckerFactory {
     }
     
     /**
-     * Create new instance of rule configuration checker.
+     * Find instance of rule configuration checker.
      * 
      * @param config rule configuration
-     * @return new instance of rule configuration checker
+     * @return found instance
      */
     @SuppressWarnings("rawtypes")
-    public static Optional<RuleConfigurationChecker> newInstance(final RuleConfiguration config) {
+    public static Optional<RuleConfigurationChecker> findInstance(final RuleConfiguration config) {
         Map<Class<?>, RuleConfigurationChecker> checkers = OrderedSPIRegistry.getRegisteredServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass()));
         return Optional.ofNullable(checkers.get(config.getClass()));
     }

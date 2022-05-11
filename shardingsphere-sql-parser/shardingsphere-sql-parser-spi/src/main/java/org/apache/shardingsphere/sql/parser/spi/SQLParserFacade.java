@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.sql.parser.spi;
 
+import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 
 /**
  * SQL parser facade.
  */
-public interface SQLParserFacade {
+public interface SQLParserFacade extends TypedSPI {
     
     /**
      * Get SQL lexer class type.

@@ -96,8 +96,8 @@ public final class RuleAlteredContext {
         dataConsistencyCalculateAlgorithm = null != dataConsistencyCheckerConfig
                 ? DataConsistencyCalculateAlgorithmFactory.newInstance(dataConsistencyCheckerConfig.getType(), dataConsistencyCheckerConfig.getProps())
                 : null;
-        rowBasedJobLock = RowBasedJobLockFactory.newInstance();
-        ruleBasedJobLock = RuleBasedJobLockFactory.newInstance();
+        rowBasedJobLock = RowBasedJobLockFactory.getInstance();
+        ruleBasedJobLock = RuleBasedJobLockFactory.getInstance();
         inventoryDumperExecuteEngine = ExecuteEngine.newFixedThreadInstance(inputConfig.getWorkerThread());
         incrementalDumperExecuteEngine = ExecuteEngine.newCachedThreadInstance();
         importerExecuteEngine = ExecuteEngine.newFixedThreadInstance(outputConfig.getWorkerThread());
