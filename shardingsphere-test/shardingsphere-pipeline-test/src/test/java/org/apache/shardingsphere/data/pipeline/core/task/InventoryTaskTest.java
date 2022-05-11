@@ -73,6 +73,8 @@ public final class InventoryTaskTest {
             position = new IntegerPrimaryKeyPosition(0, 1000);
         }
         inventoryDumperConfig.setPosition(position);
+        inventoryDumperConfig.setPrimaryKey("order_id");
+        inventoryDumperConfig.setUniqueKeyDataType(Types.INTEGER);
         PipelineDataSourceWrapper dataSource = DATA_SOURCE_MANAGER.getDataSource(inventoryDumperConfig.getDataSourceConfig());
         PipelineTableMetaDataLoader metaDataLoader = new PipelineTableMetaDataLoader(dataSource);
         try (
