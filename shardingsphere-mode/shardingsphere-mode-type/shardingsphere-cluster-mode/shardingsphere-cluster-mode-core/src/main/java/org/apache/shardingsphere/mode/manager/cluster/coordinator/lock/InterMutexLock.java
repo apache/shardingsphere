@@ -15,13 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.ShardingSphereGlobalLock;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockRegistryService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockState;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.TimeoutMilliseconds;
 
@@ -33,11 +31,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Global distribute lock of ShardingSphere.
+ * Inter mutex lock.
  */
 @Slf4j
 @RequiredArgsConstructor
-public final class ShardingSphereDistributeGlobalLock implements ShardingSphereGlobalLock {
+public final class InterMutexLock implements ShardingSphereGlobalLock {
     
     private final LockRegistryService lockService;
     
@@ -148,7 +146,7 @@ public final class ShardingSphereDistributeGlobalLock implements ShardingSphereG
     }
     
     @Override
-    public boolean isLocked() {
+    public boolean isLocked(final String lockName) {
         return LockState.LOCKED == synchronizedLockState.get();
     }
     

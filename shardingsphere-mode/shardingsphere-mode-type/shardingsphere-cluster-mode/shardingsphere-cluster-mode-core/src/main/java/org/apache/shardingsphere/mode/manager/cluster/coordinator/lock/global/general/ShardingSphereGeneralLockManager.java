@@ -21,15 +21,16 @@ import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.lock.LockType;
-import org.apache.shardingsphere.mode.manager.ShardingSphereLockManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.ShardingSphereGlobalLock;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeServiceFactory;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.ShardingSphereLockManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.general.event.GeneralAckLockReleasedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.general.event.GeneralAckLockedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.general.event.GeneralLockReleasedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.general.event.GeneralLockedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeType;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
@@ -55,7 +56,7 @@ public final class ShardingSphereGeneralLockManager implements ShardingSphereLoc
     
     public ShardingSphereGeneralLockManager() {
         locks = new ConcurrentHashMap<>();
-        lockNodeService = LockNodeServiceFactory.getInstance().getLockNodeService(getLockType());
+        lockNodeService = LockNodeServiceFactory.getInstance().getLockNodeService(LockNodeType.GENERAL);
     }
     
     @Override
@@ -102,7 +103,7 @@ public final class ShardingSphereGeneralLockManager implements ShardingSphereLoc
         }
         ShardingSphereGlobalLock lock = locks.get(lockName);
         if (null != lock) {
-            return lock.isLocked();
+            return lock.isLocked(lockName);
         }
         return false;
     }

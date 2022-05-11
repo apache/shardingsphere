@@ -57,7 +57,7 @@ public final class ShardingSphereReentrantLock implements ShardingSphereLock {
     }
     
     @Override
-    public boolean isLocked() {
+    public boolean isLocked(final String lockName) {
         throw new UnsupportedOperationException();
     }
 }
