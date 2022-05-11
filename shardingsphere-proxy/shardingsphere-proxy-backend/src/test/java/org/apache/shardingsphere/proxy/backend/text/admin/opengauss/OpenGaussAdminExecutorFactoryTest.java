@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.admin.opengauss;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutor;
-import org.apache.shardingsphere.proxy.backend.text.admin.postgresql.PostgreSQLAdminExecutorFactory;
+import org.apache.shardingsphere.proxy.backend.text.admin.postgresql.PostgreSQLAdminExecutorCreator;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,16 +42,16 @@ import static org.mockito.Mockito.when;
 public final class OpenGaussAdminExecutorFactoryTest {
     
     @Mock
-    private PostgreSQLAdminExecutorFactory postgreSQLAdminExecutorFactory;
+    private PostgreSQLAdminExecutorCreator postgreSQLAdminExecutorFactory;
     
-    private OpenGaussAdminExecutorFactory openGaussAdminExecutorFactory;
+    private OpenGaussAdminExecutorCreator openGaussAdminExecutorFactory;
     
     @Before
     @SneakyThrows
     public void setup() {
-        Field field = OpenGaussAdminExecutorFactory.class.getDeclaredField("delegated");
+        Field field = OpenGaussAdminExecutorCreator.class.getDeclaredField("delegated");
         field.setAccessible(true);
-        openGaussAdminExecutorFactory = new OpenGaussAdminExecutorFactory();
+        openGaussAdminExecutorFactory = new OpenGaussAdminExecutorCreator();
         field.set(openGaussAdminExecutorFactory, postgreSQLAdminExecutorFactory);
     }
     
@@ -59,8 +59,8 @@ public final class OpenGaussAdminExecutorFactoryTest {
     public void assertNewInstanceWithSQLStatementContextOnly() {
         SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class);
         DatabaseAdminExecutor expected = mock(DatabaseAdminExecutor.class);
-        when(postgreSQLAdminExecutorFactory.newInstance(sqlStatementContext)).thenReturn(Optional.of(expected));
-        Optional<DatabaseAdminExecutor> actual = openGaussAdminExecutorFactory.newInstance(sqlStatementContext);
+        when(postgreSQLAdminExecutorFactory.create(sqlStatementContext)).thenReturn(Optional.of(expected));
+        Optional<DatabaseAdminExecutor> actual = openGaussAdminExecutorFactory.create(sqlStatementContext);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is(expected));
     }
@@ -69,7 +69,7 @@ public final class OpenGaussAdminExecutorFactoryTest {
     public void assertNewInstanceWithSelectDatabase() {
         SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("pg_database"));
-        Optional<DatabaseAdminExecutor> actual = openGaussAdminExecutorFactory.newInstance(sqlStatementContext, "select datcompatibility from pg_database where datname = 'sharding_db'", "");
+        Optional<DatabaseAdminExecutor> actual = openGaussAdminExecutorFactory.create(sqlStatementContext, "select datcompatibility from pg_database where datname = 'sharding_db'", "");
         assertTrue(actual.isPresent());
         assertTrue(actual.get() instanceof OpenGaussSelectDatabaseExecutor);
     }
@@ -79,8 +79,8 @@ public final class OpenGaussAdminExecutorFactoryTest {
         SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.emptyList());
         DatabaseAdminExecutor expected = mock(DatabaseAdminExecutor.class);
-        when(postgreSQLAdminExecutorFactory.newInstance(sqlStatementContext, "", "")).thenReturn(Optional.of(expected));
-        Optional<DatabaseAdminExecutor> actual = openGaussAdminExecutorFactory.newInstance(sqlStatementContext, "", "");
+        when(postgreSQLAdminExecutorFactory.create(sqlStatementContext, "", "")).thenReturn(Optional.of(expected));
+        Optional<DatabaseAdminExecutor> actual = openGaussAdminExecutorFactory.create(sqlStatementContext, "", "");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is(expected));
     }

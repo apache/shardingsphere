@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutor;
-import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutorFactory;
+import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutorCreator;
 import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.MySQLSetCharsetExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.NoResourceSetExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.NoResourceShowExecutor;
@@ -58,16 +58,16 @@ import java.util.Iterator;
 import java.util.Optional;
 
 /**
- * Admin executor factory for MySQL.
+ * Database admin executor creator for MySQL.
  */
-public final class MySQLAdminExecutorFactory implements DatabaseAdminExecutorFactory {
+public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCreator {
     
     private static final String INFORMATION_SCHEMA = "information_schema";
     
     private static final String PERFORMANCE_SCHEMA = "performance_schema";
     
     @Override
-    public Optional<DatabaseAdminExecutor> newInstance(final SQLStatementContext<?> sqlStatementContext) {
+    public Optional<DatabaseAdminExecutor> create(final SQLStatementContext<?> sqlStatementContext) {
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         if (sqlStatement instanceof MySQLShowFunctionStatusStatement) {
             return Optional.of(new ShowFunctionStatusExecutor((MySQLShowFunctionStatusStatement) sqlStatement));
@@ -82,7 +82,7 @@ public final class MySQLAdminExecutorFactory implements DatabaseAdminExecutorFac
     }
     
     @Override
-    public Optional<DatabaseAdminExecutor> newInstance(final SQLStatementContext<?> sqlStatementContext, final String sql, final String schemaName) {
+    public Optional<DatabaseAdminExecutor> create(final SQLStatementContext<?> sqlStatementContext, final String sql, final String schemaName) {
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         if (sqlStatement instanceof UseStatement) {
             return Optional.of(new UseDatabaseExecutor((UseStatement) sqlStatement));
