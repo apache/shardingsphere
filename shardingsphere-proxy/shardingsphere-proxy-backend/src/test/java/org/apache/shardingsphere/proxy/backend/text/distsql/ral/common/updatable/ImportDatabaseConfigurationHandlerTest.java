@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatabl
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.ImportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesValidator;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -179,6 +180,6 @@ public final class ImportDatabaseConfigurationHandlerTest {
     }
     
     private RALBackendHandler.HandlerParameter<ImportDatabaseConfigurationStatement> getParameter(final ImportDatabaseConfigurationStatement statement, final ConnectionSession connectionSession) {
-        return new RALBackendHandler.HandlerParameter<ImportDatabaseConfigurationStatement>().setStatement(statement).setConnectionSession(connectionSession);
+        return new RALBackendHandler.HandlerParameter<>(statement, new MySQLDatabaseType(), connectionSession);
     }
 }

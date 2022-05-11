@@ -20,8 +20,6 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral;
 import com.google.common.base.Preconditions;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -73,10 +71,8 @@ public abstract class RALBackendHandler<E extends RALStatement, R extends RALBac
     }
     
     @Getter
-    @Setter
     @Accessors(chain = true)
     @AllArgsConstructor
-    @NoArgsConstructor
     public static class HandlerParameter<E extends RALStatement> {
         
         private E statement;
