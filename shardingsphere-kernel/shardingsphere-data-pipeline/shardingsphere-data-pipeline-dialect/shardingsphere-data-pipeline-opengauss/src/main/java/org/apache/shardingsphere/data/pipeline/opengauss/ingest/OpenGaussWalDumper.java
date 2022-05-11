@@ -23,7 +23,6 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.Standa
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
-import org.apache.shardingsphere.data.pipeline.core.datasource.creator.PipelineDataSourceCreatorFactory;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.AbstractIncrementalDumper;
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
@@ -39,9 +38,7 @@ import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.Abstr
 import org.opengauss.jdbc.PgConnection;
 import org.opengauss.replication.PGReplicationStream;
 
-import javax.sql.DataSource;
 import java.nio.ByteBuffer;
-import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
@@ -57,8 +54,6 @@ public final class OpenGaussWalDumper extends AbstractIncrementalDumper<WalPosit
     private final OpenGaussLogicalReplication logicalReplication = new OpenGaussLogicalReplication();
     
     private final WalEventConverter walEventConverter;
-    
-    private String slotName = OpenGaussLogicalReplication.SLOT_NAME_PREFIX;
     
     private final PipelineChannel channel;
     
@@ -79,29 +74,11 @@ public final class OpenGaussWalDumper extends AbstractIncrementalDumper<WalPosit
         dump();
     }
     
-    private PgConnection getReplicationConn() throws SQLException {
-        return logicalReplication.createConnection((StandardPipelineDataSourceConfiguration) dumperConfig.getDataSourceConfig()).unwrap(PgConnection.class);
-    }
-    
-    private MppdbDecodingPlugin initReplication() {
-        try {
-            DataSource pipelineDataSource = PipelineDataSourceCreatorFactory.getInstance(
-                    dumperConfig.getDataSourceConfig().getType()).createPipelineDataSource(dumperConfig.getDataSourceConfig().getDataSourceConfiguration());
-            try (Connection connection = pipelineDataSource.getConnection()) {
-                slotName = OpenGaussLogicalReplication.getUniqueSlotName(connection);
-                OpenGaussLogicalReplication.createIfNotExists(connection);
-                return new MppdbDecodingPlugin(new OpenGaussTimestampUtils(connection.unwrap(PgConnection.class).getTimestampUtils()));
-            }
-        } catch (final SQLException ex) {
-            log.warn("Create replication slot failed!");
-        }
-        return null;
-    }
-    
     private void dump() {
-        DecodingPlugin decodingPlugin = initReplication();
-        try (PgConnection connection = getReplicationConn()) {
-            PGReplicationStream stream = logicalReplication.createReplicationStream(connection, walPosition.getLogSequenceNumber(), slotName);
+        PGReplicationStream stream = null;
+        try (PgConnection connection = getReplicationConnectionUnwrap()) {
+            stream = logicalReplication.createReplicationStream(connection, walPosition.getLogSequenceNumber(), OpenGaussPositionInitializer.getUniqueSlotName(connection));
+            DecodingPlugin decodingPlugin = new MppdbDecodingPlugin(new OpenGaussTimestampUtils(connection.getTimestampUtils()));
             while (isRunning()) {
                 ByteBuffer message = stream.readPending();
                 if (null == message) {
@@ -113,11 +90,20 @@ public final class OpenGaussWalDumper extends AbstractIncrementalDumper<WalPosit
                 pushRecord(record);
             }
         } catch (final SQLException ex) {
-            if (ex.getMessage().contains("is already active")) {
-                return;
-            }
             throw new IngestException(ex);
+        } finally {
+            if (null != stream) {
+                try {
+                    stream.close();
+                } catch (final SQLException ex) {
+                    log.error("Close PGReplicationStream failed", ex);
+                }
+            }
         }
+    }
+    
+    private PgConnection getReplicationConnectionUnwrap() throws SQLException {
+        return logicalReplication.createConnection((StandardPipelineDataSourceConfiguration) dumperConfig.getDataSourceConfig()).unwrap(PgConnection.class);
     }
     
     private void pushRecord(final Record record) {
@@ -128,4 +114,3 @@ public final class OpenGaussWalDumper extends AbstractIncrementalDumper<WalPosit
     protected void doStop() {
     }
 }
-

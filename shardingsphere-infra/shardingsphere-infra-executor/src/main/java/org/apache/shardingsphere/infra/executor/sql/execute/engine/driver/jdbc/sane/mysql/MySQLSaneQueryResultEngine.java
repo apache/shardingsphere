@@ -72,7 +72,8 @@ public final class MySQLSaneQueryResultEngine implements SaneQueryResultEngine {
             }
         }
         return queryResultColumnMetaDataList.isEmpty()
-                ? Optional.empty() : Optional.of(new RawMemoryQueryResult(new RawQueryResultMetaData(queryResultColumnMetaDataList), Collections.singletonList(new MemoryQueryResultDataRow(data))));
+                ? Optional.empty()
+                : Optional.of(new RawMemoryQueryResult(new RawQueryResultMetaData(queryResultColumnMetaDataList), Collections.singletonList(new MemoryQueryResultDataRow(data))));
     }
     
     private QueryResult createQueryResult(final MySQLShowOtherStatement sqlStatement) {

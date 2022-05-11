@@ -28,7 +28,9 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.Gover
 @RequiredArgsConstructor
 @Getter
 public final class SchemaChangedEvent implements GovernanceEvent {
-
+    
+    private final String databaseName;
+    
     private final String schemaName;
     
     private final TableMetaData changedTableMetaData;

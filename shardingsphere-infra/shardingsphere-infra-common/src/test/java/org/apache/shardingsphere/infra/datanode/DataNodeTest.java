@@ -23,7 +23,6 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 public final class DataNodeTest {
@@ -42,7 +41,7 @@ public final class DataNodeTest {
     
     @Test(expected = ShardingSphereConfigurationException.class)
     public void assertNewInValidDataNodeWithTwoDelimiters() {
-        new DataNode("ds_0.tbl_0.tbl_1");
+        new DataNode("ds_0.db_0.tbl_0.tbl_1");
     }
     
     @Test(expected = ShardingSphereConfigurationException.class)
@@ -57,7 +56,6 @@ public final class DataNodeTest {
         assertThat(dataNode, is(dataNode));
         assertThat(dataNode, not(new DataNode("ds_0.tbl_1")));
         assertFalse(dataNode.equals(null));
-        assertNotNull(dataNode);
     }
     
     @Test
@@ -67,14 +65,14 @@ public final class DataNodeTest {
     
     @Test
     public void assertToString() {
-        assertThat(new DataNode("ds_0.tbl_0").toString(), is("DataNode(dataSourceName=ds_0, tableName=tbl_0)"));
+        assertThat(new DataNode("ds_0.tbl_0").toString(), is("DataNode(dataSourceName=ds_0, tableName=tbl_0, schemaName=null)"));
     }
-
+    
     @Test(expected = ShardingSphereConfigurationException.class)
     public void assertEmptyDataSourceDataNode() {
         new DataNode(".tbl_0");
     }
-
+    
     @Test(expected = ShardingSphereConfigurationException.class)
     public void assertEmptyTableDataNode() {
         new DataNode("ds_0.");
@@ -90,6 +88,37 @@ public final class DataNodeTest {
     @Test
     public void assertFormattedTextLength() {
         String text = "ds_0.tbl_0";
+        DataNode dataNode = new DataNode(text);
+        assertThat(dataNode.getFormattedTextLength(), is(text.length()));
+    }
+    
+    @Test
+    public void assertNewValidDataNodeIncludeInstance() {
+        DataNode dataNode = new DataNode("ds_0.db_0.tbl_0");
+        assertThat(dataNode.getDataSourceName(), is("ds_0.db_0"));
+        assertThat(dataNode.getTableName(), is("tbl_0"));
+    }
+    
+    @Test
+    public void assertHashCodeIncludeInstance() {
+        assertThat(new DataNode("ds_0.db_0.tbl_0").hashCode(), is(new DataNode("ds_0.db_0.tbl_0").hashCode()));
+    }
+    
+    @Test
+    public void assertToStringIncludeInstance() {
+        assertThat(new DataNode("ds_0.db_0.tbl_0").toString(), is("DataNode(dataSourceName=ds_0.db_0, tableName=tbl_0, schemaName=null)"));
+    }
+    
+    @Test
+    public void assertFormatIncludeInstance() {
+        String expected = "ds_0.db_0.tbl_0";
+        DataNode dataNode = new DataNode(expected);
+        assertThat(dataNode.format(), is(expected));
+    }
+    
+    @Test
+    public void assertFormattedTextLengthIncludeInstance() {
+        String text = "ds_0.db_0.tbl_0";
         DataNode dataNode = new DataNode(text);
         assertThat(dataNode.getFormattedTextLength(), is(text.length()));
     }

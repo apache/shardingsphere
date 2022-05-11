@@ -52,73 +52,67 @@ public final class CreateShardingScalingRuleStatementUpdaterTest {
     
     @Test(expected = RequiredRuleMissedException.class)
     public void assertCheckWithoutShardingRule() throws DistSQLException {
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement("default_scaling"), null);
+        updater.checkSQLStatement(shardingSphereMetaData, new CreateShardingScalingRuleStatement("default_scaling", null), null);
     }
     
     @Test(expected = DuplicateRuleException.class)
     public void assertCheckWithExist() throws DistSQLException {
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
         currentRuleConfig.getScaling().put("default_scaling", null);
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement("default_scaling"), currentRuleConfig);
+        updater.checkSQLStatement(shardingSphereMetaData, new CreateShardingScalingRuleStatement("default_scaling", null), currentRuleConfig);
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
     public void assertCheckInvalidRateLimiter() throws DistSQLException {
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
-        CreateShardingScalingRuleStatement statement = new CreateShardingScalingRuleStatement("default_scaling");
-        statement.setConfigurationSegment(createConfigurationWithInvalidRateLimiter());
+        CreateShardingScalingRuleStatement statement = new CreateShardingScalingRuleStatement("default_scaling", createConfigurationWithInvalidRateLimiter());
         updater.checkSQLStatement(shardingSphereMetaData, statement, currentRuleConfig);
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
     public void assertCheckInvalidStreamChannel() throws DistSQLException {
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
-        CreateShardingScalingRuleStatement statement = new CreateShardingScalingRuleStatement("default_scaling");
-        statement.setConfigurationSegment(createConfigurationWithInvalidStreamChannel());
+        CreateShardingScalingRuleStatement statement = new CreateShardingScalingRuleStatement("default_scaling", createConfigurationWithInvalidStreamChannel());
         updater.checkSQLStatement(shardingSphereMetaData, statement, currentRuleConfig);
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
     public void assertCheckInvalidCompletionDetector() throws DistSQLException {
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
-        CreateShardingScalingRuleStatement statement = new CreateShardingScalingRuleStatement("default_scaling");
-        statement.setConfigurationSegment(createConfigurationWithInvalidCompletionDetector());
+        CreateShardingScalingRuleStatement statement = new CreateShardingScalingRuleStatement("default_scaling", createConfigurationWithInvalidCompletionDetector());
         updater.checkSQLStatement(shardingSphereMetaData, statement, currentRuleConfig);
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
-    public void assertCheckInvalidDataConsistencyChecker() throws DistSQLException {
+    public void assertCheckInvalidDataConsistencyCalculator() throws DistSQLException {
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
-        CreateShardingScalingRuleStatement statement = new CreateShardingScalingRuleStatement("default_scaling");
-        statement.setConfigurationSegment(createConfigurationWithInvalidDataConsistencyChecker());
+        CreateShardingScalingRuleStatement statement = new CreateShardingScalingRuleStatement("default_scaling", createConfigurationWithInvalidDataConsistencyCalculator());
         updater.checkSQLStatement(shardingSphereMetaData, statement, currentRuleConfig);
     }
     
     @Test
     public void assertCheckSuccessWithoutConfiguration() throws DistSQLException {
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement("default_scaling"), currentRuleConfig);
+        updater.checkSQLStatement(shardingSphereMetaData, new CreateShardingScalingRuleStatement("default_scaling", null), currentRuleConfig);
     }
     
     @Test
     public void assertCheckSuccessWithCompleteConfiguration() throws DistSQLException {
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
-        CreateShardingScalingRuleStatement statement = new CreateShardingScalingRuleStatement("default_scaling");
-        statement.setConfigurationSegment(createCompleteConfiguration());
+        CreateShardingScalingRuleStatement statement = new CreateShardingScalingRuleStatement("default_scaling", createCompleteConfiguration());
         updater.checkSQLStatement(shardingSphereMetaData, statement, currentRuleConfig);
     }
     
     @Test
     public void assertBuildNullConfiguration() {
-        ShardingRuleConfiguration result = updater.buildToBeCreatedRuleConfiguration(createSQLStatement("default_scaling"));
+        ShardingRuleConfiguration result = updater.buildToBeCreatedRuleConfiguration(new CreateShardingScalingRuleStatement("default_scaling", null));
         assertThat(result.getScaling().size(), is(1));
         assertThat(result.getScaling().keySet().iterator().next(), is("default_scaling"));
     }
     
     @Test
     public void assertBuildCompleteConfiguration() {
-        CreateShardingScalingRuleStatement statement = new CreateShardingScalingRuleStatement("default_scaling");
-        statement.setConfigurationSegment(createCompleteConfiguration());
+        CreateShardingScalingRuleStatement statement = new CreateShardingScalingRuleStatement("default_scaling", createCompleteConfiguration());
         ShardingRuleConfiguration result = updater.buildToBeCreatedRuleConfiguration(statement);
         assertThat(result.getScaling().size(), is(1));
         String key = result.getScaling().keySet().iterator().next();
@@ -128,16 +122,15 @@ public final class CreateShardingScalingRuleStatementUpdaterTest {
         assertThat(value.getOutput().getRateLimiter().getType(), is(LIMIT_TYPE_OUTPUT));
         assertThat(value.getStreamChannel().getType(), is("MEMORY"));
         assertThat(value.getCompletionDetector().getType(), is("IDLE"));
-        assertThat(value.getDataConsistencyChecker().getType(), is("DATA_MATCH"));
+        assertThat(value.getDataConsistencyCalculator().getType(), is("DATA_MATCH"));
     }
     
     @Test
     public void assertUpdateSuccess() {
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
-        CreateShardingScalingRuleStatement statement = new CreateShardingScalingRuleStatement("default_scaling");
-        statement.setConfigurationSegment(createCompleteConfiguration());
-        ShardingRuleConfiguration toBeCreatedRuleConfiguration = updater.buildToBeCreatedRuleConfiguration(statement);
-        updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfiguration);
+        CreateShardingScalingRuleStatement statement = new CreateShardingScalingRuleStatement("default_scaling", createCompleteConfiguration());
+        ShardingRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(statement);
+        updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
         assertThat(currentRuleConfig.getScalingName(), is("default_scaling"));
         assertThat(currentRuleConfig.getScaling().size(), is(1));
         String key = currentRuleConfig.getScaling().keySet().iterator().next();
@@ -147,12 +140,8 @@ public final class CreateShardingScalingRuleStatementUpdaterTest {
         assertThat(value.getOutput().getRateLimiter().getType(), is(LIMIT_TYPE_OUTPUT));
         assertThat(value.getStreamChannel().getType(), is("MEMORY"));
         assertThat(value.getCompletionDetector().getType(), is("IDLE"));
-        assertThat(value.getDataConsistencyChecker().getType(), is("DATA_MATCH"));
-        assertThat(value.getDataConsistencyChecker().getProps().getProperty("chunk-size"), is("1000"));
-    }
-    
-    private CreateShardingScalingRuleStatement createSQLStatement(final String scalingName) {
-        return new CreateShardingScalingRuleStatement(scalingName);
+        assertThat(value.getDataConsistencyCalculator().getType(), is("DATA_MATCH"));
+        assertThat(value.getDataConsistencyCalculator().getProps().getProperty("chunk-size"), is("1000"));
     }
     
     private ShardingScalingRuleConfigurationSegment createConfigurationWithInvalidRateLimiter() {
@@ -163,24 +152,24 @@ public final class CreateShardingScalingRuleStatementUpdaterTest {
     }
     
     private InputOrOutputSegment createInputOrOutputSegment(final String type) {
-        return new InputOrOutputSegment(10, 1000, createAlgorithmSegment(type));
+        return new InputOrOutputSegment(10, 1000, new AlgorithmSegment(type, new Properties()));
     }
     
     private ShardingScalingRuleConfigurationSegment createConfigurationWithInvalidStreamChannel() {
         ShardingScalingRuleConfigurationSegment result = new ShardingScalingRuleConfigurationSegment();
-        result.setStreamChannel(createAlgorithmSegment("INVALID"));
+        result.setStreamChannel(new AlgorithmSegment("INVALID", new Properties()));
         return result;
     }
     
     private ShardingScalingRuleConfigurationSegment createConfigurationWithInvalidCompletionDetector() {
         ShardingScalingRuleConfigurationSegment result = new ShardingScalingRuleConfigurationSegment();
-        result.setCompletionDetector(createAlgorithmSegment("INVALID"));
+        result.setCompletionDetector(new AlgorithmSegment("INVALID", new Properties()));
         return result;
     }
     
-    private ShardingScalingRuleConfigurationSegment createConfigurationWithInvalidDataConsistencyChecker() {
+    private ShardingScalingRuleConfigurationSegment createConfigurationWithInvalidDataConsistencyCalculator() {
         ShardingScalingRuleConfigurationSegment result = new ShardingScalingRuleConfigurationSegment();
-        result.setDataConsistencyChecker(createAlgorithmSegment("INVALID"));
+        result.setDataConsistencyCalculator(new AlgorithmSegment("INVALID", new Properties()));
         return result;
     }
     
@@ -188,15 +177,11 @@ public final class CreateShardingScalingRuleStatementUpdaterTest {
         ShardingScalingRuleConfigurationSegment result = new ShardingScalingRuleConfigurationSegment();
         result.setInputSegment(createInputOrOutputSegment(LIMIT_TYPE_INPUT));
         result.setOutputSegment(createInputOrOutputSegment(LIMIT_TYPE_OUTPUT));
-        result.setStreamChannel(createAlgorithmSegment("MEMORY"));
-        result.setCompletionDetector(createAlgorithmSegment("IDLE"));
-        AlgorithmSegment dataConsistencyChecker = createAlgorithmSegment("DATA_MATCH");
-        dataConsistencyChecker.getProps().setProperty("chunk-size", "1000");
-        result.setDataConsistencyChecker(dataConsistencyChecker);
+        result.setStreamChannel(new AlgorithmSegment("MEMORY", new Properties()));
+        result.setCompletionDetector(new AlgorithmSegment("IDLE", new Properties()));
+        Properties props = new Properties();
+        props.setProperty("chunk-size", "1000");
+        result.setDataConsistencyCalculator(new AlgorithmSegment("DATA_MATCH", props));
         return result;
-    }
-    
-    private AlgorithmSegment createAlgorithmSegment(final String type) {
-        return new AlgorithmSegment(type, new Properties());
     }
 }

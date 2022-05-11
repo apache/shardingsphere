@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.repository.standalone.h2;
 
-import org.apache.commons.lang3.StringUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,7 +26,6 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public final class H2RepositoryTest {
     
@@ -40,14 +38,9 @@ public final class H2RepositoryTest {
         props.setProperty("user", "sa");
         props.setProperty("password", "");
         props.setProperty("driver_class", "org.h2.Driver");
-        h2Repository.setProps(props);
+        h2Repository.init(props);
     }
     
-    @Test
-    public void assertType() {
-        assertThat(h2Repository.getType(), is("H2"));
-    }
-
     @Test
     public void assertPersistAndGet() {
         h2Repository.persist("/testPath/test1", "test1_content");
@@ -55,7 +48,7 @@ public final class H2RepositoryTest {
         h2Repository.persist("/testPath/test1", "modify_content");
         assertThat(h2Repository.get("/testPath/test1"), is("modify_content"));
     }
-
+    
     @Test
     public void assertPersistAndGetChildrenKeys() {
         h2Repository.persist("/testPath/test1", "test1_content");
@@ -64,11 +57,11 @@ public final class H2RepositoryTest {
         assertThat(childrenKeys.get(0), is("test1"));
         assertThat(childrenKeys.get(1), is("test2"));
     }
-
+    
     @Test
     public void assertDelete() {
         h2Repository.delete("/testPath");
-        assertTrue(StringUtils.isBlank(h2Repository.get("/testPath")));
+        assertThat(h2Repository.get("/testPath"), is(""));
     }
     
     @After

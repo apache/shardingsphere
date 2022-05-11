@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.distsql.handler.query;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
+import org.apache.shardingsphere.infra.expr.InlineExpressionParser;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
@@ -27,9 +28,8 @@ import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfi
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableNodesStatement;
+import org.apache.shardingsphere.sharding.factory.ShardingAlgorithmFactory;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
-import org.apache.shardingsphere.sharding.support.InlineExpressionParser;
-import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
@@ -41,7 +41,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -75,31 +74,34 @@ public final class ShardingTableNodesQueryResultSet implements DistSQLResultSet 
         return result;
     }
     
-    private int getTotalShardingCount(final ShardingRuleConfiguration ruleConfiguration, final ShardingAutoTableRuleConfiguration shardingAutoTableRuleConfig) {
-        Map<String, ShardingSphereAlgorithmConfiguration> shardingAlgorithms = ruleConfiguration.getShardingAlgorithms();
+    private int getTotalShardingCount(final ShardingRuleConfiguration ruleConfig, final ShardingAutoTableRuleConfiguration shardingAutoTableRuleConfig) {
+        Map<String, ShardingSphereAlgorithmConfiguration> shardingAlgorithms = ruleConfig.getShardingAlgorithms();
         ShardingStrategyConfiguration shardingStrategy = shardingAutoTableRuleConfig.getShardingStrategy();
-        if (useDefaultStrategy(shardingStrategy, ruleConfiguration)) {
-            int tableCount = getShardingCount(shardingAlgorithms.get(ruleConfiguration.getDefaultTableShardingStrategy().getShardingAlgorithmName()));
-            int databaseCount = getShardingCount(shardingAlgorithms.get(ruleConfiguration.getDefaultDatabaseShardingStrategy().getShardingAlgorithmName()));
+        if (useDefaultStrategy(shardingStrategy, ruleConfig)) {
+            int tableCount = getShardingCount(shardingAlgorithms.get(ruleConfig.getDefaultTableShardingStrategy().getShardingAlgorithmName()));
+            int databaseCount = getShardingCount(shardingAlgorithms.get(ruleConfig.getDefaultDatabaseShardingStrategy().getShardingAlgorithmName()));
             return tableCount * databaseCount;
         }
         return getShardingCount(shardingAlgorithms.get(shardingStrategy.getShardingAlgorithmName()));
     }
     
-    private boolean useDefaultStrategy(final ShardingStrategyConfiguration currentShardingStrategy, final ShardingRuleConfiguration ruleConfiguration) {
+    private boolean useDefaultStrategy(final ShardingStrategyConfiguration currentShardingStrategy, final ShardingRuleConfiguration ruleConfig) {
         return (null == currentShardingStrategy || Strings.isNullOrEmpty(currentShardingStrategy.getShardingAlgorithmName()))
-                && null != ruleConfiguration.getDefaultDatabaseShardingStrategy() && null != ruleConfiguration.getDefaultTableShardingStrategy();
+                && null != ruleConfig.getDefaultDatabaseShardingStrategy() && null != ruleConfig.getDefaultTableShardingStrategy();
     }
     
-    private int getShardingCount(final ShardingSphereAlgorithmConfiguration algorithmConfiguration) {
-        if (null == algorithmConfiguration) {
+    private int getShardingCount(final ShardingSphereAlgorithmConfiguration algorithmConfig) {
+        if (null == algorithmConfig) {
             return 0;
         }
-        Optional<ShardingAlgorithm> shardingAlgorithm = TypedSPIRegistry.findRegisteredService(ShardingAlgorithm.class, algorithmConfiguration.getType(), algorithmConfiguration.getProps());
-        return shardingAlgorithm.filter(op -> op instanceof ShardingAutoTableAlgorithm).map(op -> {
-            op.init();
-            return ((ShardingAutoTableAlgorithm) op).getAutoTablesAmount();
-        }).orElse(0);
+        if (ShardingAlgorithmFactory.contains(algorithmConfig.getType())) {
+            ShardingAlgorithm shardingAlgorithm = ShardingAlgorithmFactory.newInstance(algorithmConfig);
+            if (shardingAlgorithm instanceof ShardingAutoTableAlgorithm) {
+                shardingAlgorithm.init(algorithmConfig.getProps());
+                return ((ShardingAutoTableAlgorithm) shardingAlgorithm).getAutoTablesAmount();
+            }
+        }
+        return 0;
     }
     
     private String getDataNodes(final ShardingAutoTableRuleConfiguration shardingAutoTableRuleConfig, final int shardingCount) {

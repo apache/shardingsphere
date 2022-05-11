@@ -21,7 +21,8 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.spi.type.typed.StatelessTypedSPI;
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
@@ -29,23 +30,25 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * ShardingSphere schema refresher.
+ * Meta data refresher.
  *
  * @param <T> type of SQL statement
  */
-public interface MetaDataRefresher<T extends SQLStatement> extends StatelessTypedSPI {
+@SingletonSPI
+public interface MetaDataRefresher<T extends SQLStatement> extends TypedSPI {
     
     /**
-     * Refresh ShardingSphere schema.
+     * Refresh schema.
      *
-     * @param schemaMetaData schema meta data
+     * @param metaData meta data
      * @param database federation database meta data                      
      * @param optimizerPlanners optimizer planners
      * @param logicDataSourceNames route data source names
+     * @param schemaName schema name
      * @param sqlStatement SQL statement
      * @param props configuration properties
      * @throws SQLException SQL exception
      */
-    void refresh(ShardingSphereMetaData schemaMetaData, FederationDatabaseMetaData database, Map<String, OptimizerPlannerContext> optimizerPlanners, 
-                 Collection<String> logicDataSourceNames, T sqlStatement, ConfigurationProperties props) throws SQLException;
+    void refresh(ShardingSphereMetaData metaData, FederationDatabaseMetaData database, Map<String, OptimizerPlannerContext> optimizerPlanners,
+                 Collection<String> logicDataSourceNames, String schemaName, T sqlStatement, ConfigurationProperties props) throws SQLException;
 }

@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 
 /**
- * Non reentrant lock implemented ShardingSphereLock.
+ * Non-reentrant lock implemented ShardingSphereLock.
  */
 @RequiredArgsConstructor
 public final class ShardingSphereNonReentrantLock implements ShardingSphereLock {
@@ -69,12 +69,7 @@ public final class ShardingSphereNonReentrantLock implements ShardingSphereLock 
     }
     
     @Override
-    public boolean isLocked(final String lockName) {
+    public boolean isLocked() {
         return locked;
-    }
-    
-    @Override
-    public long getDefaultTimeOut() {
-        return DEFAULT_TRY_LOCK_TIMEOUT_MILLISECONDS;
     }
 }

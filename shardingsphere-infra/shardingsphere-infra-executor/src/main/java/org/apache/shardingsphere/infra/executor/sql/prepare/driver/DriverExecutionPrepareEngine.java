@@ -24,8 +24,6 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMod
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.DriverExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.prepare.AbstractExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -54,11 +52,7 @@ public final class DriverExecutionPrepareEngine<T extends DriverExecutionUnit<?>
     @SuppressWarnings("rawtypes")
     private final SQLExecutionUnitBuilder sqlExecutionUnitBuilder;
     
-    static {
-        ShardingSphereServiceLoader.register(SQLExecutionUnitBuilder.class);
-    }
-    
-    public DriverExecutionPrepareEngine(final String type, final int maxConnectionsSizePerQuery, final ExecutorConnectionManager<C> connectionManager, 
+    public DriverExecutionPrepareEngine(final String type, final int maxConnectionsSizePerQuery, final ExecutorConnectionManager<C> connectionManager,
                                         final ExecutorStatementManager<C, ?, ?> statementManager, final StorageResourceOption option, final Collection<ShardingSphereRule> rules) {
         super(maxConnectionsSizePerQuery, rules);
         this.connectionManager = connectionManager;
@@ -77,7 +71,7 @@ public final class DriverExecutionPrepareEngine<T extends DriverExecutionUnit<?>
     private SQLExecutionUnitBuilder getCachedSqlExecutionUnitBuilder(final String type) {
         SQLExecutionUnitBuilder result;
         if (null == (result = TYPE_TO_BUILDER_MAP.get(type))) {
-            result = TYPE_TO_BUILDER_MAP.computeIfAbsent(type, key -> TypedSPIRegistry.getRegisteredService(SQLExecutionUnitBuilder.class, key));
+            result = TYPE_TO_BUILDER_MAP.computeIfAbsent(type, SQLExecutionUnitBuilderFactory::getInstance);
         }
         return result;
     }

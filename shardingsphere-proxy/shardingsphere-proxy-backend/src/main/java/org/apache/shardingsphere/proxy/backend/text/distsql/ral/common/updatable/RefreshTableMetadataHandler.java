@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable;
 
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.RefreshTableMetadataStatement;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -42,25 +43,27 @@ public final class RefreshTableMetadataHandler extends UpdatableRALBackendHandle
     
     @Override
     protected void update(final ContextManager contextManager, final RefreshTableMetadataStatement sqlStatement) throws DistSQLException {
-        String schemaName = connectionSession.getSchemaName();
-        checkSchema(schemaName);
+        String databaseName = getDatabaseName();
+        String schemaName = connectionSession.getDatabaseType().getDefaultSchema(databaseName);
         if (sqlStatement.getResourceName().isPresent()) {
-            contextManager.reloadMetaData(schemaName, sqlStatement.getTableName().get(), sqlStatement.getResourceName().get());
+            contextManager.reloadMetaData(databaseName, schemaName, sqlStatement.getTableName().get(), sqlStatement.getResourceName().get());
             return;
         }
         if (sqlStatement.getTableName().isPresent()) {
-            contextManager.reloadMetaData(schemaName, sqlStatement.getTableName().get());
+            contextManager.reloadMetaData(databaseName, schemaName, sqlStatement.getTableName().get());
             return;
         }
-        contextManager.reloadMetaData(schemaName);
+        contextManager.reloadMetaData(databaseName, schemaName);
     }
     
-    private void checkSchema(final String schemaName) {
-        if (null == schemaName) {
+    private String getDatabaseName() {
+        String result = connectionSession.getDatabaseName();
+        if (Strings.isNullOrEmpty(result)) {
             throw new NoDatabaseSelectedException();
         }
-        if (!ProxyContext.getInstance().schemaExists(schemaName)) {
-            throw new UnknownDatabaseException(schemaName);
+        if (!ProxyContext.getInstance().databaseExists(result)) {
+            throw new UnknownDatabaseException(result);
         }
+        return result;
     }
 }

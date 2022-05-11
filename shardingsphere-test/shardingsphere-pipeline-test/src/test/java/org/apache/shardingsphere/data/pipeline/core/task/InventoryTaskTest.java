@@ -23,7 +23,7 @@ import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfig
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
-import org.apache.shardingsphere.data.pipeline.api.ingest.position.PrimaryKeyPosition;
+import org.apache.shardingsphere.data.pipeline.api.ingest.position.IntegerPrimaryKeyPosition;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
@@ -31,25 +31,26 @@ import org.apache.shardingsphere.data.pipeline.core.util.JobConfigurationBuilder
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineContextUtil;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 
 import static org.junit.Assert.assertFalse;
 
 public final class InventoryTaskTest {
     
-    private static TaskConfiguration taskConfig;
-    
     private static final PipelineDataSourceManager DATA_SOURCE_MANAGER = new PipelineDataSourceManager();
+    
+    private TaskConfiguration taskConfig;
     
     @BeforeClass
     public static void beforeClass() {
         PipelineContextUtil.mockModeConfigAndContextManager();
-        taskConfig = new RuleAlteredJobContext(JobConfigurationBuilder.createJobConfiguration()).getTaskConfig();
     }
     
     @AfterClass
@@ -57,20 +58,29 @@ public final class InventoryTaskTest {
         DATA_SOURCE_MANAGER.close();
     }
     
+    @Before
+    public void setUp() {
+        taskConfig = new RuleAlteredJobContext(JobConfigurationBuilder.createJobConfiguration()).getTaskConfig();
+    }
+    
     @Test(expected = IngestException.class)
     public void assertStartWithGetEstimatedRowsFailure() {
         InventoryDumperConfiguration inventoryDumperConfig = new InventoryDumperConfiguration(taskConfig.getDumperConfig());
-        inventoryDumperConfig.setTableName("t_non_exist");
+        inventoryDumperConfig.setActualTableName("t_non_exist");
+        inventoryDumperConfig.setLogicTableName("t_non_exist");
         IngestPosition<?> position = taskConfig.getDumperConfig().getPosition();
         if (null == position) {
-            position = new PrimaryKeyPosition(0, 1000);
+            position = new IntegerPrimaryKeyPosition(0, 1000);
         }
         inventoryDumperConfig.setPosition(position);
+        inventoryDumperConfig.setPrimaryKey("order_id");
+        inventoryDumperConfig.setUniqueKeyDataType(Types.INTEGER);
         PipelineDataSourceWrapper dataSource = DATA_SOURCE_MANAGER.getDataSource(inventoryDumperConfig.getDataSourceConfig());
         PipelineTableMetaDataLoader metaDataLoader = new PipelineTableMetaDataLoader(dataSource);
-        try (InventoryTask inventoryTask = new InventoryTask(inventoryDumperConfig, taskConfig.getImporterConfig(),
-                PipelineContextUtil.getPipelineChannelFactory(),
-                DATA_SOURCE_MANAGER, dataSource, metaDataLoader, PipelineContextUtil.getExecuteEngine())) {
+        try (
+                InventoryTask inventoryTask = new InventoryTask(inventoryDumperConfig, taskConfig.getImporterConfig(),
+                        PipelineContextUtil.getPipelineChannelCreator(),
+                        DATA_SOURCE_MANAGER, dataSource, metaDataLoader, PipelineContextUtil.getExecuteEngine())) {
             inventoryTask.start();
         }
     }
@@ -79,27 +89,33 @@ public final class InventoryTaskTest {
     public void assertGetProgress() throws SQLException {
         initTableData(taskConfig.getDumperConfig());
         InventoryDumperConfiguration inventoryDumperConfig = new InventoryDumperConfiguration(taskConfig.getDumperConfig());
-        inventoryDumperConfig.setTableName("t_order");
+        // TODO use t_order_0, and also others
+        inventoryDumperConfig.setActualTableName("t_order");
+        inventoryDumperConfig.setLogicTableName("t_order");
+        inventoryDumperConfig.setPrimaryKey("order_id");
+        inventoryDumperConfig.setUniqueKeyDataType(Types.INTEGER);
         IngestPosition<?> position = taskConfig.getDumperConfig().getPosition();
         if (null == position) {
-            position = new PrimaryKeyPosition(0, 1000);
+            position = new IntegerPrimaryKeyPosition(0, 1000);
         }
         inventoryDumperConfig.setPosition(position);
         PipelineDataSourceWrapper dataSource = DATA_SOURCE_MANAGER.getDataSource(inventoryDumperConfig.getDataSourceConfig());
         PipelineTableMetaDataLoader metaDataLoader = new PipelineTableMetaDataLoader(dataSource);
-        try (InventoryTask inventoryTask = new InventoryTask(inventoryDumperConfig, taskConfig.getImporterConfig(),
-                PipelineContextUtil.getPipelineChannelFactory(),
-                new PipelineDataSourceManager(), dataSource, metaDataLoader, PipelineContextUtil.getExecuteEngine())) {
+        try (
+                InventoryTask inventoryTask = new InventoryTask(inventoryDumperConfig, taskConfig.getImporterConfig(),
+                        PipelineContextUtil.getPipelineChannelCreator(),
+                        new PipelineDataSourceManager(), dataSource, metaDataLoader, PipelineContextUtil.getExecuteEngine())) {
             inventoryTask.start();
             assertFalse(inventoryTask.getProgress().getPosition() instanceof FinishedPosition);
         }
     }
     
     private void initTableData(final DumperConfiguration dumperConfig) throws SQLException {
-        try (PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager();
-             PipelineDataSourceWrapper dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig());
-             Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement()) {
+        try (
+                PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager();
+                PipelineDataSourceWrapper dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig());
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS t_order");
             statement.execute("CREATE TABLE t_order (order_id INT PRIMARY KEY, user_id VARCHAR(12))");
             statement.execute("INSERT INTO t_order (order_id, user_id) VALUES (1, 'xxx'), (999, 'yyy')");

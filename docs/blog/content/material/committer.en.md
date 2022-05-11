@@ -22,7 +22,7 @@ To put it simply, whether it is showing off with other friends or writing on you
 
 In addition, officially recognized committer will also get mailboxes with @apache suffix, and they can also be listed on the Apache website.
 
-（http://people.apache.org/committer-index.html）
+ (http://people.apache.org/committer-index.html) 
 
 
 Of the millions of engineers in the world, only a very small number of people can become a committer with these privileges, is it tempting?
@@ -63,9 +63,9 @@ P.S. ShardingSphere recently completed an important step in the transition to Ap
 
 The following is the migrated URL:
 
-Official website（http://shardingsphere.apache.org/）
+Official website (http://shardingsphere.apache.org/) 
 
-GitHub（https://github.com/apache/incubator-shardingsphere）
+GitHub (https://github.com/apache/incubator-shardingsphere) 
 
 ### Conclusion
 Since Apache ShardingSphere (Incubating) was open sourced in 2016, it has been constantly improving and developing, and is recognized by more and more enterprises and individuals: 6000+ stars and 70+ company success stories have been harvested on Github. In addition, more and more enterprises and individuals have joined the open source project of Apache ShardingSphere (Incubating), which has contributed tremendously to its growth and development.

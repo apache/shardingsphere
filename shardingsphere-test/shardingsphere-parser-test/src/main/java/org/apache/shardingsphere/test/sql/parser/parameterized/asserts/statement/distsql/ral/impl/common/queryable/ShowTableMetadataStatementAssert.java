@@ -39,7 +39,7 @@ public final class ShowTableMetadataStatementAssert {
      * @param actual actual show table metadata statement
      * @param expected expected show table metadata statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowTableMetadataStatement actual, 
+    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowTableMetadataStatement actual,
                                 final ShowTableMetadataStatementTestCase expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sharding.rewrite.parameterized.scenario;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
@@ -54,7 +53,7 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
     
     private static final String CASE_PATH = "scenario/sharding/case";
     
-    public ShardingSQLRewriterParameterizedTest(final String type, final String name, final String fileName, 
+    public ShardingSQLRewriterParameterizedTest(final String type, final String name, final String fileName,
                                                 final String databaseType, final SQLRewriteEngineTestParameters testParameters) {
         super(testParameters);
     }
@@ -63,31 +62,31 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
     public static Collection<Object[]> loadTestParameters() {
         return SQLRewriteEngineTestParametersBuilder.loadTestParameters(CASE_PATH.toUpperCase(), CASE_PATH, ShardingSQLRewriterParameterizedTest.class);
     }
-
+    
     @Override
     protected YamlRootConfiguration createRootConfiguration() throws IOException {
         URL url = ShardingSQLRewriterParameterizedTest.class.getClassLoader().getResource(getTestParameters().getRuleFile());
         Preconditions.checkNotNull(url, "Cannot found rewrite rule yaml configuration.");
         return YamlEngine.unmarshal(new File(url.getFile()), YamlRootConfiguration.class);
     }
-
+    
     @Override
-    protected void mockRules(final Collection<ShardingSphereRule> rules) {
+    protected void mockRules(final Collection<ShardingSphereRule> rules, final String schemaName) {
         Optional<SingleTableRule> singleTableRule = rules.stream().filter(each -> each instanceof SingleTableRule).map(each -> (SingleTableRule) each).findFirst();
         if (singleTableRule.isPresent()) {
-            singleTableRule.get().put("t_single", "db");
-            singleTableRule.get().put("t_single_extend", "db");
+            singleTableRule.get().put("db", schemaName, "t_single");
+            singleTableRule.get().put("db", schemaName, "t_single_extend");
         }
     }
     
     @Override
-    protected Map<String, ShardingSphereSchema> mockSchemas() {
+    protected Map<String, ShardingSphereSchema> mockSchemas(final String schemaName) {
         ShardingSphereSchema result = mock(ShardingSphereSchema.class);
         when(result.getAllTableNames()).thenReturn(Arrays.asList("t_account", "t_account_detail"));
         TableMetaData accountTableMetaData = mock(TableMetaData.class);
         when(accountTableMetaData.getColumns()).thenReturn(createColumnMetaDataMap());
         Map<String, IndexMetaData> indexMetaDataMap = new HashMap<>(1, 1);
-        indexMetaDataMap.put("index_name", new IndexMetaData("index_name"));
+        indexMetaDataMap.put("status_idx_exist", new IndexMetaData("status_idx_exist"));
         when(accountTableMetaData.getIndexes()).thenReturn(indexMetaDataMap);
         when(accountTableMetaData.getPrimaryKeyColumns()).thenReturn(Collections.singletonList("account_id"));
         when(result.containsTable("t_account")).thenReturn(true);
@@ -97,7 +96,7 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
         when(result.getAllColumnNames("t_user")).thenReturn(new ArrayList<>(Arrays.asList("id", "content")));
         when(result.getAllColumnNames("t_user_extend")).thenReturn(new ArrayList<>(Arrays.asList("user_id", "content")));
         when(result.containsColumn("t_account", "account_id")).thenReturn(true);
-        return Collections.singletonMap(DefaultSchema.LOGIC_NAME, result);
+        return Collections.singletonMap(schemaName, result);
     }
     
     private Map<String, ColumnMetaData> createColumnMetaDataMap() {

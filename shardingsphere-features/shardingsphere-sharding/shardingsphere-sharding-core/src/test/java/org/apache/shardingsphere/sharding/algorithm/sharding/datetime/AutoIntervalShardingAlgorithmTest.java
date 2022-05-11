@@ -18,9 +18,11 @@
 package org.apache.shardingsphere.sharding.algorithm.sharding.datetime;
 
 import com.google.common.collect.Range;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
+import org.apache.shardingsphere.sharding.factory.ShardingAlgorithmFactory;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -28,6 +30,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -41,31 +44,35 @@ public final class AutoIntervalShardingAlgorithmTest {
     
     @Before
     public void setup() {
-        shardingAlgorithm = new AutoIntervalShardingAlgorithm();
-        shardingAlgorithm.getProps().setProperty("datetime-lower", "2020-01-01 00:00:00");
-        shardingAlgorithm.getProps().setProperty("datetime-upper", "2020-01-01 00:00:16");
-        shardingAlgorithm.getProps().setProperty("sharding-seconds", "4");
-        shardingAlgorithm.init();
+        shardingAlgorithm = createAutoIntervalShardingAlgorithm(createNormalProperties());
+    }
+    
+    private Properties createNormalProperties() {
+        Properties result = new Properties();
+        result.setProperty("datetime-lower", "2020-01-01 00:00:00");
+        result.setProperty("datetime-upper", "2020-01-01 00:00:16");
+        result.setProperty("sharding-seconds", "4");
+        return result;
     }
     
     @Test
     public void assertPreciseDoSharding() {
         List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
-        assertThat(shardingAlgorithm.doSharding(availableTargetNames, 
+        assertThat(shardingAlgorithm.doSharding(availableTargetNames,
                 new PreciseShardingValue<>("t_order", "create_time", DATA_NODE_INFO, "2020-01-01 00:00:01")), is("t_order_1"));
     }
     
     @Test
     public void assertPreciseDoShardingBeyondTheLastOne() {
         List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3", "t_order_4", "t_order_5");
-        assertThat(shardingAlgorithm.doSharding(availableTargetNames, 
+        assertThat(shardingAlgorithm.doSharding(availableTargetNames,
                 new PreciseShardingValue<>("t_order", "create_time", DATA_NODE_INFO, "2021-01-01 00:00:02")), is("t_order_5"));
     }
     
     @Test
     public void assertRangeDoShardingWithAllRange() {
         List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3", "t_order_4");
-        Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames, 
+        Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames,
                 new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO, Range.closed("2019-01-01 00:00:00", "2020-01-01 00:00:15")));
         assertThat(actual.size(), is(5));
     }
@@ -73,7 +80,7 @@ public final class AutoIntervalShardingAlgorithmTest {
     @Test
     public void assertRangeDoShardingWithPartRange() {
         List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3", "t_order_4");
-        Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames, 
+        Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames,
                 new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO, Range.closed("2020-01-01 00:00:04", "2020-01-01 00:00:10")));
         assertThat(actual.size(), is(3));
         assertTrue(actual.contains("t_order_1"));
@@ -84,7 +91,7 @@ public final class AutoIntervalShardingAlgorithmTest {
     @Test
     public void assertRangeDoShardingWithoutLowerBound() {
         List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
-        Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames, 
+        Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames,
                 new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO, Range.lessThan("2020-01-01 00:00:11")));
         assertThat(actual.size(), is(4));
         assertTrue(actual.contains("t_order_0"));
@@ -96,7 +103,7 @@ public final class AutoIntervalShardingAlgorithmTest {
     @Test
     public void assertRangeDoShardingWithoutUpperBound() {
         List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3", "t_order_4", "t_order_5");
-        Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames, 
+        Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames,
                 new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO, Range.greaterThan("2020-01-01 00:00:09")));
         assertThat(actual.size(), is(3));
         assertTrue(actual.contains("t_order_3"));
@@ -106,37 +113,32 @@ public final class AutoIntervalShardingAlgorithmTest {
     
     @Test
     public void assertGetAutoTablesAmount() {
-        AutoIntervalShardingAlgorithm shardingAlgorithm = new AutoIntervalShardingAlgorithm();
-        shardingAlgorithm.getProps().setProperty("datetime-lower", "2020-01-01 00:00:00");
-        shardingAlgorithm.getProps().setProperty("datetime-upper", "2021-01-01 00:00:00");
-        shardingAlgorithm.getProps().setProperty("sharding-seconds", "86400");
-        shardingAlgorithm.init();
-        assertThat(shardingAlgorithm.getAutoTablesAmount(), is(368));
+        assertThat(createAutoIntervalShardingAlgorithm(createRangeWithDayProperties()).getAutoTablesAmount(), is(368));
+    }
+    
+    private Properties createRangeWithDayProperties() {
+        Properties result = new Properties();
+        result.setProperty("datetime-lower", "2020-01-01 00:00:00");
+        result.setProperty("datetime-upper", "2021-01-01 00:00:00");
+        result.setProperty("sharding-seconds", "86400");
+        return result;
     }
     
     @Test
     public void assertRangeDoShardingWithGreaterTenTables() {
-        AutoIntervalShardingAlgorithm shardingAlgorithm = new AutoIntervalShardingAlgorithm();
-        shardingAlgorithm.getProps().setProperty("datetime-lower", "2020-01-01 00:00:00");
-        shardingAlgorithm.getProps().setProperty("datetime-upper", "2020-01-01 00:00:30");
-        shardingAlgorithm.getProps().setProperty("sharding-seconds", "1");
-        shardingAlgorithm.init();
+        AutoIntervalShardingAlgorithm shardingAlgorithm = createAutoIntervalShardingAlgorithm(createRangeWithSecondProperties());
         List<String> availableTargetNames = new LinkedList<>();
         for (int i = 0; i < 32; i++) {
             availableTargetNames.add("t_order_" + i);
         }
-        Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames, 
+        Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames,
                 new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO, Range.closed("2020-01-01 00:00:00", "2020-01-01 00:00:10")));
         assertThat(actual.size(), is(11));
     }
-
+    
     @Test
     public void assertRangeDoShardingInValueWithMilliseconds() {
-        AutoIntervalShardingAlgorithm shardingAlgorithm = new AutoIntervalShardingAlgorithm();
-        shardingAlgorithm.getProps().setProperty("datetime-lower", "2020-01-01 00:00:00");
-        shardingAlgorithm.getProps().setProperty("datetime-upper", "2020-01-01 00:00:30");
-        shardingAlgorithm.getProps().setProperty("sharding-seconds", "1");
-        shardingAlgorithm.init();
+        AutoIntervalShardingAlgorithm shardingAlgorithm = createAutoIntervalShardingAlgorithm(createRangeWithSecondProperties());
         List<String> availableTargetNames = new LinkedList<>();
         for (int i = 0; i < 32; i++) {
             availableTargetNames.add("t_order_" + i);
@@ -153,5 +155,17 @@ public final class AutoIntervalShardingAlgorithmTest {
         Collection<String> actualWithThreeMilliseconds = shardingAlgorithm.doSharding(availableTargetNames,
                 new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO, Range.closed("2020-01-01 00:00:11.123", "2020-01-01 00:00:21.123")));
         assertThat(actualWithThreeMilliseconds.size(), is(11));
+    }
+    
+    private Properties createRangeWithSecondProperties() {
+        Properties result = new Properties();
+        result.setProperty("datetime-lower", "2020-01-01 00:00:00");
+        result.setProperty("datetime-upper", "2020-01-01 00:00:30");
+        result.setProperty("sharding-seconds", "1");
+        return result;
+    }
+    
+    private AutoIntervalShardingAlgorithm createAutoIntervalShardingAlgorithm(final Properties props) {
+        return (AutoIntervalShardingAlgorithm) ShardingAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("AUTO_INTERVAL", props));
     }
 }

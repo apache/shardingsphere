@@ -112,7 +112,7 @@
         <!-- Imports -->
         <module name="AvoidStarImport"/>
         <module name="AvoidStaticImport">
-            <property name="excludes" value="org.junit.Assert.*,org.hamcrest.CoreMatchers.*,org.mockito.Mockito.*,org.mockito.ArgumentMatchers.*"/>
+            <property name="excludes" value="org.junit.Assert.*,org.hamcrest.Matchers.*,org.hamcrest.CoreMatchers.*,org.mockito.Mockito.*,org.mockito.ArgumentMatchers.*"/>
         </module>
         <module name="IllegalImport"/>
         <module name="RedundantImport"/>
@@ -205,7 +205,10 @@
         <module name="AvoidEscapedUnicodeCharacters"/>
         <module name="DescendantToken"/>
         <module name="FinalParameters"/>
-        <module name="Indentation"/>
+        <module name="Indentation">
+            <property name="arrayInitIndent" value="2"/>
+            <property name="lineWrappingIndentation" value="8"/>
+        </module>
         <module name="OuterTypeFilename"/>
         <module name="TodoComment"/>
         <module name="TrailingComment"/>

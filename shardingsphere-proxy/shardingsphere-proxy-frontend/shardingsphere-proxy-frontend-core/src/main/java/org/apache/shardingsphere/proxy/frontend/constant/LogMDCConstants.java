@@ -26,7 +26,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class LogMDCConstants {
     
-    public static final String SCHEMA_KEY = "schema";
+    public static final String DATABASE_KEY = "database";
     
     public static final String USER_KEY = "user";
 }

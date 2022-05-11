@@ -31,7 +31,7 @@ import static org.hamcrest.CoreMatchers.hasItems;
 import static org.junit.Assert.assertThat;
 
 public final class RecordUtilTest {
-
+    
     @Test
     public void assertExtractPrimaryColumns() {
         DataRecord dataRecord = mockDataRecord("t2");
@@ -39,7 +39,7 @@ public final class RecordUtilTest {
         assertThat(actual.size(), is(2));
         assertThat(Arrays.asList("sc", "id"), hasItems(actual.iterator().next().getName()));
     }
-
+    
     @Test
     public void assertExtractConditionalColumns() {
         DataRecord dataRecord = mockDataRecord("t2");
@@ -47,7 +47,7 @@ public final class RecordUtilTest {
         assertThat(actual.size(), is(3));
         assertThat(Arrays.asList("sc", "id", "c1"), hasItems(actual.iterator().next().getName()));
     }
-
+    
     @Test
     public void assertExtractUpdatedColumns() {
         DataRecord dataRecord = mockDataRecord("t2");
@@ -55,7 +55,7 @@ public final class RecordUtilTest {
         assertThat(actual.size(), is(3));
         assertThat(Arrays.asList("c2", "c3", "c1"), hasItems(actual.iterator().next().getName()));
     }
-
+    
     private DataRecord mockDataRecord(final String tableName) {
         DataRecord result = new DataRecord(new PlaceholderPosition(), 4);
         result.setTableName(tableName);

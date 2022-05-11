@@ -34,7 +34,7 @@ public final class DummyDropDatabaseMetaDataRefresher implements MetaDataRefresh
     
     @Override
     public void refresh(final ShardingSphereMetaData schemaMetaData, final FederationDatabaseMetaData database, final Map<String, OptimizerPlannerContext> optimizerPlanners,
-                        final Collection<String> logicDataSourceNames, final DropDatabaseStatement sqlStatement, final ConfigurationProperties props) {
+                        final Collection<String> logicDataSourceNames, final String schemaName, final DropDatabaseStatement sqlStatement, final ConfigurationProperties props) {
         sqlStatement.getDatabaseName();
     }
     

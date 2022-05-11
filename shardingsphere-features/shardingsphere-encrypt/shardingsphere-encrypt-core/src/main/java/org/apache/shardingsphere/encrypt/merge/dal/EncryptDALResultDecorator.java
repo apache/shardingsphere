@@ -37,7 +37,8 @@ public final class EncryptDALResultDecorator implements ResultDecorator<EncryptR
     @Override
     public MergedResult decorate(final QueryResult queryResult, final SQLStatementContext<?> sqlStatementContext, final EncryptRule rule) {
         return isNeedMergeEncryptColumns(sqlStatementContext.getSqlStatement())
-                ? new MergedEncryptColumnsMergedResult(queryResult, sqlStatementContext, rule) : new TransparentMergedResult(queryResult);
+                ? new MergedEncryptColumnsMergedResult(queryResult, sqlStatementContext, rule)
+                : new TransparentMergedResult(queryResult);
     }
     
     @Override

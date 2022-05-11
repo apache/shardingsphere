@@ -29,33 +29,34 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 public final class AggregationProjectionTest {
+    
     private final AggregationType aggregationType = AggregationType.COUNT;
-
+    
     private final String innerExpression = "( A.\"DIRECTION\" )";
-
+    
     private final String alias = "AVG_DERIVED_COUNT_0";
-
+    
     private final AggregationProjection aggregationProjection1 = new AggregationProjection(aggregationType, innerExpression, alias, mock(DatabaseType.class));
-
+    
     private final AggregationProjection aggregationProjection2 = new AggregationProjection(aggregationType, innerExpression, null, mock(DatabaseType.class));
-
+    
     @Test
     public void assertGetExpression() {
         assertThat(aggregationProjection1.getExpression(), is(aggregationType + innerExpression));
     }
-
+    
     @Test
     public void assertGetAlias() {
         Optional<String> actual = aggregationProjection1.getAlias();
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is(alias));
     }
-
+    
     @Test
     public void assertGetColumnLabel() {
         assertThat(aggregationProjection1.getColumnLabel(), is(alias));
     }
-
+    
     @Test
     public void assertGetColumnLabelWithoutAlias() {
         assertThat(aggregationProjection2.getColumnLabel(), is(aggregationType + innerExpression));

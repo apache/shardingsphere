@@ -41,7 +41,7 @@ public final class CreateProcedureStatementContext extends CommonSQLStatementCon
     public CreateProcedureStatementContext(final CreateProcedureStatement sqlStatement) {
         super(sqlStatement);
         Optional<RoutineBodySegment> routineBodySegment = CreateProcedureStatementHandler.getRoutineBodySegment(sqlStatement);
-        Collection<SimpleTableSegment> tables = routineBodySegment.map(bodySegment -> new TableExtractor().extractExistTableFromRoutineBody(bodySegment)).orElse(Collections.emptyList());
+        Collection<SimpleTableSegment> tables = routineBodySegment.map(optional -> new TableExtractor().extractExistTableFromRoutineBody(optional)).orElseGet(Collections::emptyList);
         tablesContext = new TablesContext(tables, getDatabaseType());
     }
 }

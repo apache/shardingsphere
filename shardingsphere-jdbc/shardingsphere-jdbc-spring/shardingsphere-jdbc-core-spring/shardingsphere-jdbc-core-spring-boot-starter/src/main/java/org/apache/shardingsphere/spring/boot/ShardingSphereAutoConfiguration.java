@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.mode.ModeConfiguratio
 import org.apache.shardingsphere.spring.boot.datasource.DataSourceMapSetter;
 import org.apache.shardingsphere.spring.boot.prop.SpringBootPropertiesConfiguration;
 import org.apache.shardingsphere.spring.boot.rule.LocalRulesCondition;
-import org.apache.shardingsphere.spring.boot.schema.SchemaNameSetter;
+import org.apache.shardingsphere.spring.boot.schema.DatabaseNameSetter;
 import org.apache.shardingsphere.spring.transaction.TransactionTypeScanner;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,7 +61,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ShardingSphereAutoConfiguration implements EnvironmentAware {
     
-    private String schemaName;
+    private String databaseName;
     
     private final SpringBootPropertiesConfiguration props;
     
@@ -89,8 +89,8 @@ public class ShardingSphereAutoConfiguration implements EnvironmentAware {
     @Conditional(LocalRulesCondition.class)
     @Autowired(required = false)
     public DataSource shardingSphereDataSource(final ObjectProvider<List<RuleConfiguration>> rules, final ObjectProvider<ModeConfiguration> modeConfig) throws SQLException {
-        Collection<RuleConfiguration> ruleConfigs = Optional.ofNullable(rules.getIfAvailable()).orElse(Collections.emptyList());
-        return ShardingSphereDataSourceFactory.createDataSource(schemaName, modeConfig.getIfAvailable(), dataSourceMap, ruleConfigs, props.getProps());
+        Collection<RuleConfiguration> ruleConfigs = Optional.ofNullable(rules.getIfAvailable()).orElseGet(Collections::emptyList);
+        return ShardingSphereDataSourceFactory.createDataSource(databaseName, modeConfig.getIfAvailable(), dataSourceMap, ruleConfigs, props.getProps());
     }
     
     /**
@@ -103,8 +103,8 @@ public class ShardingSphereAutoConfiguration implements EnvironmentAware {
     @Bean
     @ConditionalOnMissingBean(DataSource.class)
     public DataSource dataSource(final ModeConfiguration modeConfig) throws SQLException {
-        return !dataSourceMap.isEmpty() ? ShardingSphereDataSourceFactory.createDataSource(schemaName, modeConfig, dataSourceMap, Collections.emptyList(), props.getProps())
-                : ShardingSphereDataSourceFactory.createDataSource(schemaName, modeConfig);
+        return !dataSourceMap.isEmpty() ? ShardingSphereDataSourceFactory.createDataSource(databaseName, modeConfig, dataSourceMap, Collections.emptyList(), props.getProps())
+                : ShardingSphereDataSourceFactory.createDataSource(databaseName, modeConfig);
     }
     
     /**
@@ -120,6 +120,6 @@ public class ShardingSphereAutoConfiguration implements EnvironmentAware {
     @Override
     public final void setEnvironment(final Environment environment) {
         dataSourceMap.putAll(DataSourceMapSetter.getDataSourceMap(environment));
-        schemaName = SchemaNameSetter.getSchemaName(environment);
+        databaseName = DatabaseNameSetter.getDatabaseName(environment);
     }
 }

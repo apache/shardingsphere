@@ -40,14 +40,14 @@ public final class RuleAlteredJobIdTest {
         jobId.setSubTypes(subTypesPair.getLeft());
         jobId.setCurrentMetadataVersion(0);
         jobId.setNewMetadataVersion(1);
-        jobId.setSchemaName("sharding_db");
+        jobId.setDatabaseName("sharding_db");
         String hexText = jobId.marshal();
         RuleAlteredJobId actual = RuleAlteredJobId.unmarshal(hexText);
         assertThat(actual.getFormatVersion(), is(jobId.getFormatVersion()));
         assertThat(actual.getSubTypes(), is(subTypesPair.getRight()));
         assertThat(actual.getCurrentMetadataVersion(), is(jobId.getCurrentMetadataVersion()));
         assertThat(actual.getNewMetadataVersion(), is(jobId.getNewMetadataVersion()));
-        assertThat(actual.getSchemaName(), is(jobId.getSchemaName()));
+        assertThat(actual.getDatabaseName(), is(jobId.getDatabaseName()));
     }
     
     private Pair<List<String>, List<String>> getSubTypesPair() {

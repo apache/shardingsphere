@@ -40,7 +40,7 @@
 #      - root@%:root
 #      - sharding@:sharding
 #    provider:
-#      type: ALL_PRIVILEGES_PERMITTED
+#      type: ALL_PERMITTED
 #  - !TRANSACTION
 #    defaultType: XA
 #    providerType: Atomikos
@@ -81,4 +81,5 @@
 #  sql-federation-enabled: false
 #    # Available proxy backend driver type: JDBC (default), ExperimentalVertx
 #  proxy-backend-driver-type: JDBC
-#  data-source-aggregation-enabled: false
+#  proxy-mysql-default-version: 5.7.22 # In the absence of schema name, the default version will be used.
+#  proxy-default-port: 3307 # Proxy default port.

@@ -23,15 +23,15 @@ import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.exception.SchemaNotExistedException;
-import org.apache.shardingsphere.infra.metadata.schema.QualifiedSchema;
-import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
-import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
-import org.apache.shardingsphere.infra.storage.StorageNodeRole;
-import org.apache.shardingsphere.infra.storage.StorageNodeStatus;
+import org.apache.shardingsphere.infra.exception.DatabaseNotExistedException;
+import org.apache.shardingsphere.infra.metadata.schema.QualifiedDatabase;
+import org.apache.shardingsphere.mode.metadata.storage.StorageNodeDataSource;
+import org.apache.shardingsphere.mode.metadata.storage.StorageNodeRole;
+import org.apache.shardingsphere.mode.metadata.storage.StorageNodeStatus;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.service.StorageNodeStatusService;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.storage.event.DataSourceDisabledEvent;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
@@ -68,25 +68,25 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
     
     @Override
     protected void update(final ContextManager contextManager, final SetReadwriteSplittingStatusStatement sqlStatement) throws DistSQLException {
-        String schemaName = sqlStatement.getSchema().isPresent() ? sqlStatement.getSchema().get().getIdentifier().getValue() : connectionSession.getSchemaName();
+        String databaseName = sqlStatement.getSchema().isPresent() ? sqlStatement.getSchema().get().getIdentifier().getValue() : connectionSession.getDatabaseName();
         String toBeUpdatedResource = sqlStatement.getResourceName();
         checkModeAndPersistRepository(contextManager);
-        checkSchema(schemaName);
-        checkReadwriteSplittingRule(contextManager, schemaName);
-        Map<String, String> replicaResources = getReplicaResources(contextManager, schemaName);
-        Map<String, String> disabledResources = getDisabledResources(contextManager, schemaName);
+        checkDatabaseName(databaseName);
+        checkReadwriteSplittingRule(contextManager, databaseName);
+        Map<String, String> replicaResources = getReplicaResources(contextManager, databaseName);
+        Map<String, String> disabledResources = getDisabledResources(contextManager, databaseName);
         boolean isDisable = DISABLE.equals(sqlStatement.getStatus());
         if (isDisable) {
-            checkDisable(contextManager, schemaName, disabledResources.keySet(), toBeUpdatedResource, replicaResources);
+            checkDisable(contextManager, databaseName, disabledResources.keySet(), toBeUpdatedResource, replicaResources);
         } else {
-            checkEnable(contextManager, schemaName, disabledResources, toBeUpdatedResource);
+            checkEnable(contextManager, databaseName, disabledResources, toBeUpdatedResource);
         }
         Collection<String> groupNames = getGroupNames(toBeUpdatedResource, replicaResources, disabledResources);
-        updateStatus(schemaName, groupNames, toBeUpdatedResource, isDisable);
+        updateStatus(databaseName, groupNames, toBeUpdatedResource, isDisable);
     }
     
-    private ReadwriteSplittingRuleConfiguration checkReadwriteSplittingRule(final ContextManager contextManager, final String schemaName) {
-        Optional<ReadwriteSplittingRuleConfiguration> result = contextManager.getMetaDataContexts().getMetaData(schemaName)
+    private ReadwriteSplittingRuleConfiguration checkReadwriteSplittingRule(final ContextManager contextManager, final String databaseName) {
+        Optional<ReadwriteSplittingRuleConfiguration> result = contextManager.getMetaDataContexts().getMetaData(databaseName)
                 .getRuleMetaData().findRuleConfiguration(ReadwriteSplittingRuleConfiguration.class).stream().findAny();
         if (!result.isPresent()) {
             throw new UnsupportedOperationException("The current schema has no read_write splitting rules");
@@ -103,41 +103,41 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
         }
     }
     
-    private void checkSchema(final String schemaName) {
-        if (null == schemaName) {
+    private void checkDatabaseName(final String databaseName) {
+        if (Strings.isNullOrEmpty(databaseName)) {
             throw new NoDatabaseSelectedException();
         }
-        if (!ProxyContext.getInstance().getAllSchemaNames().contains(schemaName)) {
-            throw new SchemaNotExistedException(schemaName);
+        if (!ProxyContext.getInstance().getAllDatabaseNames().contains(databaseName)) {
+            throw new DatabaseNotExistedException(databaseName);
         }
     }
     
-    private Map<String, String> getReplicaResources(final ContextManager contextManager, final String schemaName) {
-        Map<String, Map<String, String>> readwriteSplittingRules = getExportedReadwriteSplittingRules(contextManager, schemaName);
+    private Map<String, String> getReplicaResources(final ContextManager contextManager, final String databaseName) {
+        Map<String, Map<String, String>> readwriteSplittingRules = getExportedReadwriteSplittingRules(contextManager, databaseName);
         Map<String, String> result = new HashMap<>();
         readwriteSplittingRules.entrySet().stream().filter(entry -> !entry.getValue().isEmpty()).forEach(entry -> addReplicaResource(result, entry));
         return result;
     }
     
-    private Map<String, String> getDisabledResources(final ContextManager contextManager, final String schemaName) {
+    private Map<String, String> getDisabledResources(final ContextManager contextManager, final String databaseName) {
         Optional<MetaDataPersistService> persistService = contextManager.getMetaDataContexts().getMetaDataPersistService();
         Map<String, String> result = new HashMap<>();
-        persistService.ifPresent(op -> {
-            Map<String, String> disableNodes = getDisabledStorageNodes(schemaName, op).stream()
-                    .collect(Collectors.toMap(QualifiedSchema::getDataSourceName, QualifiedSchema::getGroupName, (value1, value2) -> String.join(",", value1, value2)));
+        persistService.ifPresent(optional -> {
+            Map<String, String> disableNodes = getDisabledStorageNodes(databaseName, optional).stream()
+                    .collect(Collectors.toMap(QualifiedDatabase::getDataSourceName, QualifiedDatabase::getGroupName, (value1, value2) -> String.join(",", value1, value2)));
             result.putAll(disableNodes);
         });
         return result;
     }
     
-    private void checkEnable(final ContextManager contextManager, final String schemaName, final Map<String, String> disabledResources, final String toBeEnabledResource) throws DistSQLException {
-        checkResourceExists(contextManager, schemaName, toBeEnabledResource);
+    private void checkEnable(final ContextManager contextManager, final String databaseName, final Map<String, String> disabledResources, final String toBeEnabledResource) throws DistSQLException {
+        checkResourceExists(contextManager, databaseName, toBeEnabledResource);
         checkIsNotDisabled(disabledResources.keySet(), toBeEnabledResource);
     }
     
-    private void checkResourceExists(final ContextManager contextManager, final String schemaName, final String toBeDisabledResource) throws DistSQLException {
-        Collection<String> notExistedResources = contextManager.getMetaDataContexts().getMetaData(schemaName).getResource().getNotExistedResources(Collections.singleton(toBeDisabledResource));
-        DistSQLException.predictionThrow(notExistedResources.isEmpty(), () -> new RequiredResourceMissedException(schemaName, Collections.singleton(toBeDisabledResource)));
+    private void checkResourceExists(final ContextManager contextManager, final String databaseName, final String toBeDisabledResource) throws DistSQLException {
+        Collection<String> notExistedResources = contextManager.getMetaDataContexts().getMetaData(databaseName).getResource().getNotExistedResources(Collections.singleton(toBeDisabledResource));
+        DistSQLException.predictionThrow(notExistedResources.isEmpty(), () -> new RequiredResourceMissedException(databaseName, Collections.singleton(toBeDisabledResource)));
     }
     
     private void checkIsNotDisabled(final Collection<String> disabledResources, final String toBeEnabledResource) {
@@ -146,9 +146,9 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
         }
     }
     
-    private void checkDisable(final ContextManager contextManager, final String schemaName, final Collection<String> disabledResources, final String toBeDisabledResource,
+    private void checkDisable(final ContextManager contextManager, final String databaseName, final Collection<String> disabledResources, final String toBeDisabledResource,
                               final Map<String, String> replicaResources) throws DistSQLException {
-        checkResourceExists(contextManager, schemaName, toBeDisabledResource);
+        checkResourceExists(contextManager, databaseName, toBeDisabledResource);
         checkIsDisabled(replicaResources, disabledResources, toBeDisabledResource);
         checkIsReplicaResource(replicaResources, toBeDisabledResource);
         checkIsLastResource(replicaResources, toBeDisabledResource);
@@ -181,34 +181,34 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
         return Splitter.on(",").splitToList(groupNames);
     }
     
-    private void updateStatus(final String schemaName, final Collection<String> groupNames, final String toBeDisableResource, final boolean isDisable) {
+    private void updateStatus(final String databaseName, final Collection<String> groupNames, final String toBeDisableResource, final boolean isDisable) {
         groupNames.forEach(each -> {
             StorageNodeDataSource storageNodeDataSource = new StorageNodeDataSource(StorageNodeRole.MEMBER, isDisable ? StorageNodeStatus.DISABLED : StorageNodeStatus.ENABLED);
-            ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(schemaName, each, toBeDisableResource, storageNodeDataSource));
+            ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(databaseName, each, toBeDisableResource, storageNodeDataSource));
         });
     }
     
-    private Collection<QualifiedSchema> getDisabledStorageNodes(final String schemaName, final MetaDataPersistService persistService) {
+    private Collection<QualifiedDatabase> getDisabledStorageNodes(final String databaseName, final MetaDataPersistService persistService) {
         Map<String, StorageNodeDataSource> storageNodes = new StorageNodeStatusService((ClusterPersistRepository) persistService.getRepository()).loadStorageNodes();
         return storageNodes.entrySet().stream().filter(each -> StorageNodeStatus.DISABLED.name().equalsIgnoreCase(each.getValue().getStatus()))
-                .map(each -> new QualifiedSchema(each.getKey())).filter(each -> schemaName.equalsIgnoreCase(each.getSchemaName()))
+                .map(each -> new QualifiedDatabase(each.getKey())).filter(each -> databaseName.equalsIgnoreCase(each.getDatabaseName()))
                 .collect(Collectors.toList());
     }
     
-    private Map<String, Map<String, String>> getExportedReadwriteSplittingRules(final ContextManager contextManager, final String schemaName) {
+    private Map<String, Map<String, String>> getExportedReadwriteSplittingRules(final ContextManager contextManager, final String databaseName) {
         Map<String, Map<String, String>> result = new HashMap<>();
-        contextManager.getMetaDataContexts().getMetaData(schemaName).getRuleMetaData().findRules(ReadwriteSplittingRule.class).stream().findAny()
+        contextManager.getMetaDataContexts().getMetaData(databaseName).getRuleMetaData().findRules(ReadwriteSplittingRule.class).stream().findAny()
                 .filter(each -> each.containExportableKey(Arrays.asList(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE, ExportableConstants.EXPORTABLE_KEY_ENABLED_DATA_SOURCE)))
                 .map(each -> each.export(Arrays.asList(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE, ExportableConstants.EXPORTABLE_KEY_ENABLED_DATA_SOURCE)))
-                .ifPresent(each -> {
-                    result.putAll((Map) each.getOrDefault(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE, Collections.emptyMap()));
-                    result.putAll((Map) each.getOrDefault(ExportableConstants.EXPORTABLE_KEY_ENABLED_DATA_SOURCE, Collections.emptyMap()));
+                .ifPresent(optional -> {
+                    result.putAll((Map) optional.getOrDefault(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE, Collections.emptyMap()));
+                    result.putAll((Map) optional.getOrDefault(ExportableConstants.EXPORTABLE_KEY_ENABLED_DATA_SOURCE, Collections.emptyMap()));
                 });
         return result;
     }
     
     private Collection<String> getOnlyOneResourceRules(final Map<String, String> replicaResources) {
-        return replicaResources.values().stream().map(schemaName -> Arrays.stream(schemaName.split(",")).collect(Collectors.toMap(each -> each, each -> 1)).entrySet())
+        return replicaResources.values().stream().map(databaseName -> Arrays.stream(databaseName.split(",")).collect(Collectors.toMap(each -> each, each -> 1)).entrySet())
                 .flatMap(Collection::stream).collect(Collectors.toMap(Entry::getKey, Entry::getValue, Integer::sum)).entrySet().stream()
                 .filter(entry -> entry.getValue() <= 1).map(Entry::getKey).collect(Collectors.toSet());
     }

@@ -33,41 +33,38 @@ import java.io.IOException;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutorTaskAdviceTest {
-
+    
     @ClassRule
     public static final OpenTelemetryCollector COLLECTOR = new OpenTelemetryCollector();
-
+    
     private CommandExecutorTaskAdvice advice;
-
+    
     @Before
     public void setup() {
         advice = new CommandExecutorTaskAdvice();
     }
-
+    
     @Test
     public void assertMethod() {
         advice.beforeMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
         advice.afterMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
         List<SpanData> spanItems = COLLECTOR.getSpanItems();
-        assertNotNull(spanItems);
         assertThat(spanItems.size(), is(1));
         SpanData spanData = spanItems.get(0);
         assertThat(spanData.getName(), is("/ShardingSphere/rootInvoke/"));
         assertThat(spanData.getAttributes().get(AttributeKey.stringKey(OpenTelemetryConstants.COMPONENT)), is(OpenTelemetryConstants.COMPONENT_NAME));
         assertThat(spanData.getKind(), is(SpanKind.CLIENT));
     }
-
+    
     @Test
     public void assertExceptionHandle() {
         advice.beforeMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
         advice.onThrowing(getTargetObject(), null, new Object[]{}, new IOException());
         advice.afterMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
         List<SpanData> spanItems = COLLECTOR.getSpanItems();
-        assertNotNull(spanItems);
         assertThat(spanItems.size(), is(1));
         SpanData spanData = spanItems.get(0);
         assertThat(spanData.getName(), is("/ShardingSphere/rootInvoke/"));

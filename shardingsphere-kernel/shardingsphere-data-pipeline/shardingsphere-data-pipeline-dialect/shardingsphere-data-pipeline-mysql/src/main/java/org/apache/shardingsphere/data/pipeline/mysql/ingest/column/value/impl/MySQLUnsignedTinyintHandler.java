@@ -30,6 +30,9 @@ public final class MySQLUnsignedTinyintHandler implements MySQLDataTypeHandler {
     
     @Override
     public Serializable handle(final Serializable value) {
+        if (null == value) {
+            return null;
+        }
         byte byteValue = (byte) value;
         return 0 > byteValue ? TINYINT_MODULO + byteValue : byteValue;
     }

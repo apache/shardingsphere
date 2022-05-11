@@ -69,8 +69,8 @@ public final class YamlRootRuleConfigurationsForYamlShardingRuleConfigurationTes
     
     private void assertYamlShardingConfiguration(final YamlRootConfiguration actual) {
         assertDataSourceMap(actual);
-        Optional<YamlShardingRuleConfiguration> shardingRuleConfig = actual.getRules().stream().filter(
-            each -> each instanceof YamlShardingRuleConfiguration).findFirst().map(config -> (YamlShardingRuleConfiguration) config);
+        Optional<YamlShardingRuleConfiguration> shardingRuleConfig = actual.getRules().stream()
+                .filter(each -> each instanceof YamlShardingRuleConfiguration).findFirst().map(optional -> (YamlShardingRuleConfiguration) optional);
         assertTrue(shardingRuleConfig.isPresent());
         assertThat(shardingRuleConfig.get().getTables().size(), is(4));
         assertTUser(shardingRuleConfig.get());
@@ -86,15 +86,15 @@ public final class YamlRootRuleConfigurationsForYamlShardingRuleConfigurationTes
     private void assertTUser(final YamlShardingRuleConfiguration actual) {
         assertThat(actual.getTables().get("t_user").getActualDataNodes(), is("ds_${0..1}.t_user_${0..15}"));
         assertThat(actual.getTables().get("t_user").getDatabaseStrategy().getComplex().getShardingColumns(), is("region_id, user_id"));
-        assertThat(actual.getTables().get("t_user").getDatabaseStrategy().getComplex().getShardingAlgorithmName(), is("complex_test"));
+        assertThat(actual.getTables().get("t_user").getDatabaseStrategy().getComplex().getShardingAlgorithmName(), is("core_complex_fixture"));
         assertThat(actual.getTables().get("t_user").getTableStrategy().getComplex().getShardingColumns(), is("region_id, user_id"));
-        assertThat(actual.getTables().get("t_user").getTableStrategy().getComplex().getShardingAlgorithmName(), is("complex_test"));
+        assertThat(actual.getTables().get("t_user").getTableStrategy().getComplex().getShardingAlgorithmName(), is("core_complex_fixture"));
     }
     
     private void assertTStock(final YamlShardingRuleConfiguration actual) {
         assertThat(actual.getTables().get("t_stock").getActualDataNodes(), is("ds_${0..1}.t_stock{0..8}"));
-        assertThat(actual.getTables().get("t_stock").getDatabaseStrategy().getHint().getShardingAlgorithmName(), is("hint_test"));
-        assertThat(actual.getTables().get("t_stock").getTableStrategy().getHint().getShardingAlgorithmName(), is("hint_test"));
+        assertThat(actual.getTables().get("t_stock").getDatabaseStrategy().getHint().getShardingAlgorithmName(), is("core_hint_fixture"));
+        assertThat(actual.getTables().get("t_stock").getTableStrategy().getHint().getShardingAlgorithmName(), is("core_hint_fixture"));
     }
     
     private void assertTOrder(final YamlShardingRuleConfiguration actual) {
@@ -108,8 +108,8 @@ public final class YamlRootRuleConfigurationsForYamlShardingRuleConfigurationTes
     private void assertTOrderItem(final YamlShardingRuleConfiguration actual) {
         assertThat(actual.getTables().get("t_order_item").getActualDataNodes(), is("ds_${0..1}.t_order_item_${0..1}"));
         assertThat(actual.getTables().get("t_order_item").getTableStrategy().getStandard().getShardingColumn(), is("order_id"));
-        assertThat(actual.getTables().get("t_order_item").getTableStrategy().getStandard().getShardingAlgorithmName(), is("standard_test"));
-        assertThat(actual.getTables().get("t_order_item").getTableStrategy().getStandard().getShardingAlgorithmName(), is("standard_test"));
+        assertThat(actual.getTables().get("t_order_item").getTableStrategy().getStandard().getShardingAlgorithmName(), is("core_standard_fixture"));
+        assertThat(actual.getTables().get("t_order_item").getTableStrategy().getStandard().getShardingAlgorithmName(), is("core_standard_fixture"));
     }
     
     private void assertBindingTable(final YamlShardingRuleConfiguration actual) {

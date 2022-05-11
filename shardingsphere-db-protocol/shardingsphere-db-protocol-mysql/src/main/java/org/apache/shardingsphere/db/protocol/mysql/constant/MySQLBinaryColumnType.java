@@ -35,15 +35,15 @@ import java.util.Map;
 @Getter
 public enum MySQLBinaryColumnType implements BinaryColumnType {
     
-    MYSQL_TYPE_DECIMAL(0x00), 
+    MYSQL_TYPE_DECIMAL(0x00),
     
-    MYSQL_TYPE_TINY(0x01), 
+    MYSQL_TYPE_TINY(0x01),
     
-    MYSQL_TYPE_SHORT(0x02), 
+    MYSQL_TYPE_SHORT(0x02),
     
-    MYSQL_TYPE_LONG(0x03), 
+    MYSQL_TYPE_LONG(0x03),
     
-    MYSQL_TYPE_FLOAT(0x04), 
+    MYSQL_TYPE_FLOAT(0x04),
     
     MYSQL_TYPE_DOUBLE(0x05),
     

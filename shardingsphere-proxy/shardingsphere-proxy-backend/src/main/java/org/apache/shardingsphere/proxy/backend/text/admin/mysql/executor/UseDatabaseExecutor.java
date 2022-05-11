@@ -41,17 +41,17 @@ public final class UseDatabaseExecutor implements DatabaseAdminExecutor {
     
     @Override
     public void execute(final ConnectionSession connectionSession) {
-        String schemaName = SQLUtil.getExactlyValue(useStatement.getSchema());
-        if (ProxyContext.getInstance().schemaExists(schemaName) && SQLCheckEngine.check(schemaName, getRules(schemaName), connectionSession.getGrantee())) {
-            connectionSession.setCurrentSchema(schemaName);
+        String databaseName = SQLUtil.getExactlyValue(useStatement.getSchema());
+        if (ProxyContext.getInstance().databaseExists(databaseName) && SQLCheckEngine.check(databaseName, getRules(databaseName), connectionSession.getGrantee())) {
+            connectionSession.setCurrentDatabase(databaseName);
             return;
         }
-        throw new UnknownDatabaseException(schemaName);
+        throw new UnknownDatabaseException(databaseName);
     }
     
     private Collection<ShardingSphereRule> getRules(final String schemaName) {
         Collection<ShardingSphereRule> result = new LinkedList<>();
-        Optional.ofNullable(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(schemaName)).ifPresent(each -> result.addAll(each.getRuleMetaData().getRules()));
+        Optional.ofNullable(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(schemaName)).ifPresent(optional -> result.addAll(optional.getRuleMetaData().getRules()));
         result.addAll(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData().getRules());
         return result;
     }

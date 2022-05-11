@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.rule.builder;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.spi.type.ordered.OrderedSPI;
 
 /**
@@ -26,6 +27,7 @@ import org.apache.shardingsphere.spi.type.ordered.OrderedSPI;
  * @param <T> type of rule configuration
  * @param <B> type of rule builder
  */
+@SingletonSPI
 public interface DefaultRuleConfigurationBuilder<T extends RuleConfiguration, B extends RuleBuilder<?>> extends OrderedSPI<B> {
     
     /**

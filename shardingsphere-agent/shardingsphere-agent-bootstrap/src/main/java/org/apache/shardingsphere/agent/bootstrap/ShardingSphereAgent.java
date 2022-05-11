@@ -50,11 +50,11 @@ public final class ShardingSphereAgent {
      * @throws IOException IO exception
      */
     public static void premain(final String arguments, final Instrumentation instrumentation) throws IOException {
-        AgentConfiguration agentConfiguration = AgentConfigurationLoader.load();
-        AgentConfigurationRegistry.INSTANCE.put(agentConfiguration);
+        AgentConfiguration agentConfig = AgentConfigurationLoader.load();
+        AgentConfigurationRegistry.INSTANCE.put(agentConfig);
         ApmPluginLoader loader = createPluginLoader();
         setUpAgentBuilder(instrumentation, loader);
-        setupPluginBootService(agentConfiguration.getPlugins());
+        setupPluginBootService(agentConfig.getPlugins());
     }
     
     private static ApmPluginLoader createPluginLoader() throws IOException {
@@ -63,8 +63,8 @@ public final class ShardingSphereAgent {
         return result;
     }
     
-    private static void setupPluginBootService(final Map<String, PluginConfiguration> pluginConfigurationMap) {
-        PluginBootServiceManager.startAllServices(pluginConfigurationMap);
+    private static void setupPluginBootService(final Map<String, PluginConfiguration> pluginConfigs) {
+        PluginBootServiceManager.startAllServices(pluginConfigs);
         Runtime.getRuntime().addShutdownHook(new Thread(PluginBootServiceManager::closeAllServices));
     }
     

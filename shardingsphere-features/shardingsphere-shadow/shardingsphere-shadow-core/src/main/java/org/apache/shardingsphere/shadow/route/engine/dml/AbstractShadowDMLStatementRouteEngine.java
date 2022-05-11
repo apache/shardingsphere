@@ -104,8 +104,7 @@ public abstract class AbstractShadowDMLStatementRouteEngine implements ShadowRou
     }
     
     private boolean isContainsShadowInSQLComments(final String tableName, final ShadowRule shadowRule, final ShadowDetermineCondition shadowCondition) {
-        return parseSQLComments()
-                .filter(SQLComments -> isMatchAnyHintShadowAlgorithms(shadowRule.getRelatedHintShadowAlgorithms(tableName), shadowCondition.initSQLComments(SQLComments), shadowRule)).isPresent();
+        return parseSQLComments().filter(each -> isMatchAnyHintShadowAlgorithms(shadowRule.getRelatedHintShadowAlgorithms(tableName), shadowCondition.initSQLComments(each), shadowRule)).isPresent();
     }
     
     private boolean isMatchAnyHintShadowAlgorithms(final Collection<HintShadowAlgorithm<Comparable<?>>> shadowAlgorithms, final ShadowDetermineCondition shadowCondition, final ShadowRule shadowRule) {
@@ -129,7 +128,7 @@ public abstract class AbstractShadowDMLStatementRouteEngine implements ShadowRou
     }
     
     private boolean isMatchAnyColumnShadowAlgorithms(final String shadowTable, final Collection<ColumnShadowAlgorithm<Comparable<?>>> columnShadowAlgorithms, final ShadowRule shadowRule,
-                                                        final ShadowOperationType shadowOperationType) {
+                                                     final ShadowOperationType shadowOperationType) {
         Iterator<Optional<ShadowColumnCondition>> iterator = getShadowColumnConditionIterator();
         ShadowDetermineCondition shadowDetermineCondition;
         while (iterator.hasNext()) {

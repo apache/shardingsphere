@@ -69,7 +69,7 @@ public final class ParseDistSQLBackendHandler extends QueryableRALBackendHandler
         SQLStatement parsedSqlStatement;
         try {
             parsedSqlStatement = new ShardingSphereSQLParserEngine(
-                    getBackendDatabaseType(databaseType, connectionSession).getName(), sqlParserRule.get().toParserConfiguration()).parse(sqlStatement.getSql(), false);
+                    getBackendDatabaseType(databaseType, connectionSession).getType(), sqlParserRule.get().toParserConfiguration()).parse(sqlStatement.getSql(), false);
         } catch (SQLParsingException ex) {
             throw new SQLParsingException("You have a syntax error in your parsed statement");
         }
@@ -77,8 +77,9 @@ public final class ParseDistSQLBackendHandler extends QueryableRALBackendHandler
     }
     
     private static DatabaseType getBackendDatabaseType(final DatabaseType defaultDatabaseType, final ConnectionSession connectionSession) {
-        String schemaName = connectionSession.getSchemaName();
-        return Strings.isNullOrEmpty(schemaName) || !ProxyContext.getInstance().schemaExists(schemaName)
-                ? defaultDatabaseType : ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(schemaName).getResource().getDatabaseType();
+        String databaseName = connectionSession.getDatabaseName();
+        return Strings.isNullOrEmpty(databaseName) || !ProxyContext.getInstance().databaseExists(databaseName)
+                ? defaultDatabaseType
+                : ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(databaseName).getResource().getDatabaseType();
     }
 }

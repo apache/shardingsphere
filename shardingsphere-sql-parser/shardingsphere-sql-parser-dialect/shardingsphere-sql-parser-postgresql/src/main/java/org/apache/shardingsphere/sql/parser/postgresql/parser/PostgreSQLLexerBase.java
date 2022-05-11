@@ -27,6 +27,7 @@ import java.util.Deque;
  * Postgre SQL Lexer Base.
  */
 public abstract class PostgreSQLLexerBase extends Lexer {
+    
     private final Deque<String> tags = new ArrayDeque<>();
     
     protected PostgreSQLLexerBase(final CharStream input) {

@@ -38,17 +38,17 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class AnalyzeTableStatementContextTest {
-
+    
     @Test
     public void assertMysqlNewInstance() {
         assertNewInstance(mock(MySQLAnalyzeTableStatement.class));
     }
-
+    
     @Test
     public void assertPostgreSQLNewInstance() {
         assertNewInstance(mock(PostgreSQLAnalyzeTableStatement.class));
     }
-
+    
     private void assertNewInstance(final AnalyzeTableStatement analyzeTableStatement) {
         SimpleTableSegment table1 = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_1")));
         SimpleTableSegment table2 = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_2")));
@@ -59,6 +59,6 @@ public final class AnalyzeTableStatementContextTest {
         AnalyzeTableStatementContext actual = new AnalyzeTableStatementContext(analyzeTableStatement);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(analyzeTableStatement));
-        assertThat(actual.getAllTables().stream().map(a -> a.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Arrays.asList("tbl_1", "tbl_2")));
+        assertThat(actual.getAllTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Arrays.asList("tbl_1", "tbl_2")));
     }
 }

@@ -19,10 +19,11 @@ package org.apache.shardingsphere.singletable.metadata;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataBuilder;
+import org.apache.shardingsphere.infra.metadata.schema.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
@@ -76,10 +77,11 @@ public final class SingleTableSchemaBuilderTest {
         when(dataSource.getConnection()).thenReturn(connection);
         Collection<ShardingSphereRule> rules = Collections.singletonList(mockSingleTableRuleLoad(connection));
         mockSQLLoad(connection);
-        ShardingSphereSchema schema = new ShardingSphereSchema(TableMetaDataBuilder.load(Arrays.asList(singleTableNames),
-                new SchemaBuilderMaterials(databaseType, Collections.singletonMap("logic_db", dataSource), rules, props)));
-        assertThat(schema.getTables().size(), is(2));
-        assertActualOfSingleTables(schema.getTables().values());
+        Map<String, SchemaMetaData> actual = TableMetaDataBuilder.load(Arrays.asList(singleTableNames),
+                new SchemaBuilderMaterials(databaseType, Collections.singletonMap(DefaultDatabase.LOGIC_NAME, dataSource), rules, props, DefaultDatabase.LOGIC_NAME));
+        assertThat(actual.size(), is(1));
+        assertThat(actual.values().iterator().next().getTables().size(), is(2));
+        assertActualOfSingleTables(actual.values().iterator().next().getTables().values());
     }
     
     @SneakyThrows(SQLException.class)
@@ -114,7 +116,7 @@ public final class SingleTableSchemaBuilderTest {
         when(connection.getMetaData().getTables(any(), any(), eq(null), any())).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true, true, true, true, true, true, false);
         when(resultSet.getString(TABLE_NAME)).thenReturn(singleTableNames[0], singleTableNames[1]);
-        return new SingleTableRule(new SingleTableRuleConfiguration(), databaseType, Collections.singletonMap("logic_db", dataSource),
+        return new SingleTableRule(new SingleTableRuleConfiguration(), DefaultDatabase.LOGIC_NAME, databaseType, Collections.singletonMap("logic_db", dataSource),
                 Collections.emptyList(), new ConfigurationProperties(new Properties()));
     }
     

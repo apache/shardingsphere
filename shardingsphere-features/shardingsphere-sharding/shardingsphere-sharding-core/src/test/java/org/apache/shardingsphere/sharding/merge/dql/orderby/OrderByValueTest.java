@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.merge.dql.orderby;
 
-import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -53,27 +53,27 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class OrderByValueTest {
-
+    
     @Test
     public void assertCompareToForAscForMySQL() throws SQLException, NoSuchFieldException {
-        assertCompareToForAsc(new MySQLSelectStatement());   
+        assertCompareToForAsc(new MySQLSelectStatement());
     }
-
+    
     @Test
     public void assertCompareToForAscForOracle() throws SQLException, NoSuchFieldException {
         assertCompareToForAsc(new OracleSelectStatement());
     }
-
+    
     @Test
     public void assertCompareToForAscForPostgreSQL() throws SQLException, NoSuchFieldException {
         assertCompareToForAsc(new PostgreSQLSelectStatement());
     }
-
+    
     @Test
     public void assertCompareToForAscForSQL92() throws SQLException, NoSuchFieldException {
         assertCompareToForAsc(new SQL92SelectStatement());
     }
-
+    
     @Test
     public void assertCompareToForAscForSQLServer() throws SQLException, NoSuchFieldException {
         assertCompareToForAsc(new SQLServerSelectStatement());
@@ -84,48 +84,48 @@ public final class OrderByValueTest {
         selectStatement.setProjections(projectionsSegment);
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         selectStatement.setOrderBy(createOrderBySegment());
-        SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData),
-                Collections.emptyList(), selectStatement, DefaultSchema.LOGIC_NAME);
+        SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, metaData),
+                Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         QueryResult queryResult1 = createQueryResult("1", "2");
         OrderByValue orderByValue1 = new OrderByValue(queryResult1, Arrays.asList(
-            createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC)),
-            createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.ASC, OrderDirection.ASC))),
-            selectStatementContext, schema);
+                createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC)),
+                createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.ASC, OrderDirection.ASC))),
+                selectStatementContext, schema);
         FieldSetter.setField(orderByValue1, OrderByValue.class.getDeclaredField("orderValuesCaseSensitive"), Arrays.asList(false, false));
         assertTrue(orderByValue1.next());
         QueryResult queryResult2 = createQueryResult("3", "4");
         OrderByValue orderByValue2 = new OrderByValue(queryResult2, Arrays.asList(
-            createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC)),
-            createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.ASC, OrderDirection.ASC))),
-            selectStatementContext, schema);
+                createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC)),
+                createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.ASC, OrderDirection.ASC))),
+                selectStatementContext, schema);
         FieldSetter.setField(orderByValue2, OrderByValue.class.getDeclaredField("orderValuesCaseSensitive"), Arrays.asList(false, false));
         assertTrue(orderByValue2.next());
         assertTrue(orderByValue1.compareTo(orderByValue2) < 0);
         assertFalse(orderByValue1.getQueryResult().next());
         assertFalse(orderByValue2.getQueryResult().next());
     }
-
+    
     @Test
     public void assertCompareToForDescForMySQL() throws SQLException, NoSuchFieldException {
         assertCompareToForDesc(new MySQLSelectStatement());
     }
-
+    
     @Test
     public void assertCompareToForDescForOracle() throws SQLException, NoSuchFieldException {
         assertCompareToForDesc(new OracleSelectStatement());
     }
-
+    
     @Test
     public void assertCompareToForDescForPostgreSQL() throws SQLException, NoSuchFieldException {
         assertCompareToForDesc(new PostgreSQLSelectStatement());
     }
-
+    
     @Test
     public void assertCompareToForDescForSQL92() throws SQLException, NoSuchFieldException {
         assertCompareToForDesc(new SQL92SelectStatement());
     }
-
+    
     @Test
     public void assertCompareToForDescForSQLServer() throws SQLException, NoSuchFieldException {
         assertCompareToForDesc(new SQLServerSelectStatement());
@@ -136,49 +136,49 @@ public final class OrderByValueTest {
         selectStatement.setProjections(projectionsSegment);
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         selectStatement.setOrderBy(createOrderBySegment());
-        SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData),
-                Collections.emptyList(), selectStatement, DefaultSchema.LOGIC_NAME);
+        SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, metaData),
+                Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(schema.get("table")).thenReturn(new TableMetaData());
         QueryResult queryResult1 = createQueryResult("1", "2");
         OrderByValue orderByValue1 = new OrderByValue(queryResult1, Arrays.asList(
-            createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC)),
-            createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC))),
-            selectStatementContext, schema);
+                createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC)),
+                createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC))),
+                selectStatementContext, schema);
         FieldSetter.setField(orderByValue1, OrderByValue.class.getDeclaredField("orderValuesCaseSensitive"), Arrays.asList(false, false));
         assertTrue(orderByValue1.next());
         QueryResult queryResult2 = createQueryResult("3", "4");
         OrderByValue orderByValue2 = new OrderByValue(queryResult2, Arrays.asList(
-            createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC)),
-            createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC))),
-            selectStatementContext, schema);
+                createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC)),
+                createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC))),
+                selectStatementContext, schema);
         FieldSetter.setField(orderByValue2, OrderByValue.class.getDeclaredField("orderValuesCaseSensitive"), Arrays.asList(false, false));
         assertTrue(orderByValue2.next());
         assertTrue(orderByValue1.compareTo(orderByValue2) > 0);
         assertFalse(orderByValue1.getQueryResult().next());
         assertFalse(orderByValue2.getQueryResult().next());
     }
-
+    
     @Test
     public void assertCompareToWhenEqualForMySQL() throws SQLException, NoSuchFieldException {
         assertCompareToWhenEqual(new MySQLSelectStatement());
     }
-
+    
     @Test
     public void assertCompareToWhenEqualForOracle() throws SQLException, NoSuchFieldException {
         assertCompareToWhenEqual(new OracleSelectStatement());
     }
-
+    
     @Test
     public void assertCompareToWhenEqualForPostgreSQL() throws SQLException, NoSuchFieldException {
         assertCompareToWhenEqual(new PostgreSQLSelectStatement());
     }
-
+    
     @Test
     public void assertCompareToWhenEqualForSQL92() throws SQLException, NoSuchFieldException {
         assertCompareToWhenEqual(new SQL92SelectStatement());
     }
-
+    
     @Test
     public void assertCompareToWhenEqualForSQLServer() throws SQLException, NoSuchFieldException {
         assertCompareToWhenEqual(new SQLServerSelectStatement());
@@ -189,21 +189,21 @@ public final class OrderByValueTest {
         selectStatement.setProjections(projectionsSegment);
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         selectStatement.setOrderBy(createOrderBySegment());
-        SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData),
-                Collections.emptyList(), selectStatement, DefaultSchema.LOGIC_NAME);
+        SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, metaData),
+                Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         QueryResult queryResult1 = createQueryResult("1", "2");
         OrderByValue orderByValue1 = new OrderByValue(queryResult1, Arrays.asList(
-            createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC)),
-            createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC))),
-            selectStatementContext, schema);
+                createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC)),
+                createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC))),
+                selectStatementContext, schema);
         FieldSetter.setField(orderByValue1, OrderByValue.class.getDeclaredField("orderValuesCaseSensitive"), Arrays.asList(false, false));
         assertTrue(orderByValue1.next());
         QueryResult queryResult2 = createQueryResult("1", "2");
         OrderByValue orderByValue2 = new OrderByValue(queryResult2, Arrays.asList(
-            createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC)),
-            createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC))),
-            selectStatementContext, schema);
+                createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC)),
+                createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC))),
+                selectStatementContext, schema);
         FieldSetter.setField(orderByValue2, OrderByValue.class.getDeclaredField("orderValuesCaseSensitive"), Arrays.asList(false, false));
         assertTrue(orderByValue2.next());
         assertThat(orderByValue1.compareTo(orderByValue2), is(0));
@@ -225,7 +225,7 @@ public final class OrderByValueTest {
         result.setIndex(indexOrderByItemSegment.getColumnIndex());
         return result;
     }
-
+    
     private OrderBySegment createOrderBySegment() {
         OrderByItemSegment orderByItemSegment = new ColumnOrderByItemSegment(new ColumnSegment(0, 0, new IdentifierValue("id")), OrderDirection.ASC, OrderDirection.ASC);
         return new OrderBySegment(0, 0, Collections.singletonList(orderByItemSegment));

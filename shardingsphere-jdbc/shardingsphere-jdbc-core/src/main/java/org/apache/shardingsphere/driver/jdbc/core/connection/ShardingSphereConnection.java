@@ -39,7 +39,7 @@ import java.sql.Statement;
 public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     
     @Getter
-    private final String schema;
+    private final String databaseName;
     
     @Getter
     private final ContextManager contextManager;
@@ -55,10 +55,10 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     
     private volatile boolean closed;
     
-    public ShardingSphereConnection(final String schema, final ContextManager contextManager) {
-        this.schema = schema;
+    public ShardingSphereConnection(final String databaseName, final ContextManager contextManager) {
+        this.databaseName = databaseName;
         this.contextManager = contextManager;
-        connectionManager = new ConnectionManager(schema, contextManager);
+        connectionManager = new ConnectionManager(databaseName, contextManager);
     }
     
     /**
@@ -188,18 +188,27 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     @Override
     public Savepoint setSavepoint(final String name) throws SQLException {
         checkClose();
+        if (!isHoldTransaction()) {
+            throw new SQLException("Savepoint can only be used in transaction blocks.");
+        }
         return connectionManager.setSavepoint(name);
     }
     
     @Override
     public Savepoint setSavepoint() throws SQLException {
         checkClose();
+        if (!isHoldTransaction()) {
+            throw new SQLException("Savepoint can only be used in transaction blocks.");
+        }
         return connectionManager.setSavepoint();
     }
     
     @Override
     public void releaseSavepoint(final Savepoint savepoint) throws SQLException {
         checkClose();
+        if (!isHoldTransaction()) {
+            return;
+        }
         connectionManager.releaseSavepoint(savepoint);
     }
     
@@ -240,6 +249,12 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     @Override
     public Array createArrayOf(final String typeName, final Object[] elements) throws SQLException {
         return connectionManager.getRandomConnection().createArrayOf(typeName, elements);
+    }
+    
+    @Override
+    public String getSchema() throws SQLException {
+        // TODO return databaseName for now in getSchema(), the same as before
+        return databaseName;
     }
     
     @Override

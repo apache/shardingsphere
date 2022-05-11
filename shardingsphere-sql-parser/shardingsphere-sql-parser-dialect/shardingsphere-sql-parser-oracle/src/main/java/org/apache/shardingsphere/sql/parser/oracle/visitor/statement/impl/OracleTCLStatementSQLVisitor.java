@@ -70,7 +70,7 @@ public final class OracleTCLStatementSQLVisitor extends OracleStatementSQLVisito
         result.setSavepointName(((IdentifierValue) visit(ctx.savepointName())).getValue());
         return result;
     }
-
+    
     @Override
     public ASTNode visitSetConstraints(final SetConstraintsContext ctx) {
         return new OracleSetConstraintsStatement();

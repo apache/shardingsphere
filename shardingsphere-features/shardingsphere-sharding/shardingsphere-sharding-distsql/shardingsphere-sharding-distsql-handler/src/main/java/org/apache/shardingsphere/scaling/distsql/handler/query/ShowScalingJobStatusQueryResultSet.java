@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
  */
 public final class ShowScalingJobStatusQueryResultSet implements DistSQLResultSet {
     
-    private static final RuleAlteredJobAPI RULE_ALTERED_JOB_API = PipelineJobAPIFactory.newInstance();
+    private static final RuleAlteredJobAPI RULE_ALTERED_JOB_API = PipelineJobAPIFactory.getInstance();
     
     private Iterator<Collection<Object>> data;
     
@@ -45,23 +45,23 @@ public final class ShowScalingJobStatusQueryResultSet implements DistSQLResultSe
         long currentTimeMillis = System.currentTimeMillis();
         data = RULE_ALTERED_JOB_API.getProgress(((ShowScalingStatusStatement) sqlStatement).getJobId()).entrySet().stream()
                 .map(entry -> {
-                    Collection<Object> list = new LinkedList<>();
-                    list.add(entry.getKey());
+                    Collection<Object> result = new LinkedList<>();
+                    result.add(entry.getKey());
                     if (null != entry.getValue()) {
-                        list.add(entry.getValue().getDataSource());
-                        list.add(entry.getValue().getStatus());
-                        list.add(entry.getValue().isActive() ? "true" : "false");
-                        list.add(entry.getValue().getInventoryFinishedPercentage());
+                        result.add(entry.getValue().getDataSource());
+                        result.add(entry.getValue().getStatus());
+                        result.add(entry.getValue().isActive() ? Boolean.TRUE.toString() : Boolean.FALSE.toString());
+                        result.add(entry.getValue().getInventoryFinishedPercentage());
                         long latestActiveTimeMillis = entry.getValue().getIncrementalLatestActiveTimeMillis();
-                        list.add(latestActiveTimeMillis > 0 ? TimeUnit.MILLISECONDS.toSeconds(currentTimeMillis - latestActiveTimeMillis) : 0);
+                        result.add(latestActiveTimeMillis > 0 ? TimeUnit.MILLISECONDS.toSeconds(currentTimeMillis - latestActiveTimeMillis) : 0);
                     } else {
-                        list.add("");
-                        list.add("");
-                        list.add("");
-                        list.add("");
-                        list.add("");
+                        result.add("");
+                        result.add("");
+                        result.add("");
+                        result.add("");
+                        result.add("");
                     }
-                    return list;
+                    return result;
                 }).collect(Collectors.toList()).iterator();
     }
     

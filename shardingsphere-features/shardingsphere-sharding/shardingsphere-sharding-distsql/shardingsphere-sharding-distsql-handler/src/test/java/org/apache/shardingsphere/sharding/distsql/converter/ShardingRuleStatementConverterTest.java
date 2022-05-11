@@ -27,9 +27,6 @@ import org.apache.shardingsphere.sharding.distsql.parser.segment.AutoTableRuleSe
 import org.apache.shardingsphere.sharding.distsql.parser.segment.KeyGenerateStrategySegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.ShardingStrategySegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.TableRuleSegment;
-import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -43,11 +40,6 @@ import static org.junit.Assert.assertThat;
 
 public final class ShardingRuleStatementConverterTest {
     
-    @Before
-    public void before() {
-        ShardingSphereServiceLoader.register(ShardingAlgorithm.class);
-    }
-    
     @Test
     public void assertConvert() {
         ShardingRuleConfiguration config = ShardingTableRuleStatementConverter.convert(createTableRuleSegment1());
@@ -60,21 +52,21 @@ public final class ShardingRuleStatementConverterTest {
         assertThat(tableRule.getKeyGenerateStrategy().getKeyGeneratorName(), is("t_order_snowflake"));
         assertThat(tableRule.getKeyGenerateStrategy().getColumn(), is("order_id"));
         assertThat(config.getAutoTables().size(), is(2));
-        Iterator<ShardingAutoTableRuleConfiguration> autoTableConfigIterator = config.getAutoTables().iterator();
-        ShardingAutoTableRuleConfiguration autoTableRule = autoTableConfigIterator.next();
+        Iterator<ShardingAutoTableRuleConfiguration> autoTableConfigs = config.getAutoTables().iterator();
+        ShardingAutoTableRuleConfiguration autoTableRule = autoTableConfigs.next();
         assertThat(autoTableRule.getLogicTable(), is("t_order"));
         assertThat(autoTableRule.getActualDataSources(), is("ds0,ds1"));
-        assertThat(autoTableRule.getShardingStrategy().getShardingAlgorithmName(), is("t_order_MOD"));
+        assertThat(autoTableRule.getShardingStrategy().getShardingAlgorithmName(), is("t_order_mod"));
         assertThat(tableRule.getKeyGenerateStrategy().getKeyGeneratorName(), is("t_order_snowflake"));
         assertThat(tableRule.getKeyGenerateStrategy().getColumn(), is("order_id"));
-        autoTableRule = autoTableConfigIterator.next();
+        autoTableRule = autoTableConfigs.next();
         assertThat(autoTableRule.getKeyGenerateStrategy().getKeyGeneratorName(), is("snowflake_algorithm"));
         assertThat(config.getShardingAlgorithms().size(), is(3));
-        assertThat(config.getShardingAlgorithms().get("t_order_MOD").getType(), is("MOD"));
-        assertThat(config.getShardingAlgorithms().get("t_order_MOD").getProps().get("sharding_count"), is("2"));
+        assertThat(config.getShardingAlgorithms().get("t_order_mod").getType(), is("mod"));
+        assertThat(config.getShardingAlgorithms().get("t_order_mod").getProps().getProperty("sharding_count"), is("2"));
         assertThat(config.getKeyGenerators().size(), is(1));
         assertThat(config.getKeyGenerators().get("t_order_snowflake").getType(), is("snowflake"));
-        assertThat(config.getKeyGenerators().get("t_order_snowflake").getProps().get(""), is(""));
+        assertThat(config.getKeyGenerators().get("t_order_snowflake").getProps().getProperty(""), is(""));
     }
     
     private Collection<AbstractTableRuleSegment> createTableRuleSegment1() {
@@ -98,7 +90,7 @@ public final class ShardingRuleStatementConverterTest {
         return new AlgorithmSegment(name, props);
     }
     
-    private static Properties newProperties(final String key, final String value) {
+    private Properties newProperties(final String key, final String value) {
         Properties result = new Properties();
         result.put(key, value);
         return result;

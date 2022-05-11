@@ -19,7 +19,7 @@ package org.apache.shardingsphere.dbdiscovery.spring.boot;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.dbdiscovery.algorithm.config.AlgorithmProvidedDatabaseDiscoveryRuleConfiguration;
-import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
+import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
 import org.apache.shardingsphere.dbdiscovery.spring.boot.algorithm.DatabaseDiscoveryAlgorithmProvidedBeanRegistry;
 import org.apache.shardingsphere.dbdiscovery.spring.boot.rule.YamlDatabaseDiscoveryRuleSpringBootConfiguration;
 import org.apache.shardingsphere.dbdiscovery.spring.boot.condition.DatabaseDiscoverySpringBootCondition;
@@ -59,9 +59,9 @@ public class DatabaseDiscoveryRuleSpringbootConfiguration {
      * @return discovery rule configuration
      */
     @Bean
-    public RuleConfiguration discoveryRuleConfiguration(final ObjectProvider<Map<String, DatabaseDiscoveryType>> discoveryTypes) {
+    public RuleConfiguration discoveryRuleConfiguration(final ObjectProvider<Map<String, DatabaseDiscoveryProviderAlgorithm>> discoveryTypes) {
         AlgorithmProvidedDatabaseDiscoveryRuleConfiguration result = swapper.swapToObject(yamlConfig.getDatabaseDiscovery());
-        Map<String, DatabaseDiscoveryType> discoveryTypeMap = Optional.ofNullable(discoveryTypes.getIfAvailable()).orElseGet(Collections::emptyMap);
+        Map<String, DatabaseDiscoveryProviderAlgorithm> discoveryTypeMap = Optional.ofNullable(discoveryTypes.getIfAvailable()).orElseGet(Collections::emptyMap);
         result.setDiscoveryTypes(discoveryTypeMap);
         return result;
     }

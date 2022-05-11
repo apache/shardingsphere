@@ -19,10 +19,9 @@ package org.apache.shardingsphere.spi;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.spi.exception.ServiceLoaderInstantiationException;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -34,7 +33,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * ShardingSphere service loader.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-@SingletonSPI
 public final class ShardingSphereServiceLoader {
     
     private static final Map<Class<?>, Collection<Object>> SERVICES = new ConcurrentHashMap<>();
@@ -61,54 +59,33 @@ public final class ShardingSphereServiceLoader {
     /**
      * Get service instances.
      * 
-     * @param serviceClass service class
+     * @param serviceInterface service interface
      * @param <T> type of service
      * @return service instances
      */
-    public static <T> Collection<T> getServiceInstances(final Class<T> serviceClass) {
-        return null == ShardingSphereServiceLoader.class.getAnnotation(SingletonSPI.class) ? newServiceInstances(serviceClass) : getSingletonServiceInstances(serviceClass);
+    public static <T> Collection<T> getServiceInstances(final Class<T> serviceInterface) {
+        return null == serviceInterface.getAnnotation(SingletonSPI.class) ? createNewServiceInstances(serviceInterface) : getSingletonServiceInstances(serviceInterface);
     }
     
-    /**
-     * Get singleton service instances.
-     *
-     * @param service service class
-     * @param <T> type of service
-     * @return service instances
-     */
+    @SneakyThrows(ReflectiveOperationException.class)
     @SuppressWarnings("unchecked")
-    public static <T> Collection<T> getSingletonServiceInstances(final Class<T> service) {
-        return (Collection<T>) SERVICES.getOrDefault(service, Collections.emptyList());
-    }
-    
-    /**
-     * New service instances.
-     *
-     * @param service service class
-     * @param <T> type of service
-     * @return service instances
-     */
-    @SuppressWarnings("unchecked")
-    public static <T> Collection<T> newServiceInstances(final Class<T> service) {
-        if (!SERVICES.containsKey(service)) {
+    private static <T> Collection<T> createNewServiceInstances(final Class<T> serviceInterface) {
+        if (!SERVICES.containsKey(serviceInterface)) {
             return Collections.emptyList();
         }
-        Collection<Object> services = SERVICES.get(service);
+        Collection<Object> services = SERVICES.get(serviceInterface);
         if (services.isEmpty()) {
             return Collections.emptyList();
         }
-        Collection<T> result = new ArrayList<>(services.size());
+        Collection<T> result = new LinkedList<>();
         for (Object each : services) {
-            result.add((T) newServiceInstance(each.getClass()));
+            result.add((T) each.getClass().getDeclaredConstructor().newInstance());
         }
         return result;
     }
     
-    private static Object newServiceInstance(final Class<?> clazz) {
-        try {
-            return clazz.getDeclaredConstructor().newInstance();
-        } catch (final ReflectiveOperationException ex) {
-            throw new ServiceLoaderInstantiationException(clazz, ex);
-        }
+    @SuppressWarnings("unchecked")
+    private static <T> Collection<T> getSingletonServiceInstances(final Class<T> serviceInterface) {
+        return (Collection<T>) SERVICES.getOrDefault(serviceInterface, Collections.emptyList());
     }
 }

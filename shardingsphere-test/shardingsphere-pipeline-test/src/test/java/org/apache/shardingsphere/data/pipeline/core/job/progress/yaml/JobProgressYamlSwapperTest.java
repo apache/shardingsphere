@@ -30,13 +30,13 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNull;
 
 public final class JobProgressYamlSwapperTest {
-
+    
     private static final JobProgressYamlSwapper JOB_PROGRESS_YAML_SWAPPER = new JobProgressYamlSwapper();
-
+    
     private JobProgress getJobProgress(final String data) {
         return JOB_PROGRESS_YAML_SWAPPER.swapToObject(YamlEngine.unmarshal(data, YamlJobProgress.class));
     }
-
+    
     @Test
     public void assertFullSwapToYaml() {
         JobProgress jobProgress = getJobProgress(ConfigurationFileUtil.readFile("job-progress.yaml"));
@@ -46,20 +46,20 @@ public final class JobProgressYamlSwapperTest {
         assertThat(actual.getInventory().getFinished().length, is(2));
         assertArrayEquals(actual.getInventory().getFinished(), new String[]{"ds0.t_2", "ds0.t_1"});
         assertThat(actual.getInventory().getUnfinished().size(), is(2));
-        assertThat(actual.getInventory().getUnfinished().get("ds1.t_2"), is("1,2"));
+        assertThat(actual.getInventory().getUnfinished().get("ds1.t_2"), is("i,1,2"));
         assertThat(actual.getInventory().getUnfinished().get("ds1.t_1"), is(""));
         assertThat(actual.getIncremental().size(), is(1));
         assertTrue(actual.getIncremental().containsKey("ds0"));
         assertNull(actual.getIncremental().get("position"));
     }
-
+    
     @Test
     public void assertNullIncremental() {
         JobProgress jobProgress = getJobProgress(ConfigurationFileUtil.readFile("job-progress-no-finished.yaml"));
         YamlJobProgress actual = JOB_PROGRESS_YAML_SWAPPER.swapToYaml(jobProgress);
         assertTrue(actual.getIncremental().isEmpty());
     }
-
+    
     @Test
     public void assertNullInventory() {
         JobProgress jobProgress = getJobProgress(ConfigurationFileUtil.readFile("job-progress-no-inventory.yaml"));

@@ -23,21 +23,21 @@ rules:
       databaseStrategy:
         standard:
           shardingColumn: user_id
-          shardingAlgorithmName: standard_test
+          shardingAlgorithmName: it_standard_fixture
       tableStrategy:
         standard:
           shardingColumn: order_id
-          shardingAlgorithmName: standard_test
+          shardingAlgorithmName: it_standard_fixture
     t_order_item:
       actualDataNodes: readwrite_ds_${0..9}.t_order_item_${0..9}
       databaseStrategy:
         standard:
           shardingColumn: user_id
-          shardingAlgorithmName: standard_test
+          shardingAlgorithmName: it_standard_fixture
       tableStrategy:
         standard:
           shardingColumn: order_id
-          shardingAlgorithmName: standard_test
+          shardingAlgorithmName: it_standard_fixture
       keyGenerateStrategy:
         column: item_id
         keyGeneratorName: constant
@@ -46,11 +46,11 @@ rules:
       databaseStrategy:
         standard:
           shardingColumn: user_id
-          shardingAlgorithmName: standard_test
+          shardingAlgorithmName: it_standard_fixture
       tableStrategy:
         standard:
           shardingColumn: order_id
-          shardingAlgorithmName: standard_test
+          shardingAlgorithmName: it_standard_fixture
     t_order_item_federate_sharding:
       actualDataNodes: readwrite_ds_1.t_order_item_federate_sharding_${0..1}
       tableStrategy:
@@ -70,8 +70,8 @@ rules:
     - t_broadcast_table_for_ddl
   
   shardingAlgorithms:
-    standard_test:
-      type: STANDARD_TEST
+    it_standard_fixture:
+      type: IT.STANDARD.FIXTURE
     table_inline_item_id:
       type: INLINE
       props:
@@ -83,7 +83,7 @@ rules:
 
   keyGenerators:
     constant:
-      type: Constant
+      type: IT.FIXTURE
       
 - !READWRITE_SPLITTING
   dataSources:

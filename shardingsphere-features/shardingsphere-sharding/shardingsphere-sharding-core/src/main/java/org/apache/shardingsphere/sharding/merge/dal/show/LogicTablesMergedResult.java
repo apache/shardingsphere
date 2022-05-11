@@ -69,7 +69,7 @@ public class LogicTablesMergedResult extends MemoryMergedResult<ShardingRule> {
         return result;
     }
     
-    protected void setCellValue(final MemoryQueryResultRow memoryResultSetRow, final String logicTableName, final String actualTableName, 
+    protected void setCellValue(final MemoryQueryResultRow memoryResultSetRow, final String logicTableName, final String actualTableName,
                                 final TableMetaData tableMetaData, final ShardingRule shardingRule) {
     }
 }

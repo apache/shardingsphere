@@ -27,7 +27,6 @@ import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -53,7 +52,7 @@ public final class ShadowTableRule {
     }
     
     private Collection<String> initHintShadowAlgorithmNames(final Collection<String> shadowAlgorithmNames, final Map<String, ShadowAlgorithm> shadowAlgorithms) {
-        return shadowAlgorithmNames.stream().filter(each -> shadowAlgorithms.get(each) instanceof HintShadowAlgorithm).collect(Collectors.toCollection(LinkedList::new));
+        return shadowAlgorithmNames.stream().filter(each -> shadowAlgorithms.get(each) instanceof HintShadowAlgorithm).collect(Collectors.toList());
     }
     
     private Map<ShadowOperationType, Collection<String>> initColumnShadowAlgorithmNames(final Collection<String> shadowAlgorithmNames, final Map<String, ShadowAlgorithm> shadowAlgorithms) {
@@ -61,7 +60,7 @@ public final class ShadowTableRule {
         shadowAlgorithmNames.forEach(each -> {
             ShadowAlgorithm shadowAlgorithm = shadowAlgorithms.get(each);
             if (shadowAlgorithm instanceof ColumnShadowAlgorithm) {
-                ShadowOperationType.contains(shadowAlgorithm.getProps().get("operation").toString()).ifPresent(shadowOperationType -> initShadowAlgorithmNames(result, each, shadowOperationType));
+                ShadowOperationType.contains(shadowAlgorithm.getProps().getProperty("operation")).ifPresent(optional -> initShadowAlgorithmNames(result, each, optional));
             }
         });
         return result;

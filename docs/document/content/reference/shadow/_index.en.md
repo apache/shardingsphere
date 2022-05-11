@@ -46,7 +46,7 @@ Support two type shadow algorithms.
 
 The shadow judgment first judges whether there is an intersection between SQL related tables and configured shadow tables.
 
-If there is an intersection, determine the shadow algorithm associated with the shadow table of the intersection in turn，and any one of them was successful. SQL statement executed shadow DB.
+If there is an intersection, determine the shadow algorithm associated with the shadow table of the intersection in turn, and any one of them was successful. SQL statement executed shadow DB.
 
 If shadow tables have no intersection, or shadow algorithms are unsuccessful, SQL statement executed production DB.
 
@@ -72,37 +72,62 @@ Shadow algorithm details, please refer to [List of built-in shadow algorithms](/
 
 Assume that the e-commerce website wants to perform pressure testing on the order business,
 
-the pressure testing related table `t_order` is a shadow table，the production data executed to the `ds` production DB, and the pressure testing data executed to the database `ds_shadow` shadow DB.
+the pressure testing related table `t_order` is a shadow table, the production data executed to the `ds` production DB, and the pressure testing data executed to the database `ds_shadow` shadow DB.
 
 ### Shadow DB configuration
 
-The shadow configuration for example(YAML)：
+The configuration example of `config-shadow.yaml`(YAML)：
 
 ```yaml
-data-sources:
-  shadow-data-source:
-    source-data-source-name: ds
-    shadow-data-source-name: ds-shadow
-tables:
-  t_order:
-    data-source-names: shadow-data-source
-    shadow-algorithm-names:
-      - simple-hint-algorithm
-      - user-id-value-match-algorithm
-shadow-algorithms:
-  simple-hint-algorithm:
-    type: SIMPLE_HINT
-    props:
-      foo: bar
-  user-id-value-match-algorithm:
-    type: VALUE_MATCH
-    props:
-      operation: insert
-      column: user_id
-      value: 0
+databaseName: shadow_db
+
+dataSources:
+  ds:
+    url: jdbc:mysql://127.0.0.1:3306/ds?serverTimezone=UTC&useSSL=false
+    username: root
+    password:
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 50
+    minPoolSize: 1
+  shadow_ds:
+    url: jdbc:mysql://127.0.0.1:3306/shadow_ds?serverTimezone=UTC&useSSL=false
+    username: root
+    password:
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 50
+    minPoolSize: 1
+
+rules:
+- !SHADOW
+  dataSources:
+    shadowDataSource:
+      sourceDataSourceName: ds
+      shadowDataSourceName: shadow_ds
+  tables:
+    t_order:
+      dataSourceNames:
+        - shadowDataSource
+      shadowAlgorithmNames:
+        - simple-hint-algorithm
+        - user-id-value-match-algorithm
+  shadowAlgorithms:
+    simple-hint-algorithm:
+      type: SIMPLE_HINT
+      props:
+        foo: bar
+    user-id-insert-match-algorithm:
+      type: VALUE_MATCH
+      props:
+        operation: insert
+        column: user_id
+        regex: 0
       
-sql-parser:
-  sql-comment-parse-enabled: true
+- !SQL_PARSER
+  sqlCommentParseEnabled: true
 ```
 
 **Note**: If you use the Hint shadow algorithm, the parse SQL comment configuration item `sql-comment-parse-enabled: true` need to be turned on. turned off by default.
@@ -158,13 +183,13 @@ No need to modify any SQL or code, only need to control the data of the testing 
 Column Shadow algorithm configuration (YAML):
 
 ```yaml
-shadow-algorithms:
-  user-id-value-match-algorithm:
+shadowAlgorithms:
+  user-id-insert-match-algorithm:
     type: VALUE_MATCH
     props:
       operation: insert
       column: user_id
-      value: 0
+      regex: 0
 ```
 
 **Note**: When the shadow table uses the column shadow algorithm, the same type of shadow operation (INSERT, UPDATE, DELETE, SELECT) currently only supports a single column.
@@ -181,7 +206,7 @@ SQL executed to shadow DB, other data executed to production DB.
 Note Shadow algorithm configuration (YAML):
 
 ```yaml
-shadow-algorithms:
+shadowAlgorithms:
   simple-hint-algorithm:
     type: SIMPLE_HINT
     props:
@@ -203,7 +228,7 @@ Both will be executed to shadow DB, other data executed to production DB.
 2 type of shadow algorithm example (YAML):
 
 ```yaml
-shadow-algorithms:
+shadowAlgorithms:
   user-id-value-match-algorithm:
     type: VALUE_MATCH
     props:
@@ -235,31 +260,32 @@ Both will be executed to shadow DB, other data executed to production DB.
 Default shadow algorithm configuration (YAML):
 
 ```yaml
-data-sources:
-  shadow-data-source:
-    source-data-source-name: ds
-    shadow-data-source-name: ds-shadow
+rules:
+- !SHADOW
+dataSources:
+  shadowDataSource:
+    sourceDataSourceName: ds
+    shadowDataSourceName: shadow_ds
 tables:
   t_order:
-    data-source-names: shadow-data-source
-    shadow-algorithm-names:
+    dataSourceNames:
+      - shadowDataSource
+    shadowAlgorithmNames:
       - simple-hint-algorithm
       - user-id-value-match-algorithm
-default-shadow-algorithm-name: simple-note-algorithm
-shadow-algorithms:
+shadowAlgorithms:
   simple-hint-algorithm:
     type: SIMPLE_HINT
     props:
       foo: bar
-  user-id-value-match-algorithm:
+  user-id-insert-match-algorithm:
     type: VALUE_MATCH
     props:
       operation: insert
       column: user_id
-      value: 0
-      
-sql-parser:
-  sql-comment-parse-enabled: true
+      regex: 0
+- !SQL_PARSER
+  sqlCommentParseEnabled: true
 ```
 
 **Note**:
@@ -268,11 +294,12 @@ When using ensure that the configuration items of `props` in the configuration f
 should same as the configuration written in the SQL comment. The fewer configuration items in the configuration file, the looser the matching conditions
 
 ```yaml
-simple-note-algorithm:
-  type: SIMPLE_HINT
-  props:
-    foo: bar
-    foo1: bar1
+shadowAlgorithms:
+  simple-note-algorithm:
+    type: SIMPLE_HINT
+    props:
+      foo: bar
+      foo1: bar1
 ```
 
 For example, the 'props' item have `2` configure, the following syntax can be used in SQL:
@@ -285,10 +312,11 @@ SELECT * FROM t_xxx_2 WHERE order_id = xxx /*foo:bar, foo1:bar1, foo2:bar2, ...*
 ```
 
 ```yaml
-simple-note-algorithm:
-  type: SIMPLE_HINT
-  props:
-    foo: bar
+shadowAlgorithms:
+  simple-note-algorithm:
+    type: SIMPLE_HINT
+    props:
+      foo: bar
 ```
 
 For example, the 'props' item have `1` configure, the following syntax can be used in SQL:

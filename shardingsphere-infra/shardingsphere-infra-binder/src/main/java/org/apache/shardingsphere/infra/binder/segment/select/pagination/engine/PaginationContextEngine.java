@@ -50,7 +50,7 @@ public final class PaginationContextEngine {
      * @param whereSegments where segments
      * @return pagination context
      */
-    public PaginationContext createPaginationContext(final SelectStatement selectStatement, final ProjectionsContext projectionsContext, 
+    public PaginationContext createPaginationContext(final SelectStatement selectStatement, final ProjectionsContext projectionsContext,
                                                      final List<Object> parameters, final Collection<WhereSegment> whereSegments) {
         Optional<LimitSegment> limitSegment = SelectStatementHandler.getLimitSegment(selectStatement);
         if (limitSegment.isPresent()) {

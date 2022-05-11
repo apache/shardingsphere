@@ -22,8 +22,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
@@ -129,12 +129,12 @@ public final class YamlShardingSphereDataSourceFactory {
     private static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final YamlRootConfiguration rootConfig) throws SQLException {
         ModeConfiguration modeConfig = null == rootConfig.getMode() ? null : new ModeConfigurationYamlSwapper().swapToObject(rootConfig.getMode());
         Collection<RuleConfiguration> ruleConfigs = SWAPPER_ENGINE.swapToRuleConfigurations(rootConfig.getRules());
-        return ShardingSphereDataSourceFactory.createDataSource(rootConfig.getSchemaName(), modeConfig, dataSourceMap, ruleConfigs, rootConfig.getProps());
+        return ShardingSphereDataSourceFactory.createDataSource(rootConfig.getDatabaseName(), modeConfig, dataSourceMap, ruleConfigs, rootConfig.getProps());
     }
     
     private static DataSource createDataSource(final DataSource dataSource, final YamlRootConfiguration rootConfig) throws SQLException {
         Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
-        dataSourceMap.put(Strings.isNullOrEmpty(rootConfig.getSchemaName()) ? DefaultSchema.LOGIC_NAME : rootConfig.getSchemaName(), dataSource);
+        dataSourceMap.put(Strings.isNullOrEmpty(rootConfig.getDatabaseName()) ? DefaultDatabase.LOGIC_NAME : rootConfig.getDatabaseName(), dataSource);
         return createDataSource(dataSourceMap, rootConfig);
     }
 }

@@ -67,8 +67,8 @@ Answer:
 1. ShardingSphere-Proxy could be considered as a mysql sever, so we recommend using mysql command line tool to connect to and operate it.
 2. If users would like use a third-party database tool, there may be some errors cause of the certain implementation/options.
 3. The currently tested third-party database tools are as follows:
-   - Navicat：11.1.13、15.0.20.
-   - DataGrip：2020.1、2021.1 (turn on "introspect using jdbc metadata" in idea or datagrip).
+   - Navicat：11.1.13, 15.0.20.
+   - DataGrip：2020.1, 2021.1 (turn on "introspect using jdbc metadata" in idea or datagrip).
    - WorkBench：8.0.25.
 
 ## [Proxy] When using a client such as Navicat to connect to ShardingSphere-Proxy, if ShardingSphere-Proxy does not create a Schema or does not add a Resource, the client connection will fail?
@@ -313,7 +313,7 @@ https://ourcodeworld.com/articles/read/109/how-to-solve-filename-too-long-error-
 
 Answer:
 
-In Apache ShardingSphere, many functionality implementation are uploaded through [SPI](/en/concepts/pluggable/), such as Distributed Primary Key. These functions load SPI implementation by configuring the `type`，so the `type` must be specified in the configuration file.
+In Apache ShardingSphere, many functionality implementation are uploaded through [SPI](/en/concepts/pluggable/), such as Distributed Primary Key. These functions load SPI implementation by configuring the `type`, so the `type` must be specified in the configuration file.
 
 ## [Other] How to speed up the metadata loading when service starts up?
 

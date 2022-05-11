@@ -73,22 +73,26 @@ rules:
       completionDetector: # Completion detect algorithm. If it's not configured, then system won't continue to do next steps automatically.
         type: # Algorithm type. Options: IDLE
         props: # Algorithm properties
-          incremental-task-idle-minute-threshold: # If incremental tasks is idle more than so much minutes, then it could be considered as almost completed. Available for types: IDLE
+          incremental-task-idle-seconds-threshold: # If incremental tasks is idle more than so much seconds, then it could be considered as almost completed. Available for types: IDLE
       dataConsistencyChecker: # Data consistency check algorithm. If it's not configured, then system will skip this step.
         type: # Algorithm type. Options: DATA_MATCH, CRC32_MATCH
         props: # Algorithm properties
           chunk-size: # Maximum records count of a query operation for check
 ```
 
-Configuration Example:
+`type` of `dataConsistencyChecker` could be got by executing DistSQL `SHOW SCALING CHECK ALGORITHMS`. Simple comparison:
+- `DATA_MATCH` : Support all types of databases, but it's not the best performant one.
+- `CRC32_MATCH` : Support `MySQL`, performance is better than `DATA_MATCH`.
+
+Auto Mode Configuration Example:
 ```yaml
 rules:
 - !SHARDING
   # ignored configuration
   
-  scalingName: default_scaling
+  scalingName: scaling_auto
   scaling:
-    default_scaling:
+    scaling_auto:
       input:
         workerThread: 40
         batchSize: 1000
@@ -102,20 +106,43 @@ rules:
       completionDetector:
         type: IDLE
         props:
-          incremental-task-idle-minute-threshold: 30
+          incremental-task-idle-seconds-threshold: 1800
       dataConsistencyChecker:
         type: DATA_MATCH
         props:
           chunk-size: 1000
 ```
 
-You could customize `completionDetector`, `dataConsistencyChecker` algorithm by implementing SPI. Current implementation could be referenced, please refer to [Dev Manual#Scaling](/en/dev-manual/scaling/) for more details.
+Manual Mode Configuration Example:
+```yaml
+rules:
+- !SHARDING
+  # ignored configuration
+  
+  scalingName: scaling_manual
+  scaling:
+    scaling_manual:
+      input:
+        workerThread: 40
+        batchSize: 1000
+      output:
+        workerThread: 40
+        batchSize: 1000
+      streamChannel:
+        type: MEMORY
+        props:
+          block-queue-size: 10000
+      dataConsistencyChecker:
+        type: DATA_MATCH
+        props:
+          chunk-size: 1000
+```
 
 Way 2: Configure scaling by DistSQL
 
-Create scaling configuration example:
+Auto Mode Configuration Example:
 ```sql
-CREATE SHARDING SCALING RULE default_scaling (
+CREATE SHARDING SCALING RULE scaling_auto (
 INPUT(
   WORKER_THREAD=40,
   BATCH_SIZE=1000
@@ -125,7 +152,23 @@ OUTPUT(
   BATCH_SIZE=1000
 ),
 STREAM_CHANNEL(TYPE(NAME=MEMORY, PROPERTIES("block-queue-size"=10000))),
-COMPLETION_DETECTOR(TYPE(NAME=IDLE, PROPERTIES("incremental-task-idle-minute-threshold"=3))),
+COMPLETION_DETECTOR(TYPE(NAME=IDLE, PROPERTIES("incremental-task-idle-seconds-threshold"=1800))),
+DATA_CONSISTENCY_CHECKER(TYPE(NAME=DATA_MATCH, PROPERTIES("chunk-size"=1000)))
+);
+```
+
+Manual Mode Configuration Example:
+```sql
+CREATE SHARDING SCALING RULE scaling_manual (
+INPUT(
+  WORKER_THREAD=40,
+  BATCH_SIZE=1000
+),
+OUTPUT(
+  WORKER_THREAD=40,
+  BATCH_SIZE=1000
+),
+STREAM_CHANNEL(TYPE(NAME=MEMORY, PROPERTIES("block-queue-size"=10000))),
 DATA_CONSISTENCY_CHECKER(TYPE(NAME=DATA_MATCH, PROPERTIES("chunk-size"=1000)))
 );
 ```

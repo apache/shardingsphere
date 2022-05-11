@@ -34,12 +34,12 @@ public final class PipelineSQLBuilderFactory {
     }
     
     /**
-     * Get SQL builder instance.
+     * Get instance of pipeline SQL builder.
      *
      * @param databaseType database type
-     * @return SQL builder
+     * @return got instance
      */
-    public static PipelineSQLBuilder getSQLBuilder(final String databaseType) {
-        return TypedSPIRegistry.getRegisteredService(PipelineSQLBuilder.class, databaseType);
+    public static PipelineSQLBuilder getInstance(final String databaseType) {
+        return TypedSPIRegistry.getRegisteredService(PipelineSQLBuilder.class, databaseType, null);
     }
 }

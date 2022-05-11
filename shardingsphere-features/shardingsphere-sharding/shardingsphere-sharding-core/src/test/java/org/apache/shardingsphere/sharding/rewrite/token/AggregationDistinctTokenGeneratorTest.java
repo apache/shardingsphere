@@ -24,10 +24,10 @@ import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.Aggregati
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.AggregationDistinctToken;
 import org.junit.Test;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -38,7 +38,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class AggregationDistinctTokenGeneratorTest {
-
+    
     @Test
     public void assertIsGenerateSQLToken() {
         AggregationDistinctTokenGenerator aggregationDistinctTokenGenerator = new AggregationDistinctTokenGenerator();
@@ -47,27 +47,23 @@ public final class AggregationDistinctTokenGeneratorTest {
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class);
         assertFalse(aggregationDistinctTokenGenerator.isGenerateSQLToken(insertStatementContext));
     }
-
+    
     @Test
     public void assertGenerateSQLToken() {
         AggregationDistinctProjection aggregationDistinctProjection = mock(AggregationDistinctProjection.class);
-        final String testAlias = "AVG_DERIVED_COUNT_0";
+        String testAlias = "AVG_DERIVED_COUNT_0";
         when(aggregationDistinctProjection.getAlias()).thenReturn(Optional.of(testAlias));
-        final int testStartIndex = 0;
-        when(aggregationDistinctProjection.getStartIndex()).thenReturn(testStartIndex);
-        final int testStopIndex = 2;
-        when(aggregationDistinctProjection.getStopIndex()).thenReturn(testStopIndex);
-        final String testDistinctInnerExpression = "TEST_DISTINCT_INNER_EXPRESSION";
+        when(aggregationDistinctProjection.getStartIndex()).thenReturn(0);
+        when(aggregationDistinctProjection.getStopIndex()).thenReturn(2);
+        String testDistinctInnerExpression = "TEST_DISTINCT_INNER_EXPRESSION";
         when(aggregationDistinctProjection.getDistinctInnerExpression()).thenReturn(testDistinctInnerExpression);
-        List<AggregationDistinctProjection> aggregationDistinctProjectionList = new LinkedList<>();
-        aggregationDistinctProjectionList.add(aggregationDistinctProjection);
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        when(selectStatementContext.getProjectionsContext().getAggregationDistinctProjections()).thenReturn(aggregationDistinctProjectionList);
+        when(selectStatementContext.getProjectionsContext().getAggregationDistinctProjections()).thenReturn(Collections.singletonList(aggregationDistinctProjection));
         AggregationDistinctTokenGenerator aggregationDistinctTokenGenerator = new AggregationDistinctTokenGenerator();
-        List<AggregationDistinctToken> generateSQLTokensResult = aggregationDistinctTokenGenerator.generateSQLTokens(selectStatementContext).stream().collect(Collectors.toList());
+        List<AggregationDistinctToken> generateSQLTokensResult = new ArrayList<>(aggregationDistinctTokenGenerator.generateSQLTokens(selectStatementContext));
         assertThat(generateSQLTokensResult.get(0).toString(), is(testDistinctInnerExpression + " AS " + testAlias));
         when(aggregationDistinctProjection.getAlias()).thenReturn(Optional.of("TEST_ERROR_ALIAS"));
-        generateSQLTokensResult = aggregationDistinctTokenGenerator.generateSQLTokens(selectStatementContext).stream().collect(Collectors.toList());
+        generateSQLTokensResult = new ArrayList<>(aggregationDistinctTokenGenerator.generateSQLTokens(selectStatementContext));
         assertThat(generateSQLTokensResult.get(0).toString(), is(testDistinctInnerExpression));
     }
 }

@@ -29,7 +29,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Getter
 @Setter
 public final class DropShardingScalingRuleStatementTestCase extends DropRuleStatementTestCase {
-
+    
     @XmlAttribute(name = "scaling-name")
     private String scalingName;
 }

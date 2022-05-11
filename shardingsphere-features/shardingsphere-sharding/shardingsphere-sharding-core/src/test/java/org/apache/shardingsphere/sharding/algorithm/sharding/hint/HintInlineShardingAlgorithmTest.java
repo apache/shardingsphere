@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.sharding.algorithm.sharding.hint;
 
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingValue;
+import org.apache.shardingsphere.sharding.factory.ShardingAlgorithmFactory;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -37,21 +39,15 @@ public final class HintInlineShardingAlgorithmTest {
     
     @Before
     public void setUp() {
-        initHintInlineShardingAlgorithm();
-        initHintInlineShardingAlgorithmDefault();
-    }
-    
-    private void initHintInlineShardingAlgorithm() {
-        hintInlineShardingAlgorithm = new HintInlineShardingAlgorithm();
-        Properties props = new Properties();
-        props.setProperty("algorithm-expression", "t_order_$->{value % 4}");
-        hintInlineShardingAlgorithm.setProps(props);
-        hintInlineShardingAlgorithm.init();
-    }
-    
-    private void initHintInlineShardingAlgorithmDefault() {
+        hintInlineShardingAlgorithm = (HintInlineShardingAlgorithm) ShardingAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("HINT_INLINE", createProperties()));
         hintInlineShardingAlgorithmDefault = new HintInlineShardingAlgorithm();
-        hintInlineShardingAlgorithmDefault.init();
+        hintInlineShardingAlgorithmDefault.init(new Properties());
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty("algorithm-expression", "t_order_$->{value % 4}");
+        return result;
     }
     
     @Test

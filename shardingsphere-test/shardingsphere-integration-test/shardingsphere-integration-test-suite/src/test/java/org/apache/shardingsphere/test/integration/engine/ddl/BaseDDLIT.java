@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.integration.engine.ddl;
 import com.google.common.base.Splitter;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.sharding.route.engine.exception.NoSuchTableException;
-import org.apache.shardingsphere.sharding.support.InlineExpressionParser;
+import org.apache.shardingsphere.infra.expr.InlineExpressionParser;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetIndex;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetaData;
@@ -169,9 +169,9 @@ public abstract class BaseDDLIT extends SingleITCase {
     
     private void assertColumnMetaData(final DataSetColumn actual, final DataSetColumn expected) {
         assertThat("Mismatched column name.", actual.getName(), is(expected.getName()));
-        if ("MySQL".equals(getDatabaseType().getName()) && "integer".equals(expected.getType())) {
+        if ("MySQL".equals(getDatabaseType().getType()) && "integer".equals(expected.getType())) {
             assertThat("Mismatched column type.", actual.getType(), is("int"));
-        } else if ("PostgreSQL".equals(getDatabaseType().getName()) && "integer".equals(expected.getType())) {
+        } else if ("PostgreSQL".equals(getDatabaseType().getType()) && "integer".equals(expected.getType())) {
             assertThat("Mismatched column type.", actual.getType(), is("int4"));
         } else {
             assertThat("Mismatched column type.", actual.getType(), is(expected.getType()));

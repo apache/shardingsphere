@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sharding.algorithm.sharding.range;
 
 import com.google.common.collect.Range;
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
@@ -36,14 +35,14 @@ import java.util.Properties;
  */
 public abstract class AbstractRangeShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>>, ShardingAutoTableAlgorithm {
     
-    private volatile Map<Integer, Range<Comparable<?>>> partitionRange;
-    
     @Getter
-    @Setter
-    private Properties props = new Properties();
+    private Properties props;
+    
+    private Map<Integer, Range<Comparable<?>>> partitionRange;
     
     @Override
-    public final void init() {
+    public final void init(final Properties props) {
+        this.props = props;
         partitionRange = calculatePartitionRange(props);
     }
     

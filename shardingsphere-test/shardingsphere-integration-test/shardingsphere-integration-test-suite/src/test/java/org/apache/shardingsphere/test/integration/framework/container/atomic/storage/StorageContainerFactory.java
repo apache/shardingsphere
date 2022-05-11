@@ -35,18 +35,18 @@ public final class StorageContainerFactory {
      * 
      * @param databaseType database type
      * @param scenario scenario
-     * @return new instance of storage container
+     * @return created instance
      */
     public static StorageContainer newInstance(final DatabaseType databaseType, final String scenario) {
-        switch (databaseType.getName()) {
+        switch (databaseType.getType()) {
             case "MySQL":
                 return new MySQLContainer(scenario);
-            case "PostgreSQL" :
+            case "PostgreSQL":
                 return new PostgreSQLContainer(scenario);
             case "H2":
                 return new H2Container(scenario);
             default:
-                throw new RuntimeException(String.format("Database [%s] is unknown.", databaseType.getName()));
+                throw new RuntimeException(String.format("Database [%s] is unknown.", databaseType.getType()));
         }
     }
 }

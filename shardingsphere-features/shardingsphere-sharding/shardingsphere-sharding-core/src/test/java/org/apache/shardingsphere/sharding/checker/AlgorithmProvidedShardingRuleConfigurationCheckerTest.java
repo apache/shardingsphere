@@ -18,53 +18,46 @@
 package org.apache.shardingsphere.sharding.checker;
 
 import org.apache.shardingsphere.infra.config.checker.RuleConfigurationChecker;
+import org.apache.shardingsphere.infra.config.checker.RuleConfigurationCheckerFactory;
 import org.apache.shardingsphere.sharding.algorithm.config.AlgorithmProvidedShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.ordered.OrderedSPIRegistry;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class AlgorithmProvidedShardingRuleConfigurationCheckerTest {
     
-    static {
-        ShardingSphereServiceLoader.register(RuleConfigurationChecker.class);
-    }
-    
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     public void assertCheckPass() {
-        ShardingStrategyConfiguration strategyConfiguration = mock(ShardingStrategyConfiguration.class);
-        ShardingTableRuleConfiguration ruleConfiguration = mock(ShardingTableRuleConfiguration.class);
-        ShardingAutoTableRuleConfiguration autoTableRuleConfiguration = mock(ShardingAutoTableRuleConfiguration.class);
-        AlgorithmProvidedShardingRuleConfiguration ruleConfig = mock(AlgorithmProvidedShardingRuleConfiguration.class);
-        when(ruleConfig.getTables()).thenReturn(Collections.singleton(ruleConfiguration));
-        when(ruleConfig.getAutoTables()).thenReturn(Collections.singleton(autoTableRuleConfiguration));
-        when(ruleConfig.getDefaultTableShardingStrategy()).thenReturn(strategyConfiguration);
-        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServices(RuleConfigurationChecker.class, Collections.singleton(ruleConfig)).get(ruleConfig);
-        assertNotNull(checker);
-        assertThat(checker, instanceOf(AlgorithmProvidedShardingRuleConfigurationChecker.class));
-        checker.check("test", ruleConfig);
+        AlgorithmProvidedShardingRuleConfiguration config = mock(AlgorithmProvidedShardingRuleConfiguration.class);
+        when(config.getTables()).thenReturn(Collections.singleton(mock(ShardingTableRuleConfiguration.class)));
+        when(config.getAutoTables()).thenReturn(Collections.singleton(mock(ShardingAutoTableRuleConfiguration.class)));
+        when(config.getDefaultTableShardingStrategy()).thenReturn(mock(ShardingStrategyConfiguration.class));
+        Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.findInstance(config);
+        assertTrue(checker.isPresent());
+        assertThat(checker.get(), instanceOf(AlgorithmProvidedShardingRuleConfigurationChecker.class));
+        checker.get().check("test", config);
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test(expected = IllegalStateException.class)
     public void assertCheckNoPass() {
-        AlgorithmProvidedShardingRuleConfiguration ruleConfig = mock(AlgorithmProvidedShardingRuleConfiguration.class);
-        when(ruleConfig.getTables()).thenReturn(Collections.emptyList());
-        when(ruleConfig.getAutoTables()).thenReturn(Collections.emptyList());
-        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServices(RuleConfigurationChecker.class, Collections.singleton(ruleConfig)).get(ruleConfig);
-        assertNotNull(checker);
-        assertThat(checker, instanceOf(AlgorithmProvidedShardingRuleConfigurationChecker.class));
-        checker.check("test", ruleConfig);
+        AlgorithmProvidedShardingRuleConfiguration config = mock(AlgorithmProvidedShardingRuleConfiguration.class);
+        when(config.getTables()).thenReturn(Collections.emptyList());
+        when(config.getAutoTables()).thenReturn(Collections.emptyList());
+        Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.findInstance(config);
+        assertTrue(checker.isPresent());
+        assertThat(checker.get(), instanceOf(AlgorithmProvidedShardingRuleConfigurationChecker.class));
+        checker.get().check("test", config);
     }
 }

@@ -59,9 +59,9 @@ public final class MetricsPluginIT extends BasePluginIT {
     public static final String TRANSACTION_COMMIT = "proxy_transaction_commit_total";
     
     public static final String TRANSACTION_ROLLBACK = "proxy_transaction_rollback_total";
-
+    
     @Test
-    public void assertProxyWithAgent() {
+    public void assertProxyWithAgent() throws IOException {
         super.assertProxyWithAgent();
         Properties props = IntegrationTestEnvironment.getInstance().getProps();
         try {

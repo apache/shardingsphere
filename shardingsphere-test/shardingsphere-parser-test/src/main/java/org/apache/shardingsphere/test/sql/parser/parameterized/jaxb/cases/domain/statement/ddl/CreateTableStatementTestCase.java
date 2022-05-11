@@ -47,7 +47,7 @@ public final class CreateTableStatementTestCase extends SQLParserTestCase {
     private final List<ExpectedConstraintDefinition> constraintDefinitions = new LinkedList<>();
     
     @XmlElement(name = "column")
-    private final List<ExpectedColumn> columns = new LinkedList<>(); 
+    private final List<ExpectedColumn> columns = new LinkedList<>();
     
     @XmlElement(name = "select")
     private SelectStatementTestCase createTableAsSelectStatement;

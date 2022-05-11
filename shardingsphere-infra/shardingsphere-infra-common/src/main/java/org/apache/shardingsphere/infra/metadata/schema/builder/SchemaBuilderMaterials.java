@@ -41,4 +41,6 @@ public final class SchemaBuilderMaterials {
     private final Collection<ShardingSphereRule> rules;
     
     private final ConfigurationProperties props;
+    
+    private final String defaultSchemaName;
 }

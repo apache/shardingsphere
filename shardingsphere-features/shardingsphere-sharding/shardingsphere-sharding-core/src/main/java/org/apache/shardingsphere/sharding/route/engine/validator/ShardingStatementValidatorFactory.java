@@ -71,7 +71,7 @@ public final class ShardingStatementValidatorFactory {
      * 
      * @param sqlStatement SQL statement
      * @param shardingConditions sharding conditions
-     * @return instance of sharding statement validator
+     * @return created instance
      */
     public static Optional<ShardingStatementValidator> newInstance(final SQLStatement sqlStatement, final ShardingConditions shardingConditions) {
         if (sqlStatement instanceof DDLStatement) {

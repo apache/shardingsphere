@@ -28,14 +28,14 @@ import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 @Getter
 @Setter
 public final class ShardingScalingRuleConfigurationSegment implements ASTNode {
-
+    
     private InputOrOutputSegment inputSegment;
-
+    
     private InputOrOutputSegment outputSegment;
-
+    
     private AlgorithmSegment streamChannel;
-
+    
     private AlgorithmSegment completionDetector;
-
-    private AlgorithmSegment dataConsistencyChecker;
+    
+    private AlgorithmSegment dataConsistencyCalculator;
 }

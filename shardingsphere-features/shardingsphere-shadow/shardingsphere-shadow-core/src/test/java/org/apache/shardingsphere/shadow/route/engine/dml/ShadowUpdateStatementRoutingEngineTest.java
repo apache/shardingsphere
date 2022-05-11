@@ -21,11 +21,6 @@ import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementConte
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadowRuleConfiguration;
-import org.apache.shardingsphere.shadow.algorithm.shadow.column.ColumnRegexMatchShadowAlgorithm;
-import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
-import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
-import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
@@ -41,11 +36,7 @@ import org.junit.Test;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.Map;
 import java.util.Optional;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -64,27 +55,22 @@ public final class ShadowUpdateStatementRoutingEngineTest {
     
     private UpdateStatementContext createUpdateStatementContext() {
         UpdateStatementContext result = mock(UpdateStatementContext.class);
-        Collection<SimpleTableSegment> allTables = new LinkedList<>();
-        allTables.add(new SimpleTableSegment(new TableNameSegment(20, 25, new IdentifierValue("t_order"))));
-        when(result.getAllTables()).thenReturn(allTables);
+        when(result.getAllTables()).thenReturn(Collections.singleton(new SimpleTableSegment(new TableNameSegment(20, 25, new IdentifierValue("t_order")))));
         BinaryOperationExpression binaryOperationExpression = mock(BinaryOperationExpression.class);
         when(binaryOperationExpression.getLeft()).thenReturn(new ColumnSegment(0, 0, new IdentifierValue("user_id")));
         when(binaryOperationExpression.getRight()).thenReturn(new LiteralExpressionSegment(0, 0, "1"));
-        WhereSegment whereSegment = new WhereSegment(0, 0, binaryOperationExpression);
-        when(result.getWhereSegments()).thenReturn(Collections.singletonList(whereSegment));
-        MySQLUpdateStatement updateStatement = new MySQLUpdateStatement();
-        updateStatement.getCommentSegments().add(new CommentSegment("/*shadow:true,foo:bar*/", 0, 20));
-        updateStatement.getCommentSegments().add(new CommentSegment("/*aaa:bbb*/", 21, 30));
-        when(result.getSqlStatement()).thenReturn(updateStatement);
+        when(result.getWhereSegments()).thenReturn(Collections.singleton(new WhereSegment(0, 0, binaryOperationExpression)));
+        MySQLUpdateStatement sqlStatement = new MySQLUpdateStatement();
+        sqlStatement.getCommentSegments().add(new CommentSegment("/*shadow:true,foo:bar*/", 0, 20));
+        sqlStatement.getCommentSegments().add(new CommentSegment("/*aaa:bbb*/", 21, 30));
+        when(result.getSqlStatement()).thenReturn(sqlStatement);
         return result;
     }
     
     @Test
     public void assertRouteAndParseShadowColumnConditions() {
         RouteContext routeContext = mock(RouteContext.class);
-        Collection<RouteUnit> routeUnits = new LinkedList<>();
-        routeUnits.add(new RouteUnit(new RouteMapper("ds", "ds_shadow"), new LinkedList<>()));
-        when(routeContext.getRouteUnits()).thenReturn(routeUnits);
+        when(routeContext.getRouteUnits()).thenReturn(Collections.singleton(new RouteUnit(new RouteMapper("ds", "ds_shadow"), Collections.emptyList())));
         Optional<Collection<String>> sqlNotes = shadowRouteEngine.parseSQLComments();
         assertTrue(sqlNotes.isPresent());
         assertThat(sqlNotes.get().size(), is(2));
@@ -92,50 +78,11 @@ public final class ShadowUpdateStatementRoutingEngineTest {
         assertThat(sqlNotesIt.next(), is("/*shadow:true,foo:bar*/"));
         assertThat(sqlNotesIt.next(), is("/*aaa:bbb*/"));
     }
-
-    private AlgorithmProvidedShadowRuleConfiguration createAlgorithmProvidedShadowRuleConfiguration() {
-        AlgorithmProvidedShadowRuleConfiguration result = new AlgorithmProvidedShadowRuleConfiguration();
-        result.setDataSources(createDataSources());
-        result.setTables(createTables());
-        result.setShadowAlgorithms(createShadowAlgorithms());
-        return result;
-    }
-
-    private Map<String, ShadowAlgorithm> createShadowAlgorithms() {
-        Map<String, ShadowAlgorithm> result = new LinkedHashMap<>();
-        result.put("user-id-update-regex-algorithm", createColumnShadowAlgorithm());
-        return result;
-    }
-
-    private ShadowAlgorithm createColumnShadowAlgorithm() {
-        Properties properties = new Properties();
-        properties.setProperty("column", "user_id");
-        properties.setProperty("operation", "update");
-        properties.setProperty("regex", "[1]");
-        ColumnRegexMatchShadowAlgorithm columnRegexMatchShadowAlgorithm = new ColumnRegexMatchShadowAlgorithm();
-        columnRegexMatchShadowAlgorithm.setProps(properties);
-        columnRegexMatchShadowAlgorithm.init();
-        return columnRegexMatchShadowAlgorithm;
-    }
-
-    private Map<String, ShadowTableConfiguration> createTables() {
-        Map<String, ShadowTableConfiguration> result = new LinkedHashMap<>();
-        Collection<String> shadowAlgorithmNames = new LinkedList<>();
-        shadowAlgorithmNames.add("user-id-update-regex-algorithm");
-        result.put("t_order", new ShadowTableConfiguration(Collections.singletonList("shadow-data-source-0"), shadowAlgorithmNames));
-        return result;
-    }
-
-    private Map<String, ShadowDataSourceConfiguration> createDataSources() {
-        Map<String, ShadowDataSourceConfiguration> result = new LinkedHashMap<>();
-        result.put("shadow-data-source-0", new ShadowDataSourceConfiguration("ds", "ds_shadow"));
-        return result;
-    }
     
     @Test
     public void assertGetAllTables() {
-        Collection<SimpleTableSegment> allTables = shadowRouteEngine.getAllTables();
-        assertThat(allTables.size(), is(1));
-        assertThat(allTables.iterator().next().getTableName().getIdentifier().getValue(), is("t_order"));
+        Collection<SimpleTableSegment> actual = shadowRouteEngine.getAllTables();
+        assertThat(actual.size(), is(1));
+        assertThat(actual.iterator().next().getTableName().getIdentifier().getValue(), is("t_order"));
     }
 }

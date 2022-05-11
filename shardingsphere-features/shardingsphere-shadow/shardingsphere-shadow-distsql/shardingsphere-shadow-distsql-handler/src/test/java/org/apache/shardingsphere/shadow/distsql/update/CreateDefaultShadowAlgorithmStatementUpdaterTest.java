@@ -39,17 +39,13 @@ public final class CreateDefaultShadowAlgorithmStatementUpdaterTest {
     private ShardingSphereMetaData shardingSphereMetaData;
     
     @Mock
-    private ShadowRuleConfiguration currentConfiguration;
+    private ShadowRuleConfiguration currentConfig;
     
     private final CreateDefaultShadowAlgorithmStatementUpdater updater = new CreateDefaultShadowAlgorithmStatementUpdater();
     
     @Test(expected = RequiredAlgorithmMissedException.class)
     public void assertExecuteWithNotExistAlgorithm() throws DistSQLException {
-        when(currentConfiguration.getShadowAlgorithms()).thenReturn(Collections.singletonMap("default_name", null));
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement("input_default_name"), currentConfiguration);
-    }
-    
-    private CreateDefaultShadowAlgorithmStatement createSQLStatement(final String defaultShadowAlgorithmName) {
-        return new CreateDefaultShadowAlgorithmStatement(defaultShadowAlgorithmName);
+        when(currentConfig.getShadowAlgorithms()).thenReturn(Collections.singletonMap("default_name", null));
+        updater.checkSQLStatement(shardingSphereMetaData, new CreateDefaultShadowAlgorithmStatement("input_default_name"), currentConfig);
     }
 }

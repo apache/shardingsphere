@@ -33,15 +33,7 @@ public final class TypedPropertiesTest {
     
     @Test
     public void assertGetValue() {
-        Properties props = new Properties();
-        props.setProperty(TestTypedPropertyKey.BOOLEAN_VALUE.getKey(), Boolean.TRUE.toString());
-        props.setProperty(TestTypedPropertyKey.BOOLEAN_OBJECT_VALUE.getKey(), Boolean.TRUE.toString());
-        props.setProperty(TestTypedPropertyKey.INT_VALUE.getKey(), "100");
-        props.setProperty(TestTypedPropertyKey.INT_OBJECT_VALUE.getKey(), "100");
-        props.setProperty(TestTypedPropertyKey.LONG_VALUE.getKey(), "10000");
-        props.setProperty(TestTypedPropertyKey.LONG_OBJECT_VALUE.getKey(), "10000");
-        props.setProperty(TestTypedPropertyKey.STRING_VALUE.getKey(), "new_value");
-        TestTypedProperties actual = new TestTypedProperties(props);
+        TestTypedProperties actual = new TestTypedProperties(createProperties());
         assertTrue(actual.getValue(TestTypedPropertyKey.BOOLEAN_VALUE));
         assertTrue(actual.getValue(TestTypedPropertyKey.BOOLEAN_OBJECT_VALUE));
         assertThat(actual.getValue(TestTypedPropertyKey.INT_VALUE), is(100));
@@ -49,6 +41,18 @@ public final class TypedPropertiesTest {
         assertThat(actual.getValue(TestTypedPropertyKey.LONG_VALUE), is(10000L));
         assertThat(actual.getValue(TestTypedPropertyKey.LONG_OBJECT_VALUE), is(10000L));
         assertThat(actual.getValue(TestTypedPropertyKey.STRING_VALUE), is("new_value"));
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty(TestTypedPropertyKey.BOOLEAN_VALUE.getKey(), Boolean.TRUE.toString());
+        result.setProperty(TestTypedPropertyKey.BOOLEAN_OBJECT_VALUE.getKey(), Boolean.TRUE.toString());
+        result.setProperty(TestTypedPropertyKey.INT_VALUE.getKey(), "100");
+        result.setProperty(TestTypedPropertyKey.INT_OBJECT_VALUE.getKey(), "100");
+        result.setProperty(TestTypedPropertyKey.LONG_VALUE.getKey(), "10000");
+        result.setProperty(TestTypedPropertyKey.LONG_OBJECT_VALUE.getKey(), "10000");
+        result.setProperty(TestTypedPropertyKey.STRING_VALUE.getKey(), "new_value");
+        return result;
     }
     
     @Test

@@ -23,12 +23,11 @@ chapter = true
  - 应尽量将设计精细化拆分；做到小幅度修改，多次数提交，但应保证提交的完整性。
  - 确保遵守编码规范。
  - 如果您使用 IDEA，可导入推荐的 [Settings](https://shardingsphere.apache.org/community/data/shardingsphere-settings.jar)。
+ - 通过 Spotless 统一代码风格，执行 `mvn spotless:apply` 格式化代码。
  
 ## 编码规范
 
  - 使用 linux 换行符。
- - 缩进（包含空行）和上一行保持一致。
- - 类声明后与下面的变量或方法之间需要空一行。
  - 不应有无意义的空行。请提炼私有方法，代替方法体过长或代码段逻辑闭环而采用的空行间隔。
  - 类、方法和变量的命名要做到顾名思义，避免使用缩写。
  - 返回值变量使用 `result` 命名；循环中使用 `each` 命名循环变量；map 中使用 `entry` 代替 `each`。
@@ -65,7 +64,7 @@ chapter = true
    - 正确性测试（Correct）：通过正确的输入，得到预期结果。
    - 合理性设计（Design）：与生产代码设计相结合，设计高质量的单元测试。
    - 容错性测试（Error）：通过非法数据、异常流程等错误的输入，得到预期结果。
- - 如无特殊理由，测试需全覆盖。
+ - 除去简单的 `getter /setter` 方法，以及声明 SPI 的静态代码，如：`getType / getOrder`，单元测试需全覆盖。
  - 每个测试用例需精确断言。
  - 准备环境的代码和测试代码分离。
  - 只有 junit `Assert`，hamcrest `CoreMatchers`，Mockito 相关可以使用 static import。

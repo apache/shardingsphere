@@ -22,7 +22,7 @@ Apache ShardingSphere 在分片算法上提供给用户极大的自由度，但�
 
 ShardingSphere-Scaling 是一个提供给用户的通用数据接入迁移及弹性伸缩的解决方案。
 
-![概述](https://shardingsphere.apache.org/document/current/img/scaling/overview.cn.png)
+![概述](https://shardingsphere.apache.org/document/current/img/scaling/overview_v2.png)
 
 ## 目标
 

@@ -96,7 +96,7 @@ public final class OptimizerPlannerContextFactory {
         return result;
     }
     
-    private static CalciteCatalogReader createCatalogReader(final String schemaName, final Schema schema, 
+    private static CalciteCatalogReader createCatalogReader(final String schemaName, final Schema schema,
                                                             final RelDataTypeFactory relDataTypeFactory, final CalciteConnectionConfig connectionConfig) {
         CalciteSchema rootSchema = CalciteSchema.createRootSchema(true);
         rootSchema.add(schemaName, schema);

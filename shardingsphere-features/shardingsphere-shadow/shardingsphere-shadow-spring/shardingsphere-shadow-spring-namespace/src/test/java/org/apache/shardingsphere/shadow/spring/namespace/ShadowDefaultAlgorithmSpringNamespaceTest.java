@@ -20,7 +20,6 @@ package org.apache.shardingsphere.shadow.spring.namespace;
 import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.algorithm.shadow.hint.SimpleHintShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
-import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
@@ -29,8 +28,10 @@ import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 import javax.annotation.Resource;
 import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 @ContextConfiguration(locations = "classpath:META-INF/spring/shadow-default-algorithm-application-context.xml")
 public final class ShadowDefaultAlgorithmSpringNamespaceTest extends AbstractJUnit4SpringContextTests {
@@ -41,25 +42,17 @@ public final class ShadowDefaultAlgorithmSpringNamespaceTest extends AbstractJUn
     @Test
     public void assertDataSource() {
         assertShadowDataSources(shadowRule.getDataSources());
-        assertShadowTables(shadowRule.getTables());
-        assertDefaultShadowAlgorithm(shadowRule.getDefaultShadowAlgorithmName());
+        assertTrue(shadowRule.getTables().isEmpty());
+        assertThat(shadowRule.getDefaultShadowAlgorithmName(), is("simple-hint-algorithm"));
         assertShadowAlgorithms(shadowRule.getShadowAlgorithms());
-    }
-    
-    private void assertDefaultShadowAlgorithm(final String defaultShadowAlgorithmName) {
-        assertThat("simple-hint-algorithm".equals(defaultShadowAlgorithmName), is(true));
     }
     
     private void assertShadowAlgorithms(final Map<String, ShadowAlgorithm> shadowAlgorithms) {
         ShadowAlgorithm simpleHintAlgorithm = shadowAlgorithms.get("simple-hint-algorithm");
-        assertThat(simpleHintAlgorithm instanceof SimpleHintShadowAlgorithm, is(true));
+        assertThat(simpleHintAlgorithm, instanceOf(SimpleHintShadowAlgorithm.class));
         assertThat(simpleHintAlgorithm.getType(), is("SIMPLE_HINT"));
-        assertThat(simpleHintAlgorithm.getProps().get("shadow"), is("true"));
-        assertThat(simpleHintAlgorithm.getProps().get("foo"), is("bar"));
-    }
-    
-    private void assertShadowTables(final Map<String, ShadowTableConfiguration> shadowTables) {
-        assertThat(shadowTables.size(), is(0));
+        assertTrue(Boolean.parseBoolean(simpleHintAlgorithm.getProps().getProperty("shadow")));
+        assertThat(simpleHintAlgorithm.getProps().getProperty("foo"), is("bar"));
     }
     
     private void assertShadowDataSources(final Map<String, ShadowDataSourceConfiguration> dataSources) {

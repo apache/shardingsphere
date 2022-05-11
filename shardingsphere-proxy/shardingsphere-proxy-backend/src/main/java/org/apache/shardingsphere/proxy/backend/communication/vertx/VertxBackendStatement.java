@@ -38,7 +38,7 @@ public final class VertxBackendStatement implements ExecutorVertxStatementManage
     }
     
     @Override
-    public Future<Query<RowSet<Row>>> createStorageResource(final ExecutionUnit executionUnit, final Future<? extends SqlClient> connection, 
+    public Future<Query<RowSet<Row>>> createStorageResource(final ExecutionUnit executionUnit, final Future<? extends SqlClient> connection,
                                                             final ConnectionMode connectionMode, final VertxExecutionContext option) {
         return Future.failedFuture(new UnsupportedOperationException("Vert.x prepared query is not like JDBC prepared statement."));
     }

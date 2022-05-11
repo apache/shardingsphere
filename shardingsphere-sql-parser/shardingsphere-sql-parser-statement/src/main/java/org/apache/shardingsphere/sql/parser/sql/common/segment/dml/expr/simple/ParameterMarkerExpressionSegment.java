@@ -56,7 +56,7 @@ public class ParameterMarkerExpressionSegment implements SimpleExpressionSegment
         this.parameterMarkerIndex = parameterMarkerIndex;
         this.parameterMarkerType = ParameterMarkerType.QUESTION;
     }
-
+    
     @Override
     public Optional<String> getAlias() {
         return null == alias ? Optional.empty() : Optional.ofNullable(alias.getIdentifier().getValue());

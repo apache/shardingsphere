@@ -17,11 +17,9 @@
 
 package org.apache.shardingsphere.proxy.backend.config.yaml.swapper;
 
-import org.apache.shardingsphere.infra.database.metadata.url.StandardJdbcUrlParser;
 import org.apache.shardingsphere.infra.datasource.config.ConnectionConfiguration;
 import org.apache.shardingsphere.infra.datasource.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.config.PoolConfiguration;
-import org.apache.shardingsphere.infra.datasource.registry.GlobalDataSourceRegistry;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDataSourceConfiguration;
 
 /**
@@ -33,15 +31,9 @@ public final class YamlProxyDataSourceConfigurationSwapper {
      * Swap YAML proxy data source configuration to data source configuration.
      *
      * @param yamlConfig YAML proxy data source configuration
-     * @param schemaName Schema name
-     * @param dataSourceName Data source name
-     * @param isDataSourceAggregation is data source aggregation
      * @return data source configuration
      */
-    public DataSourceConfiguration swap(final YamlProxyDataSourceConfiguration yamlConfig, final String schemaName, final String dataSourceName, final boolean isDataSourceAggregation) {
-        if (isDataSourceAggregation) {
-            setGlobalDataSourceSchema(schemaName, dataSourceName, yamlConfig.getUrl());
-        }
+    public DataSourceConfiguration swap(final YamlProxyDataSourceConfiguration yamlConfig) {
         return new DataSourceConfiguration(swapConnectionConfiguration(yamlConfig), swapPoolConfiguration(yamlConfig));
     }
     
@@ -52,13 +44,5 @@ public final class YamlProxyDataSourceConfigurationSwapper {
     private PoolConfiguration swapPoolConfiguration(final YamlProxyDataSourceConfiguration yamlConfig) {
         return new PoolConfiguration(yamlConfig.getConnectionTimeoutMilliseconds(), yamlConfig.getIdleTimeoutMilliseconds(),
                 yamlConfig.getMaxLifetimeMilliseconds(), yamlConfig.getMaxPoolSize(), yamlConfig.getMinPoolSize(), yamlConfig.getReadOnly(), yamlConfig.getCustomPoolProps());
-    }
-
-    private void setGlobalDataSourceSchema(final String schemaName, final String dataSourceName, final String jdbcUrl) {
-        String key = schemaName + "." + dataSourceName;
-        StandardJdbcUrlParser jdbcUrlParser = new StandardJdbcUrlParser();
-        String value = jdbcUrlParser.parse(jdbcUrl).getDatabase();
-        GlobalDataSourceRegistry.getInstance().getDataSourceSchema().put(key, value);
-        GlobalDataSourceRegistry.getInstance().setDataSourceAggregationEnabled(true);
     }
 }

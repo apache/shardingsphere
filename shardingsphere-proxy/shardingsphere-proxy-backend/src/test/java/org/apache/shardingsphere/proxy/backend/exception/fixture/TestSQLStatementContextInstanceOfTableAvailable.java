@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -30,18 +30,18 @@ import java.util.Collection;
 
 @RequiredArgsConstructor
 public final class TestSQLStatementContextInstanceOfTableAvailable implements SQLStatementContext<SQLStatement>, TableAvailable {
-
+    
     private final SQLStatement sqlStatement;
-
+    
     private final Collection<SimpleTableSegment> allTables;
-
+    
     private final TablesContext tablesContext;
-
+    
     @Override
     public SQLStatement getSqlStatement() {
         return sqlStatement;
     }
-
+    
     @Override
     public TablesContext getTablesContext() {
         return tablesContext;
@@ -49,7 +49,7 @@ public final class TestSQLStatementContextInstanceOfTableAvailable implements SQ
     
     @Override
     public DatabaseType getDatabaseType() {
-        return DatabaseTypeRegistry.getDefaultDatabaseType();
+        return DatabaseTypeEngine.getDefaultDatabaseType();
     }
     
     @Override

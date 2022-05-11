@@ -281,7 +281,7 @@ rules:
       - root@%:root
       - sharding@:sharding
     provider:
-      type: ALL_PRIVILEGES_PERMITTED
+      type: ALL_PERMITTED
 props:
   max-connections-size-per-query: 1
   kernel-executor-size: 16  # Infinite by default.
@@ -796,7 +796,7 @@ rules:
         keep-alive-cron: '0/5 * * * * ?'
   discoveryTypes:
     mgr:
-      type: MGR
+      type: MySQL.MGR
       props:
         group-name: 92504d5b-6dec-11e8-91ea-246e9612aaf1
 ```

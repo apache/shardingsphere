@@ -46,7 +46,7 @@ public final class ShadowDistSQLStatementParserFacade implements FeaturedDistSQL
     }
     
     @Override
-    public String getFeatureType() {
+    public String getType() {
         return "shadow";
     }
 }

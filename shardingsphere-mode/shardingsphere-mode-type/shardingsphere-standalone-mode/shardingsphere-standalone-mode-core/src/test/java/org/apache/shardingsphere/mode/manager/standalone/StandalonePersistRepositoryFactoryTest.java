@@ -17,43 +17,24 @@
 
 package org.apache.shardingsphere.mode.manager.standalone;
 
-import org.apache.shardingsphere.infra.config.mode.PersistRepositoryConfiguration;
-import org.apache.shardingsphere.mode.manager.standalone.fixture.StandalonePersistRepositoryFixture;
-import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepository;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepositoryFactory;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.exception.ServiceProviderNotFoundException;
 import org.junit.Test;
 
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 public final class StandalonePersistRepositoryFactoryTest {
-
-    static {
-        ShardingSphereServiceLoader.register(StandalonePersistRepositoryFixture.class);
-    }
-
+    
     @Test
-    public void assertNewInstanceWithNoConfig() {
-        StandalonePersistRepository standalonePersistRepository = StandalonePersistRepositoryFactory.newInstance(null);
-        assertThat(standalonePersistRepository.getType(), is("File"));
+    public void assertGetInstance() {
+        assertThat(StandalonePersistRepositoryFactory.getInstance(new StandalonePersistRepositoryConfiguration("FIXTURE", new Properties())).getType(), is("FIXTURE"));
     }
-
+    
     @Test
-    public void assertNewInstanceWithConfig() {
-        PersistRepositoryConfiguration config = new StandalonePersistRepositoryConfiguration("File", new Properties());
-        StandalonePersistRepository standalonePersistRepository = StandalonePersistRepositoryFactory.newInstance(config);
-        assertNotNull(standalonePersistRepository);
-    }
-
-    @Test(expected = ServiceProviderNotFoundException.class)
-    public void assertNewInstanceWhenTypeIsNotExist() {
-        PersistRepositoryConfiguration config = new StandalonePersistRepositoryConfiguration("NOT_EXISTED", new Properties());
-        StandalonePersistRepositoryFactory.newInstance(config);
+    public void assertGetDefaultInstance() {
+        assertThat(StandalonePersistRepositoryFactory.getInstance(null).getType(), is("FIXTURE"));
     }
 }

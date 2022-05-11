@@ -35,13 +35,12 @@ public final class ContextManagerBuilderFactory {
     }
     
     /**
-     * Build context manager.
+     * Get instance of context manager builder.
      * 
      * @param modeConfig mode configuration
-     * @return context manager
+     * @return got instance
      */
-    public static ContextManagerBuilder newInstance(final ModeConfiguration modeConfig) {
-        return null == modeConfig
-                ? RequiredSPIRegistry.getRegisteredService(ContextManagerBuilder.class) : TypedSPIRegistry.getRegisteredService(ContextManagerBuilder.class, modeConfig.getType());
+    public static ContextManagerBuilder getInstance(final ModeConfiguration modeConfig) {
+        return null == modeConfig ? RequiredSPIRegistry.getRegisteredService(ContextManagerBuilder.class) : TypedSPIRegistry.getRegisteredService(ContextManagerBuilder.class, modeConfig.getType());
     }
 }

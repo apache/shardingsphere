@@ -24,7 +24,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.DatabaseRequiredBackendHandler;
 
 import java.sql.Types;
 import java.util.Collection;
@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 /**
  * RQL backend handler.
  */
-public final class RQLBackendHandler extends SchemaRequiredBackendHandler<RQLStatement> {
+public final class RQLBackendHandler extends DatabaseRequiredBackendHandler<RQLStatement> {
     
     private final DistSQLResultSet resultSet;
     
@@ -44,10 +44,10 @@ public final class RQLBackendHandler extends SchemaRequiredBackendHandler<RQLSta
     }
     
     @Override
-    protected ResponseHeader execute(final String schemaName, final RQLStatement sqlStatement) {
-        resultSet.init(ProxyContext.getInstance().getMetaData(schemaName), sqlStatement);
-        List<QueryHeader> queryHeaders = resultSet.getColumnNames().stream().map(
-            each -> new QueryHeader(schemaName, "", each, each, Types.CHAR, "CHAR", 255, 0, false, false, false, false)).collect(Collectors.toList());
+    protected ResponseHeader execute(final String databaseName, final RQLStatement sqlStatement) {
+        resultSet.init(ProxyContext.getInstance().getMetaData(databaseName), sqlStatement);
+        List<QueryHeader> queryHeaders = resultSet.getColumnNames().stream()
+                .map(each -> new QueryHeader(databaseName, "", each, each, Types.CHAR, "CHAR", 255, 0, false, false, false, false)).collect(Collectors.toList());
         return new QueryResponseHeader(queryHeaders);
     }
     

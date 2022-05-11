@@ -25,7 +25,6 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.c
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.RevokeStatementTestCase;
 
-
 /**
  * SQLServer Revoke statement assert.
  */

@@ -29,42 +29,42 @@ import java.sql.SQLFeatureNotSupportedException;
 public abstract class AbstractUnsupportedOperationParameterMetaData extends WrapperAdapter implements ParameterMetaData {
     
     @Override
-    public final int isNullable(final int param) throws SQLException {
+    public final int isNullable(final int parameter) throws SQLException {
         throw new SQLFeatureNotSupportedException("isNullable");
     }
     
     @Override
-    public final boolean isSigned(final int param) throws SQLException {
+    public final boolean isSigned(final int parameter) throws SQLException {
         throw new SQLFeatureNotSupportedException("isSigned");
     }
     
     @Override
-    public final int getPrecision(final int param) throws SQLException {
+    public final int getPrecision(final int parameter) throws SQLException {
         throw new SQLFeatureNotSupportedException("getPrecision");
     }
     
     @Override
-    public final int getScale(final int param) throws SQLException {
+    public final int getScale(final int parameter) throws SQLException {
         throw new SQLFeatureNotSupportedException("getScale");
     }
     
     @Override
-    public final int getParameterType(final int param) throws SQLException {
+    public final int getParameterType(final int parameter) throws SQLException {
         throw new SQLFeatureNotSupportedException("getParameterType");
     }
     
     @Override
-    public final String getParameterTypeName(final int param) throws SQLException {
+    public final String getParameterTypeName(final int parameter) throws SQLException {
         throw new SQLFeatureNotSupportedException("getParameterTypeName");
     }
     
     @Override
-    public final String getParameterClassName(final int param) throws SQLException {
+    public final String getParameterClassName(final int parameter) throws SQLException {
         throw new SQLFeatureNotSupportedException("getParameterClassName");
     }
     
     @Override
-    public final int getParameterMode(final int param) throws SQLException {
+    public final int getParameterMode(final int parameter) throws SQLException {
         throw new SQLFeatureNotSupportedException("getParameterMode");
     }
 }

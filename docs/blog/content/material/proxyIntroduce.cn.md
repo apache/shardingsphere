@@ -117,7 +117,7 @@ rules: # 认证信息
      - root@%:root
      - sharding@:sharding
    provider:
-     type: ALL_PRIVILEGES_PERMITTED
+     type: ALL_PERMITTED
  - !TRANSACTION
    defaultType: XA
    providerType: Atomikos

@@ -50,7 +50,8 @@ public final class DataSourcePoolCreator {
      * @return created data sources
      */
     public static Map<String, DataSource> create(final Map<String, DataSourceProperties> dataSourcePropsMap) {
-        return dataSourcePropsMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        return dataSourcePropsMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> create(entry.getKey(), entry.getValue()), (oldValue, currentValue) -> oldValue,
+                LinkedHashMap::new));
     }
     
     /**
@@ -60,14 +61,9 @@ public final class DataSourcePoolCreator {
      * @return created data source
      */
     public static DataSource create(final DataSourceProperties dataSourceProps) {
-        if (isCanBeDataSourceAggregation(dataSourceProps)) {
-            if (GlobalDataSourceRegistry.getInstance().getCachedDataSources().containsKey(dataSourceProps.getInstance())) {
-                return GlobalDataSourceRegistry.getInstance().getCachedDataSources().get(dataSourceProps.getInstance());
-            }
-        }
         // TODO when aggregation is enabled, some data source properties should be changed, e.g. maxPoolSize
         DataSource result = createDataSource(dataSourceProps.getDataSourceClassName());
-        Optional<DataSourcePoolMetaData> poolMetaData = DataSourcePoolMetaDataFactory.newInstance(dataSourceProps.getDataSourceClassName());
+        Optional<DataSourcePoolMetaData> poolMetaData = DataSourcePoolMetaDataFactory.findInstance(dataSourceProps.getDataSourceClassName());
         DataSourceReflection dataSourceReflection = new DataSourceReflection(result);
         if (poolMetaData.isPresent()) {
             setDefaultFields(dataSourceReflection, poolMetaData.get());
@@ -77,8 +73,20 @@ public final class DataSourcePoolCreator {
         } else {
             setConfiguredFields(dataSourceProps, dataSourceReflection);
         }
-        if (isCanBeDataSourceAggregation(dataSourceProps)) {
-            GlobalDataSourceRegistry.getInstance().getCachedDataSources().put(dataSourceProps.getInstance(), result);
+        return result;
+    }
+    
+    /**
+     * Create data source.
+     *
+     * @param dataSourceName data source name
+     * @param dataSourceProps data source properties
+     * @return created data source
+     */
+    public static DataSource create(final String dataSourceName, final DataSourceProperties dataSourceProps) {
+        DataSource result = create(dataSourceProps);
+        if (!GlobalDataSourceRegistry.getInstance().getCachedDataSourceDataSources().containsKey(dataSourceName)) {
+            GlobalDataSourceRegistry.getInstance().getCachedDataSourceDataSources().put(dataSourceName, result);
         }
         return result;
     }
@@ -124,13 +132,5 @@ public final class DataSourcePoolCreator {
                 dataSourcePoolMetaDataReflection.getJdbcConnectionProperties().setProperty(entry.getKey(), entry.getValue().toString());
             }
         }
-    }
-
-    private static boolean isCanBeDataSourceAggregation(final DataSourceProperties dataSourceProps) {
-        if (!dataSourceProps.getConnectionPropertySynonyms().getLocalProperties().containsKey("jdbcUrl")) {
-            return false;
-        }
-        String jdbcUrlProp = (String) dataSourceProps.getConnectionPropertySynonyms().getLocalProperties().get("jdbcUrl");
-        return jdbcUrlProp.contains("jdbc:mysql") && GlobalDataSourceRegistry.getInstance().isDataSourceAggregationEnabled();
     }
 }

@@ -39,15 +39,16 @@ public final class DatabaseDatetimeService implements DatetimeService {
     @Override
     public Date getDatetime() {
         try {
-            return loadDatetime(timeServiceConfig.getDataSource(), DatetimeLoadingSQLProviderFactory.newInstance(timeServiceConfig.getDatabaseType()).getDatetimeLoadingSQL());
+            return loadDatetime(timeServiceConfig.getDataSource(), DatetimeLoadingSQLProviderFactory.getInstance(timeServiceConfig.getDatabaseType()).getDatetimeLoadingSQL());
         } catch (final SQLException ex) {
             throw new ShardingSphereException("Load datetime from database error!", ex);
         }
     }
     
     private Date loadDatetime(final DataSource dataSource, final String datetimeLoadingSQL) throws SQLException {
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(datetimeLoadingSQL)) {
+        try (
+                Connection connection = dataSource.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(datetimeLoadingSQL)) {
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 resultSet.next();
                 return (Date) resultSet.getObject(1);

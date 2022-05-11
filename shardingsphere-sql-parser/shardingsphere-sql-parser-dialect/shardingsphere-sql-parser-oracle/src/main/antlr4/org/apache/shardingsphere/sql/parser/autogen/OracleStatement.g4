@@ -71,5 +71,18 @@ execute
     | dropDirectory
     | dropView
     | dropTrigger
+    | alterView
+    | alterTrigger
+    | createEdition
+    | alterDatabaseLink
+    | alterDatabaseDictionary
+    | createSynonym
+    | createDirectory
+    | dropSynonym
+    | dropPackage
+    | dropEdition
+    | dropOutline
+    | alterOutline
+    | alterAnalyticView
     ) SEMI_?
     ;

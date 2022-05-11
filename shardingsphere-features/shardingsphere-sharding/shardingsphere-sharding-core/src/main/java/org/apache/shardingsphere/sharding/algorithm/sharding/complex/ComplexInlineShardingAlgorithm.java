@@ -21,12 +21,13 @@ import com.google.common.base.Preconditions;
 import groovy.lang.Closure;
 import groovy.util.Expando;
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sharding.support.InlineExpressionParser;
+import org.apache.shardingsphere.infra.expr.InlineExpressionParser;
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingValue;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -45,27 +46,36 @@ public final class ComplexInlineShardingAlgorithm implements ComplexKeysSharding
     
     private static final String ALLOW_RANGE_QUERY_KEY = "allow-range-query-with-inline-sharding";
     
-    private boolean allowRangeQuery;
-    
-    private String[] shardingColumns;
+    @Getter
+    private Properties props;
     
     private String algorithmExpression;
     
-    @Getter
-    @Setter
-    private Properties props = new Properties();
+    private Collection<String> shardingColumns;
+    
+    private boolean allowRangeQuery;
     
     @Override
-    public void init() {
-        String expression = props.getProperty(ALGORITHM_EXPRESSION_KEY);
-        Preconditions.checkNotNull(expression, "Inline sharding algorithm expression cannot be null.");
-        algorithmExpression = InlineExpressionParser.handlePlaceHolder(expression.trim());
-        initShardingColumns(props.getProperty(SHARING_COLUMNS_KEY, ""));
-        allowRangeQuery = Boolean.parseBoolean(props.getOrDefault(ALLOW_RANGE_QUERY_KEY, Boolean.FALSE.toString()).toString());
+    public void init(final Properties props) {
+        this.props = props;
+        algorithmExpression = getAlgorithmExpression(props);
+        shardingColumns = getShardingColumns(props);
+        allowRangeQuery = getAllowRangeQuery(props);
     }
     
-    private void initShardingColumns(final String shardingColumns) {
-        this.shardingColumns = shardingColumns.isEmpty() ? new String[0] : shardingColumns.split(",");
+    private String getAlgorithmExpression(final Properties props) {
+        String algorithmExpression = props.getProperty(ALGORITHM_EXPRESSION_KEY);
+        Preconditions.checkNotNull(algorithmExpression, "Inline sharding algorithm expression can not be null.");
+        return InlineExpressionParser.handlePlaceHolder(algorithmExpression.trim());
+    }
+    
+    private Collection<String> getShardingColumns(final Properties props) {
+        String shardingColumns = props.getProperty(SHARING_COLUMNS_KEY, "");
+        return shardingColumns.isEmpty() ? Collections.emptyList() : Arrays.asList(shardingColumns.split(","));
+    }
+    
+    private boolean getAllowRangeQuery(final Properties props) {
+        return Boolean.parseBoolean(props.getOrDefault(ALLOW_RANGE_QUERY_KEY, Boolean.FALSE.toString()).toString());
     }
     
     @Override
@@ -77,8 +87,8 @@ public final class ComplexInlineShardingAlgorithm implements ComplexKeysSharding
             throw new UnsupportedOperationException("Since the property of `" + ALLOW_RANGE_QUERY_KEY + "` is false, inline sharding algorithm can not tackle with range query.");
         }
         Map<String, Collection<Comparable<?>>> columnNameAndShardingValuesMap = shardingValue.getColumnNameAndShardingValuesMap();
-        if (shardingColumns.length > 0 && shardingColumns.length != columnNameAndShardingValuesMap.size()) {
-            throw new IllegalArgumentException("complex inline need " + shardingColumns.length + " sharing columns, but only found " + columnNameAndShardingValuesMap.size());
+        if (!shardingColumns.isEmpty() && shardingColumns.size() != columnNameAndShardingValuesMap.size()) {
+            throw new IllegalArgumentException("Complex inline need " + shardingColumns.stream() + " sharing columns, but only found " + columnNameAndShardingValuesMap.size());
         }
         Collection<Map<String, Comparable<?>>> combine = combine(columnNameAndShardingValuesMap);
         return combine.stream().map(this::doSharding).collect(Collectors.toList());

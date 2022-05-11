@@ -48,14 +48,14 @@ public final class PostgreSQLAuthenticationHandler {
     public PostgreSQLLoginResult login(final String username, final String databaseName, final byte[] md5Salt, final PostgreSQLPasswordMessagePacket passwordMessagePacket) {
         String digest = passwordMessagePacket.getDigest();
         Grantee grantee = new Grantee(username, "%");
-        if (!Strings.isNullOrEmpty(databaseName) && !ProxyContext.getInstance().schemaExists(databaseName)) {
+        if (!Strings.isNullOrEmpty(databaseName) && !ProxyContext.getInstance().databaseExists(databaseName)) {
             return new PostgreSQLLoginResult(PostgreSQLErrorCode.INVALID_CATALOG_NAME, String.format("database \"%s\" does not exist", databaseName));
         }
         if (!SQLCheckEngine.check(grantee, getRules(databaseName))) {
             return new PostgreSQLLoginResult(PostgreSQLErrorCode.INVALID_AUTHORIZATION_SPECIFICATION, String.format("unknown username: %s", username));
         }
         PostgreSQLAuthenticator authenticator = getAuthenticator(username, grantee.getHostname());
-        if (!SQLCheckEngine.check(grantee, (a, b) -> authenticator.authenticate((ShardingSphereUser) a, (Object[]) b), new Object[] {digest, md5Salt}, getRules(databaseName))) {
+        if (!SQLCheckEngine.check(grantee, (a, b) -> authenticator.authenticate((ShardingSphereUser) a, (Object[]) b), new Object[]{digest, md5Salt}, getRules(databaseName))) {
             return new PostgreSQLLoginResult(PostgreSQLErrorCode.INVALID_PASSWORD, String.format("password authentication failed for user \"%s\"", username));
         }
         return null == databaseName || SQLCheckEngine.check(databaseName, getRules(databaseName), grantee)
@@ -65,7 +65,7 @@ public final class PostgreSQLAuthenticationHandler {
     
     private Collection<ShardingSphereRule> getRules(final String databaseName) {
         Collection<ShardingSphereRule> result = new LinkedList<>();
-        if (!Strings.isNullOrEmpty(databaseName) && ProxyContext.getInstance().schemaExists(databaseName)) {
+        if (!Strings.isNullOrEmpty(databaseName) && ProxyContext.getInstance().databaseExists(databaseName)) {
             result.addAll(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(databaseName).getRuleMetaData().getRules());
         }
         result.addAll(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData().getRules());

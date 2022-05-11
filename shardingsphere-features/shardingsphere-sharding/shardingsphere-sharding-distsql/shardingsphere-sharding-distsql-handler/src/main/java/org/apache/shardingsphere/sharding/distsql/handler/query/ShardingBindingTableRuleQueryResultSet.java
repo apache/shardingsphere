@@ -39,7 +39,7 @@ public final class ShardingBindingTableRuleQueryResultSet implements DistSQLResu
     public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
         Optional<ShardingRuleConfiguration> shardingRuleConfig = metaData.getRuleMetaData().getConfigurations()
                 .stream().filter(each -> each instanceof ShardingRuleConfiguration).map(each -> (ShardingRuleConfiguration) each).findFirst();
-        data = shardingRuleConfig.map(shardingRuleConfiguration -> shardingRuleConfiguration.getBindingTableGroups().iterator()).orElseGet(Collections::emptyIterator);
+        data = shardingRuleConfig.map(each -> each.getBindingTableGroups().iterator()).orElseGet(Collections::emptyIterator);
     }
     
     @Override

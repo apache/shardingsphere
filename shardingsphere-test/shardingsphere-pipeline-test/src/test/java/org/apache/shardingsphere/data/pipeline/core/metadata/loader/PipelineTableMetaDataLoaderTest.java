@@ -20,29 +20,28 @@ package org.apache.shardingsphere.data.pipeline.core.metadata.loader;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineTableMetaData;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.sql.Types;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
+// TODO use H2 to do real test
 public final class PipelineTableMetaDataLoaderTest {
     
     private static final String TEST_CATALOG = "catalog";
@@ -59,20 +58,13 @@ public final class PipelineTableMetaDataLoaderTest {
     
     private static final String TEST_TABLE = "test";
     
-    @Mock
     private PipelineDataSourceWrapper dataSource;
     
     @Mock
     private Connection connection;
     
     @Mock
-    private Statement statement;
-    
-    @Mock
     private DatabaseMetaData databaseMetaData;
-    
-    @Mock
-    private ResultSet tableResultSet;
     
     @Mock
     private ResultSet primaryKeyResultSet;
@@ -80,18 +72,11 @@ public final class PipelineTableMetaDataLoaderTest {
     @Mock
     private ResultSet columnMetaDataResultSet;
     
-    @Mock
-    private ResultSet indexMetaDataResultSet;
-    
-    @Mock
-    private ResultSet caseSensitivesResultSet;
-    
-    @Mock
-    private ResultSetMetaData resultSetMetaData;
-    
     @Before
     public void setUp() throws SQLException {
-        when(dataSource.getConnection()).thenReturn(connection);
+        DataSource rawDataSource = mock(DataSource.class);
+        dataSource = new PipelineDataSourceWrapper(rawDataSource, new H2DatabaseType());
+        when(rawDataSource.getConnection()).thenReturn(connection);
         when(connection.getCatalog()).thenReturn(TEST_CATALOG);
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         when(databaseMetaData.getColumns(TEST_CATALOG, null, TEST_TABLE, "%")).thenReturn(columnMetaDataResultSet);
@@ -108,9 +93,8 @@ public final class PipelineTableMetaDataLoaderTest {
     @Test
     public void assertGetTableMetaData() {
         PipelineTableMetaDataLoader metaDataLoader = new PipelineTableMetaDataLoader(dataSource);
-        DatabaseType databaseType = mock(DatabaseType.class, RETURNS_DEEP_STUBS);
-        assertColumnMetaData(metaDataLoader.getTableMetaData(TEST_TABLE));
-        assertPrimaryKeys(metaDataLoader.getTableMetaData(TEST_TABLE).getPrimaryKeyColumns());
+        assertColumnMetaData(metaDataLoader.getTableMetaData(null, TEST_TABLE));
+        assertPrimaryKeys(metaDataLoader.getTableMetaData(null, TEST_TABLE).getPrimaryKeyColumns());
     }
     
     private void assertPrimaryKeys(final List<String> actual) {
@@ -133,6 +117,6 @@ public final class PipelineTableMetaDataLoaderTest {
     @Test(expected = RuntimeException.class)
     public void assertGetTableMetaDataFailure() throws SQLException {
         when(dataSource.getConnection()).thenThrow(new SQLException(""));
-        new PipelineTableMetaDataLoader(dataSource).getTableMetaData(TEST_TABLE);
+        new PipelineTableMetaDataLoader(dataSource).getTableMetaData(null, TEST_TABLE);
     }
 }

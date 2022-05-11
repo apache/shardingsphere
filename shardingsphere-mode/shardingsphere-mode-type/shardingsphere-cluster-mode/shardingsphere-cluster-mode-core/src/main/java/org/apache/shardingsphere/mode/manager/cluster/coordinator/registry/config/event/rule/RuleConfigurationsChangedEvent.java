@@ -31,9 +31,9 @@ import java.util.Collection;
 @Getter
 public final class RuleConfigurationsChangedEvent implements GovernanceEvent {
     
-    private final String schemaName;
+    private final String databaseName;
     
-    private final String schemaVersion;
+    private final String databaseVersion;
     
     private final Collection<RuleConfiguration> ruleConfigurations;
 }

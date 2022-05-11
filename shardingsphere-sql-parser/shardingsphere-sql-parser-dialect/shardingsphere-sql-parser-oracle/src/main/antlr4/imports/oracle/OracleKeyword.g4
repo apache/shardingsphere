@@ -219,6 +219,10 @@ DIRECTORY
     : D I R E C T O R Y
     ;
 
+CREDENTIALS
+    : C R E D E N T I A L S
+    ;
+
 EDITION
     : E D I T I O N
     ;
@@ -929,6 +933,10 @@ LOG
 
 REUSE
     : R E U S E
+    ;
+
+SETTINGS
+    : S E T T I N G S
     ;
 
 STORAGE
@@ -2705,4 +2713,8 @@ SINGLE_C
 
 SYSTIMESTAMP
     : S Y S T I M E S T A M P
+    ;
+
+CATEGORY
+    : C A T E G O R Y
     ;

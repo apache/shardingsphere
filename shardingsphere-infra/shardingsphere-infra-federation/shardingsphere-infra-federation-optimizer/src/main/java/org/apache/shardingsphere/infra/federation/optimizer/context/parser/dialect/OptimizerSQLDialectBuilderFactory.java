@@ -42,7 +42,7 @@ public final class OptimizerSQLDialectBuilderFactory {
     public static Properties build(final DatabaseType databaseType) {
         OptimizerSQLDialectBuilder builder = null == databaseType
                 ? RequiredSPIRegistry.getRegisteredService(OptimizerSQLDialectBuilder.class)
-                : TypedSPIRegistry.getRegisteredService(OptimizerSQLDialectBuilder.class, databaseType.getName());
+                : TypedSPIRegistry.getRegisteredService(OptimizerSQLDialectBuilder.class, databaseType.getType());
         return builder.build();
     }
 }

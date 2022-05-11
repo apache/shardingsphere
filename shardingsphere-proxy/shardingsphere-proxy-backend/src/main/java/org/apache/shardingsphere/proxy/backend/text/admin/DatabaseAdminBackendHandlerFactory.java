@@ -50,10 +50,10 @@ public final class DatabaseAdminBackendHandlerFactory {
      * @param databaseType database type
      * @param sqlStatementContext SQL statement context
      * @param connectionSession connection session
-     * @return new instance of database admin backend handler
+     * @return created instance
      */
     public static Optional<TextProtocolBackendHandler> newInstance(final DatabaseType databaseType, final SQLStatementContext<?> sqlStatementContext, final ConnectionSession connectionSession) {
-        Optional<DatabaseAdminExecutorFactory> executorFactory = TypedSPIRegistry.findRegisteredService(DatabaseAdminExecutorFactory.class, databaseType.getName());
+        Optional<DatabaseAdminExecutorFactory> executorFactory = TypedSPIRegistry.findRegisteredService(DatabaseAdminExecutorFactory.class, databaseType.getType());
         if (!executorFactory.isPresent()) {
             return Optional.empty();
         }
@@ -68,19 +68,19 @@ public final class DatabaseAdminBackendHandlerFactory {
      * @param sqlStatementContext SQL statement context
      * @param connectionSession connection session
      * @param sql SQL being executed
-     * @return new instance of database admin backend handler
+     * @return created instance
      */
     public static Optional<TextProtocolBackendHandler> newInstance(final DatabaseType databaseType, final SQLStatementContext<?> sqlStatementContext,
                                                                    final ConnectionSession connectionSession, final String sql) {
-        Optional<DatabaseAdminExecutorFactory> executorFactory = TypedSPIRegistry.findRegisteredService(DatabaseAdminExecutorFactory.class, databaseType.getName());
+        Optional<DatabaseAdminExecutorFactory> executorFactory = TypedSPIRegistry.findRegisteredService(DatabaseAdminExecutorFactory.class, databaseType.getType());
         if (!executorFactory.isPresent()) {
             return Optional.empty();
         }
-        Optional<DatabaseAdminExecutor> executor = executorFactory.get().newInstance(sqlStatementContext, sql, connectionSession.getSchemaName());
+        Optional<DatabaseAdminExecutor> executor = executorFactory.get().newInstance(sqlStatementContext, sql, connectionSession.getDatabaseName());
         return executor.map(optional -> createTextProtocolBackendHandler(sqlStatementContext, connectionSession, optional));
     }
     
-    private static TextProtocolBackendHandler createTextProtocolBackendHandler(final SQLStatementContext<?> sqlStatementContext, 
+    private static TextProtocolBackendHandler createTextProtocolBackendHandler(final SQLStatementContext<?> sqlStatementContext,
                                                                                final ConnectionSession connectionSession, final DatabaseAdminExecutor executor) {
         if (executor instanceof DatabaseAdminQueryExecutor) {
             return new DatabaseAdminQueryBackendHandler(connectionSession, (DatabaseAdminQueryExecutor) executor);

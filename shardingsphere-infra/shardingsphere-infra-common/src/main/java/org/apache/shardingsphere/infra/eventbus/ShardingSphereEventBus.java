@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.eventbus;
 import com.google.common.eventbus.EventBus;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 
 /**
  * ShardingSphere event bus.
@@ -37,6 +38,12 @@ public final class ShardingSphereEventBus {
     }
     
     private static final class ShardingSphereEventBusHolder {
+        
+        static {
+            SLF4JBridgeHandler.removeHandlersForRootLogger();
+            SLF4JBridgeHandler.install();
+        }
+        
         private static final EventBus INSTANCE = new EventBus();
     }
 }

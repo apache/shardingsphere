@@ -38,11 +38,11 @@ public final class ModelSegment implements SQLSegment {
     
     private final int stopIndex;
     
-    private List<SubquerySegment> referenceModelSelect = new LinkedList<>();
+    private final List<SubquerySegment> referenceModelSelect = new LinkedList<>();
     
-    private List<OrderBySegment> orderBySegments = new LinkedList<>();
+    private final List<OrderBySegment> orderBySegments = new LinkedList<>();
     
-    private List<ColumnSegment> cellAssignmentColumns = new LinkedList<>();
+    private final List<ColumnSegment> cellAssignmentColumns = new LinkedList<>();
     
-    private List<SubquerySegment> cellAsssignmentSelect = new LinkedList<>();
+    private final List<SubquerySegment> cellAsssignmentSelect = new LinkedList<>();
 }

@@ -18,8 +18,9 @@
 package org.apache.shardingsphere.proxy.backend.text;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -66,7 +67,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class TextProtocolBackendHandlerFactoryTest {
     
-    private final DatabaseType databaseType = DatabaseTypeRegistry.getActualDatabaseType("MySQL");
+    private final DatabaseType databaseType = DatabaseTypeFactory.getInstance("MySQL");
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ConnectionSession connectionSession;
@@ -77,14 +78,14 @@ public final class TextProtocolBackendHandlerFactoryTest {
     @Before
     public void setUp() {
         when(connectionSession.getTransactionStatus().getTransactionType()).thenReturn(TransactionType.LOCAL);
-        when(connectionSession.getDefaultSchemaName()).thenReturn("schema");
+        when(connectionSession.getDefaultDatabaseName()).thenReturn("db");
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
         when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
         mockGlobalRuleMetaData(metaDataContexts);
         ShardingSphereMetaData shardingSphereMetaData = mockShardingSphereMetaData();
-        when(metaDataContexts.getAllSchemaNames().contains("schema")).thenReturn(true);
-        when(metaDataContexts.getMetaDataMap().get("schema")).thenReturn(shardingSphereMetaData);
+        when(metaDataContexts.getAllDatabaseNames().contains("db")).thenReturn(true);
+        when(metaDataContexts.getMetaDataMap().get("db")).thenReturn(shardingSphereMetaData);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         when(metaDataContexts.getProps()).thenReturn(new ConfigurationProperties(new Properties()));
@@ -98,7 +99,7 @@ public final class TextProtocolBackendHandlerFactoryTest {
     private ShardingSphereMetaData mockShardingSphereMetaData() {
         ShardingSphereMetaData result = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         when(result.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
-        when(result.getDefaultSchema().getAllColumnNames("t_order")).thenReturn(Collections.singletonList("order_id"));
+        when(result.getSchemaByName(DefaultDatabase.LOGIC_NAME).getAllColumnNames("t_order")).thenReturn(Collections.singletonList("order_id"));
         return result;
     }
     
@@ -190,7 +191,7 @@ public final class TextProtocolBackendHandlerFactoryTest {
     public void assertNewInstanceWithSet() throws SQLException {
         String sql = "set @num=1";
         ProxyContext instance = ProxyContext.getInstance();
-        when(instance.getAllSchemaNames()).thenReturn(Collections.singletonList("schema"));
+        when(instance.getAllDatabaseNames()).thenReturn(Collections.singletonList("schema"));
         when(instance.getMetaData("schema").hasDataSource()).thenReturn(true);
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, Optional::empty, connectionSession);
         assertThat(actual, instanceOf(BroadcastDatabaseBackendHandler.class));
@@ -223,8 +224,8 @@ public final class TextProtocolBackendHandlerFactoryTest {
     public void assertNewInstanceWithQuery() throws SQLException {
         String sql = "select * from t_order limit 1";
         ProxyContext instance = ProxyContext.getInstance();
-        when(instance.getAllSchemaNames()).thenReturn(Collections.singletonList("schema"));
-        when(instance.getMetaData("schema").hasDataSource()).thenReturn(true);
+        when(instance.getAllDatabaseNames()).thenReturn(Collections.singletonList("db"));
+        when(instance.getMetaData("db").hasDataSource()).thenReturn(true);
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, Optional::empty, connectionSession);
         assertThat(actual, instanceOf(SchemaAssignedDatabaseBackendHandler.class));
         sql = "select * from information_schema.schemata limit 1";

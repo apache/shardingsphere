@@ -17,18 +17,18 @@
 
 package org.apache.shardingsphere.authority.provider.natived;
 
-import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
+import lombok.Getter;
+import org.apache.shardingsphere.authority.model.AuthorityRegistry;
 import org.apache.shardingsphere.authority.provider.natived.builder.StoragePrivilegeBuilder;
-import org.apache.shardingsphere.authority.spi.AuthorityProvideAlgorithm;
+import org.apache.shardingsphere.authority.registry.UserPrivilegeMapAuthorityRegistry;
+import org.apache.shardingsphere.authority.spi.AuthorityProviderAlgorithm;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Properties;
 
 /**
  * Native authority provide algorithm.
@@ -36,23 +36,19 @@ import java.util.concurrent.ConcurrentHashMap;
  * @deprecated This algorithm will be removed in a future version.
 */
 @Deprecated
-public final class NativeAuthorityProviderAlgorithm implements AuthorityProvideAlgorithm {
+public final class NativeAuthorityProviderAlgorithm implements AuthorityProviderAlgorithm {
     
-    private final Map<ShardingSphereUser, ShardingSpherePrivileges> userPrivilegeMap = new ConcurrentHashMap<>();
+    @Getter
+    private Properties props;
     
     @Override
-    public void init(final Map<String, ShardingSphereMetaData> metaDataMap, final Collection<ShardingSphereUser> users) {
-        userPrivilegeMap.putAll(StoragePrivilegeBuilder.build(new LinkedList<>(metaDataMap.values()), users));
+    public void init(final Properties props) {
+        this.props = props;
     }
     
     @Override
-    public void refresh(final Map<String, ShardingSphereMetaData> metaDataMap, final Collection<ShardingSphereUser> users) {
-        userPrivilegeMap.putAll(StoragePrivilegeBuilder.build(new LinkedList<>(metaDataMap.values()), users));
-    }
-    
-    @Override
-    public Optional<ShardingSpherePrivileges> findPrivileges(final Grantee grantee) {
-        return userPrivilegeMap.keySet().stream().filter(each -> each.getGrantee().equals(grantee)).findFirst().map(userPrivilegeMap::get);
+    public AuthorityRegistry buildAuthorityRegistry(final Map<String, ShardingSphereMetaData> metaDataMap, final Collection<ShardingSphereUser> users) {
+        return new UserPrivilegeMapAuthorityRegistry(StoragePrivilegeBuilder.build(new LinkedList<>(metaDataMap.values()), users));
     }
     
     @Override

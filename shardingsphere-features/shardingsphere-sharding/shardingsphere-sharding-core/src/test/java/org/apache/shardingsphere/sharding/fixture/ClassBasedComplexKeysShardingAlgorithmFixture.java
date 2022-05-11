@@ -17,24 +17,25 @@
 
 package org.apache.shardingsphere.sharding.fixture;
 
+import lombok.Getter;
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingValue;
 
 import java.util.Collection;
+import java.util.Properties;
 
+@Getter
 public final class ClassBasedComplexKeysShardingAlgorithmFixture implements ComplexKeysShardingAlgorithm<Integer> {
-
+    
+    private Properties props;
+    
     @Override
-    public void init() {
+    public void init(final Properties props) {
+        this.props = props;
     }
-
+    
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final ComplexKeysShardingValue<Integer> shardingValue) {
         return availableTargetNames;
-    }
-
-    @Override
-    public String getType() {
-        return null;
     }
 }

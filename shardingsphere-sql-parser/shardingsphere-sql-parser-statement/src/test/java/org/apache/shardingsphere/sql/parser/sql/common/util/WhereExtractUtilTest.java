@@ -36,12 +36,12 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class WhereExtractUtilTest {
-
+    
     @Test
     public void assertGetJoinWhereSegmentsWithEmptySelectStatement() {
         assertTrue(WhereExtractUtil.getJoinWhereSegments(new MySQLSelectStatement()).isEmpty());
     }
-
+    
     @Test
     public void assertGetJoinWhereSegments() {
         JoinTableSegment tableSegment = new JoinTableSegment();
@@ -55,7 +55,7 @@ public final class WhereExtractUtilTest {
         WhereSegment actual = joinWhereSegments.iterator().next();
         assertThat(actual.getExpr(), is(tableSegment.getCondition()));
     }
-
+    
     @Test
     public void assertGetSubqueryWhereSegmentsFromSubqueryTableSegment() {
         MySQLSelectStatement subQuerySelectStatement = new MySQLSelectStatement();

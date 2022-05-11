@@ -60,7 +60,7 @@ public final class StandardShardingStrategy implements ShardingStrategy {
                                          final DataNodeInfo dataNodeInfo, final ConfigurationProperties props) {
         ShardingConditionValue shardingConditionValue = shardingConditionValues.iterator().next();
         Collection<String> shardingResult = shardingConditionValue instanceof ListShardingConditionValue
-                ? doSharding(availableTargetNames, (ListShardingConditionValue) shardingConditionValue, dataNodeInfo) 
+                ? doSharding(availableTargetNames, (ListShardingConditionValue) shardingConditionValue, dataNodeInfo)
                 : doSharding(availableTargetNames, (RangeShardingConditionValue) shardingConditionValue, dataNodeInfo);
         Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         result.addAll(shardingResult);
@@ -71,7 +71,7 @@ public final class StandardShardingStrategy implements ShardingStrategy {
     private Collection<String> doSharding(final Collection<String> availableTargetNames, final ListShardingConditionValue<?> shardingValue, final DataNodeInfo dataNodeInfo) {
         Collection<String> result = new LinkedList<>();
         for (Comparable<?> each : shardingValue.getValues()) {
-            String target = shardingAlgorithm.doSharding(availableTargetNames, 
+            String target = shardingAlgorithm.doSharding(availableTargetNames,
                     new PreciseShardingValue(shardingValue.getTableName(), shardingValue.getColumnName(), dataNodeInfo, each));
             if (null != target && availableTargetNames.contains(target)) {
                 result.add(target);

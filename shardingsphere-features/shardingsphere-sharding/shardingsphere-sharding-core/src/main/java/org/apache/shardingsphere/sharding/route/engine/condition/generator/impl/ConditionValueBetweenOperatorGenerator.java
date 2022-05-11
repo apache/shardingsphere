@@ -18,8 +18,7 @@
 package org.apache.shardingsphere.sharding.route.engine.condition.generator.impl;
 
 import com.google.common.collect.Range;
-import org.apache.shardingsphere.spi.type.required.RequiredSPIRegistry;
-import org.apache.shardingsphere.infra.datetime.DatetimeService;
+import org.apache.shardingsphere.infra.datetime.DatetimeServiceFactory;
 import org.apache.shardingsphere.sharding.route.engine.condition.Column;
 import org.apache.shardingsphere.sharding.route.engine.condition.ExpressionConditionUtils;
 import org.apache.shardingsphere.sharding.route.engine.condition.generator.ConditionValue;
@@ -45,7 +44,7 @@ public final class ConditionValueBetweenOperatorGenerator implements ConditionVa
         if (betweenConditionValue.isPresent() && andConditionValue.isPresent()) {
             return Optional.of(new RangeShardingConditionValue<>(column.getName(), column.getTableName(), SafeNumberOperationUtil.safeClosed(betweenConditionValue.get(), andConditionValue.get())));
         }
-        Date datetime = RequiredSPIRegistry.getRegisteredService(DatetimeService.class).getDatetime();
+        Date datetime = DatetimeServiceFactory.getInstance().getDatetime();
         if (!betweenConditionValue.isPresent() && ExpressionConditionUtils.isNowExpression(predicate.getBetweenExpr())) {
             betweenConditionValue = Optional.of(datetime);
         }

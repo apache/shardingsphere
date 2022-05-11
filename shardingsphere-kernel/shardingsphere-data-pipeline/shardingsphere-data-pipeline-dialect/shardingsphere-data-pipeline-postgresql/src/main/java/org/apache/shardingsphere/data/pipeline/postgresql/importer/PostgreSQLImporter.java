@@ -19,13 +19,9 @@ package org.apache.shardingsphere.data.pipeline.postgresql.importer;
 
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
+import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.importer.AbstractImporter;
-import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.PostgreSQLPipelineSQLBuilder;
-import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
-
-import java.util.Map;
-import java.util.Set;
 
 /**
  * PostgreSQL importer.
@@ -37,8 +33,7 @@ public final class PostgreSQLImporter extends AbstractImporter {
     }
     
     @Override
-    protected PipelineSQLBuilder createSQLBuilder(final Map<String, Set<String>> shardingColumnsMap) {
-        return new PostgreSQLPipelineSQLBuilder(shardingColumnsMap);
+    protected String getSchemaName(final String logicTableName) {
+        return getImporterConfig().getSchemaName(new LogicTableName(logicTableName));
     }
 }
-

@@ -33,7 +33,7 @@ public final class InsertValueTest {
     
     @Test
     public void assertToString() {
-        List<ExpressionSegment> expressionSegmentList = new ArrayList<>(3);
+        List<ExpressionSegment> expressionSegments = new ArrayList<>(3);
         ParameterMarkerExpressionSegment parameterMarkerExpressionSegment = new ParameterMarkerExpressionSegment(1, 1, 1);
         LiteralExpressionSegment literalExpressionSegment = new LiteralExpressionSegment(2, 2, "literals");
         ComplexExpressionSegment complexExpressionSegment = new ComplexExpressionSegment() {
@@ -53,10 +53,10 @@ public final class InsertValueTest {
                 return 3;
             }
         };
-        expressionSegmentList.add(parameterMarkerExpressionSegment);
-        expressionSegmentList.add(literalExpressionSegment);
-        expressionSegmentList.add(complexExpressionSegment);
-        InsertValue insertValue = new InsertValue(expressionSegmentList);
+        expressionSegments.add(parameterMarkerExpressionSegment);
+        expressionSegments.add(literalExpressionSegment);
+        expressionSegments.add(complexExpressionSegment);
+        InsertValue insertValue = new InsertValue(expressionSegments);
         String actualToString = insertValue.toString();
         String expectedToString = "(?, 'literals', complexExpressionSegment)";
         assertThat(actualToString, is(expectedToString));

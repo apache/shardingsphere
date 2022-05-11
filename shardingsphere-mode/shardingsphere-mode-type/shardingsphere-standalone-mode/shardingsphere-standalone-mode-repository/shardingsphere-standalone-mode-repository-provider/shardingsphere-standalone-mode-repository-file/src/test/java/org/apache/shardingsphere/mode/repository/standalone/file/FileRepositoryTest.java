@@ -37,12 +37,7 @@ public final class FileRepositoryTest {
     public void setUp() {
         Properties props = new Properties();
         props.setProperty("path", "target");
-        fileRepository.setProps(props);
-    }
-    
-    @Test
-    public void assertType() {
-        assertThat(fileRepository.getType(), is("File"));
+        fileRepository.init(props);
     }
     
     @Test

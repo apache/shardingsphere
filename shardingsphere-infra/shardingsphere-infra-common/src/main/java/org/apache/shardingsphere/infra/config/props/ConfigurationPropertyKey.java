@@ -35,100 +35,107 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     /**
      * Whether show SQL in log.
      */
-    SQL_SHOW("sql-show", String.valueOf(Boolean.FALSE), boolean.class),
+    SQL_SHOW("sql-show", String.valueOf(Boolean.FALSE), boolean.class, false),
     
     /**
      * Whether show SQL details in simple style.
      */
-    SQL_SIMPLE("sql-simple", String.valueOf(Boolean.FALSE), boolean.class),
+    SQL_SIMPLE("sql-simple", String.valueOf(Boolean.FALSE), boolean.class, false),
     
     /**
      * The max thread size of worker group to execute SQL.
      */
-    KERNEL_EXECUTOR_SIZE("kernel-executor-size", String.valueOf(0), int.class),
+    KERNEL_EXECUTOR_SIZE("kernel-executor-size", String.valueOf(0), int.class, true),
     
     /**
      * Max opened connection size for each query.
      */
-    MAX_CONNECTIONS_SIZE_PER_QUERY("max-connections-size-per-query", String.valueOf(1), int.class),
+    MAX_CONNECTIONS_SIZE_PER_QUERY("max-connections-size-per-query", String.valueOf(1), int.class, false),
     
     /**
      * Whether validate table meta data consistency when application startup or updated.
      */
-    CHECK_TABLE_METADATA_ENABLED("check-table-metadata-enabled", String.valueOf(Boolean.FALSE), boolean.class),
+    CHECK_TABLE_METADATA_ENABLED("check-table-metadata-enabled", String.valueOf(Boolean.FALSE), boolean.class, false),
     
     /**
      * Frontend database protocol type for ShardingSphere-Proxy.
      */
-    PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE("proxy-frontend-database-protocol-type", "", String.class),
+    PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE("proxy-frontend-database-protocol-type", "", String.class, false),
     
     /**
      * Flush threshold for every records from databases for ShardingSphere-Proxy.
      */
-    PROXY_FRONTEND_FLUSH_THRESHOLD("proxy-frontend-flush-threshold", String.valueOf(128), int.class),
-      
+    PROXY_FRONTEND_FLUSH_THRESHOLD("proxy-frontend-flush-threshold", String.valueOf(128), int.class, false),
+    
     /**
      * Whether enable hint for ShardingSphere-Proxy.
      */
-    PROXY_HINT_ENABLED("proxy-hint-enabled", String.valueOf(Boolean.FALSE), boolean.class),
+    PROXY_HINT_ENABLED("proxy-hint-enabled", String.valueOf(Boolean.FALSE), boolean.class, false),
     
     /**
      * Whether enable show process list.
      */
-    SHOW_PROCESS_LIST_ENABLED("show-process-list-enabled", String.valueOf(Boolean.FALSE), boolean.class),
+    SHOW_PROCESS_LIST_ENABLED("show-process-list-enabled", String.valueOf(Boolean.FALSE), boolean.class, false),
     
     /**
      * The length of time in milliseconds an SQL waits for a global lock before giving up.
      */
-    LOCK_WAIT_TIMEOUT_MILLISECONDS("lock-wait-timeout-milliseconds", String.valueOf(50000L), long.class),
+    LOCK_WAIT_TIMEOUT_MILLISECONDS("lock-wait-timeout-milliseconds", String.valueOf(50000L), long.class, false),
     
     /**
      * Proxy backend query fetch size. A larger value may increase the memory usage of ShardingSphere Proxy.
      * The default value is -1, which means set the minimum value for different JDBC drivers.
      */
-    PROXY_BACKEND_QUERY_FETCH_SIZE("proxy-backend-query-fetch-size", String.valueOf(-1), int.class),
+    PROXY_BACKEND_QUERY_FETCH_SIZE("proxy-backend-query-fetch-size", String.valueOf(-1), int.class, false),
     
     /**
      * Whether check duplicate table.
      */
-    CHECK_DUPLICATE_TABLE_ENABLED("check-duplicate-table-enabled", String.valueOf(Boolean.FALSE), boolean.class),
+    CHECK_DUPLICATE_TABLE_ENABLED("check-duplicate-table-enabled", String.valueOf(Boolean.FALSE), boolean.class, false),
     
     /**
      * Proxy frontend executor size. The default value is 0, which means let Netty decide.
      */
-    PROXY_FRONTEND_EXECUTOR_SIZE("proxy-frontend-executor-size", String.valueOf(0), int.class),
+    PROXY_FRONTEND_EXECUTOR_SIZE("proxy-frontend-executor-size", String.valueOf(0), int.class, true),
     
     /**
      * Available options of proxy backend executor suitable: OLAP(default), OLTP. The OLTP option may reduce time cost of writing packets to client, but it may increase the latency of SQL execution
      * and block other clients if client connections are more than {@link ConfigurationPropertyKey#PROXY_FRONTEND_EXECUTOR_SIZE}, especially executing slow SQL.
      */
-    PROXY_BACKEND_EXECUTOR_SUITABLE("proxy-backend-executor-suitable", "OLAP", String.class),
+    PROXY_BACKEND_EXECUTOR_SUITABLE("proxy-backend-executor-suitable", "OLAP", String.class, false),
     
     /**
      * Less than or equal to 0 means no limitation.
      */
-    PROXY_FRONTEND_MAX_CONNECTIONS("proxy-frontend-max-connections", "0", int.class),
+    PROXY_FRONTEND_MAX_CONNECTIONS("proxy-frontend-max-connections", "0", int.class, false),
     
     /**
-     * Whether enable sql federation.
+     * Whether enable SQL federation.
      */
-    SQL_FEDERATION_ENABLED("sql-federation-enabled", String.valueOf(Boolean.FALSE), boolean.class),
+    SQL_FEDERATION_ENABLED("sql-federation-enabled", String.valueOf(Boolean.FALSE), boolean.class, false),
     
     /**
-     * Proxy backend driver type. Default driver is JDBC.
+     * Proxy backend driver type..
      */
-    PROXY_BACKEND_DRIVER_TYPE("proxy-backend-driver-type", "JDBC", String.class),
-
+    PROXY_BACKEND_DRIVER_TYPE("proxy-backend-driver-type", "JDBC", String.class, true),
+    
     /**
-     * Whether enable data source aggregation, default false.
+     * Proxy MySQL default version.
      */
-    DATA_SOURCE_AGGREGATION_ENABLED("data-source-aggregation-enabled", String.valueOf(Boolean.FALSE), boolean.class);
+    PROXY_MYSQL_DEFAULT_VERSION("proxy-mysql-default-version", "5.7.22", String.class, false),
+    
+    /**
+     * Proxy default start port.
+     */
+    PROXY_DEFAULT_PORT("proxy-default-port", "3307", int.class, true);
     
     private final String key;
     
     private final String defaultValue;
     
     private final Class<?> type;
+    
+    private final boolean rebootRequired;
     
     /**
      * Get property key names.

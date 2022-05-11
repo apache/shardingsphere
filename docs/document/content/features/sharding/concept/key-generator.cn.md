@@ -18,6 +18,10 @@ Apache ShardingSphere 不仅提供了内置的分布式主键生成器，例如 
 
 采用 `UUID.randomUUID()` 的方式产生分布式主键。
 
+### NanoID
+
+生成长度为 21 的字符串分布式主键。
+
 ### SNOWFLAKE
 
 在分片规则配置模块可配置每个表的主键生成策略，默认使用雪花算法（snowflake）生成 64bit 的长整型数据。

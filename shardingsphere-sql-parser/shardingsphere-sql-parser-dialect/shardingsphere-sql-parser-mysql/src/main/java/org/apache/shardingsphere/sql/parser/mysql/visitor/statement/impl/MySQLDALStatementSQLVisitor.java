@@ -279,7 +279,7 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
         MySQLShowEngineStatement result = new MySQLShowEngineStatement();
         result.setEngineName(ctx.engineRef().getText());
         return result;
-    } 
+    }
     
     @Override
     public ASTNode visitShowCharset(final ShowCharsetContext ctx) {
@@ -351,7 +351,7 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitResetPersist(final ResetPersistContext ctx) {
         MySQLResetPersistStatement result = new MySQLResetPersistStatement();
@@ -363,7 +363,7 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitResetOption(final ResetOptionContext ctx) {
         if (null != ctx.MASTER()) {
@@ -386,17 +386,17 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
         result.setStopIndex(ctx.stop.getStopIndex());
         return result;
     }
-
+    
     @Override
     public ASTNode visitChannelOption(final ChannelOptionContext ctx) {
         return visit(ctx.string_());
     }
-
+    
     @Override
     public ASTNode visitBinaryLogFileIndexNumber(final BinaryLogFileIndexNumberContext ctx) {
         return new NumberLiteralValue(ctx.getText());
     }
-
+    
     @Override
     public ASTNode visitShowReplicas(final ShowReplicasContext ctx) {
         return new MySQLShowReplicasStatement();
@@ -596,7 +596,7 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
             return visit(ctx.update());
         }
     }
-
+    
     @Override
     public ASTNode visitShowProcedureCode(final ShowProcedureCodeContext ctx) {
         MySQLShowProcedureCodeStatement result = new MySQLShowProcedureCodeStatement();
@@ -656,7 +656,7 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
         result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
-
+    
     @Override
     public ASTNode visitShowTriggers(final ShowTriggersContext ctx) {
         MySQLShowTriggersStatement result = new MySQLShowTriggersStatement();
@@ -670,7 +670,7 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
         result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
-
+    
     @Override
     public ASTNode visitShowWhereClause(final ShowWhereClauseContext ctx) {
         return new WhereSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ExpressionSegment) visit(ctx.expr()));
@@ -902,7 +902,7 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     public ASTNode visitShutdown(final ShutdownContext ctx) {
         return new MySQLShutdownStatement();
     }
-
+    
     @Override
     public ASTNode visitShowProcesslist(final ShowProcesslistContext ctx) {
         return new MySQLShowProcessListStatement();

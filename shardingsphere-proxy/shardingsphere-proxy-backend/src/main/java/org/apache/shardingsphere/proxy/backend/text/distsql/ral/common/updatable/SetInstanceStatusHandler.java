@@ -81,8 +81,8 @@ public final class SetInstanceStatusHandler extends UpdatableRALBackendHandler<S
     
     private void checkExist(final InstanceId operationInstanceId) {
         Optional<MetaDataPersistService> metaDataPersistService = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataPersistService();
-        metaDataPersistService.ifPresent(op -> {
-            Collection<ComputeNodeInstance> computeNodeInstances = op.getComputeNodePersistService().loadAllComputeNodeInstances();
+        metaDataPersistService.ifPresent(optional -> {
+            Collection<ComputeNodeInstance> computeNodeInstances = optional.getComputeNodePersistService().loadAllComputeNodeInstances();
             if (computeNodeInstances.stream().noneMatch(each -> isIdenticalInstance(each.getInstanceDefinition(), operationInstanceId))) {
                 throw new UnsupportedOperationException(String.format("`%s` does not exist", operationInstanceId.getId()));
             }

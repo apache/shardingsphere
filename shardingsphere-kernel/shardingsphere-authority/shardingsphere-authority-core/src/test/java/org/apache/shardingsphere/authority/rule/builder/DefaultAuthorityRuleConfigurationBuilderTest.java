@@ -21,31 +21,14 @@ import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 public final class DefaultAuthorityRuleConfigurationBuilderTest {
     
-    private final DefaultAuthorityRuleConfigurationBuilder builder = new DefaultAuthorityRuleConfigurationBuilder();
-    
     @Test
     public void assertBuild() {
-        AuthorityRuleConfiguration authorityRuleConfiguration = builder.build();
-        assertNotNull(authorityRuleConfiguration);
-        assertNotNull(authorityRuleConfiguration.getProvider());
-        assertThat(authorityRuleConfiguration.getProvider().getType(), is("ALL_PRIVILEGES_PERMITTED"));
-        assertThat(authorityRuleConfiguration.getUsers().size(), is(1));
-    }
-    
-    @Test
-    public void assertGetOrder() {
-        int order = builder.getOrder();
-        assertThat(order, is(500));
-    }
-    
-    @Test
-    public void assertGetTypeClass() {
-        assertThat(builder.getTypeClass(), equalTo(AuthorityRuleBuilder.class));
+        AuthorityRuleConfiguration actual = new DefaultAuthorityRuleConfigurationBuilder().build();
+        assertThat(actual.getProvider().getType(), is("ALL_PERMITTED"));
+        assertThat(actual.getUsers().size(), is(1));
     }
 }

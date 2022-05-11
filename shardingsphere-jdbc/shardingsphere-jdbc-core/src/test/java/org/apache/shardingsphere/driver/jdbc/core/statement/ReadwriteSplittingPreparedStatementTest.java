@@ -56,8 +56,9 @@ public final class ReadwriteSplittingPreparedStatementTest extends AbstractShard
     
     @Test
     public void assertGetGeneratedKeys() throws SQLException {
-        try (PreparedStatement preparedStatement = getReadwriteSplittingDataSource()
-                .getConnection().prepareStatement("INSERT INTO t_config(status) VALUES(?);", Statement.RETURN_GENERATED_KEYS)) {
+        try (
+                PreparedStatement preparedStatement = getReadwriteSplittingDataSource()
+                        .getConnection().prepareStatement("INSERT INTO t_config(status) VALUES(?);", Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, "OK");
             preparedStatement.executeUpdate();
             ResultSet generatedKeys = preparedStatement.getGeneratedKeys();

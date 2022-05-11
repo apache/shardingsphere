@@ -25,6 +25,7 @@ import org.apache.shardingsphere.test.integration.framework.container.atomic.sto
 import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.StorageContainerFactory;
 import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
+import org.apache.shardingsphere.test.integration.util.NetworkAliasUtil;
 
 import javax.sql.DataSource;
 import java.util.Map;
@@ -41,11 +42,12 @@ public final class MemoryComposedContainer implements ComposedContainer {
     private final AdapterContainer adapterContainer;
     
     public MemoryComposedContainer(final ParameterizedArray parameterizedArray) {
-        containers = new ITContainers(parameterizedArray.getScenario());
-        storageContainer = containers.registerContainer(StorageContainerFactory.newInstance(
-                parameterizedArray.getDatabaseType(), parameterizedArray.getScenario()), parameterizedArray.getDatabaseType().getName(), true);
-        adapterContainer = containers.registerContainer(AdapterContainerFactory.newInstance(
-                parameterizedArray.getAdapter(), parameterizedArray.getDatabaseType(), storageContainer, parameterizedArray.getScenario()), parameterizedArray.getAdapter(), true);
+        String scenario = parameterizedArray.getScenario();
+        containers = new ITContainers(scenario);
+        storageContainer = containers.registerContainer(StorageContainerFactory.newInstance(parameterizedArray.getDatabaseType(), scenario),
+                NetworkAliasUtil.getNetworkAliasWithScenario(parameterizedArray.getDatabaseType().getType(), scenario));
+        adapterContainer = containers.registerContainer(AdapterContainerFactory.newInstance(parameterizedArray.getAdapter(), parameterizedArray.getDatabaseType(), storageContainer, scenario),
+                NetworkAliasUtil.getNetworkAliasWithScenario(parameterizedArray.getAdapter(), scenario));
         if (adapterContainer instanceof DockerITContainer) {
             ((DockerITContainer) adapterContainer).dependsOn(storageContainer);
         }

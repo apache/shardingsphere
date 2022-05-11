@@ -35,11 +35,11 @@ import java.sql.SQLException;
  */
 @RequiredArgsConstructor
 public final class TransactionSetHandler implements TextProtocolBackendHandler {
-
+    
     private final SetTransactionStatement sqlStatement;
-
+    
     private final ConnectionSession connectionSession;
-
+    
     @Override
     public ResponseHeader execute() throws SQLException {
         if (null == sqlStatement.getScope() && connectionSession.getTransactionStatus().isInTransaction()) {

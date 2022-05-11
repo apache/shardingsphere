@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.dbdiscovery.spring.boot.algorithm;
 
-import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
+import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
 import org.apache.shardingsphere.spring.boot.registry.AbstractAlgorithmProvidedBeanRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.core.env.Environment;
@@ -25,7 +25,7 @@ import org.springframework.core.env.Environment;
 /**
  * Database-discovery algorithm provided bean registry.
  */
-public final class DatabaseDiscoveryAlgorithmProvidedBeanRegistry extends AbstractAlgorithmProvidedBeanRegistry<DatabaseDiscoveryType> {
+public final class DatabaseDiscoveryAlgorithmProvidedBeanRegistry extends AbstractAlgorithmProvidedBeanRegistry<DatabaseDiscoveryProviderAlgorithm> {
     
     private static final String ALGORITHMS = "spring.shardingsphere.rules.database-discovery.discovery-types.";
     
@@ -40,6 +40,6 @@ public final class DatabaseDiscoveryAlgorithmProvidedBeanRegistry extends Abstra
     
     @Override
     public void postProcessBeanDefinitionRegistry(final BeanDefinitionRegistry registry) {
-        registerBean(ALGORITHMS, DatabaseDiscoveryType.class, registry);
+        registerBean(ALGORITHMS, DatabaseDiscoveryProviderAlgorithm.class, registry);
     }
 }

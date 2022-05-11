@@ -54,7 +54,7 @@ public final class MySQLErrPacketFactoryTest {
         assertThat(actual.getSqlState(), is("XXX"));
         assertThat(actual.getErrorMessage(), is("No reason"));
     }
-
+    
     @Test
     public void assertNewInstanceWithSQLExceptionOfNullSQLState() {
         MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new SQLException(new RuntimeException("No reason")));
@@ -63,7 +63,7 @@ public final class MySQLErrPacketFactoryTest {
         assertThat(actual.getSqlState(), is("HY000"));
         assertThat(actual.getErrorMessage(), endsWith("No reason"));
     }
-
+    
     @Test
     public void assertNewInstanceWithSQLExceptionOfNullParam() {
         MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new SQLException(""));

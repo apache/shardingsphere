@@ -19,42 +19,26 @@ package org.apache.shardingsphere.traffic.algorithm.traffic.hint;
 
 import org.apache.shardingsphere.infra.hint.SQLHintProperties;
 import org.apache.shardingsphere.traffic.api.traffic.hint.HintTrafficValue;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class SQLHintTrafficAlgorithmTest {
     
-    private SQLHintTrafficAlgorithm sqlHintAlgorithm;
-    
-    @Before
-    public void setUp() {
-        sqlHintAlgorithm = new SQLHintTrafficAlgorithm();
-        sqlHintAlgorithm.init();
-    }
-    
     @Test
     public void assertMatchWhenSQLHintAllMatch() {
         Properties props = new Properties();
-        props.put("useTraffic", "true");
-        assertTrue(sqlHintAlgorithm.match(new HintTrafficValue(new SQLHintProperties(props))));
+        props.put("useTraffic", Boolean.TRUE.toString());
+        assertTrue(new SQLHintTrafficAlgorithm().match(new HintTrafficValue(new SQLHintProperties(props))));
     }
     
     @Test
     public void assertMatchWhenSQLHintOneMatch() {
         Properties props = new Properties();
-        props.put("useTraffic", "false");
-        assertFalse(sqlHintAlgorithm.match(new HintTrafficValue(new SQLHintProperties(props))));
-    }
-    
-    @Test
-    public void assertGetType() {
-        assertThat(sqlHintAlgorithm.getType(), is("SQL_HINT"));
+        props.put("useTraffic", Boolean.FALSE.toString());
+        assertFalse(new SQLHintTrafficAlgorithm().match(new HintTrafficValue(new SQLHintProperties(props))));
     }
 }

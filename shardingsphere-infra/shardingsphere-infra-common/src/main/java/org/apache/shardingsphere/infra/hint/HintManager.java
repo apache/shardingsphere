@@ -197,7 +197,7 @@ public final class HintManager implements AutoCloseable {
      * @return dataSource name
      */
     public static Optional<String> getDataSourceName() {
-        return Optional.ofNullable(HINT_MANAGER_HOLDER.get()).map(hintManager -> hintManager.dataSourceName);
+        return Optional.ofNullable(HINT_MANAGER_HOLDER.get()).map(optional -> optional.dataSourceName);
     }
     
     @Override

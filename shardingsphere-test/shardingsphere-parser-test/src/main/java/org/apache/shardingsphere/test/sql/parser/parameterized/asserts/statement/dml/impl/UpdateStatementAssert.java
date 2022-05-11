@@ -79,7 +79,7 @@ public final class UpdateStatementAssert {
             assertFalse(assertContext.getText("Actual where segment should not exist."), actual.getWhere().isPresent());
         }
     }
-
+    
     private static void assertOrderByClause(final SQLCaseAssertContext assertContext, final UpdateStatement actual, final UpdateStatementTestCase expected) {
         Optional<OrderBySegment> orderBySegment = UpdateStatementHandler.getOrderBySegment(actual);
         if (null != expected.getOrderByClause()) {
@@ -89,7 +89,7 @@ public final class UpdateStatementAssert {
             assertFalse(assertContext.getText("Actual order by segment should not exist."), orderBySegment.isPresent());
         }
     }
-
+    
     private static void assertLimitClause(final SQLCaseAssertContext assertContext, final UpdateStatement actual, final UpdateStatementTestCase expected) {
         Optional<LimitSegment> limitSegment = UpdateStatementHandler.getLimitSegment(actual);
         if (null != expected.getLimitClause()) {

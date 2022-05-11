@@ -71,7 +71,7 @@ public final class DataSourceQueryResultSet implements DistSQLResultSet {
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("name", "type", "host", "port", "db", "connection_timeout_milliseconds", "idle_timeout_milliseconds", 
+        return Arrays.asList("name", "type", "host", "port", "db", "connection_timeout_milliseconds", "idle_timeout_milliseconds",
                 "max_lifetime_milliseconds", "max_pool_size", "min_pool_size", "read_only", "other_attributes");
     }
     
@@ -86,26 +86,26 @@ public final class DataSourceQueryResultSet implements DistSQLResultSet {
         DataSourceMetaData metaData = resource.getDataSourcesMetaData().getDataSourceMetaData(dataSourceName);
         Collection<Object> result = new LinkedList<>();
         result.add(dataSourceName);
-        result.add(resource.getDatabaseType().getName());
+        result.add(resource.getDatabaseType().getType());
         result.add(metaData.getHostname());
         result.add(metaData.getPort());
         result.add(metaData.getCatalog());
-        DataSourceProperties dataSourceProperties = dataSourcePropsMap.get(dataSourceName);
-        Map<String, Object> standardProperties = dataSourceProperties.getPoolPropertySynonyms().getStandardProperties();
-        result.add(getStandardProperty(standardProperties, CONNECTION_TIMEOUT_MILLISECONDS));
-        result.add(getStandardProperty(standardProperties, IDLE_TIMEOUT_MILLISECONDS));
-        result.add(getStandardProperty(standardProperties, MAX_LIFETIME_MILLISECONDS));
-        result.add(getStandardProperty(standardProperties, MAX_POOL_SIZE));
-        result.add(getStandardProperty(standardProperties, MIN_POOL_SIZE));
-        result.add(getStandardProperty(standardProperties, READ_ONLY));
-        Map<String, Object> otherProperties = dataSourceProperties.getCustomDataSourceProperties().getProperties();
-        result.add(otherProperties.isEmpty() ? "" : new Gson().toJson(otherProperties));
+        DataSourceProperties dataSourceProps = dataSourcePropsMap.get(dataSourceName);
+        Map<String, Object> standardProps = dataSourceProps.getPoolPropertySynonyms().getStandardProperties();
+        result.add(getStandardProperty(standardProps, CONNECTION_TIMEOUT_MILLISECONDS));
+        result.add(getStandardProperty(standardProps, IDLE_TIMEOUT_MILLISECONDS));
+        result.add(getStandardProperty(standardProps, MAX_LIFETIME_MILLISECONDS));
+        result.add(getStandardProperty(standardProps, MAX_POOL_SIZE));
+        result.add(getStandardProperty(standardProps, MIN_POOL_SIZE));
+        result.add(getStandardProperty(standardProps, READ_ONLY));
+        Map<String, Object> otherProps = dataSourceProps.getCustomDataSourceProperties().getProperties();
+        result.add(otherProps.isEmpty() ? "" : new Gson().toJson(otherProps));
         return result;
     }
     
-    private String getStandardProperty(final Map<String, Object> standardProperties, final String key) {
-        if (standardProperties.containsKey(key) && null != standardProperties.get(key)) {
-            return standardProperties.get(key).toString();
+    private String getStandardProperty(final Map<String, Object> standardProps, final String key) {
+        if (standardProps.containsKey(key) && null != standardProps.get(key)) {
+            return standardProps.get(key).toString();
         }
         return "";
     }

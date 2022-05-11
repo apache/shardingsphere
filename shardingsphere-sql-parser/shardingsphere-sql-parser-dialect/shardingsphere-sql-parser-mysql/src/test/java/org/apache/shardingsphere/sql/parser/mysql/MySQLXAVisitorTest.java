@@ -40,9 +40,9 @@ import static org.junit.Assert.assertThat;
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
 public final class MySQLXAVisitorTest {
-
+    
     private static Collection<Object[]> testUnits = new LinkedList<>();
-
+    
     static {
         testUnits.add(new Object[]{"xa_start", "XA START 0x6262,b'000',7", "START", "0x6262,b'000',7"});
         testUnits.add(new Object[]{"xa_begin", "XA BEGIN 0x6262,b'000',7", "BEGIN", "0x6262,b'000',7"});
@@ -52,20 +52,20 @@ public final class MySQLXAVisitorTest {
         testUnits.add(new Object[]{"xa_rollback", "XA ROLLBACK 0x6262,b'000',7", "ROLLBACK", "0x6262,b'000',7"});
         testUnits.add(new Object[]{"xa_recover", "XA RECOVER", "RECOVER", null});
     }
-
+    
     private final String caseId;
-
+    
     private final String inputSql;
-
+    
     private final String op;
-
+    
     private final String xid;
-
+    
     @Parameters(name = "{0}")
     public static Collection<Object[]> getTestParameters() {
         return testUnits;
     }
-
+    
     @Test
     public void assertXA() {
         CodePointBuffer buffer = CodePointBuffer.withChars(CharBuffer.wrap(inputSql.toCharArray()));

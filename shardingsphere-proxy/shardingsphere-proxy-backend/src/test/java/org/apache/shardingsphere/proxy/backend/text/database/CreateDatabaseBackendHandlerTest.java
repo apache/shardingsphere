@@ -25,7 +25,6 @@ import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,6 +33,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
 
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -53,7 +53,7 @@ public final class CreateDatabaseBackendHandlerTest {
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.getInstance().init(contextManager);
         handler = new CreateDatabaseBackendHandler(statement);
-        when(metaDataContexts.getAllSchemaNames()).thenReturn(Collections.singleton("test_db"));
+        when(metaDataContexts.getAllDatabaseNames()).thenReturn(Collections.singleton("test_db"));
     }
     
     @SneakyThrows
@@ -61,7 +61,7 @@ public final class CreateDatabaseBackendHandlerTest {
     public void assertExecuteCreateNewDatabase() {
         when(statement.getDatabaseName()).thenReturn("other_db");
         ResponseHeader responseHeader = handler.execute();
-        Assert.assertTrue(responseHeader instanceof UpdateResponseHeader);
+        assertTrue(responseHeader instanceof UpdateResponseHeader);
     }
     
     @SneakyThrows
@@ -69,7 +69,7 @@ public final class CreateDatabaseBackendHandlerTest {
     public void assertExecuteCreateExistDatabase() {
         when(statement.getDatabaseName()).thenReturn("test_db");
         ResponseHeader responseHeader = handler.execute();
-        Assert.assertTrue(responseHeader instanceof UpdateResponseHeader);
+        assertTrue(responseHeader instanceof UpdateResponseHeader);
     }
     
     @SneakyThrows
@@ -78,6 +78,6 @@ public final class CreateDatabaseBackendHandlerTest {
         when(statement.getDatabaseName()).thenReturn("test_db");
         when(statement.isContainsNotExistClause()).thenReturn(true);
         ResponseHeader responseHeader = handler.execute();
-        Assert.assertTrue(responseHeader instanceof UpdateResponseHeader);
+        assertTrue(responseHeader instanceof UpdateResponseHeader);
     }
 }

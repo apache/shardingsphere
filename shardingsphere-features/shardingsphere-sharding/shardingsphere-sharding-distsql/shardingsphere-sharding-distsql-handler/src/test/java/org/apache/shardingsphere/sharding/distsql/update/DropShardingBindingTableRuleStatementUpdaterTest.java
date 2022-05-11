@@ -32,8 +32,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -62,9 +62,9 @@ public final class DropShardingBindingTableRuleStatementUpdaterTest {
     @Test
     public void assertCheckSQLStatementWithIfExists() throws DistSQLException {
         updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(true, "t_1,t_2"), null);
-        ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
-        shardingRuleConfiguration.setBindingTableGroups(Collections.singletonList("t_3,t_4"));
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(true, "t_1,t_2"), shardingRuleConfiguration);
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        shardingRuleConfig.setBindingTableGroups(Collections.singletonList("t_3,t_4"));
+        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(true, "t_1,t_2"), shardingRuleConfig);
     }
     
     @Test(expected = RequiredRuleMissedException.class)
@@ -118,12 +118,12 @@ public final class DropShardingBindingTableRuleStatementUpdaterTest {
     }
     
     private DropShardingBindingTableRulesStatement createSQLStatement(final String... group) {
-        LinkedList<BindingTableRuleSegment> segments = Arrays.stream(group).map(BindingTableRuleSegment::new).collect(Collectors.toCollection(LinkedList::new));
+        Collection<BindingTableRuleSegment> segments = Arrays.stream(group).map(BindingTableRuleSegment::new).collect(Collectors.toList());
         return new DropShardingBindingTableRulesStatement(segments);
     }
     
     private DropShardingBindingTableRulesStatement createSQLStatement(final boolean containsExistClause, final String... group) {
-        LinkedList<BindingTableRuleSegment> segments = Arrays.stream(group).map(BindingTableRuleSegment::new).collect(Collectors.toCollection(LinkedList::new));
+        Collection<BindingTableRuleSegment> segments = Arrays.stream(group).map(BindingTableRuleSegment::new).collect(Collectors.toList());
         return new DropShardingBindingTableRulesStatement(containsExistClause, segments);
     }
     

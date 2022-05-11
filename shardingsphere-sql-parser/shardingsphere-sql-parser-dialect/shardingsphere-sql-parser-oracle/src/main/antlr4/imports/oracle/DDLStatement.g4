@@ -23,6 +23,10 @@ createTable
     : CREATE createTableSpecification TABLE tableName createSharingClause createDefinitionClause createMemOptimizeClause createParentClause
     ;
 
+createEdition
+    : CREATE EDITION editionName (AS CHILD OF editionName)?
+    ;
+
 createIndex
     : CREATE createIndexSpecification INDEX indexName ON createIndexDefinitionClause usableSpecification? invalidationSpecification?
     ;
@@ -35,8 +39,29 @@ alterIndex
     : ALTER INDEX indexName alterIndexInformationClause
     ;
 
+alterTrigger
+    : ALTER TRIGGER triggerName (
+    | triggerCompileClause
+    | ( ENABLE | DISABLE)
+    | RENAME TO name
+    | (EDITIONABLE | NONEDITIONABLE)
+    )
+    ;    
+
+triggerCompileClause
+    : COMPILE DEBUG? (compilerParametersClause*)? (REUSE SETTINGS)?
+    ;
+
+compilerParametersClause
+    : parameterName EQ_ parameterValue
+    ;
+
 dropTable
     : DROP TABLE tableName (CASCADE CONSTRAINTS)? (PURGE)?
+    ;
+
+dropPackage
+    : DROP PACKAGE BODY? packageName
     ;
 
 dropTrigger
@@ -49,6 +74,23 @@ dropIndex
 
 dropView
     : DROP VIEW viewName (CASCADE CONSTRAINTS)?
+    ;
+
+dropEdition
+    : DROP EDITION editionName CASCADE?
+    ;
+
+dropOutline
+    : DROP OUTLINE outlineName
+    ;
+
+alterOutline
+    : ALTER OUTLINE (PUBLIC | PRIVATE)? outlineName
+    ( REBUILD
+    | RENAME TO outlineName
+    | CHANGE CATEGORY TO categoryName
+    | (ENABLE | DISABLE)
+    )+
     ;
 
 truncateTable
@@ -299,6 +341,10 @@ renameTableSpecification
     : RENAME TO identifier
     ;
 
+dropSynonym
+    : DROP PUBLIC? SYNONYM (schemaName DOT_)? synonymName FORCE?
+    ;
+
 columnClauses
     : operateColumnClause+ | renameColumnClause
     ;
@@ -488,6 +534,10 @@ dropReuseClause
 
 collationClause
     : DEFAULT COLLATION collationName
+    ;
+
+createSynonym
+    : CREATE (OR REPLACE)? (EDITIONABLE | NONEDITIONABLE)? (PUBLIC)? SYNONYM (schemaName DOT_)? synonymName (SHARING EQ_ (METADATA | NONE))? FOR objectName (AT_ dbLink)?
     ;
 
 commitClause
@@ -939,6 +989,10 @@ clusterClause
     : BY (LINEAR | INTERLEAVED)? ORDER clusteringColumns
     ;
 
+createDirectory
+    : CREATE (OR REPLACE)? DIRECTORY directoryName (SHARING EQ_ (METADATA | NONE))? AS pathString
+    ;
+
 clusteringColumns
     : LP_? clusteringColumnGroup (COMMA_ clusteringColumnGroup)* RP_?
     ;
@@ -1032,6 +1086,17 @@ allowDisallowClustering
 
 alterMappingTableClauses
     : MAPPING TABLE (allocateExtentClause | deallocateUnusedClause)
+    ;
+
+alterView
+    : ALTER VIEW viewName (
+    | ADD outOfLineConstraint
+    | MODIFY CONSTRAINT constraintName (RELY | NORELY) 
+    | DROP (CONSTRAINT constraintName | PRIMARY KEY | UNIQUE columnNames) 
+    | COMPILE 
+    | READ (ONLY | WRITE) 
+    | (EDITIONABLE | NONEDITIONABLE)
+    )
     ;
 
 deallocateUnusedClause
@@ -1255,6 +1320,14 @@ defaultCollationClause
     : DEFAULT_COLLATION EQ_ (collationName | NONE)
     ;
 
+alterDatabaseDictionary
+    : ALTER DATABASE DICTIONARY (
+    | ENCRYPT CREDENTIALS
+    | REKEY CREDENTIALS
+    | DELETE CREDENTIALS KEY
+    )
+    ;
+    
 alterDatabase
     : ALTER databaseClauses
     ( startupClauses
@@ -2023,6 +2096,13 @@ createDatabaseLink
     (connectToClause | dbLinkAuthentication)* (USING connectString)?
     ;
     
+alterDatabaseLink
+    : ALTER SHARED? PUBLIC? DATABASE LINK dbLink (
+    | CONNECT TO username IDENTIFIED BY password dbLinkAuthentication?
+    | dbLinkAuthentication
+    )
+    ;
+
 dropDatabaseLink
     : DROP PUBLIC? DATABASE LINK dbLink 
     ;
@@ -2186,4 +2266,8 @@ externalParameter
 
 property
     : (INDICATOR (STRUCT | TDO)? | LENGTH | DURATION | MAXLEN | CHARSETID | CHARSETFORM)
+    ;
+
+alterAnalyticView
+    : ALTER ANALYTIC VIEW analyticViewName (RENAME TO analyticViewName | COMPILE)
     ;

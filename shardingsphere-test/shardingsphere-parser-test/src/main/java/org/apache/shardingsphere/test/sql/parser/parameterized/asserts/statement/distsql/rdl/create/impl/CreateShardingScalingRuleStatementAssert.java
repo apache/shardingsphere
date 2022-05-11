@@ -55,11 +55,11 @@ public final class CreateShardingScalingRuleStatementAssert {
             assertNotNull(assertContext.getText("Actual statement should exist."), actual);
             assertThat(assertContext.getText(String.format("`%s`'s scaling name assertion error: ", actual.getClass().getSimpleName())),
                     actual.getScalingName(), is(expected.getScalingName()));
-            assertShardingScalingRuleConfiguration(assertContext, actual.getConfigurationSegment(), expected.getConfigurationSegment());
+            assertShardingScalingRuleConfiguration(assertContext, actual.getScalingRuleConfigSegment(), expected.getConfigurationSegment());
         }
     }
     
-    private static void assertShardingScalingRuleConfiguration(final SQLCaseAssertContext assertContext, final ShardingScalingRuleConfigurationSegment actual, 
+    private static void assertShardingScalingRuleConfiguration(final SQLCaseAssertContext assertContext, final ShardingScalingRuleConfigurationSegment actual,
                                                                final ExpectedShardingScalingRuleConfigurationSegment expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual sharding scaling rule configuration segment should not exist."), actual);
@@ -69,7 +69,7 @@ public final class CreateShardingScalingRuleStatementAssert {
             assertInputOrOutputSegment("output", assertContext, actual.getOutputSegment(), expected.getOutputSegment());
             assertAlgorithmSegment("stream channel", assertContext, actual.getStreamChannel(), expected.getStreamChannel());
             assertAlgorithmSegment("completion detector", assertContext, actual.getCompletionDetector(), expected.getCompletionDetector());
-            assertAlgorithmSegment("data consistency checker", assertContext, actual.getDataConsistencyChecker(), expected.getDataConsistencyChecker());
+            assertAlgorithmSegment("data consistency calculator", assertContext, actual.getDataConsistencyCalculator(), expected.getDataConsistencyChecker());
         }
     }
     

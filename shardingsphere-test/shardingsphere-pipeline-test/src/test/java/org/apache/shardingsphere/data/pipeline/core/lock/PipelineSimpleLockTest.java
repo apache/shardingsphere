@@ -23,8 +23,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -42,11 +40,10 @@ public final class PipelineSimpleLockTest {
         long timeoutMillis = 50L;
         boolean locked = pipelineSimpleLock.tryLock(lockName, timeoutMillis);
         assertTrue(locked);
-        assertThat(pipelineSimpleLock.tryLock(lockName, timeoutMillis), is(false));
         pipelineSimpleLock.releaseLock(lockName);
         locked = pipelineSimpleLock.tryLock(lockName, timeoutMillis);
         assertTrue(locked);
         pipelineSimpleLock.releaseLock(lockName);
     }
-
+    
 }

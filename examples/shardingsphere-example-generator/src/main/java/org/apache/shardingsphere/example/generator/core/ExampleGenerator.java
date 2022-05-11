@@ -21,35 +21,40 @@ import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
 import org.apache.shardingsphere.example.generator.core.yaml.config.YamlExampleConfiguration;
 import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
+import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * Example generator.
  */
-public interface ExampleGenerator {
+public interface ExampleGenerator extends TypedSPI {
     
     String OUTPUT_PATH = "./examples/shardingsphere-example-generator/target/generated-sources/shardingsphere-${product}-sample/${feature?replace(',', '-')}--${framework}--${mode}--${transaction}/";
     
     String RESOURCES_PATH = "src/main/resources";
     
-    default void generate(final Configuration templateConfig, final YamlExampleConfiguration configuration) throws IOException, TemplateException {
-        for (String eachFramework : configuration.getFrameworks()) {
-            for (String eachFeature : GenerateUtil.generateCombination(configuration.getFeatures())) {
-                generate(templateConfig, buildDataModel(configuration, eachFramework, eachFeature), eachFramework, eachFeature);
+    default void generate(final Configuration templateConfig, final YamlExampleConfiguration exampleConfig) throws IOException, TemplateException {
+        for (String eachMode : exampleConfig.getModes()) {
+            for (String eachTransaction : exampleConfig.getTransactions()) {
+                for (String eachFramework : exampleConfig.getFrameworks()) {
+                    for (String eachFeature : GenerateUtil.generateCombination(exampleConfig.getFeatures())) {
+                        generate(templateConfig, buildDataModel(exampleConfig.getProps(), eachMode, eachTransaction, eachFramework, eachFeature), eachFramework, eachFeature);
+                    }
+                }
             }
         }
     }
-    
-    default Map<String, String> buildDataModel(final YamlExampleConfiguration configuration, final String framework, final String feature) {
+
+    default Map<String, String> buildDataModel(final Properties props, final String mode, final String transaction, final String framework, final String feature) {
         Map<String, String> result = new LinkedHashMap<>();
-        configuration.getProps().forEach((key, value) -> result.put(key.toString(), value.toString()));
+        props.forEach((key, value) -> result.put(key.toString(), value.toString()));
         result.put("product", getType());
-        // TODO support mode & transaction combination
-        result.put("mode", configuration.getModes().size() > 0 ? configuration.getModes().get(0) : "");
-        result.put("transaction", configuration.getTransactions().size() > 0 ? configuration.getTransactions().get(0) : "");
+        result.put("mode", mode);
+        result.put("transaction", transaction);
         result.put("feature", feature);
         result.put("framework", framework);
         result.put("shardingsphereVersion", ShardingSphereVersion.VERSION);
@@ -66,11 +71,4 @@ public interface ExampleGenerator {
      * @throws TemplateException template exception
      */
     void generate(final Configuration templateConfig, final Map<String, String> dataModel, final String framework, final String feature) throws IOException, TemplateException;
-    
-    /**
-     * Get generator type.
-     *
-     * @return generator type
-     */
-    String getType();
 }

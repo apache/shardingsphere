@@ -23,6 +23,7 @@ import org.apache.shardingsphere.agent.config.PluginConfiguration;
 import org.apache.shardingsphere.agent.spi.boot.PluginBootService;
 
 public class OpenTelemetryTracingPluginBootService implements PluginBootService {
+    
     @Override
     public void start(final PluginConfiguration pluginConfig) {
         pluginConfig.getProps().forEach((key, value) -> System.setProperty(String.valueOf(key), String.valueOf(value)));
@@ -30,11 +31,11 @@ public class OpenTelemetryTracingPluginBootService implements PluginBootService 
         // tracer will be created
         sdk.getTracer("shardingsphere-agent");
     }
-
+    
     @Override
     public void close() {
     }
-
+    
     @Override
     public String getType() {
         return "OpenTelemetry";

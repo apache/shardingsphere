@@ -20,8 +20,6 @@ package org.apache.shardingsphere.infra.yaml.config.swapper;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.ordered.OrderedSPIRegistry;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
@@ -37,10 +35,6 @@ import java.util.stream.Collectors;
  */
 public final class YamlRuleConfigurationSwapperEngine {
     
-    static {
-        ShardingSphereServiceLoader.register(YamlRuleConfigurationSwapper.class);
-    }
-    
     /**
      * Swap to YAML rule configurations.
      *
@@ -49,8 +43,8 @@ public final class YamlRuleConfigurationSwapperEngine {
      */
     @SuppressWarnings("unchecked")
     public Collection<YamlRuleConfiguration> swapToYamlRuleConfigurations(final Collection<RuleConfiguration> ruleConfigs) {
-        return OrderedSPIRegistry.getRegisteredServices(YamlRuleConfigurationSwapper.class, ruleConfigs).entrySet().stream().map(
-            entry -> (YamlRuleConfiguration) entry.getValue().swapToYamlConfiguration(entry.getKey())).collect(Collectors.toList());
+        return YamlRuleConfigurationSwapperFactory.getInstanceMapByRuleConfigurations(ruleConfigs).entrySet().stream()
+                .map(entry -> (YamlRuleConfiguration) entry.getValue().swapToYamlConfiguration(entry.getKey())).collect(Collectors.toList());
     }
     
     /**
@@ -63,28 +57,28 @@ public final class YamlRuleConfigurationSwapperEngine {
     public Collection<RuleConfiguration> swapToRuleConfigurations(final Collection<YamlRuleConfiguration> yamlRuleConfigs) {
         Collection<RuleConfiguration> result = new LinkedList<>();
         Collection<Class<?>> ruleConfigTypes = yamlRuleConfigs.stream().map(YamlRuleConfiguration::getRuleConfigurationType).collect(Collectors.toList());
-        for (Entry<Class<?>, YamlRuleConfigurationSwapper> entry : OrderedSPIRegistry.getRegisteredServicesByClass(YamlRuleConfigurationSwapper.class, ruleConfigTypes).entrySet()) {
+        for (Entry<Class<?>, YamlRuleConfigurationSwapper> entry : YamlRuleConfigurationSwapperFactory.getInstanceMapByRuleConfigurationClasses(ruleConfigTypes).entrySet()) {
             result.addAll(swapToRuleConfigurations(yamlRuleConfigs, entry.getKey(), entry.getValue()));
         }
         return result;
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private Collection<RuleConfiguration> swapToRuleConfigurations(final Collection<YamlRuleConfiguration> yamlRuleConfigs, 
+    private Collection<RuleConfiguration> swapToRuleConfigurations(final Collection<YamlRuleConfiguration> yamlRuleConfigs,
                                                                    final Class<?> ruleConfigType, final YamlRuleConfigurationSwapper swapper) {
-        return yamlRuleConfigs.stream().filter(
-            each -> each.getRuleConfigurationType().equals(ruleConfigType)).map(each -> (RuleConfiguration) swapper.swapToObject(each)).collect(Collectors.toList());
+        return yamlRuleConfigs.stream()
+                .filter(each -> each.getRuleConfigurationType().equals(ruleConfigType)).map(each -> (RuleConfiguration) swapper.swapToObject(each)).collect(Collectors.toList());
     }
     
     /**
      * Get YAML shortcuts.
-     * 
+     *
      * @return YAML shortcuts
      */
     @SuppressWarnings("rawtypes")
     @SneakyThrows(ReflectiveOperationException.class)
     public static Map<String, Class<?>> getYamlShortcuts() {
-        Collection<YamlRuleConfigurationSwapper> swappers = ShardingSphereServiceLoader.getServiceInstances(YamlRuleConfigurationSwapper.class);
+        Collection<YamlRuleConfigurationSwapper> swappers = YamlRuleConfigurationSwapperFactory.getAllInstances();
         Map<String, Class<?>> result = new HashMap<>(swappers.size(), 1);
         for (YamlRuleConfigurationSwapper each : swappers) {
             Class<?> yamlRuleConfigurationClass = Class.forName(((ParameterizedType) each.getClass().getGenericInterfaces()[0]).getActualTypeArguments()[0].getTypeName());
@@ -102,8 +96,7 @@ public final class YamlRuleConfigurationSwapperEngine {
     @SuppressWarnings({"unchecked", "rawtypes"})
     public RuleConfiguration swapToRuleConfiguration(final YamlRuleConfiguration yamlRuleConfig) {
         Collection<Class<?>> types = Collections.singletonList(yamlRuleConfig.getRuleConfigurationType());
-        Map<Class<?>, YamlRuleConfigurationSwapper> typeSwapperMap = OrderedSPIRegistry.getRegisteredServicesByClass(YamlRuleConfigurationSwapper.class, types);
-        YamlRuleConfigurationSwapper swapper = typeSwapperMap.get(yamlRuleConfig.getRuleConfigurationType());
+        YamlRuleConfigurationSwapper swapper = YamlRuleConfigurationSwapperFactory.getInstanceMapByRuleConfigurationClasses(types).get(yamlRuleConfig.getRuleConfigurationType());
         return (RuleConfiguration) swapper.swapToObject(yamlRuleConfig);
     }
 }

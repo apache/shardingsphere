@@ -22,12 +22,11 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.authority.provider.natived.model.privilege.NativePrivileges;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRecognizer;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -40,7 +39,6 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -51,13 +49,7 @@ import java.util.concurrent.TimeoutException;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class StoragePrivilegeBuilder {
     
-    private static final int CPU_CORES = Runtime.getRuntime().availableProcessors();
-    
     private static final long FUTURE_GET_TIME_OUT_MILLISECONDS = 5000L;
-    
-    static {
-        ShardingSphereServiceLoader.register(StoragePrivilegeHandler.class);
-    }
     
     /**
      * Build privileges.
@@ -85,20 +77,21 @@ public final class StoragePrivilegeBuilder {
     }
     
     private static Map<ShardingSphereUser, NativePrivileges> buildPrivilegesInStorage(final ShardingSphereMetaData metaData, final Collection<ShardingSphereUser> users) {
-        DatabaseType databaseType = DatabaseTypeRecognizer.getDatabaseType(metaData.getResource().getAllInstanceDataSources());
-        Optional<StoragePrivilegeHandler> handler = TypedSPIRegistry.findRegisteredService(StoragePrivilegeHandler.class, databaseType.getName());
+        DatabaseType databaseType = DatabaseTypeEngine.getDatabaseType(metaData.getResource().getAllInstanceDataSources());
+        Optional<StoragePrivilegeHandler> handler = StoragePrivilegeHandlerFactory.findInstance(databaseType.getType());
         if (!handler.isPresent()) {
             return buildPrivilegesInCache(users);
         }
         save(metaData.getResource().getAllInstanceDataSources(), users, handler.get());
         Map<ShardingSphereUser, Collection<NativePrivileges>> result = load(metaData.getResource().getAllInstanceDataSources(), users, handler.get());
         checkConsistent(result);
-        return StoragePrivilegeMerger.merge(result, metaData.getName(), metaData.getRuleMetaData().getRules());
+        return StoragePrivilegeMerger.merge(result, metaData.getDatabaseName(), metaData.getRuleMetaData().getRules());
     }
     
     private static void save(final Collection<DataSource> dataSources,
                              final Collection<ShardingSphereUser> users, final StoragePrivilegeHandler handler) {
-        ExecutorService executorService = Executors.newFixedThreadPool(Math.min(CPU_CORES * 2, dataSources.isEmpty() ? 1 : dataSources.size()));
+        // TODO ExecutorEngine.execute and callback
+        ExecutorService executorService = ExecutorEngine.createExecutorEngineWithCPUAndResources(dataSources.size()).getExecutorServiceManager().getExecutorService();
         Collection<Future<?>> tasks = new HashSet<>();
         for (DataSource each : dataSources) {
             tasks.add(executorService.submit(() -> save(each, users, handler)));
@@ -125,10 +118,11 @@ public final class StoragePrivilegeBuilder {
         }
     }
     
-    private static Map<ShardingSphereUser, Collection<NativePrivileges>> load(final Collection<DataSource> dataSources, 
+    private static Map<ShardingSphereUser, Collection<NativePrivileges>> load(final Collection<DataSource> dataSources,
                                                                               final Collection<ShardingSphereUser> users, final StoragePrivilegeHandler handler) {
         Map<ShardingSphereUser, Collection<NativePrivileges>> result = new LinkedHashMap<>(users.size(), 1);
-        ExecutorService executorService = Executors.newFixedThreadPool(Math.min(CPU_CORES * 2, dataSources.isEmpty() ? 1 : dataSources.size()));
+        // TODO ExecutorEngine.execute and callback
+        ExecutorService executorService = ExecutorEngine.createExecutorEngineWithCPUAndResources(dataSources.size()).getExecutorServiceManager().getExecutorService();
         Collection<Future<Map<ShardingSphereUser, NativePrivileges>>> futures = new HashSet<>(dataSources.size(), 1);
         for (DataSource each : dataSources) {
             futures.add(executorService.submit(() -> handler.load(users, each)));

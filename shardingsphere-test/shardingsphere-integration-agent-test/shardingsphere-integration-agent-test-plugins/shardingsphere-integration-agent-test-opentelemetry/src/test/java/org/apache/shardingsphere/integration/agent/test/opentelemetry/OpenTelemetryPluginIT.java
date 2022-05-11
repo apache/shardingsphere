@@ -20,7 +20,6 @@ package org.apache.shardingsphere.integration.agent.test.opentelemetry;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.integration.agent.test.common.BasePluginIT;
 import org.apache.shardingsphere.integration.agent.test.common.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.integration.agent.test.common.util.OkHttpUtils;
@@ -28,8 +27,8 @@ import org.apache.shardingsphere.integration.agent.test.opentelemetry.result.Tra
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 
@@ -38,7 +37,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
-@Slf4j
 public final class OpenTelemetryPluginIT extends BasePluginIT {
     
     private static final String ROOT_INVOKE = "/shardingsphere/rootinvoke/";
@@ -46,9 +44,9 @@ public final class OpenTelemetryPluginIT extends BasePluginIT {
     private static final String PARSE_SQL = "/shardingsphere/parsesql/";
     
     private static final String EXECUTE_SQL = "/shardingsphere/executesql/";
-
+    
     @Test
-    public void assertProxyWithAgent() {
+    public void assertProxyWithAgent() throws IOException {
         super.assertProxyWithAgent();
         Properties props = IntegrationTestEnvironment.getInstance().getProps();
         try {
@@ -56,47 +54,35 @@ public final class OpenTelemetryPluginIT extends BasePluginIT {
         } catch (final InterruptedException ignore) {
         }
         String url = props.getProperty("opentelemetry.zipkin.url") + props.getProperty("opentelemetry.servername");
-        String response = null;
-        try {
-            response = OkHttpUtils.getInstance().get(url);
-        } catch (final IOException ex) {
-            log.info("http get zipkin is error :", ex);
-        }
-        assertNotNull(response);
-        JsonArray array = new JsonParser().parse(response).getAsJsonArray().get(0).getAsJsonArray();
+        JsonArray array = JsonParser.parseString(OkHttpUtils.getInstance().get(url)).getAsJsonArray().get(0).getAsJsonArray();
         Gson gson = new Gson();
-        Collection<TracingResult> traces = new ArrayList<>();
-        array.forEach(element -> traces.add(gson.fromJson(element, TracingResult.class)));
-        assertTraces(traces);
+        Collection<TracingResult> traces = new LinkedList<>();
+        array.forEach(each -> traces.add(gson.fromJson(each, TracingResult.class)));
+        traces.forEach(this::assertTrace);
     }
     
-    private void assertTraces(final Collection<TracingResult> traces) {
-        traces.forEach(tracingResult -> {
-            assertNotNull(tracingResult.getTraceId());
-            assertNotNull(tracingResult.getId());
-            String name = tracingResult.getName();
-            assertNotNull(name);
-            assertNotNull(tracingResult.getTimestamp());
-            assertNotNull(tracingResult.getDuration());
-            Map<String, String> localEndPoint = tracingResult.getLocalEndpoint();
-            assertNotNull(localEndPoint);
-            assertThat(localEndPoint.get("serviceName"), is("shardingsphere"));
-            assertNotNull(localEndPoint.get("ipv4"));
-            Map<String, String> tags = tracingResult.getTags();
-            switch (name) {
-                case ROOT_INVOKE:
-                    assertRootInvokeTags(tags);
-                    break;
-                case PARSE_SQL:
-                    assertParseSqlTags(tags);
-                    break;
-                case EXECUTE_SQL:
-                    assertExecuteSqlTags(tags);
-                    break;
-                default:
-                    fail();
-            }
-        });
+    private void assertTrace(final TracingResult tracingResult) {
+        assertNotNull(tracingResult.getTraceId());
+        assertNotNull(tracingResult.getId());
+        assertNotNull(tracingResult.getTimestamp());
+        assertNotNull(tracingResult.getDuration());
+        Map<String, String> localEndPoint = tracingResult.getLocalEndpoint();
+        assertThat(localEndPoint.get("serviceName"), is("shardingsphere"));
+        assertNotNull(localEndPoint.get("ipv4"));
+        Map<String, String> tags = tracingResult.getTags();
+        switch (tracingResult.getName()) {
+            case ROOT_INVOKE:
+                assertRootInvokeTags(tags);
+                break;
+            case PARSE_SQL:
+                assertParseSQLTags(tags);
+                break;
+            case EXECUTE_SQL:
+                assertExecuteSQLTags(tags);
+                break;
+            default:
+                fail();
+        }
     }
     
     private void assertRootInvokeTags(final Map<String, String> tags) {
@@ -104,14 +90,14 @@ public final class OpenTelemetryPluginIT extends BasePluginIT {
         assertThat(tags.get("otel.library.name"), is("shardingsphere-agent"));
     }
     
-    private void assertParseSqlTags(final Map<String, String> tags) {
+    private void assertParseSQLTags(final Map<String, String> tags) {
         assertThat(tags.get("component"), is("ShardingSphere"));
         assertNotNull(tags.get("db.statement"));
         assertThat(tags.get("db.type"), is("shardingsphere-proxy"));
         assertThat(tags.get("otel.library.name"), is("shardingsphere-agent"));
     }
     
-    private void assertExecuteSqlTags(final Map<String, String> tags) {
+    private void assertExecuteSQLTags(final Map<String, String> tags) {
         assertThat(tags.get("component"), is("ShardingSphere"));
         assertNotNull(tags.get("db.bind_vars"));
         assertNotNull(tags.get("db.instance"));

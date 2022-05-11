@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.spi.type.ordered;
 
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.fixture.FixtureCustomInterface;
-import org.apache.shardingsphere.spi.fixture.FixtureCustomInterfaceImpl;
+import org.apache.shardingsphere.spi.type.ordered.fixture.OrderedInterfaceFixture;
+import org.apache.shardingsphere.spi.type.ordered.fixture.OrderedInterfaceFixtureImpl;
 import org.apache.shardingsphere.spi.type.ordered.fixture.OrderedSPIFixture;
 import org.apache.shardingsphere.spi.type.ordered.fixture.OrderedSPIFixtureImpl;
 import org.apache.shardingsphere.spi.type.ordered.cache.OrderedServicesCache;
@@ -52,24 +52,24 @@ public final class OrderedSPIRegistryTest {
     @SuppressWarnings("rawtypes")
     @Test
     public void assertGetRegisteredServicesByClass() {
-        Map<Class<?>, OrderedSPIFixture> actual = OrderedSPIRegistry.getRegisteredServicesByClass(OrderedSPIFixture.class, Collections.singleton(FixtureCustomInterfaceImpl.class));
+        Map<Class<?>, OrderedSPIFixture> actual = OrderedSPIRegistry.getRegisteredServicesByClass(OrderedSPIFixture.class, Collections.singleton(OrderedInterfaceFixtureImpl.class));
         assertThat(actual.size(), is(1));
-        assertThat(actual.get(FixtureCustomInterfaceImpl.class), instanceOf(OrderedSPIFixtureImpl.class));
+        assertThat(actual.get(OrderedInterfaceFixtureImpl.class), instanceOf(OrderedSPIFixtureImpl.class));
     }
     
     @SuppressWarnings("rawtypes")
     @Test
     public void assertGetRegisteredServices() {
-        FixtureCustomInterfaceImpl key = new FixtureCustomInterfaceImpl();
-        Map<FixtureCustomInterfaceImpl, OrderedSPIFixture> actual = OrderedSPIRegistry.getRegisteredServices(OrderedSPIFixture.class, Collections.singleton(key));
+        OrderedInterfaceFixtureImpl key = new OrderedInterfaceFixtureImpl();
+        Map<OrderedInterfaceFixtureImpl, OrderedSPIFixture> actual = OrderedSPIRegistry.getRegisteredServices(OrderedSPIFixture.class, Collections.singleton(key));
         assertThat(actual.size(), is(1));
         assertThat(actual.get(key), instanceOf(OrderedSPIFixtureImpl.class));
     }
-
+    
     @Test
     public void assertGetRegisteredServicesFromCache() {
-        FixtureCustomInterface key = new FixtureCustomInterfaceImpl();
-        assertThat(OrderedSPIRegistry.getRegisteredServices(OrderedSPIFixture.class, Collections.singleton(key)), 
+        OrderedInterfaceFixture key = new OrderedInterfaceFixtureImpl();
+        assertThat(OrderedSPIRegistry.getRegisteredServices(OrderedSPIFixture.class, Collections.singleton(key)),
                 is(OrderedSPIRegistry.getRegisteredServices(OrderedSPIFixture.class, Collections.singleton(key))));
     }
 }

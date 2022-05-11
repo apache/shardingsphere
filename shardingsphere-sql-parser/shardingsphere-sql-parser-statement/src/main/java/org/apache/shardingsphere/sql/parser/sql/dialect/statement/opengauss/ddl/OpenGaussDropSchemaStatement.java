@@ -17,14 +17,19 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropSchemaStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 
 /**
  * OpenGauss drop schema statement.
  */
+@Getter
+@Setter
 @ToString
-public final class OpenGaussDropSchemaStatement extends AbstractSQLStatement implements DDLStatement, OpenGaussStatement {
+public final class OpenGaussDropSchemaStatement extends DropSchemaStatement implements OpenGaussStatement {
+    
+    private boolean containsCascade;
 }

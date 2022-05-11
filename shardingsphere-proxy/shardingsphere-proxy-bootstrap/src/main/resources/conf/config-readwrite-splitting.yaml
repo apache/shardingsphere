@@ -16,13 +16,13 @@
 #
 
 ######################################################################################################
-# 
+#
 # Here you can configure the rules for the proxy.
 # This example is configuration of replica-query rule.
-# 
+#
 ######################################################################################################
 #
-#schemaName: readwrite_splitting_db
+#databaseName: readwrite_splitting_db
 #
 #dataSources:
 #  primary_ds:
@@ -68,7 +68,7 @@
 #
 ######################################################################################################
 
-#schemaName: readwrite_splitting_db
+#databaseName: readwrite_splitting_db
 #
 #dataSources:
 #  write_ds:

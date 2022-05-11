@@ -64,35 +64,35 @@ public final class ProxyContext {
     }
     
     /**
-     * Check schema exists.
+     * Check database exists.
      *
-     * @param schemaName schema name
-     * @return schema exists or not
+     * @param databaseName database name
+     * @return database exists or not
      */
-    public boolean schemaExists(final String schemaName) {
-        return contextManager.getMetaDataContexts().getAllSchemaNames().contains(schemaName);
+    public boolean databaseExists(final String databaseName) {
+        return contextManager.getMetaDataContexts().getAllDatabaseNames().contains(databaseName);
     }
     
     /**
      * Get ShardingSphere meta data.
      *
-     * @param schemaName schema name
+     * @param databaseName database name
      * @return ShardingSphere meta data
      */
-    public ShardingSphereMetaData getMetaData(final String schemaName) {
-        if (Strings.isNullOrEmpty(schemaName) || !contextManager.getMetaDataContexts().getAllSchemaNames().contains(schemaName)) {
+    public ShardingSphereMetaData getMetaData(final String databaseName) {
+        if (Strings.isNullOrEmpty(databaseName) || !contextManager.getMetaDataContexts().getAllDatabaseNames().contains(databaseName)) {
             throw new NoDatabaseSelectedException();
         }
-        return contextManager.getMetaDataContexts().getMetaData(schemaName);
+        return contextManager.getMetaDataContexts().getMetaData(databaseName);
     }
     
     /**
-     * Get all schema names.
+     * Get all database names.
      *
-     * @return all schema names
+     * @return all database names
      */
-    public Collection<String> getAllSchemaNames() {
-        return contextManager.getMetaDataContexts().getAllSchemaNames();
+    public Collection<String> getAllDatabaseNames() {
+        return contextManager.getMetaDataContexts().getAllDatabaseNames();
     }
     
     /**
@@ -113,7 +113,7 @@ public final class ProxyContext {
     // TODO performance enhancement: cache when call init() and pay attention for refresh of rule modification
     public Collection<ShardingSphereRule> getRules(final String databaseName) {
         Collection<ShardingSphereRule> result = new LinkedList<>();
-        if (!Strings.isNullOrEmpty(databaseName) && schemaExists(databaseName)) {
+        if (!Strings.isNullOrEmpty(databaseName) && databaseExists(databaseName)) {
             result.addAll(contextManager.getMetaDataContexts().getMetaData(databaseName).getRuleMetaData().getRules());
         }
         result.addAll(contextManager.getMetaDataContexts().getGlobalRuleMetaData().getRules());

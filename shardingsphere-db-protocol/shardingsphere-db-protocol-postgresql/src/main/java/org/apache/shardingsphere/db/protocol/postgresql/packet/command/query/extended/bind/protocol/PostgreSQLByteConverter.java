@@ -123,9 +123,9 @@ public final class PostgreSQLByteConverter {
     }
     
     private static byte[] initBytesZeroCase(final int scale) {
-        final byte[] bytes = new byte[] {0, 0, -1, -1, 0, 0, 0, 0};
-        int2(bytes, 6, Math.max(0, scale));
-        return bytes;
+        final byte[] result = new byte[]{0, 0, -1, -1, 0, 0, 0, 0};
+        int2(result, 6, Math.max(0, scale));
+        return result;
     }
     
     private static int initShortValuesNoneScaled(final PositiveShortStack shortStacks, final BigInteger unscaled, final int weight) {
@@ -148,7 +148,7 @@ public final class PostgreSQLByteConverter {
     }
     
     private static int initShortValuesScaled(final PositiveShortStack shortStacks, final BigInteger unscaled, final int scale) {
-        int weight = -1;
+        int result = -1;
         final BigInteger[] split = unscaled.divideAndRemainder(tenPower(scale));
         BigInteger decimal = split[1];
         BigInteger wholes = split[0];
@@ -166,7 +166,7 @@ public final class PostgreSQLByteConverter {
                 --segments;
             } while (!BigInteger.ZERO.equals(decimal));
             if (BigInteger.ZERO.equals(wholes)) {
-                weight -= segments;
+                result -= segments;
             } else {
                 for (int i = 0; i < segments; ++i) {
                     shortStacks.push((short) 0);
@@ -174,12 +174,12 @@ public final class PostgreSQLByteConverter {
             }
         }
         while (!BigInteger.ZERO.equals(wholes)) {
-            ++weight;
+            ++result;
             final BigInteger[] pair = wholes.divideAndRemainder(BI_TEN_THOUSAND);
             wholes = pair[0];
             shortStacks.push(pair[1].shortValue());
         }
-        return weight;
+        return result;
     }
     
     private static byte[] initBytes(final BigDecimal number, final PositiveShortStack shortStacks, final int scale, final int weight) {

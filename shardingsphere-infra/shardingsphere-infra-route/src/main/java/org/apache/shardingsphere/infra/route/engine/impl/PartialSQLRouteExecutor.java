@@ -25,13 +25,12 @@ import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.SQLRouter;
+import org.apache.shardingsphere.infra.route.SQLRouterFactory;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.route.engine.SQLRouteExecutor;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.ordered.OrderedSPIRegistry;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -45,10 +44,6 @@ import java.util.Optional;
  */
 public final class PartialSQLRouteExecutor implements SQLRouteExecutor {
     
-    static {
-        ShardingSphereServiceLoader.register(SQLRouter.class);
-    }
-    
     private final ConfigurationProperties props;
     
     @SuppressWarnings("rawtypes")
@@ -56,7 +51,7 @@ public final class PartialSQLRouteExecutor implements SQLRouteExecutor {
     
     public PartialSQLRouteExecutor(final Collection<ShardingSphereRule> rules, final ConfigurationProperties props) {
         this.props = props;
-        routers = OrderedSPIRegistry.getRegisteredServices(SQLRouter.class, rules);
+        routers = SQLRouterFactory.getInstances(rules);
     }
     
     @Override

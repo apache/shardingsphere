@@ -28,13 +28,13 @@ weight = 2
 
 功能支持情况：
 
-| 功能                   | MySQL         | PostgreSQL    | openGauss     |
-| --------------------- | ------------- | ------------- | ------------- |
+| 功能                   | MySQL         | PostgreSQL   | openGauss     |
+| --------------------- | ------------- |--------------| ------------- |
 | 全量迁移               | 支持           | 支持           | 支持           |
 | 增量迁移               | 支持           | 支持           | 支持           |
-| 自动建表               | 支持           | 不支持         | 支持           |
+| 自动建表               | 支持           | 支持           | 支持            |
 | DATA_MATCH一致性校验   | 支持           | 支持           | 支持           |
-| CRC32_MATCH一致性校验  | 支持           | 不支持         | 不支持          |
+| CRC32_MATCH一致性校验  | 支持           | 不支持          | 不支持          |
 
 **注意**：
 
@@ -75,7 +75,7 @@ show variables like '%binlog%';
 
 执行以下命令，查看该用户是否有迁移权限：
 ```
-SHOW GRANTS 'user';
+SHOW GRANTS FOR 'user';
 ```
 
 示例结果：
@@ -108,21 +108,19 @@ max_replication_slots = 10
 
 示例：
 ```sql
-preview select count(1) from t_order;
+preview SELECT COUNT(1) FROM t_order;
 ```
 
 返回信息：
 ```
-mysql> preview select count(1) from t_order;
-+------------------+--------------------------------+
-| data_source_name | sql                            |
-+------------------+--------------------------------+
-| ds_0             | select count(1) from t_order_0 |
-| ds_0             | select count(1) from t_order_1 |
-| ds_1             | select count(1) from t_order_0 |
-| ds_1             | select count(1) from t_order_1 |
-+------------------+--------------------------------+
-4 rows in set (0.00 sec)
+mysql> preview SELECT COUNT(1) FROM t_order;
++------------------+-------------------------------------------------------------------------+
+| data_source_name | actual_sql                                                              |
++------------------+-------------------------------------------------------------------------+
+| ds_0             | SELECT COUNT(1) FROM t_order_0 UNION ALL SELECT COUNT(1) FROM t_order_1 |
+| ds_1             | SELECT COUNT(1) FROM t_order_0 UNION ALL SELECT COUNT(1) FROM t_order_1 |
++------------------+-------------------------------------------------------------------------+
+2 rows in set (0.65 sec)
 ```
 
 #### 创建迁移任务
@@ -264,28 +262,245 @@ mysql> show scaling status 660152090995195904;
 
 示例：
 ```sql
-preview select count(1) from t_order;
+preview SELECT COUNT(1) FROM t_order;
 ```
 
 返回信息：
 ```
-mysql> preview select count(1) from t_order;
-+------------------+--------------------------------+
-| data_source_name | sql                            |
-+------------------+--------------------------------+
-| ds_2             | select count(1) from t_order_0 |
-| ds_2             | select count(1) from t_order_1 |
-| ds_3             | select count(1) from t_order_0 |
-| ds_3             | select count(1) from t_order_1 |
-| ds_4             | select count(1) from t_order_0 |
-| ds_4             | select count(1) from t_order_1 |
-+------------------+--------------------------------+
-6 rows in set (0.01 sec)
+mysql> preview SELECT COUNT(1) FROM t_order;
++------------------+-------------------------------------------------------------------------+
+| data_source_name | actual_sql                                                              |
++------------------+-------------------------------------------------------------------------+
+| ds_2             | SELECT COUNT(1) FROM t_order_0 UNION ALL SELECT COUNT(1) FROM t_order_1 |
+| ds_3             | SELECT COUNT(1) FROM t_order_0 UNION ALL SELECT COUNT(1) FROM t_order_1 |
+| ds_4             | SELECT COUNT(1) FROM t_order_0 UNION ALL SELECT COUNT(1) FROM t_order_1 |
++------------------+-------------------------------------------------------------------------+
+3 rows in set (0.21 sec)
 ```
 
 #### 其他 DistSQL
 详情请参见 [RAL #弹性伸缩](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/#%E5%BC%B9%E6%80%A7%E4%BC%B8%E7%BC%A9)。
 
-### DistSQL 手动模式接口
+### DistSQL 手动模式完整流程示例
 
-数据校验、切换配置等操作可以手动执行。详情请参见：[RAL #弹性伸缩](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/#%E5%BC%B9%E6%80%A7%E4%BC%B8%E7%BC%A9)。
+手动模式下，数据校验、切换配置等操作可以手动执行。详情请参见：[RAL #弹性伸缩](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/#%E5%BC%B9%E6%80%A7%E4%BC%B8%E7%BC%A9)。
+
+本示例演示从已有 MySQL 数据库迁移到 proxy。
+
+除了明确说明在 MySQL 执行的 SQL，其他都是在 proxy 执行。
+
+#### 新建源端库
+
+已有数据不需要这个步骤。这里是模拟一个源端库用于测试。
+
+在 MySQL 执行 SQL：
+```sql
+DROP DATABASE IF EXISTS scaling_ds_0;
+CREATE DATABASE scaling_ds_0 DEFAULT CHARSET utf8;
+
+DROP DATABASE IF EXISTS scaling_ds_1;
+CREATE DATABASE scaling_ds_1 DEFAULT CHARSET utf8;
+```
+
+#### 登录 proxy
+
+```shell
+mysql -h127.0.0.1 -P3307 -uroot -proot
+```
+
+#### 创建并配置 schema
+
+创建 schema：
+```sql
+CREATE DATABASE scaling_db;
+
+USE scaling_db
+```
+
+加入源端数据库资源：
+```sql
+ADD RESOURCE ds_0 (
+    URL="jdbc:mysql://127.0.0.1:3306/scaling_ds_0?serverTimezone=UTC&useSSL=false",
+    USER=root,
+    PASSWORD=root,
+    PROPERTIES("maximumPoolSize"=50,"idleTimeout"="60000")
+), ds_1 (
+    URL="jdbc:mysql://127.0.0.1:3306/scaling_ds_1?serverTimezone=UTC&useSSL=false",
+    USER=root,
+    PASSWORD=root,
+    PROPERTIES("maximumPoolSize"=50,"idleTimeout"="60000")
+);
+```
+
+配置规则：
+把现有系统中的表配置到规则里，使用 tables 规则 INLINE 算法，方便适配已有的表名。
+```sql
+CREATE SHARDING ALGORITHM database_inline (
+TYPE(NAME=INLINE,PROPERTIES("algorithm-expression"="ds_${user_id % 2}"))
+);
+CREATE SHARDING ALGORITHM t_order_inline (
+TYPE(NAME=INLINE,PROPERTIES("algorithm-expression"="t_order_${order_id % 2}"))
+);
+CREATE SHARDING ALGORITHM t_order_item_inline (
+TYPE(NAME=INLINE,PROPERTIES("algorithm-expression"="t_order_item_${order_id % 2}"))
+);
+
+CREATE SHARDING TABLE RULE t_order (
+DATANODES("ds_${0..1}.t_order_${0..1}"),
+DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
+TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=t_order_inline),
+KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME=snowflake))
+), t_order_item (
+DATANODES("ds_${0..1}.t_order_item_${0..1}"),
+DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
+TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=t_order_item_inline),
+KEY_GENERATE_STRATEGY(COLUMN=order_item_id,TYPE(NAME=snowflake))
+);
+
+CREATE SHARDING BINDING TABLE RULES (t_order,t_order_item);
+
+CREATE SHARDING SCALING RULE scaling_manual2 (
+DATA_CONSISTENCY_CHECKER(TYPE(NAME=CRC32_MATCH))
+);
+```
+
+#### 创建测试表并初始化数据
+
+该步骤在实际使用中不需要。
+
+```sql
+CREATE TABLE t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) CHARSET utf8mb4, PRIMARY KEY (order_id));
+CREATE TABLE t_order_item (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) CHARSET utf8mb4, creation_date DATE, PRIMARY KEY (item_id));
+
+INSERT INTO t_order (order_id, user_id, status) VALUES (1,2,'ok'),(2,4,'ok'),(3,6,'ok'),(4,1,'ok'),(5,3,'ok'),(6,5,'ok');
+INSERT INTO t_order_item (item_id, order_id, user_id, status) VALUES (1,1,2,'ok'),(2,2,4,'ok'),(3,3,6,'ok'),(4,4,1,'ok'),(5,5,3,'ok'),(6,6,5,'ok');
+```
+
+#### 执行迁移
+
+预览分片：
+```sql
+mysql> PREVIEW SELECT COUNT(1) FROM t_order;
++------------------+-------------------------------------------------------------------------+
+| data_source_name | actual_sql                                                              |
++------------------+-------------------------------------------------------------------------+
+| ds_0             | SELECT COUNT(1) FROM t_order_0 UNION ALL SELECT COUNT(1) FROM t_order_1 |
+| ds_1             | SELECT COUNT(1) FROM t_order_0 UNION ALL SELECT COUNT(1) FROM t_order_1 |
++------------------+-------------------------------------------------------------------------+
+2 rows in set (0.65 sec)
+```
+
+在 MySQL 创建目标端库：
+```sql
+DROP DATABASE IF EXISTS scaling_ds_10;
+CREATE DATABASE scaling_ds_10 DEFAULT CHARSET utf8;
+
+DROP DATABASE IF EXISTS scaling_ds_11;
+CREATE DATABASE scaling_ds_11 DEFAULT CHARSET utf8;
+
+DROP DATABASE IF EXISTS scaling_ds_12;
+CREATE DATABASE scaling_ds_12 DEFAULT CHARSET utf8;
+```
+
+加入目标端数据库资源：
+```sql
+ADD RESOURCE ds_2 (
+    URL="jdbc:mysql://127.0.0.1:3306/scaling_ds_10?serverTimezone=UTC&useSSL=false",
+    USER=root,
+    PASSWORD=root,
+    PROPERTIES("maximumPoolSize"=50,"idleTimeout"="60000")
+), ds_3 (
+    URL="jdbc:mysql://127.0.0.1:3306/scaling_ds_11?serverTimezone=UTC&useSSL=false",
+    USER=root,
+    PASSWORD=root,
+    PROPERTIES("maximumPoolSize"=50,"idleTimeout"="60000")
+), ds_4 (
+    URL="jdbc:mysql://127.0.0.1:3306/scaling_ds_12?serverTimezone=UTC&useSSL=false",
+    USER=root,
+    PASSWORD=root,
+    PROPERTIES("maximumPoolSize"=50,"idleTimeout"="60000")
+);
+```
+
+修改分片规则触发迁移：
+```sql
+ALTER SHARDING ALGORITHM database_inline (
+TYPE(NAME=INLINE,PROPERTIES("algorithm-expression"="ds_${user_id % 3 + 2}"))
+);
+
+ALTER SHARDING TABLE RULE t_order (
+DATANODES("ds_${2..4}.t_order_${0..1}"),
+DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
+TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=t_order_inline),
+KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME=snowflake))
+), t_order_item (
+DATANODES("ds_${2..4}.t_order_item_${0..1}"),
+DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
+TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=t_order_item_inline),
+KEY_GENERATE_STRATEGY(COLUMN=order_item_id,TYPE(NAME=snowflake))
+);
+```
+
+查看当前迁移任务的进度：
+```sql
+mysql> SHOW SCALING LIST;
++--------------------------------------------+----------------------+----------------------+--------+---------------------+-----------+
+| id                                         | tables               | sharding_total_count | active | create_time         | stop_time |
++--------------------------------------------+----------------------+----------------------+--------+---------------------+-----------+
+| 0130317c30317c3054317c7363616c696e675f6462 | t_order,t_order_item | 2                    | true   | 2022-04-16 17:22:19 | NULL      |
++--------------------------------------------+----------------------+----------------------+--------+---------------------+-----------+
+1 row in set (0.34 sec)
+
+mysql> SHOW SCALING STATUS 0130317c30317c3054317c7363616c696e675f6462;
++------+-------------+--------------------------+--------+-------------------------------+--------------------------+
+| item | data_source | status                   | active | inventory_finished_percentage | incremental_idle_seconds |
++------+-------------+--------------------------+--------+-------------------------------+--------------------------+
+| 0    | ds_0        | EXECUTE_INCREMENTAL_TASK | true   | 100                           | 8                        |
+| 1    | ds_1        | EXECUTE_INCREMENTAL_TASK | true   | 100                           | 7                        |
++------+-------------+--------------------------+--------+-------------------------------+--------------------------+
+2 rows in set (0.02 sec)
+```
+当 status 达到 EXECUTE_INCREMENTAL_TASK，全量迁移已完成，在增量迁移阶段。
+
+
+选择一个业务低峰期，对源端库或数据操作入口做停写。
+
+proxy 停写：
+```sql
+mysql> STOP SCALING SOURCE WRITING 0130317c30317c3054317c7363616c696e675f6462;
+Query OK, 0 rows affected (0.07 sec)
+```
+
+数据一致性校验：
+```sql
+mysql> CHECK SCALING 0130317c30317c3054317c7363616c696e675f6462 BY TYPE (NAME=CRC32_MATCH);
++--------------+----------------------+----------------------+-----------------------+-------------------------+
+| table_name   | source_records_count | target_records_count | records_count_matched | records_content_matched |
++--------------+----------------------+----------------------+-----------------------+-------------------------+
+| t_order      | 6                    | 6                    | true                  | true                    |
+| t_order_item | 6                    | 6                    | true                  | true                    |
++--------------+----------------------+----------------------+-----------------------+-------------------------+
+2 rows in set (2.16 sec)
+```
+
+切换元数据：
+```sql
+mysql> APPLY SCALING 0130317c30317c3054317c7363616c696e675f6462;
+Query OK, 0 rows affected (0.22 sec)
+```
+
+预览分片是否已生效：
+```sql
+mysql> PREVIEW SELECT COUNT(1) FROM t_order;
++------------------+-------------------------------------------------------------------------+
+| data_source_name | actual_sql                                                              |
++------------------+-------------------------------------------------------------------------+
+| ds_2             | SELECT COUNT(1) FROM t_order_0 UNION ALL SELECT COUNT(1) FROM t_order_1 |
+| ds_3             | SELECT COUNT(1) FROM t_order_0 UNION ALL SELECT COUNT(1) FROM t_order_1 |
+| ds_4             | SELECT COUNT(1) FROM t_order_0 UNION ALL SELECT COUNT(1) FROM t_order_1 |
++------------------+-------------------------------------------------------------------------+
+3 rows in set (0.21 sec)
+```
+数据已经分片到新的数据库资源。
+
+可选择性删除不再使用的 ds_0 和 ds_1。

@@ -56,7 +56,7 @@ public final class ShowDatabasesExecutor implements DatabaseAdminQueryExecutor {
     
     private Collection<Object> getSchemaNames(final ConnectionSession connectionSession) {
         Collection<Object> result = new LinkedList<>();
-        for (String each : ProxyContext.getInstance().getAllSchemaNames()) {
+        for (String each : ProxyContext.getInstance().getAllDatabaseNames()) {
             if (checkLikePattern(each) && SQLCheckEngine.check(each, getRules(each), connectionSession.getGrantee())) {
                 result.add(each);
             }
@@ -66,7 +66,7 @@ public final class ShowDatabasesExecutor implements DatabaseAdminQueryExecutor {
     
     private boolean checkLikePattern(final String schemaName) {
         if (showDatabasesStatement.getFilter().isPresent()) {
-            Optional<String> pattern = showDatabasesStatement.getFilter().get().getLike().map(each -> SQLUtil.convertLikePatternToRegex(each.getPattern()));
+            Optional<String> pattern = showDatabasesStatement.getFilter().get().getLike().map(optional -> SQLUtil.convertLikePatternToRegex(optional.getPattern()));
             return !pattern.isPresent() || schemaName.matches(pattern.get());
         }
         return true;

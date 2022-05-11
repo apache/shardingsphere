@@ -24,7 +24,7 @@ import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManager;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource;
-import org.apache.shardingsphere.transaction.xa.manager.XATransactionManagerProviderLoader;
+import org.apache.shardingsphere.transaction.xa.manager.XATransactionManagerProviderFactory;
 import org.apache.shardingsphere.transaction.xa.spi.XATransactionManagerProvider;
 
 import javax.sql.DataSource;
@@ -52,7 +52,7 @@ public final class XAShardingSphereTransactionManager implements ShardingSphereT
     
     @Override
     public void init(final DatabaseType databaseType, final Collection<ResourceDataSource> resourceDataSources, final TransactionRule transactionRule) {
-        xaTransactionManagerProvider = XATransactionManagerProviderLoader.getInstance().getXATransactionManagerProvider(transactionRule.getProviderType());
+        xaTransactionManagerProvider = XATransactionManagerProviderFactory.getInstance(transactionRule.getProviderType());
         xaTransactionManagerProvider.init();
         resourceDataSources.forEach(each -> cachedDataSources.put(each.getOriginalName(), newXATransactionDataSource(databaseType, each)));
     }
@@ -88,7 +88,7 @@ public final class XAShardingSphereTransactionManager implements ShardingSphereT
     public void begin() {
         xaTransactionManagerProvider.getTransactionManager().begin();
     }
-
+    
     @Override
     @SneakyThrows({SystemException.class, NotSupportedException.class})
     public void begin(final int timeout) {
@@ -99,7 +99,7 @@ public final class XAShardingSphereTransactionManager implements ShardingSphereT
         transactionManager.setTransactionTimeout(timeout);
         transactionManager.begin();
     }
-
+    
     @SneakyThrows({SystemException.class, RollbackException.class, HeuristicMixedException.class, HeuristicRollbackException.class})
     @Override
     public void commit(final boolean rollbackOnly) {

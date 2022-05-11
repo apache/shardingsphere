@@ -21,13 +21,14 @@ import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.database.DatabaseServerInfo;
 import org.apache.shardingsphere.proxy.frontend.protocol.DatabaseProtocolFrontendEngineFactory;
 
 import javax.sql.DataSource;
+
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -43,13 +44,8 @@ public final class ShardingSphereProxyVersion {
      */
     public static void setVersion(final ContextManager contextManager) {
         CommonConstants.PROXY_VERSION.set(ShardingSphereProxyVersion.getProxyVersion());
-        Optional<DataSource> sampleDataSource = findSampleBackendDataSource(contextManager);
-        if (!sampleDataSource.isPresent()) {
-            return;
-        }
-        DatabaseServerInfo databaseServerInfo = new DatabaseServerInfo(sampleDataSource.get());
-        log.info(databaseServerInfo.toString());
-        DatabaseProtocolFrontendEngineFactory.newInstance(DatabaseTypeRegistry.getTrunkDatabaseType(databaseServerInfo.getDatabaseName())).setDatabaseVersion(databaseServerInfo.getDatabaseVersion());
+        contextManager.getMetaDataContexts().getAllDatabaseNames()
+                .forEach(each -> setDatabaseVersion(each, contextManager.getDataSourceMap(each)));
     }
     
     private static String getProxyVersion() {
@@ -62,8 +58,15 @@ public final class ShardingSphereProxyVersion {
         return result;
     }
     
-    private static Optional<DataSource> findSampleBackendDataSource(final ContextManager contextManager) {
-        Optional<ShardingSphereMetaData> metaData = contextManager.getMetaDataContexts().getMetaDataMap().values().stream().filter(ShardingSphereMetaData::isComplete).findFirst();
-        return metaData.flatMap(optional -> optional.getResource().getDataSources().values().stream().findFirst());
+    private static void setDatabaseVersion(final String databaseName, final Map<String, DataSource> dataSources) {
+        Optional<DataSource> dataSource = dataSources.values().stream().findFirst();
+        if (!dataSource.isPresent()) {
+            return;
+        }
+        DatabaseServerInfo databaseServerInfo = new DatabaseServerInfo(dataSource.get());
+        log.info("{}, database name is `{}`", databaseServerInfo, databaseName);
+        DatabaseProtocolFrontendEngineFactory
+                .newInstance(DatabaseTypeEngine.getTrunkDatabaseType(databaseServerInfo.getDatabaseName()))
+                .setDatabaseVersion(databaseName, databaseServerInfo.getDatabaseVersion());
     }
 }

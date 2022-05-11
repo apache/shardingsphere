@@ -69,13 +69,13 @@ public final class ConnectionSessionTest {
     
     @Test
     public void assertSetCurrentSchema() {
-        connectionSession.setCurrentSchema("currentSchema");
-        assertThat(connectionSession.getSchemaName(), is("currentSchema"));
+        connectionSession.setCurrentDatabase("currentDatabase");
+        assertThat(connectionSession.getDatabaseName(), is("currentDatabase"));
     }
     
     @Test(expected = ShardingSphereException.class)
     public void assertFailedSwitchTransactionTypeWhileBegin() throws SQLException {
-        connectionSession.setCurrentSchema("schema");
+        connectionSession.setCurrentDatabase("db");
         JDBCBackendTransactionManager transactionManager = new JDBCBackendTransactionManager(backendConnection);
         transactionManager.begin();
         connectionSession.getTransactionStatus().setTransactionType(TransactionType.XA);
@@ -83,10 +83,10 @@ public final class ConnectionSessionTest {
     
     @Test(expected = ShardingSphereException.class)
     public void assertFailedSwitchSchemaWhileBegin() throws SQLException {
-        connectionSession.setCurrentSchema("schema");
+        connectionSession.setCurrentDatabase("db");
         JDBCBackendTransactionManager transactionManager = new JDBCBackendTransactionManager(backendConnection);
         transactionManager.begin();
-        connectionSession.setCurrentSchema("newSchema");
+        connectionSession.setCurrentDatabase("newDB");
     }
     
     @Test

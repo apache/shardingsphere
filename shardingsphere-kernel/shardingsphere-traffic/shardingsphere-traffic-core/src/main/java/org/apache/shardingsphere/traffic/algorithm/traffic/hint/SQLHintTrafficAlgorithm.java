@@ -17,17 +17,24 @@
 
 package org.apache.shardingsphere.traffic.algorithm.traffic.hint;
 
+import lombok.Getter;
 import org.apache.shardingsphere.infra.hint.SQLHintPropertiesKey;
 import org.apache.shardingsphere.traffic.api.traffic.hint.HintTrafficAlgorithm;
 import org.apache.shardingsphere.traffic.api.traffic.hint.HintTrafficValue;
 
+import java.util.Properties;
+
 /**
  * Simple hint traffic algorithm.
  */
+@Getter
 public final class SQLHintTrafficAlgorithm implements HintTrafficAlgorithm {
     
+    private Properties props;
+    
     @Override
-    public void init() {
+    public void init(final Properties props) {
+        this.props = props;
     }
     
     @Override

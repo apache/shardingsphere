@@ -33,17 +33,17 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class CreateViewStatementContextTest {
-
+    
     @Test
     public void assertMySQLNewInstance() {
         assertNewInstance(mock(MySQLCreateViewStatement.class));
     }
-
+    
     @Test
     public void assertPostgreSQLNewInstance() {
         assertNewInstance(mock(PostgreSQLCreateViewStatement.class));
     }
-
+    
     private void assertNewInstance(final CreateViewStatement createViewStatement) {
         SimpleTableSegment view = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("view")));
         when(createViewStatement.getView()).thenReturn(view);

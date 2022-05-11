@@ -21,34 +21,41 @@ import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
+import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class MySQLPipelineSQLBuilderTest {
     
-    private final MySQLPipelineSQLBuilder sqlBuilder = new MySQLPipelineSQLBuilder(ImmutableMap.<String, Set<String>>builder().put("t2", Collections.singleton("sc")).build());
+    private final MySQLPipelineSQLBuilder sqlBuilder = new MySQLPipelineSQLBuilder();
+    
+    private final Map<LogicTableName, Set<String>> shardingColumnsMap = ImmutableMap.<LogicTableName, Set<String>>builder().put(new LogicTableName("t2"), Collections.singleton("sc")).build();
     
     @Test
     public void assertBuildInsertSQL() {
-        String actual = sqlBuilder.buildInsertSQL(mockDataRecord("t1"));
+        String actual = sqlBuilder.buildInsertSQL(null, mockDataRecord("t1"), shardingColumnsMap);
         assertThat(actual, is("INSERT INTO `t1`(`id`,`sc`,`c1`,`c2`,`c3`) VALUES(?,?,?,?,?) ON DUPLICATE KEY UPDATE `sc`=VALUES(`sc`),`c1`=VALUES(`c1`),`c2`=VALUES(`c2`),`c3`=VALUES(`c3`)"));
     }
     
     @Test
     public void assertBuildInsertSQLHasShardingColumn() {
-        String actual = sqlBuilder.buildInsertSQL(mockDataRecord("t2"));
+        String actual = sqlBuilder.buildInsertSQL(null, mockDataRecord("t2"), shardingColumnsMap);
         assertThat(actual, is("INSERT INTO `t2`(`id`,`sc`,`c1`,`c2`,`c3`) VALUES(?,?,?,?,?) ON DUPLICATE KEY UPDATE `c1`=VALUES(`c1`),`c2`=VALUES(`c2`),`c3`=VALUES(`c3`)"));
     }
     
     @Test
     public void assertBuildSumCrc32SQL() {
-        String actual = sqlBuilder.buildCRC32SQL("t2", "id");
-        assertThat(actual, is("SELECT BIT_XOR(CAST(CRC32(`id`) AS UNSIGNED)) AS checksum FROM `t2`"));
+        Optional<String> actual = sqlBuilder.buildCRC32SQL(null, "t2", "id");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("SELECT BIT_XOR(CAST(CRC32(`id`) AS UNSIGNED)) AS checksum FROM `t2`"));
     }
     
     private DataRecord mockDataRecord(final String tableName) {

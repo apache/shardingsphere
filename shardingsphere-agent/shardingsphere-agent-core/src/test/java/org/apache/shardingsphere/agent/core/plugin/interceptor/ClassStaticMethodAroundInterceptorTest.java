@@ -67,8 +67,7 @@ public final class ClassStaticMethodAroundInterceptorTest {
     public static Collection<Object[]> prepareData() {
         return Arrays.asList(
                 new Object[]{"staticMock", "rebase static invocation method", new String[]{"before", "after"}},
-                new Object[]{"staticMockWithException", null, new String[]{"before", "exception", "after"}}
-        );
+                new Object[]{"staticMockWithException", null, new String[]{"before", "exception", "after"}});
     }
     
     @BeforeClass

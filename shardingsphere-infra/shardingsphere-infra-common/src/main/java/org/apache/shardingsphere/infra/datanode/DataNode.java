@@ -21,6 +21,7 @@ import com.google.common.base.Objects;
 import com.google.common.base.Splitter;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 
@@ -31,6 +32,7 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 @Getter
+@Setter
 @ToString
 public final class DataNode {
     
@@ -40,6 +42,9 @@ public final class DataNode {
     
     private final String tableName;
     
+    // TODO add final for schemaName
+    private String schemaName;
+    
     /**
      * Constructs a data node with well-formatted string.
      *
@@ -47,16 +52,20 @@ public final class DataNode {
      */
     public DataNode(final String dataNode) {
         // TODO remove duplicated splitting?
-        if (!isValidDataNode(dataNode)) {
+        boolean isIncludeInstance = isActualDataNodesIncludedDataSourceInstance(dataNode);
+        if (!isIncludeInstance && !isValidDataNode(dataNode, 2)) {
+            throw new ShardingSphereConfigurationException("Invalid format for actual data nodes: '%s'", dataNode);
+        }
+        if (isIncludeInstance && !isValidDataNode(dataNode, 3)) {
             throw new ShardingSphereConfigurationException("Invalid format for actual data nodes: '%s'", dataNode);
         }
         List<String> segments = Splitter.on(DELIMITER).splitToList(dataNode);
-        dataSourceName = segments.get(0);
-        tableName = segments.get(1);
+        dataSourceName = isIncludeInstance ? segments.get(0) + DELIMITER + segments.get(1) : segments.get(0);
+        tableName = segments.get(isIncludeInstance ? 2 : 1);
     }
     
-    private static boolean isValidDataNode(final String dataNodeStr) {
-        return dataNodeStr.contains(DELIMITER) && 2 == Splitter.on(DELIMITER).omitEmptyStrings().splitToList(dataNodeStr).size();
+    private static boolean isValidDataNode(final String dataNodeStr, final Integer tier) {
+        return dataNodeStr.contains(DELIMITER) && tier == Splitter.on(DELIMITER).omitEmptyStrings().splitToList(dataNodeStr).size();
     }
     
     @Override
@@ -69,12 +78,13 @@ public final class DataNode {
         }
         DataNode dataNode = (DataNode) object;
         return Objects.equal(dataSourceName.toUpperCase(), dataNode.dataSourceName.toUpperCase())
-            && Objects.equal(tableName.toUpperCase(), dataNode.tableName.toUpperCase());
+                && Objects.equal(tableName.toUpperCase(), dataNode.tableName.toUpperCase())
+                && Objects.equal(null == schemaName ? null : schemaName.toUpperCase(), null == dataNode.schemaName ? null : dataNode.schemaName.toUpperCase());
     }
     
     @Override
     public int hashCode() {
-        return Objects.hashCode(dataSourceName.toUpperCase(), tableName.toUpperCase());
+        return Objects.hashCode(dataSourceName.toUpperCase(), tableName.toUpperCase(), null == schemaName ? null : schemaName.toUpperCase());
     }
     
     /**
@@ -93,5 +103,15 @@ public final class DataNode {
      */
     public int getFormattedTextLength() {
         return dataSourceName.length() + DELIMITER.length() + tableName.length();
+    }
+    
+    /**
+     * Is Actual data nodes three tier structure.
+     *
+     * @param actualDataNodes dataSource map
+     * @return boolean
+     */
+    public static boolean isActualDataNodesIncludedDataSourceInstance(final String actualDataNodes) {
+        return isValidDataNode(actualDataNodes, 3);
     }
 }

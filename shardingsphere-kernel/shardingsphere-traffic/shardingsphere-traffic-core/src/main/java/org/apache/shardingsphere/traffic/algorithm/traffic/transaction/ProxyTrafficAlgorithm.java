@@ -17,16 +17,23 @@
 
 package org.apache.shardingsphere.traffic.algorithm.traffic.transaction;
 
+import lombok.Getter;
 import org.apache.shardingsphere.traffic.api.traffic.transaction.TransactionTrafficAlgorithm;
 import org.apache.shardingsphere.traffic.api.traffic.transaction.TransactionTrafficValue;
+
+import java.util.Properties;
 
 /**
  * Proxy traffic algorithm.
  */
+@Getter
 public final class ProxyTrafficAlgorithm implements TransactionTrafficAlgorithm {
     
+    private Properties props;
+    
     @Override
-    public void init() {
+    public void init(final Properties props) {
+        this.props = props;
     }
     
     @Override

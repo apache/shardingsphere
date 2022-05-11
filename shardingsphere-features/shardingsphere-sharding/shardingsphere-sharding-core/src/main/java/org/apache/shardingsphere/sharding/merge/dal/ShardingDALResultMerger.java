@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryRe
 import org.apache.shardingsphere.infra.merge.engine.merger.ResultMerger;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sharding.merge.dal.common.SingleLocalDataMergedResult;
 import org.apache.shardingsphere.sharding.merge.dal.show.LogicTablesMergedResult;
@@ -47,16 +48,18 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class ShardingDALResultMerger implements ResultMerger {
     
-    private final String schemaName;
+    private final String databaseName;
     
     private final ShardingRule shardingRule;
     
     @Override
-    public MergedResult merge(final List<QueryResult> queryResults, final SQLStatementContext<?> sqlStatementContext, final ShardingSphereSchema schema) throws SQLException {
+    public MergedResult merge(final List<QueryResult> queryResults, final SQLStatementContext<?> sqlStatementContext, final ShardingSphereMetaData metaData) throws SQLException {
         SQLStatement dalStatement = sqlStatementContext.getSqlStatement();
+        String schemaName = sqlStatementContext.getTablesContext().getSchemaName().orElse(sqlStatementContext.getDatabaseType().getDefaultSchema(metaData.getDatabaseName()));
         if (dalStatement instanceof MySQLShowDatabasesStatement) {
-            return new SingleLocalDataMergedResult(Collections.singletonList(schemaName));
+            return new SingleLocalDataMergedResult(Collections.singletonList(databaseName));
         }
+        ShardingSphereSchema schema = metaData.getSchemaByName(schemaName);
         if (dalStatement instanceof MySQLShowTablesStatement) {
             return new LogicTablesMergedResult(shardingRule, sqlStatementContext, schema, queryResults);
         }

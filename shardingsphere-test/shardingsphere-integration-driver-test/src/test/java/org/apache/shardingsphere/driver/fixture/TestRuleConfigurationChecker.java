@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.config.checker.RuleConfigurationChecker;
 public final class TestRuleConfigurationChecker implements RuleConfigurationChecker<TestRuleConfiguration> {
     
     @Override
-    public void check(final String schemaName, final TestRuleConfiguration config) {
+    public void check(final String databaseName, final TestRuleConfiguration config) {
     }
     
     @Override

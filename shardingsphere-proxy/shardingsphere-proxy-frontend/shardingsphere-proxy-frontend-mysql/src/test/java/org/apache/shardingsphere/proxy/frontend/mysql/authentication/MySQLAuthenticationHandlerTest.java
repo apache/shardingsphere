@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.mysql.authentication;
 import com.google.common.primitives.Bytes;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
-import org.apache.shardingsphere.authority.provider.natived.NativeAuthorityProviderAlgorithm;
+import org.apache.shardingsphere.authority.model.AuthorityRegistry;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.authority.rule.builder.AuthorityRuleBuilder;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLAuthenticationMethod;
@@ -28,19 +28,17 @@ import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerErrorCode
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthPluginData;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.executor.check.SQLChecker;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
+import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.mysql.authentication.authenticator.MySQLAuthenticator;
 import org.apache.shardingsphere.proxy.frontend.mysql.authentication.authenticator.MySQLNativePasswordAuthenticator;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -72,10 +70,6 @@ public final class MySQLAuthenticationHandlerTest {
     
     private final byte[] part2 = {83, 121, 75, 81, 87, 56, 120, 112, 73, 109, 77, 69};
     
-    static {
-        ShardingSphereServiceLoader.register(SQLChecker.class);
-    }
-    
     @Before
     public void setUp() {
         initAuthPluginDataForAuthenticationHandler();
@@ -91,28 +85,28 @@ public final class MySQLAuthenticationHandlerTest {
     
     @Test
     public void assertLoginWithPassword() {
-        setAuthority(new ShardingSphereUser("root", "root", ""));
+        initProxyContext(new ShardingSphereUser("root", "root", ""), true);
         byte[] authResponse = {-27, 89, -20, -27, 65, -120, -64, -101, 86, -100, -108, -100, 6, -125, -37, 117, 14, -43, 95, -113};
         assertFalse(authenticationHandler.login("root", "", authResponse, "db1").isPresent());
     }
     
     @Test
     public void assertLoginWithAbsentUser() {
-        setAuthority(new ShardingSphereUser("root", "root", ""));
+        initProxyContext(new ShardingSphereUser("root", "root", ""), true);
         byte[] authResponse = {-27, 89, -20, -27, 65, -120, -64, -101, 86, -100, -108, -100, 6, -125, -37, 117, 14, -43, 95, -113};
         assertThat(authenticationHandler.login("root1", "", authResponse, "db1").orElse(null), is(MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR));
     }
     
     @Test
     public void assertLoginWithIncorrectPassword() {
-        setAuthority(new ShardingSphereUser("root", "root", ""));
+        initProxyContext(new ShardingSphereUser("root", "root", ""), true);
         byte[] authResponse = {0, 89, -20, -27, 65, -120, -64, -101, 86, -100, -108, -100, 6, -125, -37, 117, 14, -43, 95, -113};
         assertThat(authenticationHandler.login("root", "", authResponse, "db1").orElse(null), is(MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR));
     }
     
     @Test
     public void assertLoginWithoutPassword() {
-        setAuthority(new ShardingSphereUser("root", null, ""));
+        initProxyContext(new ShardingSphereUser("root", null, ""), true);
         byte[] authResponse = {};
         assertFalse(authenticationHandler.login("root", "", authResponse, "db1").isPresent());
     }
@@ -134,12 +128,6 @@ public final class MySQLAuthenticationHandlerTest {
         MySQLAuthenticator authenticator = authenticationHandler.getAuthenticator("root", "");
         assertThat(authenticator, instanceOf(MySQLNativePasswordAuthenticator.class));
         assertThat(authenticator.getAuthenticationMethodName(), is(MySQLAuthenticationMethod.SECURE_PASSWORD_AUTHENTICATION.getMethodName()));
-    }
-    
-    private void setAuthority(final ShardingSphereUser user) {
-        NativeAuthorityProviderAlgorithm algorithm = new NativeAuthorityProviderAlgorithm();
-        algorithm.init(Collections.emptyMap(), Collections.emptyList());
-        initProxyContext(user, true);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
@@ -171,11 +159,11 @@ public final class MySQLAuthenticationHandlerTest {
         AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(Collections.singletonList(user), new ShardingSphereAlgorithmConfiguration("NATIVE", new Properties()));
         AuthorityRule rule = new AuthorityRuleBuilder().build(ruleConfig, Collections.emptyMap());
         if (!isNeedSuper) {
-            Field providerField = AuthorityRule.class.getDeclaredField("provider");
-            NativeAuthorityProviderAlgorithm nativeAuthorityProviderAlgorithm = mock(NativeAuthorityProviderAlgorithm.class, RETURNS_DEEP_STUBS);
-            when(nativeAuthorityProviderAlgorithm.findPrivileges(user.getGrantee())).thenReturn(Optional.empty());
-            providerField.setAccessible(true);
-            providerField.set(rule, nativeAuthorityProviderAlgorithm);
+            Field authorityRegistryField = AuthorityRule.class.getDeclaredField("authorityRegistry");
+            AuthorityRegistry authorityRegistry = mock(AuthorityRegistry.class);
+            when(authorityRegistry.findPrivileges(user.getGrantee())).thenReturn(Optional.empty());
+            authorityRegistryField.setAccessible(true);
+            authorityRegistryField.set(rule, authorityRegistry);
         }
         return new ShardingSphereRuleMetaData(Collections.singletonList(ruleConfig), Collections.singletonList(rule));
     }

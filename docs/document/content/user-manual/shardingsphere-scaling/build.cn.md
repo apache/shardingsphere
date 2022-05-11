@@ -74,22 +74,26 @@ rules:
       completionDetector: # 作业是否接近完成检测算法。如果不配置则无法自动进行后续步骤，可以通过 DistSQL 手动操作。
         type: # 算法类型。可选项：IDLE
         props: # 算法属性
-          incremental-task-idle-minute-threshold: # 如果增量同步任务不再活动超过一定时间，那么可以认为增量同步任务接近完成。适用算法类型：IDLE
+          incremental-task-idle-seconds-threshold: # 如果增量同步任务不再活动超过一定时间，那么可以认为增量同步任务接近完成。适用算法类型：IDLE
       dataConsistencyChecker: # 数据一致性校验算法。如果不配置则跳过这个步骤。
         type: # 算法类型。可选项：DATA_MATCH, CRC32_MATCH
         props: # 算法属性
           chunk-size: # 一次查询操作返回的最大记录数
 ```
 
-配置示例：
+`dataConsistencyChecker` 的 `type` 可以通过执行 DistSQL `SHOW SCALING CHECK ALGORITHMS` 查询到。简单对比：
+- `DATA_MATCH`：支持所有数据库，但是性能不是最好的。
+- `CRC32_MATCH`：只支持 `MySQL`，但是性能更好。
+
+自动模式配置示例：
 ```yaml
 rules:
 - !SHARDING
   # 忽略的配置
   
-  scalingName: default_scaling
+  scalingName: scaling_auto
   scaling:
-    default_scaling:
+    scaling_auto:
       input:
         workerThread: 40
         batchSize: 1000
@@ -103,20 +107,43 @@ rules:
       completionDetector:
         type: IDLE
         props:
-          incremental-task-idle-minute-threshold: 30
+          incremental-task-idle-seconds-threshold: 1800
       dataConsistencyChecker:
         type: DATA_MATCH
         props:
           chunk-size: 1000
 ```
 
-以上的 `completionDetector`，`dataConsistencyChecker` 都可以通过实现 SPI 自定义。可以参考现有实现，详情请参见[开发者手册#弹性伸缩](/cn/dev-manual/scaling/)。
+手动模式配置示例：
+```yaml
+rules:
+- !SHARDING
+  # 忽略的配置
+  
+  scalingName: scaling_manual
+  scaling:
+    scaling_manual:
+      input:
+        workerThread: 40
+        batchSize: 1000
+      output:
+        workerThread: 40
+        batchSize: 1000
+      streamChannel:
+        type: MEMORY
+        props:
+          block-queue-size: 10000
+      dataConsistencyChecker:
+        type: DATA_MATCH
+        props:
+          chunk-size: 1000
+```
 
 方法2：通过 DistSQL 配置 scaling
 
-创建 scaling 配置示例：
+自动模式配置示例：
 ```sql
-CREATE SHARDING SCALING RULE default_scaling (
+CREATE SHARDING SCALING RULE scaling_auto (
 INPUT(
   WORKER_THREAD=40,
   BATCH_SIZE=1000
@@ -126,7 +153,23 @@ OUTPUT(
   BATCH_SIZE=1000
 ),
 STREAM_CHANNEL(TYPE(NAME=MEMORY, PROPERTIES("block-queue-size"=10000))),
-COMPLETION_DETECTOR(TYPE(NAME=IDLE, PROPERTIES("incremental-task-idle-minute-threshold"=3))),
+COMPLETION_DETECTOR(TYPE(NAME=IDLE, PROPERTIES("incremental-task-idle-seconds-threshold"=1800))),
+DATA_CONSISTENCY_CHECKER(TYPE(NAME=DATA_MATCH, PROPERTIES("chunk-size"=1000)))
+);
+```
+
+手动模式配置示例：
+```sql
+CREATE SHARDING SCALING RULE scaling_manual (
+INPUT(
+  WORKER_THREAD=40,
+  BATCH_SIZE=1000
+),
+OUTPUT(
+  WORKER_THREAD=40,
+  BATCH_SIZE=1000
+),
+STREAM_CHANNEL(TYPE(NAME=MEMORY, PROPERTIES("block-queue-size"=10000))),
 DATA_CONSISTENCY_CHECKER(TYPE(NAME=DATA_MATCH, PROPERTIES("chunk-size"=1000)))
 );
 ```

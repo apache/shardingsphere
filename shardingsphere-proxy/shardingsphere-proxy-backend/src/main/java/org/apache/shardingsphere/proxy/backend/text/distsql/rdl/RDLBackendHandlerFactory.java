@@ -24,7 +24,6 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.RuleDefinitionStat
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceStatement;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.resource.AddResourceBackendHandler;
@@ -43,22 +42,21 @@ public final class RDLBackendHandlerFactory {
     /**
      * Create new instance of RDL backend handler.
      * 
-     * @param databaseType database type
      * @param sqlStatement RDL statement
      * @param connectionSession connection session
      * @return RDL backend handler
      * @throws SQLException SQL exception
      */
-    public static TextProtocolBackendHandler newInstance(final DatabaseType databaseType, final RDLStatement sqlStatement, final ConnectionSession connectionSession) throws SQLException {
-        return createBackendHandler(databaseType, sqlStatement, connectionSession);
+    public static TextProtocolBackendHandler newInstance(final RDLStatement sqlStatement, final ConnectionSession connectionSession) throws SQLException {
+        return createBackendHandler(sqlStatement, connectionSession);
     }
     
-    private static TextProtocolBackendHandler createBackendHandler(final DatabaseType databaseType, final RDLStatement sqlStatement, final ConnectionSession connectionSession) {
+    private static TextProtocolBackendHandler createBackendHandler(final RDLStatement sqlStatement, final ConnectionSession connectionSession) {
         if (sqlStatement instanceof AddResourceStatement) {
-            return new AddResourceBackendHandler(databaseType, (AddResourceStatement) sqlStatement, connectionSession);
+            return new AddResourceBackendHandler((AddResourceStatement) sqlStatement, connectionSession);
         }
         if (sqlStatement instanceof AlterResourceStatement) {
-            return new AlterResourceBackendHandler(databaseType, (AlterResourceStatement) sqlStatement, connectionSession);
+            return new AlterResourceBackendHandler((AlterResourceStatement) sqlStatement, connectionSession);
         }
         if (sqlStatement instanceof DropResourceStatement) {
             return new DropResourceBackendHandler((DropResourceStatement) sqlStatement, connectionSession);

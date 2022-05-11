@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.agent.plugin.tracing.opentracing.definition;
 
-import java.util.Collection;
-import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -26,16 +24,8 @@ import static org.junit.Assert.assertThat;
 
 public final class OpenTracingPluginDefinitionServiceTest {
     
-    private final OpenTracingPluginDefinitionService openTracingPluginDefinitionService = new OpenTracingPluginDefinitionService();
-    
     @Test
     public void assertDefine() {
-        Collection<PluginInterceptorPoint> interceptorPointList = openTracingPluginDefinitionService.install();
-        assertThat(interceptorPointList.size(), is(3));
-    }
-    
-    @Test
-    public void assertType() {
-        assertThat(openTracingPluginDefinitionService.getType(), is("OpenTracing"));
+        assertThat(new OpenTracingPluginDefinitionService().install().size(), is(3));
     }
 }

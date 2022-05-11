@@ -45,15 +45,15 @@ public final class LockStatementAssert {
     public static void assertIs(final SQLCaseAssertContext assertContext, final LockStatement actual, final LockStatementTestCase expected) {
         if (actual instanceof MySQLLockStatement) {
             MySQLLockStatement lockStatement = (MySQLLockStatement) actual;
-            if (null != expected.getTables() && expected.getTables().size() > 0) {
-                assertTrue(assertContext.getText("Actual lock statement should exist."), lockStatement.getTables().size() > 0);
+            if (null != expected.getTables() && !expected.getTables().isEmpty()) {
+                assertFalse(assertContext.getText("Actual lock statement should exist."), lockStatement.getTables().isEmpty());
                 int count = 0;
                 for (SimpleTableSegment each : lockStatement.getTables()) {
                     TableAssert.assertIs(assertContext, each, expected.getTables().get(count));
                     count++;
                 }
             } else {
-                assertFalse(assertContext.getText("Actual lock statement should not exist."), lockStatement.getTables().size() > 0);
+                assertTrue(assertContext.getText("Actual lock statement should not exist."), lockStatement.getTables().isEmpty());
             }
         }
     }

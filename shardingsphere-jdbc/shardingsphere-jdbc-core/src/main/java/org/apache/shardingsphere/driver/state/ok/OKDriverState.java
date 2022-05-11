@@ -29,8 +29,8 @@ import java.sql.Connection;
 public final class OKDriverState implements DriverState {
     
     @Override
-    public Connection getConnection(final String schemaName, final ContextManager contextManager) {
-        return new ShardingSphereConnection(schemaName, contextManager);
+    public Connection getConnection(final String databaseName, final ContextManager contextManager) {
+        return new ShardingSphereConnection(databaseName, contextManager);
     }
     
     @Override

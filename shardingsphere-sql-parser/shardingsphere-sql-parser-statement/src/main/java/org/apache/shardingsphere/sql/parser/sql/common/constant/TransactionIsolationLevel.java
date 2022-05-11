@@ -26,13 +26,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public enum TransactionIsolationLevel {
-
+    
     NONE("NONE"),
-    READ_UNCOMMITTED("READ_UNCOMMITTED"),
-    READ_COMMITTED("READ_COMMITTED"),
-    REPEATABLE_READ("REPEATABLE_READ"),
+    READ_UNCOMMITTED("READ-UNCOMMITTED"),
+    READ_COMMITTED("READ-COMMITTED"),
+    REPEATABLE_READ("REPEATABLE-READ"),
     SNAPSHOT("SNAPSHOT"),
     SERIALIZABLE("SERIALIZABLE");
-
+    
     private final String isolationLevel;
 }

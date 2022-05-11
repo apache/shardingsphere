@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-# supported: jdbc,proxy
+# supported: JDBC, PROXY
 products:
   - jdbc
 
@@ -26,6 +26,9 @@ modes:
 # supported: local
 transactions: 
   - local
+  - xa-atomikos
+  - xa-narayana
+  - xa-bitronix
 
 # supported: sharding,readwrite-splitting,encrypt,shadow,db-discovery
 features: 

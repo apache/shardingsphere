@@ -25,10 +25,8 @@ import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCStatementManager;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
-import org.apache.shardingsphere.proxy.backend.communication.SQLStatementSchemaHolder;
+import org.apache.shardingsphere.proxy.backend.communication.SQLStatementDatabaseHolder;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -45,11 +43,7 @@ import java.util.Optional;
 @Setter
 public final class JDBCBackendStatement implements ExecutorJDBCStatementManager {
     
-    static {
-        ShardingSphereServiceLoader.register(StatementMemoryStrictlyFetchSizeSetter.class);
-    }
-    
-    private String schemaName;
+    private String databaseName;
     
     @Override
     public Statement createStorageResource(final Connection connection, final ConnectionMode connectionMode, final StatementOption option) throws SQLException {
@@ -65,7 +59,8 @@ public final class JDBCBackendStatement implements ExecutorJDBCStatementManager 
         String sql = executionUnit.getSqlUnit().getSql();
         List<Object> parameters = executionUnit.getSqlUnit().getParameters();
         PreparedStatement result = option.isReturnGeneratedKeys()
-                ? connection.prepareStatement(executionUnit.getSqlUnit().getSql(), Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(sql);
+                ? connection.prepareStatement(executionUnit.getSqlUnit().getSql(), Statement.RETURN_GENERATED_KEYS)
+                : connection.prepareStatement(sql);
         for (int i = 0; i < parameters.size(); i++) {
             Object parameter = parameters.get(i);
             if (parameter instanceof TypeUnspecifiedSQLParameter) {
@@ -82,8 +77,8 @@ public final class JDBCBackendStatement implements ExecutorJDBCStatementManager 
     
     private void setFetchSize(final Statement statement) throws SQLException {
         DatabaseType databaseType = ProxyContext.getInstance().getContextManager().getMetaDataContexts()
-                .getMetaData(null == schemaName ? SQLStatementSchemaHolder.get() : schemaName).getResource().getDatabaseType();
-        Optional<StatementMemoryStrictlyFetchSizeSetter> fetchSizeSetter = TypedSPIRegistry.findRegisteredService(StatementMemoryStrictlyFetchSizeSetter.class, databaseType.getName());
+                .getMetaData(null == databaseName ? SQLStatementDatabaseHolder.get() : databaseName).getResource().getDatabaseType();
+        Optional<StatementMemoryStrictlyFetchSizeSetter> fetchSizeSetter = StatementMemoryStrictlyFetchSizeSetterFactory.findInstance(databaseType.getType());
         if (fetchSizeSetter.isPresent()) {
             fetchSizeSetter.get().setFetchSize(statement);
         }

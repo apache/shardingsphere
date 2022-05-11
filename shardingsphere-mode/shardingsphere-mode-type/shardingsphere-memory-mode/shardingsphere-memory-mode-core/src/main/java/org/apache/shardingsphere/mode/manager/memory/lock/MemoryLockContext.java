@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -40,35 +39,57 @@ public final class MemoryLockContext implements LockContext {
     }
     
     @Override
-    public ShardingSphereLock getOrCreateSchemaLock(final String schemaName) {
-        Preconditions.checkNotNull(schemaName, "Get or create schema lock args schema name can not be null.");
-        ShardingSphereLock result = locks.get(schemaName);
+    public boolean tryLockWriteDatabase(final String databaseName) {
+        Preconditions.checkNotNull(databaseName, "Try lock write database args database name can not be null.");
+        return getGlobalLock(databaseName).tryLock(databaseName);
+    }
+    
+    @Override
+    public void releaseLockWriteDatabase(final String databaseName) {
+        Preconditions.checkNotNull(databaseName, "Release lock write database args database name can not be null.");
+        getGlobalLock(databaseName).releaseLock(databaseName);
+    }
+    
+    @Override
+    public boolean isLockedDatabase(final String databaseName) {
+        Preconditions.checkNotNull(databaseName, "Is locked database args database name can not be null.");
+        ShardingSphereLock shardingSphereLock = locks.get(databaseName);
+        return null != shardingSphereLock && shardingSphereLock.isLocked();
+    }
+    
+    @Override
+    public ShardingSphereLock getGlobalLock(final String lockName) {
+        Preconditions.checkNotNull(lockName, "Get global lock args lock name can not be null.");
+        ShardingSphereLock result = locks.get(lockName);
         if (null != result) {
             return result;
         }
         synchronized (locks) {
-            result = locks.get(schemaName);
+            result = locks.get(lockName);
             if (null != result) {
                 return result;
             }
             result = new ShardingSphereNonReentrantLock(new ReentrantLock());
-            locks.put(schemaName, result);
+            locks.put(lockName, result);
             return result;
         }
     }
     
     @Override
-    public Optional<ShardingSphereLock> getSchemaLock(final String schemaName) {
-        if (null == schemaName) {
-            return Optional.empty();
+    public ShardingSphereLock getStandardLock(final String lockName) {
+        Preconditions.checkNotNull(lockName, "Get standard lock args lock name can not be null.");
+        ShardingSphereLock result = locks.get(lockName);
+        if (null != result) {
+            return result;
         }
-        return Optional.ofNullable(locks.get(schemaName));
-    }
-    
-    @Override
-    public boolean isLockedSchema(final String schemaName) {
-        Preconditions.checkNotNull(schemaName, "Is locked schema args schema name can not be null.");
-        ShardingSphereLock shardingSphereLock = locks.get(schemaName);
-        return null != shardingSphereLock && shardingSphereLock.isLocked(schemaName);
+        synchronized (locks) {
+            result = locks.get(lockName);
+            if (null != result) {
+                return result;
+            }
+            result = new ShardingSphereReentrantLock(new ReentrantLock());
+            locks.put(lockName, result);
+            return result;
+        }
     }
 }

@@ -21,7 +21,7 @@ import com.google.common.base.Strings;
 import org.apache.shardingsphere.driver.jdbc.adapter.AdaptedDatabaseMetaData;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.DatabaseMetaDataResultSet;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
@@ -51,17 +51,17 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     private DatabaseMetaData currentDatabaseMetaData;
     
     public ShardingSphereDatabaseMetaData(final ShardingSphereConnection connection) {
-        super(connection.getContextManager().getMetaDataContexts().getMetaData(connection.getSchema()).getResource().getCachedDatabaseMetaData());
+        super(connection.getContextManager().getMetaDataContexts().getMetaData(connection.getDatabaseName()).getResource().getCachedDatabaseMetaData());
         this.connection = connection;
-        rules = connection.getContextManager().getMetaDataContexts().getMetaData(connection.getSchema()).getRuleMetaData().getRules();
-        dataSourcesMetaData = connection.getContextManager().getMetaDataContexts().getMetaData(connection.getSchema()).getResource().getDataSourcesMetaData();
+        rules = connection.getContextManager().getMetaDataContexts().getMetaData(connection.getDatabaseName()).getRuleMetaData().getRules();
+        dataSourcesMetaData = connection.getContextManager().getMetaDataContexts().getMetaData(connection.getDatabaseName()).getResource().getDataSourcesMetaData();
     }
     
     @Override
     public Connection getConnection() throws SQLException {
         if (null == currentPhysicalConnection) {
             currentPhysicalConnection = connection.getConnectionManager().getRandomConnection();
-        } 
+        }
         return currentPhysicalConnection;
     }
     
@@ -118,13 +118,13 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     @Override
     public ResultSet getColumns(final String catalog, final String schemaPattern, final String tableNamePattern, final String columnNamePattern) throws SQLException {
         return createDatabaseMetaDataResultSet(
-            getDatabaseMetaData().getColumns(getActualCatalog(catalog), getActualSchema(schemaPattern), getActualTableNamePattern(tableNamePattern), columnNamePattern));
+                getDatabaseMetaData().getColumns(getActualCatalog(catalog), getActualSchema(schemaPattern), getActualTableNamePattern(tableNamePattern), columnNamePattern));
     }
     
     @Override
     public ResultSet getColumnPrivileges(final String catalog, final String schema, final String table, final String columnNamePattern) throws SQLException {
         return createDatabaseMetaDataResultSet(
-            getDatabaseMetaData().getColumnPrivileges(getActualCatalog(catalog), getActualSchema(schema), getActualTable(catalog, table), columnNamePattern));
+                getDatabaseMetaData().getColumnPrivileges(getActualCatalog(catalog), getActualSchema(schema), getActualTable(catalog, table), columnNamePattern));
     }
     
     @Override
@@ -161,7 +161,7 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     public ResultSet getCrossReference(final String parentCatalog,
                                        final String parentSchema, final String parentTable, final String foreignCatalog, final String foreignSchema, final String foreignTable) throws SQLException {
         return createDatabaseMetaDataResultSet(
-            getDatabaseMetaData().getCrossReference(getActualCatalog(parentCatalog), getActualSchema(parentSchema), parentTable, foreignCatalog, foreignSchema, foreignTable));
+                getDatabaseMetaData().getCrossReference(getActualCatalog(parentCatalog), getActualSchema(parentSchema), parentTable, foreignCatalog, foreignSchema, foreignTable));
     }
     
     @Override
@@ -197,7 +197,7 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     @Override
     public ResultSet getPseudoColumns(final String catalog, final String schemaPattern, final String tableNamePattern, final String columnNamePattern) throws SQLException {
         return createDatabaseMetaDataResultSet(
-            getDatabaseMetaData().getPseudoColumns(getActualCatalog(catalog), getActualSchema(schemaPattern), getActualTableNamePattern(tableNamePattern), columnNamePattern));
+                getDatabaseMetaData().getPseudoColumns(getActualCatalog(catalog), getActualSchema(schemaPattern), getActualTableNamePattern(tableNamePattern), columnNamePattern));
     }
     
     private String getActualTableNamePattern(final String tableNamePattern) {
@@ -215,11 +215,11 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     }
     
     private Optional<String> findActualTable(final DataNodeContainedRule dataNodeContainedRule, final String catalog, final String table) {
-        return Strings.isNullOrEmpty(catalog) ? dataNodeContainedRule.findFirstActualTable(table) : dataNodeContainedRule.findActualTableByCatalog(catalog, table);  
+        return Strings.isNullOrEmpty(catalog) ? dataNodeContainedRule.findFirstActualTable(table) : dataNodeContainedRule.findActualTableByCatalog(catalog, table);
     }
     
     private Optional<DataNodeContainedRule> findDataNodeContainedRule() {
-        return rules.stream().filter(each -> each instanceof DataNodeContainedRule).findFirst().map(rule -> (DataNodeContainedRule) rule);
+        return rules.stream().filter(each -> each instanceof DataNodeContainedRule).findFirst().map(each -> (DataNodeContainedRule) each);
     }
     
     private ResultSet createDatabaseMetaDataResultSet(final ResultSet resultSet) throws SQLException {
@@ -227,11 +227,11 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     }
     
     private String getActualCatalog(final String catalog) {
-        return null != catalog && catalog.contains(DefaultSchema.LOGIC_NAME) ? dataSourcesMetaData.getDataSourceMetaData(getDataSourceName()).getCatalog() : catalog;
+        return null != catalog && catalog.contains(DefaultDatabase.LOGIC_NAME) ? dataSourcesMetaData.getDataSourceMetaData(getDataSourceName()).getCatalog() : catalog;
     }
     
     private String getActualSchema(final String schema) {
-        return null != schema && schema.contains(DefaultSchema.LOGIC_NAME) ? dataSourcesMetaData.getDataSourceMetaData(getDataSourceName()).getSchema() : schema;
+        return null != schema && schema.contains(DefaultDatabase.LOGIC_NAME) ? dataSourcesMetaData.getDataSourceMetaData(getDataSourceName()).getSchema() : schema;
     }
     
     private String getDataSourceName() {

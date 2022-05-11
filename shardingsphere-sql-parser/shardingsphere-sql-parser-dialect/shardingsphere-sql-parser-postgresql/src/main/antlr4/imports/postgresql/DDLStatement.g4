@@ -530,7 +530,7 @@ alterTableCmd
     | DROP COLUMN? colId dropBehavior?
     | ALTER COLUMN? colId setData? TYPE typeName collateClause? alterUsing?
     | ALTER COLUMN? colId alterGenericOptions
-    | ADD tableConstraint
+    | ADD tableConstraint (NOT VALID)?
     | ALTER CONSTRAINT name constraintAttributeSpec
     | VALIDATE CONSTRAINT name
     | DROP CONSTRAINT existClause name dropBehavior?
@@ -815,7 +815,7 @@ alterDomain
 
 alterDomainClause
     : anyName (SET | DROP) NOT NULL
-    | anyName ADD tableConstraint
+    | anyName ADD tableConstraint (NOT VALID)?
     | anyName DROP CONSTRAINT existClause? name dropBehavior?
     | anyName VALIDATE CONSTRAINT name
     | anyName RENAME CONSTRAINT constraintName TO constraintName
@@ -1183,10 +1183,10 @@ alterView
     ;
 
 alterViewClauses
-    : alterTableCmds
-    | RENAME TO name
-    | RENAME COLUMN? name TO name
-    | SET SCHEMA name
+    : alterTableCmds #alterViewCmds
+    | RENAME TO name #alterRenameView
+    | RENAME COLUMN? name TO name #alterRenameColumn
+    | SET SCHEMA name #alterSetSchema
     ;
 
 close
@@ -1644,7 +1644,7 @@ dropDomain
     ;
 
 dropEventTrigger
-    : DROP EVENT TRIGGER existClause? name dropBehavior?
+    : DROP EVENT TRIGGER existClause? nameList dropBehavior?
     ;
 
 dropExtension
@@ -1736,7 +1736,7 @@ dropTablespace
     ;
 
 dropTextSearch
-    : DROP TEXT SEARCH (CONFIGURATION | DICTIONARY | PARSER | TEMPLATE) existClause? name dropBehavior?
+    : DROP TEXT SEARCH (CONFIGURATION | DICTIONARY | PARSER | TEMPLATE) existClause? qualifiedName dropBehavior?
     ;
 
 dropTransform
@@ -1756,7 +1756,7 @@ dropUserMapping
     ;
 
 dropView
-    : DROP VIEW existClause? nameList dropBehavior?
+    : DROP VIEW existClause? qualifiedNameList dropBehavior?
     ;
 
 importForeignSchema
@@ -1864,4 +1864,29 @@ securityLabelClausces
 
 unlisten
     : UNLISTEN (colId | ASTERISK_)
+    ;
+
+createSchema
+    : CREATE SCHEMA notExistClause? createSchemaClauses
+    ;
+
+createSchemaClauses
+    : colId? AUTHORIZATION roleSpec schemaEltList
+    | colId schemaEltList
+    ;
+
+schemaEltList
+    : schemaStmt*
+    ;
+
+schemaStmt
+    : createTable | createIndex | createSequence | createTrigger | grant | createView
+    ;
+
+alterSchema
+    : ALTER SCHEMA name (RENAME TO name | OWNER TO roleSpec)
+    ;
+
+dropSchema
+    : DROP SCHEMA existClause? nameList dropBehavior?
     ;

@@ -17,14 +17,16 @@
 
 package org.apache.shardingsphere.spi;
 
-import org.apache.shardingsphere.spi.exception.ServiceLoaderInstantiationException;
-import org.apache.shardingsphere.spi.type.typed.fixture.stateful.StatefulTypedSPIFixture;
+import org.apache.shardingsphere.spi.fixture.EmptySPIFixture;
+import org.apache.shardingsphere.spi.fixture.MultitonSPIFixture;
+import org.apache.shardingsphere.spi.fixture.MultitonSPIFixtureImpl;
+import org.apache.shardingsphere.spi.fixture.SingletonSPIFixture;
+import org.apache.shardingsphere.spi.fixture.SingletonSPIFixtureImpl;
 import org.junit.Test;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Collection;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
@@ -32,56 +34,37 @@ import static org.junit.Assert.assertTrue;
 
 public final class ShardingSphereServiceLoaderTest {
     
-    @Test
-    public void assertGetSingletonServiceInstanceWhenIsNotExist() {
-        ShardingSphereServiceLoader.register(Collection.class);
-        Collection<?> collection = ShardingSphereServiceLoader.getSingletonServiceInstances(Collection.class);
-        assertTrue(collection.isEmpty());
+    static {
+        ShardingSphereServiceLoader.register(EmptySPIFixture.class);
+        ShardingSphereServiceLoader.register(SingletonSPIFixture.class);
+        ShardingSphereServiceLoader.register(MultitonSPIFixture.class);
     }
     
     @Test
-    public void assertGetSingletonServiceInstanceWhenIsExist() {
-        ShardingSphereServiceLoader.register(StatefulTypedSPIFixture.class);
-        Collection<?> collection = ShardingSphereServiceLoader.getSingletonServiceInstances(StatefulTypedSPIFixture.class);
-        assertThat(collection.size(), is(1));
-        assertThat(collection.iterator().next(), is(ShardingSphereServiceLoader.getSingletonServiceInstances(StatefulTypedSPIFixture.class).iterator().next()));
+    public void assertGetServiceInstancesWithUnregisteredSPI() {
+        assertTrue(ShardingSphereServiceLoader.getServiceInstances(Object.class).isEmpty());
     }
     
     @Test
-    public void assertNewServiceInstanceWhenIsNotExist() {
-        ShardingSphereServiceLoader.register(Collection.class);
-        Collection<?> collection = ShardingSphereServiceLoader.newServiceInstances(Collection.class);
-        assertTrue(collection.isEmpty());
+    public void assertGetServiceInstancesWithEmptyInstances() {
+        assertTrue(ShardingSphereServiceLoader.getServiceInstances(EmptySPIFixture.class).isEmpty());
     }
     
     @Test
-    public void assertNewServiceInstanceWhenIsExist() {
-        ShardingSphereServiceLoader.register(StatefulTypedSPIFixture.class);
-        Collection<?> collection = ShardingSphereServiceLoader.newServiceInstances(StatefulTypedSPIFixture.class);
-        assertThat(collection.size(), is(1));
-        assertThat(collection.iterator().next(), not(ShardingSphereServiceLoader.getSingletonServiceInstances(StatefulTypedSPIFixture.class).iterator().next()));
+    public void assertGetServiceInstancesWithSingletonSPI() {
+        Collection<SingletonSPIFixture> actual = ShardingSphereServiceLoader.getServiceInstances(SingletonSPIFixture.class);
+        assertThat(actual.size(), is(1));
+        SingletonSPIFixture actualInstance = actual.iterator().next();
+        assertThat(actualInstance, instanceOf(SingletonSPIFixtureImpl.class));
+        assertThat(actualInstance, is(ShardingSphereServiceLoader.getServiceInstances(SingletonSPIFixture.class).iterator().next()));
     }
     
     @Test
-    public void assertRegisterTwice() {
-        ShardingSphereServiceLoader.register(StatefulTypedSPIFixture.class);
-        Collection<?> actualFirstRegister = ShardingSphereServiceLoader.newServiceInstances(StatefulTypedSPIFixture.class);
-        assertThat(actualFirstRegister.size(), is(1));
-        ShardingSphereServiceLoader.register(StatefulTypedSPIFixture.class);
-        Collection<?> actualSecondRegister = ShardingSphereServiceLoader.newServiceInstances(StatefulTypedSPIFixture.class);
-        assertThat(actualSecondRegister.size(), is(actualFirstRegister.size()));
-    }
-    
-    @Test
-    public void assertNewInstanceError() throws NoSuchMethodException, IllegalAccessException {
-        Method method = ShardingSphereServiceLoader.class.getDeclaredMethod("newServiceInstance", Class.class);
-        method.setAccessible(true);
-        Throwable targetException = null;
-        try {
-            method.invoke(null, StatefulTypedSPIFixture.class);
-        } catch (final InvocationTargetException ex) {
-            targetException = ex.getTargetException();
-        }
-        assertTrue(targetException instanceof ServiceLoaderInstantiationException);
+    public void assertGetServiceInstancesWithMultitonSPI() {
+        Collection<MultitonSPIFixture> actual = ShardingSphereServiceLoader.getServiceInstances(MultitonSPIFixture.class);
+        assertThat(actual.size(), is(1));
+        MultitonSPIFixture actualInstance = actual.iterator().next();
+        assertThat(actualInstance, instanceOf(MultitonSPIFixtureImpl.class));
+        assertThat(actualInstance, not(ShardingSphereServiceLoader.getServiceInstances(MultitonSPIFixture.class).iterator().next()));
     }
 }

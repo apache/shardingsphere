@@ -88,15 +88,15 @@ plugins:
 
 | Name       |  Description     |  Value range    |  Default value     |
 | :--------- | :-------- |:--------- | :-------- |
-| JVM_INFORMATION_COLLECTOR_ENABLED      | Start JVM collector |  true、false  |  true  |
+| JVM_INFORMATION_COLLECTOR_ENABLED      | Start JVM collector |  true, false  |  true  |
 | SERVICE_NAME      | Tracking service name | Custom | shardingsphere-agent |
-| JAEGER_SAMPLER_TYPE | Jaeger sample rate type | const、probabilistic、ratelimiting、remote | const |
-| JAEGER_SAMPLER_PARAM  | Jaeger sample rate parameter |const:0、1, probabilistic:0.0 - 1.0, ratelimiting: > 0, Customize the number of acquisitions per second，remote：need to customize the remote service addres,JAEGER_SAMPLER_MANAGER_HOST_PORT | 1（const type）|
-| SAMPLER_TYPE  | Zipkin sample rate type | const、counting、ratelimiting、boundary | const |
-| SAMPLER_PARAM | Zipkin sampling rate parameter |const:0、1, counting:0.01 - 1.0, ratelimiting: > 0, boundary:0.0001 - 1.0 | 1（const type）|
+| JAEGER_SAMPLER_TYPE | Jaeger sample rate type | const, probabilistic, ratelimiting, remote | const |
+| JAEGER_SAMPLER_PARAM  | Jaeger sample rate parameter |const:0, 1, probabilistic:0.0 - 1.0, ratelimiting: > 0, Customize the number of acquisitions per second, remote：need to customize the remote service addres,JAEGER_SAMPLER_MANAGER_HOST_PORT | 1 (const type) |
+| SAMPLER_TYPE  | Zipkin sample rate type | const, counting, ratelimiting, boundary | const |
+| SAMPLER_PARAM | Zipkin sampling rate parameter |const:0, 1, counting:0.01 - 1.0, ratelimiting: > 0, boundary:0.0001 - 1.0 | 1 (const type) |
 | otel.resource.attributes | opentelemetry properties | String key value pair (, split) | service.name=shardingsphere-agent |
-| otel.traces.exporter | Tracing expoter | zipkin、jaeger | zipkin |
-| otel.traces.sampler | Opentelemetry sample rate type | always_on、always_off、traceidratio | always_on |
+| otel.traces.exporter | Tracing expoter | zipkin, jaeger | zipkin |
+| otel.traces.sampler | Opentelemetry sample rate type | always_on, always_off, traceidratio | always_on |
 | otel.traces.sampler.arg | Opentelemetry sample rate parameter | traceidratio：0.0 - 1.0 | 1.0 |
 
 

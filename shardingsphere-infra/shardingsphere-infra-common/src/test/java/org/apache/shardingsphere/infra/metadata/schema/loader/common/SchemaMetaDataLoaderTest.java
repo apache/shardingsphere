@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.loader.common;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,8 +45,9 @@ public final class SchemaMetaDataLoaderTest {
     @Before
     public void setUp() throws SQLException {
         ResultSet resultSet = mockResultSet();
-        when(dataSource.getConnection().getMetaData().getTables("catalog", null, null, new String[]{"TABLE", "VIEW"})).thenReturn(resultSet);
+        when(dataSource.getConnection().getMetaData().getTables("catalog", "public", null, new String[]{"TABLE", "VIEW"})).thenReturn(resultSet);
         when(dataSource.getConnection().getCatalog()).thenReturn("catalog");
+        when(dataSource.getConnection().getSchema()).thenReturn("public");
     }
     
     private ResultSet mockResultSet() throws SQLException {
@@ -56,7 +58,8 @@ public final class SchemaMetaDataLoaderTest {
     }
     
     @Test
-    public void assertLoadAllTableNames() throws SQLException {
-        assertThat(SchemaMetaDataLoader.loadAllTableNames(mock(DatabaseType.class), dataSource), is(Collections.singletonList("tbl")));
+    public void assertLoadSchemaTableNames() throws SQLException {
+        assertThat(SchemaMetaDataLoader.loadSchemaTableNames(DefaultDatabase.LOGIC_NAME,
+                new PostgreSQLDatabaseType(), dataSource), is(Collections.singletonMap("public", Collections.singletonList("tbl"))));
     }
 }

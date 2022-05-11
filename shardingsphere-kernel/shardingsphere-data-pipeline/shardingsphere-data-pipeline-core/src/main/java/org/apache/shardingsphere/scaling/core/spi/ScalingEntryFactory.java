@@ -36,7 +36,7 @@ public final class ScalingEntryFactory {
      * Get instance of scaling entry.
      *
      * @param databaseType database type
-     * @return instance of scaling entry
+     * @return got instance
      */
     public static ScalingEntry getInstance(final String databaseType) {
         return TypedSPIRegistry.getRegisteredService(ScalingEntry.class, databaseType);

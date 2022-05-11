@@ -37,7 +37,9 @@ import java.util.List;
  */
 public final class MySQLCommandPacketDecoder extends ByteToMessageDecoder {
     
-    private enum States { ResponsePacket, FieldPacket, RowDataPacket }
+    private enum States {
+        ResponsePacket, FieldPacket, RowDataPacket
+    }
     
     private States currentState = States.ResponsePacket;
     

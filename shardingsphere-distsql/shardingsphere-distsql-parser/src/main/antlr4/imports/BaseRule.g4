@@ -39,6 +39,10 @@ schemaName
     : IDENTIFIER
     ;
 
+databaseName
+    : IDENTIFIER
+    ;
+
 resourceName
     : IDENTIFIER | STRING
     ;
