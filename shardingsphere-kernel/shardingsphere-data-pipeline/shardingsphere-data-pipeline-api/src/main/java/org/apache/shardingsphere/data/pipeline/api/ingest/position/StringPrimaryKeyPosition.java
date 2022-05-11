@@ -17,31 +17,35 @@
 
 package org.apache.shardingsphere.data.pipeline.api.ingest.position;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 /**
- * Primary key position.
+ * String primary key position.
  */
-public abstract class PrimaryKeyPosition<T> {
+@RequiredArgsConstructor
+@Getter
+public final class StringPrimaryKeyPosition extends PrimaryKeyPosition<String> implements IngestPosition<StringPrimaryKeyPosition> {
     
-    /**
-     * Get begin value.
-     *
-     * @return begin value
-     */
-    public abstract T getBeginValue();
+    private final String beginValue;
     
-    /**
-     * Get end value.
-     *
-     * @return end value
-     */
-    public abstract T getEndValue();
-    
-    protected abstract T convert(String value);
-    
-    protected abstract char getType();
+    private final String endValue;
     
     @Override
-    public final String toString() {
-        return String.format("%s,%s,%s", getType(), getBeginValue(), getEndValue());
+    protected String convert(final String value) {
+        return value;
+    }
+    
+    @Override
+    protected char getType() {
+        return 's';
+    }
+    
+    @Override
+    public int compareTo(final StringPrimaryKeyPosition position) {
+        if (null == position) {
+            return 1;
+        }
+        return beginValue.compareTo(position.getBeginValue());
     }
 }

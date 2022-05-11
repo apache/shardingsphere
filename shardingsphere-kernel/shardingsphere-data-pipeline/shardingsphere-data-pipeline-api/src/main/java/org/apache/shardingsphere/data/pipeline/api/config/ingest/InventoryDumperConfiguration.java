@@ -38,6 +38,8 @@ public final class InventoryDumperConfiguration extends DumperConfiguration {
     // TODO rename to uniqueKey
     private String primaryKey;
     
+    private Integer uniqueKeyDataType;
+    
     private Integer shardingItem;
     
     private int batchSize = 1000;
