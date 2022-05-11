@@ -156,21 +156,16 @@ public final class RALBackendHandlerFactory {
      * @throws SQLException SQL exception
      */
     public static TextProtocolBackendHandler newInstance(final DatabaseType databaseType, final RALStatement sqlStatement, final ConnectionSession connectionSession) throws SQLException {
-        TextProtocolBackendHandler result = null;
         if (sqlStatement instanceof HintDistSQLStatement) {
             return new HintDistSQLBackendHandler((HintDistSQLStatement) sqlStatement, connectionSession);
         }
         if (sqlStatement instanceof QueryableScalingRALStatement) {
-            result = QueryableScalingRALBackendHandlerFactory.newInstance((QueryableScalingRALStatement) sqlStatement, connectionSession);
+            return QueryableScalingRALBackendHandlerFactory.newInstance((QueryableScalingRALStatement) sqlStatement, connectionSession);
         }
         if (sqlStatement instanceof UpdatableScalingRALStatement) {
-            result = new UpdatableScalingRALBackendHandler((UpdatableScalingRALStatement) sqlStatement);
+            return new UpdatableScalingRALBackendHandler((UpdatableScalingRALStatement) sqlStatement);
         }
-        if (null == result) {
-            HandlerParameter parameter = new HandlerParameter(sqlStatement, databaseType, connectionSession);
-            result = getHandler(sqlStatement, parameter);
-        }
-        return result;
+        return getHandler(sqlStatement, new HandlerParameter(sqlStatement, databaseType, connectionSession));
     }
     
     private static RALBackendHandler newInstance(final Class<? extends RALBackendHandler> clazz) {
