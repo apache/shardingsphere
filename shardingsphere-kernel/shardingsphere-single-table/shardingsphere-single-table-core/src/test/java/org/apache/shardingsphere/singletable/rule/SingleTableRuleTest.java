@@ -262,4 +262,14 @@ public final class SingleTableRuleTest {
         String actualTable = "student";
         assertFalse(singleTableRule.findLogicTableByActualTable(actualTable).isPresent());
     }
+    
+    @Test
+    public void assertFindActualTableByCatalog() {
+        DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class);
+        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class), dataSourceMap,
+                Collections.singletonList(dataNodeContainedRule), new ConfigurationProperties(new Properties()));
+        String catalog = "employee";
+        String logicTable = "t_order_0";
+        assertFalse(singleTableRule.findActualTableByCatalog(catalog, logicTable).isPresent());
+    }
 }

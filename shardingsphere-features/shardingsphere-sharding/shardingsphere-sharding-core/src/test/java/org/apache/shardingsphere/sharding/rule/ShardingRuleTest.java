@@ -772,4 +772,11 @@ public final class ShardingRuleTest {
         assertTrue(actual.isNeedAccumulate(Collections.singletonList("table_0")));
         assertFalse(actual.isNeedAccumulate(Collections.singletonList("BROADCAST_TABLE")));
     }
+    
+    @Test
+    public void assertFindActualTableByCatalog() {
+        ShardingRule actual = createMaximumShardingRule();
+        Optional<String> actualTableByCatalog = actual.findActualTableByCatalog("ds_0", "logic_table");
+        assertThat(actualTableByCatalog.orElse(""), is("table_0"));
+    }
 }

@@ -70,6 +70,11 @@ public final class DataNodeContainedFixtureRule implements DataNodeContainedRule
     }
     
     @Override
+    public Optional<String> findActualTableByCatalog(final String catalog, final String logicTable) {
+        return Optional.empty();
+    }
+    
+    @Override
     public Collection<String> getAllTables() {
         return Collections.emptyList();
     }
