@@ -13,7 +13,7 @@ Please register [here](https://github.com/apache/shardingsphere/discussions/1225
 
 ## Who is Using ShardingSphere?
 
-Total: 193 companies.
+Total: 194 companies.
 
 ### Infra Software
 <ul>
@@ -161,6 +161,20 @@ Total: 193 companies.
     <li><a href="http://www.yaduo.com/" rel="nofollow">YaDuo</a></li>
 </ul>
 
+### E-Entertainment
+<ul>
+    <li><a href="https://www.ximalaya.com/" rel="nofollow">Ximalaya</a></li>
+    <li><a href="https://y.tencentmusic.com" rel="nofollow">Tencent Music</a></li>
+    <li><a href="https://www.bilibili.com/" rel="nofollow">Bilibili</a></li>
+    <li><a href="https://www.iqiyi.com/" rel="nofollow">Iqiyi</a></li>
+    <li><a href="https://www.yy.com/" rel="nofollow">YY</a></li>
+    <li><a href="https://www.douyu.com/" rel="nofollow">DOUYU.COM</a></li>
+    <li><a href="https://www.soulapp.cn/" rel="nofollow">Soul App</a></li>
+    <li><a href="https://www.bbgameonline.com/" rel="nofollow">BBGame</a></li>
+    <li><a href="https://www.elelive.net/" rel="nofollow">elelive.tv</a></li>
+    <li><a href="http://read.zhulang.com/" rel="nofollow">LianShang Literature</a></li>
+</ul>
+
 ### E-Learning
 <ul>
     <li><a href="http://www.100tal.com/" rel="nofollow">TAL</a></li>
@@ -176,19 +190,6 @@ Total: 193 companies.
     <li><a href="http://www.swydedu.com/" rel="nofollow">swydEdu</a></li>
     <li><a href="https://www.codemao.cn/" rel="nofollow">Dianmao</a></li>
     <li><a href="https://www.yxt.com/" rel="nofollow">YunXueTang</a></li>
-</ul>
-
-### E-Entertainment
-<ul>
-    <li><a href="https://y.tencentmusic.com" rel="nofollow">Tencent Music</a></li>
-    <li><a href="https://www.bilibili.com/" rel="nofollow">Bilibili</a></li>
-    <li><a href="https://www.iqiyi.com/" rel="nofollow">Iqiyi</a></li>
-    <li><a href="https://www.yy.com/" rel="nofollow">YY</a></li>
-    <li><a href="https://www.douyu.com/" rel="nofollow">DOUYU.COM</a></li>
-    <li><a href="https://www.soulapp.cn/" rel="nofollow">Soul App</a></li>
-    <li><a href="https://www.bbgameonline.com/" rel="nofollow">BBGame</a></li>
-    <li><a href="https://www.elelive.net/" rel="nofollow">elelive.tv</a></li>
-    <li><a href="http://read.zhulang.com/" rel="nofollow">LianShang Literature</a></li>
 </ul>
 
 ### News
