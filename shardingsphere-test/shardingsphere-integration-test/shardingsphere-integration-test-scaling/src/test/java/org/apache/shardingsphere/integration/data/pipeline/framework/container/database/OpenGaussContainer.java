@@ -27,6 +27,9 @@ import org.testcontainers.containers.BindMode;
 
 import java.sql.DriverManager;
 
+/**
+ * OpenGauss container for Scaling IT. 
+ */
 public final class OpenGaussContainer extends DockerDatabaseContainer {
     
     private static final DatabaseType DATABASE_TYPE = new OpenGaussDatabaseType();
@@ -39,7 +42,7 @@ public final class OpenGaussContainer extends DockerDatabaseContainer {
     protected void configure() {
         super.configure();
         withCommand("--max_connections=600");
-        addEnv("GS_PASSWORD", "Enmo@123");
+        addEnv("GS_PASSWORD", "Root@123");
         withClasspathResourceMapping("/env/postgresql/postgresql.conf", "/usr/local/opengauss/share/postgresql/postgresql.conf.sample", BindMode.READ_ONLY);
         withPrivilegedMode(true);
         withExposedPorts(5432);
@@ -47,7 +50,7 @@ public final class OpenGaussContainer extends DockerDatabaseContainer {
             addFixedExposedPort(5432, 5432);
         }
         setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(DATABASE_TYPE, "localhost", getFirstMappedPort(), "postgres"),
-                "gaussdb", "Enmo@123")));
+                "gaussdb", "Root@123")));
     }
     
     @Override
