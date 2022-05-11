@@ -37,7 +37,7 @@ public final class EncryptRuleBuilderTest {
     @Test
     public void assertBuild() {
         EncryptRuleConfiguration ruleConfig = mock(EncryptRuleConfiguration.class);
-        SchemaRuleBuilder builder = SchemaRuleBuilderFactory.newInstance(Collections.singletonList(ruleConfig)).get(ruleConfig);
+        SchemaRuleBuilder builder = SchemaRuleBuilderFactory.getInstanceMap(Collections.singletonList(ruleConfig)).get(ruleConfig);
         assertThat(builder.build(ruleConfig, "", Collections.emptyMap(), Collections.emptyList(), new ConfigurationProperties(new Properties())), instanceOf(EncryptRule.class));
     }
 }

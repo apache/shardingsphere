@@ -181,7 +181,7 @@ public final class InventoryTaskSplitter {
     private Collection<IngestPosition<?>> getPositionByIntegerPrimaryKeyRange(final RuleAlteredJobContext jobContext, final DataSource dataSource, final InventoryDumperConfiguration dumperConfig) {
         Collection<IngestPosition<?>> result = new LinkedList<>();
         RuleAlteredJobConfiguration jobConfig = jobContext.getJobConfig();
-        String sql = PipelineSQLBuilderFactory.newInstance(jobConfig.getSourceDatabaseType())
+        String sql = PipelineSQLBuilderFactory.getInstance(jobConfig.getSourceDatabaseType())
                 .buildSplitByPrimaryKeyRangeSQL(dumperConfig.getSchemaName(new LogicTableName(dumperConfig.getLogicTableName())), dumperConfig.getActualTableName(), dumperConfig.getPrimaryKey());
         try (
                 Connection connection = dataSource.getConnection();

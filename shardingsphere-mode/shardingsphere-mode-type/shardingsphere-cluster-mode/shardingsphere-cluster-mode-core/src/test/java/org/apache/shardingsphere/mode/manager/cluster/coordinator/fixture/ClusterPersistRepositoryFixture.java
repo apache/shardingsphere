@@ -83,6 +83,6 @@ public final class ClusterPersistRepositoryFixture implements ClusterPersistRepo
     
     @Override
     public String getType() {
-        return "TEST";
+        return "FIXTURE";
     }
 }

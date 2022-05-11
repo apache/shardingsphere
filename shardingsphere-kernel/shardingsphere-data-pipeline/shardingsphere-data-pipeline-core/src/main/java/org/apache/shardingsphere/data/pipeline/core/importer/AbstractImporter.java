@@ -66,7 +66,7 @@ public abstract class AbstractImporter extends AbstractLifecycleExecutor impleme
         this.importerConfig = importerConfig;
         this.dataSourceManager = dataSourceManager;
         this.channel = channel;
-        pipelineSqlBuilder = PipelineSQLBuilderFactory.newInstance(importerConfig.getDataSourceConfig().getDatabaseType().getType());
+        pipelineSqlBuilder = PipelineSQLBuilderFactory.getInstance(importerConfig.getDataSourceConfig().getDatabaseType().getType());
     }
     
     @Override

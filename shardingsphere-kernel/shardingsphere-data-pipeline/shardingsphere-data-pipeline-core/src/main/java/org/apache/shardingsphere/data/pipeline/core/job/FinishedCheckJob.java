@@ -41,7 +41,7 @@ import java.util.Set;
 @Slf4j
 public final class FinishedCheckJob implements SimpleJob {
     
-    private final RuleAlteredJobAPI ruleAlteredJobAPI = PipelineJobAPIFactory.newInstance();
+    private final RuleAlteredJobAPI ruleAlteredJobAPI = PipelineJobAPIFactory.getInstance();
     
     private final Set<String> onCheckJobIds = new ConcurrentHashSet<>();
     

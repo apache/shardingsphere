@@ -52,7 +52,7 @@ public final class QueryHeaderBuilderEngine {
                              final int columnIndex, final LazyInitializer<DataNodeContainedRule> dataNodeContainedRule) throws SQLException {
         String columnName = queryResultMetaData.getColumnName(columnIndex);
         String columnLabel = queryResultMetaData.getColumnLabel(columnIndex);
-        return QueryHeaderBuilderFactory.newInstance(databaseType).build(queryResultMetaData, metaData, columnName, columnLabel, columnIndex, dataNodeContainedRule);
+        return QueryHeaderBuilderFactory.getInstance(databaseType).build(queryResultMetaData, metaData, columnName, columnLabel, columnIndex, dataNodeContainedRule);
     }
     
     /**
@@ -70,7 +70,7 @@ public final class QueryHeaderBuilderEngine {
                              final ShardingSphereMetaData metaData, final int columnIndex, final LazyInitializer<DataNodeContainedRule> dataNodeContainedRule) throws SQLException {
         String columnName = getColumnName(projectionsContext, queryResultMetaData, columnIndex);
         String columnLabel = getColumnLabel(projectionsContext, queryResultMetaData, columnIndex);
-        return QueryHeaderBuilderFactory.newInstance(databaseType).build(queryResultMetaData, metaData, columnName, columnLabel, columnIndex, dataNodeContainedRule);
+        return QueryHeaderBuilderFactory.getInstance(databaseType).build(queryResultMetaData, metaData, columnName, columnLabel, columnIndex, dataNodeContainedRule);
     }
     
     private String getColumnLabel(final ProjectionsContext projectionsContext, final QueryResultMetaData queryResultMetaData, final int columnIndex) throws SQLException {

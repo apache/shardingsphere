@@ -42,7 +42,7 @@ public final class ReadwriteSplittingStrategyFactory {
      * 
      * @param type type of readwrite splitting strategy
      * @param props properties of readwrite splitting strategy
-     * @return readwrite splitting strategy
+     * @return created instance
      */
     public static ReadwriteSplittingStrategy newInstance(final String type, final Properties props) {
         return "STATIC".equalsIgnoreCase(type) ? createStaticReadwriteSplittingStrategy(props) : createDynamicReadwriteSplittingStrategy(props);
@@ -59,7 +59,7 @@ public final class ReadwriteSplittingStrategyFactory {
     private static DynamicReadwriteSplittingStrategy createDynamicReadwriteSplittingStrategy(final Properties props) {
         String autoAwareDataSourceName = props.getProperty("auto-aware-data-source-name");
         Preconditions.checkArgument(!Strings.isNullOrEmpty(autoAwareDataSourceName), "Auto aware data source name is required.");
-        Optional<DynamicDataSourceStrategy> dynamicDataSourceStrategy = DynamicDataSourceStrategyFactory.newInstance();
+        Optional<DynamicDataSourceStrategy> dynamicDataSourceStrategy = DynamicDataSourceStrategyFactory.findInstance();
         Preconditions.checkArgument(dynamicDataSourceStrategy.isPresent(), "Dynamic data source strategy is required.");
         return new DynamicReadwriteSplittingStrategy(autoAwareDataSourceName, dynamicDataSourceStrategy.get());
     }

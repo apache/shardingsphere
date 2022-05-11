@@ -116,7 +116,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
     }
     
     private String getQuerySQL(final DataConsistencyCalculateParameter parameter) {
-        PipelineSQLBuilder sqlBuilder = PipelineSQLBuilderFactory.newInstance(parameter.getDatabaseType());
+        PipelineSQLBuilder sqlBuilder = PipelineSQLBuilderFactory.getInstance(parameter.getDatabaseType());
         String logicTableName = parameter.getLogicTableName();
         String schemaName = parameter.getTableNameSchemaNameMapping().getSchemaName(logicTableName);
         String uniqueKey = parameter.getUniqueKey();

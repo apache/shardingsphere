@@ -111,7 +111,7 @@ public final class PipelineDDLGenerator {
                 : dataNode.getDataSourceName())).findFirst();
         String dataSourceName = optional.map(DataNode::getDataSourceName).orElseGet(() -> metaData.getResource().getDataSources().keySet().iterator().next());
         String actualTable = optional.map(DataNode::getTableName).orElse(tableName);
-        return DialectDDLSQLGeneratorFactory.newInstance(databaseType).orElseThrow(() -> new ShardingSphereException("Failed to get dialect ddl sql generator"))
+        return DialectDDLSQLGeneratorFactory.findInstance(databaseType).orElseThrow(() -> new ShardingSphereException("Failed to get dialect ddl sql generator"))
                 .generateDDLSQL(actualTable, schemaName, metaData.getResource().getDataSources().get(dataSourceName));
     }
     

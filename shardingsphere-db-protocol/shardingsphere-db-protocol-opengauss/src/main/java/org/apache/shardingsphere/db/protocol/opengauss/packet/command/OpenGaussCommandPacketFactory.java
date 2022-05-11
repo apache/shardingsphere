@@ -50,7 +50,7 @@ public final class OpenGaussCommandPacketFactory {
      *
      * @param commandPacketType command packet type for PostgreSQL/openGauss
      * @param payload packet payload for PostgreSQL
-     * @return command packet for PostgreSQL
+     * @return created instance
      */
     public static PostgreSQLCommandPacket newInstance(final CommandPacketType commandPacketType, final PostgreSQLPacketPayload payload) {
         if (!OpenGaussCommandPacketType.isExtendedProtocolPacketType(commandPacketType)) {

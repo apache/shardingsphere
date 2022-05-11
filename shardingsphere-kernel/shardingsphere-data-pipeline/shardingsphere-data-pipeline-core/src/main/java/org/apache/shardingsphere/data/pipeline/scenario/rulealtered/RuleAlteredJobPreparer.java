@@ -141,7 +141,7 @@ public final class RuleAlteredJobPreparer {
     }
     
     private void checkSourceDataSource(final RuleAlteredJobContext jobContext) {
-        DataSourceChecker dataSourceChecker = DataSourceCheckerFactory.newInstance(jobContext.getJobConfig().getSourceDatabaseType());
+        DataSourceChecker dataSourceChecker = DataSourceCheckerFactory.getInstance(jobContext.getJobConfig().getSourceDatabaseType());
         Collection<PipelineDataSourceWrapper> sourceDataSources = Collections.singleton(jobContext.getSourceDataSource());
         dataSourceChecker.checkConnection(sourceDataSources);
         dataSourceChecker.checkPrivilege(sourceDataSources);
@@ -149,7 +149,7 @@ public final class RuleAlteredJobPreparer {
     }
     
     private void checkTargetDataSource(final RuleAlteredJobContext jobContext, final PipelineDataSourceWrapper targetDataSource) {
-        DataSourceChecker dataSourceChecker = DataSourceCheckerFactory.newInstance(jobContext.getJobConfig().getTargetDatabaseType());
+        DataSourceChecker dataSourceChecker = DataSourceCheckerFactory.getInstance(jobContext.getJobConfig().getTargetDatabaseType());
         Collection<PipelineDataSourceWrapper> targetDataSources = Collections.singletonList(targetDataSource);
         dataSourceChecker.checkConnection(targetDataSources);
         ImporterConfiguration importerConfig = jobContext.getTaskConfig().getImporterConfig();
@@ -183,7 +183,7 @@ public final class RuleAlteredJobPreparer {
         }
         String databaseType = taskConfig.getJobConfig().getSourceDatabaseType();
         DataSource dataSource = dataSourceManager.getDataSource(taskConfig.getDumperConfig().getDataSourceConfig());
-        return PositionInitializerFactory.getPositionInitializer(databaseType).init(dataSource);
+        return PositionInitializerFactory.getInstance(databaseType).init(dataSource);
     }
     
     /**
@@ -201,7 +201,7 @@ public final class RuleAlteredJobPreparer {
     
     private void cleanup0(final RuleAlteredJobConfiguration jobConfig) throws SQLException {
         DatabaseType databaseType = DatabaseTypeFactory.getInstance(jobConfig.getSourceDatabaseType());
-        PositionInitializer positionInitializer = PositionInitializerFactory.getPositionInitializer(databaseType.getType());
+        PositionInitializer positionInitializer = PositionInitializerFactory.getInstance(databaseType.getType());
         ShardingSpherePipelineDataSourceConfiguration sourceDataSourceConfig = (ShardingSpherePipelineDataSourceConfiguration) PipelineDataSourceConfigurationFactory
                 .newInstance(jobConfig.getSource().getType(), jobConfig.getSource().getParameter());
         for (DataSourceProperties each : new YamlDataSourceConfigurationSwapper().getDataSourcePropertiesMap(sourceDataSourceConfig.getRootConfig()).values()) {

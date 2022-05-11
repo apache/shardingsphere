@@ -44,7 +44,7 @@ public final class MariaDBXAConnectionWrapperTest {
     
     @Test
     public void assertWrap() throws SQLException {
-        XAConnection actual = XAConnectionWrapperFactory.newInstance(databaseType).wrap(createXADataSource(), mockConnection());
+        XAConnection actual = XAConnectionWrapperFactory.getInstance(databaseType).wrap(createXADataSource(), mockConnection());
         assertThat(actual.getXAResource(), instanceOf(MariaXaResource.class));
     }
     

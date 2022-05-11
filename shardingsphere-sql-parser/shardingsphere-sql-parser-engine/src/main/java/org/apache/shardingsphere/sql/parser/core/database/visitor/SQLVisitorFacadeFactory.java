@@ -38,7 +38,7 @@ public final class SQLVisitorFacadeFactory {
      * 
      * @param databaseType database type
      * @param visitorType visitor type
-     * @return instance of visitor facade
+     * @return got instance
      */
     public static SQLVisitorFacade getInstance(final String databaseType, final String visitorType) {
         return TypedSPIRegistry.getRegisteredService(SQLVisitorFacade.class, String.join(".", databaseType, visitorType));

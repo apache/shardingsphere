@@ -76,7 +76,7 @@ public final class EncryptRuleConfigurationYamlSwapperTest {
     
     private EncryptRuleConfigurationYamlSwapper getSwapper() {
         EncryptRuleConfiguration ruleConfig = mock(EncryptRuleConfiguration.class);
-        return (EncryptRuleConfigurationYamlSwapper) YamlRuleConfigurationSwapperFactory.newInstanceMapByRuleConfigurations(Collections.singletonList(ruleConfig)).get(ruleConfig);
+        return (EncryptRuleConfigurationYamlSwapper) YamlRuleConfigurationSwapperFactory.getInstanceMapByRuleConfigurations(Collections.singletonList(ruleConfig)).get(ruleConfig);
     }
     
     @Test

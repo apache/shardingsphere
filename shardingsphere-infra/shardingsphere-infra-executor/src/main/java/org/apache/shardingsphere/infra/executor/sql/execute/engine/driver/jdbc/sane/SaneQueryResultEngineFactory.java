@@ -24,22 +24,22 @@ import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
 /**
- * JDBC sane query result engine factory.
+ * Sane query result engine factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class JDBCSaneQueryResultEngineFactory {
+public final class SaneQueryResultEngineFactory {
     
     static {
         ShardingSphereServiceLoader.register(SaneQueryResultEngine.class);
     }
     
     /**
-     * Get new instance of JDBC sane query result engine.
+     * Get instance of sane query result engine.
      * 
      * @param databaseType database type
-     * @return new instance of JDBC sane query result engine
+     * @return got instance
      */
-    public static SaneQueryResultEngine newInstance(final DatabaseType databaseType) {
+    public static SaneQueryResultEngine getInstance(final DatabaseType databaseType) {
         return TypedSPIRegistry.findRegisteredService(SaneQueryResultEngine.class, databaseType.getType()).orElseGet(DefaultSaneQueryResultEngine::new);
     }
 }

@@ -35,12 +35,12 @@ public final class StandalonePersistRepositoryFactory {
     }
     
     /**
-     * Create new instance of standalone persist repository.
+     * Get instance of standalone persist repository.
      * 
      * @param config persist repository configuration
-     * @return new instance of standalone persist repository
+     * @return got instance
      */
-    public static StandalonePersistRepository newInstance(final PersistRepositoryConfiguration config) {
+    public static StandalonePersistRepository getInstance(final PersistRepositoryConfiguration config) {
         return null == config ? RequiredSPIRegistry.getRegisteredService(StandalonePersistRepository.class)
                 : TypedSPIRegistry.getRegisteredService(StandalonePersistRepository.class, config.getType(), config.getProps());
     }

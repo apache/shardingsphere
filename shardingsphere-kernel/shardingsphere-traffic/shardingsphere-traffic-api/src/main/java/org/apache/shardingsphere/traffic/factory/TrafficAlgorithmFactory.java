@@ -39,7 +39,7 @@ public final class TrafficAlgorithmFactory {
      * Create new instance of traffic algorithm.
      * 
      * @param trafficAlgorithmConfig traffic algorithm configuration
-     * @return new instance of traffic algorithm
+     * @return created instance
      */
     public static TrafficAlgorithm newInstance(final ShardingSphereAlgorithmConfiguration trafficAlgorithmConfig) {
         return ShardingSphereAlgorithmFactory.createAlgorithm(trafficAlgorithmConfig, TrafficAlgorithm.class);

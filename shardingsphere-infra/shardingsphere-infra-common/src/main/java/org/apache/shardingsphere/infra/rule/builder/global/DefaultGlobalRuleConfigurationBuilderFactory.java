@@ -36,13 +36,13 @@ public final class DefaultGlobalRuleConfigurationBuilderFactory {
     }
     
     /**
-     * Create new instance default global rule configuration builder.
+     * Get instance default global rule configuration builder.
      *
      * @param globalRuleBuilders global rule builders
-     * @return new instance default global rule configuration builder
+     * @return got instance
      */
     @SuppressWarnings("rawtypes")
-    public static Map<GlobalRuleBuilder, DefaultGlobalRuleConfigurationBuilder> newInstance(final Collection<GlobalRuleBuilder> globalRuleBuilders) {
+    public static Map<GlobalRuleBuilder, DefaultGlobalRuleConfigurationBuilder> getInstance(final Collection<GlobalRuleBuilder> globalRuleBuilders) {
         return OrderedSPIRegistry.getRegisteredServices(DefaultGlobalRuleConfigurationBuilder.class, globalRuleBuilders);
     }
 }

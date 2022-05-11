@@ -43,7 +43,7 @@ public final class SingleTableRuleBuilderTest {
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     public void assertBuild() {
-        Collection<SchemaRuleBuilder> builders = SchemaRuleBuilderFactory.newInstance();
+        Collection<SchemaRuleBuilder> builders = SchemaRuleBuilderFactory.getInstances();
         SchemaRuleBuilder builder = builders.iterator().next();
         SingleTableRuleConfiguration config = mock(SingleTableRuleConfiguration.class);
         ShardingSphereRule shardingSphereRule = mock(ShardingSphereRule.class);
@@ -56,7 +56,7 @@ public final class SingleTableRuleBuilderTest {
     @Test
     public void assertBuildWithDefaultDataSource() {
         ShardingSphereRule shardingSphereRule = mock(ShardingSphereRule.class);
-        Collection<SchemaRuleBuilder> builders = SchemaRuleBuilderFactory.newInstance();
+        Collection<SchemaRuleBuilder> builders = SchemaRuleBuilderFactory.getInstances();
         SchemaRuleBuilder builder = builders.iterator().next();
         SingleTableRuleConfiguration config = new SingleTableRuleConfiguration();
         config.setDefaultDataSource("ds_0");

@@ -26,22 +26,22 @@ import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 import java.util.Optional;
 
 /**
- * Dialect table meta data loader factory.
+ * Dialect schema meta data loader factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DialectTableMetaDataLoaderFactory {
+public final class DialectSchemaMetaDataLoaderFactory {
     
     static {
         ShardingSphereServiceLoader.register(DialectSchemaMetaDataLoader.class);
     }
     
     /**
-     * Create new instance of dialect table meta data loader.
+     * Find instance of dialect schema meta data loader.
      * 
      * @param databaseType database type
-     * @return new instance of dialect table meta data loader
+     * @return found instance
      */
-    public static Optional<DialectSchemaMetaDataLoader> newInstance(final DatabaseType databaseType) {
+    public static Optional<DialectSchemaMetaDataLoader> findInstance(final DatabaseType databaseType) {
         return TypedSPIRegistry.findRegisteredService(DialectSchemaMetaDataLoader.class, databaseType.getType());
     }
 }

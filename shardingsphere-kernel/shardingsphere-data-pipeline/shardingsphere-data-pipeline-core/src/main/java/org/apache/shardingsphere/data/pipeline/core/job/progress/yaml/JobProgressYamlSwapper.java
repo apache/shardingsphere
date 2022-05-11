@@ -122,6 +122,6 @@ public final class JobProgressYamlSwapper {
     }
     
     private Function<Entry<String, YamlJobProgress.YamlIncremental>, IncrementalTaskProgress> getIncrementalTaskProgressFunction(final String databaseType) {
-        return entry -> new IncrementalTaskProgress(PositionInitializerFactory.getPositionInitializer(databaseType).init(entry.getValue().getPosition()), entry.getValue().getDelay());
+        return entry -> new IncrementalTaskProgress(PositionInitializerFactory.getInstance(databaseType).init(entry.getValue().getPosition()), entry.getValue().getDelay());
     }
 }

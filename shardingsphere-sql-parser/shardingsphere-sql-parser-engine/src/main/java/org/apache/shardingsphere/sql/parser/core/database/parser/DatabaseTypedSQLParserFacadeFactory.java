@@ -37,7 +37,7 @@ public final class DatabaseTypedSQLParserFacadeFactory {
      * Get instance of database type based SQL parser facade.
      * 
      * @param databaseType database type
-     * @return instance of database type based SQL parser facade
+     * @return got instance
      */
     public static DatabaseTypedSQLParserFacade getInstance(final String databaseType) {
         return TypedSPIRegistry.getRegisteredService(DatabaseTypedSQLParserFacade.class, databaseType);
