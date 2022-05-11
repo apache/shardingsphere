@@ -43,6 +43,8 @@ public final class PostgresColumnPropertiesLoader extends PostgresAbstractLoader
     
     private static final Pattern BRACKETS_PATTERN = Pattern.compile("(\\(\\d+\\))");
     
+    private static final String ATT_OPTION_SPLIT = "=";
+    
     public PostgresColumnPropertiesLoader(final Connection connection, final int majorVersion, final int minorVersion) {
         super(connection, majorVersion, minorVersion);
     }
@@ -134,9 +136,11 @@ public final class PostgresColumnPropertiesLoader extends PostgresAbstractLoader
         return Arrays.stream((String[]) ((Array) editTypes).getArray()).sorted(String::compareTo).collect(Collectors.toList());
     }
     
-    private void columnFormatter(final Map<String, Object> column, final Collection<String> editTypes) {
+    private void columnFormatter(final Map<String, Object> column, final Collection<String> editTypes) throws SQLException {
         handlePrimaryColumn(column);
         fetchLengthPrecision(column);
+        formatColumnVariables(column);
+        formatSecurityLabels(column);
         editTypes.add(column.get("cltype").toString());
         column.put("edit_types", editTypes.stream().sorted().collect(Collectors.toList()));
         column.put("cltype", parseTypeName(column.get("cltype").toString()));
@@ -199,6 +203,21 @@ public final class PostgresColumnPropertiesLoader extends PostgresAbstractLoader
                 column.put("attprecision", null);
             }
         }
+    }
+    
+    private void formatColumnVariables(final Map<String, Object> column) throws SQLException {
+        if (null == column.get("attoptions")) {
+            return;
+        }
+        Collection<Map<String, String>> attOptions = new LinkedList<>();
+        Collection<String> columnVariables = Arrays.stream((String[]) ((Array) column.get("attoptions")).getArray()).collect(Collectors.toList());
+        for (String each : columnVariables) {
+            Map<String, String> columnVariable = new LinkedHashMap<>();
+            columnVariable.put("name", each.substring(0, each.indexOf(ATT_OPTION_SPLIT)));
+            columnVariable.put("value", each.substring(each.indexOf(ATT_OPTION_SPLIT) + 1));
+            attOptions.add(columnVariable);
+        }
+        column.put("attoptions", attOptions);
     }
     
     private String getFullDataType(final Map<String, Object> column) {

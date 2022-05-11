@@ -21,21 +21,26 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.postgresql.util.FreemarkerManager;
 
+import java.sql.Array;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Postgres abstract loader.
  */
 @Getter
 public abstract class PostgresAbstractLoader {
+    
+    private static final String SECURITY_LABEL_SPLIT = "=";
     
     private final Connection connection;
     
@@ -69,5 +74,20 @@ public abstract class PostgresAbstractLoader {
             result.add(row);
         }
         return result;
+    }
+    
+    protected void formatSecurityLabels(final Map<String, Object> data) throws SQLException {
+        if (null == data.get("seclabels")) {
+            return;
+        }
+        Collection<Map<String, String>> formatLabels = new LinkedList<>();
+        Collection<String> securityLabels = Arrays.stream((String[]) ((Array) data.get("seclabels")).getArray()).collect(Collectors.toList());
+        for (String each : securityLabels) {
+            Map<String, String> securityLabel = new LinkedHashMap<>();
+            securityLabel.put("provider", each.substring(0, each.indexOf(SECURITY_LABEL_SPLIT)));
+            securityLabel.put("label", each.substring(each.indexOf(SECURITY_LABEL_SPLIT) + 1));
+            formatLabels.add(securityLabel);
+        }
+        data.put("seclabels", formatLabels);
     }
 }
