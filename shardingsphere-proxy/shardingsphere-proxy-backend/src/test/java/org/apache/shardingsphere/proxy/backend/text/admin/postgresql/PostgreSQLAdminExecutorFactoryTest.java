@@ -78,7 +78,7 @@ public final class PostgreSQLAdminExecutorFactoryTest {
         CommonSQLStatementContext<SetStatement> statementContext = new CommonSQLStatementContext<>(setStatement);
         Optional<DatabaseAdminExecutor> actual = postgreSQLAdminExecutorFactory.create(statementContext, null, null);
         assertTrue(actual.isPresent());
-        assertTrue(actual.get() instanceof PostgreSQLSetCharsetExecutor);
+        assertThat(actual.get(), instanceOf(PostgreSQLSetCharsetExecutor.class));
     }
     
     @Test
