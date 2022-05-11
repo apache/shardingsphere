@@ -44,7 +44,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Properties;
 
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -91,7 +92,7 @@ public final class AddResourceBackendHandlerTest {
         when(metaData.getResource()).thenReturn(resource);
         when(resource.getDataSources()).thenReturn(Collections.emptyMap());
         ResponseHeader responseHeader = addResourceBackendHandler.execute("test_db", createAddResourceStatement());
-        assertTrue(responseHeader instanceof UpdateResponseHeader);
+        assertThat(responseHeader, instanceOf(UpdateResponseHeader.class));
     }
     
     @Test(expected = DuplicateResourceException.class)

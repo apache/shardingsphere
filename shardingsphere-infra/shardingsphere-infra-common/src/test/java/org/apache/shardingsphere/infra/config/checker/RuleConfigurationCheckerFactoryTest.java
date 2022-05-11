@@ -23,7 +23,9 @@ import org.junit.Test;
 
 import java.util.Optional;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class RuleConfigurationCheckerFactoryTest {
@@ -33,7 +35,7 @@ public final class RuleConfigurationCheckerFactoryTest {
     public void assertFindInstance() {
         Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.findInstance(new TestRuleConfiguration());
         assertTrue(checker.isPresent());
-        assertTrue(checker.get() instanceof RuleConfigurationCheckerFixture);
+        assertThat(checker.get(), instanceOf(RuleConfigurationCheckerFixture.class));
     }
     
     @SuppressWarnings("rawtypes")
