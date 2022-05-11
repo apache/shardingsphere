@@ -21,9 +21,9 @@ import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.lock.LockType;
-import org.apache.shardingsphere.infra.lock.ShardingSphereGlobalLock;
-import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.mode.manager.ShardingSphereLockManager;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.ShardingSphereGlobalLock;
+import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeServiceFactory;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.general.event.GeneralAckLockReleasedEvent;
@@ -114,7 +114,7 @@ public final class ShardingSphereGeneralLockManager implements ShardingSphereLoc
      */
     @Subscribe
     public synchronized void locked(final GeneralLockedEvent event) {
-        String lockName = event.getLockName();
+        String lockName = event.getLockedName();
         ShardingSphereGeneralLock lock = locks.get(lockName);
         if (null == lock) {
             lock = createGeneralLock();
@@ -130,7 +130,7 @@ public final class ShardingSphereGeneralLockManager implements ShardingSphereLoc
      */
     @Subscribe
     public synchronized void lockReleased(final GeneralLockReleasedEvent event) {
-        String lockName = event.getLockName();
+        String lockName = event.getLockedName();
         getOptionalLock(lockName).ifPresent(optional -> optional.releaseAckLock(lockName, getCurrentInstanceId()));
     }
     
@@ -141,7 +141,7 @@ public final class ShardingSphereGeneralLockManager implements ShardingSphereLoc
      */
     @Subscribe
     public synchronized void ackLocked(final GeneralAckLockedEvent event) {
-        getOptionalLock(event.getLockName()).ifPresent(optional -> optional.addLockedInstance(event.getLockedInstance()));
+        getOptionalLock(event.getAckLockedName()).ifPresent(optional -> optional.addLockedInstance(event.getLockedInstance()));
     }
     
     /**
@@ -151,7 +151,7 @@ public final class ShardingSphereGeneralLockManager implements ShardingSphereLoc
      */
     @Subscribe
     public synchronized void ackLockReleased(final GeneralAckLockReleasedEvent event) {
-        getOptionalLock(event.getLockName()).ifPresent(optional -> optional.removeLockedInstance(event.getLockedInstance()));
+        getOptionalLock(event.getAckLockedName()).ifPresent(optional -> optional.removeLockedInstance(event.getLockedInstance()));
     }
     
     private String getCurrentInstanceId() {

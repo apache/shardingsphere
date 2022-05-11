@@ -28,5 +28,5 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.Gover
 @Getter
 public final class GeneralLockReleasedEvent implements GovernanceEvent {
     
-    private final String lockName;
+    private final String lockedName;
 }

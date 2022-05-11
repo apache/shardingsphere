@@ -143,7 +143,7 @@ public final class RuleAlteredJobConfiguration implements PipelineJobConfigurati
      */
     public void buildHandleConfig() {
         if (null == getJobShardingDataNodes()) {
-            RuleAlteredJobConfigurationPreparerFactory.newInstance().extendJobConfiguration(this);
+            RuleAlteredJobConfigurationPreparerFactory.getInstance().extendJobConfiguration(this);
         }
         if (null == jobId) {
             jobId = generateJobId();

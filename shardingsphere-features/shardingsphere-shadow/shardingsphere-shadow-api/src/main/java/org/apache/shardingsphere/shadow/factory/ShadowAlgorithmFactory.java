@@ -39,7 +39,7 @@ public final class ShadowAlgorithmFactory {
      * Create new instance of shadow algorithm.
      * 
      * @param shadowAlgorithmConfig shadow algorithm configuration
-     * @return new instance of shadow algorithm
+     * @return created instance
      */
     public static ShadowAlgorithm newInstance(final ShardingSphereAlgorithmConfiguration shadowAlgorithmConfig) {
         return ShardingSphereAlgorithmFactory.createAlgorithm(shadowAlgorithmConfig, ShadowAlgorithm.class);

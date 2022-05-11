@@ -29,12 +29,12 @@ import static org.junit.Assert.assertThat;
 public final class DataSourcePropertyProviderFactoryTest {
     
     @Test
-    public void assertGetProviderByDefault() {
-        assertThat(DataSourcePropertyProviderFactory.newInstance(new MockedDataSource()), instanceOf(DefaultDataSourcePropertyProvider.class));
+    public void assertGetInstance() {
+        assertThat(DataSourcePropertyProviderFactory.getInstance(new HikariDataSource()), instanceOf(HikariCPPropertyProvider.class));
     }
     
     @Test
-    public void assertGetProviderBySPI() {
-        assertThat(DataSourcePropertyProviderFactory.newInstance(new HikariDataSource()), instanceOf(HikariCPPropertyProvider.class));
+    public void assertGetDefaultInstance() {
+        assertThat(DataSourcePropertyProviderFactory.getInstance(new MockedDataSource()), instanceOf(DefaultDataSourcePropertyProvider.class));
     }
 }

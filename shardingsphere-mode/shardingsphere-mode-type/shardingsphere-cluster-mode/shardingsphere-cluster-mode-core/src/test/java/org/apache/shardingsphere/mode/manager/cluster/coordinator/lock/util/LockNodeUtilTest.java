@@ -31,7 +31,7 @@ public final class LockNodeUtilTest {
     
     @Test
     public void assertParseLockName() {
-        String[] lockName = LockNodeUtil.parseDatabaseLockName("database#@#127.0.0.1@3307");
+        String[] lockName = LockNodeUtil.parseAckLockName("database#@#127.0.0.1@3307");
         assertThat(lockName.length, is(2));
         assertThat(lockName[0], is("database"));
         assertThat(lockName[1], is("127.0.0.1@3307"));

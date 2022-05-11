@@ -65,7 +65,7 @@ public final class GeneralAckChangedWatcherTest {
         Optional<GovernanceEvent> addGovernanceEvent = watcher.createGovernanceEvent(addDataChangedEvent);
         assertTrue(addGovernanceEvent.isPresent());
         assertThat(addGovernanceEvent.get(), instanceOf(GeneralAckLockedEvent.class));
-        assertThat(((GeneralAckLockedEvent) addGovernanceEvent.get()).getLockName(), is("lock_name"));
+        assertThat(((GeneralAckLockedEvent) addGovernanceEvent.get()).getAckLockedName(), is("lock_name"));
         assertThat(((GeneralAckLockedEvent) addGovernanceEvent.get()).getLockedInstance(), is("127.0.0.1@3307"));
     }
     
@@ -75,7 +75,7 @@ public final class GeneralAckChangedWatcherTest {
         Optional<GovernanceEvent> deleteGovernanceEvent = watcher.createGovernanceEvent(deleteDataChangedEvent);
         assertTrue(deleteGovernanceEvent.isPresent());
         assertThat(deleteGovernanceEvent.get(), instanceOf(GeneralAckLockReleasedEvent.class));
-        assertThat(((GeneralAckLockReleasedEvent) deleteGovernanceEvent.get()).getLockName(), is("lock_name"));
+        assertThat(((GeneralAckLockReleasedEvent) deleteGovernanceEvent.get()).getAckLockedName(), is("lock_name"));
         assertThat(((GeneralAckLockReleasedEvent) deleteGovernanceEvent.get()).getLockedInstance(), is("127.0.0.1@3307"));
     }
     

@@ -55,7 +55,7 @@ public final class LockNodeUtil {
      * @param ackLockedName ack locked name
      * @return string array of locked name and instance id
      */
-    public static String[] parseDatabaseLockName(final String ackLockedName) {
+    public static String[] parseAckLockName(final String ackLockedName) {
         return ackLockedName.trim().split(LOCK_DELIMITER);
     }
 }
