@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock;
+package org.apache.shardingsphere.mode.manager;
 
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
+import org.apache.shardingsphere.infra.lock.LockType;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockType;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 
 import java.util.Collection;

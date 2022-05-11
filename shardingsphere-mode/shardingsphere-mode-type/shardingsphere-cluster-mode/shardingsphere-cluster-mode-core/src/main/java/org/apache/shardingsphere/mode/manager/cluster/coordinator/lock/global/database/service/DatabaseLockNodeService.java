@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.database.service;
 
+import org.apache.shardingsphere.infra.lock.LockType;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.AbstractGlobalLockNodeService;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockType;
 
 /**
  * Database lock node service.

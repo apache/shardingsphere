@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.standard;
 
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
+import org.apache.shardingsphere.infra.lock.LockType;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.ShardingSphereLockManager;
+import org.apache.shardingsphere.mode.manager.ShardingSphereLockManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeServiceFactory;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.standard.service.StandardLockRegistryService;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockType;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 

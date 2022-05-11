@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.standard.service;
 
+import org.apache.shardingsphere.infra.lock.LockType;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeService;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockType;
 
 import java.util.Optional;
 

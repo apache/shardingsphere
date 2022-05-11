@@ -15,30 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock;
-
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-
-import java.util.Collection;
+package org.apache.shardingsphere.infra.lock;
 
 /**
- * ShardingSphere lock manager factory.
+ * Lock type.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingSphereLockManagerFactory {
+public enum LockType {
     
-    static {
-        ShardingSphereServiceLoader.register(ShardingSphereLockManager.class);
-    }
-    
-    /**
-     * Create new instances of ShardingSphere lock manager.
-     * 
-     * @return new instances of ShardingSphere lock manager
-     */
-    public static Collection<ShardingSphereLockManager> newInstances() {
-        return ShardingSphereServiceLoader.getServiceInstances(ShardingSphereLockManager.class);
-    }
+    STANDARD, GENERAL, DATABASE, SCHEMA
 }
