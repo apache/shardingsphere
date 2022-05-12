@@ -59,13 +59,14 @@ public final class EncryptAlgorithmMetaData {
     }
     
     /**
-     * Judge whether table is support QueryWithCipherColumn or not.
+     * Judge whether column is support QueryWithCipherColumn or not.
      *
      * @param tableName table name
-     * @return whether table is support QueryWithCipherColumn or not
+     * @param columnName column name
+     * @return whether column is support QueryWithCipherColumn or not
      */
-    public boolean isQueryWithCipherColumn(final String tableName) {
-        return encryptRule.isQueryWithCipherColumn(tableName);
+    public boolean isQueryWithCipherColumn(final String tableName, final String columnName) {
+        return encryptRule.isQueryWithCipherColumn(tableName, columnName);
     }
     
     /**

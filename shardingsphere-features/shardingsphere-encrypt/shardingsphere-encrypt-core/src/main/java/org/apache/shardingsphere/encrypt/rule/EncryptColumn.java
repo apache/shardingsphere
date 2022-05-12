@@ -47,6 +47,8 @@ public final class EncryptColumn {
     
     private final String encryptorName;
     
+    private final Boolean queryWithCipherColumn;
+    
     /**
      * Get assisted query column.
      * 
@@ -64,4 +66,12 @@ public final class EncryptColumn {
     public Optional<String> getPlainColumn() {
         return Strings.isNullOrEmpty(plainColumn) ? Optional.empty() : Optional.of(plainColumn);
     }
+    
+    public EncryptColumn(final EncryptColumnDataType logicDataType, final String cipherColumn,
+                         final EncryptColumnDataType cipherDataType, final String assistedQueryColumn,
+                         final EncryptColumnDataType assistedQueryDataType, final String plainColumn,
+                         final EncryptColumnDataType plainDataType, final String encryptorName) {
+        this(logicDataType, cipherColumn, cipherDataType, assistedQueryColumn, assistedQueryDataType, plainColumn, plainDataType, encryptorName, null);
+    }
+    
 }

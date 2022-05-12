@@ -46,7 +46,7 @@ public final class EncryptMergedResult implements MergedResult {
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
         Optional<EncryptContext> encryptContext = metaData.findEncryptContext(columnIndex);
-        if (!encryptContext.isPresent() || !metaData.isQueryWithCipherColumn(encryptContext.get().getTableName())) {
+        if (!encryptContext.isPresent() || !metaData.isQueryWithCipherColumn(encryptContext.get().getTableName(), encryptContext.get().getColumnName())) {
             return mergedResult.getValue(columnIndex, type);
         }
         Optional<EncryptAlgorithm> encryptAlgorithm = metaData.findEncryptor(encryptContext.get().getTableName(), encryptContext.get().getColumnName());

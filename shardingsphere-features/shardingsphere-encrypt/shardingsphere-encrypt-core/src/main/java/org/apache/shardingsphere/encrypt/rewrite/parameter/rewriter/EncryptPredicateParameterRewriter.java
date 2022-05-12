@@ -55,7 +55,7 @@ public final class EncryptPredicateParameterRewriter implements ParameterRewrite
     public void rewrite(final ParameterBuilder parameterBuilder, final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters) {
         String schemaName = sqlStatementContext.getTablesContext().getSchemaName().orElseGet(() -> sqlStatementContext.getDatabaseType().getDefaultSchema(databaseName));
         for (EncryptCondition each : encryptConditions) {
-            boolean queryWithCipherColumn = encryptRule.isQueryWithCipherColumn(each.getTableName());
+            boolean queryWithCipherColumn = encryptRule.isQueryWithCipherColumn(each.getTableName(), each.getColumnName());
             if (queryWithCipherColumn) {
                 encryptParameters(parameterBuilder, each.getPositionIndexMap(), getEncryptedValues(schemaName, each, each.getValues(parameters)));
             }

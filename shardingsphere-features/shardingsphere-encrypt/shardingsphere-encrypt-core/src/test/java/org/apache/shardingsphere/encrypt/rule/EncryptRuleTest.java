@@ -142,12 +142,13 @@ public final class EncryptRuleTest {
     
     @Test
     public void assertIsQueryWithCipherColumn() {
-        EncryptColumnRuleConfiguration encryptColumnConfig = new EncryptColumnRuleConfiguration("encrypt_column", "encrypt_cipher", "", "", "test_encryptor");
+        EncryptColumnRuleConfiguration encryptColumnConfig = new EncryptColumnRuleConfiguration("encrypt_column", "encrypt_cipher", "", "", "test_encryptor", false);
         EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration("t_encrypt", Collections.singletonList(encryptColumnConfig), true);
         AlgorithmProvidedEncryptRuleConfiguration ruleConfig = new AlgorithmProvidedEncryptRuleConfiguration(
                 Collections.singleton(tableConfig), ImmutableMap.of("test_encryptor", new CoreEncryptAlgorithmFixture()), true);
         EncryptRule actual = new EncryptRule(ruleConfig, Collections.emptyMap());
         assertTrue(actual.isQueryWithCipherColumn("t_encrypt"));
+        assertFalse(actual.isQueryWithCipherColumn("t_encrypt", "encrypt_column"));
     }
     
     @Test
