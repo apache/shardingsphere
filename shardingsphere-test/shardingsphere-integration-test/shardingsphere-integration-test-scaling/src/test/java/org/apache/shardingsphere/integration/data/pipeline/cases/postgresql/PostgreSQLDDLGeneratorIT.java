@@ -54,7 +54,7 @@ public final class PostgreSQLDDLGeneratorIT {
     
     private static final String CASE_FILE_PATH = "/ddlgenerator.xml";
     
-    private static final String PARENT_PATH = "env/scenario/manual/postgres/ddlgenerator";
+    private static final String PARENT_PATH = "env/scenario/manual/postgresql/ddlgenerator";
     
     private static final String DEFAULT_SCHEMA = "public";
     
