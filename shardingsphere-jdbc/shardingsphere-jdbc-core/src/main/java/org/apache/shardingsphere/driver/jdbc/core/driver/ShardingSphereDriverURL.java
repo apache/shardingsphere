@@ -49,5 +49,5 @@ public final class ShardingSphereDriverURL {
      */
     public File toConfigurationFile() {
         return new File(inClasspath ? Objects.requireNonNull(ShardingSphereDriverURL.class.getResource("/" + file), String.format("Can not find configuration file `%s`", file)).getFile() : file);
-    } 
+    }
 }
