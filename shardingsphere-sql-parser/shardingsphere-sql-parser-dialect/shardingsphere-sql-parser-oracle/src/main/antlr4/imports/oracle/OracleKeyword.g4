@@ -2718,3 +2718,31 @@ SYSTIMESTAMP
 CATEGORY
     : C A T E G O R Y
     ;
+
+ORDER
+    : O R D E R
+    ;
+
+NOKEEP
+    : N O K E E P
+    ;
+
+SCALE
+    : S C A L E
+    ;
+
+NOSCALE
+    : N O S C A L E
+    ;
+
+EXTEND
+    : E X T E N D
+    ;
+
+NOEXTEND
+    : N O E X T E N D
+    ;
+
+NOSHARD
+    : N O S H A R D
+    ;

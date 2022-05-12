@@ -85,5 +85,6 @@ execute
     | alterOutline
     | alterAnalyticView
     | alterAttributeDimension
+    | createSequence
     ) SEMI_?
     ;

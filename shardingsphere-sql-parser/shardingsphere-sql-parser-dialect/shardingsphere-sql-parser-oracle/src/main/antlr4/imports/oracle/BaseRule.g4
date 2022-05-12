@@ -1261,3 +1261,7 @@ capacityUnit
 attributeDimensionName
     : identifier
     ;
+
+sequenceName
+    : identifier
+    ;
