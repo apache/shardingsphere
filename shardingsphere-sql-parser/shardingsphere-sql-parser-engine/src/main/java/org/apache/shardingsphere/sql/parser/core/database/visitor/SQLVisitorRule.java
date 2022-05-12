@@ -502,7 +502,9 @@ public enum SQLVisitorRule {
     
     ALTER_ANALYTIC_VIEW("AlterAnalyticView", SQLStatementType.DDL),
     
-    DROP_EDITION("DropEdition", SQLStatementType.DDL);
+    DROP_EDITION("DropEdition", SQLStatementType.DDL),
+    
+    ALTER_ATTRIBUTE_DIMENSION("AlterAttributeDimension", SQLStatementType.DDL);
     
     private final String name;
     

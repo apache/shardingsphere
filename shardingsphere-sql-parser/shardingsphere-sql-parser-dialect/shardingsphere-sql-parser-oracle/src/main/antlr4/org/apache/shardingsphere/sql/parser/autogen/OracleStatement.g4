@@ -84,5 +84,6 @@ execute
     | dropOutline
     | alterOutline
     | alterAnalyticView
+    | alterAttributeDimension
     ) SEMI_?
     ;
