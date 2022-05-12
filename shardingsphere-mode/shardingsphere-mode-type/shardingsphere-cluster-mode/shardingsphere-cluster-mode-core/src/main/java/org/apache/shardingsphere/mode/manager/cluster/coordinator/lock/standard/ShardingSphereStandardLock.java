@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.standard
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.InterMutexReentrantLock;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.InterReentrantMutexLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeServiceFactory;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeType;
@@ -33,7 +33,7 @@ public final class ShardingSphereStandardLock implements ShardingSphereLock {
     
     private final LockNodeService lockNodeService = LockNodeServiceFactory.getInstance().getLockNodeService(LockNodeType.STANDARD);
     
-    private final InterMutexReentrantLock interLock;
+    private final InterReentrantMutexLock interLock;
     
     @Override
     public boolean tryLock(final String lockName) {

@@ -15,12 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.service;
+
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.AbstractGlobalLockNodeService;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeType;
 
 /**
- * Lock node type.
+ * Mutex lock node service.
  */
-public enum LockNodeType {
+public final class MutexLockNodeService extends AbstractGlobalLockNodeService {
     
-    STANDARD, GENERAL, MUTEX, DATABASE, SCHEMA
+    @Override
+    public String getSequenceNodePath() {
+        return PATH_DELIMITER + LOCK_ROOT + PATH_DELIMITER + LOCK_SCOPE_GLOBAL + PATH_DELIMITER + getLockLevel() + PATH_DELIMITER + "sequence";
+    }
+    
+    @Override
+    protected String getLockLevel() {
+        return "mutex";
+    }
+    
+    @Override
+    public LockNodeType getType() {
+        return LockNodeType.MUTEX;
+    }
 }

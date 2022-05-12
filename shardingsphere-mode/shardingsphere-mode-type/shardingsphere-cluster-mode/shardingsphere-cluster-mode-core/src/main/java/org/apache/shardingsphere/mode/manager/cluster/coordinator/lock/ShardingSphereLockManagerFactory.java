@@ -30,7 +30,7 @@ import java.util.Collection;
 public final class ShardingSphereLockManagerFactory {
     
     static {
-        ShardingSphereServiceLoader.register(ShardingSphereLockManager.class);
+        ShardingSphereServiceLoader.register(ShardingSphereDistributeLockManager.class);
     }
     
     /**
@@ -38,7 +38,7 @@ public final class ShardingSphereLockManagerFactory {
      * 
      * @return got instances
      */
-    public static Collection<ShardingSphereLockManager> getAllInstances() {
-        return ShardingSphereServiceLoader.getServiceInstances(ShardingSphereLockManager.class);
+    public static Collection<ShardingSphereDistributeLockManager> getAllInstances() {
+        return ShardingSphereServiceLoader.getServiceInstances(ShardingSphereDistributeLockManager.class);
     }
 }

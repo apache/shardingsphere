@@ -156,13 +156,13 @@ public final class EtcdRepository implements ClusterPersistRepository {
     }
     
     @Override
-    public Lock getGlobalLock(final String lockName) {
-        return etcdInternalLockHolder.getGlobalLock(lockName);
+    public Lock getInternalMutexLock(final String lockName) {
+        return etcdInternalLockHolder.getInternalMutexLock(lockName);
     }
     
     @Override
-    public Lock getStandardLock(final String lockName) {
-        return etcdInternalLockHolder.getStandardLock(lockName);
+    public Lock getInternalReentrantMutexLock(final String lockName) {
+        return etcdInternalLockHolder.getInternalReentrantMutexLock(lockName);
     }
     
     @Override

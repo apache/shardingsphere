@@ -20,9 +20,9 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.standard
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.lock.LockType;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.InterMutexReentrantLock;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.ShardingSphereLockManager;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.standard.service.StandardLockRegistryService;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.InterReentrantMutexLock;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.ShardingSphereDistributeLockManager;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.standard.service.ReentrantMutexLockRegistryService;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
@@ -30,7 +30,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public final class ShardingSphereStandardLockManager implements ShardingSphereLockManager {
+public final class ShardingSphereStandardDistributeLockManager implements ShardingSphereDistributeLockManager {
     
     private final Map<String, ShardingSphereStandardLock> locks = new ConcurrentHashMap<>();
     
@@ -42,7 +42,7 @@ public final class ShardingSphereStandardLockManager implements ShardingSphereLo
     }
     
     private ShardingSphereStandardLock createGeneralLock() {
-        return new ShardingSphereStandardLock(new InterMutexReentrantLock(new StandardLockRegistryService(clusterRepository)));
+        return new ShardingSphereStandardLock(new InterReentrantMutexLock(new ReentrantMutexLockRegistryService(clusterRepository)));
     }
     
     @Override

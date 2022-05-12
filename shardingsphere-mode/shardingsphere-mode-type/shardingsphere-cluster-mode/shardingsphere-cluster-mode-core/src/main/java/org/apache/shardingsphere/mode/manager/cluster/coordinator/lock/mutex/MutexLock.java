@@ -15,12 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex;
 
-/**
- * Lock node type.
- */
-public enum LockNodeType {
+public interface MutexLock {
     
-    STANDARD, GENERAL, MUTEX, DATABASE, SCHEMA
+    /**
+     * Try lock.
+     *
+     * @return is locked or not.
+     */
+    boolean tryLock();
+    
+    /**
+     * Try lock.
+     *
+     * @param timeout timeout
+     * @return is locked or not.
+     */
+    boolean tryLock(long timeout);
+    
+    /**
+     * Unlock.
+     */
+    void unlock();
+    
+    /**
+     * Is locked
+     *
+     * @return is locked or not
+     */
+    boolean isLocked();
 }

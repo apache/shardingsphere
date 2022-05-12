@@ -25,7 +25,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.ShardingS
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeServiceFactory;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.ShardingSphereLockManager;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.ShardingSphereDistributeLockManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.database.event.DatabaseAckLockReleasedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.database.event.DatabaseAckLockedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.database.event.DatabaseLockReleasedEvent;
@@ -42,7 +42,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Database lock manager of ShardingSphere.
  */
-public final class ShardingSphereDatabaseLockManager implements ShardingSphereLockManager {
+public final class ShardingSphereDatabaseDistributeLockManager implements ShardingSphereDistributeLockManager {
     
     private final Map<String, ShardingSphereDatabaseLock> locks;
     
@@ -54,7 +54,7 @@ public final class ShardingSphereDatabaseLockManager implements ShardingSphereLo
     
     private Collection<ComputeNodeInstance> computeNodeInstances;
     
-    public ShardingSphereDatabaseLockManager() {
+    public ShardingSphereDatabaseDistributeLockManager() {
         locks = new ConcurrentHashMap<>();
         lockNodeService = LockNodeServiceFactory.getInstance().getLockNodeService(LockNodeType.DATABASE);
     }

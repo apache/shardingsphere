@@ -76,12 +76,12 @@ public final class TestClusterPersistRepository implements ClusterPersistReposit
     }
     
     @Override
-    public Lock getGlobalLock(final String lockName) {
+    public Lock getInternalMutexLock(final String lockName) {
         return null;
     }
     
     @Override
-    public Lock getStandardLock(final String lockName) {
+    public Lock getInternalReentrantMutexLock(final String lockName) {
         return null;
     }
     

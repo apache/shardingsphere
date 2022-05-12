@@ -15,12 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.event;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 
 /**
- * Lock node type.
+ * Mutex lock released event.
  */
-public enum LockNodeType {
+@RequiredArgsConstructor
+@Getter
+public final class MutexLockReleasedEvent implements GovernanceEvent {
     
-    STANDARD, GENERAL, MUTEX, DATABASE, SCHEMA
+    private final String lockedName;
 }

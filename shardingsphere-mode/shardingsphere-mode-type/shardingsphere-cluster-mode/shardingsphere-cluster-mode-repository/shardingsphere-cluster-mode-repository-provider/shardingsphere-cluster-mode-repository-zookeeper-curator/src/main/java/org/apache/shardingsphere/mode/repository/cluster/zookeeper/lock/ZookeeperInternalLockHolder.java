@@ -42,12 +42,12 @@ public class ZookeeperInternalLockHolder {
     private final CuratorFramework client;
     
     /**
-     * Get global lock.
+     * Get internal mutex lock.
      *
      * @param lockName lock name
-     * @return global lock
+     * @return internal mutex lock
      */
-    public Lock getGlobalLock(final String lockName) {
+    public Lock getInternalMutexLock(final String lockName) {
         ZookeeperInternalLock result = locks.get(lockName);
         if (Objects.isNull(result)) {
             result = new ZookeeperInternalLock(new InterProcessSemaphoreMutex(client, lockName));
@@ -57,12 +57,12 @@ public class ZookeeperInternalLockHolder {
     }
     
     /**
-     * Get standard lock.
+     * Get internal reentrant mutex lock.
      *
      * @param lockName lock name
-     * @return standard lock
+     * @return internal reentrant mutex lock
      */
-    public Lock getStandardLock(final String lockName) {
+    public Lock getInternalReentrantMutexLock(final String lockName) {
         ZookeeperInternalLock result = locks.get(lockName);
         if (Objects.isNull(result)) {
             result = new ZookeeperInternalLock(new InterProcessMutex(client, lockName));

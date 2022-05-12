@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.InterMutexLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.ShardingSphereGlobalLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeService;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.GlobalLockRegistryService;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.MutexLockRegistryService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.TimeoutMilliseconds;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
@@ -39,7 +39,7 @@ public final class ShardingSphereDatabaseLock implements ShardingSphereGlobalLoc
     public ShardingSphereDatabaseLock(final ClusterPersistRepository clusterRepository, final LockNodeService lockNodeService, final ComputeNodeInstance currentInstance,
                                       final Collection<ComputeNodeInstance> computeNodeInstances) {
         this.lockNodeService = lockNodeService;
-        innerLock = new InterMutexLock(new GlobalLockRegistryService(clusterRepository), currentInstance, computeNodeInstances);
+        innerLock = new InterMutexLock(new MutexLockRegistryService(clusterRepository), currentInstance, computeNodeInstances);
     }
     
     @Override

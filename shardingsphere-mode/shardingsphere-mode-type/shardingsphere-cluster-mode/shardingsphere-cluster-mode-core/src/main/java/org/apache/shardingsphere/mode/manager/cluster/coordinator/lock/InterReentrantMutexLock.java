@@ -25,7 +25,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.Time
  * Inter mutex reentrant lock.
  */
 @RequiredArgsConstructor
-public final class InterMutexReentrantLock implements ShardingSphereLock {
+public final class InterReentrantMutexLock implements ShardingSphereLock {
     
     private final LockRegistryService lockRegistryService;
     

@@ -19,11 +19,11 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.g
 
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.InterMutexLock;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.InterMutexReentrantLock;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.InterReentrantMutexLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.ShardingSphereGlobalLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeService;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.GlobalLockRegistryService;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.standard.service.StandardLockRegistryService;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.MutexLockRegistryService;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.standard.service.ReentrantMutexLockRegistryService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.TimeoutMilliseconds;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
@@ -36,15 +36,15 @@ public final class ShardingSphereGeneralLock implements ShardingSphereGlobalLock
     
     private final LockNodeService lockNodeService;
     
-    private final InterMutexReentrantLock sequencedLock;
+    private final InterReentrantMutexLock sequencedLock;
     
     private final InterMutexLock innerLock;
     
     public ShardingSphereGeneralLock(final ClusterPersistRepository clusterRepository, final LockNodeService lockNodeService, final ComputeNodeInstance currentInstance,
                                      final Collection<ComputeNodeInstance> computeNodeInstances) {
         this.lockNodeService = lockNodeService;
-        sequencedLock = new InterMutexReentrantLock(new StandardLockRegistryService(clusterRepository));
-        innerLock = new InterMutexLock(new GlobalLockRegistryService(clusterRepository), currentInstance, computeNodeInstances);
+        sequencedLock = new InterReentrantMutexLock(new ReentrantMutexLockRegistryService(clusterRepository));
+        innerLock = new InterMutexLock(new MutexLockRegistryService(clusterRepository), currentInstance, computeNodeInstances);
     }
     
     @Override

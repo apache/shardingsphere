@@ -15,48 +15,40 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.standard.service;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockRegistryService;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
-
-import java.util.concurrent.TimeUnit;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.TimeoutMilliseconds;
 
 /**
- * Standard lock registry service.
+ * Inter mutex reentrant lock.
  */
 @RequiredArgsConstructor
-public final class StandardLockRegistryService implements LockRegistryService {
+public final class InterReentrantMutexLock implements MutexLock {
     
-    private final ClusterPersistRepository repository;
+    private final String lockName;
+    
+    private final LockRegistryService lockRegistryService;
     
     @Override
-    public boolean tryLock(final String lockName, final long timeoutMilliseconds) {
-        try {
-            return repository.getStandardLock(lockName).tryLock(timeoutMilliseconds, TimeUnit.MILLISECONDS);
-        } catch (final InterruptedException ignore) {
-            return false;
-        }
+    public boolean tryLock() {
+        return tryLock(TimeoutMilliseconds.MAX_TRY_LOCK);
     }
     
     @Override
-    public void releaseLock(final String lockName) {
-        repository.getStandardLock(lockName).unlock();
+    public boolean tryLock(final long timeoutMillis) {
+        return lockRegistryService.tryLock(lockName, TimeoutMilliseconds.MAX_TRY_LOCK);
     }
     
     @Override
-    public void removeLock(final String lockName) {
-        throw new UnsupportedOperationException();
+    public void unlock() {
+        lockRegistryService.releaseLock(lockName);
     }
     
     @Override
-    public void ackLock(final String lockName, final String lockValue) {
-        throw new UnsupportedOperationException();
-    }
-    
-    @Override
-    public void releaseAckLock(final String lockName) {
+    public boolean isLocked() {
         throw new UnsupportedOperationException();
     }
 }

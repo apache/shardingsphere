@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.standard.service;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global;
 
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockRegistryService;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeUtil;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,7 +31,7 @@ import java.lang.reflect.Field;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class StandardLockRegistryServiceTest {
+public final class MutexLockRegistryServiceTest {
     
     @Mock
     private ClusterPersistRepository clusterPersistRepository;
@@ -39,25 +40,25 @@ public final class StandardLockRegistryServiceTest {
     
     @Before
     public void setUp() throws ReflectiveOperationException {
-        lockRegistryService = new StandardLockRegistryService(clusterPersistRepository);
+        lockRegistryService = new MutexLockRegistryService(clusterPersistRepository);
         Field field = lockRegistryService.getClass().getDeclaredField("repository");
         field.setAccessible(true);
         field.set(lockRegistryService, clusterPersistRepository);
     }
     
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void assertRemoveLock() {
         lockRegistryService.removeLock("test");
-        verify(clusterPersistRepository).delete("test");
+        verify(clusterPersistRepository).delete(LockNodeUtil.generateMutexLockReleasedNodePath("test"));
     }
     
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void assertAckLock() {
         lockRegistryService.ackLock("databaseAckLock", "127.0.0.1@3307");
         verify(clusterPersistRepository).persistEphemeral("databaseAckLock", "127.0.0.1@3307");
     }
     
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void assertReleaseAckLock() {
         lockRegistryService.releaseAckLock("databaseAckLock");
         verify(clusterPersistRepository).delete("databaseAckLock");
