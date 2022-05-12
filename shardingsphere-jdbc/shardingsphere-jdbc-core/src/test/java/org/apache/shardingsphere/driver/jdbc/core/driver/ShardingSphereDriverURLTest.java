@@ -26,16 +26,21 @@ import static org.junit.Assert.assertThat;
 
 public final class ShardingSphereDriverURLTest {
     
-    @Test
-    public void assertToConfigurationFile() {
-        ShardingSphereDriverURL actual = new ShardingSphereDriverURL("jdbc:shardingsphere:config/driver/foo-driver-fixture.yaml");
-        assertThat(actual.toConfigurationFile(), is(new File("config/driver/foo-driver-fixture.yaml")));
+    @Test(expected = IllegalArgumentException.class)
+    public void assertNewConstructorWithEmptyURL() {
+        new ShardingSphereDriverURL("jdbc:shardingsphere:");
     }
     
     @Test
     public void assertToClasspathConfigurationFile() {
         ShardingSphereDriverURL actual = new ShardingSphereDriverURL("jdbc:shardingsphere:classpath:config/driver/foo-driver-fixture.yaml");
         assertThat(actual.toConfigurationFile().getName(), is("foo-driver-fixture.yaml"));
+    }
+    
+    @Test
+    public void assertToConfigurationFile() {
+        ShardingSphereDriverURL actual = new ShardingSphereDriverURL("jdbc:shardingsphere:config/driver/foo-driver-fixture.yaml");
+        assertThat(actual.toConfigurationFile(), is(new File("config/driver/foo-driver-fixture.yaml")));
     }
     
     @Test

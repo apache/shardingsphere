@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.driver;
 
+import com.google.common.base.Preconditions;
+
 import java.io.File;
 import java.util.Objects;
 
@@ -40,6 +42,7 @@ public final class ShardingSphereDriverURL {
             file = configuredFile;
             inClasspath = false;
         }
+        Preconditions.checkArgument(!file.isEmpty(), "Configuration file is required in ShardingSphere driver URL.");
     }
     
     /**
@@ -48,6 +51,8 @@ public final class ShardingSphereDriverURL {
      * @return generated configuration file
      */
     public File toConfigurationFile() {
-        return new File(inClasspath ? Objects.requireNonNull(ShardingSphereDriverURL.class.getResource("/" + file), String.format("Can not find configuration file `%s`", file)).getFile() : file);
+        return new File(inClasspath
+                ? Objects.requireNonNull(ShardingSphereDriverURL.class.getResource("/" + file), String.format("Can not find configuration file `%s` in classpath.", file)).getFile()
+                : file);
     }
 }
