@@ -4368,4 +4368,14 @@
             <column-projection name="status" alias="ns1:status" start-index="101" stop-index="122"/>
         </projections>
     </select>
+
+    <select sql-case-id="select_with_column_alias_with_assignment_operator">
+        <from>
+            <simple-table name="t_order" start-index="88" stop-index="94" />
+        </from>
+        <projections start-index="7" stop-index="81">
+            <expression-projection text="status_info = order_id + ' ' + status" start-index="7" stop-index="43" />
+            <expression-projection text="user_info = order_id + ' ' + user_id" start-index="46" stop-index="81" />
+        </projections>
+    </select>
 </sql-parser-test-cases>

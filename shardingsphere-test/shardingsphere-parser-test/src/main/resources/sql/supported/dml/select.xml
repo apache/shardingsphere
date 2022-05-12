@@ -128,4 +128,5 @@
     <sql-case id="select_with_keyword_target" value="SELECT m.target FROM sys_menu m" />
     <sql-case id="select_with_xml_namespaces_clause" value="WITH XMLNAMESPACES ('uri' AS ns1) SELECT order_id AS 'ns1:order_id', status AS 'ns1:status' FROM t_order FOR XML RAW ('ns1:order'), ELEMENTS" db-types="SQLServer" />
     <sql-case id="select_with_xml_default_namespaces_clause" value="WITH XMLNAMESPACES ('uri1' AS ns1, 'uri2' AS ns2, DEFAULT 'uri2') SELECT order_id AS 'ns1:order_id', status AS 'ns1:status' FROM t_order FOR XML RAW ('ns1:order'), ELEMENTS XSINIL" db-types="SQLServer" />
+    <sql-case id="select_with_column_alias_with_assignment_operator" value="SELECT status_info = order_id + ' ' + status, user_info = order_id + ' ' + user_id FROM t_order" db-types="SQLServer" />
 </sql-cases>
