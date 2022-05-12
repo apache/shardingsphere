@@ -56,9 +56,9 @@ public final class DriverDataSourceCache {
         }
         try {
             ((ShardingSphereDataSource) dataSource).close();
-            // CHECKSTYLE: OFF
+            // CHECKSTYLE:OFF
         } catch (Exception ex) {
-            // CHECKSTYLE: ON
+            // CHECKSTYLE:ON
             throw new SQLException(ex);
         }
         return previousDataSource;
