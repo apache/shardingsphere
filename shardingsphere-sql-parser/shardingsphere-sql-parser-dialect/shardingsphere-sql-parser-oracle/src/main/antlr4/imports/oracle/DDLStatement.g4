@@ -2275,3 +2275,29 @@ alterAnalyticView
 alterAttributeDimension
     : ALTER ATTRIBUTE DIMENSION (schemaName DOT_)? attributeDimensionName (RENAME TO attributeDimensionName | COMPILE)
     ;
+
+createSequence
+    : CREATE SEQUENCE (schemaName DOT_)? sequenceName (SHARING EQ_ (METADATA | DATA | NONE))? createSequenceClause+
+    ;
+
+createSequenceClause
+    : (INCREMENT BY | START WITH) INTEGER_
+    | MAXVALUE INTEGER_
+    | NOMAXVALUE
+    | MINVALUE INTEGER_
+    | NOMINVALUE
+    | CYCLE
+    | NOCYCLE
+    | CACHE INTEGER_
+    | NOCACHE
+    | ORDER
+    | NOORDER
+    | KEEP
+    | NOKEEP
+    | SCALE (EXTEND | NOEXTEND)
+    | NOSCALE
+    | SHARD (EXTEND | NOEXTEND)
+    | NOSHARD
+    | SESSION
+    | GLOBAL
+    ;
