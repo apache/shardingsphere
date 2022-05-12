@@ -38,6 +38,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Properties;
 
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -55,31 +57,42 @@ public final class AlterShardingKeyGeneratorStatementUpdaterTest {
     
     @Test(expected = DuplicateRuleException.class)
     public void assertExecuteWithDuplicate() throws DistSQLException {
-        ShardingKeyGeneratorSegment keyGeneratorSegment = new ShardingKeyGeneratorSegment("inputAlgorithmName", new AlgorithmSegment("inputAlgorithmName", createProperties()));
+        ShardingKeyGeneratorSegment keyGeneratorSegment = new ShardingKeyGeneratorSegment("input_key_generator_name", new AlgorithmSegment("snowflake", createProperties()));
         updater.checkSQLStatement(shardingSphereMetaData, new AlterShardingKeyGeneratorStatement(Arrays.asList(keyGeneratorSegment, keyGeneratorSegment)), null);
     }
     
     @Test(expected = RequiredAlgorithmMissedException.class)
     public void assertExecuteWithNotExist() throws DistSQLException {
         Properties props = createProperties();
-        ShardingKeyGeneratorSegment keyGeneratorSegment = new ShardingKeyGeneratorSegment("notExistAlgorithmName", new AlgorithmSegment("inputAlgorithmName", props));
+        ShardingKeyGeneratorSegment keyGeneratorSegment = new ShardingKeyGeneratorSegment("not_exist_key_generator_name", new AlgorithmSegment("snowflake", props));
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
-        ruleConfig.getShardingAlgorithms().put("existAlgorithmName", new ShardingSphereAlgorithmConfiguration("hash_mod", props));
+        ruleConfig.getKeyGenerators().put("exist_key_generator_name", new ShardingSphereAlgorithmConfiguration("hash_mod", props));
         updater.checkSQLStatement(shardingSphereMetaData, new AlterShardingKeyGeneratorStatement(Collections.singletonList(keyGeneratorSegment)), ruleConfig);
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
     public void assertExecuteWithInvalidAlgorithm() throws DistSQLException {
         Properties props = createProperties();
-        ShardingKeyGeneratorSegment keyGeneratorSegment = new ShardingKeyGeneratorSegment("existAlgorithmName", new AlgorithmSegment("inputAlgorithmName", props));
+        ShardingKeyGeneratorSegment keyGeneratorSegment = new ShardingKeyGeneratorSegment("exist_key_generator_name", new AlgorithmSegment("snowflake", props));
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
-        ruleConfig.getKeyGenerators().put("existAlgorithmName", new ShardingSphereAlgorithmConfiguration("InvalidAlgorithm", props));
+        ruleConfig.getKeyGenerators().put("exist_key_generator_name", new ShardingSphereAlgorithmConfiguration("invalid_type", props));
         updater.checkSQLStatement(shardingSphereMetaData, new AlterShardingKeyGeneratorStatement(Collections.singletonList(keyGeneratorSegment)), ruleConfig);
+    }
+    
+    @Test
+    public void assertUpdate() {
+        ShardingKeyGeneratorSegment keyGeneratorSegment = new ShardingKeyGeneratorSegment("exist_key_generator_name", new AlgorithmSegment("snowflake", createProperties()));
+        ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
+        currentRuleConfig.getKeyGenerators().put("exist_key_generator_name", new ShardingSphereAlgorithmConfiguration("uuid", createProperties()));
+        AlterShardingKeyGeneratorStatement statement = new AlterShardingKeyGeneratorStatement(Collections.singletonList(keyGeneratorSegment));
+        ShardingRuleConfiguration toBeAlteredRuleConfiguration = updater.buildToBeAlteredRuleConfiguration(statement);
+        updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfiguration);
+        assertThat(currentRuleConfig.getKeyGenerators().get("exist_key_generator_name").getType(), is("uuid"));
     }
     
     private Properties createProperties() {
         Properties result = new Properties();
-        result.put("inputKey", "inputValue");
+        result.put("key", "value");
         return result;
     }
 }

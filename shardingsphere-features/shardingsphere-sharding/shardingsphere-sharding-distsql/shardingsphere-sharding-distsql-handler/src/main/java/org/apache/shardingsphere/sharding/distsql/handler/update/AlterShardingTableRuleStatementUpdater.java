@@ -57,8 +57,8 @@ public final class AlterShardingTableRuleStatementUpdater implements RuleDefinit
     private void removeRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeAlteredRuleConfig) {
         Collection<String> toBeAlteredLogicTableNames = getAlteredLogicalTableNames(toBeAlteredRuleConfig);
         toBeAlteredLogicTableNames.forEach(each -> {
-            currentRuleConfig.getTables().removeIf(table -> table.getLogicTable().equals(each));
-            currentRuleConfig.getAutoTables().removeIf(table -> table.getLogicTable().equals(each));
+            currentRuleConfig.getTables().removeIf(table -> table.getLogicTable().equalsIgnoreCase(each));
+            currentRuleConfig.getAutoTables().removeIf(table -> table.getLogicTable().equalsIgnoreCase(each));
         });
     }
     
