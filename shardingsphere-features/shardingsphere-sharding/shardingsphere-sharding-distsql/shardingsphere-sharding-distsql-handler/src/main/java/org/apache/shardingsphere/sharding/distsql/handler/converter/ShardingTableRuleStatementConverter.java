@@ -165,14 +165,14 @@ public final class ShardingTableRuleStatementConverter {
     }
     
     private static String getAutoTableShardingAlgorithmName(final String tableName, final String algorithmType) {
-        return String.format("%s_%s", tableName, algorithmType.toLowerCase());
+        return String.format("%s_%s", tableName.toLowerCase(), algorithmType.toLowerCase());
     }
     
     private static String getTableShardingAlgorithmName(final String tableName, final ShardingStrategyLevelType strategyLevel, final String algorithmType) {
-        return String.format("%s_%s_%s", tableName, strategyLevel.name().toLowerCase(), algorithmType.toLowerCase());
+        return String.format("%s_%s_%s", tableName.toLowerCase(), strategyLevel.name().toLowerCase(), algorithmType.toLowerCase());
     }
     
     private static String getKeyGeneratorName(final String tableName, final String algorithmType) {
-        return String.format("%s_%s", tableName, algorithmType.toLowerCase());
+        return String.format("%s_%s", tableName.toLowerCase(), algorithmType.toLowerCase());
     }
 }

@@ -79,6 +79,13 @@ public final class DropShardingBroadcastTableRuleStatementUpdaterTest {
     }
     
     @Test
+    public void assertDropSpecifiedCurrentRuleConfigurationWithDifferentCase() {
+        ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
+        updater.updateCurrentRuleConfiguration(createSQLStatement("T_ORDER"), currentRuleConfig);
+        assertTrue(currentRuleConfig.getBroadcastTables().isEmpty());
+    }
+    
+    @Test
     public void assertAllCurrentRuleConfiguration() {
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         updater.updateCurrentRuleConfiguration(createSQLStatement(null), currentRuleConfig);

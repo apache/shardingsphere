@@ -102,6 +102,31 @@ public final class AlterShardingTableRuleStatementUpdaterTest {
     }
     
     @Test
+    public void assertUpdateWithDifferentCase() throws DistSQLException {
+        AlterShardingTableRuleStatement statement = new AlterShardingTableRuleStatement(Arrays.asList(createCompleteAutoTableRule("T_ORDER_ITEM"), createCompleteTableRule("T_ORDER")));
+        updater.checkSQLStatement(shardingSphereMetaData, statement, currentRuleConfig);
+        ShardingRuleConfiguration toBeAlteredRuleConfig = updater.buildToBeAlteredRuleConfiguration(statement);
+        updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
+        assertThat(currentRuleConfig.getTables().size(), is(1));
+        ShardingTableRuleConfiguration tableRule = currentRuleConfig.getTables().iterator().next();
+        assertThat(tableRule.getLogicTable(), is("T_ORDER"));
+        assertThat(tableRule.getActualDataNodes(), is("ds_${0..1}.t_order${0..1}"));
+        assertThat(tableRule.getTableShardingStrategy(), instanceOf(StandardShardingStrategyConfiguration.class));
+        assertThat(((StandardShardingStrategyConfiguration) tableRule.getTableShardingStrategy()).getShardingColumn(), is("product_id"));
+        assertThat(tableRule.getTableShardingStrategy().getShardingAlgorithmName(), is("t_order_algorithm"));
+        assertThat(tableRule.getDatabaseShardingStrategy(), instanceOf(StandardShardingStrategyConfiguration.class));
+        assertThat(tableRule.getDatabaseShardingStrategy().getShardingAlgorithmName(), is("t_order_database_inline"));
+        assertThat(currentRuleConfig.getTables().size(), is(1));
+        ShardingAutoTableRuleConfiguration autoTableRule = currentRuleConfig.getAutoTables().iterator().next();
+        assertThat(autoTableRule.getLogicTable(), is("T_ORDER_ITEM"));
+        assertThat(autoTableRule.getActualDataSources(), is("ds_0,ds_1"));
+        assertThat(autoTableRule.getShardingStrategy().getShardingAlgorithmName(), is("t_order_item_foo.distsql.fixture"));
+        assertThat(((StandardShardingStrategyConfiguration) autoTableRule.getShardingStrategy()).getShardingColumn(), is("order_id"));
+        assertThat(autoTableRule.getKeyGenerateStrategy().getColumn(), is("product_id"));
+        assertThat(autoTableRule.getKeyGenerateStrategy().getKeyGeneratorName(), is("t_order_item_distsql.fixture"));
+    }
+    
+    @Test
     public void assertUpdateTableType() throws DistSQLException {
         AlterShardingTableRuleStatement statement = new AlterShardingTableRuleStatement(Arrays.asList(createCompleteAutoTableRule("t_order"), createCompleteTableRule("t_order_item")));
         updater.checkSQLStatement(shardingSphereMetaData, statement, currentRuleConfig);
