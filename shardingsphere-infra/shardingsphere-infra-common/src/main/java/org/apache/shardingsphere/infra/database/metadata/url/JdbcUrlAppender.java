@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.database.metadata.url;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -35,7 +35,7 @@ public final class JdbcUrlAppender {
      * @return appended JDBC URL
      */
     public String appendQueryProperties(final String jdbcUrl, final Properties queryProps) {
-        Properties currentQueryProps = DatabaseTypeRegistry.getDatabaseTypeByURL(jdbcUrl).getDataSourceMetaData(jdbcUrl, null).getQueryProperties();
+        Properties currentQueryProps = DatabaseTypeEngine.getDatabaseType(jdbcUrl).getDataSourceMetaData(jdbcUrl, null).getQueryProperties();
         return hasConflictedQueryProperties(currentQueryProps, queryProps)
                 ? concat(jdbcUrl.substring(0, jdbcUrl.indexOf('?') + 1), getMergedProperties(currentQueryProps, queryProps))
                 : concat(jdbcUrl + (currentQueryProps.isEmpty() ? "?" : "&"), queryProps);

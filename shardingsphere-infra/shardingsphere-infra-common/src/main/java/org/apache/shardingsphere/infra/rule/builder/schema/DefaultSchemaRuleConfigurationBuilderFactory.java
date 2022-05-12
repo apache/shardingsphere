@@ -36,13 +36,13 @@ public final class DefaultSchemaRuleConfigurationBuilderFactory {
     }
     
     /**
-     * Create new instance of schema rule builder.
+     * Get instances of schema rule builder.
      *
      * @param builders schema rule builders
-     * @return new instance of schema rule builder
+     * @return got instances
      */
     @SuppressWarnings("rawtypes")
-    public static Map<SchemaRuleBuilder, DefaultSchemaRuleConfigurationBuilder> newInstance(final Collection<SchemaRuleBuilder> builders) {
+    public static Map<SchemaRuleBuilder, DefaultSchemaRuleConfigurationBuilder> getInstances(final Collection<SchemaRuleBuilder> builders) {
         return OrderedSPIRegistry.getRegisteredServices(DefaultSchemaRuleConfigurationBuilder.class, builders);
     }
 }

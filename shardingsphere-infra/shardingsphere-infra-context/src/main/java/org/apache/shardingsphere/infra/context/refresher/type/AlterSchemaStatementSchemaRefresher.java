@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.metadata.schema.event.AlterSchemaEvent;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterSchemaStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.AlterSchemaStatementHandler;
 
 import java.sql.SQLException;
@@ -46,14 +47,14 @@ public final class AlterSchemaStatementSchemaRefresher implements MetaDataRefres
     @Override
     public void refresh(final ShardingSphereMetaData metaData, final FederationDatabaseMetaData database, final Map<String, OptimizerPlannerContext> optimizerPlanners,
                         final Collection<String> logicDataSourceNames, final String schemaName, final AlterSchemaStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
-        Optional<String> renameSchemaName = AlterSchemaStatementHandler.getRenameSchema(sqlStatement);
+        Optional<IdentifierValue> renameSchemaName = AlterSchemaStatementHandler.getRenameSchema(sqlStatement);
         if (!renameSchemaName.isPresent()) {
             return;
         }
-        String actualSchemaName = sqlStatement.getSchemaName();
-        putSchemaMetaData(metaData, database, optimizerPlanners, actualSchemaName, renameSchemaName.get(), logicDataSourceNames);
+        String actualSchemaName = sqlStatement.getSchemaName().getValue();
+        putSchemaMetaData(metaData, database, optimizerPlanners, actualSchemaName, renameSchemaName.get().getValue(), logicDataSourceNames);
         removeSchemaMetaData(metaData, database, optimizerPlanners, actualSchemaName);
-        AlterSchemaEvent event = new AlterSchemaEvent(metaData.getDatabaseName(), actualSchemaName, renameSchemaName.get(), metaData.getSchemaByName(renameSchemaName.get()));
+        AlterSchemaEvent event = new AlterSchemaEvent(metaData.getDatabaseName(), actualSchemaName, renameSchemaName.get().getValue(), metaData.getSchemaByName(renameSchemaName.get().getValue()));
         ShardingSphereEventBus.getInstance().post(event);
     }
     

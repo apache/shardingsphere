@@ -37,11 +37,11 @@ public final class PostgreSQLContainer extends DockerDatabaseContainer {
     
     @Override
     protected void configure() {
+        super.configure();
         withCommand("--max_connections=600");
         withCommand("--wal_level=logical");
         addEnv("POSTGRES_USER", "root");
         addEnv("POSTGRES_PASSWORD", "root");
-        super.configure();
         withClasspathResourceMapping("/env/postgresql/postgresql.conf", "/etc/postgresql/postgresql.conf", BindMode.READ_ONLY);
         withExposedPorts(5432);
         if (ITEnvTypeEnum.NATIVE == IntegrationTestEnvironment.getInstance().getItEnvType()) {

@@ -80,6 +80,19 @@ dropEdition
     : DROP EDITION editionName CASCADE?
     ;
 
+dropOutline
+    : DROP OUTLINE outlineName
+    ;
+
+alterOutline
+    : ALTER OUTLINE (PUBLIC | PRIVATE)? outlineName
+    ( REBUILD
+    | RENAME TO outlineName
+    | CHANGE CATEGORY TO categoryName
+    | (ENABLE | DISABLE)
+    )+
+    ;
+
 truncateTable
     : TRUNCATE TABLE tableName materializedViewLogClause? dropReuseClause? CASCADE?
     ;
@@ -2253,4 +2266,8 @@ externalParameter
 
 property
     : (INDICATOR (STRUCT | TDO)? | LENGTH | DURATION | MAXLEN | CHARSETID | CHARSETFORM)
+    ;
+
+alterAnalyticView
+    : ALTER ANALYTIC VIEW analyticViewName (RENAME TO analyticViewName | COMPILE)
     ;

@@ -81,5 +81,8 @@ execute
     | dropSynonym
     | dropPackage
     | dropEdition
+    | dropOutline
+    | alterOutline
+    | alterAnalyticView
     ) SEMI_?
     ;

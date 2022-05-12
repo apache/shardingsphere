@@ -35,12 +35,12 @@ public final class StoragePrivilegeHandlerFactory {
     }
     
     /**
-     * Create new instance of storage privilege handler.
+     * Find instance of storage privilege handler.
      * 
      * @param type type of storage privilege handler
-     * @return new instance of storage privilege handler
+     * @return found instance
      */
-    public static Optional<StoragePrivilegeHandler> newInstance(final String type) {
+    public static Optional<StoragePrivilegeHandler> findInstance(final String type) {
         return TypedSPIRegistry.findRegisteredService(StoragePrivilegeHandler.class, type);
     }
 }

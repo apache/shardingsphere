@@ -33,13 +33,13 @@ public final class RALUpdaterFactory {
     }
     
     /**
-     * Create new instance of RAL updater.
+     * Get instance of RAL updater.
      * 
      * @param sqlStatementClass SQL statement class 
-     * @return new instance of RAL updater
+     * @return got instance
      */
     @SuppressWarnings("rawtypes")
-    public static RALUpdater newInstance(final Class<?> sqlStatementClass) {
+    public static RALUpdater getInstance(final Class<?> sqlStatementClass) {
         return TypedSPIRegistry.getRegisteredService(RALUpdater.class, sqlStatementClass.getCanonicalName());
     }
 }

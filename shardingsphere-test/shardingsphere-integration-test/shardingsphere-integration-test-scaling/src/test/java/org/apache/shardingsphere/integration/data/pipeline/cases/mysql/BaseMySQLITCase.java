@@ -56,13 +56,13 @@ public abstract class BaseMySQLITCase extends BaseITCase {
             addResource(connection);
         }
         initShardingRule();
-        setIncreaseTaskThread(new Thread(new MySQLIncrementTaskRunnable(getJdbcTemplate(), getCommonSQLCommand())));
+        setIncreaseTaskThread(new Thread(new MySQLIncrementTaskRunnable(getJdbcTemplate(), extraSQLCommand)));
         getJdbcTemplate().execute(extraSQLCommand.getCreateTableOrder());
         getJdbcTemplate().execute(extraSQLCommand.getCreateTableOrderItem());
         getIncreaseTaskThread().start();
         Pair<List<Object[]>, List<Object[]>> dataPair = TableCrudUtil.generateMySQLInsertDataList(3000);
-        getJdbcTemplate().batchUpdate(extraSQLCommand.getInsertOrder(), dataPair.getLeft());
-        getJdbcTemplate().batchUpdate(getCommonSQLCommand().getInsertOrderItem(), dataPair.getRight());
+        getJdbcTemplate().batchUpdate(extraSQLCommand.getFullInsertOrder(), dataPair.getLeft());
+        getJdbcTemplate().batchUpdate(extraSQLCommand.getInsertOrderItem(), dataPair.getRight());
     }
     
     @Override

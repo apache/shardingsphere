@@ -65,6 +65,8 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class EtcdRepositoryTest {
     
+    private final EtcdRepository repository = new EtcdRepository();
+    
     @Mock
     private Client client;
     
@@ -91,11 +93,6 @@ public final class EtcdRepositoryTest {
     
     @Mock
     private CompletableFuture putFuture;
-    
-    @Mock
-    private CompletableFuture lockFuture;
-    
-    private final EtcdRepository repository = new EtcdRepository();
     
     @Before
     public void setUp() {

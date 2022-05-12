@@ -22,5 +22,5 @@ package org.apache.shardingsphere.infra.lock;
  */
 public enum LockType {
     
-    STANDARD, GENERAL, DATABASE
+    STANDARD, GENERAL, DATABASE, SCHEMA
 }

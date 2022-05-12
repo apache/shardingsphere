@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.scaling.distsql.handler.query;
 
-import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPIFactory;
+import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPI;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
  */
 public final class CheckScalingQueryResultSet implements DistSQLResultSet {
     
-    private static final RuleAlteredJobAPI RULE_ALTERED_JOB_API = PipelineJobAPIFactory.newInstance();
+    private static final RuleAlteredJobAPI RULE_ALTERED_JOB_API = RuleAlteredJobAPIFactory.getInstance();
     
     private Iterator<Collection<Object>> data;
     

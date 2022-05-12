@@ -77,7 +77,7 @@ public final class DataSourcePropertiesCreator {
     
     private static Map<String, Object> createProperties(final DataSource dataSource) {
         Map<String, Object> result = new LinkedHashMap<>();
-        Optional<DataSourcePoolMetaData> poolMetaData = DataSourcePoolMetaDataFactory.newInstance(dataSource.getClass().getName());
+        Optional<DataSourcePoolMetaData> poolMetaData = DataSourcePoolMetaDataFactory.findInstance(dataSource.getClass().getName());
         for (Entry<String, Object> entry : new DataSourceReflection(dataSource).convertToProperties().entrySet()) {
             String propertyName = entry.getKey();
             Object propertyValue = entry.getValue();

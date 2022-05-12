@@ -27,11 +27,11 @@ public final class RuleAlteredDetectorFactoryTest {
     
     @Test
     public void assertNewInstanceWithRuleConfiguration() {
-        assertFalse(RuleAlteredDetectorFactory.newInstance(mock(RuleConfiguration.class)).isPresent());
+        assertFalse(RuleAlteredDetectorFactory.findInstance(mock(RuleConfiguration.class)).isPresent());
     }
     
     @Test
     public void assertNewInstanceWithYamlRuleConfiguration() {
-        assertFalse(RuleAlteredDetectorFactory.newInstance(mock(RuleConfiguration.class)).isPresent());
+        assertFalse(RuleAlteredDetectorFactory.findInstance(mock(RuleConfiguration.class)).isPresent());
     }
 }

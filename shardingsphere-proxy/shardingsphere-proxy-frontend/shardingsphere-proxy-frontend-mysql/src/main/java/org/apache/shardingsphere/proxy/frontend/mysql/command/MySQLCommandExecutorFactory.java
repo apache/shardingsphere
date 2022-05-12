@@ -59,7 +59,7 @@ public final class MySQLCommandExecutorFactory {
      * @param commandPacketType command packet type for MySQL
      * @param commandPacket command packet for MySQL
      * @param connectionSession connection session
-     * @return command executor
+     * @return created instance
      * @throws SQLException SQL exception
      */
     public static CommandExecutor newInstance(final MySQLCommandPacketType commandPacketType, final CommandPacket commandPacket, final ConnectionSession connectionSession) throws SQLException {

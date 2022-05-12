@@ -37,7 +37,7 @@ public final class MySQLDatabaseTypeTest {
     
     @Test
     public void assertGetName() {
-        assertThat(new MySQLDatabaseType().getName(), is("MySQL"));
+        assertThat(new MySQLDatabaseType().getType(), is("MySQL"));
     }
     
     @Test

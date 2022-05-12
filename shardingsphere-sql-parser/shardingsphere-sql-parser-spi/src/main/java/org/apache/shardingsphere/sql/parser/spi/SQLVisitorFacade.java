@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.sql.parser.spi;
 
+import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 
 /**
  * SQL visitor facade.
  */
-public interface SQLVisitorFacade {
+public interface SQLVisitorFacade extends TypedSPI {
     
     /**
      * Get database type.
@@ -79,4 +80,9 @@ public interface SQLVisitorFacade {
      * @return RL visitor class
      */
     Class<? extends SQLVisitor> getRLVisitorClass();
+    
+    @Override
+    default String getType() {
+        return String.join(".", getDatabaseType(), getVisitorType());
+    }
 }

@@ -34,17 +34,17 @@ import java.util.Properties;
 public final class SQLVisitorFactory {
     
     /**
-     * New instance of SQL visitor.
+     * Create new instance of SQL visitor.
      * 
      * @param databaseType database type
      * @param visitorType SQL visitor type
      * @param visitorRule SQL visitor rule
      * @param props SQL visitor config
      * @param <T> type of visitor result
-     * @return parse tree visitor
+     * @return created instance
      */
     public static <T> ParseTreeVisitor<T> newInstance(final String databaseType, final String visitorType, final SQLVisitorRule visitorRule, final Properties props) {
-        SQLVisitorFacade facade = SQLVisitorFacadeRegistry.getInstance().getSQLVisitorFacade(databaseType, visitorType);
+        SQLVisitorFacade facade = SQLVisitorFacadeFactory.getInstance(databaseType, visitorType);
         return createParseTreeVisitor(facade, visitorRule.getType(), props);
     }
     

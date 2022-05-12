@@ -35,12 +35,12 @@ public final class StatementMemoryStrictlyFetchSizeSetterFactory {
     }
     
     /**
-     * Create new instance of statement memory strictly fetch size setter.
+     * Find instance of statement memory strictly fetch size setter.
      * 
      * @param databaseType database type
-     * @return new instance of statement memory strictly fetch size setter
+     * @return found instance
      */
-    public static Optional<StatementMemoryStrictlyFetchSizeSetter> newInstance(final String databaseType) {
+    public static Optional<StatementMemoryStrictlyFetchSizeSetter> findInstance(final String databaseType) {
         return TypedSPIRegistry.findRegisteredService(StatementMemoryStrictlyFetchSizeSetter.class, databaseType);
     }
 }

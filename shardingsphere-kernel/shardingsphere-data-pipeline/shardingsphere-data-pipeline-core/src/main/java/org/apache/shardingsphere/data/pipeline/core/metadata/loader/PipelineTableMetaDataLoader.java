@@ -23,7 +23,7 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSource
 import org.apache.shardingsphere.data.pipeline.api.metadata.TableName;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineTableMetaData;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -67,7 +67,7 @@ public final class PipelineTableMetaDataLoader {
     }
     
     private boolean isSchemaAvailable() {
-        return DatabaseTypeRegistry.getActualDatabaseType(dataSource.getDatabaseType().getName()).isSchemaAvailable();
+        return DatabaseTypeFactory.getInstance(dataSource.getDatabaseType().getType()).isSchemaAvailable();
     }
     
     private Map<TableName, PipelineTableMetaData> loadTableMetaData0(final Connection connection, final String schemaName, final String tableNamePattern) throws SQLException {

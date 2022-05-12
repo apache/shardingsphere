@@ -2714,3 +2714,7 @@ SINGLE_C
 SYSTIMESTAMP
     : S Y S T I M E S T A M P
     ;
+
+CATEGORY
+    : C A T E G O R Y
+    ;

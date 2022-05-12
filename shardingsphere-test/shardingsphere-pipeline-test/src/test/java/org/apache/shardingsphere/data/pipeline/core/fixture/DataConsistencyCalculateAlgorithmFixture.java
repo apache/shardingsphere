@@ -20,11 +20,13 @@ package org.apache.shardingsphere.data.pipeline.core.fixture;
 import lombok.Getter;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 @Getter
 public final class DataConsistencyCalculateAlgorithmFixture implements DataConsistencyCalculateAlgorithm {
@@ -43,7 +45,7 @@ public final class DataConsistencyCalculateAlgorithmFixture implements DataConsi
     
     @Override
     public Collection<String> getSupportedDatabaseTypes() {
-        return DatabaseTypeRegistry.getDatabaseTypeNames();
+        return DatabaseTypeFactory.getInstances().stream().map(DatabaseType::getType).collect(Collectors.toList());
     }
     
     @Override

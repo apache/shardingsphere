@@ -39,7 +39,7 @@ public final class DataConsistencyCalculateAlgorithmFactory {
      *
      * @param type algorithm type
      * @param props properties
-     * @return new instance of data consistency calculate algorithm
+     * @return created instance
      */
     public static DataConsistencyCalculateAlgorithm newInstance(final String type, final Properties props) {
         return ShardingSphereAlgorithmFactory.createAlgorithm(new ShardingSphereAlgorithmConfiguration(type, props), DataConsistencyCalculateAlgorithm.class);

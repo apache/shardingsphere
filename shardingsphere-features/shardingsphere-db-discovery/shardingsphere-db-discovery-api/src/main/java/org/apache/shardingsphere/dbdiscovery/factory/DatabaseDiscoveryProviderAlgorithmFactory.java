@@ -39,7 +39,7 @@ public final class DatabaseDiscoveryProviderAlgorithmFactory {
      * Create new instance of database discovery provider algorithm.
      *
      * @param databaseDiscoveryProviderAlgorithmConfig database discovery provider algorithm configuration
-     * @return new instance of database discovery provider algorithm
+     * @return created instance
      */
     public static DatabaseDiscoveryProviderAlgorithm newInstance(final ShardingSphereAlgorithmConfiguration databaseDiscoveryProviderAlgorithmConfig) {
         return ShardingSphereAlgorithmFactory.createAlgorithm(databaseDiscoveryProviderAlgorithmConfig, DatabaseDiscoveryProviderAlgorithm.class);
