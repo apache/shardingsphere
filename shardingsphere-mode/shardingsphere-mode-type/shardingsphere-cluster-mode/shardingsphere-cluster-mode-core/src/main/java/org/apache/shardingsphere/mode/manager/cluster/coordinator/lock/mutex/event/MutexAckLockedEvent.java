@@ -15,30 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.event;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-
-import java.util.Collection;
+import lombok.Getter;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeUtil;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 
 /**
- * ShardingSphere lock manager factory.
+ * Mutex ack locked event.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingSphereLockManagerFactory {
+@Getter
+public final class MutexAckLockedEvent implements GovernanceEvent {
     
-    static {
-        ShardingSphereServiceLoader.register(ShardingSphereDistributeLockManager.class);
-    }
+    private final String lockName;
     
-    /**
-     * Get all instances of ShardingSphere lock manager.
-     * 
-     * @return got instances
-     */
-    public static Collection<ShardingSphereDistributeLockManager> getAllInstances() {
-        return ShardingSphereServiceLoader.getServiceInstances(ShardingSphereDistributeLockManager.class);
+    private final String lockedInstance;
+    
+    public MutexAckLockedEvent(final String ackLockName) {
+        String[] lockNameInstance = LockNodeUtil.parseAckLockName(ackLockName);
+        lockName = lockNameInstance[0];
+        lockedInstance = lockNameInstance[1];
     }
 }

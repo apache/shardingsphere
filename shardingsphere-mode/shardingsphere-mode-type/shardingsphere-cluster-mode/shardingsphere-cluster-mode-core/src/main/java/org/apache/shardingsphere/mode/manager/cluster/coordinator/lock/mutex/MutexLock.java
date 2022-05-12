@@ -15,24 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.database.service;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex;
 
-import org.junit.Test;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class DatabaseStandardLockNodeServiceTest {
+public interface MutexLock {
     
-    private static final DatabaseLockNodeService SERVICE = new DatabaseLockNodeService();
+    /**
+     * Try lock.
+     *
+     * @return is locked or not.
+     */
+    boolean tryLock();
     
-    @Test
-    public void assertGetSequenceNodePath() {
-        assertThat(SERVICE.getSequenceNodePath(), is("/lock/global/database/sequence"));
-    }
+    /**
+     * Try lock.
+     *
+     * @param timeout timeout
+     * @return is locked or not.
+     */
+    boolean tryLock(long timeout);
     
-    @Test
-    public void assertGetLockLevel() {
-        assertThat(SERVICE.getLockLevel(), is("database"));
-    }
+    /**
+     * Unlock.
+     */
+    void unlock();
+    
+    /**
+     * Is locked.
+     *
+     * @return is locked or not
+     */
+    boolean isLocked();
 }

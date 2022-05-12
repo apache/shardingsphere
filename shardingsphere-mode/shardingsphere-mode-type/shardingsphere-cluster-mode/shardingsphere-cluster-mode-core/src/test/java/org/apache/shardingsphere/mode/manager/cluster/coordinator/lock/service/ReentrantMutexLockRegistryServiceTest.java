@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.standard.service;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service;
 
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockRegistryService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
@@ -30,7 +30,7 @@ import java.lang.reflect.Field;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class StandardLockRegistryServiceTest {
+public final class ReentrantMutexLockRegistryServiceTest {
     
     @Mock
     private ClusterPersistRepository clusterPersistRepository;
@@ -39,7 +39,7 @@ public final class StandardLockRegistryServiceTest {
     
     @Before
     public void setUp() throws ReflectiveOperationException {
-        lockRegistryService = new StandardLockRegistryService(clusterPersistRepository);
+        lockRegistryService = new ReentrantMutexLockRegistryService(clusterPersistRepository);
         Field field = lockRegistryService.getClass().getDeclaredField("repository");
         field.setAccessible(true);
         field.set(lockRegistryService, clusterPersistRepository);

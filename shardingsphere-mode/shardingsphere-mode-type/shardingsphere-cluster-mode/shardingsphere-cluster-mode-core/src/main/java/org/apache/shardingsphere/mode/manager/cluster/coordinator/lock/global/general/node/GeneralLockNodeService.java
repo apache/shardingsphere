@@ -15,30 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.general.node;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-
-import java.util.Collection;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.AbstractGlobalLockNodeService;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeType;
 
 /**
- * ShardingSphere lock manager factory.
+ * General lock node service.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingSphereLockManagerFactory {
+public final class GeneralLockNodeService extends AbstractGlobalLockNodeService {
     
-    static {
-        ShardingSphereServiceLoader.register(ShardingSphereDistributeLockManager.class);
+    @Override
+    public String getSequenceNodePath() {
+        return PATH_DELIMITER + LOCK_ROOT + PATH_DELIMITER + LOCK_SCOPE_GLOBAL + PATH_DELIMITER + getLockLevel() + PATH_DELIMITER + "sequence";
     }
     
-    /**
-     * Get all instances of ShardingSphere lock manager.
-     * 
-     * @return got instances
-     */
-    public static Collection<ShardingSphereDistributeLockManager> getAllInstances() {
-        return ShardingSphereServiceLoader.getServiceInstances(ShardingSphereDistributeLockManager.class);
+    @Override
+    protected String getLockLevel() {
+        return "general";
+    }
+    
+    @Override
+    public LockNodeType getType() {
+        return LockNodeType.GENERAL;
     }
 }

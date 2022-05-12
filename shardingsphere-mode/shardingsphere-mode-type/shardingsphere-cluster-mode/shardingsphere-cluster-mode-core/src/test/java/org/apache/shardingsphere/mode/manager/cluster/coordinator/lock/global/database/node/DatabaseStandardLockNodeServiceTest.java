@@ -15,30 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.database.node;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.junit.Test;
 
-import java.util.Collection;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
-/**
- * ShardingSphere lock manager factory.
- */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingSphereLockManagerFactory {
+public final class DatabaseStandardLockNodeServiceTest {
     
-    static {
-        ShardingSphereServiceLoader.register(ShardingSphereDistributeLockManager.class);
+    private static final DatabaseLockNodeService SERVICE = new DatabaseLockNodeService();
+    
+    @Test
+    public void assertGetSequenceNodePath() {
+        assertThat(SERVICE.getSequenceNodePath(), is("/lock/global/database/sequence"));
     }
     
-    /**
-     * Get all instances of ShardingSphere lock manager.
-     * 
-     * @return got instances
-     */
-    public static Collection<ShardingSphereDistributeLockManager> getAllInstances() {
-        return ShardingSphereServiceLoader.getServiceInstances(ShardingSphereDistributeLockManager.class);
+    @Test
+    public void assertGetLockLevel() {
+        assertThat(SERVICE.getLockLevel(), is("database"));
     }
 }

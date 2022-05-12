@@ -27,7 +27,7 @@ import java.util.Collection;
 /**
  * Lock manager of ShardingSphere.
  */
-public interface ShardingSphereLockManager {
+public interface ShardingSphereDistributeLockManager {
     
     /**
      * Init locks state.

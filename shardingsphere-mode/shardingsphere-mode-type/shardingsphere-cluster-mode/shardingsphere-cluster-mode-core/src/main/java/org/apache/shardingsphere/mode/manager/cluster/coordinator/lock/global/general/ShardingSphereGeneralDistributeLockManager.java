@@ -25,7 +25,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.ShardingS
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeServiceFactory;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.ShardingSphereLockManager;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.ShardingSphereDistributeLockManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.general.event.GeneralAckLockReleasedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.general.event.GeneralAckLockedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.general.event.GeneralLockReleasedEvent;
@@ -42,22 +42,17 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * General lock manager of ShardingSphere.
  */
-public final class ShardingSphereGeneralLockManager implements ShardingSphereLockManager {
+public final class ShardingSphereGeneralDistributeLockManager implements ShardingSphereDistributeLockManager {
     
-    private final Map<String, ShardingSphereGeneralLock> locks;
+    private final Map<String, ShardingSphereGeneralLock> locks = new ConcurrentHashMap<>();
     
-    private final LockNodeService lockNodeService;
+    private final LockNodeService lockNodeService = LockNodeServiceFactory.getInstance().getLockNodeService(LockNodeType.GENERAL);
     
     private ClusterPersistRepository clusterRepository;
     
     private ComputeNodeInstance currentInstance;
     
     private Collection<ComputeNodeInstance> computeNodeInstances;
-    
-    public ShardingSphereGeneralLockManager() {
-        locks = new ConcurrentHashMap<>();
-        lockNodeService = LockNodeServiceFactory.getInstance().getLockNodeService(LockNodeType.GENERAL);
-    }
     
     @Override
     public void initLocksState(final PersistRepository repository, final ComputeNodeInstance instance, final Collection<ComputeNodeInstance> computeNodeInstances) {

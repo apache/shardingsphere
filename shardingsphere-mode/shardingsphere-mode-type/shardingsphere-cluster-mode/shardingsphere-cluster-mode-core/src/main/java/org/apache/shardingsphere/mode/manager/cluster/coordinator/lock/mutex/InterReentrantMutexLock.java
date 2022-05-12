@@ -15,37 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockRegistryService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.TimeoutMilliseconds;
 
 /**
  * Inter mutex reentrant lock.
  */
 @RequiredArgsConstructor
-public final class InterMutexReentrantLock implements ShardingSphereLock {
+public final class InterReentrantMutexLock implements MutexLock {
+    
+    private final String lockName;
     
     private final LockRegistryService lockRegistryService;
     
     @Override
-    public boolean tryLock(final String lockName) {
-        return tryLock(lockName, TimeoutMilliseconds.MAX_TRY_LOCK);
+    public boolean tryLock() {
+        return tryLock(TimeoutMilliseconds.MAX_TRY_LOCK);
     }
     
     @Override
-    public boolean tryLock(final String lockName, final long timeoutMillis) {
-        return lockRegistryService.tryLock(lockName, TimeoutMilliseconds.MAX_TRY_LOCK);
+    public boolean tryLock(final long timeoutMillis) {
+        return lockRegistryService.tryLock(lockName, timeoutMillis);
     }
     
     @Override
-    public void releaseLock(final String lockName) {
+    public void unlock() {
         lockRegistryService.releaseLock(lockName);
     }
     
     @Override
-    public boolean isLocked(final String lockName) {
+    public boolean isLocked() {
         throw new UnsupportedOperationException();
     }
 }

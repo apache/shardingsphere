@@ -15,28 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.general.service;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.event;
 
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.AbstractGlobalLockNodeService;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeType;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 
 /**
- * General lock node service.
+ * Mutex locked event.
  */
-public final class GeneralLockNodeService extends AbstractGlobalLockNodeService {
+@RequiredArgsConstructor
+@Getter
+public final class MutexLockedEvent implements GovernanceEvent {
     
-    @Override
-    public String getSequenceNodePath() {
-        return PATH_DELIMITER + LOCK_ROOT + PATH_DELIMITER + LOCK_SCOPE_GLOBAL + PATH_DELIMITER + getLockLevel() + PATH_DELIMITER + "sequence";
-    }
-    
-    @Override
-    protected String getLockLevel() {
-        return "general";
-    }
-    
-    @Override
-    public LockNodeType getType() {
-        return LockNodeType.GENERAL;
-    }
+    private final String lockedName;
 }

@@ -40,6 +40,6 @@ public final class LockNodeUtilTest {
     @Test
     public void assertGenerateGlobalLockReleasedNodePath() {
         String nodePath = "/lock/global/database/sharding_db";
-        assertThat(LockNodeUtil.generateGlobalLockReleasedNodePath(nodePath), is("/lock/global/database/sharding_db/leases"));
+        assertThat(LockNodeUtil.generateMutexLockReleasedNodePath(nodePath), is("/lock/global/database/sharding_db/leases"));
     }
 }

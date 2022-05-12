@@ -15,12 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex;
 
-/**
- * Lock node type.
- */
-public enum LockNodeType {
+public interface LockAckAble {
     
-    MUTEX, DATABASE, SCHEMA, GENERAL
+    /**
+     * Ack locked.
+     *
+     * @param ackLockName ack lock name
+     * @param instanceId instance id
+     */
+    void ackLock(String ackLockName, String instanceId);
+    
+    /**
+     * Release ack lock.
+     *
+     * @param ackLockName ack lock name
+     * @param instanceId instance id
+     */
+    void releaseAckLock(String ackLockName, String instanceId);
+    
+    /**
+     * Add locked instance id.
+     *
+     * @param instanceId instance id
+     */
+    void addLockedInstance(String instanceId);
+    
+    /**
+     * Remove locked instance id.
+     *
+     * @param instanceId instance id
+     */
+    void removeLockedInstance(String instanceId);
 }

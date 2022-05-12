@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service;
 
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockRegistryService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeUtil;
@@ -31,7 +31,7 @@ import java.lang.reflect.Field;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class GlobalLockRegistryServiceTest {
+public final class MutexLockRegistryServiceTest {
     
     @Mock
     private ClusterPersistRepository clusterPersistRepository;
@@ -40,7 +40,7 @@ public final class GlobalLockRegistryServiceTest {
     
     @Before
     public void setUp() throws ReflectiveOperationException {
-        lockRegistryService = new GlobalLockRegistryService(clusterPersistRepository);
+        lockRegistryService = new MutexLockRegistryService(clusterPersistRepository);
         Field field = lockRegistryService.getClass().getDeclaredField("repository");
         field.setAccessible(true);
         field.set(lockRegistryService, clusterPersistRepository);
@@ -49,7 +49,7 @@ public final class GlobalLockRegistryServiceTest {
     @Test
     public void assertRemoveLock() {
         lockRegistryService.removeLock("test");
-        verify(clusterPersistRepository).delete(LockNodeUtil.generateGlobalLockReleasedNodePath("test"));
+        verify(clusterPersistRepository).delete(LockNodeUtil.generateMutexLockReleasedNodePath("test"));
     }
     
     @Test

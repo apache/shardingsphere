@@ -15,25 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.standard;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.InterMutexReentrantLock;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeService;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeServiceFactory;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeType;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.TimeoutMilliseconds;
 
 /**
- * Standard distribute lock of ShardingSphere.
+ * Inter mutex reentrant lock.
  */
 @RequiredArgsConstructor
-public final class ShardingSphereStandardLock implements ShardingSphereLock {
+public final class InterReentrantMutexLock implements ShardingSphereLock {
     
-    private final LockNodeService lockNodeService = LockNodeServiceFactory.getInstance().getLockNodeService(LockNodeType.STANDARD);
-    
-    private final InterMutexReentrantLock interLock;
+    private final LockRegistryService lockRegistryService;
     
     @Override
     public boolean tryLock(final String lockName) {
@@ -42,12 +36,12 @@ public final class ShardingSphereStandardLock implements ShardingSphereLock {
     
     @Override
     public boolean tryLock(final String lockName, final long timeoutMillis) {
-        return interLock.tryLock(lockNodeService.generateLocksName(lockName), TimeoutMilliseconds.MAX_TRY_LOCK);
+        return lockRegistryService.tryLock(lockName, timeoutMillis);
     }
     
     @Override
     public void releaseLock(final String lockName) {
-        interLock.releaseLock(lockNodeService.generateLocksName(lockName));
+        lockRegistryService.releaseLock(lockName);
     }
     
     @Override

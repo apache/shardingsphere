@@ -34,7 +34,7 @@ import java.util.Map;
  */
 public final class DistributeLockContext implements LockContext {
     
-    private final Map<LockType, ShardingSphereLockManager> lockManagers = new EnumMap<>(LockType.class);
+    private final Map<LockType, ShardingSphereDistributeLockManager> lockManagers = new EnumMap<>(LockType.class);
     
     private final ClusterPersistRepository repository;
     
@@ -47,7 +47,7 @@ public final class DistributeLockContext implements LockContext {
     }
     
     private void loadLockManager() {
-        for (ShardingSphereLockManager each : ShardingSphereLockManagerFactory.getAllInstances()) {
+        for (ShardingSphereDistributeLockManager each : ShardingSphereLockManagerFactory.getAllInstances()) {
             if (lockManagers.containsKey(each.getLockType())) {
                 continue;
             }
@@ -58,7 +58,7 @@ public final class DistributeLockContext implements LockContext {
     @Override
     public void initLockState(final InstanceContext instanceContext) {
         Collection<ComputeNodeInstance> computeNodeInstances = instanceContext.getComputeNodeInstances();
-        for (ShardingSphereLockManager each : lockManagers.values()) {
+        for (ShardingSphereDistributeLockManager each : lockManagers.values()) {
             each.initLocksState(repository, currentInstance, computeNodeInstances);
         }
     }
@@ -82,14 +82,8 @@ public final class DistributeLockContext implements LockContext {
     }
     
     @Override
-    public synchronized ShardingSphereLock getGlobalLock(final String lockName) {
+    public synchronized ShardingSphereLock getMutexLock(final String lockName) {
         Preconditions.checkNotNull(lockName, "Get global lock args lock name can not be null.");
         return lockManagers.get(LockType.GENERAL).getOrCreateLock(lockName);
-    }
-    
-    @Override
-    public synchronized ShardingSphereLock getStandardLock(final String lockName) {
-        Preconditions.checkNotNull(lockName, "Get standard lock args lock name can not be null.");
-        return lockManagers.get(LockType.STANDARD).getOrCreateLock(lockName);
     }
 }

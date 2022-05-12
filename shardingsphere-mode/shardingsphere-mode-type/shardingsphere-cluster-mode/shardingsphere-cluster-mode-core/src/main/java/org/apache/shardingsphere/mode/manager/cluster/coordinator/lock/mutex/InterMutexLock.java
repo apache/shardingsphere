@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockRegistryService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockState;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.TimeoutMilliseconds;
 
@@ -35,7 +36,9 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 @Slf4j
 @RequiredArgsConstructor
-public final class InterMutexLock implements ShardingSphereGlobalLock {
+public final class InterMutexLock implements MutexLock, LockAckAble {
+    
+    private final String lockName;
     
     private final LockRegistryService lockService;
     
@@ -50,12 +53,12 @@ public final class InterMutexLock implements ShardingSphereGlobalLock {
     private final Set<String> lockedInstances = new CopyOnWriteArraySet<>();
     
     @Override
-    public boolean tryLock(final String lockName) {
-        return tryLock(lockName, TimeoutMilliseconds.MAX_TRY_LOCK);
+    public boolean tryLock() {
+        return tryLock(TimeoutMilliseconds.MAX_TRY_LOCK);
     }
     
     @Override
-    public boolean tryLock(final String lockName, final long timeoutMillis) {
+    public boolean tryLock(final long timeoutMillis) {
         return innerTryLock(lockName, Math.max(timeoutMillis, TimeoutMilliseconds.MIN_TRY_LOCK));
     }
     
@@ -121,6 +124,18 @@ public final class InterMutexLock implements ShardingSphereGlobalLock {
         return false;
     }
     
+    private boolean isAckCompleted() {
+        if (computeNodeInstances.size() > lockedInstances.size()) {
+            return false;
+        }
+        for (ComputeNodeInstance each : computeNodeInstances) {
+            if (!lockedInstances.contains(each.getInstanceDefinition().getInstanceId().getId())) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
     private void sleepInterval() {
         try {
             TimeUnit.MILLISECONDS.sleep(TimeoutMilliseconds.CHECK_ACK_INTERVAL);
@@ -129,7 +144,7 @@ public final class InterMutexLock implements ShardingSphereGlobalLock {
     }
     
     @Override
-    public void releaseLock(final String lockName) {
+    public void unlock() {
         if (LockState.LOCKED == synchronizedLockState.get()) {
             log.debug("release lock, lockName={}", lockName);
             String currentInstanceId = getCurrentInstanceId();
@@ -146,35 +161,23 @@ public final class InterMutexLock implements ShardingSphereGlobalLock {
     }
     
     @Override
-    public boolean isLocked(final String lockName) {
+    public boolean isLocked() {
         return LockState.LOCKED == synchronizedLockState.get();
     }
     
-    private boolean isAckCompleted() {
-        if (computeNodeInstances.size() > lockedInstances.size()) {
-            return false;
-        }
-        for (ComputeNodeInstance each : computeNodeInstances) {
-            if (!lockedInstances.contains(each.getInstanceDefinition().getInstanceId().getId())) {
-                return false;
-            }
-        }
-        return true;
-    }
-    
     @Override
-    public void ackLock(final String lockName, final String lockedInstanceId) {
+    public void ackLock(final String ackLockName, final String lockedInstanceId) {
         if (!isOwner.get() && LockState.UNLOCKED == synchronizedLockState.get()) {
-            lockService.ackLock(lockName, lockedInstanceId);
+            lockService.ackLock(ackLockName, lockedInstanceId);
             lockedInstances.add(lockedInstanceId);
             synchronizedLockState.compareAndSet(LockState.UNLOCKED, LockState.LOCKED);
         }
     }
     
     @Override
-    public void releaseAckLock(final String lockName, final String lockedInstanceId) {
+    public void releaseAckLock(final String ackLockName, final String lockedInstanceId) {
         if (!isOwner.get()) {
-            lockService.releaseAckLock(lockName);
+            lockService.releaseAckLock(ackLockName);
         } else {
             isOwner.compareAndSet(true, false);
         }
