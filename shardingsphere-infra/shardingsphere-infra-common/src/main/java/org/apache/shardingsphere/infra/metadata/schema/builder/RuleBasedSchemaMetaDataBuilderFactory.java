@@ -35,13 +35,13 @@ public final class RuleBasedSchemaMetaDataBuilderFactory {
     }
     
     /**
-     * Create new instance of rule based schema meta data builder.
+     * Get instances of rule based schema meta data builder.
      * 
      * @param rules rules
-     * @return new instance of rule based schema meta data builder
+     * @return got instances
      */
     @SuppressWarnings("rawtypes")
-    public static Map<ShardingSphereRule, RuleBasedSchemaMetaDataBuilder> newInstance(final Collection<ShardingSphereRule> rules) {
+    public static Map<ShardingSphereRule, RuleBasedSchemaMetaDataBuilder> getInstances(final Collection<ShardingSphereRule> rules) {
         return OrderedSPIRegistry.getRegisteredServices(RuleBasedSchemaMetaDataBuilder.class, rules);
     }
 }

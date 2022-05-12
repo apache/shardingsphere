@@ -28,9 +28,9 @@ import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsist
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineDataConsistencyCheckFailedException;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -40,8 +40,11 @@ import java.sql.SQLXML;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * Data match data consistency calculate algorithm.
@@ -49,7 +52,7 @@ import java.util.Properties;
 @Slf4j
 public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractStreamingDataConsistencyCalculateAlgorithm {
     
-    private static final Collection<String> SUPPORTED_DATABASE_TYPES = DatabaseTypeRegistry.getDatabaseTypeNames();
+    private static final Collection<String> SUPPORTED_DATABASE_TYPES = DatabaseTypeFactory.getInstances().stream().map(DatabaseType::getType).collect(Collectors.toList());
     
     private static final String CHUNK_SIZE_KEY = "chunk-size";
     
@@ -59,6 +62,10 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
     private Properties props;
     
     private int chunkSize;
+    
+    private final Map<String, String> firstSQLCache = new ConcurrentHashMap<>();
+    
+    private final Map<String, String> laterSQLCache = new ConcurrentHashMap<>();
     
     @Override
     public void init(final Properties props) {
@@ -77,27 +84,19 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
     
     @Override
     protected Optional<Object> calculateChunk(final DataConsistencyCalculateParameter parameter) {
-        String logicTableName = parameter.getLogicTableName();
-        PipelineSQLBuilder sqlBuilder = PipelineSQLBuilderFactory.newInstance(parameter.getDatabaseType());
-        String uniqueKey = parameter.getUniqueKey();
         CalculatedResult previousCalculatedResult = (CalculatedResult) parameter.getPreviousCalculatedResult();
-        Number startUniqueKeyValue = null != previousCalculatedResult ? previousCalculatedResult.getMaxUniqueKeyValue() : -1;
-        String sql = sqlBuilder.buildChunkedQuerySQL(parameter.getTableNameSchemaNameMapping().getSchemaName(logicTableName), logicTableName, uniqueKey, startUniqueKeyValue);
-        try {
-            return query(parameter.getDataSource(), sql, uniqueKey, startUniqueKeyValue, chunkSize);
-        } catch (final SQLException ex) {
-            throw new PipelineDataConsistencyCheckFailedException(String.format("table %s data check failed.", logicTableName), ex);
-        }
-    }
-    
-    private Optional<Object> query(final DataSource dataSource, final String sql, final String uniqueKey, final Number startUniqueKeyValue, final int chunkSize) throws SQLException {
+        String sql = getQuerySQL(parameter);
         try (
-                Connection connection = dataSource.getConnection();
+                Connection connection = parameter.getDataSource().getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setObject(1, startUniqueKeyValue);
-            preparedStatement.setInt(2, chunkSize);
+            if (null == previousCalculatedResult) {
+                preparedStatement.setInt(1, chunkSize);
+            } else {
+                preparedStatement.setObject(1, previousCalculatedResult.getMaxUniqueKeyValue());
+                preparedStatement.setInt(2, chunkSize);
+            }
             Collection<Collection<Object>> records = new LinkedList<>();
-            Number maxUniqueKeyValue = null;
+            Object maxUniqueKeyValue = null;
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
@@ -107,10 +106,25 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
                         record.add(resultSet.getObject(columnIndex));
                     }
                     records.add(record);
-                    maxUniqueKeyValue = (Number) resultSet.getObject(uniqueKey);
+                    maxUniqueKeyValue = resultSet.getObject(parameter.getUniqueKey());
                 }
             }
             return records.isEmpty() ? Optional.empty() : Optional.of(new CalculatedResult(maxUniqueKeyValue, records.size(), records));
+        } catch (final SQLException ex) {
+            throw new PipelineDataConsistencyCheckFailedException(String.format("table %s data check failed.", parameter.getLogicTableName()), ex);
+        }
+    }
+    
+    private String getQuerySQL(final DataConsistencyCalculateParameter parameter) {
+        PipelineSQLBuilder sqlBuilder = PipelineSQLBuilderFactory.getInstance(parameter.getDatabaseType());
+        String logicTableName = parameter.getLogicTableName();
+        String schemaName = parameter.getTableNameSchemaNameMapping().getSchemaName(logicTableName);
+        String uniqueKey = parameter.getUniqueKey();
+        String cacheKey = schemaName.toLowerCase() + "." + logicTableName.toLowerCase();
+        if (null == parameter.getPreviousCalculatedResult()) {
+            return firstSQLCache.computeIfAbsent(cacheKey, s -> sqlBuilder.buildChunkedQuerySQL(schemaName, logicTableName, uniqueKey, true));
+        } else {
+            return laterSQLCache.computeIfAbsent(cacheKey, s -> sqlBuilder.buildChunkedQuerySQL(schemaName, logicTableName, uniqueKey, false));
         }
     }
     
@@ -134,7 +148,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
     private static final class CalculatedResult {
         
         @NonNull
-        private final Number maxUniqueKeyValue;
+        private final Object maxUniqueKeyValue;
         
         private final int recordCount;
         
@@ -142,16 +156,19 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
         
         @SneakyThrows
         @Override
-        public boolean equals(final Object o) {
+        public boolean equals(final @NonNull Object o) {
             if (this == o) {
                 return true;
             }
             if (!(o instanceof CalculatedResult)) {
+                log.warn("CalculatedResult type not match, o.className={}", o.getClass().getName());
                 return false;
             }
             final CalculatedResult that = (CalculatedResult) o;
             boolean equalsFirst = new EqualsBuilder().append(getRecordCount(), that.getRecordCount()).append(getMaxUniqueKeyValue(), that.getMaxUniqueKeyValue()).isEquals();
             if (!equalsFirst) {
+                log.warn("recordCount or maxUniqueKeyValue not match, recordCount1={}, recordCount2={}, maxUniqueKeyValue1={}, maxUniqueKeyValue2={}",
+                        getRecordCount(), that.getRecordCount(), getMaxUniqueKeyValue(), that.getMaxUniqueKeyValue());
                 return false;
             }
             Iterator<Collection<Object>> thisIterator = this.records.iterator();
@@ -160,7 +177,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
                 Collection<Object> thisNext = thisIterator.next();
                 Collection<Object> thatNext = thatIterator.next();
                 if (thisNext.size() != thatNext.size()) {
-                    log.info("record column size not match, size1={}, size2={}, record1={}, record2={}", thisNext.size(), thatNext.size(), thisNext, thatNext);
+                    log.warn("record column size not match, size1={}, size2={}, record1={}, record2={}", thisNext.size(), thatNext.size(), thisNext, thatNext);
                     return false;
                 }
                 Iterator<Object> thisNextIterator = thisNext.iterator();
@@ -172,7 +189,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
                         return ((SQLXML) thisResult).getString().equals(((SQLXML) thatResult).getString());
                     }
                     if (!new EqualsBuilder().append(thisResult, thatResult).isEquals()) {
-                        log.info("record column value not match, value1={}, value2={}, record1={}, record2={}", thisResult, thatResult, thisNext, thatNext);
+                        log.warn("record column value not match, value1={}, value2={}, record1={}, record2={}", thisResult, thatResult, thisNext, thatNext);
                         return false;
                     }
                 }

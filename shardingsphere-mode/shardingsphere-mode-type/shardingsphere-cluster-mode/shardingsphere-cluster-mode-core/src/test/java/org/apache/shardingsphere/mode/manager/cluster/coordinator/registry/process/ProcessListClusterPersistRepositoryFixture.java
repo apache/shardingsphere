@@ -26,7 +26,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.locks.Lock;
 
 public final class ProcessListClusterPersistRepositoryFixture implements ClusterPersistRepository {
@@ -35,15 +34,6 @@ public final class ProcessListClusterPersistRepositoryFixture implements Cluster
     
     @Override
     public void init(final ClusterPersistRepositoryConfiguration config) {
-    }
-    
-    @Override
-    public void init(final Properties props) {
-    }
-    
-    @Override
-    public Properties getProps() {
-        return new Properties();
     }
     
     @Override

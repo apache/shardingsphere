@@ -32,7 +32,7 @@ public final class DefaultSingleTableSchemaRuleConfigurationBuilderTest {
     @SuppressWarnings("rawtypes")
     @Test
     public void assertBuild() {
-        DefaultSchemaRuleConfigurationBuilder builder = DefaultSchemaRuleConfigurationBuilderFactory.newInstance(Collections.singletonList(new SingleTableRuleBuilder())).values().iterator().next();
+        DefaultSchemaRuleConfigurationBuilder builder = DefaultSchemaRuleConfigurationBuilderFactory.getInstances(Collections.singletonList(new SingleTableRuleBuilder())).values().iterator().next();
         assertThat(builder.build(), instanceOf(SingleTableRuleConfiguration.class));
     }
 }

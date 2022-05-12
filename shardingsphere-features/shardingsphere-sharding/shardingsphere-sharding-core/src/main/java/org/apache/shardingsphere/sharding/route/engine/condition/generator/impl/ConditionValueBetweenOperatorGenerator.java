@@ -44,7 +44,7 @@ public final class ConditionValueBetweenOperatorGenerator implements ConditionVa
         if (betweenConditionValue.isPresent() && andConditionValue.isPresent()) {
             return Optional.of(new RangeShardingConditionValue<>(column.getName(), column.getTableName(), SafeNumberOperationUtil.safeClosed(betweenConditionValue.get(), andConditionValue.get())));
         }
-        Date datetime = DatetimeServiceFactory.newInstance().getDatetime();
+        Date datetime = DatetimeServiceFactory.getInstance().getDatetime();
         if (!betweenConditionValue.isPresent() && ExpressionConditionUtils.isNowExpression(predicate.getBetweenExpr())) {
             betweenConditionValue = Optional.of(datetime);
         }

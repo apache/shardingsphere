@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.job.progress.yaml;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
-import org.apache.shardingsphere.data.pipeline.api.ingest.position.PrimaryKeyPosition;
+import org.apache.shardingsphere.data.pipeline.api.ingest.position.PrimaryKeyPositionFactory;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTaskProgress;
@@ -111,7 +111,7 @@ public final class JobProgressYamlSwapper {
     }
     
     private Function<Entry<String, String>, InventoryTaskProgress> getInventoryTaskProgressFunction() {
-        return entry -> new InventoryTaskProgress(Strings.isNullOrEmpty(entry.getValue()) ? new PlaceholderPosition() : PrimaryKeyPosition.init(entry.getValue()));
+        return entry -> new InventoryTaskProgress(Strings.isNullOrEmpty(entry.getValue()) ? new PlaceholderPosition() : PrimaryKeyPositionFactory.newInstance(entry.getValue()));
     }
     
     private Map<String, IncrementalTaskProgress> getIncrementalTaskProgressMap(final String databaseType, final Map<String, YamlJobProgress.YamlIncremental> incremental) {
@@ -122,6 +122,6 @@ public final class JobProgressYamlSwapper {
     }
     
     private Function<Entry<String, YamlJobProgress.YamlIncremental>, IncrementalTaskProgress> getIncrementalTaskProgressFunction(final String databaseType) {
-        return entry -> new IncrementalTaskProgress(PositionInitializerFactory.getPositionInitializer(databaseType).init(entry.getValue().getPosition()), entry.getValue().getDelay());
+        return entry -> new IncrementalTaskProgress(PositionInitializerFactory.getInstance(databaseType).init(entry.getValue().getPosition()), entry.getValue().getDelay());
     }
 }

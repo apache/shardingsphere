@@ -35,7 +35,7 @@ public final class H2DatabaseTypeTest {
     
     @Test
     public void assertGetName() {
-        assertThat(new H2DatabaseType().getName(), is("H2"));
+        assertThat(new H2DatabaseType().getType(), is("H2"));
     }
     
     @Test
@@ -51,7 +51,7 @@ public final class H2DatabaseTypeTest {
     
     @Test
     public void assertGetTrunkDatabaseType() {
-        assertThat(new H2DatabaseType().getTrunkDatabaseType().getName(), is("MySQL"));
+        assertThat(new H2DatabaseType().getTrunkDatabaseType().getType(), is("MySQL"));
     }
     
     @Test

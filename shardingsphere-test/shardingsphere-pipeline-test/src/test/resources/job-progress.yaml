@@ -26,7 +26,7 @@ inventory:
   - ds0.t_2
   - ds0.t_1
   unfinished:
-    ds1.t_2: 1,2
+    ds1.t_2: i,1,2
     ds1.t_1: ''
 sourceDatabaseType: H2
 status: RUNNING

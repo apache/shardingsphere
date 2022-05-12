@@ -40,10 +40,10 @@ public final class MySQLContainer extends DockerDatabaseContainer {
     
     @Override
     protected void configure() {
+        super.configure();
         withCommand("--sql_mode=", "--default-authentication-plugin=mysql_native_password");
         setEnv(Lists.newArrayList("LANG=C.UTF-8", "MYSQL_ROOT_PASSWORD=root", "MYSQL_ROOT_HOST=%"));
         withClasspathResourceMapping("/env/mysql/my.cnf", "/etc/mysql/my.cnf", BindMode.READ_ONLY);
-        super.configure();
         withExposedPorts(getPort());
         if (ITEnvTypeEnum.NATIVE == IntegrationTestEnvironment.getInstance().getItEnvType()) {
             addFixedExposedPort(3306, 3306);

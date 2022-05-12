@@ -143,18 +143,18 @@ public final class RuleAlteredJobConfiguration implements PipelineJobConfigurati
      */
     public void buildHandleConfig() {
         if (null == getJobShardingDataNodes()) {
-            RuleAlteredJobConfigurationPreparerFactory.newInstance().extendJobConfiguration(this);
+            RuleAlteredJobConfigurationPreparerFactory.getInstance().extendJobConfiguration(this);
         }
         if (null == jobId) {
             jobId = generateJobId();
         }
         if (Strings.isNullOrEmpty(getSourceDatabaseType())) {
             PipelineDataSourceConfiguration sourceDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(source.getType(), source.getParameter());
-            setSourceDatabaseType(sourceDataSourceConfig.getDatabaseType().getName());
+            setSourceDatabaseType(sourceDataSourceConfig.getDatabaseType().getType());
         }
         if (Strings.isNullOrEmpty(getTargetDatabaseType())) {
             PipelineDataSourceConfiguration targetDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(target.getType(), target.getParameter());
-            setTargetDatabaseType(targetDataSourceConfig.getDatabaseType().getName());
+            setTargetDatabaseType(targetDataSourceConfig.getDatabaseType().getType());
         }
         if (null == jobShardingItem) {
             jobShardingItem = 0;

@@ -83,20 +83,4 @@
     <insert-order-item>
         INSERT INTO t_order_item(item_id, order_id, user_id, status) VALUES(?,?,?,?)
     </insert-order-item>
-    
-    <update-order>
-        UPDATE t_order SET t_varchar = 'update' WHERE id = %s
-    </update-order>
-    
-    <update-order-item>
-        UPDATE t_order_item SET status = 'changed' WHERE item_id = %s
-    </update-order-item>
-    
-    <delete-order>
-        DELETE FROM t_order WHERE id = %s
-    </delete-order>
-    
-    <delete-order-item>
-        DELETE FROM t_order_item WHERE item_id = %s
-    </delete-order-item>
 </command>

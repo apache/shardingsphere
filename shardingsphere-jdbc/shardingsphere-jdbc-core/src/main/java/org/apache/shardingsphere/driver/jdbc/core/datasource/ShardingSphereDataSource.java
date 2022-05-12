@@ -66,7 +66,7 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
     
     @SuppressWarnings("unchecked")
     private void checkRuleConfiguration(final String databaseName, final Collection<RuleConfiguration> ruleConfigs) {
-        ruleConfigs.forEach(each -> RuleConfigurationCheckerFactory.newInstance(each).ifPresent(optional -> optional.check(databaseName, each)));
+        ruleConfigs.forEach(each -> RuleConfigurationCheckerFactory.findInstance(each).ifPresent(optional -> optional.check(databaseName, each)));
     }
     
     private ContextManager createContextManager(final String databaseName, final ModeConfiguration modeConfig, final Map<String, DataSource> dataSourceMap,
@@ -78,7 +78,7 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
                 .globalRuleConfigs(globalRuleConfigs)
                 .props(props)
                 .instanceDefinition(new InstanceDefinition(InstanceType.JDBC)).build();
-        return ContextManagerBuilderFactory.newInstance(modeConfig).build(parameter);
+        return ContextManagerBuilderFactory.getInstance(modeConfig).build(parameter);
     }
     
     @Override

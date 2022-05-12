@@ -35,11 +35,11 @@ public final class ExecuteProcessReporterFactory {
     }
     
     /**
-     * Create new instance of execute process reporter.
+     * Get instance of execute process reporter.
      * 
-     * @return new instance of execute process reporter
+     * @return got instance
      */
-    public static Optional<ExecuteProcessReporter> newInstance() {
+    public static Optional<ExecuteProcessReporter> getInstance() {
         return OptionalSPIRegistry.findRegisteredService(ExecuteProcessReporter.class);
     }
 }

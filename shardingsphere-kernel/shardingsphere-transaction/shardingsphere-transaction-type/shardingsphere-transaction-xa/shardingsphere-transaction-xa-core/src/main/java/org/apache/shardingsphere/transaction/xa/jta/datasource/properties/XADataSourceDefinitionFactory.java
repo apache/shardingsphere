@@ -34,12 +34,12 @@ public final class XADataSourceDefinitionFactory {
     }
     
     /**
-     * Get XA data source definition.
+     * Get instance of XA data source definition.
      * 
      * @param databaseType database type
-     * @return XA data source definition
+     * @return got instance
      */
-    public static XADataSourceDefinition getXADataSourceDefinition(final DatabaseType databaseType) {
-        return TypedSPIRegistry.getRegisteredService(XADataSourceDefinition.class, databaseType.getName());
+    public static XADataSourceDefinition getInstance(final DatabaseType databaseType) {
+        return TypedSPIRegistry.getRegisteredService(XADataSourceDefinition.class, databaseType.getType());
     }
 }

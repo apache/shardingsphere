@@ -46,7 +46,7 @@ public final class SQLCheckEngine {
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     public static boolean check(final String databaseName, final Collection<ShardingSphereRule> rules, final Grantee grantee) {
-        for (Entry<ShardingSphereRule, SQLChecker> entry : SQLCheckerFactory.newInstance(rules).entrySet()) {
+        for (Entry<ShardingSphereRule, SQLChecker> entry : SQLCheckerFactory.getInstance(rules).entrySet()) {
             boolean checkResult = entry.getValue().check(databaseName, grantee, entry.getKey());
             if (!checkResult) {
                 return false;
@@ -68,7 +68,7 @@ public final class SQLCheckEngine {
     @SuppressWarnings({"rawtypes", "unchecked"})
     public static void check(final SQLStatement sqlStatement, final List<Object> parameters, final Collection<ShardingSphereRule> rules,
                              final String currentDatabase, final Map<String, ShardingSphereMetaData> metaDataMap, final Grantee grantee) {
-        for (Entry<ShardingSphereRule, SQLChecker> entry : SQLCheckerFactory.newInstance(rules).entrySet()) {
+        for (Entry<ShardingSphereRule, SQLChecker> entry : SQLCheckerFactory.getInstance(rules).entrySet()) {
             SQLCheckResult checkResult = entry.getValue().check(sqlStatement, parameters, grantee, currentDatabase, metaDataMap, entry.getKey());
             if (!checkResult.isPassed()) {
                 throw new SQLCheckException(checkResult.getErrorMessage());
@@ -87,7 +87,7 @@ public final class SQLCheckEngine {
         if (rules.isEmpty()) {
             return false;
         }
-        for (Entry<ShardingSphereRule, SQLChecker> entry : SQLCheckerFactory.newInstance(rules).entrySet()) {
+        for (Entry<ShardingSphereRule, SQLChecker> entry : SQLCheckerFactory.getInstance(rules).entrySet()) {
             boolean checkResult = entry.getValue().check(user, entry.getKey());
             if (!checkResult) {
                 return false;
@@ -109,7 +109,7 @@ public final class SQLCheckEngine {
         if (rules.isEmpty()) {
             return false;
         }
-        for (Entry<ShardingSphereRule, SQLChecker> entry : SQLCheckerFactory.newInstance(rules).entrySet()) {
+        for (Entry<ShardingSphereRule, SQLChecker> entry : SQLCheckerFactory.getInstance(rules).entrySet()) {
             boolean checkResult = entry.getValue().check(user, validate, cipher, entry.getKey());
             if (!checkResult) {
                 return false;

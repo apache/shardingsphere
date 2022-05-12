@@ -62,7 +62,7 @@ public final class PipelineContextUtil {
             
             @Override
             protected ClusterPersistRepository initialize() {
-                return ClusterPersistRepositoryFactory.newInstance(PERSIST_REPOSITORY_CONFIG);
+                return ClusterPersistRepositoryFactory.getInstance(PERSIST_REPOSITORY_CONFIG);
             }
         };
     }

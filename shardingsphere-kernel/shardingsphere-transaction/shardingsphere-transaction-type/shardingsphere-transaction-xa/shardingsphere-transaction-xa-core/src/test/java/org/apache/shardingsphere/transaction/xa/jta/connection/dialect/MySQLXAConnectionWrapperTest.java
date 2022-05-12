@@ -20,7 +20,7 @@ package org.apache.shardingsphere.transaction.xa.jta.connection.dialect;
 import com.mysql.jdbc.jdbc2.optional.JDBC4MysqlXAConnection;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.transaction.xa.fixture.DataSourceUtils;
 import org.apache.shardingsphere.transaction.xa.jta.connection.XAConnectionWrapperFactory;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.XADataSourceFactory;
@@ -39,11 +39,11 @@ import static org.mockito.Mockito.when;
 
 public final class MySQLXAConnectionWrapperTest {
     
-    private final DatabaseType databaseType = DatabaseTypeRegistry.getActualDatabaseType("MySQL");
+    private final DatabaseType databaseType = DatabaseTypeFactory.getInstance("MySQL");
     
     @Test
     public void assertWrap() throws SQLException {
-        XAConnection actual = XAConnectionWrapperFactory.newInstance(databaseType).wrap(createXADataSource(), mockConnection());
+        XAConnection actual = XAConnectionWrapperFactory.getInstance(databaseType).wrap(createXADataSource(), mockConnection());
         assertThat(actual.getXAResource(), instanceOf(JDBC4MysqlXAConnection.class));
     }
     

@@ -54,7 +54,7 @@ public final class MemoryLockContext implements LockContext {
     public boolean isLockedDatabase(final String databaseName) {
         Preconditions.checkNotNull(databaseName, "Is locked database args database name can not be null.");
         ShardingSphereLock shardingSphereLock = locks.get(databaseName);
-        return null != shardingSphereLock && shardingSphereLock.isLocked();
+        return null != shardingSphereLock && shardingSphereLock.isLocked(databaseName);
     }
     
     @Override

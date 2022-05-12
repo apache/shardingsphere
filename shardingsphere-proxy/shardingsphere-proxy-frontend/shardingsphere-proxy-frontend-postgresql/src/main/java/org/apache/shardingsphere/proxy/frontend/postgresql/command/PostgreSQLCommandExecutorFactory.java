@@ -61,7 +61,7 @@ public final class PostgreSQLCommandExecutorFactory {
      * @param commandPacket command packet for PostgreSQL
      * @param connectionSession connection session
      * @param connectionContext PostgreSQL connection context
-     * @return command executor
+     * @return created instance
      * @throws SQLException SQL exception
      */
     public static CommandExecutor newInstance(final PostgreSQLCommandPacketType commandPacketType, final PostgreSQLCommandPacket commandPacket,

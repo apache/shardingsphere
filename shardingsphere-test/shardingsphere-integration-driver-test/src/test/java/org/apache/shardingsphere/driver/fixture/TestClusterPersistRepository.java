@@ -17,17 +17,16 @@
 
 package org.apache.shardingsphere.driver.fixture;
 
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
-import org.apache.shardingsphere.infra.database.DefaultDatabase;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.locks.Lock;
 
 public final class TestClusterPersistRepository implements ClusterPersistRepository {
@@ -37,15 +36,6 @@ public final class TestClusterPersistRepository implements ClusterPersistReposit
     @Override
     public void init(final ClusterPersistRepositoryConfiguration config) {
         registryData.put("/metadata", DefaultDatabase.LOGIC_NAME);
-    }
-    
-    @Override
-    public void init(final Properties props) {
-    }
-    
-    @Override
-    public Properties getProps() {
-        return new Properties();
     }
     
     @Override

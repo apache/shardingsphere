@@ -33,12 +33,12 @@ public final class DataSourceCheckerFactory {
     }
     
     /**
-     * Create new instance of data source checker.
+     * Get instance of data source checker.
      *
      * @param databaseType database type
-     * @return new instance of data source checker
+     * @return got instance
      */
-    public static DataSourceChecker newInstance(final String databaseType) {
+    public static DataSourceChecker getInstance(final String databaseType) {
         return TypedSPIRegistry.getRegisteredService(DataSourceChecker.class, databaseType);
     }
 }

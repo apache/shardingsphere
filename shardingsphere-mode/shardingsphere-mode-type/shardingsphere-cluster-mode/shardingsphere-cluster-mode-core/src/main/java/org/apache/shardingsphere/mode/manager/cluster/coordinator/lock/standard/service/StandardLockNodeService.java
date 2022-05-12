@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.standard.service;
 
-import org.apache.shardingsphere.infra.lock.LockType;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeService;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeType;
 
 import java.util.Optional;
 
 public final class StandardLockNodeService implements LockNodeService {
     
-    protected static final String LOCK_SCOPE_STANDARD = "standard";
+    private static final String LOCK_SCOPE_STANDARD = "standard";
     
     @Override
     public String getSequenceNodePath() {
@@ -62,7 +62,7 @@ public final class StandardLockNodeService implements LockNodeService {
     }
     
     @Override
-    public LockType getLockType() {
-        return LockType.STANDARD;
+    public LockNodeType getType() {
+        return LockNodeType.STANDARD;
     }
 }

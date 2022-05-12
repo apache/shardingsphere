@@ -31,11 +31,11 @@ public final class ShardingSphereYamlConstructFactory {
     }
     
     /**
-     * Create new instances of ShardingSphere YAML construct.
+     * Get instances of ShardingSphere YAML construct.
      * 
-     * @return new instances of ShardingSphere YAML construct
+     * @return got instances
      */
-    public static Collection<ShardingSphereYamlConstruct> newInstances() {
+    public static Collection<ShardingSphereYamlConstruct> getInstances() {
         return ShardingSphereServiceLoader.getServiceInstances(ShardingSphereYamlConstruct.class);
     }
 }

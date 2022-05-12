@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Optional;
 
@@ -32,14 +33,14 @@ import java.util.Optional;
 @ToString
 public abstract class CreateSchemaStatement extends AbstractSQLStatement implements DDLStatement {
     
-    private String schemaName;
+    private IdentifierValue schemaName;
     
     /**
      * Get schema name.
      * 
      * @return schema name
      */
-    public Optional<String> getSchemaName() {
+    public Optional<IdentifierValue> getSchemaName() {
         return Optional.ofNullable(schemaName);
     }
 }

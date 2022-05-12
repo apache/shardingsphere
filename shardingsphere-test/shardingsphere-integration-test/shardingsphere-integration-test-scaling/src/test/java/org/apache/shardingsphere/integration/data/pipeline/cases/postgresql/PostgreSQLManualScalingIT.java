@@ -52,7 +52,7 @@ public final class PostgreSQLManualScalingIT extends BasePostgreSQLITCase {
             if (Strings.isNullOrEmpty(dockerImageName)) {
                 continue;
             }
-            result.add(new ScalingParameterized(DATABASE, dockerImageName, "env/scenario/manual/postgres"));
+            result.add(new ScalingParameterized(DATABASE, dockerImageName, "env/scenario/manual/postgresql"));
         }
         return result;
     }

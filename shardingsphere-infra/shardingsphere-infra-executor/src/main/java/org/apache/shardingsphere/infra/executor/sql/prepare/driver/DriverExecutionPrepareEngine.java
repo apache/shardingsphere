@@ -71,7 +71,7 @@ public final class DriverExecutionPrepareEngine<T extends DriverExecutionUnit<?>
     private SQLExecutionUnitBuilder getCachedSqlExecutionUnitBuilder(final String type) {
         SQLExecutionUnitBuilder result;
         if (null == (result = TYPE_TO_BUILDER_MAP.get(type))) {
-            result = TYPE_TO_BUILDER_MAP.computeIfAbsent(type, SQLExecutionUnitBuilderFactory::newInstance);
+            result = TYPE_TO_BUILDER_MAP.computeIfAbsent(type, SQLExecutionUnitBuilderFactory::getInstance);
         }
         return result;
     }

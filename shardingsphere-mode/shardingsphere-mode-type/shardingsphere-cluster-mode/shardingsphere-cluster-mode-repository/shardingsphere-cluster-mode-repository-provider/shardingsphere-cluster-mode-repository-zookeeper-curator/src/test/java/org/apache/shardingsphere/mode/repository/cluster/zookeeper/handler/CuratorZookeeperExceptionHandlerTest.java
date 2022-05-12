@@ -21,7 +21,8 @@ import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositor
 import org.apache.zookeeper.KeeperException.NoNodeException;
 import org.junit.Test;
 
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 public final class CuratorZookeeperExceptionHandlerTest {
@@ -37,7 +38,7 @@ public final class CuratorZookeeperExceptionHandlerTest {
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            assertTrue(ex instanceof ClusterPersistRepositoryException);
+            assertThat(ex, instanceOf(ClusterPersistRepositoryException.class));
         }
     }
 }
