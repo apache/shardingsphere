@@ -105,16 +105,16 @@ public final class PostgreSQLDDLGeneratorIT {
     }
     
     private String getVersionOutput(final Collection<DDLGeneratorOutputEntity> outputs, final int majorVersion) {
-        String defaultSql = "";
+        String result = "";
         for (DDLGeneratorOutputEntity each : outputs) {
             if ("default".equals(each.getVersion())) {
-                defaultSql = each.getSql();
+                result = each.getSql();
             }
             if (String.valueOf(majorVersion).equals(each.getVersion())) {
                 return each.getSql();
             }
         }
-        return defaultSql;
+        return result;
     }
     
     private DataSource createDataSource() {
