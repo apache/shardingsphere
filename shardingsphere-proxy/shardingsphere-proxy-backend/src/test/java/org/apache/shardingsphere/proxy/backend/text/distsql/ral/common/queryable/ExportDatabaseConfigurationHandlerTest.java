@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryabl
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ExportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
@@ -136,6 +137,6 @@ public final class ExportDatabaseConfigurationHandlerTest {
     }
     
     private HandlerParameter<ExportDatabaseConfigurationStatement> getParameter(final ExportDatabaseConfigurationStatement statement, final ConnectionSession connectionSession) {
-        return new HandlerParameter<ExportDatabaseConfigurationStatement>().setStatement(statement).setConnectionSession(connectionSession);
+        return new HandlerParameter<>(statement, new MySQLDatabaseType(), connectionSession);
     }
 }
