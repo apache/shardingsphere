@@ -20,8 +20,8 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockRegistryService;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.MutexLockRegistryService;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.standard.service.ReentrantMutexLockRegistryService;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.MutexLockRegistryService;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.ReentrantMutexLockRegistryService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 import java.util.Collection;
@@ -53,6 +53,12 @@ public final class ShardingSphereMutexLockHolder {
         computeNodeInstances = nodeInstances;
     }
     
+    /**
+     * Get inter mutex Lock.
+     *
+     * @param locksName locks name
+     * @return inter mutex lock
+     */
     public MutexLock getInterMutexLock(final String locksName) {
         MutexLock result = interMutexLocks.get(locksName);
         if (null == result) {
@@ -62,10 +68,16 @@ public final class ShardingSphereMutexLockHolder {
         return result;
     }
     
-    private MutexLock createInterMutexLock(String locksName) {
+    private MutexLock createInterMutexLock(final String locksName) {
         return new InterMutexLock(locksName, mutexLockRegistryService, currentInstance, computeNodeInstances);
     }
     
+    /**
+     * Get inter reentrant mutex lock.
+     *
+     * @param locksName locks name
+     * @return inter reentrant mutex lock
+     */
     public MutexLock getInterReentrantMutexLock(final String locksName) {
         MutexLock result = interReentrantMutexLocks.get(locksName);
         if (null == result) {
@@ -75,10 +87,11 @@ public final class ShardingSphereMutexLockHolder {
         return result;
     }
     
-    public String getCurrentInstanceId() {
-        return currentInstance.getCurrentInstanceId();
-    }
-    
+    /**
+     * Synchronize mutex lock.
+     *
+     * @param lockNodeService lock node service
+     */
     public void synchronizeMutexLock(final LockNodeService lockNodeService) {
         Collection<String> allGlobalLock = repository.getChildrenKeys(lockNodeService.getLocksNodePath());
         if (allGlobalLock.isEmpty()) {
@@ -92,5 +105,12 @@ public final class ShardingSphereMutexLockHolder {
         }
     }
     
-    
+    /**
+     * Get current instance id.
+     *
+     * @return current instance id
+     */
+    public String getCurrentInstanceId() {
+        return currentInstance.getCurrentInstanceId();
+    }
 }

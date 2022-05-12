@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.database.service;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.node;
 
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.AbstractGlobalLockNodeService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeType;
 
 /**
- * Database lock node service.
+ * Mutex lock node service.
  */
-public final class DatabaseLockNodeService extends AbstractGlobalLockNodeService {
+public final class MutexLockNodeService extends AbstractGlobalLockNodeService {
     
     @Override
     public String getSequenceNodePath() {
@@ -32,11 +32,11 @@ public final class DatabaseLockNodeService extends AbstractGlobalLockNodeService
     
     @Override
     protected String getLockLevel() {
-        return "database";
+        return "mutex";
     }
     
     @Override
     public LockNodeType getType() {
-        return LockNodeType.DATABASE;
+        return LockNodeType.MUTEX;
     }
 }

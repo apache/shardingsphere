@@ -44,7 +44,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class ShardingSphereGeneralDistributeLockManager implements ShardingSphereDistributeLockManager {
     
-    private final Map<String, ShardingSphereGeneralLock> locks = new ConcurrentHashMap<>();;
+    private final Map<String, ShardingSphereGeneralLock> locks = new ConcurrentHashMap<>();
     
     private final LockNodeService lockNodeService = LockNodeServiceFactory.getInstance().getLockNodeService(LockNodeType.GENERAL);
     

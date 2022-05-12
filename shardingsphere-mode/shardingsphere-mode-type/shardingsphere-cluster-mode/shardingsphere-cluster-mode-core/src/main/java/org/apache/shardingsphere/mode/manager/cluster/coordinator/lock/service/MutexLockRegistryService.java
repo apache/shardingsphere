@@ -15,26 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.standard.service;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockRegistryService;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeUtil;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 import java.util.concurrent.TimeUnit;
 
 /**
- * Reentrant mutex lock registry service.
+ * Mutex lock registry service.
  */
 @RequiredArgsConstructor
-public final class ReentrantMutexLockRegistryService implements LockRegistryService {
+public final class MutexLockRegistryService implements LockRegistryService {
     
     private final ClusterPersistRepository repository;
     
     @Override
     public boolean tryLock(final String lockName, final long timeoutMilliseconds) {
         try {
-            return repository.getInternalReentrantMutexLock(lockName).tryLock(timeoutMilliseconds, TimeUnit.MILLISECONDS);
+            return repository.getInternalMutexLock(lockName).tryLock(timeoutMilliseconds, TimeUnit.MILLISECONDS);
         } catch (final InterruptedException ignore) {
             return false;
         }
@@ -42,21 +43,21 @@ public final class ReentrantMutexLockRegistryService implements LockRegistryServ
     
     @Override
     public void releaseLock(final String lockName) {
-        repository.getInternalReentrantMutexLock(lockName).unlock();
+        repository.getInternalMutexLock(lockName).unlock();
     }
     
     @Override
     public void removeLock(final String lockName) {
-        throw new UnsupportedOperationException();
+        repository.delete(LockNodeUtil.generateMutexLockReleasedNodePath(lockName));
     }
     
     @Override
     public void ackLock(final String lockName, final String lockValue) {
-        throw new UnsupportedOperationException();
+        repository.persistEphemeral(lockName, lockValue);
     }
     
     @Override
     public void releaseAckLock(final String lockName) {
-        throw new UnsupportedOperationException();
+        repository.delete(lockName);
     }
 }

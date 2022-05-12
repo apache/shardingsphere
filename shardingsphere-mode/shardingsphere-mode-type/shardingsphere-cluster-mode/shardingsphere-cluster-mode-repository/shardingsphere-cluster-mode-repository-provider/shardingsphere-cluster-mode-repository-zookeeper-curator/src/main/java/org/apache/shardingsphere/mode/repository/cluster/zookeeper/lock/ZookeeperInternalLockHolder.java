@@ -24,9 +24,9 @@ import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.apache.curator.framework.recipes.locks.InterProcessSemaphoreMutex;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.handler.CuratorZookeeperExceptionHandler;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -37,7 +37,7 @@ import java.util.concurrent.locks.Lock;
 @RequiredArgsConstructor
 public class ZookeeperInternalLockHolder {
     
-    private final Map<String, ZookeeperInternalLock> locks = new ConcurrentHashMap<>();
+    private final Map<String, ZookeeperInternalLock> locks = new LinkedHashMap<>();
     
     private final CuratorFramework client;
     
@@ -47,7 +47,7 @@ public class ZookeeperInternalLockHolder {
      * @param lockName lock name
      * @return internal mutex lock
      */
-    public Lock getInternalMutexLock(final String lockName) {
+    public synchronized Lock getInternalMutexLock(final String lockName) {
         ZookeeperInternalLock result = locks.get(lockName);
         if (Objects.isNull(result)) {
             result = new ZookeeperInternalLock(new InterProcessSemaphoreMutex(client, lockName));
@@ -62,7 +62,7 @@ public class ZookeeperInternalLockHolder {
      * @param lockName lock name
      * @return internal reentrant mutex lock
      */
-    public Lock getInternalReentrantMutexLock(final String lockName) {
+    public synchronized Lock getInternalReentrantMutexLock(final String lockName) {
         ZookeeperInternalLock result = locks.get(lockName);
         if (Objects.isNull(result)) {
             result = new ZookeeperInternalLock(new InterProcessMutex(client, lockName));

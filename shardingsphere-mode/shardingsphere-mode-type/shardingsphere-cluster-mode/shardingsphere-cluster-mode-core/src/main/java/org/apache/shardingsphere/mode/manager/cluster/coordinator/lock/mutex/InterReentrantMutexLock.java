@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockRegistryService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.TimeoutMilliseconds;
 
@@ -39,7 +38,7 @@ public final class InterReentrantMutexLock implements MutexLock {
     
     @Override
     public boolean tryLock(final long timeoutMillis) {
-        return lockRegistryService.tryLock(lockName, TimeoutMilliseconds.MAX_TRY_LOCK);
+        return lockRegistryService.tryLock(lockName, timeoutMillis);
     }
     
     @Override

@@ -17,4 +17,3 @@
 
 org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.general.ShardingSphereGeneralDistributeLockManager
 org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.database.ShardingSphereDatabaseDistributeLockManager
-org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.standard.ShardingSphereStandardDistributeLockManager

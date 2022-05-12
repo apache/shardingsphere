@@ -40,7 +40,7 @@ public interface MutexLock {
     void unlock();
     
     /**
-     * Is locked
+     * Is locked.
      *
      * @return is locked or not
      */

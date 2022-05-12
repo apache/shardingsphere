@@ -36,7 +36,7 @@ public final class InterReentrantMutexLock implements ShardingSphereLock {
     
     @Override
     public boolean tryLock(final String lockName, final long timeoutMillis) {
-        return lockRegistryService.tryLock(lockName, TimeoutMilliseconds.MAX_TRY_LOCK);
+        return lockRegistryService.tryLock(lockName, timeoutMillis);
     }
     
     @Override

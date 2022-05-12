@@ -59,7 +59,7 @@ public final class InterMutexLock implements MutexLock, LockAckAble {
     
     @Override
     public boolean tryLock(final long timeoutMillis) {
-        return innerTryLock(lockName, timeoutMillis);
+        return innerTryLock(lockName, Math.max(timeoutMillis, TimeoutMilliseconds.MIN_TRY_LOCK));
     }
     
     private boolean innerTryLock(final String lockName, final long timeout) {

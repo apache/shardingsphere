@@ -23,9 +23,6 @@ import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.lock.LockType;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.ShardingSphereDistributeMutexLock;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.ShardingSphereMutexLockHolder;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeType;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 import java.util.Collection;
@@ -42,8 +39,6 @@ public final class DistributeLockContext implements LockContext {
     private final ClusterPersistRepository repository;
     
     private final ComputeNodeInstance currentInstance;
-    
-    private ShardingSphereDistributeMutexLock mutexLock;
     
     public DistributeLockContext(final ClusterPersistRepository repository, final ComputeNodeInstance currentInstance) {
         this.repository = repository;
@@ -66,13 +61,6 @@ public final class DistributeLockContext implements LockContext {
         for (ShardingSphereDistributeLockManager each : lockManagers.values()) {
             each.initLocksState(repository, currentInstance, computeNodeInstances);
         }
-        initMutexLock(computeNodeInstances);
-    }
-    
-    private void initMutexLock(final Collection<ComputeNodeInstance> computeNodeInstances) {
-        LockNodeService lockNodeService = LockNodeServiceFactory.getInstance().getLockNodeService(LockNodeType.MUTEX);
-        ShardingSphereMutexLockHolder lockHolder = new ShardingSphereMutexLockHolder(repository, currentInstance, computeNodeInstances);
-        mutexLock = new ShardingSphereDistributeMutexLock(lockNodeService, lockHolder);
     }
     
     @Override

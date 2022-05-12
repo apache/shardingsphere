@@ -22,8 +22,8 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.InterMute
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.InterReentrantMutexLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.ShardingSphereGlobalLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeService;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.MutexLockRegistryService;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.standard.service.ReentrantMutexLockRegistryService;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.MutexLockRegistryService;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.ReentrantMutexLockRegistryService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.TimeoutMilliseconds;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
@@ -58,7 +58,7 @@ public final class ShardingSphereGeneralLock implements ShardingSphereGlobalLock
     }
     
     private synchronized boolean innerTryLock(final String lockName, final long timeoutMillis) {
-        if (!sequencedLock.tryLock(lockNodeService.getSequenceNodePath(), TimeoutMilliseconds.MIN_TRY_LOCK)) {
+        if (!sequencedLock.tryLock(lockNodeService.getSequenceNodePath(), TimeoutMilliseconds.DEFAULT_REGISTRY)) {
             return false;
         }
         try {
