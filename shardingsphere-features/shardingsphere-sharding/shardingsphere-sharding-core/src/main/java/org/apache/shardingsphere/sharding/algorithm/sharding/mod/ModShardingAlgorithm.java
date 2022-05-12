@@ -36,69 +36,76 @@ public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Com
     
     private static final String SHARDING_COUNT_KEY = "sharding-count";
     
-    private static final String REVERSE_START_INDEX = "reverse-start-index";
+    private static final String START_OFFSET_INDEX_KEY = "start-offset";
     
-    private static final String ZERO_PADDING = "zero-padding";
+    private static final String STOP_OFFSET_INDEX_KEY = "stop-offset";
+    
+    private static final String ZERO_PADDING_KEY = "zero-padding";
     
     @Getter
     private Properties props;
     
     private int shardingCount;
     
-    private volatile int reverseStartIndex;
+    private int startOffset;
     
-    private volatile boolean zeroPadding;
+    private int stopOffset;
     
-    private volatile int shardingDigits;
+    private boolean zeroPadding;
+    
+    private int maxPaddingSize;
     
     @Override
     public void init(final Properties props) {
         this.props = props;
         shardingCount = getShardingCount(props);
-        reverseStartIndex = getReverseStartIndex(props);
+        startOffset = getStartOffset(props);
+        stopOffset = getStopOffset(props);
         zeroPadding = isZeroPadding(props);
-        shardingDigits = getShardingDigits();
+        maxPaddingSize = calculateMaxPaddingSize();
     }
     
     private int getShardingCount(final Properties props) {
-        Preconditions.checkArgument(props.containsKey(SHARDING_COUNT_KEY), "Sharding count cannot be null.");
+        Preconditions.checkArgument(props.containsKey(SHARDING_COUNT_KEY), "Sharding count can not be null.");
         return Integer.parseInt(props.getProperty(SHARDING_COUNT_KEY));
     }
     
-    private int getShardingDigits() {
-        int digits = 0;
-        // if shardingCount = 100, it must be 00-99, this is 2 digit
-        int tmpCalculateShardingCount = shardingCount - 1;
-        while (tmpCalculateShardingCount != 0) {
-            digits++;
-            tmpCalculateShardingCount = tmpCalculateShardingCount / 10;
-        }
-        return Math.max(digits, 1);
+    private int getStartOffset(final Properties props) {
+        return Integer.parseInt(String.valueOf(props.getProperty(START_OFFSET_INDEX_KEY, "0")));
     }
     
-    private int getReverseStartIndex(final Properties props) {
-        return Integer.parseInt(String.valueOf(props.getOrDefault(REVERSE_START_INDEX, '0')));
+    private int getStopOffset(final Properties props) {
+        return Integer.parseInt(String.valueOf(props.getProperty(STOP_OFFSET_INDEX_KEY, "0")));
     }
     
     private boolean isZeroPadding(final Properties props) {
-        return Boolean.parseBoolean(String.valueOf(props.getOrDefault(ZERO_PADDING, "false")));
+        return Boolean.parseBoolean(String.valueOf(props.getProperty(ZERO_PADDING_KEY, Boolean.FALSE.toString())));
+    }
+    
+    private int calculateMaxPaddingSize() {
+        int result = 0;
+        int calculatingShardingCount = shardingCount - 1;
+        while (calculatingShardingCount != 0) {
+            result++;
+            calculatingShardingCount = calculatingShardingCount / 10;
+        }
+        return Math.max(result, 1);
     }
     
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
-        BigInteger shardingCountBigInter = new BigInteger(String.valueOf(shardingCount));
-        String suffix = getSuffix(getBigIntegerValue(shardingValue.getValue()).mod(shardingCountBigInter).toString());
-        return findMatchedTargetName(availableTargetNames, suffix, shardingValue.getDataNodeInfo()).orElse(null);
+        String shardingResultSuffix = getShardingResultSuffix(cutShardingValue(shardingValue.getValue()).mod(new BigInteger(String.valueOf(shardingCount))).toString());
+        return findMatchedTargetName(availableTargetNames, shardingResultSuffix, shardingValue.getDataNodeInfo()).orElse(null);
     }
     
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Comparable<?>> shardingValue) {
-        return isContainAllTargets(shardingValue) ? availableTargetNames : getAvailableTargetNames(availableTargetNames, shardingValue);
+        return containsAllTargets(shardingValue) ? availableTargetNames : getAvailableTargetNames(availableTargetNames, shardingValue);
     }
     
-    private boolean isContainAllTargets(final RangeShardingValue<Comparable<?>> shardingValue) {
+    private boolean containsAllTargets(final RangeShardingValue<Comparable<?>> shardingValue) {
         return !shardingValue.getValueRange().hasUpperBound() || shardingValue.getValueRange().hasLowerBound()
-                && getLongValue(shardingValue.getValueRange().upperEndpoint()) - getLongValue(shardingValue.getValueRange().lowerEndpoint()) >= shardingCount - 1;
+                && getBigInteger(shardingValue.getValueRange().upperEndpoint()).subtract(getBigInteger(shardingValue.getValueRange().lowerEndpoint())).intValue() >= shardingCount - 1;
     }
     
     private Collection<String> getAvailableTargetNames(final Collection<String> availableTargetNames, final RangeShardingValue<Comparable<?>> shardingValue) {
@@ -107,31 +114,26 @@ public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Com
         BigInteger upper = new BigInteger(shardingValue.getValueRange().upperEndpoint().toString());
         BigInteger shardingCountBigInter = new BigInteger(String.valueOf(shardingCount));
         for (BigInteger i = lower; i.compareTo(upper) <= 0; i = i.add(new BigInteger("1"))) {
-            String suffix = getSuffix(String.valueOf(i.mod(shardingCountBigInter)));
-            findMatchedTargetName(availableTargetNames, suffix, shardingValue.getDataNodeInfo()).ifPresent(result::add);
+            String shardingResultSuffix = getShardingResultSuffix(String.valueOf(i.mod(shardingCountBigInter)));
+            findMatchedTargetName(availableTargetNames, shardingResultSuffix, shardingValue.getDataNodeInfo()).ifPresent(result::add);
         }
         return result;
     }
     
-    private String getSuffix(final String suffix) {
-        if (zeroPadding) {
-            return fillString(suffix, shardingDigits);
-        } else {
-            return String.valueOf(suffix);
-        }
+    private String getShardingResultSuffix(final String shardingResultSuffix) {
+        return zeroPadding ? fillZero(shardingResultSuffix) : shardingResultSuffix;
     }
     
-    private static String fillString(final String num, final int digit) {
-        return String.format("%0" + digit + "d", Integer.parseInt(num));
+    private String fillZero(final String value) {
+        return String.format("%0" + maxPaddingSize + "d", Integer.parseInt(value));
     }
     
-    private BigInteger getBigIntegerValue(final Comparable<?> value) {
-        int endIndex = value.toString().length() - reverseStartIndex;
-        return new BigInteger(value.toString().substring(0, endIndex));
+    private BigInteger cutShardingValue(final Comparable<?> shardingValue) {
+        return 0 == startOffset && 0 == stopOffset ? getBigInteger(shardingValue) : new BigInteger(shardingValue.toString().substring(startOffset, shardingValue.toString().length() - stopOffset));
     }
     
-    private long getLongValue(final Comparable<?> value) {
-        return value instanceof Number ? ((Number) value).longValue() : Long.parseLong(value.toString());
+    private BigInteger getBigInteger(final Comparable<?> value) {
+        return value instanceof Number ? BigInteger.valueOf(((Number) value).longValue()) : new BigInteger(value.toString());
     }
     
     @Override
