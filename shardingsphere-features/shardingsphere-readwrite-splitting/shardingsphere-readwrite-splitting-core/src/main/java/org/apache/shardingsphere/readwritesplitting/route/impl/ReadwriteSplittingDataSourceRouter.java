@@ -48,12 +48,18 @@ public final class ReadwriteSplittingDataSourceRouter {
         if (1 == rule.getReadDataSourceNames().size()) {
             return rule.getReadDataSourceNames().get(0);
         }
+        if(TransactionHolder.isTransaction() && rule.getRouteMode() == 1) {
+        
+        }
+        if(TransactionHolder.isTransaction() && rule.getRouteMode() == 2) {
+            return rule.getLoadBalancer().getDataSource(rule.getName(), rule.getWriteDataSource(), rule.getReadDataSourceNames());
+        }
         return rule.getLoadBalancer().getDataSource(rule.getName(), rule.getWriteDataSource(), rule.getReadDataSourceNames());
     }
     
     private boolean isPrimaryRoute(final SQLStatementContext<?> sqlStatementContext) {
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
-        return containsLockSegment(sqlStatement) || !(sqlStatement instanceof SelectStatement) || isHintWriteRouteOnly(sqlStatementContext) || TransactionHolder.isTransaction();
+        return containsLockSegment(sqlStatement) || !(sqlStatement instanceof SelectStatement) || isHintWriteRouteOnly(sqlStatementContext) || (TransactionHolder.isTransaction() && rule.getRouteMode() == 0);
     }
     
     private boolean isHintWriteRouteOnly(final SQLStatementContext<?> sqlStatementContext) {
