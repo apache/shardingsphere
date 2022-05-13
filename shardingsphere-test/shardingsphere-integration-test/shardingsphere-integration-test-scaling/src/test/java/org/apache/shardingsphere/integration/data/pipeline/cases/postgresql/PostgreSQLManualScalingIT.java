@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.integration.data.pipeline.cases.postgresql;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
-import com.google.common.collect.Sets;
+import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
+import org.apache.shardingsphere.integration.data.pipeline.cases.base.BasePostgreSQLITCase;
+import org.apache.shardingsphere.integration.data.pipeline.cases.scenario.ScalingScenario;
 import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
+import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -28,13 +33,6 @@ import org.junit.runners.Parameterized.Parameters;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 
 @RunWith(Parameterized.class)
 public final class PostgreSQLManualScalingIT extends BasePostgreSQLITCase {
@@ -52,20 +50,35 @@ public final class PostgreSQLManualScalingIT extends BasePostgreSQLITCase {
             if (Strings.isNullOrEmpty(dockerImageName)) {
                 continue;
             }
-            result.add(new ScalingParameterized(DATABASE, dockerImageName, "env/scenario/manual/postgresql"));
+            for (String scenario : ScalingScenario.listScenario()) {
+                result.add(new ScalingParameterized(DATABASE_TYPE, dockerImageName, Joiner.on("/").join("env/scenario/manual/postgresql", scenario, ScalingScenario.SCENARIO_SUFFIX)));
+            }
         }
         return result;
     }
     
+    @Before
+    public void setUp() {
+        addResource();
+        initShardingAlgorithm();
+        // TODO wait for algorithm init
+        ThreadUtil.sleep(2000);
+        createScalingRule();
+        createSchema("test");
+    }
+    
     @Test
     public void assertManualScalingSuccess() throws InterruptedException {
-        List<Map<String, Object>> previewResults = getJdbcTemplate().queryForList("PREVIEW SELECT COUNT(1) FROM t_order");
-        Set<Object> originalSources = previewResults.stream().map(each -> each.get("data_source_name")).collect(Collectors.toSet());
-        assertThat(originalSources, is(Sets.newHashSet("ds_0", "ds_1")));
+        createAllSharingTableRule();
+        bindingShardingRule();
+        getSqlHelper().createOrderTable();
+        getSqlHelper().createOrderItemTable();
+        getSqlHelper().initTableData(true);
+        startIncrementTask(new SnowflakeKeyGenerateAlgorithm());
+        assertOriginalSourceSuccess();
         getJdbcTemplate().execute(getCommonSQLCommand().getAutoAlterTableRule());
-        Map<String, Object> showScalingResMap = getJdbcTemplate().queryForMap("SHOW SCALING LIST");
-        String jobId = String.valueOf(showScalingResMap.get("id"));
+        String jobId = String.valueOf(getJdbcTemplate().queryForMap("SHOW SCALING LIST").get("id"));
         getIncreaseTaskThread().join(60 * 1000L);
-        checkMatchConsistency(getJdbcTemplate(), jobId);
+        assertCheckMatchConsistencySuccess(getJdbcTemplate(), jobId);
     }
 }

@@ -15,21 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.data.pipeline.framework.param;
+package org.apache.shardingsphere.integration.data.pipeline.cases.scenario;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import com.google.common.collect.Sets;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-public final class ScalingParameterized {
+import java.util.Collection;
+
+/**
+ * Manual scaling scenario.
+ */
+public final class ScalingScenario {
     
-    private DatabaseType databaseType;
+    public static final String SCENARIO_SUFFIX = "sql.xml";
     
-    private String dockerImageName;
-    
-    private String scenario;
+    /**
+     * manual scenario list.
+     *
+     * @return scenario list
+     */
+    public static Collection<String> listScenario() {
+        return Sets.newHashSet("snowflake_primary_key");
+    }
 }

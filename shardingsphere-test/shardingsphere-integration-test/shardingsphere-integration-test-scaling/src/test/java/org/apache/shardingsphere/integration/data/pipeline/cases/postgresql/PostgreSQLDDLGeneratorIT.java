@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.integration.data.pipeline.cases.postgresql;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.data.pipeline.spi.ddlgenerator.DialectDDLSQLGeneratorFactory;
@@ -52,7 +53,7 @@ import static org.junit.Assert.assertThat;
 @RunWith(Parameterized.class)
 public final class PostgreSQLDDLGeneratorIT {
     
-    private static final String CASE_FILE_PATH = "/ddlgenerator.xml";
+    private static final String CASE_FILE_PATH = "ddlgenerator.xml";
     
     private static final String PARENT_PATH = "env/scenario/manual/postgresql/ddlgenerator";
     
@@ -70,7 +71,7 @@ public final class PostgreSQLDDLGeneratorIT {
     
     public PostgreSQLDDLGeneratorIT(final ScalingParameterized parameterized) {
         this.parameterized = parameterized;
-        this.rootEntity = JAXB.unmarshal(Objects.requireNonNull(PostgreSQLDDLGeneratorIT.class.getClassLoader().getResource(parameterized.getParentPath() + CASE_FILE_PATH)),
+        this.rootEntity = JAXB.unmarshal(Objects.requireNonNull(PostgreSQLDDLGeneratorIT.class.getClassLoader().getResource(parameterized.getScenario())),
                 DDLGeneratorAssertionsRootEntity.class);
         this.dockerDatabaseContainer = DatabaseContainerFactory.newInstance(parameterized.getDatabaseType(), parameterized.getDockerImageName());
         dockerDatabaseContainer.start();
@@ -83,7 +84,7 @@ public final class PostgreSQLDDLGeneratorIT {
             if (Strings.isNullOrEmpty(each)) {
                 continue;
             }
-            result.add(new ScalingParameterized(new PostgreSQLDatabaseType(), each, PARENT_PATH));
+            result.add(new ScalingParameterized(new PostgreSQLDatabaseType(), each, Joiner.on("/").join(PARENT_PATH, CASE_FILE_PATH)));
         }
         return result;
     }

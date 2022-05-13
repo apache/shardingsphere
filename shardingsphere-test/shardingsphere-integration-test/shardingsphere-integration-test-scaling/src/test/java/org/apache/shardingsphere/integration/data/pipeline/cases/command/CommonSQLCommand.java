@@ -23,18 +23,26 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.List;
 
 @Data
 @XmlRootElement(name = "command")
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class CommonSQLCommand {
     
-    @XmlElement(name = "create-sharding-algorithm")
-    private List<String> createShardingAlgorithm;
+    @XmlElement(name = "create-database-sharding-algorithm")
+    private String createDatabaseShardingAlgorithm;
     
-    @XmlElement(name = "create-sharding-table")
-    private String createShardingTable;
+    @XmlElement(name = "create-order-sharding-algorithm")
+    private String createOrderShardingAlgorithm;
+    
+    @XmlElement(name = "create-order-item-sharding-algorithm")
+    private String createOrderItemShardingAlgorithm;
+    
+    @XmlElement(name = "create-all-sharding-table-rule")
+    private String createAllSharingTableRule;
+    
+    @XmlElement(name = "create-order-sharding-table-rule")
+    private String createOrderShardingTableRule;
     
     @XmlElement(name = "alter-sharding-algorithm")
     private String alterShardingAlgorithm;

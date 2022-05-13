@@ -17,63 +17,49 @@
 
 package org.apache.shardingsphere.integration.data.pipeline.cases.mysql;
 
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.tuple.Pair;
+import org.apache.shardingsphere.integration.data.pipeline.cases.base.BaseTaskRunnable;
 import org.apache.shardingsphere.integration.data.pipeline.cases.command.ExtraSQLCommand;
-import org.apache.shardingsphere.integration.data.pipeline.util.TableCrudUtil;
+import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import java.sql.SQLException;
-import java.time.Instant;
 import java.util.LinkedList;
 import java.util.List;
 
 @Slf4j
-@AllArgsConstructor
-public final class MySQLIncrementTaskRunnable implements Runnable {
+public final class MySQLIncrementTaskRunnable extends BaseTaskRunnable {
     
-    private final JdbcTemplate jdbcTemplate;
-    
-    private final ExtraSQLCommand extraSQLCommand;
+    public MySQLIncrementTaskRunnable(final JdbcTemplate jdbcTemplate, final ExtraSQLCommand extraSQLCommand, final KeyGenerateAlgorithm keyGenerateAlgorithm) {
+        super(jdbcTemplate, extraSQLCommand, keyGenerateAlgorithm);
+    }
     
     @Override
     public void run() {
         int executeCount = 0;
-        List<Long> newPrimaryKeys = new LinkedList<>();
-        try {
-            while (executeCount < 20 && !Thread.currentThread().isInterrupted()) {
-                newPrimaryKeys.add(insertOrderAndOrderItem());
-                if (newPrimaryKeys.size() % 2 == 0) {
-                    deleteOrderAndOrderItem(newPrimaryKeys.get(newPrimaryKeys.size() - 1));
-                } else {
-                    updateOrderAndOrderItem(newPrimaryKeys.get(newPrimaryKeys.size() - 1));
-                }
-                executeCount++;
-                log.info("Increment task runnable execute successfully.");
+        List<Object> newOrderPrimaryKeys = new LinkedList<>();
+        List<Object> newOrderItemPrimaryKeys = new LinkedList<>();
+        while (executeCount < 20 && !Thread.currentThread().isInterrupted()) {
+            newOrderPrimaryKeys.add(insertOrder());
+            newOrderItemPrimaryKeys.add(insertOrderItem());
+            if (newOrderPrimaryKeys.size() % 2 == 0) {
+                deleteOrderByPrimaryKey(newOrderPrimaryKeys.get(newOrderPrimaryKeys.size() - 1));
+                deleteOrderItemByPrimaryKey(newOrderItemPrimaryKeys.get(newOrderItemPrimaryKeys.size() - 1));
+            } else {
+                updateOrderByPrimaryKey(newOrderPrimaryKeys.get(newOrderPrimaryKeys.size() - 1));
+                updateOrderItemByPrimaryKey(newOrderItemPrimaryKeys.get(newOrderItemPrimaryKeys.size() - 1));
             }
-        } catch (final SQLException ex) {
-            log.error("IncrementTaskThread error", ex);
-            throw new RuntimeException(ex);
+            executeCount++;
+            log.info("MySQL increment task runnable execute successfully.");
         }
     }
     
-    private long insertOrderAndOrderItem() throws SQLException {
-        Pair<Object[], Object[]> dataPair = TableCrudUtil.generateSimpleInsertData();
-        jdbcTemplate.update(extraSQLCommand.getInsertOrder(), dataPair.getLeft());
-        jdbcTemplate.update(extraSQLCommand.getInsertOrderItem(), dataPair.getRight());
-        return Long.parseLong(dataPair.getLeft()[0].toString());
+    @Override
+    protected Object[] getOrderInsertDate() {
+        return new Object[]{getKeyGenerateAlgorithm().generateKey(), RANDOM.nextInt(0, 6), RANDOM.nextInt(0, 6)};
     }
     
-    private void updateOrderAndOrderItem(final long primaryKey) throws SQLException {
-        jdbcTemplate.update(extraSQLCommand.getUpdateOrderById(), null, null, primaryKey);
-        long epochSecond = Instant.now().getEpochSecond();
-        jdbcTemplate.update(extraSQLCommand.getUpdateOrderById(), "update" + epochSecond, epochSecond, primaryKey);
-        jdbcTemplate.update(extraSQLCommand.getUpdateOrderItemById(), "changed" + epochSecond, primaryKey);
-    }
-    
-    private void deleteOrderAndOrderItem(final long primaryKey) throws SQLException {
-        jdbcTemplate.update(extraSQLCommand.getDeleteOrderById(), primaryKey);
-        jdbcTemplate.update(extraSQLCommand.getDeleteOrderItemById(), primaryKey);
+    @Override
+    protected Object[] getOrderInsertItemDate() {
+        return new Object[]{getKeyGenerateAlgorithm().generateKey(), RANDOM.nextInt(0, 6), RANDOM.nextInt(0, 6), "OK"};
     }
 }
