@@ -95,7 +95,7 @@ public final class SelectDatabaseExecutorTest {
     }
     
     private ShardingSphereMetaData getMetaData() throws SQLException {
-        return new ShardingSphereMetaData("sharding_db",
+        return new ShardingSphereMetaData("sharding_db", new PostgreSQLDatabaseType(),
                 new ShardingSphereResource(mockDatasourceMap(), mockDataSourcesMetaData(), mock(CachedDatabaseMetaData.class), new PostgreSQLDatabaseType()),
                 mock(ShardingSphereRuleMetaData.class), Collections.emptyMap());
     }
@@ -103,7 +103,7 @@ public final class SelectDatabaseExecutorTest {
     private ShardingSphereMetaData getEmptyMetaData(final String schemaName) {
         ShardingSphereRuleMetaData metaData = mock(ShardingSphereRuleMetaData.class);
         when(metaData.getRules()).thenReturn(Collections.emptyList());
-        return new ShardingSphereMetaData(schemaName,
+        return new ShardingSphereMetaData(schemaName, new PostgreSQLDatabaseType(),
                 new ShardingSphereResource(Collections.emptyMap(), mockDataSourcesMetaData(), mock(CachedDatabaseMetaData.class), new PostgreSQLDatabaseType()),
                 metaData, Collections.emptyMap());
     }
