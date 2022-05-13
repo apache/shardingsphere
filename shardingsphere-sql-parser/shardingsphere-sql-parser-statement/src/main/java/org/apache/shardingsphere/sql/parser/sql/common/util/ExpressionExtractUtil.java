@@ -94,8 +94,8 @@ public final class ExpressionExtractUtil {
      * @return expression while it is not and it's right side not CommonExpressionSegment
      */
     public static Optional<ExpressionSegment> checkAndGetExpressionSegment(final ExpressionSegment expression) {
-        if (expression instanceof CommonExpressionSegment ||
-                expression instanceof BinaryOperationExpression && ((BinaryOperationExpression) expression).getRight() instanceof CommonExpressionSegment) {
+        if (expression instanceof CommonExpressionSegment
+                || expression instanceof BinaryOperationExpression && ((BinaryOperationExpression) expression).getRight() instanceof CommonExpressionSegment) {
             return Optional.empty();
         }
         return Optional.of(expression);
