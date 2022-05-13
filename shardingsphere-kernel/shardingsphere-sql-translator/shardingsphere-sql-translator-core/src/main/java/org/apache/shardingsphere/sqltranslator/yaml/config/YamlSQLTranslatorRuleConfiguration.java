@@ -15,32 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.singletable.config;
+package org.apache.shardingsphere.sqltranslator.yaml.config;
 
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.config.function.EnhancedRuleConfiguration;
-import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
-
-import java.util.Optional;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
+import org.apache.shardingsphere.sqltranslator.config.SQLTranslatorRuleConfiguration;
 
 /**
- * Single table rule configuration.
+ * SQL translator configuration for YAML.
  */
-@AllArgsConstructor
-@NoArgsConstructor
+@Getter
 @Setter
-public final class SingleTableRuleConfiguration implements SchemaRuleConfiguration, EnhancedRuleConfiguration {
+public final class YamlSQLTranslatorRuleConfiguration implements YamlRuleConfiguration {
     
-    private String defaultDataSource;
+    private String type;
     
-    /**
-     * Get default data source.
-     * 
-     * @return default data source
-     */
-    public Optional<String> getDefaultDataSource() {
-        return Optional.ofNullable(defaultDataSource);
+    @Override
+    public Class<SQLTranslatorRuleConfiguration> getRuleConfigurationType() {
+        return SQLTranslatorRuleConfiguration.class;
     }
 }
