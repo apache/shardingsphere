@@ -15,15 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqltranslator.constant;
+package org.apache.shardingsphere.sqltranslator.spi.type;
+
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sqltranslator.spi.SQLTranslator;
 
 /**
- * SQL translator constants.
+ * Native SQL translator.
  */
-public final class SQLTranslatorConstants {
+public final class NativeSQLTranslator implements SQLTranslator {
     
-    /**
-     * Default SQL translator type.
-     */
-    public static final String DEFAULT_TYPE = "JOOQ";
+    @Override
+    public String translate(final String sql, final SQLStatement statement, final DatabaseType frontendDatabaseType, final DatabaseType backendDatabaseType) {
+        // TODO
+        return sql;
+    }
+    
+    @Override
+    public String getType() {
+        return "NATIVE";
+    }
+    
+    @Override
+    public boolean isDefault() {
+        return true;
+    }
 }

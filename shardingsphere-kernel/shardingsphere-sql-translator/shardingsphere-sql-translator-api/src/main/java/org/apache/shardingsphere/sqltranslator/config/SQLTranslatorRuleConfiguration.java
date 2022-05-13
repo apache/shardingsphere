@@ -34,6 +34,8 @@ public final class SQLTranslatorRuleConfiguration implements GlobalRuleConfigura
     
     private String type;
     
+    // TODO is ignore translate fail
+    
     /**
      * Get type.
      * 

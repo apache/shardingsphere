@@ -19,22 +19,24 @@ package org.apache.shardingsphere.sqltranslator.spi;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.spi.type.required.RequiredSPI;
 import org.apache.shardingsphere.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
  * SQL translator.
- * 
- * @param <T> type of to be translated SQL
  */
 @SingletonSPI
-public interface SQLTranslator<T> extends TypedSPI {
+public interface SQLTranslator extends TypedSPI, RequiredSPI {
     
     /**
-     *
-     * @param sqlStatement SQL statement
+     * Translate SQL.
+     * 
+     * @param sql to be translated SQL
+     * @param sqlStatement to be translated SQL statement
      * @param frontendDatabaseType frontend database type
      * @param backendDatabaseType backend database type
      * @return translated SQL
      */
-    String translate(T sqlStatement, DatabaseType frontendDatabaseType, DatabaseType backendDatabaseType);
+    String translate(String sql, SQLStatement sqlStatement, DatabaseType frontendDatabaseType, DatabaseType backendDatabaseType);
 }

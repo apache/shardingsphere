@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.rewrite;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContextDecorator;
@@ -28,6 +29,7 @@ import org.apache.shardingsphere.infra.rewrite.engine.RouteSQLRewriteEngine;
 import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteResult;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 
 import java.util.List;
 import java.util.Map;
@@ -62,7 +64,12 @@ public final class SQLRewriteEntry {
      */
     public SQLRewriteResult rewrite(final String sql, final List<Object> parameters, final SQLStatementContext<?> sqlStatementContext, final RouteContext routeContext) {
         SQLRewriteContext sqlRewriteContext = createSQLRewriteContext(sql, parameters, sqlStatementContext, routeContext);
-        return routeContext.getRouteUnits().isEmpty() ? new GenericSQLRewriteEngine().rewrite(sqlRewriteContext) : new RouteSQLRewriteEngine().rewrite(sqlRewriteContext, routeContext);
+        SQLTranslatorRule rule = metaData.getRuleMetaData().getSingleRule(SQLTranslatorRule.class);
+        DatabaseType frontendDatabaseType = metaData.getFrontendDatabaseType();
+        DatabaseType backendDatabaseType = metaData.getResource().getDatabaseType();
+        return routeContext.getRouteUnits().isEmpty()
+                ? new GenericSQLRewriteEngine(rule, frontendDatabaseType, backendDatabaseType).rewrite(sqlRewriteContext)
+                : new RouteSQLRewriteEngine(rule, frontendDatabaseType, backendDatabaseType).rewrite(sqlRewriteContext, routeContext);
     }
     
     private SQLRewriteContext createSQLRewriteContext(final String sql, final List<Object> parameters, final SQLStatementContext<?> sqlStatementContext, final RouteContext routeContext) {

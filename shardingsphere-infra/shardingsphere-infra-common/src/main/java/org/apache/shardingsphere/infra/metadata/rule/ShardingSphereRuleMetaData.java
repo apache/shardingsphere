@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.metadata.rule;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import java.util.Collection;
@@ -94,5 +95,20 @@ public final class ShardingSphereRuleMetaData {
     public <T extends ShardingSphereRule> Optional<T> findSingleRule(final Class<T> clazz) {
         Collection<T> foundRules = findRules(clazz);
         return foundRules.isEmpty() ? Optional.empty() : Optional.of(foundRules.iterator().next());
+    }
+    
+    /**
+     * Get single rule by class.
+     *
+     * @param clazz target class
+     * @param <T> type of rule
+     * @return got single rule
+     */
+    public <T extends ShardingSphereRule> T getSingleRule(final Class<T> clazz) {
+        Collection<T> foundRules = findRules(clazz);
+        if (foundRules.isEmpty()) {
+            throw new ShardingSphereException("Can not find rule `%s`", clazz.getSimpleName());
+        }
+        return foundRules.iterator().next();
     }
 }

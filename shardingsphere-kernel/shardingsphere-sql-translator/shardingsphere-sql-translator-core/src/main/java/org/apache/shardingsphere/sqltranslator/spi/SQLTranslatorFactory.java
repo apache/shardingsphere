@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sqltranslator.spi;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.type.required.RequiredSPIRegistry;
 import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
 /**
@@ -38,8 +39,7 @@ public final class SQLTranslatorFactory {
      * @param type translator type 
      * @return got instance
      */
-    @SuppressWarnings("rawtypes")
     public static SQLTranslator getInstance(final String type) {
-        return TypedSPIRegistry.getRegisteredService(SQLTranslator.class, type);
+        return TypedSPIRegistry.findRegisteredService(SQLTranslator.class, type).orElse(RequiredSPIRegistry.getRegisteredService(SQLTranslator.class));
     }
 }
