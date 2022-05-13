@@ -23,7 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.constant.LogicalOperator;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
 
@@ -42,7 +41,7 @@ public final class ExpressionExtractUtil {
     
     /**
      * Get and predicate collection.
-     * 
+     *
      * @param expression expression segment
      * @return and predicate collection
      */
@@ -83,38 +82,13 @@ public final class ExpressionExtractUtil {
     
     private static AndPredicate createAndPredicate(final ExpressionSegment expression) {
         AndPredicate result = new AndPredicate();
-        checkAndGetExpressionSegment(expression).ifPresent(each -> result.getPredicates().add(each));
+        result.getPredicates().add(expression);
         return result;
     }
     
     /**
-     * Check and get the expressionSegment.
-     *
-     * @param expression ExpressionSegment
-     * @return expression while it is not and it's right side not LiteralExpressionSegment
-     */
-    public static Optional<ExpressionSegment> checkAndGetExpressionSegment(final ExpressionSegment expression) {
-        if (expression instanceof LiteralExpressionSegment) {
-            if (isNullLiterals(((LiteralExpressionSegment) expression).getLiterals())) {
-                return Optional.empty();
-            }
-        }
-        if (expression instanceof BinaryOperationExpression && ((BinaryOperationExpression) expression).getRight() instanceof LiteralExpressionSegment) {
-            if (isNullLiterals(((LiteralExpressionSegment) ((BinaryOperationExpression) expression).getRight()).getLiterals())) {
-                return Optional.empty();
-            }
-        }
-        return Optional.of(expression);
-    }
-    
-    private static boolean isNullLiterals(final Object literals) {
-        String text = String.valueOf(literals);
-        return "NULL".equalsIgnoreCase(text) || "NOT NULL".equalsIgnoreCase(text);
-    }
-    
-    /**
      * Get parameter marker expression collection.
-     * 
+     *
      * @param expressions expression collection
      * @return parameter marker expression collection
      */
