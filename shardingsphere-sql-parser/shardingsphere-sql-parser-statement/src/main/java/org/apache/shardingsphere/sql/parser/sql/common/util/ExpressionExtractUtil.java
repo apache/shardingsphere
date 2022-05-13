@@ -41,7 +41,7 @@ public final class ExpressionExtractUtil {
     
     /**
      * Get and predicate collection.
-     *
+     * 
      * @param expression expression segment
      * @return and predicate collection
      */
@@ -88,7 +88,7 @@ public final class ExpressionExtractUtil {
     
     /**
      * Get parameter marker expression collection.
-     *
+     * 
      * @param expressions expression collection
      * @return parameter marker expression collection
      */
