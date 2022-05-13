@@ -17,21 +17,45 @@
 
 package org.apache.shardingsphere.sqltranslator.rule;
 
-import lombok.Getter;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sqltranslator.config.SQLTranslatorRuleConfiguration;
-import org.apache.shardingsphere.sqltranslator.constant.SQLTranslatorConstants;
+import org.apache.shardingsphere.sqltranslator.spi.SQLTranslator;
+import org.apache.shardingsphere.sqltranslator.spi.SQLTranslatorFactory;
 
 /**
  * SQL translator rule.
  */
-@Getter
 public final class SQLTranslatorRule implements GlobalRule {
     
-    private final String type;
+    private final SQLTranslator translator;
     
     public SQLTranslatorRule(final SQLTranslatorRuleConfiguration ruleConfig) {
-        type = ruleConfig.getType().orElse(SQLTranslatorConstants.DEFAULT_TYPE);
+        translator = SQLTranslatorFactory.getInstance(ruleConfig.getType().orElse(""));
+    }
+    
+    /**
+     * Translate SQL.
+     * 
+     * @param sql to be translated SQL
+     * @param sqlStatement to be translated SQL statement
+     * @param frontendDatabaseType frontend database type
+     * @param backendDatabaseType backend database type
+     * @return translated SQL
+     */
+    public String translate(final String sql, final SQLStatement sqlStatement, final DatabaseType frontendDatabaseType, final DatabaseType backendDatabaseType) {
+        if (frontendDatabaseType.equals(backendDatabaseType)) {
+            return sql;
+        }
+        try {
+            return translator.translate(sql, sqlStatement, frontendDatabaseType, backendDatabaseType);
+            // CHECKSTYLE:OFF
+            // TODO catch TranslationException
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            return sql;
+        }
     }
     
     @Override

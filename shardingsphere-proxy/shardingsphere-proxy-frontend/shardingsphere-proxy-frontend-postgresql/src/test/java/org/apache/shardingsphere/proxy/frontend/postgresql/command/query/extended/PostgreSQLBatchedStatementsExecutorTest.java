@@ -31,6 +31,8 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.JDBC
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLInsertStatement;
+import org.apache.shardingsphere.sqltranslator.config.SQLTranslatorRuleConfiguration;
+import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,6 +50,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -86,6 +89,8 @@ public final class PostgreSQLBatchedStatementsExecutorTest {
         when(contextManager.getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE)).thenReturn(1);
         when(contextManager.getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY)).thenReturn(1);
         when(contextManager.getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
+        when(contextManager.getMetaDataContexts().getMetaData(any(String.class)).getRuleMetaData().findSingleRule(SQLTranslatorRule.class))
+                .thenReturn(Optional.of(new SQLTranslatorRule(new SQLTranslatorRuleConfiguration())));
     }
     
     @Test
