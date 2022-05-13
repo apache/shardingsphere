@@ -15,32 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.singletable.config;
+package org.apache.shardingsphere.sqltranslator.config;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.config.function.EnhancedRuleConfiguration;
-import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
+import org.apache.shardingsphere.infra.config.scope.GlobalRuleConfiguration;
 
 import java.util.Optional;
 
 /**
- * Single table rule configuration.
+ * SQL translator rule configuration.
  */
 @AllArgsConstructor
 @NoArgsConstructor
 @Setter
-public final class SingleTableRuleConfiguration implements SchemaRuleConfiguration, EnhancedRuleConfiguration {
+public final class SQLTranslatorRuleConfiguration implements GlobalRuleConfiguration {
     
-    private String defaultDataSource;
+    private String type;
     
     /**
-     * Get default data source.
+     * Get type.
      * 
-     * @return default data source
+     * @return type
      */
-    public Optional<String> getDefaultDataSource() {
-        return Optional.ofNullable(defaultDataSource);
+    public Optional<String> getType() {
+        return Optional.ofNullable(type);
     }
 }
