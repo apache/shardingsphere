@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.data.pipeline.framework.container.proxy;
+package org.apache.shardingsphere.test.integration.framework.container.wait;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +26,9 @@ import java.sql.Connection;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Wait strategy implemented via JDBC connection checking.
+ */
 @Slf4j
 @RequiredArgsConstructor
 public final class JDBCConnectionWaitStrategy extends AbstractWaitStrategy {
