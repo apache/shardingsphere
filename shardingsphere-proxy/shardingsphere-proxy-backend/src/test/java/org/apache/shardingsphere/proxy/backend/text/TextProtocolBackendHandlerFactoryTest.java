@@ -255,7 +255,7 @@ public final class TextProtocolBackendHandlerFactoryTest {
     @Test(expected = UnsupportedOperationException.class)
     public void assertUnsupportedDistSQLInTransaction() throws SQLException {
         when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(true);
-        String sql = "SHOW SHARDING TABLE RULES FROM sharding_db";
+        String sql = "CREATE SHARDING KEY GENERATOR snowflake_key_generator (TYPE(NAME=SNOWFLAKE, PROPERTIES(\"max-vibration-offset\"=3)));";
         TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, Optional::empty, connectionSession);
     }
 }

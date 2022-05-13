@@ -22,6 +22,7 @@ import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.DistSQLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
@@ -94,8 +95,8 @@ public final class TextProtocolBackendHandlerFactory {
         databaseType.handleRollbackOnly(connectionSession.getTransactionStatus().isRollbackOnly(), sqlStatement);
         checkUnsupportedSQLStatement(sqlStatement);
         if (sqlStatement instanceof DistSQLStatement) {
-            if (connectionSession.getTransactionStatus().isInTransaction()) {
-                throw new UnsupportedOperationException("Dist sql is not supported within a transaction");
+            if (connectionSession.getTransactionStatus().isInTransaction() && !(sqlStatement instanceof RQLStatement)) {
+                throw new UnsupportedOperationException("Non-query dist sql is not supported within a transaction");
             }
             return DistSQLBackendHandlerFactory.newInstance(databaseType, (DistSQLStatement) sqlStatement, connectionSession);
         }
