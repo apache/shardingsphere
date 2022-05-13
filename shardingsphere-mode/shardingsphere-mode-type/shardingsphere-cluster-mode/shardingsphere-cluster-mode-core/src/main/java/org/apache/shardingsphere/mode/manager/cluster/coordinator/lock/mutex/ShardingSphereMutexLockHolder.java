@@ -96,7 +96,6 @@ public final class ShardingSphereMutexLockHolder {
         Collection<String> allGlobalLock = repository.getChildrenKeys(lockNodeService.getLocksNodePath());
         if (allGlobalLock.isEmpty()) {
             repository.persist(lockNodeService.getLocksNodePath(), "");
-            repository.persist(lockNodeService.getLockedAckNodePath(), "");
             return;
         }
         for (String each : allGlobalLock) {
