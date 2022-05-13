@@ -417,8 +417,8 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
     public final ASTNode visitBooleanPrimary(final BooleanPrimaryContext ctx) {
         if (null != ctx.IS()) {
             ExpressionSegment left = (ExpressionSegment) visit(ctx.booleanPrimary());
-            String rightText = ctx.start.getInputStream().getText(new Interval(ctx.IS().getSymbol().getStopIndex() + 1, ctx.stop.getStopIndex())).trim();
-            ExpressionSegment right = new CommonExpressionSegment(ctx.IS().getSymbol().getStopIndex() + 1, ctx.stop.getStopIndex(), rightText);
+            ExpressionSegment right = new LiteralExpressionSegment(ctx.IS().getSymbol().getStopIndex() + 1, ctx.stop.getStopIndex(), new Interval(ctx.IS().getSymbol().getStopIndex() + 1,
+                    ctx.stop.getStopIndex()));
             String operator = "IS";
             String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
             return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.constant.LogicalOperator;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
 
@@ -91,11 +91,11 @@ public final class ExpressionExtractUtil {
      * Check and get the expressionSegment.
      *
      * @param expression ExpressionSegment
-     * @return expression while it is not and it's right side not CommonExpressionSegment
+     * @return expression while it is not and it's right side not LiteralExpressionSegment
      */
     public static Optional<ExpressionSegment> checkAndGetExpressionSegment(final ExpressionSegment expression) {
-        if (expression instanceof CommonExpressionSegment
-                || expression instanceof BinaryOperationExpression && ((BinaryOperationExpression) expression).getRight() instanceof CommonExpressionSegment) {
+        if (expression instanceof LiteralExpressionSegment
+                || expression instanceof BinaryOperationExpression && ((BinaryOperationExpression) expression).getRight() instanceof LiteralExpressionSegment) {
             return Optional.empty();
         }
         return Optional.of(expression);
