@@ -243,14 +243,19 @@ public final class TextProtocolBackendHandlerFactoryTest {
     @Test(expected = SQLParsingException.class)
     public void assertNewInstanceWithErrorSQL() throws SQLException {
         String sql = "SELECT";
-        TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, Optional::empty, connectionSession);
-        assertThat(actual, instanceOf(SkipBackendHandler.class));
+        TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, Optional::empty, connectionSession);
     }
     
     @Test(expected = SQLParsingException.class)
     public void assertNewInstanceWithErrorRDL() throws SQLException {
         String sql = "CREATE SHARDING";
-        TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, Optional::empty, connectionSession);
-        assertThat(actual, instanceOf(SkipBackendHandler.class));
+        TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, Optional::empty, connectionSession);
+    }
+    
+    @Test(expected = UnsupportedOperationException.class)
+    public void assertUnsupportedDistSQLInTransaction() throws SQLException {
+        when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(true);
+        String sql = "SHOW SHARDING TABLE RULES FROM sharding_db";
+        TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, Optional::empty, connectionSession);
     }
 }
