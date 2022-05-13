@@ -64,7 +64,7 @@ public final class AuthorityCheckerTest {
         users.add(root);
         AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(users, new ShardingSphereAlgorithmConfiguration("ALL_PERMITTED", new Properties()));
         AuthorityRule rule = new AuthorityRule(ruleConfig, Collections.emptyMap());
-        SQLChecker<AuthorityRule> sqlChecker = SQLCheckerFactory.newInstance(Collections.singleton(rule)).get(rule);
+        SQLChecker<AuthorityRule> sqlChecker = SQLCheckerFactory.getInstance(Collections.singleton(rule)).get(rule);
         assertTrue(sqlChecker.check("db0", new Grantee("root", "localhost"), rule));
     }
     
@@ -76,7 +76,7 @@ public final class AuthorityCheckerTest {
         users.add(root);
         AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(users, new ShardingSphereAlgorithmConfiguration("NATIVE", new Properties()));
         AuthorityRule rule = new AuthorityRule(ruleConfig, createMetaDataMap(users));
-        SQLChecker<AuthorityRule> sqlChecker = SQLCheckerFactory.newInstance(Collections.singleton(rule)).get(rule);
+        SQLChecker<AuthorityRule> sqlChecker = SQLCheckerFactory.getInstance(Collections.singleton(rule)).get(rule);
         assertTrue(sqlChecker.check("db0", new Grantee("root", "localhost"), rule));
         assertFalse(sqlChecker.check("db1", new Grantee("root", "localhost"), rule));
         assertFalse(sqlChecker.check("db0", new Grantee("other", "localhost"), rule));
@@ -90,7 +90,7 @@ public final class AuthorityCheckerTest {
         users.add(root);
         AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(users, new ShardingSphereAlgorithmConfiguration("NATIVE", new Properties()));
         AuthorityRule rule = new AuthorityRule(ruleConfig, Collections.emptyMap());
-        SQLChecker<AuthorityRule> sqlChecker = SQLCheckerFactory.newInstance(Collections.singleton(rule)).get(rule);
+        SQLChecker<AuthorityRule> sqlChecker = SQLCheckerFactory.getInstance(Collections.singleton(rule)).get(rule);
         assertTrue(sqlChecker.check(new Grantee("root", "localhost"), rule));
         assertFalse(sqlChecker.check(new Grantee("root", "192.168.0.1"), rule));
         assertFalse(sqlChecker.check(new Grantee("admin", "localhost"), rule));
@@ -104,7 +104,7 @@ public final class AuthorityCheckerTest {
         users.add(root);
         AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(users, new ShardingSphereAlgorithmConfiguration("NATIVE", new Properties()));
         AuthorityRule rule = new AuthorityRule(ruleConfig, Collections.emptyMap());
-        SQLChecker<AuthorityRule> sqlChecker = SQLCheckerFactory.newInstance(Collections.singleton(rule)).get(rule);
+        SQLChecker<AuthorityRule> sqlChecker = SQLCheckerFactory.getInstance(Collections.singleton(rule)).get(rule);
         SelectStatement selectStatement = mock(SelectStatement.class);
         CreateTableStatement createTableStatement = mock(CreateTableStatement.class);
         InsertStatement insertStatement = mock(InsertStatement.class);

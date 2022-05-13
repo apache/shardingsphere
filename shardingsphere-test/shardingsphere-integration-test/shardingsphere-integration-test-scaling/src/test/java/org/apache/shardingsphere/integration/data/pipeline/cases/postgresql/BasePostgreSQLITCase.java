@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.integration.data.pipeline.cases.postgresql;
 
-import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -39,7 +38,6 @@ public abstract class BasePostgreSQLITCase extends BaseITCase {
     
     protected static final DatabaseType DATABASE = new PostgreSQLDatabaseType();
     
-    @Getter
     private final ExtraSQLCommand extraSQLCommand;
     
     public BasePostgreSQLITCase(final ScalingParameterized parameterized) {
@@ -55,13 +53,14 @@ public abstract class BasePostgreSQLITCase extends BaseITCase {
             addResource(connection);
         }
         initShardingRule();
-        setIncreaseTaskThread(new Thread(new PostgreSQLIncrementTaskRunnable(getJdbcTemplate(), getCommonSQLCommand())));
+        createSchema("test");
+        setIncreaseTaskThread(new Thread(new PostgreSQLIncrementTaskRunnable(getJdbcTemplate(), extraSQLCommand)));
         getJdbcTemplate().execute(extraSQLCommand.getCreateTableOrder());
         getJdbcTemplate().execute(extraSQLCommand.getCreateTableOrderItem());
         getIncreaseTaskThread().start();
         Pair<List<Object[]>, List<Object[]>> dataPair = TableCrudUtil.generatePostgresSQLInsertDataList(3000);
-        getJdbcTemplate().batchUpdate(getExtraSQLCommand().getInsertOrder(), dataPair.getLeft());
-        getJdbcTemplate().batchUpdate(getCommonSQLCommand().getInsertOrderItem(), dataPair.getRight());
+        getJdbcTemplate().batchUpdate(extraSQLCommand.getFullInsertOrder(), dataPair.getLeft());
+        getJdbcTemplate().batchUpdate(extraSQLCommand.getInsertOrderItem(), dataPair.getRight());
     }
     
     @Override

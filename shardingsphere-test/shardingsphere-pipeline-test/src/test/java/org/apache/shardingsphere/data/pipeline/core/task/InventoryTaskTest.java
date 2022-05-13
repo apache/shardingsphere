@@ -21,9 +21,7 @@ import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfigura
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
-import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosition;
-import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
-import org.apache.shardingsphere.data.pipeline.api.ingest.position.PrimaryKeyPosition;
+import org.apache.shardingsphere.data.pipeline.api.ingest.position.IntegerPrimaryKeyPosition;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
@@ -38,8 +36,10 @@ import org.junit.Test;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 
-import static org.junit.Assert.assertFalse;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
 
 public final class InventoryTaskTest {
     
@@ -64,14 +64,7 @@ public final class InventoryTaskTest {
     
     @Test(expected = IngestException.class)
     public void assertStartWithGetEstimatedRowsFailure() {
-        InventoryDumperConfiguration inventoryDumperConfig = new InventoryDumperConfiguration(taskConfig.getDumperConfig());
-        inventoryDumperConfig.setActualTableName("t_non_exist");
-        inventoryDumperConfig.setLogicTableName("t_non_exist");
-        IngestPosition<?> position = taskConfig.getDumperConfig().getPosition();
-        if (null == position) {
-            position = new PrimaryKeyPosition(0, 1000);
-        }
-        inventoryDumperConfig.setPosition(position);
+        InventoryDumperConfiguration inventoryDumperConfig = createInventoryDumperConfiguration("t_non_exist", "t_non_exist");
         PipelineDataSourceWrapper dataSource = DATA_SOURCE_MANAGER.getDataSource(inventoryDumperConfig.getDataSourceConfig());
         PipelineTableMetaDataLoader metaDataLoader = new PipelineTableMetaDataLoader(dataSource);
         try (
@@ -85,16 +78,8 @@ public final class InventoryTaskTest {
     @Test
     public void assertGetProgress() throws SQLException {
         initTableData(taskConfig.getDumperConfig());
-        InventoryDumperConfiguration inventoryDumperConfig = new InventoryDumperConfiguration(taskConfig.getDumperConfig());
         // TODO use t_order_0, and also others
-        inventoryDumperConfig.setActualTableName("t_order");
-        inventoryDumperConfig.setLogicTableName("t_order");
-        inventoryDumperConfig.setPrimaryKey("order_id");
-        IngestPosition<?> position = taskConfig.getDumperConfig().getPosition();
-        if (null == position) {
-            position = new PrimaryKeyPosition(0, 1000);
-        }
-        inventoryDumperConfig.setPosition(position);
+        InventoryDumperConfiguration inventoryDumperConfig = createInventoryDumperConfiguration("t_order", "t_order");
         PipelineDataSourceWrapper dataSource = DATA_SOURCE_MANAGER.getDataSource(inventoryDumperConfig.getDataSourceConfig());
         PipelineTableMetaDataLoader metaDataLoader = new PipelineTableMetaDataLoader(dataSource);
         try (
@@ -102,7 +87,7 @@ public final class InventoryTaskTest {
                         PipelineContextUtil.getPipelineChannelCreator(),
                         new PipelineDataSourceManager(), dataSource, metaDataLoader, PipelineContextUtil.getExecuteEngine())) {
             inventoryTask.start();
-            assertFalse(inventoryTask.getProgress().getPosition() instanceof FinishedPosition);
+            assertThat(inventoryTask.getProgress().getPosition(), instanceOf(IntegerPrimaryKeyPosition.class));
         }
     }
     
@@ -116,5 +101,15 @@ public final class InventoryTaskTest {
             statement.execute("CREATE TABLE t_order (order_id INT PRIMARY KEY, user_id VARCHAR(12))");
             statement.execute("INSERT INTO t_order (order_id, user_id) VALUES (1, 'xxx'), (999, 'yyy')");
         }
+    }
+    
+    private InventoryDumperConfiguration createInventoryDumperConfiguration(final String logicTableName, final String actualTableName) {
+        InventoryDumperConfiguration result = new InventoryDumperConfiguration(taskConfig.getDumperConfig());
+        result.setLogicTableName(logicTableName);
+        result.setActualTableName(actualTableName);
+        result.setPrimaryKey("order_id");
+        result.setUniqueKeyDataType(Types.INTEGER);
+        result.setPosition(null == taskConfig.getDumperConfig().getPosition() ? new IntegerPrimaryKeyPosition(0, 1000) : taskConfig.getDumperConfig().getPosition());
+        return result;
     }
 }

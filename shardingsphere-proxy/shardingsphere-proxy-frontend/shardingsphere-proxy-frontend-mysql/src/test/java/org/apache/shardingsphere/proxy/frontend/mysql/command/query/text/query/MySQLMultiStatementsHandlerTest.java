@@ -43,9 +43,9 @@ import java.sql.Statement;
 import java.util.Collections;
 import java.util.Optional;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
@@ -93,7 +93,7 @@ public final class MySQLMultiStatementsHandlerTest {
             when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
             when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY)).thenReturn(1);
             ResponseHeader actual = new MySQLMultiStatementsHandler(connectionSession, expectedStatement, sql).execute();
-            assertTrue(actual instanceof UpdateResponseHeader);
+            assertThat(actual, instanceOf(UpdateResponseHeader.class));
             UpdateResponseHeader actualHeader = (UpdateResponseHeader) actual;
             assertThat(actualHeader.getUpdateCount(), is(3L));
             assertThat(actualHeader.getLastInsertId(), is(0L));

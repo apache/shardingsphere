@@ -52,7 +52,7 @@ public final class SQLRewriteEntry {
         this.databaseName = databaseName;
         this.schemas = schemas;
         this.props = props;
-        decorators = SQLRewriteContextDecoratorFactory.newInstance(rules);
+        decorators = SQLRewriteContextDecoratorFactory.getInstance(rules);
     }
     
     /**

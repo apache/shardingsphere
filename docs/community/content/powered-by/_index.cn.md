@@ -13,7 +13,7 @@ chapter = true
 
 ## 谁在使用 ShardingSphere?
 
-共计 193 家公司。
+共计 194 家公司。
 
 ### 基础软件
 <ul>
@@ -161,6 +161,20 @@ chapter = true
     <li><a href="http://www.yaduo.com/" rel="nofollow">亚朵</a></li>
 </ul>
 
+### 互联网文娱
+<ul>
+    <li><a href="https://www.ximalaya.com/" rel="nofollow">喜马拉雅</a>：<a href="https://mp.weixin.qq.com/s/hQpNb-SkDLtfo2sAo5Z_TA" rel="nofollow">用户案例</a></li>
+    <li><a href="https://y.tencentmusic.com" rel="nofollow">腾讯音乐</a></li>
+    <li><a href="https://www.bilibili.com/" rel="nofollow">哔哩哔哩</a></li>
+    <li><a href="https://www.iqiyi.com/" rel="nofollow">爱奇艺</a></li>
+    <li><a href="https://www.yy.com/" rel="nofollow">欢聚时代(YY)</a></li>
+    <li><a href="https://www.douyu.com/" rel="nofollow">斗鱼</a></li>
+    <li><a href="https://www.soulapp.cn/" rel="nofollow">Soul App</a></li>
+    <li><a href="https://www.bbgameonline.com/" rel="nofollow">BBGame</a></li>
+    <li><a href="https://www.elelive.net/" rel="nofollow">小象直播</a></li>
+    <li><a href="http://read.zhulang.com/" rel="nofollow">连尚文学</a></li>
+</ul>
+
 ### 互联网教育
 <ul>
     <li><a href="http://www.100tal.com/" rel="nofollow">好未来</a></li>
@@ -176,19 +190,6 @@ chapter = true
     <li><a href="http://www.swydedu.com/" rel="nofollow">数维原动</a></li>
     <li><a href="https://www.codemao.cn/" rel="nofollow">编程猫</a></li>
     <li><a href="https://www.yxt.com/" rel="nofollow">云学堂</a></li>
-</ul>
-
-### 互联网文娱
-<ul>
-    <li><a href="https://y.tencentmusic.com" rel="nofollow">腾讯音乐</a></li>
-    <li><a href="https://www.bilibili.com/" rel="nofollow">哔哩哔哩</a></li>
-    <li><a href="https://www.iqiyi.com/" rel="nofollow">爱奇艺</a></li>
-    <li><a href="https://www.yy.com/" rel="nofollow">欢聚时代(YY)</a></li>
-    <li><a href="https://www.douyu.com/" rel="nofollow">斗鱼</a></li>
-    <li><a href="https://www.soulapp.cn/" rel="nofollow">Soul App</a></li>
-    <li><a href="https://www.bbgameonline.com/" rel="nofollow">BBGame</a></li>
-    <li><a href="https://www.elelive.net/" rel="nofollow">小象直播</a></li>
-    <li><a href="http://read.zhulang.com/" rel="nofollow">连尚文学</a></li>
 </ul>
 
 ### 新闻资讯

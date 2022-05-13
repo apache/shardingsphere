@@ -50,9 +50,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.nullable;
@@ -107,7 +107,7 @@ public final class PostgreSQLAggregatedBatchedStatementsCommandExecutorTest {
         for (int i = 0; i < BATCH_SIZE; i++) {
             assertThat(actualPackets.get(i * 3), is(PostgreSQLBindCompletePacket.getInstance()));
             assertThat(actualPackets.get(i * 3 + 1), is(PostgreSQLNoDataPacket.getInstance()));
-            assertTrue(actualPackets.get(i * 3 + 2) instanceof PostgreSQLCommandCompletePacket);
+            assertThat(actualPackets.get(i * 3 + 2), instanceOf(PostgreSQLCommandCompletePacket.class));
         }
     }
     

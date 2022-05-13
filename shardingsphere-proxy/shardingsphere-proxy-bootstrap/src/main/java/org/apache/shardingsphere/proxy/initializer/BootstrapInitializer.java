@@ -67,11 +67,11 @@ public final class BootstrapInitializer {
                 .props(proxyConfig.getGlobalConfiguration().getProperties())
                 .labels(proxyConfig.getGlobalConfiguration().getLabels())
                 .instanceDefinition(new InstanceDefinition(InstanceType.PROXY, port)).build();
-        return ContextManagerBuilderFactory.newInstance(modeConfig).build(parameter);
+        return ContextManagerBuilderFactory.getInstance(modeConfig).build(parameter);
     }
     
     private void contextManagerInitializedCallback(final ModeConfiguration modeConfig, final ContextManager contextManager) {
-        for (ContextManagerLifecycleListener each : ContextManagerLifecycleListenerFactory.newInstances()) {
+        for (ContextManagerLifecycleListener each : ContextManagerLifecycleListenerFactory.getAllInstances()) {
             try {
                 each.onInitialized(modeConfig, contextManager);
                 // CHECKSTYLE:OFF

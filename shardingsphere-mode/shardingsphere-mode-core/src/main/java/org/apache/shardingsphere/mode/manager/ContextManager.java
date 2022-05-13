@@ -27,8 +27,7 @@ import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDa
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRecognizer;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
@@ -391,8 +390,8 @@ public final class ContextManager implements AutoCloseable {
     /**
      * Reload meta data.
      *
-     * @param databaseName database name to be reload
-     * @param schemaName schema name to be reload
+     * @param databaseName database name to be reloaded
+     * @param schemaName schema name to be reloaded
      */
     public void reloadMetaData(final String databaseName, final String schemaName) {
         try {
@@ -402,7 +401,7 @@ public final class ContextManager implements AutoCloseable {
                 metaDataContexts.getMetaDataPersistService().ifPresent(optional -> optional.getSchemaMetaDataService().persistTables(databaseName, schemaName, each));
             }
         } catch (final SQLException ex) {
-            log.error("Reload database:{} meta data failed", databaseName, ex);
+            log.error("Reload database:{} meta data of schema:{} failed", databaseName, schemaName, ex);
         }
     }
     
@@ -420,7 +419,7 @@ public final class ContextManager implements AutoCloseable {
                     metaDataContexts.getMetaData(databaseName).getRuleMetaData().getRules(), metaDataContexts.getProps(), schemaName);
             loadTableMetaData(databaseName, schemaName, tableName, materials);
         } catch (final SQLException ex) {
-            log.error("Reload table:{} meta data of database:{} failed", tableName, databaseName, ex);
+            log.error("Reload table:{} meta data of database:{} schema:{} failed", tableName, databaseName, schemaName, ex);
         }
     }
     
@@ -440,7 +439,7 @@ public final class ContextManager implements AutoCloseable {
                     metaDataContexts.getMetaData(databaseName).getRuleMetaData().getRules(), metaDataContexts.getProps(), schemaName);
             loadTableMetaData(databaseName, schemaName, tableName, materials);
         } catch (final SQLException ex) {
-            log.error("Reload table:{} meta data of database:{} with data source:{} failed", tableName, databaseName, dataSourceName, ex);
+            log.error("Reload table:{} meta data of database:{} schema:{} with data source:{} failed", tableName, databaseName, schemaName, dataSourceName, ex);
         }
     }
     
@@ -456,7 +455,7 @@ public final class ContextManager implements AutoCloseable {
     private Map<String, ShardingSphereSchema> loadActualSchema(final String databaseName, final String schemaName) throws SQLException {
         Map<String, DataSource> dataSourceMap = metaDataContexts.getMetaData(databaseName).getResource().getDataSources();
         Collection<ShardingSphereRule> rules = metaDataContexts.getMetaDataMap().get(databaseName).getRuleMetaData().getRules();
-        DatabaseType databaseType = DatabaseTypeRecognizer.getDatabaseType(dataSourceMap.values());
+        DatabaseType databaseType = DatabaseTypeEngine.getDatabaseType(dataSourceMap.values());
         return SchemaLoader.load(schemaName, databaseType, dataSourceMap, rules, metaDataContexts.getProps().getProps());
     }
     
@@ -540,7 +539,7 @@ public final class ContextManager implements AutoCloseable {
     }
     
     private void persistTransactionConfiguration(final DatabaseConfiguration databaseConfig, final MetaDataPersistService metaDataPersistService) {
-        Optional<TransactionConfigurationFileGenerator> fileGenerator = TransactionConfigurationFileGeneratorFactory.newInstance(getTransactionRule().getProviderType());
+        Optional<TransactionConfigurationFileGenerator> fileGenerator = TransactionConfigurationFileGeneratorFactory.findInstance(getTransactionRule().getProviderType());
         if (fileGenerator.isPresent()) {
             Properties transactionProps = fileGenerator.get().getTransactionProps(getTransactionRule().getProps(), databaseConfig, instanceContext.getModeConfiguration().getType());
             metaDataPersistService.persistTransactionRule(transactionProps, true);
@@ -621,7 +620,7 @@ public final class ContextManager implements AutoCloseable {
     }
     
     private ShardingSphereTransactionManagerEngine createNewEngine(final DatabaseType databaseType, final Map<String, DataSource> dataSources) {
-        Optional<TransactionConfigurationFileGenerator> fileGenerator = TransactionConfigurationFileGeneratorFactory.newInstance(getTransactionRule().getProviderType());
+        Optional<TransactionConfigurationFileGenerator> fileGenerator = TransactionConfigurationFileGeneratorFactory.findInstance(getTransactionRule().getProviderType());
         fileGenerator.ifPresent(optional -> optional.generateFile(getTransactionRule().getProps(), instanceContext));
         ShardingSphereTransactionManagerEngine result = new ShardingSphereTransactionManagerEngine();
         result.init(databaseType, dataSources, getTransactionRule());
@@ -638,8 +637,8 @@ public final class ContextManager implements AutoCloseable {
         ConfigurationProperties configurationProps = metaDataContexts.getProps();
         MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(metaDataContexts.getGlobalRuleMetaData().getConfigurations(), configurationProps.getProps());
         metaDataContextsBuilder.addDatabase(databaseName, Strings.isNullOrEmpty(configurationProps.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE))
-                ? DatabaseTypeRegistry.getDefaultDatabaseType()
-                : DatabaseTypeRegistry.getTrunkDatabaseType(configurationProps.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE)),
+                ? DatabaseTypeEngine.getDefaultDatabaseType()
+                : DatabaseTypeEngine.getTrunkDatabaseType(configurationProps.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE)),
                 new DataSourceProvidedDatabaseConfiguration(new HashMap<>(), new LinkedList<>()), configurationProps.getProps());
         return metaDataContextsBuilder.build(metaDataContexts.getMetaDataPersistService().orElse(null));
     }

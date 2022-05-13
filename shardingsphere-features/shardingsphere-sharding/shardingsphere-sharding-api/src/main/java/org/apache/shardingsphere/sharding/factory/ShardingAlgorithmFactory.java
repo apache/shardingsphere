@@ -39,7 +39,7 @@ public final class ShardingAlgorithmFactory {
      * Create new instance of sharding algorithm.
      * 
      * @param shardingAlgorithmConfig sharding algorithm configuration
-     * @return new instance of sharding algorithm
+     * @return created instance
      */
     public static ShardingAlgorithm newInstance(final ShardingSphereAlgorithmConfiguration shardingAlgorithmConfig) {
         return ShardingSphereAlgorithmFactory.createAlgorithm(shardingAlgorithmConfig, ShardingAlgorithm.class);

@@ -61,10 +61,10 @@ public final class OpenGaussErrorPacketFactory {
     }
     
     /**
-     * New instance of openGauss error packet.
+     * Create new instance of openGauss error packet.
      *
      * @param cause cause
-     * @return instance of openGauss error packet
+     * @return created instance
      */
     public static OpenGaussErrorResponsePacket newInstance(final Exception cause) {
         if (existsServerErrorMessage(cause)) {

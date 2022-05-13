@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.database.DockerDatabaseContainer;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.database.MySQLContainer;
+import org.apache.shardingsphere.integration.data.pipeline.framework.container.database.OpenGaussContainer;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.database.PostgreSQLContainer;
 
 /**
@@ -35,7 +36,7 @@ public final class DatabaseContainerFactory {
      *
      * @param databaseType database type
      * @param dockerImageName database ver
-     * @return new instance of storage container
+     * @return created instance
      */
     public static DockerDatabaseContainer newInstance(final DatabaseType databaseType, final String dockerImageName) {
         switch (databaseType.getType()) {
@@ -43,6 +44,8 @@ public final class DatabaseContainerFactory {
                 return new MySQLContainer(dockerImageName);
             case "PostgreSQL":
                 return new PostgreSQLContainer(dockerImageName);
+            case "openGauss":
+                return new OpenGaussContainer(dockerImageName);
             default:
                 throw new RuntimeException(String.format("Database [%s] is unknown.", databaseType.getType()));
         }

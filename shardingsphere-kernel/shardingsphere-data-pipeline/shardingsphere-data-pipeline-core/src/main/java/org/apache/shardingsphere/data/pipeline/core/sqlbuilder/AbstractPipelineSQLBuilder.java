@@ -17,14 +17,15 @@
 
 package org.apache.shardingsphere.data.pipeline.core.sqlbuilder;
 
-import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import lombok.NonNull;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.core.record.RecordUtil;
+import org.apache.shardingsphere.data.pipeline.core.util.PipelineJdbcUtils;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -72,9 +73,18 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
     }
     
     @Override
-    public String buildInventoryDumpSQL(final String schemaName, final String tableName, final String uniqueKey) {
+    public String buildInventoryDumpSQL(final String schemaName, final String tableName, final String uniqueKey, final int uniqueKeyDataType, final boolean firstQuery) {
+        String decoratedTableName = decorate(schemaName, tableName);
         String quotedUniqueKey = quote(uniqueKey);
-        return "SELECT * FROM " + decorate(schemaName, tableName) + " WHERE " + quotedUniqueKey + " > ? AND " + quotedUniqueKey + " <= ? ORDER BY " + quotedUniqueKey + " ASC LIMIT ?";
+        if (PipelineJdbcUtils.isIntegerColumn(uniqueKeyDataType)) {
+            return "SELECT * FROM " + decoratedTableName + " WHERE " + quotedUniqueKey + " " + (firstQuery ? ">=" : ">") + " ?"
+                    + " AND " + quotedUniqueKey + " <= ? ORDER BY " + quotedUniqueKey + " ASC LIMIT ?";
+        } else if (PipelineJdbcUtils.isStringColumn(uniqueKeyDataType)) {
+            return "SELECT * FROM " + decoratedTableName + " WHERE " + quotedUniqueKey + " " + (firstQuery ? ">=" : ">") + " ?"
+                    + " ORDER BY " + quotedUniqueKey + " ASC LIMIT ?";
+        } else {
+            throw new IllegalArgumentException("Unknown uniqueKeyDataType: " + uniqueKeyDataType);
+        }
     }
     
     protected String decorate(final String schemaName, final String tableName) {
@@ -87,7 +97,7 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
     }
     
     private boolean isSchemaAvailable() {
-        return DatabaseTypeRegistry.getActualDatabaseType(getType()).isSchemaAvailable();
+        return DatabaseTypeFactory.getInstance(getType()).isSchemaAvailable();
     }
     
     @Override
@@ -173,10 +183,12 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
     }
     
     @Override
-    public String buildChunkedQuerySQL(final String schemaName, final String tableName, final String uniqueKey, final Number startUniqueValue) {
-        Preconditions.checkNotNull(uniqueKey, "uniqueKey is null");
-        Preconditions.checkNotNull(startUniqueValue, "startUniqueValue is null");
-        return "SELECT * FROM " + decorate(schemaName, tableName) + " WHERE " + quote(uniqueKey) + " > ? ORDER BY " + quote(uniqueKey) + " ASC LIMIT ?";
+    public String buildChunkedQuerySQL(final @NonNull String schemaName, final @NonNull String tableName, final @NonNull String uniqueKey, final boolean firstQuery) {
+        if (firstQuery) {
+            return "SELECT * FROM " + decorate(schemaName, tableName) + " ORDER BY " + quote(uniqueKey) + " ASC LIMIT ?";
+        } else {
+            return "SELECT * FROM " + decorate(schemaName, tableName) + " WHERE " + quote(uniqueKey) + " > ? ORDER BY " + quote(uniqueKey) + " ASC LIMIT ?";
+        }
     }
     
     @Override

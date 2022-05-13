@@ -498,7 +498,13 @@ public enum SQLVisitorRule {
     
     DROP_OUTLINE("DropOutline", SQLStatementType.DDL),
     
-    DROP_EDITION("DropEdition", SQLStatementType.DDL);
+    ALTER_OUTLINE("AlterOutline", SQLStatementType.DDL),
+    
+    ALTER_ANALYTIC_VIEW("AlterAnalyticView", SQLStatementType.DDL),
+    
+    DROP_EDITION("DropEdition", SQLStatementType.DDL),
+    
+    ALTER_ATTRIBUTE_DIMENSION("AlterAttributeDimension", SQLStatementType.DDL);
     
     private final String name;
     

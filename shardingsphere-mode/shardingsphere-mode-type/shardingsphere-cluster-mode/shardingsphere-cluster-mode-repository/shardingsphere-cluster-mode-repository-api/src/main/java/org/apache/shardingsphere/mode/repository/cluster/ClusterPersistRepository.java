@@ -68,18 +68,18 @@ public interface ClusterPersistRepository extends PersistRepository {
     void watchSessionConnection(InstanceContext instanceContext);
     
     /**
-     * Get global lock.
+     * Get internal mutex lock.
      *
      * @param lockName lock name
-     * @return internal lock
+     * @return internal mutex lock
      */
-    Lock getGlobalLock(String lockName);
+    Lock getInternalMutexLock(String lockName);
     
     /**
-     * Get standard lock.
+     * Get internal reentrant mutex lock.
      *
      * @param lockName lock name
-     * @return internal lock
+     * @return internal reentrant mutex lock
      */
-    Lock getStandardLock(String lockName);
+    Lock getInternalReentrantMutexLock(String lockName);
 }

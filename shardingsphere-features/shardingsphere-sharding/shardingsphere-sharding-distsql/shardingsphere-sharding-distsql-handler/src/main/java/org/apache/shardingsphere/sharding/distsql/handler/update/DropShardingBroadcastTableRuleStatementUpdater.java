@@ -40,19 +40,23 @@ public final class DropShardingBroadcastTableRuleStatementUpdater implements Rul
             return;
         }
         checkCurrentRuleConfiguration(databaseName, currentRuleConfig);
-        checkBroadCastTableRuleExist(databaseName, sqlStatement, currentRuleConfig);
+        checkBroadcastTableRuleExist(databaseName, sqlStatement, currentRuleConfig);
     }
     
-    private void checkBroadCastTableRuleExist(final String databaseName, final DropShardingBroadcastTableRulesStatement sqlStatement,
+    private void checkBroadcastTableRuleExist(final String databaseName, final DropShardingBroadcastTableRulesStatement sqlStatement,
                                               final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
         if (sqlStatement.isContainsExistClause()) {
             return;
         }
         if (!sqlStatement.getRules().isEmpty()) {
             Collection<String> currentRules = currentRuleConfig.getBroadcastTables();
-            Collection<String> notExistRules = sqlStatement.getRules().stream().filter(each -> !currentRules.contains(each)).collect(Collectors.toList());
+            Collection<String> notExistRules = sqlStatement.getRules().stream().filter(each -> !containsIgnoreCase(currentRules, each)).collect(Collectors.toList());
             DistSQLException.predictionThrow(notExistRules.isEmpty(), () -> new RequiredRuleMissedException("Broadcast", databaseName, notExistRules));
         }
+    }
+    
+    private static boolean containsIgnoreCase(final Collection<String> collection, final String str) {
+        return collection.stream().anyMatch(each -> each.equalsIgnoreCase(str));
     }
     
     private void checkCurrentRuleConfiguration(final String databaseName, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
@@ -72,7 +76,7 @@ public final class DropShardingBroadcastTableRuleStatementUpdater implements Rul
         if (sqlStatement.getRules().isEmpty()) {
             currentRuleConfig.getBroadcastTables().clear();
         } else {
-            currentRuleConfig.getBroadcastTables().removeIf(sqlStatement.getRules()::contains);
+            currentRuleConfig.getBroadcastTables().removeIf(each -> containsIgnoreCase(sqlStatement.getRules(), each));
         }
         return false;
     }
