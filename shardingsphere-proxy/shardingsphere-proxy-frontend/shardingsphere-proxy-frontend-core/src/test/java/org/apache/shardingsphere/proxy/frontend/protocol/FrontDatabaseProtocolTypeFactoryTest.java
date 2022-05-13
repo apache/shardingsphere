@@ -55,7 +55,7 @@ public final class FrontDatabaseProtocolTypeFactoryTest {
                 mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
         setContextManager(metaDataContexts);
         assertTrue(metaDataContexts.getMetaDataMap().isEmpty());
-        assertThat(FrontDatabaseProtocolTypeFactory.getDatabaseType().getName(), is("MySQL"));
+        assertThat(FrontDatabaseProtocolTypeFactory.getDatabaseType().getType(), is("MySQL"));
     }
     
     @Test
@@ -69,7 +69,7 @@ public final class FrontDatabaseProtocolTypeFactoryTest {
         assertTrue(metaDataContexts.getAllDatabaseNames().contains(DefaultDatabase.LOGIC_NAME));
         DatabaseType databaseType = FrontDatabaseProtocolTypeFactory.getDatabaseType();
         assertThat(databaseType, instanceOf(DatabaseType.class));
-        assertThat(databaseType.getName(), is("MySQL"));
+        assertThat(databaseType.getType(), is("MySQL"));
     }
     
     @Test
@@ -83,7 +83,7 @@ public final class FrontDatabaseProtocolTypeFactoryTest {
         assertTrue(metaDataContexts.getAllDatabaseNames().contains(DefaultDatabase.LOGIC_NAME));
         DatabaseType databaseType = FrontDatabaseProtocolTypeFactory.getDatabaseType();
         assertThat(databaseType, instanceOf(DatabaseType.class));
-        assertThat(databaseType.getName(), is("PostgreSQL"));
+        assertThat(databaseType.getType(), is("PostgreSQL"));
         assertThat(metaDataContexts.getMetaData(DefaultDatabase.LOGIC_NAME).getResource().getDatabaseType(), instanceOf(MySQLDatabaseType.class));
     }
     

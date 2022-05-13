@@ -34,11 +34,11 @@ public final class ShardingSphereTransactionManagerFactory {
     }
     
     /**
-     * Create new instances of ShardingSphere transaction manager.
+     * Get all instances of ShardingSphere transaction manager.
      * 
-     * @return new instances of ShardingSphere transaction manager
+     * @return got instances
      */
-    public static Collection<ShardingSphereTransactionManager> newInstances() {
+    public static Collection<ShardingSphereTransactionManager> getAllInstances() {
         return ShardingSphereServiceLoader.getServiceInstances(ShardingSphereTransactionManager.class);
     }
 }

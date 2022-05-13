@@ -61,7 +61,7 @@ public final class MergeEngine {
         this.databaseType = databaseType;
         this.metaData = metaData;
         this.props = props;
-        engines = ResultProcessEngineFactory.newInstance(rules);
+        engines = ResultProcessEngineFactory.getInstances(rules);
     }
     
     /**

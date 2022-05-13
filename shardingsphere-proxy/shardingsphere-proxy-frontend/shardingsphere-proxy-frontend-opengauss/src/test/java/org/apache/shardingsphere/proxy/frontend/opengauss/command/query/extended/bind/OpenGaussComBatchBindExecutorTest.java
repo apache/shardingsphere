@@ -45,10 +45,10 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Iterator;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -98,7 +98,7 @@ public final class OpenGaussComBatchBindExecutorTest {
         OpenGaussComBatchBindExecutor executor = new OpenGaussComBatchBindExecutor(packet, connectionSession);
         Iterator<DatabasePacket<?>> actualPacketsIterator = executor.execute().iterator();
         assertThat(actualPacketsIterator.next(), is(PostgreSQLBindCompletePacket.getInstance()));
-        assertTrue(actualPacketsIterator.next() instanceof PostgreSQLCommandCompletePacket);
+        assertThat(actualPacketsIterator.next(), instanceOf(PostgreSQLCommandCompletePacket.class));
         assertFalse(actualPacketsIterator.hasNext());
     }
     

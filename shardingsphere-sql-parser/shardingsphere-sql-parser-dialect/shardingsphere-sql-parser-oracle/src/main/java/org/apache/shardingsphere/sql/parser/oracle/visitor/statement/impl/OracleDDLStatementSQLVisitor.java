@@ -45,6 +45,11 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Create
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateDimensionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropEditionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropOutlineContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterOutlineContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterAnalyticViewContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterAttributeDimensionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateSequenceContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateEditionContext;
@@ -122,6 +127,11 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.Ora
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateDimensionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateFunctionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropEditionStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropOutlineStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterOutlineStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterAnalyticViewStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterAttributeDimensionStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateSequenceStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateEditionStatement;
@@ -684,5 +694,30 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
     @Override
     public ASTNode visitDropEdition(final DropEditionContext ctx) {
         return new OracleDropEditionStatement();
+    }
+    
+    @Override
+    public ASTNode visitDropOutline(final DropOutlineContext ctx) {
+        return new OracleDropOutlineStatement();
+    }
+    
+    @Override
+    public ASTNode visitAlterOutline(final AlterOutlineContext ctx) {
+        return new OracleAlterOutlineStatement();
+    }
+    
+    @Override
+    public ASTNode visitAlterAnalyticView(final AlterAnalyticViewContext ctx) {
+        return new OracleAlterAnalyticViewStatement();
+    }
+    
+    @Override
+    public ASTNode visitAlterAttributeDimension(final AlterAttributeDimensionContext ctx) {
+        return new OracleAlterAttributeDimensionStatement();
+    }
+    
+    @Override
+    public ASTNode visitCreateSequence(final CreateSequenceContext ctx) {
+        return new OracleCreateSequenceStatement();
     }
 }

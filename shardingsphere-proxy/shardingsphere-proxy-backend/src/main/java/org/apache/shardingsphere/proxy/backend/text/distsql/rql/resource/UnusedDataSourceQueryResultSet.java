@@ -131,7 +131,7 @@ public final class UnusedDataSourceQueryResultSet implements DistSQLResultSet {
         DataSourceMetaData metaData = resource.getDataSourcesMetaData().getDataSourceMetaData(dataSourceName);
         Collection<Object> result = new LinkedList<>();
         result.add(dataSourceName);
-        result.add(resource.getDatabaseType().getName());
+        result.add(resource.getDatabaseType().getType());
         result.add(metaData.getHostname());
         result.add(metaData.getPort());
         result.add(metaData.getCatalog());

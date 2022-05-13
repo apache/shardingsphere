@@ -67,7 +67,7 @@ public final class EncryptAlterTableTokenGenerator implements CollectionSQLToken
         result.addAll(getModifyColumnTokens(tableName, alterTableStatementContext.getSqlStatement().getModifyColumnDefinitions()));
         result.addAll(getChangeColumnTokens(tableName, alterTableStatementContext.getSqlStatement().getChangeColumnDefinitions()));
         Collection<SQLToken> dropColumnTokens = getDropColumnTokens(tableName, alterTableStatementContext.getSqlStatement().getDropColumnDefinitions());
-        String databaseName = alterTableStatementContext.getDatabaseType().getName();
+        String databaseName = alterTableStatementContext.getDatabaseType().getType();
         if ("SQLServer".equals(databaseName)) {
             result.addAll(mergeDropColumnStatement(dropColumnTokens, "", ""));
         } else if ("Oracle".equals(databaseName)) {

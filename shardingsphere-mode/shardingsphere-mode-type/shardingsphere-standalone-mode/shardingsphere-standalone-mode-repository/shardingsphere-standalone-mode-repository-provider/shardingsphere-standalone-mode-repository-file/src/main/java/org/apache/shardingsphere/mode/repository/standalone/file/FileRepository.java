@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mode.repository.standalone.file;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepository;
 
@@ -44,14 +43,10 @@ public final class FileRepository implements StandalonePersistRepository {
     
     private static final String DEFAULT_PERSIST_DIRECTORY = ".shardingsphere";
     
-    @Getter
-    private Properties props;
-    
     private String path;
     
     @Override
     public void init(final Properties props) {
-        this.props = props;
         FileRepositoryProperties localRepositoryProps = new FileRepositoryProperties(props);
         path = Optional.ofNullable(
                 Strings.emptyToNull(localRepositoryProps.getValue(FileRepositoryPropertyKey.PATH)))

@@ -28,6 +28,7 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -56,14 +57,14 @@ public final class TypedSPIRegistryTest {
     public void assertGetRegisteredServiceWithProperties() {
         Properties props = new Properties();
         props.put("key", 1);
-        TypedSPIFixture actual = TypedSPIRegistry.getRegisteredService(TypedSPIFixture.class, "TYPED.FIXTURE", props);
-        assertThat(actual.getProps().getProperty("key"), is("1"));
+        TypedSPIFixtureImpl actual = (TypedSPIFixtureImpl) TypedSPIRegistry.getRegisteredService(TypedSPIFixture.class, "TYPED.FIXTURE", props);
+        assertThat(actual.getValue(), is("1"));
     }
     
     @Test
     public void assertGetRegisteredServiceWithNullProperties() {
-        TypedSPIFixture actual = TypedSPIRegistry.getRegisteredService(TypedSPIFixture.class, "TYPED.FIXTURE", null);
-        assertTrue(actual.getProps().isEmpty());
+        TypedSPIFixtureImpl actual = (TypedSPIFixtureImpl) TypedSPIRegistry.getRegisteredService(TypedSPIFixture.class, "TYPED.FIXTURE", null);
+        assertNull(actual.getValue());
     }
     
     @Test

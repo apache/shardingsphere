@@ -53,7 +53,7 @@ public final class OraclePrivilegeHandlerTest {
         Collection<ShardingSphereUser> newUsers = createUsers();
         newUsers.add(new ShardingSphereUser("user", "", ""));
         DataSource dataSource = mockDataSourceForUsers(newUsers);
-        Optional<StoragePrivilegeHandler> storagePrivilegeHandler = StoragePrivilegeHandlerFactory.newInstance("Oracle");
+        Optional<StoragePrivilegeHandler> storagePrivilegeHandler = StoragePrivilegeHandlerFactory.findInstance("Oracle");
         assertTrue(storagePrivilegeHandler.isPresent());
         assertDiffUsers(storagePrivilegeHandler.get().diff(newUsers, dataSource));
     }
@@ -62,7 +62,7 @@ public final class OraclePrivilegeHandlerTest {
     public void assertCreate() throws SQLException {
         Collection<ShardingSphereUser> users = createUsers();
         DataSource dataSource = mockDataSourceForUsers(users);
-        Optional<StoragePrivilegeHandler> storagePrivilegeHandler = StoragePrivilegeHandlerFactory.newInstance("Oracle");
+        Optional<StoragePrivilegeHandler> storagePrivilegeHandler = StoragePrivilegeHandlerFactory.findInstance("Oracle");
         assertTrue(storagePrivilegeHandler.isPresent());
         storagePrivilegeHandler.get().create(users, dataSource);
         assertCreateUsers(users, dataSource.getConnection().createStatement());
@@ -72,7 +72,7 @@ public final class OraclePrivilegeHandlerTest {
     public void assertGrantAll() throws SQLException {
         Collection<ShardingSphereUser> users = createUsers();
         DataSource dataSource = mockDataSourceForUsers(users);
-        Optional<StoragePrivilegeHandler> storagePrivilegeHandler = StoragePrivilegeHandlerFactory.newInstance("Oracle");
+        Optional<StoragePrivilegeHandler> storagePrivilegeHandler = StoragePrivilegeHandlerFactory.findInstance("Oracle");
         assertTrue(storagePrivilegeHandler.isPresent());
         storagePrivilegeHandler.get().grantAll(users, dataSource);
         assertGrantUsersAll(users, dataSource.getConnection().createStatement());
@@ -82,7 +82,7 @@ public final class OraclePrivilegeHandlerTest {
     public void assertLoad() throws SQLException {
         Collection<ShardingSphereUser> users = createUsers();
         DataSource dataSource = mockDataSource(users);
-        Optional<StoragePrivilegeHandler> storagePrivilegeHandler = StoragePrivilegeHandlerFactory.newInstance("Oracle");
+        Optional<StoragePrivilegeHandler> storagePrivilegeHandler = StoragePrivilegeHandlerFactory.findInstance("Oracle");
         assertTrue(storagePrivilegeHandler.isPresent());
         assertPrivileges(storagePrivilegeHandler.get().load(users, dataSource));
     }

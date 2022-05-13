@@ -20,11 +20,12 @@ package org.apache.shardingsphere.integration.data.pipeline.cases.postgresql;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.shardingsphere.integration.data.pipeline.cases.command.CommonSQLCommand;
+import org.apache.shardingsphere.integration.data.pipeline.cases.command.ExtraSQLCommand;
 import org.apache.shardingsphere.integration.data.pipeline.util.TableCrudUtil;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.sql.SQLException;
+import java.time.Instant;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -32,17 +33,9 @@ import java.util.List;
 @AllArgsConstructor
 public final class PostgreSQLIncrementTaskRunnable implements Runnable {
     
-    private static final String UPDATE_ORDER_BY_ID = "UPDATE t_order SET t_varchar = 'update' WHERE id = %s";
-    
-    private static final String UPDATE_ORDER_ITEM_BY_ID = "UPDATE t_order_item SET status = 'changed' WHERE item_id = %s";
-    
-    private static final String INSERT_ORDER = "INSERT INTO t_order ( id, order_id, user_id) VALUES (?, ?, ?)";
-    
-    private static final String INSERT_ORDER_ITEM = "INSERT INTO t_order_item (item_id, order_id, user_id, status) VALUES(?,?,?,?)";
-    
     private final JdbcTemplate jdbcTemplate;
     
-    private final CommonSQLCommand commonSQLCommand;
+    private final ExtraSQLCommand extraSQLCommand;
     
     @Override
     public void run() {
@@ -67,18 +60,19 @@ public final class PostgreSQLIncrementTaskRunnable implements Runnable {
     
     private long insertOrderAndOrderItem() throws SQLException {
         Pair<Object[], Object[]> dataPair = TableCrudUtil.generateSimpleInsertData();
-        jdbcTemplate.update(INSERT_ORDER, dataPair.getLeft());
-        jdbcTemplate.update(INSERT_ORDER_ITEM, dataPair.getRight());
+        jdbcTemplate.update(extraSQLCommand.getInsertOrder(), dataPair.getLeft());
+        jdbcTemplate.update(extraSQLCommand.getInsertOrderItem(), dataPair.getRight());
         return Long.parseLong(dataPair.getLeft()[0].toString());
     }
     
     private void updateOrderAndOrderItem(final long primaryKey) throws SQLException {
-        jdbcTemplate.execute(String.format(UPDATE_ORDER_BY_ID, primaryKey));
-        jdbcTemplate.execute(String.format(UPDATE_ORDER_ITEM_BY_ID, primaryKey));
+        long epochSecond = Instant.now().getEpochSecond();
+        jdbcTemplate.update(extraSQLCommand.getUpdateOrderById(), "update" + epochSecond, primaryKey);
+        jdbcTemplate.update(extraSQLCommand.getUpdateOrderItemById(), "changed" + epochSecond, primaryKey);
     }
     
     private void deleteOrderAndOrderItem(final long primaryKey) throws SQLException {
-        jdbcTemplate.execute(String.format(commonSQLCommand.getDeleteOrder(), primaryKey));
-        jdbcTemplate.execute(String.format(commonSQLCommand.getDeleteOrderItem(), primaryKey));
+        jdbcTemplate.update(extraSQLCommand.getDeleteOrderById(), primaryKey);
+        jdbcTemplate.update(extraSQLCommand.getDeleteOrderItemById(), primaryKey);
     }
 }

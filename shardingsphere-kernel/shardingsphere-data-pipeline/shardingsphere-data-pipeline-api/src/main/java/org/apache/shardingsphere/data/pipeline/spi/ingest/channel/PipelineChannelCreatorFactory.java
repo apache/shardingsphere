@@ -38,7 +38,7 @@ public final class PipelineChannelCreatorFactory {
      * Create new instance of pipeline channel creator.
      *
      * @param pipelineChannelCreatorConfig pipeline channel creator configuration
-     * @return new instance of pipeline channel creator
+     * @return created instance
      */
     public static PipelineChannelCreator newInstance(final ShardingSphereAlgorithmConfiguration pipelineChannelCreatorConfig) {
         return ShardingSphereAlgorithmFactory.createAlgorithm(pipelineChannelCreatorConfig, PipelineChannelCreator.class);

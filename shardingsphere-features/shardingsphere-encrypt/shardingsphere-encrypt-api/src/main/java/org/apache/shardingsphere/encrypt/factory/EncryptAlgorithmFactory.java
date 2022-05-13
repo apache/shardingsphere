@@ -41,7 +41,7 @@ public final class EncryptAlgorithmFactory {
      * @param encryptAlgorithmConfig encrypt algorithm configuration
      * @param <I> type of to be encrypted data
      * @param <O> type of to be decrypted data
-     * @return new instance of encrypt algorithm
+     * @return created instance
      */
     public static <I, O> EncryptAlgorithm<I, O> newInstance(final ShardingSphereAlgorithmConfiguration encryptAlgorithmConfig) {
         return ShardingSphereAlgorithmFactory.createAlgorithm(encryptAlgorithmConfig, EncryptAlgorithm.class);

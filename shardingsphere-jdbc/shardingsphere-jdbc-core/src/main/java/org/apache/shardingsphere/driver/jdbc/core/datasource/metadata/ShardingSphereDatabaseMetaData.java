@@ -124,7 +124,7 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     @Override
     public ResultSet getColumnPrivileges(final String catalog, final String schema, final String table, final String columnNamePattern) throws SQLException {
         return createDatabaseMetaDataResultSet(
-                getDatabaseMetaData().getColumnPrivileges(getActualCatalog(catalog), getActualSchema(schema), getActualTable(catalog, table), columnNamePattern));
+                getDatabaseMetaData().getColumnPrivileges(getActualCatalog(catalog), getActualSchema(schema), getActualTable(getActualCatalog(catalog), table), columnNamePattern));
     }
     
     @Override
@@ -134,27 +134,28 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     
     @Override
     public ResultSet getBestRowIdentifier(final String catalog, final String schema, final String table, final int scope, final boolean nullable) throws SQLException {
-        return createDatabaseMetaDataResultSet(getDatabaseMetaData().getBestRowIdentifier(getActualCatalog(catalog), getActualSchema(schema), getActualTable(catalog, table), scope, nullable));
+        return createDatabaseMetaDataResultSet(getDatabaseMetaData().getBestRowIdentifier(getActualCatalog(catalog), getActualSchema(schema),
+                getActualTable(getActualCatalog(catalog), table), scope, nullable));
     }
     
     @Override
     public ResultSet getVersionColumns(final String catalog, final String schema, final String table) throws SQLException {
-        return createDatabaseMetaDataResultSet(getDatabaseMetaData().getVersionColumns(getActualCatalog(catalog), getActualSchema(schema), getActualTable(catalog, table)));
+        return createDatabaseMetaDataResultSet(getDatabaseMetaData().getVersionColumns(getActualCatalog(catalog), getActualSchema(schema), getActualTable(getActualCatalog(catalog), table)));
     }
     
     @Override
     public ResultSet getPrimaryKeys(final String catalog, final String schema, final String table) throws SQLException {
-        return createDatabaseMetaDataResultSet(getDatabaseMetaData().getPrimaryKeys(getActualCatalog(catalog), getActualSchema(schema), getActualTable(catalog, table)));
+        return createDatabaseMetaDataResultSet(getDatabaseMetaData().getPrimaryKeys(getActualCatalog(catalog), getActualSchema(schema), getActualTable(getActualCatalog(catalog), table)));
     }
     
     @Override
     public ResultSet getImportedKeys(final String catalog, final String schema, final String table) throws SQLException {
-        return createDatabaseMetaDataResultSet(getDatabaseMetaData().getImportedKeys(getActualCatalog(catalog), getActualSchema(schema), getActualTable(catalog, table)));
+        return createDatabaseMetaDataResultSet(getDatabaseMetaData().getImportedKeys(getActualCatalog(catalog), getActualSchema(schema), getActualTable(getActualCatalog(catalog), table)));
     }
     
     @Override
     public ResultSet getExportedKeys(final String catalog, final String schema, final String table) throws SQLException {
-        return createDatabaseMetaDataResultSet(getDatabaseMetaData().getExportedKeys(getActualCatalog(catalog), getActualSchema(schema), getActualTable(catalog, table)));
+        return createDatabaseMetaDataResultSet(getDatabaseMetaData().getExportedKeys(getActualCatalog(catalog), getActualSchema(schema), getActualTable(getActualCatalog(catalog), table)));
     }
     
     @Override
@@ -171,7 +172,8 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     
     @Override
     public ResultSet getIndexInfo(final String catalog, final String schema, final String table, final boolean unique, final boolean approximate) throws SQLException {
-        return createDatabaseMetaDataResultSet(getDatabaseMetaData().getIndexInfo(getActualCatalog(catalog), getActualSchema(schema), getActualTable(catalog, table), unique, approximate));
+        return createDatabaseMetaDataResultSet(getDatabaseMetaData().getIndexInfo(getActualCatalog(catalog), getActualSchema(schema),
+                getActualTable(getActualCatalog(catalog), table), unique, approximate));
     }
     
     @Override

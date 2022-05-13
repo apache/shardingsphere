@@ -142,7 +142,7 @@ public final class DataConsistencyChecker {
     }
     
     private long count(final DataSource dataSource, final String tableName, final DatabaseType databaseType) {
-        String sql = PipelineSQLBuilderFactory.newInstance(databaseType.getName()).buildCountSQL(tableNameSchemaNameMapping.getSchemaName(tableName), tableName);
+        String sql = PipelineSQLBuilderFactory.getInstance(databaseType.getType()).buildCountSQL(tableNameSchemaNameMapping.getSchemaName(tableName), tableName);
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -164,8 +164,8 @@ public final class DataConsistencyChecker {
         try (
                 PipelineDataSourceWrapper sourceDataSource = PipelineDataSourceFactory.newInstance(sourceDataSourceConfig);
                 PipelineDataSourceWrapper targetDataSource = PipelineDataSourceFactory.newInstance(targetDataSourceConfig)) {
-            String sourceDatabaseType = sourceDataSourceConfig.getDatabaseType().getName();
-            String targetDatabaseType = targetDataSourceConfig.getDatabaseType().getName();
+            String sourceDatabaseType = sourceDataSourceConfig.getDatabaseType().getType();
+            String targetDatabaseType = targetDataSourceConfig.getDatabaseType().getType();
             for (String each : logicTableNames) {
                 TableMetaData tableMetaData = getTableMetaData(jobConfig.getDatabaseName(), each);
                 if (null == tableMetaData) {
@@ -204,7 +204,7 @@ public final class DataConsistencyChecker {
     
     private PipelineDataSourceConfiguration getPipelineDataSourceConfiguration(final DataConsistencyCalculateAlgorithm calculator, final YamlPipelineDataSourceConfiguration dataSourceConfig) {
         PipelineDataSourceConfiguration result = PipelineDataSourceConfigurationFactory.newInstance(dataSourceConfig.getType(), dataSourceConfig.getParameter());
-        checkDatabaseTypeSupported(calculator.getSupportedDatabaseTypes(), result.getDatabaseType().getName());
+        checkDatabaseTypeSupported(calculator.getSupportedDatabaseTypes(), result.getDatabaseType().getType());
         addMySQLDataSourceConfig(result);
         return result;
     }
@@ -216,7 +216,7 @@ public final class DataConsistencyChecker {
     }
     
     private void addMySQLDataSourceConfig(final PipelineDataSourceConfiguration dataSourceConfig) {
-        if (dataSourceConfig.getDatabaseType().getName().equalsIgnoreCase(new MySQLDatabaseType().getName())) {
+        if (dataSourceConfig.getDatabaseType().getType().equalsIgnoreCase(new MySQLDatabaseType().getType())) {
             Properties queryProps = new Properties();
             queryProps.setProperty("yearIsDateType", Boolean.FALSE.toString());
             dataSourceConfig.appendJDBCQueryProperties(queryProps);

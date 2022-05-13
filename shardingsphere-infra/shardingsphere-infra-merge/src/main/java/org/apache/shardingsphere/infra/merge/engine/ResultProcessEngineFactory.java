@@ -37,13 +37,13 @@ public final class ResultProcessEngineFactory {
     }
     
     /**
-     * Create new instance of result process engine.
+     * Got instances of result process engine.
      * 
      * @param rules rules
-     * @return new instance of result process engine
+     * @return got instances
      */
     @SuppressWarnings("rawtypes")
-    public static Map<ShardingSphereRule, ResultProcessEngine> newInstance(final Collection<ShardingSphereRule> rules) {
+    public static Map<ShardingSphereRule, ResultProcessEngine> getInstances(final Collection<ShardingSphereRule> rules) {
         return OrderedSPIRegistry.getRegisteredServices(ResultProcessEngine.class, rules);
     }
 }

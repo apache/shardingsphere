@@ -155,7 +155,7 @@ public final class SetVariableBackendHandlerTest {
     }
     
     private HandlerParameter<SetVariableStatement> getParameter(final SetVariableStatement statement, final ConnectionSession connectionSession) {
-        return new HandlerParameter<SetVariableStatement>().setStatement(statement).setConnectionSession(connectionSession);
+        return new HandlerParameter<>(statement, new MySQLDatabaseType(), connectionSession);
     }
     
     @After

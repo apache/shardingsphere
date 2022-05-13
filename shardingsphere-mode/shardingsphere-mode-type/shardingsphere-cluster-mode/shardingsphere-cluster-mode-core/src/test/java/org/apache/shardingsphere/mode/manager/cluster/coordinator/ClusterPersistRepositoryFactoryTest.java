@@ -17,11 +17,8 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator;
 
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.fixture.ClusterPersistRepositoryFixture;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryFactory;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.junit.Test;
 
 import java.util.Properties;
@@ -31,14 +28,8 @@ import static org.junit.Assert.assertThat;
 
 public final class ClusterPersistRepositoryFactoryTest {
     
-    static {
-        ShardingSphereServiceLoader.register(ClusterPersistRepositoryFixture.class);
-    }
-    
     @Test
     public void assertNewInstance() {
-        ClusterPersistRepositoryConfiguration config = new ClusterPersistRepositoryConfiguration("TEST", "", "", new Properties());
-        ClusterPersistRepository clusterPersistRepository = ClusterPersistRepositoryFactory.newInstance(config);
-        assertThat(clusterPersistRepository.getType(), is("TEST"));
+        assertThat(ClusterPersistRepositoryFactory.getInstance(new ClusterPersistRepositoryConfiguration("FIXTURE", "", "", new Properties())).getType(), is("FIXTURE"));
     }
 }

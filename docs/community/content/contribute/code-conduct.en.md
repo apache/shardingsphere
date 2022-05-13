@@ -20,7 +20,7 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
  - Careful consideration for each `pull request`; Small and frequent `pull request` with complete unit function is welcomed.
  - Conform to `Contributor Covenant Code of Conduct` below.
  - If using IDEA, you can import the recommended [Settings](https://shardingsphere.apache.org/community/data/shardingsphere-settings.jar).
- - Through the uniform code style of spotless, add `-Pcode.format` when executing Maven command.
+ - Through the uniform code style of spotless, execute the `mvn spotless:apply` formatted code.
 
 ## Contributor Covenant Code of Conduct
 

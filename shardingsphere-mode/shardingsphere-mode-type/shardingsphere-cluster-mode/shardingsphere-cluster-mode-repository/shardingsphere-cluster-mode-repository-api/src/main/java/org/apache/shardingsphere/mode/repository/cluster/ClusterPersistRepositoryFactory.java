@@ -34,12 +34,12 @@ public final class ClusterPersistRepositoryFactory {
     }
     
     /**
-     * Create new instance of cluster persist repository.
+     * Get instance of cluster persist repository.
      * 
      * @param config persist repository configuration
-     * @return new instance of cluster persist repository
+     * @return got instance
      */
-    public static ClusterPersistRepository newInstance(final ClusterPersistRepositoryConfiguration config) {
+    public static ClusterPersistRepository getInstance(final ClusterPersistRepositoryConfiguration config) {
         Preconditions.checkNotNull(config, "Cluster persist repository configuration cannot be null.");
         ClusterPersistRepository result = TypedSPIRegistry.getRegisteredService(ClusterPersistRepository.class, config.getType(), config.getProps());
         result.init(config);

@@ -51,7 +51,7 @@ public final class ScalingEnvironmentManager {
         Collection<String> tables = jobConfig.splitLogicTableNames();
         log.info("cleanupTargetTables, tables={}", tables);
         YamlPipelineDataSourceConfiguration target = jobConfig.getTarget();
-        PipelineSQLBuilder pipelineSQLBuilder = PipelineSQLBuilderFactory.newInstance(jobConfig.getTargetDatabaseType());
+        PipelineSQLBuilder pipelineSQLBuilder = PipelineSQLBuilderFactory.getInstance(jobConfig.getTargetDatabaseType());
         ShardingSphereMetaData metaData = PipelineContext.getContextManager().getMetaDataContexts().getMetaData(jobConfig.getDatabaseName());
         TableNameSchemaNameMapping tableNameSchemaNameMapping = new TableNameSchemaNameMapping(TableNameSchemaNameMapping.convert(metaData.getSchemas()));
         try (

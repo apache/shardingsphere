@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.integration.env.cluster;
 import com.google.common.base.Splitter;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -62,7 +62,7 @@ public final class ClusterEnvironment {
     }
     
     private Collection<DatabaseType> getDatabaseTypes(final Properties props) {
-        return Arrays.stream(props.getProperty("it.cluster.databases").split(",")).map(each -> DatabaseTypeRegistry.getActualDatabaseType(each.trim())).collect(Collectors.toSet());
+        return Arrays.stream(props.getProperty("it.cluster.databases").split(",")).map(each -> DatabaseTypeFactory.getInstance(each.trim())).collect(Collectors.toSet());
     }
     
     /**

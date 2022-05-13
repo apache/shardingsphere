@@ -53,7 +53,7 @@ public final class DataSetLoader {
     }
     
     private static String getFile(final String parentPath, final String scenario, final DatabaseType databaseType, final String dataSetFile) {
-        String result = String.join(File.separator, parentPath, DATA_SET_FOLDER_NAME, scenario, databaseType.getName().toLowerCase(), dataSetFile);
+        String result = String.join(File.separator, parentPath, DATA_SET_FOLDER_NAME, scenario, databaseType.getType().toLowerCase(), dataSetFile);
         if (new File(result).exists()) {
             return result;
         }
@@ -65,6 +65,6 @@ public final class DataSetLoader {
         if (new File(result).exists()) {
             return result;
         }
-        throw new IllegalArgumentException(String.format("%s not found, path=%s, scenario=%s, databaseType=%s", dataSetFile, parentPath, scenario, databaseType.getName()));
+        throw new IllegalArgumentException(String.format("%s not found, path=%s, scenario=%s, databaseType=%s", dataSetFile, parentPath, scenario, databaseType.getType()));
     }
 }

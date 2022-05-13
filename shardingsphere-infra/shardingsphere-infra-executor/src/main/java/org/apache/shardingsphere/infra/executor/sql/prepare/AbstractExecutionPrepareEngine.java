@@ -48,7 +48,7 @@ public abstract class AbstractExecutionPrepareEngine<T> implements ExecutionPrep
     
     protected AbstractExecutionPrepareEngine(final int maxConnectionsSizePerQuery, final Collection<ShardingSphereRule> rules) {
         this.maxConnectionsSizePerQuery = maxConnectionsSizePerQuery;
-        decorators = ExecutionPrepareDecoratorFactory.newInstance(rules);
+        decorators = ExecutionPrepareDecoratorFactory.getInstance(rules);
     }
     
     @Override

@@ -38,7 +38,7 @@ public final class JobRateLimitAlgorithmFactory {
      * Create new instance of job rate limit algorithm.
      *
      * @param jobRateLimitAlgorithmConfig job rate limit algorithm configuration
-     * @return new instance of job rate limit algorithm
+     * @return created instance
      */
     public static JobRateLimitAlgorithm newInstance(final ShardingSphereAlgorithmConfiguration jobRateLimitAlgorithmConfig) {
         return ShardingSphereAlgorithmFactory.createAlgorithm(jobRateLimitAlgorithmConfig, JobRateLimitAlgorithm.class);

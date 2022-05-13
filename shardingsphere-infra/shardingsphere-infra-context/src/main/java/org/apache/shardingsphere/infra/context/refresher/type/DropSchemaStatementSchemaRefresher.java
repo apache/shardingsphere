@@ -54,7 +54,7 @@ public final class DropSchemaStatementSchemaRefresher implements MetaDataRefresh
             tobeRemovedTables.addAll(schema.getAllTableNames());
             tobeRemovedSchemas.add(each.toLowerCase());
             database.removeSchemaMetadata(each);
-            optimizerPlanners.put(database.getName(), OptimizerPlannerContextFactory.create(database));   
+            optimizerPlanners.put(database.getName(), OptimizerPlannerContextFactory.create(database));
         }
         Collection<MutableDataNodeRule> rules = metaData.getRuleMetaData().findRules(MutableDataNodeRule.class);
         for (String each : tobeRemovedTables) {
