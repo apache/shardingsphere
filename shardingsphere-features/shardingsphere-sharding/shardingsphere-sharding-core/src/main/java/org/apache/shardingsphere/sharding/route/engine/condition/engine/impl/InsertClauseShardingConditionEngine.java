@@ -67,7 +67,7 @@ public final class InsertClauseShardingConditionEngine implements ShardingCondit
     }
     
     private List<ShardingCondition> createShardingConditionsWithInsertValues(final InsertStatementContext sqlStatementContext, final List<Object> parameters) {
-        String tableName = sqlStatementContext.getTable().getTableName().getIdentifier().getValue();
+        String tableName = InsertStatementContext.getTable(sqlStatementContext).getTableName().getIdentifier().getValue();
         Collection<String> columnNames = getColumnNames(sqlStatementContext);
         List<InsertValueContext> insertValueContexts = sqlStatementContext.getInsertValueContexts();
         List<ShardingCondition> result = new ArrayList<>(insertValueContexts.size());
@@ -128,7 +128,7 @@ public final class InsertClauseShardingConditionEngine implements ShardingCondit
     
     private void appendGeneratedKeyConditions(final InsertStatementContext sqlStatementContext, final List<ShardingCondition> shardingConditions) {
         Optional<GeneratedKeyContext> generatedKey = sqlStatementContext.getGeneratedKeyContext();
-        String tableName = sqlStatementContext.getTable().getTableName().getIdentifier().getValue();
+        String tableName = InsertStatementContext.getTable(sqlStatementContext).getTableName().getIdentifier().getValue();
         if (generatedKey.isPresent() && generatedKey.get().isGenerated() && shardingRule.findTableRule(tableName).isPresent()) {
             generatedKey.get().getGeneratedValues().addAll(generateKeys(tableName, sqlStatementContext.getValueListCount()));
             if (shardingRule.findShardingColumn(generatedKey.get().getColumnName(), tableName).isPresent()) {

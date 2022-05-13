@@ -96,7 +96,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
         ShardingSphereSchema schema = getSchema(metaDataMap, defaultDatabaseName);
         
         AtomicInteger parametersOffset = new AtomicInteger(0);
-        List<InsertStatement> insertStatements = getInsertStatements();
+        List<InsertStatement> insertStatements = getInsertStatements(sqlStatement);
         for (int cursor = 0; cursor < insertStatements.size(); cursor++) {
             InsertStatement insertStatement = insertStatements.get(cursor);
             List<List<ExpressionSegment>> valueExpression = getAllValueExpressions(insertStatement);
@@ -124,7 +124,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     
     private Collection<SimpleTableSegment> getAllSimpleTableSegments() {
         TableExtractor tableExtractor = new TableExtractor();
-        tableExtractor.extractTablesFromInsert(getInsertStatements());
+        tableExtractor.extractTablesFromInsert(getInsertStatements(getSqlStatement()));
         return tableExtractor.getRewriteTables();
     }
     
@@ -240,7 +240,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
      * @return column names collection
      */
     public List<String> getInsertColumnNames() {
-        InsertStatement insertStatement = getInsertStatements().get(0);
+        InsertStatement insertStatement = getInsertStatements(getSqlStatement()).get(0);
         Optional<SetAssignmentSegment> setAssignment = InsertStatementHandler.getSetAssignmentSegment(insertStatement);
         return setAssignment.map(this::getColumnNamesForSetAssignment).orElseGet(() -> getColumnNamesForInsertColumns(insertStatement.getColumns()));
     }
@@ -285,25 +285,26 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     
     /**
      * Get first index on MultiInsertStatement.
+     * @param sqlStatementContext InsertStatementContext
      *
      * @return column names collection
      */
-    public SimpleTableSegment getTable() {
-        return getInsertStatements().get(0).getTable();
+    public static SimpleTableSegment getTable(final InsertStatementContext sqlStatementContext) {
+        return getInsertStatements(sqlStatementContext.getSqlStatement()).get(0).getTable();
     }
     
     /**
      * Get InsertStatement collection from MultiInsertStatement.
+     * @param sqlStatement InsertStatement
      *
      * @return InsertStatement collection
      */
-    public List<InsertStatement> getInsertStatements() {
-        InsertStatement insertStatement = getSqlStatement();
-        Optional<InsertMultiTableElementSegment> optional = getInsertMultiTableElementSegment(insertStatement);
+    public static List<InsertStatement> getInsertStatements(final InsertStatement sqlStatement) {
+        Optional<InsertMultiTableElementSegment> optional = getInsertMultiTableElementSegment(sqlStatement);
         if (optional.isPresent()) {
             return new LinkedList<>(optional.get().getInsertStatements());
         }
-        return Collections.singletonList(insertStatement);
+        return Collections.singletonList(sqlStatement);
     }
     
     private static Optional<InsertMultiTableElementSegment> getInsertMultiTableElementSegment(final InsertStatement sqlStatement) {
@@ -317,7 +318,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     public void setUpParameters(final List<Object> parameters) {
         AtomicInteger parametersOffset = new AtomicInteger(0);
         ShardingSphereSchema schema = getSchema(metaDataMap, defaultDatabaseName);
-        List<InsertStatement> insertStatements = getInsertStatements();
+        List<InsertStatement> insertStatements = getInsertStatements(getSqlStatement());
         for (int cursor = 0; cursor < insertStatements.size(); cursor++) {
             List<InsertValueContext> insertValueContext = getInsertValueContexts(parameters, parametersOffset, valueExpressions.get(cursor));
             insertValueContextsMap.put(cursor, insertValueContext);
