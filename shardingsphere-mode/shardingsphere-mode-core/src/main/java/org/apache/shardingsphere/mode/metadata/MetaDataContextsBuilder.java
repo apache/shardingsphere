@@ -94,10 +94,9 @@ public final class MetaDataContextsBuilder {
      */
     public void addSystemDatabases(final DatabaseType databaseType) {
         for (String each : databaseType.getSystemDatabaseSchemaMap().keySet()) {
-            if (databaseMap.containsKey(each)) {
-                continue;
+            if (!databaseMap.containsKey(each)) {
+                databaseMap.put(each, DatabaseLoader.load(each, databaseType));
             }
-            databaseMap.put(each, DatabaseLoader.load(each, databaseType));
         }
     }
     
