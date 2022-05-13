@@ -75,6 +75,7 @@ public final class MySQLManualScalingIT extends BaseMySQLITCase {
     public void assertManualScalingSuccess() throws InterruptedException {
         createAllSharingTableRule();
         bindingShardingRule();
+        addNoUseTable();
         getSqlHelper().createOrderTable();
         getSqlHelper().createOrderItemTable();
         getSqlHelper().initTableData(true);

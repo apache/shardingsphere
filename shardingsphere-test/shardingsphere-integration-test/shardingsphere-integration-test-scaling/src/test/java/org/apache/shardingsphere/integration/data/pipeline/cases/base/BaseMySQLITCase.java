@@ -64,6 +64,14 @@ public abstract class BaseMySQLITCase extends BaseITCase {
         getIncreaseTaskThread().start();
     }
     
+    /**
+     * Add no use table, to test part of the table.
+     */
+    protected void addNoUseTable() {
+        getJdbcTemplate().execute("CREATE TABLE no_use(id int(11) NOT NULL)");
+        getJdbcTemplate().execute("INSERT INTO no_use(id) values (1)");
+    }
+    
     @Override
     protected Properties createQueryProperties() {
         Properties result = new Properties();
