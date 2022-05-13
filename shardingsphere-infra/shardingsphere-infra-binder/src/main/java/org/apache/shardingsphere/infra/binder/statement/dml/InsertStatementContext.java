@@ -38,9 +38,11 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.Column
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.InsertMultiTableElementSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.InsertStatementHandler;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleInsertStatement;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -94,7 +96,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
         ShardingSphereSchema schema = getSchema(metaDataMap, defaultDatabaseName);
         
         AtomicInteger parametersOffset = new AtomicInteger(0);
-        List<InsertStatement> insertStatements = InsertStatementContextUtil.getInsertStatements(sqlStatement);
+        List<InsertStatement> insertStatements = getInsertStatements();
         for (int cursor = 0; cursor < insertStatements.size(); cursor++) {
             InsertStatement insertStatement = insertStatements.get(cursor);
             List<List<ExpressionSegment>> valueExpression = getAllValueExpressions(insertStatement);
@@ -122,7 +124,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     
     private Collection<SimpleTableSegment> getAllSimpleTableSegments() {
         TableExtractor tableExtractor = new TableExtractor();
-        tableExtractor.extractTablesFromInsert(InsertStatementContextUtil.getInsertStatements(getSqlStatement()));
+        tableExtractor.extractTablesFromInsert(getInsertStatements());
         return tableExtractor.getRewriteTables();
     }
     
@@ -238,7 +240,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
      * @return column names collection
      */
     public List<String> getInsertColumnNames() {
-        InsertStatement insertStatement = InsertStatementContextUtil.getInsertStatements(getSqlStatement()).get(0);
+        InsertStatement insertStatement = getInsertStatements().get(0);
         Optional<SetAssignmentSegment> setAssignment = InsertStatementHandler.getSetAssignmentSegment(insertStatement);
         return setAssignment.map(this::getColumnNamesForSetAssignment).orElseGet(() -> getColumnNamesForInsertColumns(insertStatement.getColumns()));
     }
@@ -281,11 +283,41 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
         return result;
     }
     
+    /**
+     * Get first index on MultiInsertStatement.
+     *
+     * @return column names collection
+     */
+    public SimpleTableSegment getTable() {
+        return getInsertStatements().get(0).getTable();
+    }
+    
+    /**
+     * Get InsertStatement collection from MultiInsertStatement.
+     *
+     * @return InsertStatement collection
+     */
+    public List<InsertStatement> getInsertStatements() {
+        InsertStatement insertStatement = getSqlStatement();
+        Optional<InsertMultiTableElementSegment> optional = getInsertMultiTableElementSegment(insertStatement);
+        if (optional.isPresent()) {
+            return new LinkedList<>(optional.get().getInsertStatements());
+        }
+        return Collections.singletonList(insertStatement);
+    }
+    
+    private static Optional<InsertMultiTableElementSegment> getInsertMultiTableElementSegment(final InsertStatement sqlStatement) {
+        if (sqlStatement instanceof OracleInsertStatement) {
+            return ((OracleInsertStatement) sqlStatement).getInsertMultiTableElementSegment();
+        }
+        return Optional.empty();
+    }
+    
     @Override
     public void setUpParameters(final List<Object> parameters) {
         AtomicInteger parametersOffset = new AtomicInteger(0);
         ShardingSphereSchema schema = getSchema(metaDataMap, defaultDatabaseName);
-        List<InsertStatement> insertStatements = InsertStatementContextUtil.getInsertStatements(getSqlStatement());
+        List<InsertStatement> insertStatements = getInsertStatements();
         for (int cursor = 0; cursor < insertStatements.size(); cursor++) {
             List<InsertValueContext> insertValueContext = getInsertValueContexts(parameters, parametersOffset, valueExpressions.get(cursor));
             insertValueContextsMap.put(cursor, insertValueContext);
