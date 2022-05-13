@@ -118,7 +118,7 @@ public final class InterMutexLock implements MutexLock, LockAckAble {
                 return true;
             }
             sleepInterval();
-            count += TimeoutMilliseconds.CHECK_ACK_INTERVAL;
+            count += TimeoutMilliseconds.DEFAULT_REGISTRY;
         } while (timeout > count);
         log.debug("is lock ack OK timeout");
         return false;
@@ -138,7 +138,7 @@ public final class InterMutexLock implements MutexLock, LockAckAble {
     
     private void sleepInterval() {
         try {
-            TimeUnit.MILLISECONDS.sleep(TimeoutMilliseconds.CHECK_ACK_INTERVAL);
+            TimeUnit.MILLISECONDS.sleep(TimeoutMilliseconds.DEFAULT_REGISTRY);
         } catch (final InterruptedException ignore) {
         }
     }
