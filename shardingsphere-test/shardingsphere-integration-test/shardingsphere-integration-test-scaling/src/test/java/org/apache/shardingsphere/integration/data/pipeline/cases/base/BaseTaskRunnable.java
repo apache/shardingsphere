@@ -30,8 +30,6 @@ import java.util.concurrent.ThreadLocalRandom;
 @AllArgsConstructor
 public abstract class BaseTaskRunnable implements Runnable {
     
-    protected static final ThreadLocalRandom RANDOM = ThreadLocalRandom.current();
-    
     private final JdbcTemplate jdbcTemplate;
     
     private final ExtraSQLCommand extraSQLCommand;
@@ -71,7 +69,7 @@ public abstract class BaseTaskRunnable implements Runnable {
      */
     public void updateOrderByPrimaryKey(final Object primaryKey) {
         jdbcTemplate.update(extraSQLCommand.getUpdateOrderById(), "updated" + Instant.now().getEpochSecond(), null, primaryKey);
-        jdbcTemplate.update(extraSQLCommand.getUpdateOrderById(), "updated" + Instant.now().getEpochSecond(), RANDOM.nextInt(0, 100), primaryKey);
+        jdbcTemplate.update(extraSQLCommand.getUpdateOrderById(), "updated" + Instant.now().getEpochSecond(), ThreadLocalRandom.current().nextInt(0, 100), primaryKey);
     }
     
     /**

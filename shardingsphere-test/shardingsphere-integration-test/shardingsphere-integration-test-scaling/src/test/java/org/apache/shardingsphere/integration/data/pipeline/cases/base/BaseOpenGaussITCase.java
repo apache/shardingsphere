@@ -21,10 +21,9 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
-import org.apache.shardingsphere.integration.data.pipeline.cases.BaseITCase;
 import org.apache.shardingsphere.integration.data.pipeline.cases.command.ExtraSQLCommand;
-import org.apache.shardingsphere.integration.data.pipeline.cases.postgresql.PostgreSQLIncrementTaskRunnable;
-import org.apache.shardingsphere.integration.data.pipeline.framework.helper.SQLHelper;
+import org.apache.shardingsphere.integration.data.pipeline.cases.common.SimpleIncrementTaskRunnable;
+import org.apache.shardingsphere.integration.data.pipeline.framework.helper.ScalingTableSQLHelper;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
@@ -42,12 +41,12 @@ public abstract class BaseOpenGaussITCase extends BaseITCase {
     private final ExtraSQLCommand extraSQLCommand;
     
     @Getter
-    private final SQLHelper sqlHelper;
+    private final ScalingTableSQLHelper sqlHelper;
     
     public BaseOpenGaussITCase(final ScalingParameterized parameterized) {
         super(parameterized);
         extraSQLCommand = JAXB.unmarshal(BaseOpenGaussITCase.class.getClassLoader().getResource(parameterized.getScenario()), ExtraSQLCommand.class);
-        sqlHelper = new SQLHelper(DATABASE_TYPE, extraSQLCommand, getJdbcTemplate());
+        sqlHelper = new ScalingTableSQLHelper(DATABASE_TYPE, extraSQLCommand, getJdbcTemplate());
     }
     
     @SneakyThrows(SQLException.class)
@@ -59,7 +58,7 @@ public abstract class BaseOpenGaussITCase extends BaseITCase {
     }
     
     protected void startIncrementTask(final KeyGenerateAlgorithm keyGenerateAlgorithm) {
-        setIncreaseTaskThread(new Thread(new PostgreSQLIncrementTaskRunnable(getJdbcTemplate(), extraSQLCommand, keyGenerateAlgorithm)));
+        setIncreaseTaskThread(new Thread(new SimpleIncrementTaskRunnable(getJdbcTemplate(), extraSQLCommand, keyGenerateAlgorithm)));
         getIncreaseTaskThread().start();
     }
     

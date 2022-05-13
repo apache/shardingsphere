@@ -33,7 +33,7 @@ import java.util.List;
  * SQL helper.
  */
 @AllArgsConstructor
-public final class SQLHelper {
+public final class ScalingTableSQLHelper {
     
     private final DatabaseType databaseType;
     

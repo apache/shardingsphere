@@ -29,11 +29,11 @@ public final class ScalingScenario {
     public static final String SCENARIO_SUFFIX = "sql.xml";
     
     /**
-     * manual scenario list.
+     * Manual scenario list.
      *
      * @return scenario list
      */
     public static Collection<String> listScenario() {
-        return Sets.newHashSet("snowflake_primary_key");
+        return Sets.newHashSet("integer_primary_key");
     }
 }

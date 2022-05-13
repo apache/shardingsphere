@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.data.pipeline.cases;
+package org.apache.shardingsphere.integration.data.pipeline.cases.base;
 
 import com.google.common.collect.Sets;
 import com.zaxxer.hikari.HikariDataSource;

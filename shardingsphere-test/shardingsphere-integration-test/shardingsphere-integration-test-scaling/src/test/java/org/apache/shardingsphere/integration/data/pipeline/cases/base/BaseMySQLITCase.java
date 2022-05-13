@@ -21,10 +21,9 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.integration.data.pipeline.cases.BaseITCase;
 import org.apache.shardingsphere.integration.data.pipeline.cases.command.ExtraSQLCommand;
-import org.apache.shardingsphere.integration.data.pipeline.cases.mysql.MySQLIncrementTaskRunnable;
-import org.apache.shardingsphere.integration.data.pipeline.framework.helper.SQLHelper;
+import org.apache.shardingsphere.integration.data.pipeline.cases.common.SimpleIncrementTaskRunnable;
+import org.apache.shardingsphere.integration.data.pipeline.framework.helper.ScalingTableSQLHelper;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
@@ -41,12 +40,12 @@ public abstract class BaseMySQLITCase extends BaseITCase {
     private final ExtraSQLCommand extraSQLCommand;
     
     @Getter
-    private final SQLHelper sqlHelper;
+    private final ScalingTableSQLHelper sqlHelper;
     
     public BaseMySQLITCase(final ScalingParameterized parameterized) {
         super(parameterized);
         extraSQLCommand = JAXB.unmarshal(BaseMySQLITCase.class.getClassLoader().getResource(parameterized.getScenario()), ExtraSQLCommand.class);
-        sqlHelper = new SQLHelper(DATABASE_TYPE, extraSQLCommand, getJdbcTemplate());
+        sqlHelper = new ScalingTableSQLHelper(DATABASE_TYPE, extraSQLCommand, getJdbcTemplate());
     }
     
     @SneakyThrows(SQLException.class)
@@ -60,16 +59,18 @@ public abstract class BaseMySQLITCase extends BaseITCase {
     }
     
     protected void startIncrementTask(final KeyGenerateAlgorithm keyGenerateAlgorithm) {
-        setIncreaseTaskThread(new Thread(new MySQLIncrementTaskRunnable(getJdbcTemplate(), extraSQLCommand, keyGenerateAlgorithm)));
+        setIncreaseTaskThread(new Thread(new SimpleIncrementTaskRunnable(getJdbcTemplate(), extraSQLCommand, keyGenerateAlgorithm)));
         getIncreaseTaskThread().start();
     }
     
     /**
      * Add no use table, to test part of the table.
      */
-    protected void addNoUseTable() {
-        getJdbcTemplate().execute("CREATE TABLE no_use(id int(11) NOT NULL)");
-        getJdbcTemplate().execute("INSERT INTO no_use(id) values (1)");
+    protected void createNoUseTable() {
+        getJdbcTemplate().execute("CREATE SHARDING TABLE RULE no_use (RESOURCES(ds_0, ds_1), SHARDING_COLUMN=sharding_id, TYPE(NAME=MOD,PROPERTIES('sharding-count'=4)))");
+        getJdbcTemplate().execute("CREATE TABLE no_use(id int(11) NOT NULL,sharding_id int(11) NOT NULL, PRIMARY KEY (id))");
+        getJdbcTemplate().execute("INSERT INTO no_use(id,sharding_id) values (1,1)");
+        getJdbcTemplate().execute("INSERT INTO no_use(id,sharding_id) values (2,2)");
     }
     
     @Override

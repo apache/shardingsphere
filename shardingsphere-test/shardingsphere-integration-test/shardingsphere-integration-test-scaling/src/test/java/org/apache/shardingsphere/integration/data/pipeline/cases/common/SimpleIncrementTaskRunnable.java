@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.data.pipeline.cases.postgresql;
+package org.apache.shardingsphere.integration.data.pipeline.cases.common;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.integration.data.pipeline.cases.base.BaseTaskRunnable;
@@ -23,39 +23,40 @@ import org.apache.shardingsphere.integration.data.pipeline.cases.command.ExtraSQ
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
-public final class PostgreSQLIncrementTaskRunnable extends BaseTaskRunnable {
+public final class SimpleIncrementTaskRunnable extends BaseTaskRunnable {
     
-    public PostgreSQLIncrementTaskRunnable(final JdbcTemplate jdbcTemplate, final ExtraSQLCommand extraSQLCommand, final KeyGenerateAlgorithm keyGenerateAlgorithm) {
+    public SimpleIncrementTaskRunnable(final JdbcTemplate jdbcTemplate, final ExtraSQLCommand extraSQLCommand, final KeyGenerateAlgorithm keyGenerateAlgorithm) {
         super(jdbcTemplate, extraSQLCommand, keyGenerateAlgorithm);
-    }
-    
-    @Override
-    protected Object[] getOrderInsertDate() {
-        return new Object[]{getKeyGenerateAlgorithm().generateKey(), RANDOM.nextInt(0, 6), RANDOM.nextInt(0, 6)};
-    }
-    
-    @Override
-    protected Object[] getOrderInsertItemDate() {
-        return new Object[]{getKeyGenerateAlgorithm().generateKey(), RANDOM.nextInt(0, 6), RANDOM.nextInt(0, 6), "OK"};
     }
     
     @Override
     public void run() {
         int executeCount = 0;
-        List<Object> newPrimaryKeys = new LinkedList<>();
         while (executeCount < 20 && !Thread.currentThread().isInterrupted()) {
-            newPrimaryKeys.add(insertOrder());
-            if (newPrimaryKeys.size() % 2 == 0) {
-                deleteOrderByPrimaryKey(newPrimaryKeys.get(newPrimaryKeys.size() - 1));
+            Object orderPrimaryKey = insertOrder();
+            Object orderItemPrimaryKey = insertOrderItem();
+            if (executeCount % 2 == 0) {
+                deleteOrderByPrimaryKey(orderPrimaryKey);
+                deleteOrderItemByPrimaryKey(orderItemPrimaryKey);
             } else {
-                updateOrderByPrimaryKey(newPrimaryKeys.get(newPrimaryKeys.size() - 1));
+                updateOrderByPrimaryKey(orderPrimaryKey);
+                updateOrderItemByPrimaryKey(orderItemPrimaryKey);
             }
             executeCount++;
-            log.info("PostgreSQL increment task runnable execute successfully.");
+            log.info("Simple increment task runnable execute successfully.");
         }
+    }
+    
+    @Override
+    protected Object[] getOrderInsertDate() {
+        return new Object[]{getKeyGenerateAlgorithm().generateKey(), ThreadLocalRandom.current().nextInt(0, 6), ThreadLocalRandom.current().nextInt(0, 6)};
+    }
+    
+    @Override
+    protected Object[] getOrderInsertItemDate() {
+        return new Object[]{getKeyGenerateAlgorithm().generateKey(), ThreadLocalRandom.current().nextInt(0, 6), ThreadLocalRandom.current().nextInt(0, 6), "OK"};
     }
 }
