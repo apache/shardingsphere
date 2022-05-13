@@ -64,32 +64,32 @@
         <output sql="UPDATE t_account_bak SET cipher_certificate_number = 'encrypt_', assisted_query_certificate_number = 'assisted_query_', plain_certificate_number = '', status = 'OK'" />
     </rewrite-assertion>
     
-    <rewrite-assertion id="update_null_to_clear_plain_1" db-types="MySQL">
+    <rewrite-assertion id="update_null_to_clear_plain" db-types="MySQL">
         <input sql="UPDATE t_account_bak SET certificate_number = null" />
         <output sql="UPDATE t_account_bak SET certificate_number = null" />
     </rewrite-assertion>
 
-    <rewrite-assertion id="update_null_to_clear_plain_2" db-types="MySQL">
+    <rewrite-assertion id="update_null_to_clear_plain_with_multi" db-types="MySQL">
         <input sql="UPDATE t_account_bak SET certificate_number = null, certificate_number = ''" />
         <output sql="UPDATE t_account_bak SET certificate_number = null, cipher_certificate_number = 'encrypt_', assisted_query_certificate_number = 'assisted_query_', plain_certificate_number = ''" />
     </rewrite-assertion>
 
-    <rewrite-assertion id="update_null_to_clear_plain_where_is_null_1" db-types="MySQL">
+    <rewrite-assertion id="update_null_to_clear_plain_where_is_null" db-types="MySQL">
         <input sql="UPDATE t_account_bak SET certificate_number = null where certificate_number is null" />
         <output sql="UPDATE t_account_bak SET certificate_number = null where certificate_number is null" />
     </rewrite-assertion>
 
-    <rewrite-assertion id="update_null_to_clear_plain_where_is_null_2" db-types="MySQL">
+    <rewrite-assertion id="update_null_to_clear_plain_where_is_null_with_multi" db-types="MySQL">
         <input sql="UPDATE t_account_bak SET certificate_number = null where certificate_number is null AND status = 'OK' AND certificate_number = '111X'" />
         <output sql="UPDATE t_account_bak SET certificate_number = null where certificate_number is null AND status = 'OK' AND assisted_query_certificate_number = 'assisted_query_111X'" />
     </rewrite-assertion>
 
-    <rewrite-assertion id="update_null_to_clear_plain_where_is_not_null_1" db-types="MySQL">
+    <rewrite-assertion id="update_null_to_clear_plain_where_is_not_null" db-types="MySQL">
         <input sql="UPDATE t_account_bak SET certificate_number = null where certificate_number is not null" />
         <output sql="UPDATE t_account_bak SET certificate_number = null where certificate_number is not null" />
     </rewrite-assertion>
 
-    <rewrite-assertion id="update_null_to_clear_plain_where_is_not_null_2" db-types="MySQL">
+    <rewrite-assertion id="update_null_to_clear_plain_where_is_not_null_with_multi" db-types="MySQL">
         <input sql="UPDATE t_account_bak SET certificate_number = null where certificate_number is not null AND status = 'OK' AND certificate_number = '111X'" />
         <output sql="UPDATE t_account_bak SET certificate_number = null where certificate_number is not null AND status = 'OK' AND assisted_query_certificate_number = 'assisted_query_111X'" />
     </rewrite-assertion>

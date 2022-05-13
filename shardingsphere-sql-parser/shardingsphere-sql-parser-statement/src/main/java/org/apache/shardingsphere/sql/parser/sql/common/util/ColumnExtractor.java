@@ -46,7 +46,7 @@ public final class ColumnExtractor {
     public static Collection<ColumnSegment> extract(final ExpressionSegment expression) {
         Collection<ColumnSegment> result = new LinkedList<>();
         if (expression instanceof BinaryOperationExpression) {
-            if (((BinaryOperationExpression) expression).getLeft() instanceof ColumnSegment && !isNullOnTheRightOfExpressionSegment((BinaryOperationExpression) expression)) {
+            if (((BinaryOperationExpression) expression).getLeft() instanceof ColumnSegment) {
                 result.add((ColumnSegment) ((BinaryOperationExpression) expression).getLeft());
             }
             if (((BinaryOperationExpression) expression).getRight() instanceof ColumnSegment) {

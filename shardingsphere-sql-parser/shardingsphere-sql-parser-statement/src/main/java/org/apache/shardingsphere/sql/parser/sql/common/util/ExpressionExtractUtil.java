@@ -23,6 +23,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.constant.LogicalOperator;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
 
@@ -82,8 +83,16 @@ public final class ExpressionExtractUtil {
     
     private static AndPredicate createAndPredicate(final ExpressionSegment expression) {
         AndPredicate result = new AndPredicate();
-        result.getPredicates().add(expression);
+        checkAndGetExpressionSegment(expression).ifPresent(each -> result.getPredicates().add(each));
         return result;
+    }
+    
+    private static Optional<ExpressionSegment> checkAndGetExpressionSegment(final ExpressionSegment expression) {
+        if (expression instanceof CommonExpressionSegment ||
+                expression instanceof BinaryOperationExpression && ((BinaryOperationExpression) expression).getRight() instanceof CommonExpressionSegment) {
+            return Optional.empty();
+        }
+        return Optional.of(expression);
     }
     
     /**

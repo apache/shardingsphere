@@ -30,6 +30,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenE
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.SimpleExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
@@ -109,10 +110,10 @@ public final class EncryptConditionEngine {
     }
     
     private void addEncryptConditions(final Collection<EncryptCondition> encryptConditions, final ExpressionSegment expression, final Map<String, String> expressionTableNames) {
+        if (expression instanceof BinaryOperationExpression && ((BinaryOperationExpression) expression).getRight() instanceof CommonExpressionSegment) {
+            return;
+        }
         for (ColumnSegment each : ColumnExtractor.extract(expression)) {
-            if (isNullOnTheRightOfExpressionSegment(expression)) {
-                continue;
-            }
             String tableName = expressionTableNames.getOrDefault(each.getExpression(), "");
             Optional<EncryptColumn> encryptColumn = encryptRule.findEncryptColumn(tableName, each.getIdentifier().getValue());
             Optional<EncryptCondition> encryptCondition = encryptColumn.isPresent() ? createEncryptCondition(expression, tableName) : Optional.empty();
@@ -151,17 +152,6 @@ public final class EncryptConditionEngine {
         return (compareRightValue instanceof SimpleExpressionSegment && !(compareRightValue instanceof SubqueryExpressionSegment))
                 ? Optional.of(createEncryptEqualCondition(tableName, expression, compareRightValue))
                 : Optional.empty();
-    }
-    
-    private boolean isNullOnTheRightOfExpressionSegment(final ExpressionSegment expression) {
-        if (!(expression instanceof BinaryOperationExpression)) {
-            return false;
-        }
-        BinaryOperationExpression expressionSegment = (BinaryOperationExpression) expression;
-        if (!(expressionSegment.getLeft() instanceof ColumnSegment)) {
-            return false;
-        }
-        return ColumnExtractor.isNullOnTheRightOfExpressionSegment((BinaryOperationExpression) expression);
     }
     
     private EncryptEqualCondition createEncryptEqualCondition(final String tableName, final BinaryOperationExpression expression, final ExpressionSegment compareRightValue) {
