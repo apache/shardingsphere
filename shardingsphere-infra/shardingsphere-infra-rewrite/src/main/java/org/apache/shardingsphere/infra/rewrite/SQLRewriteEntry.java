@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.rewrite.engine.RouteSQLRewriteEngine;
 import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteResult;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.sqltranslator.config.SQLTranslatorRuleConfiguration;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 
 import java.util.List;
@@ -64,7 +65,7 @@ public final class SQLRewriteEntry {
      */
     public SQLRewriteResult rewrite(final String sql, final List<Object> parameters, final SQLStatementContext<?> sqlStatementContext, final RouteContext routeContext) {
         SQLRewriteContext sqlRewriteContext = createSQLRewriteContext(sql, parameters, sqlStatementContext, routeContext);
-        SQLTranslatorRule rule = metaData.getRuleMetaData().getSingleRule(SQLTranslatorRule.class);
+        SQLTranslatorRule rule = metaData.getRuleMetaData().findSingleRule(SQLTranslatorRule.class).orElse(new SQLTranslatorRule(new SQLTranslatorRuleConfiguration()));
         DatabaseType frontendDatabaseType = metaData.getFrontendDatabaseType();
         DatabaseType backendDatabaseType = metaData.getResource().getDatabaseType();
         return routeContext.getRouteUnits().isEmpty()

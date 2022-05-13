@@ -36,6 +36,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -79,7 +80,7 @@ public final class SQLRewriteEntryTest {
     
     private ShardingSphereRuleMetaData mockRuleMetaData() {
         ShardingSphereRuleMetaData result = mock(ShardingSphereRuleMetaData.class);
-        when(result.getSingleRule(SQLTranslatorRule.class)).thenReturn(new SQLTranslatorRule(new SQLTranslatorRuleConfiguration()));
+        when(result.findSingleRule(SQLTranslatorRule.class)).thenReturn(Optional.of(new SQLTranslatorRule(new SQLTranslatorRuleConfiguration())));
         return result;
     }
 }
