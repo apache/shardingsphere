@@ -168,8 +168,8 @@ public final class ContextManager implements AutoCloseable {
      * @param schemas schemas
      */
     public void alterDatabase(final String databaseName, final Map<String, ShardingSphereSchema> schemas) {
-        ShardingSphereMetaData alteredMetaData = new ShardingSphereMetaData(
-                databaseName, metaDataContexts.getMetaData(databaseName).getResource(), metaDataContexts.getMetaData(databaseName).getRuleMetaData(), schemas);
+        ShardingSphereMetaData alteredMetaData = new ShardingSphereMetaData(databaseName, metaDataContexts.getMetaData(databaseName).getFrontendDatabaseType(),
+                metaDataContexts.getMetaData(databaseName).getResource(), metaDataContexts.getMetaData(databaseName).getRuleMetaData(), schemas);
         Map<String, ShardingSphereMetaData> alteredMetaDataMap = new HashMap<>(metaDataContexts.getMetaDataMap());
         alteredMetaDataMap.put(databaseName, alteredMetaData);
         FederationDatabaseMetaData alteredDatabaseMetaData = new FederationDatabaseMetaData(databaseName, schemas);

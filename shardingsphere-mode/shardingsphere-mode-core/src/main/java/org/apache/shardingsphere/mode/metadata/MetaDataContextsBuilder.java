@@ -118,14 +118,14 @@ public final class MetaDataContextsBuilder {
     }
     
     private Map<String, ShardingSphereMetaData> getMetaDataMap() throws SQLException {
-        DatabaseType defaultDatabaseType = DatabaseTypeEngine.getDatabaseType(databaseConfigMap, props);
         Map<String, ShardingSphereMetaData> result = new HashMap<>(databaseMap.size(), 1);
+        DatabaseType frontendDatabaseType = DatabaseTypeEngine.getFrontendDatabaseType(databaseConfigMap, props);
         for (Entry<String, ShardingSphereDatabase> entry : databaseMap.entrySet()) {
             String databaseName = entry.getKey();
             // TODO support database and schema configuration separately
             DatabaseConfiguration databaseConfig = databaseConfigMap.getOrDefault(databaseName, new DataSourceProvidedDatabaseConfiguration(new LinkedHashMap<>(), new LinkedList<>()));
             Collection<ShardingSphereRule> rules = databaseRulesMap.getOrDefault(databaseName, new LinkedList<>());
-            result.put(databaseName, ShardingSphereMetaData.create(databaseName, entry.getValue().getSchemas(), databaseConfig, rules, defaultDatabaseType));
+            result.put(databaseName, ShardingSphereMetaData.create(databaseName, frontendDatabaseType, entry.getValue().getSchemas(), databaseConfig, rules));
         }
         return result;
     }
