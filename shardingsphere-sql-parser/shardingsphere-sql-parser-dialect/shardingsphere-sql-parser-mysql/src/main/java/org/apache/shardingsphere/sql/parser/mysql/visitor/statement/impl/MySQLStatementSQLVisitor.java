@@ -209,7 +209,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLUpdateStatement;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -418,14 +417,8 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
     public final ASTNode visitBooleanPrimary(final BooleanPrimaryContext ctx) {
         if (null != ctx.IS()) {
             ExpressionSegment left = (ExpressionSegment) visit(ctx.booleanPrimary());
-            ExpressionSegment right;
-            Interval interval = new Interval(ctx.IS().getSymbol().getStopIndex() + 1, ctx.stop.getStopIndex());
-            String rightText = ctx.start.getInputStream().getText(interval);
-            if (null != rightText && Arrays.asList("NULL", "NOT NULL").contains(rightText.trim().toUpperCase())) {
-                right = new CommonExpressionSegment(ctx.IS().getSymbol().getStopIndex() + 1, ctx.stop.getStopIndex(), rightText);
-            } else {
-                right = new LiteralExpressionSegment(ctx.IS().getSymbol().getStopIndex() + 1, ctx.stop.getStopIndex(), interval);
-            }
+            String rightText = ctx.start.getInputStream().getText(new Interval(ctx.IS().getSymbol().getStopIndex() + 1, ctx.stop.getStopIndex())).trim();
+            ExpressionSegment right = new LiteralExpressionSegment(ctx.IS().getSymbol().getStopIndex() + 1, ctx.stop.getStopIndex(), rightText);
             String operator = "IS";
             String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
             return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
