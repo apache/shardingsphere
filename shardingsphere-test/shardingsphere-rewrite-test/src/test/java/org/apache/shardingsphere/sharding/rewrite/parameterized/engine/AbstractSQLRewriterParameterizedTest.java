@@ -75,9 +75,8 @@ public abstract class AbstractSQLRewriterParameterizedTest {
     
     private final SQLRewriteEngineTestParameters testParameters;
     
-    private final SQLParserRule sqlParserRule = new SQLParserRule(new SQLParserRuleConfiguration(true,
-            DefaultSQLParserRuleConfigurationBuilder.PARSE_TREE_CACHE_OPTION,
-            DefaultSQLParserRuleConfigurationBuilder.SQL_STATEMENT_CACHE_OPTION));
+    private final SQLParserRule sqlParserRule = new SQLParserRule(new SQLParserRuleConfiguration(true, 
+            DefaultSQLParserRuleConfigurationBuilder.PARSE_TREE_CACHE_OPTION, DefaultSQLParserRuleConfigurationBuilder.SQL_STATEMENT_CACHE_OPTION));
     
     @Test
     public final void assertRewrite() throws IOException, SQLException {
@@ -120,7 +119,7 @@ public abstract class AbstractSQLRewriterParameterizedTest {
         LogicSQL logicSQL = new LogicSQL(sqlStatementContext, getTestParameters().getInputSQL(), getTestParameters().getInputParameters());
         ConfigurationProperties props = new ConfigurationProperties(rootConfig.getProps());
         RouteContext routeContext = new SQLRouteEngine(rules, props).route(logicSQL, metaData);
-        SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(schemaName, schemas, props, rules);
+        SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(metaData, props);
         SQLRewriteResult sqlRewriteResult = sqlRewriteEntry.rewrite(getTestParameters().getInputSQL(), getTestParameters().getInputParameters(), sqlStatementContext, routeContext);
         return sqlRewriteResult instanceof GenericSQLRewriteResult
                 ? Collections.singletonList(((GenericSQLRewriteResult) sqlRewriteResult).getSqlRewriteUnit())

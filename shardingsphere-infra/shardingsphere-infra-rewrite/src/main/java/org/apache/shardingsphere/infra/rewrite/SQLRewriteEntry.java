@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.rewrite;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContextDecorator;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContextDecoratorFactory;
@@ -29,7 +29,6 @@ import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteResult;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -39,20 +38,17 @@ import java.util.Map.Entry;
  */
 public final class SQLRewriteEntry {
     
-    private final String databaseName;
-    
-    private final Map<String, ShardingSphereSchema> schemas;
+    private final ShardingSphereMetaData metaData;
     
     private final ConfigurationProperties props;
     
     @SuppressWarnings("rawtypes")
     private final Map<ShardingSphereRule, SQLRewriteContextDecorator> decorators;
     
-    public SQLRewriteEntry(final String databaseName, final Map<String, ShardingSphereSchema> schemas, final ConfigurationProperties props, final Collection<ShardingSphereRule> rules) {
-        this.databaseName = databaseName;
-        this.schemas = schemas;
+    public SQLRewriteEntry(final ShardingSphereMetaData metaData, final ConfigurationProperties props) {
+        this.metaData = metaData;
         this.props = props;
-        decorators = SQLRewriteContextDecoratorFactory.getInstance(rules);
+        decorators = SQLRewriteContextDecoratorFactory.getInstance(metaData.getRuleMetaData().getRules());
     }
     
     /**
@@ -70,7 +66,7 @@ public final class SQLRewriteEntry {
     }
     
     private SQLRewriteContext createSQLRewriteContext(final String sql, final List<Object> parameters, final SQLStatementContext<?> sqlStatementContext, final RouteContext routeContext) {
-        SQLRewriteContext result = new SQLRewriteContext(databaseName, schemas, sqlStatementContext, sql, parameters);
+        SQLRewriteContext result = new SQLRewriteContext(metaData.getDatabaseName(), metaData.getSchemas(), sqlStatementContext, sql, parameters);
         decorate(decorators, result, routeContext);
         result.generateSQLTokens();
         return result;
