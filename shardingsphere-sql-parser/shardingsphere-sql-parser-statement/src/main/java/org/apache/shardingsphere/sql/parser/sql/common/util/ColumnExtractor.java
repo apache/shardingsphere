@@ -27,7 +27,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpres
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -60,25 +59,6 @@ public final class ColumnExtractor {
             result.add((ColumnSegment) ((BetweenExpression) expression).getLeft());
         }
         return result;
-    }
-    
-    /**
-     * Check `IS NULL` or `IS NOT NULL` on right.
-     *
-     * @param expression BinaryOperationExpression
-     * @return true if `IS NULL` or `IS NOT NULL` on the right of BinaryOperationExpression.
-     */
-    public static boolean isNullOnTheRightOfExpressionSegment(final BinaryOperationExpression expression) {
-        if (null == expression.getLeft() || null == expression.getText()) {
-            return false;
-        }
-        ColumnSegment left = (ColumnSegment) expression.getLeft();
-        if (null == left.getOwner() || null == left.getIdentifier()) {
-            return false;
-        }
-        String columnName = String.format("%s%s ", left.getOwner().isPresent() ? left.getOwner().get() + "." : "", left.getIdentifier().getValue());
-        String rightValue = expression.getText().replace(columnName, "");
-        return Arrays.asList("IS NULL", "IS NOT NULL").contains(rightValue.toUpperCase());
     }
     
     /**

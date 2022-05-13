@@ -30,7 +30,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenE
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.SimpleExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
@@ -73,7 +72,6 @@ public final class EncryptConditionEngine {
         SUPPORTED_COMPARE_OPERATOR.add("<");
         SUPPORTED_COMPARE_OPERATOR.add(">=");
         SUPPORTED_COMPARE_OPERATOR.add("<=");
-        SUPPORTED_COMPARE_OPERATOR.add("IS");
     }
     
     /**
@@ -110,7 +108,7 @@ public final class EncryptConditionEngine {
     }
     
     private void addEncryptConditions(final Collection<EncryptCondition> encryptConditions, final ExpressionSegment expression, final Map<String, String> expressionTableNames) {
-        if (expression instanceof BinaryOperationExpression && ((BinaryOperationExpression) expression).getRight() instanceof CommonExpressionSegment) {
+        if (!ExpressionExtractUtil.checkAndGetExpressionSegment(expression).isPresent()) {
             return;
         }
         for (ColumnSegment each : ColumnExtractor.extract(expression)) {
