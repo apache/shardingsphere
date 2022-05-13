@@ -139,7 +139,7 @@ public final class RuleAlteredJobWorker {
             log.error("rule altered action enabled but actor is not configured, ignored, ruleConfig={}", ruleConfig);
             throw new PipelineJobCreationException("rule altered actor not configured");
         }
-        return new RuleAlteredContext(onRuleAlteredActionConfig.get());
+        return new RuleAlteredContext(jobConfig.getJobId(), onRuleAlteredActionConfig.get());
     }
     
     /**
