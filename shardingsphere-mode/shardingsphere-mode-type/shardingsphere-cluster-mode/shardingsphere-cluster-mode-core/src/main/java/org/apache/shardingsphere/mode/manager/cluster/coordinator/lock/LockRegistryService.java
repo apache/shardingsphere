@@ -17,10 +17,20 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock;
 
+import java.util.concurrent.locks.Lock;
+
 /**
  * Lock registry service.
  */
 public interface LockRegistryService {
+    
+    /**
+     * Get internal lock.
+     *
+     * @param lockName lock name
+     * @return internal lock
+     */
+    Lock getInternalLock(String lockName);
     
     /**
      * Try lock.

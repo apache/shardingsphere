@@ -59,7 +59,7 @@ public final class ShardingSphereMutexLockHolder {
      * @param locksName locks name
      * @return inter mutex lock
      */
-    public MutexLock getInterMutexLock(final String locksName) {
+    public synchronized MutexLock getInterMutexLock(final String locksName) {
         MutexLock result = interMutexLocks.get(locksName);
         if (null == result) {
             result = createInterMutexLock(locksName);

@@ -15,17 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockRegistryService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.TimeoutMilliseconds;
 
 /**
  * Inter mutex reentrant lock.
  */
 @RequiredArgsConstructor
-public final class InterReentrantMutexLock implements ShardingSphereLock {
+public final class DistributeInterReentrantMutexLock implements ShardingSphereLock {
     
     private final LockRegistryService lockRegistryService;
     

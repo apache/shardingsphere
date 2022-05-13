@@ -53,12 +53,12 @@ public final class MutexLocksChangedWatcher implements GovernanceWatcher<Governa
     public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
         Optional<String> lockedName = lockNode.parseLocksNodePath(event.getKey());
         if (lockedName.isPresent()) {
-            return handleGlobalSchemaLocksEvent(event.getType(), lockedName.get());
+            return handleMutexSchemaLocksEvent(event.getType(), lockedName.get());
         }
         return Optional.empty();
     }
     
-    private Optional<GovernanceEvent> handleGlobalSchemaLocksEvent(final Type eventType, final String lockedName) {
+    private Optional<GovernanceEvent> handleMutexSchemaLocksEvent(final Type eventType, final String lockedName) {
         if (Type.ADDED == eventType) {
             return Optional.of(new MutexLockedEvent(lockedName));
         } else if (Type.DELETED == eventType) {
