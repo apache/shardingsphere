@@ -186,3 +186,25 @@ jobs:
         run: ./mvnw -B clean install -Dmaven.javadoc.skip=true -Drat.skip=true -Dcheckstyle.skip=true -DskipITs -DskipTests -Dspotless.apply.skip=true
       - name: Run Example generator
         run: echo y | ./mvnw -B test -f examples/shardingsphere-example-generator/pom.xml -Pexample-generator
+
+  test-coverage-report:
+    runs-on: ubuntu-latest
+    name: shardingsphere test-coverage report
+    steps:
+      - uses: actions/checkout@v2
+      - name: Shutdown Ubuntu MySQL(SUDO)
+        run: sudo service mysql stop
+      - name: Set up MySQL
+        uses: mirromutth/mysql-action@v1.1
+        with:
+          mysql root password: ${{ secrets.RootPassword }} # Required if "mysql user" is empty, default is empty. The root superuser password
+#          mysql user: 'developer' # Required if "mysql root password" is empty, default is empty. The superuser for the specified database. Can use secrets, too
+#          mysql password: ${{ secrets.DatabasePassword }}  # Required if "mysql user" exists. The password for the "mysql user"
+      - name: Build and Test
+        run: ./mvnw -B --no-transfer-progress clean install cobertura:cobertura -Dmaven.javadoc.skip=true -Ddatabases=MySQL,PostgreSQL
+      - name: Upload to Codecov
+        uses: codecov/codecov-action@v3.1.0
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./target/site/jacoco/jacoco.xml
+          flags: unittests
