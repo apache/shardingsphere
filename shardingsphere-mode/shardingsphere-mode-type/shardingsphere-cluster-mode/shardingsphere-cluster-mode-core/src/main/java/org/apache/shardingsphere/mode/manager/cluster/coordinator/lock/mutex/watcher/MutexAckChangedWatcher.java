@@ -53,12 +53,12 @@ public final class MutexAckChangedWatcher implements GovernanceWatcher<Governanc
     public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
         Optional<String> ackLockedName = lockNode.parseLockedAckNodePath(event.getKey());
         if (ackLockedName.isPresent()) {
-            return handleGlobalAckEvent(event.getType(), ackLockedName.get());
+            return handleMutexAckEvent(event.getType(), ackLockedName.get());
         }
         return Optional.empty();
     }
     
-    private Optional<GovernanceEvent> handleGlobalAckEvent(final Type eventType, final String lockedName) {
+    private Optional<GovernanceEvent> handleMutexAckEvent(final Type eventType, final String lockedName) {
         if (Type.ADDED == eventType) {
             return Optional.of(new MutexAckLockedEvent(lockedName));
         } else if (Type.DELETED == eventType) {
