@@ -33,6 +33,6 @@ public final class SQLTranslatorRuleConfiguration implements GlobalRuleConfigura
     private final boolean useOriginalSQLWhenTranslatingFailed;
     
     public SQLTranslatorRuleConfiguration() {
-        this(null, true);
+        this("NATIVE", true);
     }
 }
