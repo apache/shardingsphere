@@ -32,7 +32,7 @@ import java.util.Map;
  * JOOQ SQL dialect registry.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class JOOQDialectRegistry {
+public final class JooQDialectRegistry {
     
     private static final Map<DatabaseType, SQLDialect> DATABASE_DIALECT_MAP = new HashMap<>();
     
