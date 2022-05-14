@@ -36,4 +36,8 @@ public final class NativeSQLTranslator implements SQLTranslator {
     public String getType() {
         return "NATIVE";
     }
+    
+    public boolean isDefault() {
+        return true;
+    }
 }

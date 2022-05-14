@@ -91,8 +91,8 @@
         
         <elasticjob.version>3.0.1</elasticjob.version>
         
-        <springframework.version>[4.3.6.RELEASE,5.0.0.M1)</springframework.version>
-        <spring-boot.version>[1.5.20.RELEASE,2.0.0.M1)</spring-boot.version>
+        <springframework.version>[4.3.6.RELEASE,4.3.30.RELEASE]</springframework.version>
+        <spring-boot.version>[1.5.20.RELEASE,1.5.22.RELEASE]</spring-boot.version>
         
         <bytebuddy.version>1.11.18</bytebuddy.version>
         <prometheus.version>0.11.0</prometheus.version>
