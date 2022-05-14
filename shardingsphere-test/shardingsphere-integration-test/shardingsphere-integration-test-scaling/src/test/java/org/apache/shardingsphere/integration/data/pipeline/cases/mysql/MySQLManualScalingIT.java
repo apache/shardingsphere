@@ -20,7 +20,6 @@ package org.apache.shardingsphere.integration.data.pipeline.cases.mysql;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.integration.data.pipeline.cases.base.BaseMySQLITCase;
 import org.apache.shardingsphere.integration.data.pipeline.cases.scenario.ScalingScenario;
 import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
@@ -34,6 +33,7 @@ import org.junit.runners.Parameterized.Parameters;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.concurrent.TimeUnit;
 
 /**
  * MySQL manual scaling test case.
@@ -63,11 +63,11 @@ public final class MySQLManualScalingIT extends BaseMySQLITCase {
     }
     
     @Before
-    public void setUp() {
+    public void setUp() throws InterruptedException {
         addResource();
         initShardingAlgorithm();
         // TODO wait for algorithm init
-        ThreadUtil.sleep(2000);
+        TimeUnit.SECONDS.sleep(2);
         createScalingRule();
     }
     

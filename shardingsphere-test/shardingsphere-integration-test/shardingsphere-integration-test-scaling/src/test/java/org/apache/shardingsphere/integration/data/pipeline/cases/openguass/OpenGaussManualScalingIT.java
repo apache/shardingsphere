@@ -20,7 +20,6 @@ package org.apache.shardingsphere.integration.data.pipeline.cases.openguass;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.integration.data.pipeline.cases.base.BaseOpenGaussITCase;
 import org.apache.shardingsphere.integration.data.pipeline.cases.scenario.ScalingScenario;
 import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
@@ -36,6 +35,7 @@ import org.junit.runners.Parameterized.Parameters;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @RunWith(Parameterized.class)
 public final class OpenGaussManualScalingIT extends BaseOpenGaussITCase {
@@ -61,11 +61,11 @@ public final class OpenGaussManualScalingIT extends BaseOpenGaussITCase {
     }
     
     @Before
-    public void setUp() {
+    public void setUp() throws InterruptedException {
         addResource();
         initShardingAlgorithm();
         // TODO wait for algorithm init
-        ThreadUtil.sleep(2000);
+        TimeUnit.SECONDS.sleep(2);
         createScalingRule();
         createSchema("test");
     }
