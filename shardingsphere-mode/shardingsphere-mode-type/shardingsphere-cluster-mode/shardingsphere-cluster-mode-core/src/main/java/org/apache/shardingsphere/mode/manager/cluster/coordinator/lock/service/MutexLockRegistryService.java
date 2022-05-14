@@ -22,6 +22,10 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockRegis
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeUtil;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 
@@ -32,6 +36,23 @@ import java.util.concurrent.locks.Lock;
 public final class MutexLockRegistryService implements LockRegistryService {
     
     private final ClusterPersistRepository repository;
+    
+    @Override
+    public Collection<String> acquireAckLockedInstances(final String ackLockName) {
+        List<String> childrenKeys = repository.getChildrenKeys(ackLockName);
+        if (childrenKeys.isEmpty()) {
+            return new ArrayList<>();
+        }
+        Collection<String> result = new LinkedList<>();
+        for (String each : childrenKeys) {
+            result.add(parseLockedInstance(ackLockName, each));
+        }
+        return result;
+    }
+    
+    private String parseLockedInstance(final String ackLockName, final String key) {
+        return LockNodeUtil.parseAckLockedNodePathKey(key);
+    }
     
     @Override
     public Lock getInternalLock(final String lockName) {
