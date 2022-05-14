@@ -31,12 +31,12 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmC
 import org.apache.shardingsphere.sharding.cosid.algorithm.CosIdAlgorithmConstants;
 import org.apache.shardingsphere.sharding.factory.KeyGenerateAlgorithmFactory;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
-import org.hamcrest.Matchers;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.startsWith;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.junit.Assert.assertThat;
 
 public final class CosIdKeyGenerateAlgorithmTest {
@@ -82,7 +82,7 @@ public final class CosIdKeyGenerateAlgorithmTest {
         Comparable<?> actual = algorithm.generateKey();
         assertThat(actual, instanceOf(String.class));
         assertThat(actual.toString(), startsWith(prefix));
-        assertThat(actual.toString().length(), Matchers.lessThanOrEqualTo(16));
+        assertThat(actual.toString().length(), lessThanOrEqualTo(16));
     }
     
     private Properties createAsStringProperties(final String idName) {
