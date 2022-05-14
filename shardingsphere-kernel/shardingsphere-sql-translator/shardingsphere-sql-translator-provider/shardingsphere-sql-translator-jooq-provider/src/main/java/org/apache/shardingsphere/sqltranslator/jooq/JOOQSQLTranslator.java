@@ -33,8 +33,8 @@ public final class JOOQSQLTranslator implements SQLTranslator {
     @Override
     public String translate(final String sql, final SQLStatement statement, final DatabaseType frontendDatabaseType, final DatabaseType backendDatabaseType) throws SQLTranslationException {
         try {
-            Query query = DSL.using(JOOQSQLDialectRegistry.getSQLDialect(frontendDatabaseType)).parser().parseQuery(sql);
-            return DSL.using(JOOQSQLDialectRegistry.getSQLDialect(backendDatabaseType)).render(query);
+            Query query = DSL.using(JOOQDialectRegistry.getSQLDialect(frontendDatabaseType)).parser().parseQuery(sql);
+            return DSL.using(JOOQDialectRegistry.getSQLDialect(backendDatabaseType)).render(query);
         // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
