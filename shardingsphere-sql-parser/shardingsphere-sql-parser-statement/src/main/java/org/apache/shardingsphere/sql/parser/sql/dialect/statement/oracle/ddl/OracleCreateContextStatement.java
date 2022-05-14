@@ -15,31 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqltranslator.config;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.config.scope.GlobalRuleConfiguration;
-
-import java.util.Optional;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateContextStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
- * SQL translator rule configuration.
+ * Oracle create context statement.
  */
-@AllArgsConstructor
-@NoArgsConstructor
-@Setter
-public final class SQLTranslatorRuleConfiguration implements GlobalRuleConfiguration {
-    
-    private String type;
-    
-    /**
-     * Get type.
-     * 
-     * @return type
-     */
-    public Optional<String> getType() {
-        return Optional.ofNullable(type);
-    }
+@ToString
+public final class OracleCreateContextStatement extends CreateContextStatement implements OracleStatement {
 }

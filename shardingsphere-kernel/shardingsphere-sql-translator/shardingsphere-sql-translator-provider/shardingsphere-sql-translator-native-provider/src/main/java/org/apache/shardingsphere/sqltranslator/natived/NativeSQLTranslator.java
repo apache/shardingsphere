@@ -15,18 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.general.event;
+package org.apache.shardingsphere.sqltranslator.natived;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sqltranslator.spi.SQLTranslator;
 
 /**
- * General lock released event.
+ * Native SQL translator.
  */
-@RequiredArgsConstructor
-@Getter
-public final class GeneralLockReleasedEvent implements GovernanceEvent {
+public final class NativeSQLTranslator implements SQLTranslator {
     
-    private final String lockedName;
+    @Override
+    public String translate(final String sql, final SQLStatement statement, final DatabaseType frontendDatabaseType, final DatabaseType backendDatabaseType) {
+        // TODO
+        return sql;
+    }
+    
+    @Override
+    public String getType() {
+        return "NATIVE";
+    }
+    
+    @Override
+    public boolean isDefault() {
+        return true;
+    }
 }

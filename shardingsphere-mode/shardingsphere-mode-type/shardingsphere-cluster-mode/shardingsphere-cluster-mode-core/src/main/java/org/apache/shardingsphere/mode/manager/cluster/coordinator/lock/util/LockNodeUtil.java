@@ -58,4 +58,14 @@ public final class LockNodeUtil {
     public static String[] parseAckLockName(final String ackLockedName) {
         return ackLockedName.trim().split(LOCK_DELIMITER);
     }
+    
+    /**
+     * Parse locked ack node path key.
+     *
+     * @param pathKey path key
+     * @return locked instance
+     */
+    public static String parseAckLockedNodePathKey(final String pathKey) {
+        return parseAckLockName(pathKey)[1];
+    }
 }

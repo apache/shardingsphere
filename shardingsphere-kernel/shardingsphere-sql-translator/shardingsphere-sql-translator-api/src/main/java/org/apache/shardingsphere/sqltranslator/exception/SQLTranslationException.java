@@ -15,25 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.general.event;
-
-import lombok.Getter;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeUtil;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
+package org.apache.shardingsphere.sqltranslator.exception;
 
 /**
- * General ack locked event.
+ * SQL translation exception.
  */
-@Getter
-public final class GeneralAckLockedEvent implements GovernanceEvent {
+public final class SQLTranslationException extends Exception {
     
-    private final String ackLockedName;
+    private static final String ERROR_MESSAGE = "SQL `%s` translation error.";
     
-    private final String lockedInstance;
-    
-    public GeneralAckLockedEvent(final String ackLockName) {
-        String[] databaseInstance = LockNodeUtil.parseAckLockName(ackLockName);
-        ackLockedName = databaseInstance[0];
-        lockedInstance = databaseInstance[1];
+    public SQLTranslationException(final String sql, final Exception cause) {
+        super(String.format(ERROR_MESSAGE, sql), cause);
     }
 }

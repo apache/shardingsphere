@@ -15,28 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.general.node;
+package org.apache.shardingsphere.sqltranslator.api.config;
 
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.AbstractGlobalLockNodeService;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeType;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.config.scope.GlobalRuleConfiguration;
 
 /**
- * General lock node service.
+ * SQL translator rule configuration.
  */
-public final class GeneralLockNodeService extends AbstractGlobalLockNodeService {
+@RequiredArgsConstructor
+@Getter
+public final class SQLTranslatorRuleConfiguration implements GlobalRuleConfiguration {
     
-    @Override
-    public String getSequenceNodePath() {
-        return PATH_DELIMITER + LOCK_ROOT + PATH_DELIMITER + LOCK_SCOPE_GLOBAL + PATH_DELIMITER + getLockLevel() + PATH_DELIMITER + "sequence";
-    }
+    private final String type;
     
-    @Override
-    protected String getLockLevel() {
-        return "general";
-    }
+    private final boolean useOriginalSQLWhenTranslatingFailed;
     
-    @Override
-    public LockNodeType getType() {
-        return LockNodeType.GENERAL;
+    public SQLTranslatorRuleConfiguration() {
+        this(null, true);
     }
 }

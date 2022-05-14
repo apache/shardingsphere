@@ -2301,3 +2301,16 @@ createSequenceClause
     | SESSION
     | GLOBAL
     ;
+
+createContext
+    : CREATE (OR REPLACE)? CONTEXT namespace USING (schemaName DOT_)? packageName sharingClause? (initializedClause | accessedClause)?
+    ;
+
+initializedClause
+    : INITIALIZED (EXTERNALLY | GLOBALLY)
+    ;
+
+accessedClause
+    : ACCESSED GLOBALLY
+    ;
+

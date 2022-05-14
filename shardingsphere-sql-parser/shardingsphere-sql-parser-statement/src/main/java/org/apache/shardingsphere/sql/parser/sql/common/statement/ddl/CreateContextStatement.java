@@ -15,18 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.general.event;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * General locked event.
+ * Create context statement.
  */
-@RequiredArgsConstructor
-@Getter
-public final class GeneralLockedEvent implements GovernanceEvent {
-    
-    private final String lockedName;
+@ToString
+public abstract class CreateContextStatement extends AbstractSQLStatement implements DDLStatement {
 }

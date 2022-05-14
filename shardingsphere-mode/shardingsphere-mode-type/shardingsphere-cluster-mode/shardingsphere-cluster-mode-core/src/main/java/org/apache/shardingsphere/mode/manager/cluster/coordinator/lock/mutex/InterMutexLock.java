@@ -112,19 +112,22 @@ public final class InterMutexLock implements MutexLock, LockAckAble {
     }
     
     private boolean isAckOK(final long timeout) {
-        long count = 0;
+        long expend = 0;
         do {
-            if (isAckCompleted()) {
+            if (isAckCompleted(expend)) {
                 return true;
             }
             sleepInterval();
-            count += TimeoutMilliseconds.CHECK_ACK_INTERVAL;
-        } while (timeout > count);
+            expend += TimeoutMilliseconds.DEFAULT_REGISTRY;
+        } while (timeout > expend);
         log.debug("is lock ack OK timeout");
         return false;
     }
     
-    private boolean isAckCompleted() {
+    private boolean isAckCompleted(final long expend) {
+        if (expend > 100L) {
+            lockedInstances.addAll(lockService.acquireAckLockedInstances(lockName + "/ack"));
+        }
         if (computeNodeInstances.size() > lockedInstances.size()) {
             return false;
         }
@@ -138,7 +141,7 @@ public final class InterMutexLock implements MutexLock, LockAckAble {
     
     private void sleepInterval() {
         try {
-            TimeUnit.MILLISECONDS.sleep(TimeoutMilliseconds.CHECK_ACK_INTERVAL);
+            TimeUnit.MILLISECONDS.sleep(TimeoutMilliseconds.DEFAULT_REGISTRY);
         } catch (final InterruptedException ignore) {
         }
     }

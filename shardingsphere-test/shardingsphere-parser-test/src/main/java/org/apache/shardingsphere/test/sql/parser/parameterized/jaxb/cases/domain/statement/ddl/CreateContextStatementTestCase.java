@@ -15,24 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.general.node;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import org.junit.Test;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class GeneralStandardLockNodeServiceTest {
-    
-    private static final GeneralLockNodeService SERVICE = new GeneralLockNodeService();
-    
-    @Test
-    public void assertGetSequenceNodePath() {
-        assertThat(SERVICE.getSequenceNodePath(), is("/lock/global/general/sequence"));
-    }
-    
-    @Test
-    public void assertGetLockLevel() {
-        assertThat(SERVICE.getLockLevel(), is("general"));
-    }
+/**
+ * Create context statement test case.
+ */
+public final class CreateContextStatementTestCase extends SQLParserTestCase {
 }
