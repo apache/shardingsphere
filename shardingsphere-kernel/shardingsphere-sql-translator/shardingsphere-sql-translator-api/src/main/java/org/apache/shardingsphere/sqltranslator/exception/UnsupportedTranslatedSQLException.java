@@ -15,25 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqltranslator.natived;
-
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sqltranslator.spi.SQLTranslator;
+package org.apache.shardingsphere.sqltranslator.exception;
 
 /**
- * Native SQL translator.
+ * Unsupported translated SQL exception.
  */
-public final class NativeSQLTranslator implements SQLTranslator {
+public final class UnsupportedTranslatedSQLException extends SQLTranslationException {
     
-    @Override
-    public String translate(final String sql, final SQLStatement statement, final DatabaseType frontendDatabaseType, final DatabaseType backendDatabaseType) {
-        // TODO
-        return sql;
-    }
+    private static final long serialVersionUID = -1419778194546662319L;
     
-    @Override
-    public String getType() {
-        return "NATIVE";
+    private static final String ERROR_MESSAGE = "SQL `%s` translation error.";
+    
+    public UnsupportedTranslatedSQLException(final String sql, final Exception cause) {
+        super(String.format(ERROR_MESSAGE, sql), cause);
     }
 }

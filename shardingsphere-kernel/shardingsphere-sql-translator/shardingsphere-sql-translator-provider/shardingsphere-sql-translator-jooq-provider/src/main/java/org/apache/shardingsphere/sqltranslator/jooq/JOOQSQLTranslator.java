@@ -15,25 +15,40 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqltranslator.natived;
+package org.apache.shardingsphere.sqltranslator.jooq;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sqltranslator.exception.SQLTranslationException;
+import org.apache.shardingsphere.sqltranslator.exception.UnsupportedTranslatedSQLException;
 import org.apache.shardingsphere.sqltranslator.spi.SQLTranslator;
+import org.jooq.Query;
+import org.jooq.impl.DSL;
 
 /**
- * Native SQL translator.
+ * JOOQ SQL translator.
  */
-public final class NativeSQLTranslator implements SQLTranslator {
+public final class JOOQSQLTranslator implements SQLTranslator {
     
     @Override
-    public String translate(final String sql, final SQLStatement statement, final DatabaseType frontendDatabaseType, final DatabaseType backendDatabaseType) {
-        // TODO
-        return sql;
+    public String translate(final String sql, final SQLStatement statement, final DatabaseType frontendDatabaseType, final DatabaseType backendDatabaseType) throws SQLTranslationException {
+        try {
+            Query query = DSL.using(JOOQSQLDialectRegistry.getSQLDialect(frontendDatabaseType)).parser().parseQuery(sql);
+            return DSL.using(JOOQSQLDialectRegistry.getSQLDialect(backendDatabaseType)).render(query);
+        // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            throw new UnsupportedTranslatedSQLException(sql, ex);
+        }
     }
     
     @Override
     public String getType() {
-        return "NATIVE";
+        return "JOOQ";
+    }
+    
+    @Override
+    public boolean isDefault() {
+        return true;
     }
 }
