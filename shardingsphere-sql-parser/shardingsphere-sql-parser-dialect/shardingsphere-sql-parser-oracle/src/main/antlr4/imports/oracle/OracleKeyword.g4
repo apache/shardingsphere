@@ -2746,3 +2746,19 @@ NOEXTEND
 NOSHARD
     : N O S H A R D
     ;
+
+INITIALIZED
+    : I N I T I A L I Z E D
+    ;
+
+EXTERNALLY
+    : E X T E R N A L L Y
+    ;
+
+GLOBALLY
+    : G L O B A L L Y
+    ;
+
+ACCESSED
+    : A C C E S S E D
+    ;
