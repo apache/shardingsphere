@@ -22,6 +22,7 @@ import org.apache.shardingsphere.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.spi.type.required.RequiredSPI;
 import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sqltranslator.exception.SQLTranslationException;
 
 /**
  * SQL translator.
@@ -37,6 +38,7 @@ public interface SQLTranslator extends TypedSPI, RequiredSPI {
      * @param frontendDatabaseType frontend database type
      * @param backendDatabaseType backend database type
      * @return translated SQL
+     * @throws SQLTranslationException SQL translation exception
      */
-    String translate(String sql, SQLStatement sqlStatement, DatabaseType frontendDatabaseType, DatabaseType backendDatabaseType);
+    String translate(String sql, SQLStatement sqlStatement, DatabaseType frontendDatabaseType, DatabaseType backendDatabaseType) throws SQLTranslationException;
 }

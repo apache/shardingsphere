@@ -18,9 +18,11 @@
 package org.apache.shardingsphere.sqltranslator.rule;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sqltranslator.config.SQLTranslatorRuleConfiguration;
+import org.apache.shardingsphere.sqltranslator.exception.SQLTranslationException;
 import org.apache.shardingsphere.sqltranslator.spi.SQLTranslator;
 import org.apache.shardingsphere.sqltranslator.spi.SQLTranslatorFactory;
 
@@ -31,8 +33,11 @@ public final class SQLTranslatorRule implements GlobalRule {
     
     private final SQLTranslator translator;
     
+    private final boolean useOriginalSQLWhenTranslatingFailed;
+    
     public SQLTranslatorRule(final SQLTranslatorRuleConfiguration ruleConfig) {
         translator = SQLTranslatorFactory.getInstance(ruleConfig.getType());
+        useOriginalSQLWhenTranslatingFailed = ruleConfig.isUseOriginalSQLWhenTranslatingFailed();
     }
     
     /**
@@ -50,11 +55,11 @@ public final class SQLTranslatorRule implements GlobalRule {
         }
         try {
             return translator.translate(sql, sqlStatement, frontendDatabaseType, backendDatabaseType);
-            // CHECKSTYLE:OFF
-            // TODO catch TranslationException
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            return sql;
+        } catch (final SQLTranslationException ex) {
+            if (useOriginalSQLWhenTranslatingFailed) {
+                return sql;
+            }
+            throw new ShardingSphereException(ex);
         }
     }
     
