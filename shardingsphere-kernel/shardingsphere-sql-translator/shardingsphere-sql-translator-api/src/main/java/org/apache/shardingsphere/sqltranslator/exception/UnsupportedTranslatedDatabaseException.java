@@ -17,18 +17,18 @@
 
 package org.apache.shardingsphere.sqltranslator.exception;
 
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+
 /**
- * SQL translation exception.
+ * Unsupported translated database exception.
  */
-public class SQLTranslationException extends Exception {
+public final class UnsupportedTranslatedDatabaseException extends SQLTranslationException {
     
-    private static final long serialVersionUID = -7227697280221442049L;
+    private static final long serialVersionUID = -8311552562051028033L;
     
-    public SQLTranslationException(final String message) {
-        super(message);
-    }
+    private static final String ERROR_MESSAGE = "Can not support database `%s` in SQL translation.";
     
-    public SQLTranslationException(final String message, final Exception cause) {
-        super(message, cause);
+    public UnsupportedTranslatedDatabaseException(final DatabaseType databaseType) {
+        super(String.format(ERROR_MESSAGE, databaseType.getType()));
     }
 }

@@ -18,17 +18,15 @@
 package org.apache.shardingsphere.sqltranslator.exception;
 
 /**
- * SQL translation exception.
+ * Unsupported translated SQL exception.
  */
-public class SQLTranslationException extends Exception {
+public final class UnsupportedTranslatedSQLException extends SQLTranslationException {
     
-    private static final long serialVersionUID = -7227697280221442049L;
+    private static final long serialVersionUID = -1419778194546662319L;
     
-    public SQLTranslationException(final String message) {
-        super(message);
-    }
+    private static final String ERROR_MESSAGE = "SQL `%s` translation error.";
     
-    public SQLTranslationException(final String message, final Exception cause) {
-        super(message, cause);
+    public UnsupportedTranslatedSQLException(final String sql, final Exception cause) {
+        super(String.format(ERROR_MESSAGE, sql), cause);
     }
 }
