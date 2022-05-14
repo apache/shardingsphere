@@ -262,7 +262,7 @@ public abstract class SQL92StatementSQLVisitor extends SQL92StatementBaseVisitor
     public final ASTNode visitBooleanPrimary(final BooleanPrimaryContext ctx) {
         if (null != ctx.IS()) {
             ExpressionSegment left = (ExpressionSegment) visit(ctx.booleanPrimary());
-            String rightText = ctx.start.getInputStream().getText(new Interval(ctx.IS().getSymbol().getStopIndex() + 1, ctx.stop.getStopIndex())).trim();
+            String rightText = ctx.start.getInputStream().getText(new Interval(ctx.IS().getSymbol().getStopIndex() + 1, ctx.stop.getStopIndex()));
             ExpressionSegment right = new LiteralExpressionSegment(ctx.IS().getSymbol().getStopIndex() + 1, ctx.stop.getStopIndex(), rightText);
             String operator = "IS";
             String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
