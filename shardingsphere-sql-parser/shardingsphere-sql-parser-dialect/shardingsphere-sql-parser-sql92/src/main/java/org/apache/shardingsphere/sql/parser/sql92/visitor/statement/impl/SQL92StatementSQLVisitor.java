@@ -264,7 +264,8 @@ public abstract class SQL92StatementSQLVisitor extends SQL92StatementBaseVisitor
         if (null != ctx.IS()) {
             String rightText = "";
             if (null != ctx.NOT()) {
-                rightText = rightText.concat("NOT ");
+                rightText = rightText.concat(ctx.start.getInputStream().getText(ctx.NOT().getSymbol().getStartIndex(),
+                        ctx.NOT().getSymbol().getStopIndex())).concat(" ");
             }
             Token operatorToken = null;
             if (null != ctx.NULL()) {

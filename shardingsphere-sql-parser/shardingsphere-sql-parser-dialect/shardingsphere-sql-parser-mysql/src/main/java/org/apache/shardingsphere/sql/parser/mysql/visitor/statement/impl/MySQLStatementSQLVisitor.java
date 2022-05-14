@@ -419,7 +419,8 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         if (null != ctx.IS()) {
             String rightText = "";
             if (null != ctx.NOT()) {
-                rightText = rightText.concat("NOT ");
+                rightText = rightText.concat(ctx.start.getInputStream().getText(ctx.NOT().getSymbol().getStartIndex(),
+                        ctx.NOT().getSymbol().getStopIndex())).concat(" ");
             }
             Token operatorToken = null;
             if (null != ctx.NULL()) {
