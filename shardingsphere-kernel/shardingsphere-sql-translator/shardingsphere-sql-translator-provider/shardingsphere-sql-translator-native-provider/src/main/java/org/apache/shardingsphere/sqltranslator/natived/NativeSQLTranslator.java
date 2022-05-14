@@ -37,6 +37,7 @@ public final class NativeSQLTranslator implements SQLTranslator {
         return "NATIVE";
     }
     
+    @Override
     public boolean isDefault() {
         return true;
     }
