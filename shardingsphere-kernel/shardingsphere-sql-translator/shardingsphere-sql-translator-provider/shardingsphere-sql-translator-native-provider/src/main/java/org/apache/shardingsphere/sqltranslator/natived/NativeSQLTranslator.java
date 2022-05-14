@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqltranslator.spi.type;
+package org.apache.shardingsphere.sqltranslator.natived;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -28,7 +28,7 @@ import org.apache.shardingsphere.sqltranslator.spi.SQLTranslator;
 public final class NativeSQLTranslator implements SQLTranslator {
     
     @Override
-    public String translate(final String sql, final SQLStatement statement, final DatabaseType frontendDatabaseType, final DatabaseType backendDatabaseType) throws SQLTranslationException {
+    public String translate(final String sql, final SQLStatement statement, final DatabaseType frontendDatabaseType, final DatabaseType backendDatabaseType) {
         // TODO
         return sql;
     }
