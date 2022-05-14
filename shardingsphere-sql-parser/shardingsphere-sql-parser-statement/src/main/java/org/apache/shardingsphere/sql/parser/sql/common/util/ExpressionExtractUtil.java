@@ -100,7 +100,7 @@ public final class ExpressionExtractUtil {
         if (expression instanceof BinaryOperationExpression && isNullLiterals(((BinaryOperationExpression) expression).getRight())) {
             return Optional.empty();
         }
-        return Optional.of(expression);
+        return Optional.ofNullable(expression);
     }
     
     private static boolean isNullLiterals(final ExpressionSegment expression) {
