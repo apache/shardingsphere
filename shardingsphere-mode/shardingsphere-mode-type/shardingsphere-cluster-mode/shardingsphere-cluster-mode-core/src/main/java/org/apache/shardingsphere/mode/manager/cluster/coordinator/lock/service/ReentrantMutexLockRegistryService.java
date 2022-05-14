@@ -21,7 +21,10 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockRegistryService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
 
 /**
  * Reentrant mutex lock registry service.
@@ -30,6 +33,16 @@ import java.util.concurrent.TimeUnit;
 public final class ReentrantMutexLockRegistryService implements LockRegistryService {
     
     private final ClusterPersistRepository repository;
+    
+    @Override
+    public Collection<String> acquireAckLockedInstances(final String lockName) {
+        return new LinkedList<>();
+    }
+    
+    @Override
+    public Lock getInternalLock(final String lockName) {
+        return repository.getInternalReentrantMutexLock(lockName);
+    }
     
     @Override
     public boolean tryLock(final String lockName, final long timeoutMilliseconds) {

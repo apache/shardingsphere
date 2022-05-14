@@ -59,7 +59,7 @@ public final class ShardingSphereMutexLockHolder {
      * @param locksName locks name
      * @return inter mutex lock
      */
-    public MutexLock getInterMutexLock(final String locksName) {
+    public synchronized MutexLock getInterMutexLock(final String locksName) {
         MutexLock result = interMutexLocks.get(locksName);
         if (null == result) {
             result = createInterMutexLock(locksName);
@@ -96,7 +96,6 @@ public final class ShardingSphereMutexLockHolder {
         Collection<String> allGlobalLock = repository.getChildrenKeys(lockNodeService.getLocksNodePath());
         if (allGlobalLock.isEmpty()) {
             repository.persist(lockNodeService.getLocksNodePath(), "");
-            repository.persist(lockNodeService.getLockedAckNodePath(), "");
             return;
         }
         for (String each : allGlobalLock) {

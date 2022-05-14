@@ -1017,6 +1017,17 @@ flashbackArchiveClause
     : FLASHBACK ARCHIVE flashbackArchiveName? | NO FLASHBACK ARCHIVE
     ;
 
+alterPackage
+    : ALTER PACKAGE packageName (
+    | packageCompileClause
+    | (EDITIONABLE | NONEDITIONABLE)
+    )
+    ;
+
+packageCompileClause
+    : COMPILE DEBUG? (PACKAGE | SPECIFICATION | BODY)? (compilerParametersClause*)? (REUSE SETTINGS)?
+    ;
+
 alterSynonym
     : ALTER PUBLIC? SYNONYM (schemaName DOT_)? synonymName (COMPILE | EDITIONABLE | NONEDITIONABLE)
     ;
@@ -2301,3 +2312,16 @@ createSequenceClause
     | SESSION
     | GLOBAL
     ;
+
+createContext
+    : CREATE (OR REPLACE)? CONTEXT namespace USING (schemaName DOT_)? packageName sharingClause? (initializedClause | accessedClause)?
+    ;
+
+initializedClause
+    : INITIALIZED (EXTERNALLY | GLOBALLY)
+    ;
+
+accessedClause
+    : ACCESSED GLOBALLY
+    ;
+
