@@ -17,31 +17,22 @@
 
 package org.apache.shardingsphere.sqltranslator.config;
 
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.scope.GlobalRuleConfiguration;
-
-import java.util.Optional;
 
 /**
  * SQL translator rule configuration.
  */
-@AllArgsConstructor
-@NoArgsConstructor
-@Setter
+@RequiredArgsConstructor
+@Getter
 public final class SQLTranslatorRuleConfiguration implements GlobalRuleConfiguration {
     
-    private String type;
+    private final String type;
     
-    // TODO is ignore translate fail
+    private final boolean useOriginalSQLWhenTranslatingFailed;
     
-    /**
-     * Get type.
-     * 
-     * @return type
-     */
-    public Optional<String> getType() {
-        return Optional.ofNullable(type);
+    public SQLTranslatorRuleConfiguration() {
+        this(null, true);
     }
 }

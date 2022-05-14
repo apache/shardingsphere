@@ -15,26 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqltranslator.yaml.config;
-
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
-import org.apache.shardingsphere.sqltranslator.config.SQLTranslatorRuleConfiguration;
+package org.apache.shardingsphere.sqltranslator.exception;
 
 /**
- * SQL translator configuration for YAML.
+ * SQL translation exception.
  */
-@Getter
-@Setter
-public final class YamlSQLTranslatorRuleConfiguration implements YamlRuleConfiguration {
+public final class SQLTranslationException extends Exception {
     
-    private String type;
+    private static final String ERROR_MESSAGE = "SQL `%s` translation error.";
     
-    private boolean useOriginalSQLWhenTranslatingFailed = true;
-    
-    @Override
-    public Class<SQLTranslatorRuleConfiguration> getRuleConfigurationType() {
-        return SQLTranslatorRuleConfiguration.class;
+    public SQLTranslationException(final String sql, final Exception cause) {
+        super(String.format(ERROR_MESSAGE, sql), cause);
     }
 }
