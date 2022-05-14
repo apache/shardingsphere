@@ -35,6 +35,8 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sqltranslator.config.SQLTranslatorRuleConfiguration;
+import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,6 +46,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -75,6 +78,8 @@ public final class OpenGaussComBatchBindExecutorTest {
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE)).thenReturn(0);
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY)).thenReturn(1);
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
+        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(any(String.class)).getRuleMetaData().findSingleRule(SQLTranslatorRule.class))
+                .thenReturn(Optional.of(new SQLTranslatorRule(new SQLTranslatorRuleConfiguration())));
         int connectionId = 1;
         String statement = "S_1";
         OpenGaussComBatchBindPacket packet = mock(OpenGaussComBatchBindPacket.class);

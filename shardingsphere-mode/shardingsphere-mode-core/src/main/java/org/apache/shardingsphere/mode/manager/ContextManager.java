@@ -168,8 +168,8 @@ public final class ContextManager implements AutoCloseable {
      * @param schemas schemas
      */
     public void alterDatabase(final String databaseName, final Map<String, ShardingSphereSchema> schemas) {
-        ShardingSphereMetaData alteredMetaData = new ShardingSphereMetaData(
-                databaseName, metaDataContexts.getMetaData(databaseName).getResource(), metaDataContexts.getMetaData(databaseName).getRuleMetaData(), schemas);
+        ShardingSphereMetaData alteredMetaData = new ShardingSphereMetaData(databaseName, metaDataContexts.getMetaData(databaseName).getFrontendDatabaseType(),
+                metaDataContexts.getMetaData(databaseName).getResource(), metaDataContexts.getMetaData(databaseName).getRuleMetaData(), schemas);
         Map<String, ShardingSphereMetaData> alteredMetaDataMap = new HashMap<>(metaDataContexts.getMetaDataMap());
         alteredMetaDataMap.put(databaseName, alteredMetaData);
         FederationDatabaseMetaData alteredDatabaseMetaData = new FederationDatabaseMetaData(databaseName, schemas);
@@ -390,8 +390,8 @@ public final class ContextManager implements AutoCloseable {
     /**
      * Reload meta data.
      *
-     * @param databaseName database name to be reload
-     * @param schemaName schema name to be reload
+     * @param databaseName database name to be reloaded
+     * @param schemaName schema name to be reloaded
      */
     public void reloadMetaData(final String databaseName, final String schemaName) {
         try {
@@ -401,7 +401,7 @@ public final class ContextManager implements AutoCloseable {
                 metaDataContexts.getMetaDataPersistService().ifPresent(optional -> optional.getSchemaMetaDataService().persistTables(databaseName, schemaName, each));
             }
         } catch (final SQLException ex) {
-            log.error("Reload database:{} meta data failed", databaseName, ex);
+            log.error("Reload database:{} meta data of schema:{} failed", databaseName, schemaName, ex);
         }
     }
     
@@ -419,7 +419,7 @@ public final class ContextManager implements AutoCloseable {
                     metaDataContexts.getMetaData(databaseName).getRuleMetaData().getRules(), metaDataContexts.getProps(), schemaName);
             loadTableMetaData(databaseName, schemaName, tableName, materials);
         } catch (final SQLException ex) {
-            log.error("Reload table:{} meta data of database:{} failed", tableName, databaseName, ex);
+            log.error("Reload table:{} meta data of database:{} schema:{} failed", tableName, databaseName, schemaName, ex);
         }
     }
     
@@ -439,7 +439,7 @@ public final class ContextManager implements AutoCloseable {
                     metaDataContexts.getMetaData(databaseName).getRuleMetaData().getRules(), metaDataContexts.getProps(), schemaName);
             loadTableMetaData(databaseName, schemaName, tableName, materials);
         } catch (final SQLException ex) {
-            log.error("Reload table:{} meta data of database:{} with data source:{} failed", tableName, databaseName, dataSourceName, ex);
+            log.error("Reload table:{} meta data of database:{} schema:{} with data source:{} failed", tableName, databaseName, schemaName, dataSourceName, ex);
         }
     }
     

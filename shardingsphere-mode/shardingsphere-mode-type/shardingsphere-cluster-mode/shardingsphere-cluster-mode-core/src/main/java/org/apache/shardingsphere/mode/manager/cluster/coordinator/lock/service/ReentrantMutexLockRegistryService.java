@@ -22,6 +22,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockRegis
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
 
 /**
  * Reentrant mutex lock registry service.
@@ -30,6 +31,11 @@ import java.util.concurrent.TimeUnit;
 public final class ReentrantMutexLockRegistryService implements LockRegistryService {
     
     private final ClusterPersistRepository repository;
+    
+    @Override
+    public Lock getInternalLock(final String lockName) {
+        return repository.getInternalReentrantMutexLock(lockName);
+    }
     
     @Override
     public boolean tryLock(final String lockName, final long timeoutMilliseconds) {

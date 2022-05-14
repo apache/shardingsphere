@@ -43,6 +43,8 @@ import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLCon
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sqltranslator.config.SQLTranslatorRuleConfiguration;
+import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -64,6 +66,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -111,6 +114,8 @@ public final class PostgreSQLComDescribeExecutorTest {
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
         when(connectionSession.getDatabaseName()).thenReturn(DATABASE_NAME);
         when(mockContextManager.getMetaDataContexts().getAllDatabaseNames().contains(DATABASE_NAME)).thenReturn(true);
+        when(mockContextManager.getMetaDataContexts().getMetaData(any(String.class)).getRuleMetaData().findSingleRule(SQLTranslatorRule.class))
+                .thenReturn(Optional.of(new SQLTranslatorRule(new SQLTranslatorRuleConfiguration())));
         prepareTableMetaData();
     }
     
