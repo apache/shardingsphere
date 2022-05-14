@@ -34,7 +34,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-sql-translator-provider</artifactId>
+            <artifactId>shardingsphere-sql-translator-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         
