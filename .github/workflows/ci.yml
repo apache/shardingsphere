@@ -188,7 +188,7 @@ jobs:
         run: echo y | ./mvnw -B test -f examples/shardingsphere-example-generator/pom.xml -Pexample-generator
 
   test-coverage-report:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-16.04
     name: shardingsphere test-coverage report
     steps:
       - uses: actions/checkout@v2
