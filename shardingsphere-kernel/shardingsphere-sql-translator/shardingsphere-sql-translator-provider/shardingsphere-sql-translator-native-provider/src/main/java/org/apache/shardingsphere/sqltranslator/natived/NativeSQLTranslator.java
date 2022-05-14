@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sqltranslator.natived;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sqltranslator.exception.SQLTranslationException;
 import org.apache.shardingsphere.sqltranslator.spi.SQLTranslator;
 
 /**
