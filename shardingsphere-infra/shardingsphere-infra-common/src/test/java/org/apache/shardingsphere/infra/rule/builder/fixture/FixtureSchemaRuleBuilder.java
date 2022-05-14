@@ -28,8 +28,8 @@ import java.util.Map;
 public class FixtureSchemaRuleBuilder implements SchemaRuleBuilder<FixtureSchemaRuleConfiguration> {
     
     @Override
-    public FixtureSchemaRule build(FixtureSchemaRuleConfiguration config, String databaseName, Map<String, DataSource> dataSources, Collection<ShardingSphereRule> builtRules,
-                                   ConfigurationProperties props) {
+    public FixtureSchemaRule build(final FixtureSchemaRuleConfiguration config, final String databaseName, final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules,
+                                   final ConfigurationProperties props) {
         return new FixtureSchemaRule();
     }
     

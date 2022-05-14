@@ -25,7 +25,10 @@ import java.util.Collections;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 
 public final class DefaultSchemaRuleConfigurationBuilderFactoryTest {
     
