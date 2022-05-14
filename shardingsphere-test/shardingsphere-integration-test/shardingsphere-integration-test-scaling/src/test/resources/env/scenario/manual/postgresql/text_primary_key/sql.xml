@@ -24,29 +24,11 @@
         )
     </create-table-order>
     
-    <create-table-order-item>
-        CREATE TABLE test.t_order_item (
-        item_id int8 NOT NULL,
-        order_id int4 NOT NULL,
-        user_id int8 NOT NULL,
-        status varchar(50),
-        PRIMARY KEY (item_id)
-        )
-    </create-table-order-item>
-    
     <full-insert-order>
         INSERT INTO t_order (id,order_id,user_id) VALUES (?, ?, ?)
     </full-insert-order>
     
-    <insert-order-item>
-        INSERT INTO t_order_item(item_id,order_id,user_id,status) VALUES(?,?,?,?)
-    </insert-order-item>
-    
     <delete-order-by-id>
         DELETE FROM t_order WHERE id = ?
     </delete-order-by-id>
-    
-    <delete-order-item-by-id>
-        DELETE FROM t_order_item WHERE item_id = ?
-    </delete-order-item-by-id>
 </command>
