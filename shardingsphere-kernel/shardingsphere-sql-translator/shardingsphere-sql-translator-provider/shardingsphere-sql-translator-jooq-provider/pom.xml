@@ -21,15 +21,28 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-sql-translator</artifactId>
+        <artifactId>shardingsphere-sql-translator-provider</artifactId>
         <version>5.1.2-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-sql-translator-provider</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>shardingsphere-sql-translator-jooq-provider</artifactId>
     <name>${project.artifactId}</name>
     
-    <modules>
-        <module>shardingsphere-sql-translator-native-provider</module>
-        <module>shardingsphere-sql-translator-jooq-provider</module>
-    </modules>
+    <properties>
+        <jooq.version>3.16.6</jooq.version>
+    </properties>
+    
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-sql-translator-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.jooq</groupId>
+            <artifactId>jooq</artifactId>
+            <version>${jooq.version}</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
 </project>
