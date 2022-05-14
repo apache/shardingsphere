@@ -64,11 +64,11 @@ public interface LockNodeService {
     /**
      * Generate ack lock name.
      *
-     * @param ackLockName ack lock name
+     * @param lockName lock name
      * @param lockedInstanceId locked instance id
      * @return ack lock name
      */
-    String generateAckLockName(String ackLockName, String lockedInstanceId);
+    String generateAckLockName(String lockName, String lockedInstanceId);
     
     /**
      * Parse Locks node path.
