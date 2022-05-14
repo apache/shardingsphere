@@ -15,26 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqltranslator.yaml.config;
+package org.apache.shardingsphere.sqltranslator.natived;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
-import org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfiguration;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sqltranslator.spi.SQLTranslator;
 
 /**
- * SQL translator configuration for YAML.
+ * Native SQL translator.
  */
-@Getter
-@Setter
-public final class YamlSQLTranslatorRuleConfiguration implements YamlRuleConfiguration {
-    
-    private String type;
-    
-    private boolean useOriginalSQLWhenTranslatingFailed = true;
+public final class NativeSQLTranslator implements SQLTranslator {
     
     @Override
-    public Class<SQLTranslatorRuleConfiguration> getRuleConfigurationType() {
-        return SQLTranslatorRuleConfiguration.class;
+    public String translate(final String sql, final SQLStatement statement, final DatabaseType frontendDatabaseType, final DatabaseType backendDatabaseType) {
+        // TODO
+        return sql;
+    }
+    
+    @Override
+    public String getType() {
+        return "NATIVE";
+    }
+    
+    @Override
+    public boolean isDefault() {
+        return true;
     }
 }

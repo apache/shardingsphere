@@ -15,31 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqltranslator.spi.type;
+package org.apache.shardingsphere.sqltranslator.factory;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sqltranslator.exception.SQLTranslationException;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.type.required.RequiredSPIRegistry;
+import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.sqltranslator.spi.SQLTranslator;
 
 /**
- * Native SQL translator.
+ * SQL translator factory.
  */
-public final class NativeSQLTranslator implements SQLTranslator {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class SQLTranslatorFactory {
     
-    @Override
-    public String translate(final String sql, final SQLStatement statement, final DatabaseType frontendDatabaseType, final DatabaseType backendDatabaseType) throws SQLTranslationException {
-        // TODO
-        return sql;
+    static {
+        ShardingSphereServiceLoader.register(SQLTranslator.class);
     }
     
-    @Override
-    public String getType() {
-        return "NATIVE";
-    }
-    
-    @Override
-    public boolean isDefault() {
-        return true;
+    /**
+     * Get instance of SQL translator.
+     * 
+     * @param type translator type 
+     * @return got instance
+     */
+    public static SQLTranslator getInstance(final String type) {
+        return TypedSPIRegistry.findRegisteredService(SQLTranslator.class, type).orElse(RequiredSPIRegistry.getRegisteredService(SQLTranslator.class));
     }
 }

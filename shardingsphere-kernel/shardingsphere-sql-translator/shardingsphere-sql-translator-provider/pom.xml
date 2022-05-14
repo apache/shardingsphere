@@ -21,16 +21,22 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-kernel</artifactId>
+        <artifactId>shardingsphere-sql-translator</artifactId>
         <version>5.1.2-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-sql-translator</artifactId>
+    <artifactId>shardingsphere-sql-translator-provider</artifactId>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>shardingsphere-sql-translator-api</module>
-        <module>shardingsphere-sql-translator-core</module>
-        <module>shardingsphere-sql-translator-provider</module>
+        <module>shardingsphere-sql-translator-native-provider</module>
     </modules>
+    
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-sql-translator-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>
