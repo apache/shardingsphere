@@ -192,6 +192,15 @@ jobs:
     name: shardingsphere test-coverage report
     steps:
       - uses: actions/checkout@v2
+      - name: Maven resolve ranges
+        run: ./mvnw versions:resolve-ranges -ntp -Dincludes='org.springframework:*,org.springframework.boot:*'
+      - name: Cache Maven Repos
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
       - name: Shutdown Ubuntu MySQL(SUDO)
         run: sudo service mysql stop
       - name: Set up MySQL
@@ -200,7 +209,12 @@ jobs:
           mysql root password: "root" # Required if "mysql user" is empty, default is empty. The root superuser password
 #          mysql user: 'developer' # Required if "mysql root password" is empty, default is empty. The superuser for the specified database. Can use secrets, too
 #          mysql password: ${{ secrets.DatabasePassword }}  # Required if "mysql user" exists. The password for the "mysql user"
-      - name: Build and Test
+      - name: Set up JDK 8
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: 8
+      - name: Test with Maven
         run: ./mvnw -B --no-transfer-progress clean install cobertura:cobertura -Dmaven.javadoc.skip=true -Ddatabases=MySQL,PostgreSQL
       - name: Upload to Codecov
         uses: codecov/codecov-action@v3.1.0
