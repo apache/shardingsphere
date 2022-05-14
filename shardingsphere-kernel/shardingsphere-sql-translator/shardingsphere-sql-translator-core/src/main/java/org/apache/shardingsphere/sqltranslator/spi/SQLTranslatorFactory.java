@@ -15,33 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqltranslator.config;
+package org.apache.shardingsphere.sqltranslator.spi;
 
-import lombok.AllArgsConstructor;
+import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.config.scope.GlobalRuleConfiguration;
-
-import java.util.Optional;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.type.required.RequiredSPIRegistry;
+import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
 /**
- * SQL translator rule configuration.
+ * SQL translator factory.
  */
-@AllArgsConstructor
-@NoArgsConstructor
-@Setter
-public final class SQLTranslatorRuleConfiguration implements GlobalRuleConfiguration {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class SQLTranslatorFactory {
     
-    private String type;
-    
-    // TODO is ignore translate fail
+    static {
+        ShardingSphereServiceLoader.register(SQLTranslator.class);
+    }
     
     /**
-     * Get type.
+     * Get instance of SQL translator.
      * 
-     * @return type
+     * @param type translator type 
+     * @return got instance
      */
-    public Optional<String> getType() {
-        return Optional.ofNullable(type);
+    public static SQLTranslator getInstance(final String type) {
+        return TypedSPIRegistry.findRegisteredService(SQLTranslator.class, type).orElse(RequiredSPIRegistry.getRegisteredService(SQLTranslator.class));
     }
 }

@@ -15,24 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.general.node;
+package org.apache.shardingsphere.sqltranslator.spi.type;
 
-import org.junit.Test;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sqltranslator.spi.SQLTranslator;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class GeneralStandardLockNodeServiceTest {
+/**
+ * Native SQL translator.
+ */
+public final class NativeSQLTranslator implements SQLTranslator {
     
-    private static final GeneralLockNodeService SERVICE = new GeneralLockNodeService();
-    
-    @Test
-    public void assertGetSequenceNodePath() {
-        assertThat(SERVICE.getSequenceNodePath(), is("/lock/global/general/sequence"));
+    @Override
+    public String translate(final String sql, final SQLStatement statement, final DatabaseType frontendDatabaseType, final DatabaseType backendDatabaseType) {
+        // TODO
+        return sql;
     }
     
-    @Test
-    public void assertGetLockLevel() {
-        assertThat(SERVICE.getLockLevel(), is("general"));
+    @Override
+    public String getType() {
+        return "NATIVE";
+    }
+    
+    @Override
+    public boolean isDefault() {
+        return true;
     }
 }

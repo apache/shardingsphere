@@ -15,5 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.database.node.DatabaseLockNodeService
-org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.node.MutexLockNodeService
+org.apache.shardingsphere.sqltranslator.spi.type.NativeSQLTranslator

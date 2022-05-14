@@ -87,5 +87,6 @@ execute
     | alterAttributeDimension
     | createSequence
     | alterPackage
+    | createContext
     ) SEMI_?
     ;

@@ -15,28 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.general.node;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.AbstractGlobalLockNodeService;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeType;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * General lock node service.
+ * Create context statement test case.
  */
-public final class GeneralLockNodeService extends AbstractGlobalLockNodeService {
-    
-    @Override
-    public String getSequenceNodePath() {
-        return PATH_DELIMITER + LOCK_ROOT + PATH_DELIMITER + LOCK_SCOPE_GLOBAL + PATH_DELIMITER + getLockLevel() + PATH_DELIMITER + "sequence";
-    }
-    
-    @Override
-    protected String getLockLevel() {
-        return "general";
-    }
-    
-    @Override
-    public LockNodeType getType() {
-        return LockNodeType.GENERAL;
-    }
+public final class CreateContextStatementTestCase extends SQLParserTestCase {
 }

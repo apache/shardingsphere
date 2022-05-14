@@ -15,25 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.general.event;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import lombok.Getter;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeUtil;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateContextStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
- * General ack locked event.
+ * Oracle create context statement.
  */
-@Getter
-public final class GeneralAckLockedEvent implements GovernanceEvent {
-    
-    private final String ackLockedName;
-    
-    private final String lockedInstance;
-    
-    public GeneralAckLockedEvent(final String ackLockName) {
-        String[] databaseInstance = LockNodeUtil.parseAckLockName(ackLockName);
-        ackLockedName = databaseInstance[0];
-        lockedInstance = databaseInstance[1];
-    }
+@ToString
+public final class OracleCreateContextStatement extends CreateContextStatement implements OracleStatement {
 }
