@@ -31,6 +31,8 @@ public final class YamlSQLTranslatorRuleConfiguration implements YamlRuleConfigu
     
     private String type;
     
+    private boolean useOriginalSQLWhenTranslatingFailed = true;
+    
     @Override
     public Class<SQLTranslatorRuleConfiguration> getRuleConfigurationType() {
         return SQLTranslatorRuleConfiguration.class;

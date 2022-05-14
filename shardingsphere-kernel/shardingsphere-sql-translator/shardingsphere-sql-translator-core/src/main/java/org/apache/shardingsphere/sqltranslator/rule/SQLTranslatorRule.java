@@ -32,7 +32,7 @@ public final class SQLTranslatorRule implements GlobalRule {
     private final SQLTranslator translator;
     
     public SQLTranslatorRule(final SQLTranslatorRuleConfiguration ruleConfig) {
-        translator = SQLTranslatorFactory.getInstance(ruleConfig.getType().orElse(""));
+        translator = SQLTranslatorFactory.getInstance(ruleConfig.getType());
     }
     
     /**

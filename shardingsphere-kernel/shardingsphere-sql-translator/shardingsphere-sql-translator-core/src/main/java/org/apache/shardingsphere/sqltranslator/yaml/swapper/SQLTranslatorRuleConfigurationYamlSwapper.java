@@ -30,13 +30,13 @@ public final class SQLTranslatorRuleConfigurationYamlSwapper implements YamlRule
     @Override
     public YamlSQLTranslatorRuleConfiguration swapToYamlConfiguration(final SQLTranslatorRuleConfiguration data) {
         YamlSQLTranslatorRuleConfiguration result = new YamlSQLTranslatorRuleConfiguration();
-        result.setType(data.getType().orElse(null));
+        result.setType(data.getType());
         return result;
     }
     
     @Override
     public SQLTranslatorRuleConfiguration swapToObject(final YamlSQLTranslatorRuleConfiguration yamlConfig) {
-        return new SQLTranslatorRuleConfiguration(yamlConfig.getType());
+        return new SQLTranslatorRuleConfiguration(yamlConfig.getType(), yamlConfig.isUseOriginalSQLWhenTranslatingFailed());
     }
     
     @Override
