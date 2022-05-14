@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
@@ -375,9 +376,23 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
     public final ASTNode visitBooleanPrimary(final BooleanPrimaryContext ctx) {
         if (null != ctx.IS()) {
             ExpressionSegment left = (ExpressionSegment) visit(ctx.booleanPrimary());
-            String rightText = ctx.start.getInputStream().getText(new Interval(ctx.IS().getSymbol().getStopIndex() + 1, ctx.stop.getStopIndex()));
-            ExpressionSegment right = new LiteralExpressionSegment(ctx.IS().getSymbol().getStopIndex() + 1, ctx.stop.getStopIndex(), rightText);
             String operator = "IS";
+            Token operatorToken = ctx.IS().getSymbol();
+            if (null != ctx.NOT()) {
+                operatorToken = ctx.NOT().getSymbol();
+            }
+            if (null != ctx.NULL()) {
+                operatorToken = ctx.NULL().getSymbol();
+            }
+            if (null != ctx.TRUE()) {
+                operatorToken = ctx.TRUE().getSymbol();
+            }
+            if (null != ctx.FALSE()) {
+                operatorToken = ctx.FALSE().getSymbol();
+            }
+            int startIndex = ctx.IS().getSymbol().equals(operatorToken) ? ctx.IS().getSymbol().getStopIndex() + 1 : operatorToken.getStartIndex();
+            String rightText = ctx.start.getInputStream().getText(new Interval(startIndex, ctx.stop.getStopIndex()));
+            ExpressionSegment right = new LiteralExpressionSegment(ctx.IS().getSymbol().getStopIndex() + 1, ctx.stop.getStopIndex(), rightText);
             String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
             return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
         }
