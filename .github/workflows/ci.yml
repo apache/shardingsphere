@@ -217,8 +217,4 @@ jobs:
       - name: Test with Maven
         run: ./mvnw -B --no-transfer-progress clean install cobertura:cobertura -Dmaven.javadoc.skip=true -Ddatabases=MySQL,PostgreSQL
       - name: Upload to Codecov
-        uses: codecov/codecov-action@v3.1.0
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          file: ./target/site/jacoco/jacoco.xml
-          flags: unittests
+        run: curl -s https://codecov.io/bash
