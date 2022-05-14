@@ -129,7 +129,14 @@ public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Com
     }
     
     private BigInteger cutShardingValue(final Comparable<?> shardingValue) {
+        checkOffsetArgument(shardingValue);
         return 0 == startOffset && 0 == stopOffset ? getBigInteger(shardingValue) : new BigInteger(shardingValue.toString().substring(startOffset, shardingValue.toString().length() - stopOffset));
+    }
+    
+    private void checkOffsetArgument(final Comparable<?> shardingValue) {
+        Preconditions.checkArgument(startOffset >= 0, "Start offset can not be less than 0.");
+        Preconditions.checkArgument(stopOffset >= 0, "Stop offset can not be less than 0.");
+        Preconditions.checkArgument(shardingValue.toString().length() - stopOffset > startOffset, "Sharding value subtract stop offset can not be less than start offset.");
     }
     
     private BigInteger getBigInteger(final Comparable<?> value) {

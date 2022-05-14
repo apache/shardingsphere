@@ -25,5 +25,5 @@ public final class SQLTranslatorOrder {
     /**
      * SQL translator order.
      */
-    public static final int ORDER = 800;
+    public static final int ORDER = 900;
 }

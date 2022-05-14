@@ -86,5 +86,7 @@ execute
     | alterAnalyticView
     | alterAttributeDimension
     | createSequence
+    | alterPackage
+    | createContext
     ) SEMI_?
     ;

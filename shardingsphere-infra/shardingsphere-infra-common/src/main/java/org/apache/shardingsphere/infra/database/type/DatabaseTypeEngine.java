@@ -43,6 +43,23 @@ public final class DatabaseTypeEngine {
     /**
      * Get database type.
      *
+     * @param databaseConfigs database configs
+     * @param props props
+     * @return database type
+     */
+    public static DatabaseType getFrontendDatabaseType(final Map<String, ? extends DatabaseConfiguration> databaseConfigs, final ConfigurationProperties props) {
+        Optional<DatabaseType> configuredDatabaseType = findConfiguredDatabaseType(props);
+        if (configuredDatabaseType.isPresent()) {
+            return configuredDatabaseType.get();
+        }
+        Collection<DataSource> dataSources = databaseConfigs.values().stream()
+                .filter(DatabaseTypeEngine::isComplete).findFirst().map(optional -> optional.getDataSources().values()).orElseGet(Collections::emptyList);
+        return getDatabaseType(dataSources);
+    }
+    
+    /**
+     * Get database type.
+     *
      * @param url database URL
      * @return database type
      */
