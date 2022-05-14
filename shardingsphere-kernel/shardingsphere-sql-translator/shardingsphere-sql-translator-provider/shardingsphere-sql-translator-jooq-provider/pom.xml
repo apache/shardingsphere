@@ -28,7 +28,7 @@
     <name>${project.artifactId}</name>
     
     <properties>
-        <jooq.version>3.14.8</jooq.version>
+        <jooq.version>3.14.15</jooq.version>
     </properties>
     
     <dependencies>
@@ -42,7 +42,6 @@
             <groupId>org.jooq</groupId>
             <artifactId>jooq</artifactId>
             <version>${jooq.version}</version>
-            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>
