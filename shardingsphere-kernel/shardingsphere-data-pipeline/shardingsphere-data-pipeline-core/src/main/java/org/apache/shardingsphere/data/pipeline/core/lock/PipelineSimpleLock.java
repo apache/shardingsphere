@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.data.pipeline.core.lock;
 
-import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.infra.lock.LockContext;
 
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Pipeline simple lock.
@@ -39,7 +39,7 @@ public final class PipelineSimpleLock {
     private final Map<String, Boolean> lockNameLockedMap;
     
     private PipelineSimpleLock() {
-        lockNameLockedMap = Maps.newConcurrentMap();
+        lockNameLockedMap = new ConcurrentHashMap<>();
         lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
     }
     
