@@ -54,7 +54,7 @@ public final class MemoryContextManagerBuilder implements ContextManagerBuilder 
         for (Entry<String, ? extends DatabaseConfiguration> entry : parameter.getDatabaseConfigs().entrySet()) {
             metaDataContextsBuilder.addDatabase(entry.getKey(), databaseType, entry.getValue(), parameter.getProps());
         }
-        metaDataContextsBuilder.addSystemDatabases(databaseType);
+        metaDataContextsBuilder.addSystemDatabases(DatabaseTypeEngine.getFrontendDatabaseType(parameter.getDatabaseConfigs(), new ConfigurationProperties(parameter.getProps())));
         MetaDataContexts metaDataContexts = metaDataContextsBuilder.build(null);
         InstanceContext instanceContext = buildInstanceContext(parameter);
         generateTransactionConfigurationFile(instanceContext, metaDataContexts);

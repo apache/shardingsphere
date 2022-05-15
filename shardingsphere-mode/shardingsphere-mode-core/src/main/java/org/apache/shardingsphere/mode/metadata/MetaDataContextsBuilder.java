@@ -88,7 +88,7 @@ public final class MetaDataContextsBuilder {
     }
     
     /**
-     * Add system schemas.
+     * Add system databases.
      *
      * @param databaseType database type
      */
