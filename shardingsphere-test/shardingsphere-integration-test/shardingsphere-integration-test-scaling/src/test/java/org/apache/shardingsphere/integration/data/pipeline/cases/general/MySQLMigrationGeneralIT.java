@@ -43,11 +43,11 @@ import static org.junit.Assert.assertTrue;
  */
 @Slf4j
 @RunWith(Parameterized.class)
-public final class MySQLGeneralScalingIT extends BaseExtraSQLITCase {
+public final class MySQLMigrationGeneralIT extends BaseExtraSQLITCase {
     
     private final ScalingParameterized parameterized;
     
-    public MySQLGeneralScalingIT(final ScalingParameterized parameterized) {
+    public MySQLMigrationGeneralIT(final ScalingParameterized parameterized) {
         super(parameterized);
         this.parameterized = parameterized;
         log.info("parameterized:{}", parameterized);

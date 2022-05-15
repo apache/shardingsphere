@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
 
-import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
@@ -25,7 +24,6 @@ import org.apache.shardingsphere.data.pipeline.api.config.job.MigrationJobConfig
 import org.apache.shardingsphere.data.pipeline.api.config.job.yaml.YamlMigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.job.yaml.YamlMigrationJobConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
@@ -35,15 +33,12 @@ import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCreationException;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobAPIFactory;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationProcessContext;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredDetector;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredDetectorFactory;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.rule.rulealtered.OnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.event.StartScalingEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingTaskFinishedEvent;
 
@@ -66,8 +61,6 @@ public final class RuleAlteredJobWorker {
     
     private static final RuleAlteredJobWorker INSTANCE = new RuleAlteredJobWorker();
     
-    private static final YamlRuleConfigurationSwapperEngine SWAPPER_ENGINE = new YamlRuleConfigurationSwapperEngine();
-    
     /**
      * Get instance.
      *
@@ -89,50 +82,6 @@ public final class RuleAlteredJobWorker {
         }
         Optional<RuleAlteredDetector> detector = RuleAlteredDetectorFactory.findInstance(ruleConfig);
         return detector.isPresent() && detector.get().getOnRuleAlteredActionConfig(ruleConfig).isPresent();
-    }
-    
-    /**
-     * Create rule altered context.
-     *
-     * @param jobConfig job configuration
-     * @return rule altered context
-     */
-    public static MigrationProcessContext createRuleAlteredContext(final MigrationJobConfiguration jobConfig) {
-        YamlRootConfiguration targetRootConfig = getYamlRootConfig(jobConfig);
-        YamlRuleConfiguration yamlRuleConfig = null;
-        for (YamlRuleConfiguration each : targetRootConfig.getRules()) {
-            if (jobConfig.getAlteredRuleYamlClassNameTablesMap().containsKey(each.getClass().getName())) {
-                yamlRuleConfig = each;
-                break;
-            }
-        }
-        if (null == yamlRuleConfig) {
-            throw new PipelineJobCreationException("could not find altered rule");
-        }
-        RuleConfiguration ruleConfig = SWAPPER_ENGINE.swapToRuleConfiguration(yamlRuleConfig);
-        Optional<RuleAlteredDetector> detector = RuleAlteredDetectorFactory.findInstance(ruleConfig);
-        Preconditions.checkState(detector.isPresent());
-        Optional<OnRuleAlteredActionConfiguration> onRuleAlteredActionConfig = detector.get().getOnRuleAlteredActionConfig(ruleConfig);
-        if (!onRuleAlteredActionConfig.isPresent()) {
-            log.error("rule altered action enabled but actor is not configured, ignored, ruleConfig={}", ruleConfig);
-            throw new PipelineJobCreationException("rule altered actor not configured");
-        }
-        return new MigrationProcessContext(jobConfig.getJobId(), onRuleAlteredActionConfig.get());
-    }
-    
-    /**
-     * Get YAML root configuration, which should include rule altered action configuration.
-     *
-     * @param jobConfig job configuration
-     * @return YAML root configuration
-     */
-    private static YamlRootConfiguration getYamlRootConfig(final MigrationJobConfiguration jobConfig) {
-        PipelineDataSourceConfiguration targetDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(jobConfig.getTarget().getType(), jobConfig.getTarget().getParameter());
-        if (targetDataSourceConfig instanceof ShardingSpherePipelineDataSourceConfiguration) {
-            return ((ShardingSpherePipelineDataSourceConfiguration) targetDataSourceConfig).getRootConfig();
-        }
-        PipelineDataSourceConfiguration sourceDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(jobConfig.getSource().getType(), jobConfig.getSource().getParameter());
-        return ((ShardingSpherePipelineDataSourceConfiguration) sourceDataSourceConfig).getRootConfig();
     }
     
     /**
@@ -182,10 +131,7 @@ public final class RuleAlteredJobWorker {
             throw new PipelineJobCreationException("more than 1 rule altered");
         }
         YamlMigrationJobConfiguration result = new YamlMigrationJobConfiguration();
-        result.setDatabaseName(event.getDatabaseName());
-        result.setAlteredRuleYamlClassNameTablesMap(alteredRuleYamlClassNameTablesMap);
-        result.setActiveVersion(event.getActiveVersion());
-        result.setNewVersion(event.getNewVersion());
+        result.setTargetDatabaseName(event.getDatabaseName());
         result.setSource(createYamlPipelineDataSourceConfiguration(sourceRootConfig));
         result.setTarget(createYamlPipelineDataSourceConfiguration(targetRootConfig));
         PipelineAPIFactory.getPipelineJobAPI(JobType.MIGRATION).extendYamlJobConfiguration(result);
@@ -236,7 +182,7 @@ public final class RuleAlteredJobWorker {
                 continue;
             }
             MigrationJobConfiguration jobConfig = YamlMigrationJobConfigurationSwapper.swapToObject(each.getJobParameter());
-            if (databaseName.equals(jobConfig.getDatabaseName())) {
+            if (databaseName.equals(jobConfig.getTargetDatabaseName())) {
                 result = true;
                 break;
             }

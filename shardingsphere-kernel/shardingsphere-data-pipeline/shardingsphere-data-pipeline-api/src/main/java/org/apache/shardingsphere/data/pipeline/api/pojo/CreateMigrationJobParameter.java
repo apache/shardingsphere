@@ -15,18 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.rulealtered;
+package org.apache.shardingsphere.data.pipeline.api.pojo;
 
-import org.apache.shardingsphere.data.pipeline.spi.fixture.RuleAlteredJobConfigurationPreparerFixture;
-import org.junit.Test;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
+import javax.sql.DataSource;
+import java.util.Map;
 
-public final class RuleAlteredJobConfigurationPreparerFactoryTest {
+@Data
+@RequiredArgsConstructor
+public final class CreateMigrationJobParameter {
     
-    @Test
-    public void assertGetInstance() {
-        assertThat(RuleAlteredJobConfigurationPreparerFactory.getInstance(), instanceOf(RuleAlteredJobConfigurationPreparerFixture.class));
-    }
+    private final String sourceDataSourceName;
+    
+    private final String sourceTableName;
+    
+    private final String targetDatabaseName;
+    
+    private final String targetTableName;
+    
+    private final YamlRuleConfiguration targetShardingRuleConfig;
+    
+    private final Map<String, DataSource> targetDataSources;
 }

@@ -221,10 +221,9 @@ public final class MigrationJobAPIImplTest {
         jobAPI.persistJobItemProgress(jobItemContext);
         repositoryAPI.persistJobCheckResult(jobId.get(), true);
         jobAPI.updateJobItemStatus(jobId.get(), jobItemContext.getShardingItem(), JobStatus.EXECUTE_INVENTORY_TASK);
-        jobAPI.switchClusterConfiguration(jobId.get());
         Map<Integer, InventoryIncrementalJobItemProgress> progress = jobAPI.getJobProgress(jobId.get());
         for (Entry<Integer, InventoryIncrementalJobItemProgress> entry : progress.entrySet()) {
-            assertSame(entry.getValue().getStatus(), JobStatus.FINISHED);
+            assertSame(entry.getValue().getStatus(), JobStatus.EXECUTE_INVENTORY_TASK);
         }
     }
     
@@ -253,8 +252,8 @@ public final class MigrationJobAPIImplTest {
                 Connection connection = pipelineDataSource.getConnection();
                 Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS t_order");
-            statement.execute("CREATE TABLE t_order (order_id INT PRIMARY KEY, user_id VARCHAR(12))");
-            statement.execute("INSERT INTO t_order (order_id, user_id) VALUES (1, 'xxx'), (999, 'yyy')");
+            statement.execute("CREATE TABLE t_order (order_id INT PRIMARY KEY, user_id INT(11))");
+            statement.execute("INSERT INTO t_order (order_id, user_id) VALUES (1, 0), (999, 15)");
         }
     }
     
@@ -281,5 +280,11 @@ public final class MigrationJobAPIImplTest {
         PipelineResourceAPI pipelineResourceAPI = new PipelineResourceAPIImpl();
         Map<String, DataSourceProperties> actual = pipelineResourceAPI.getMetaDataDataSource(JobType.MIGRATION);
         assertTrue(actual.containsKey("ds_0"));
+    }
+    
+    @Test
+    public void assertCreateJobConfig() {
+        // CreateMigrationJobParameter parameter = new CreateMigrationJobParameter();
+        // jobAPI.createJobConfig(parameter);
     }
 }

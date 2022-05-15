@@ -21,7 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
 import org.apache.shardingsphere.data.pipeline.api.config.TaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.job.MigrationJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeEntry;
 import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeLine;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
@@ -42,8 +41,6 @@ import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreator;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
-import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.datanode.DataNodes;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.lock.LockDefinition;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -52,11 +49,11 @@ import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.mode.lock.ExclusiveLockDefinition;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Migration job preparer.
@@ -137,24 +134,25 @@ public final class MigrationJobPreparer {
     private void prepareTarget(final MigrationJobItemContext jobItemContext) {
         MigrationJobConfiguration jobConfig = jobItemContext.getJobConfig();
         TableNameSchemaNameMapping tableNameSchemaNameMapping = jobItemContext.getTaskConfig().getDumperConfig().getTableNameSchemaNameMapping();
+        // TODO fill schema
         String targetDatabaseType = jobConfig.getTargetDatabaseType();
         if (isSourceAndTargetSchemaAvailable(jobConfig)) {
-            PrepareTargetSchemasParameter prepareTargetSchemasParameter = new PrepareTargetSchemasParameter(jobConfig.splitLogicTableNames(),
-                    DatabaseTypeFactory.getInstance(targetDatabaseType), jobConfig.getDatabaseName(),
+            PrepareTargetSchemasParameter prepareTargetSchemasParameter = new PrepareTargetSchemasParameter(Collections.singletonList(jobConfig.getTargetTableName()),
+                    DatabaseTypeFactory.getInstance(targetDatabaseType), jobConfig.getTargetDatabaseName(),
                     jobItemContext.getTaskConfig().getImporterConfig().getDataSourceConfig(), jobItemContext.getDataSourceManager(), tableNameSchemaNameMapping);
             PipelineJobPreparerUtils.prepareTargetSchema(targetDatabaseType, prepareTargetSchemasParameter);
         }
         ShardingSphereMetaData metaData = PipelineContext.getContextManager().getMetaDataContexts().getMetaData();
-        ShardingSphereDatabase sphereDatabase = metaData.getDatabases().get(jobConfig.getDatabaseName());
+        ShardingSphereDatabase sphereDatabase = metaData.getDatabases().get(jobConfig.getTargetDatabaseName());
         ShardingSphereSQLParserEngine sqlParserEngine = metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class).getSQLParserEngine(sphereDatabase.getProtocolType().getType());
         JobDataNodeLine jobDataNodeLine = JobDataNodeLine.unmarshal(jobConfig.getTablesFirstDataNodes());
         Map<String, String> tableNameMap = new HashMap<>();
-        for (JobDataNodeEntry each : jobDataNodeLine.getEntries()) {
-            String actualTableName = getActualTable(sphereDatabase, each.getLogicTableName());
-            tableNameMap.put(each.getLogicTableName(), actualTableName);
-        }
-        PrepareTargetTablesParameter prepareTargetTablesParameter = new PrepareTargetTablesParameter(jobConfig.getDatabaseName(),
-                jobItemContext.getTaskConfig().getImporterConfig().getDataSourceConfig(), sphereDatabase.getResource().getDataSources(), jobItemContext.getDataSourceManager(),
+        tableNameMap.put(jobConfig.getTargetTableName(), jobConfig.getSourceTableName());
+        PipelineDataSourceWrapper dataSource = jobItemContext.getDataSourceManager().getDataSource(jobItemContext.getTaskConfig().getDumperConfig().getDataSourceConfig());
+        Map<String, DataSource> sourceDataSourceMap = new HashMap<>(1, 1.0F);
+        sourceDataSourceMap.put(jobConfig.getSourceDataSourceName(), dataSource);
+        PrepareTargetTablesParameter prepareTargetTablesParameter = new PrepareTargetTablesParameter(jobConfig.getTargetDatabaseName(),
+                jobItemContext.getTaskConfig().getImporterConfig().getDataSourceConfig(), sourceDataSourceMap, jobItemContext.getDataSourceManager(),
                 jobDataNodeLine, tableNameMap, tableNameSchemaNameMapping, sqlParserEngine);
         PipelineJobPreparerUtils.prepareTargetTables(targetDatabaseType, prepareTargetTablesParameter);
     }
@@ -167,14 +165,6 @@ public final class MigrationJobPreparer {
             return false;
         }
         return true;
-    }
-    
-    private String getActualTable(final ShardingSphereDatabase database, final String tableName) {
-        DataNodes dataNodes = new DataNodes(database.getRuleMetaData().getRules());
-        Optional<DataNode> filteredDataNode = dataNodes.getDataNodes(tableName).stream()
-                .filter(each -> database.getResource().getDataSources().containsKey(each.getDataSourceName().contains(".") ? each.getDataSourceName().split("\\.")[0] : each.getDataSourceName()))
-                .findFirst();
-        return filteredDataNode.map(DataNode::getTableName).orElse(tableName);
     }
     
     private void initInventoryTasks(final MigrationJobItemContext jobItemContext) {

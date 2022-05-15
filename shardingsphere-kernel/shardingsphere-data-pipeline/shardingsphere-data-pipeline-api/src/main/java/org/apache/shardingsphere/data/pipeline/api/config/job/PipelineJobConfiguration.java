@@ -34,7 +34,7 @@ public interface PipelineJobConfiguration {
      *
      * @return database name
      */
-    String getDatabaseName();
+    String getTargetDatabaseName();
     
     /**
      * Get job sharding count.

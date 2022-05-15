@@ -26,6 +26,7 @@ import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContex
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobId;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
+import org.apache.shardingsphere.data.pipeline.api.pojo.CreateMigrationJobParameter;
 import org.apache.shardingsphere.data.pipeline.api.pojo.DataConsistencyCheckAlgorithmInfo;
 import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobAPI;
@@ -151,6 +152,10 @@ public final class MigrationJobAPIFixture implements MigrationJobAPI {
     
     @Override
     public void dropMigrationSourceResources(final Collection<String> resourceNames) {
+    }
+    
+    @Override
+    public void createJob(final CreateMigrationJobParameter parameter) {
     }
     
     @Override

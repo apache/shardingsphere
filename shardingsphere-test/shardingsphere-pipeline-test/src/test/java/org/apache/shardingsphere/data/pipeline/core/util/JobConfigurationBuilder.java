@@ -28,10 +28,6 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.Standa
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
-import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
-
-import java.util.Collections;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Job configuration builder.
@@ -46,15 +42,14 @@ public final class JobConfigurationBuilder {
      */
     public static MigrationJobConfiguration createJobConfiguration() {
         YamlMigrationJobConfiguration result = new YamlMigrationJobConfiguration();
-        result.setDatabaseName("logic_db");
-        result.setAlteredRuleYamlClassNameTablesMap(Collections.singletonMap(YamlShardingRuleConfiguration.class.getName(), Collections.singletonList("t_order")));
-        int activeVersion = ThreadLocalRandom.current().nextInt(Integer.MAX_VALUE - 10) + 1;
-        result.setActiveVersion(activeVersion);
-        result.setNewVersion(activeVersion + 1);
+        result.setTargetDatabaseName("logic_db");
+        result.setSourceDataSourceName("standard_0");
         // TODO add autoTables in config file
-        result.setSource(createYamlPipelineDataSourceConfiguration(
-                new ShardingSpherePipelineDataSourceConfiguration(ConfigurationFileUtil.readFile("config_sharding_sphere_jdbc_source.yaml"))));
-        result.setTarget(createYamlPipelineDataSourceConfiguration(new StandardPipelineDataSourceConfiguration(ConfigurationFileUtil.readFile("config_standard_jdbc_target.yaml"))));
+        result.setSource(createYamlPipelineDataSourceConfiguration(new StandardPipelineDataSourceConfiguration(ConfigurationFileUtil.readFile("migration_standard_jdbc_source.yaml"))));
+        result.setTarget(createYamlPipelineDataSourceConfiguration(new ShardingSpherePipelineDataSourceConfiguration(
+                ConfigurationFileUtil.readFile("migration_sharding_sphere_jdbc_target.yaml"))));
+        result.setSourceTableName("t_order");
+        result.setTargetTableName("t_order");
         PipelineAPIFactory.getPipelineJobAPI(JobType.MIGRATION).extendYamlJobConfiguration(result);
         return new YamlMigrationJobConfigurationSwapper().swapToObject(result);
     }
