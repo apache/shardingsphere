@@ -20,12 +20,15 @@ package org.apache.shardingsphere.data.pipeline.api.config.rulealtered.yaml;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.PipelineDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 
 /**
  * Rule altered job configuration swapper.
  */
 // TODO add RuleAlteredJobConfigurationSwapper test
 public final class RuleAlteredJobConfigurationSwapper implements YamlConfigurationSwapper<YamlRuleAlteredJobConfiguration, RuleAlteredJobConfiguration> {
+    
+    private static final RuleAlteredJobConfigurationSwapper JOB_CONFIG_SWAPPER = new RuleAlteredJobConfigurationSwapper();
     
     private final PipelineDataSourceConfigurationSwapper dataSourceConfigSwapper = new PipelineDataSourceConfigurationSwapper();
     
@@ -58,5 +61,16 @@ public final class RuleAlteredJobConfigurationSwapper implements YamlConfigurati
                 yamlConfig.getAlteredRuleYamlClassNameTablesMap(), yamlConfig.getLogicTables(),
                 yamlConfig.getTablesFirstDataNodes(), yamlConfig.getJobShardingDataNodes(),
                 yamlConfig.getConcurrency(), yamlConfig.getRetryTimes());
+    }
+    
+    /**
+     * Swap to job configuration from text.
+     *
+     * @param jobParameter job parameter
+     * @return job configuration
+     */
+    public static RuleAlteredJobConfiguration swapToObject(final String jobParameter) {
+        YamlRuleAlteredJobConfiguration yamlJobConfig = YamlEngine.unmarshal(jobParameter, YamlRuleAlteredJobConfiguration.class, true);
+        return JOB_CONFIG_SWAPPER.swapToObject(yamlJobConfig);
     }
 }

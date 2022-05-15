@@ -24,6 +24,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.yaml.RuleAlteredJobConfigurationSwapper;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.yaml.YamlRuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
@@ -204,14 +206,14 @@ public final class RuleAlteredJobWorker {
             log.error("more than 1 rule altered");
             throw new PipelineJobCreationException("more than 1 rule altered");
         }
-        RuleAlteredJobConfiguration result = new RuleAlteredJobConfiguration();
+        YamlRuleAlteredJobConfiguration result = new YamlRuleAlteredJobConfiguration();
         result.setDatabaseName(event.getDatabaseName());
         result.setAlteredRuleYamlClassNameTablesMap(alteredRuleYamlClassNameTablesMap);
         result.setActiveVersion(event.getActiveVersion());
         result.setNewVersion(event.getNewVersion());
         result.setSource(createYamlPipelineDataSourceConfiguration(sourceRootConfig));
         result.setTarget(createYamlPipelineDataSourceConfiguration(targetRootConfig));
-        return Optional.of(result);
+        return Optional.of(new RuleAlteredJobConfigurationSwapper().swapToObject(result));
     }
     
     private Collection<Pair<YamlRuleConfiguration, YamlRuleConfiguration>> groupSourceTargetRuleConfigsByType(final Collection<YamlRuleConfiguration> sourceRules,
@@ -289,7 +291,7 @@ public final class RuleAlteredJobWorker {
                     .allMatch(progress -> null != progress && progress.getStatus().equals(JobStatus.FINISHED))) {
                 continue;
             }
-            RuleAlteredJobConfiguration jobConfig = YamlEngine.unmarshal(each.getJobParameter(), RuleAlteredJobConfiguration.class, true);
+            RuleAlteredJobConfiguration jobConfig = RuleAlteredJobConfigurationSwapper.swapToObject(each.getJobParameter());
             if (hasUncompletedJobOfSameDatabaseName(jobConfig, databaseName)) {
                 result = true;
                 break;
