@@ -32,7 +32,6 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.HashMap;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -71,15 +70,13 @@ public final class DatabaseDiscoveryRuleTest {
     @Test
     public void assertGetExportedMethods() {
         DatabaseDiscoveryRule databaseDiscoveryRule = createRule();
-        Map<String, String> singleDataSourceRuleMap = new HashMap<>(1, 1);
-        singleDataSourceRuleMap.put("test_pr", "primary");
-        assertThat(databaseDiscoveryRule.getExportedMethods().get(ExportableConstants.EXPORTABLE_KEY_PRIMARY_DATA_SOURCE).get(), is(singleDataSourceRuleMap));
+        assertThat(databaseDiscoveryRule.getExportedMethods().get(ExportableConstants.EXPORTABLE_KEY_PRIMARY_DATA_SOURCE).get(), is(Collections.singletonMap("test_pr", "primary")));
     }
     
     private DatabaseDiscoveryRule createRule() {
         DatabaseDiscoveryDataSourceRuleConfiguration config = new DatabaseDiscoveryDataSourceRuleConfiguration("test_pr", Arrays.asList("ds_0", "ds_1"), "", "CORE.FIXTURE");
         return new DatabaseDiscoveryRule("db_discovery", dataSourceMap, new DatabaseDiscoveryRuleConfiguration(
                 Collections.singleton(config), Collections.singletonMap("discovery_heartbeat", new DatabaseDiscoveryHeartBeatConfiguration(new Properties())),
-                ImmutableMap.of("CORE.FIXTURE", new ShardingSphereAlgorithmConfiguration("CORE.FIXTURE", new Properties()))));
+                Collections.singletonMap("CORE.FIXTURE", new ShardingSphereAlgorithmConfiguration("CORE.FIXTURE", new Properties()))));
     }
 }

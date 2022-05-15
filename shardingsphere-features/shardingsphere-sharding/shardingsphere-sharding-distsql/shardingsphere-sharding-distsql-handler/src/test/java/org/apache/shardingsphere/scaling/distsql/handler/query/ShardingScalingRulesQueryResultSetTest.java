@@ -29,9 +29,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.containsString;
@@ -64,32 +62,26 @@ public final class ShardingScalingRulesQueryResultSetTest {
     }
     
     private RuleConfiguration createRuleConfiguration() {
-        Map<String, OnRuleAlteredActionConfiguration> scalingRuleConfigurationMap = new HashMap<>(1, 1);
-        scalingRuleConfigurationMap.put("scaling_name", buildCompleteConfiguration());
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        result.setScaling(scalingRuleConfigurationMap);
+        result.setScaling(Collections.singletonMap("scaling_name", buildCompleteConfiguration()));
         return result;
     }
     
     private OnRuleAlteredActionConfiguration buildCompleteConfiguration() {
         InputConfiguration inputConfig = createInputConfiguration("QPS", newProperties("qps", "50"));
         OutputConfiguration outputConfig = createOutputConfiguration("TPS", newProperties("tps", "2000"));
-        ShardingSphereAlgorithmConfiguration streamChannel = createAlgorithm("MEMORY", newProperties("block-queue-size", "10000"));
-        ShardingSphereAlgorithmConfiguration completionDetector = createAlgorithm("IDLE", newProperties("incremental-task-idle-seconds-threshold", "1800"));
-        ShardingSphereAlgorithmConfiguration dataConsistencyChecker = createAlgorithm("DATA_MATCH", newProperties("chunk-size", "1000"));
+        ShardingSphereAlgorithmConfiguration streamChannel = new ShardingSphereAlgorithmConfiguration("MEMORY", newProperties("block-queue-size", "10000"));
+        ShardingSphereAlgorithmConfiguration completionDetector = new ShardingSphereAlgorithmConfiguration("IDLE", newProperties("incremental-task-idle-seconds-threshold", "1800"));
+        ShardingSphereAlgorithmConfiguration dataConsistencyChecker = new ShardingSphereAlgorithmConfiguration("DATA_MATCH", newProperties("chunk-size", "1000"));
         return new OnRuleAlteredActionConfiguration(inputConfig, outputConfig, streamChannel, completionDetector, dataConsistencyChecker);
     }
     
     private InputConfiguration createInputConfiguration(final String type, final Properties props) {
-        return new InputConfiguration(10, 100, 10, createAlgorithm(type, props));
+        return new InputConfiguration(10, 100, 10, new ShardingSphereAlgorithmConfiguration(type, props));
     }
     
     private OutputConfiguration createOutputConfiguration(final String type, final Properties props) {
-        return new OutputConfiguration(10, 100, createAlgorithm(type, props));
-    }
-    
-    private ShardingSphereAlgorithmConfiguration createAlgorithm(final String type, final Properties props) {
-        return new ShardingSphereAlgorithmConfiguration(type, props);
+        return new OutputConfiguration(10, 100, new ShardingSphereAlgorithmConfiguration(type, props));
     }
     
     private Properties newProperties(final String key, final String value) {

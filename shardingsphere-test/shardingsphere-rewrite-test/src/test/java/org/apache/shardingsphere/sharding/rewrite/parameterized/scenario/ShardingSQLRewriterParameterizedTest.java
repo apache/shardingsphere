@@ -35,13 +35,11 @@ import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -85,9 +83,7 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
         when(result.getAllTableNames()).thenReturn(Arrays.asList("t_account", "t_account_detail"));
         TableMetaData accountTableMetaData = mock(TableMetaData.class);
         when(accountTableMetaData.getColumns()).thenReturn(createColumnMetaDataMap());
-        Map<String, IndexMetaData> indexMetaDataMap = new HashMap<>(1, 1);
-        indexMetaDataMap.put("status_idx_exist", new IndexMetaData("status_idx_exist"));
-        when(accountTableMetaData.getIndexes()).thenReturn(indexMetaDataMap);
+        when(accountTableMetaData.getIndexes()).thenReturn(Collections.singletonMap("status_idx_exist", new IndexMetaData("status_idx_exist")));
         when(accountTableMetaData.getPrimaryKeyColumns()).thenReturn(Collections.singletonList("account_id"));
         when(result.containsTable("t_account")).thenReturn(true);
         when(result.get("t_account")).thenReturn(accountTableMetaData);
@@ -108,6 +104,6 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
     }
     
     @Override
-    protected void mockDataSource(final Map<String, DataSource> dataSources) throws SQLException {
+    protected void mockDataSource(final Map<String, DataSource> dataSources) {
     }
 }
