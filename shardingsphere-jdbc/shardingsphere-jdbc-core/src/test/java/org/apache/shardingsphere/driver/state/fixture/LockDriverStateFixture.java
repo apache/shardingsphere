@@ -24,14 +24,15 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import java.sql.Connection;
 
 public class LockDriverStateFixture implements DriverState {
+    
     @Override
     public Connection getConnection(String databaseName, ContextManager contextManager) {
         return null;
     }
-
+    
     @Override
     public String getType() {
         return StateType.LOCK.name();
     }
-
+    
 }

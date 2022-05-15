@@ -27,12 +27,12 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
 public class DriverStateFactoryTest {
-
+    
     @Test
     public void assertGetInstance() {
         assertThat(DriverStateFactory.getInstance(StateType.OK), instanceOf(OKDriverStateFixture.class));
         assertThat(DriverStateFactory.getInstance(StateType.LOCK), instanceOf(LockDriverStateFixture.class));
         assertThat(DriverStateFactory.getInstance(StateType.CIRCUIT_BREAK), instanceOf(CircuitBreakDriverStateFixture.class));
     }
-
+    
 }
