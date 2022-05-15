@@ -44,10 +44,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.Types;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -63,10 +61,9 @@ public final class GeneratedKeyContextEngineTest {
     
     @Before
     public void setUp() {
-        TableMetaData tableMetaData = new TableMetaData("tbl", Collections.singletonList(new ColumnMetaData("id", Types.INTEGER, true, true, false)), Collections.emptyList(), Collections.emptyList());
-        Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(1, 1);
-        tableMetaDataMap.put("tbl", tableMetaData);
-        schema = new ShardingSphereSchema(tableMetaDataMap);
+        TableMetaData tableMetaData = new TableMetaData(
+                "tbl", Collections.singletonList(new ColumnMetaData("id", Types.INTEGER, true, true, false)), Collections.emptyList(), Collections.emptyList());
+        schema = new ShardingSphereSchema(Collections.singletonMap("tbl", tableMetaData));
     }
     
     @Test

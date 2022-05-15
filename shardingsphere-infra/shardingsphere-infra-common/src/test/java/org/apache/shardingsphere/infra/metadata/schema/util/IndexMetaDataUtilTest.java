@@ -37,7 +37,6 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -93,8 +92,7 @@ public final class IndexMetaDataUtilTest {
     
     private ShardingSphereMetaData buildMetaData() {
         TableMetaData tableMetaData = new TableMetaData(TABLE_NAME, Collections.emptyList(), Collections.singletonList(new IndexMetaData(INDEX_NAME)), Collections.emptyList());
-        Map<String, TableMetaData> tables = new HashMap<>(1, 1);
-        tables.put(TABLE_NAME, tableMetaData);
+        Map<String, TableMetaData> tables = Collections.singletonMap(TABLE_NAME, tableMetaData);
         Map<String, ShardingSphereSchema> schemas = Collections.singletonMap(DefaultDatabase.LOGIC_NAME, new ShardingSphereSchema(tables));
         return new ShardingSphereMetaData(DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class), mock(ShardingSphereResource.class), mock(ShardingSphereRuleMetaData.class), schemas);
     }
