@@ -41,7 +41,7 @@
         DATANODES("ds_${0..1}.t_order_item_${0..1}"),
         DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
         TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=t_order_item_inline),
-        KEY_GENERATE_STRATEGY(COLUMN=order_item_id,TYPE(NAME=snowflake))
+        KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME=snowflake))
         )
     </create-all-sharding-table-rule>
     
@@ -69,7 +69,7 @@
         DATANODES("ds_${2..4}.t_order_item_${0..1}"),
         DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
         TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=t_order_item_inline),
-        KEY_GENERATE_STRATEGY(COLUMN=order_item_id,TYPE(NAME=snowflake)))
+        KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME=snowflake)))
     </alter-sharding-table-rule>
     
     <auto-alter-table-rule>
