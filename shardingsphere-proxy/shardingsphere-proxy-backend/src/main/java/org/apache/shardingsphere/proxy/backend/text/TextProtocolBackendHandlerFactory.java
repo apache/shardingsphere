@@ -89,7 +89,7 @@ public final class TextProtocolBackendHandlerFactory {
         SQLStatement sqlStatement = sqlStatementSupplier.get().orElseGet(() -> {
             Optional<SQLParserRule> sqlParserRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(SQLParserRule.class);
             Preconditions.checkState(sqlParserRule.isPresent());
-            return new ShardingSphereSQLParserEngine(getBackendDatabaseType(databaseType, connectionSession).getType(), sqlParserRule.get().toParserConfiguration()).parse(sql, false);
+            return new ShardingSphereSQLParserEngine(getFrontendDatabaseType(databaseType, connectionSession).getType(), sqlParserRule.get().toParserConfiguration()).parse(sql, false);
         });
         databaseType.handleRollbackOnly(connectionSession.getTransactionStatus().isRollbackOnly(), sqlStatement);
         checkUnsupportedSQLStatement(sqlStatement);
@@ -126,11 +126,11 @@ public final class TextProtocolBackendHandlerFactory {
         return backendHandler.orElseGet(() -> DatabaseBackendHandlerFactory.newInstance(sqlStatementContext, sql, connectionSession));
     }
     
-    private static DatabaseType getBackendDatabaseType(final DatabaseType defaultDatabaseType, final ConnectionSession connectionSession) {
+    private static DatabaseType getFrontendDatabaseType(final DatabaseType defaultDatabaseType, final ConnectionSession connectionSession) {
         String databaseName = connectionSession.getDatabaseName();
         return Strings.isNullOrEmpty(databaseName) || !ProxyContext.getInstance().databaseExists(databaseName)
                 ? defaultDatabaseType
-                : ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(databaseName).getResource().getDatabaseType();
+                : ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(databaseName).getFrontendDatabaseType();
     }
     
     private static Optional<ExtraTextProtocolBackendHandler> findExtraTextProtocolBackendHandler(final SQLStatement sqlStatement) {

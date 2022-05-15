@@ -119,7 +119,7 @@ public final class SingleTableSchemaMetaDataBuilderTest {
         Collection<ShardingSphereRule> rules = Collections.singletonList(singleTableRule);
         SingleTableSchemaMetaDataBuilder builder = (SingleTableSchemaMetaDataBuilder) RuleBasedSchemaMetaDataBuilderFactory.getInstances(rules).get(singleTableRule);
         Map<String, SchemaMetaData> actual = builder.load(Collections.singleton("tbl"),
-                singleTableRule, new SchemaBuilderMaterials(databaseType, Collections.singletonMap("ds", dataSource), rules, props, "sharding_db"));
+                singleTableRule, new SchemaBuilderMaterials(databaseType, databaseType, Collections.singletonMap("ds", dataSource), rules, props, "sharding_db"));
         assertFalse(actual.isEmpty());
         assertTrue(actual.containsKey("sharding_db"));
         assertTrue(actual.get("sharding_db").getTables().containsKey("tbl"));
@@ -136,7 +136,7 @@ public final class SingleTableSchemaMetaDataBuilderTest {
         Collection<ShardingSphereRule> rules = Collections.singletonList(singleTableRule);
         final SingleTableSchemaMetaDataBuilder builder = (SingleTableSchemaMetaDataBuilder) RuleBasedSchemaMetaDataBuilderFactory.getInstances(rules).get(singleTableRule);
         Map<String, SchemaMetaData> actual = builder.load(Collections.singleton("tbl"), singleTableRule,
-                new SchemaBuilderMaterials(databaseType, Collections.singletonMap("ds", dataSource), rules, props, "sharding_db"));
+                new SchemaBuilderMaterials(databaseType, databaseType, Collections.singletonMap("ds", dataSource), rules, props, "sharding_db"));
         assertFalse(actual.isEmpty());
         assertTrue(actual.containsKey("sharding_db"));
         TableMetaData actualTableMetaData = actual.get("sharding_db").getTables().get("tbl");

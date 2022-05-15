@@ -53,7 +53,7 @@ public final class SchemaLoader {
      * @return loaded schema
      * @throws SQLException SQL exception
      */
-    public static Map<String, ShardingSphereSchema> load(final String defaultSchemaName, final DatabaseType frontendDatabaseType, 
+    public static Map<String, ShardingSphereSchema> load(final String defaultSchemaName, final DatabaseType frontendDatabaseType,
                                                          final DatabaseType backendDatabaseType, final Map<String, DataSource> dataSourceMap,
                                                          final Collection<ShardingSphereRule> rules, final Properties props) throws SQLException {
         Map<String, SchemaMetaData> schemaMetaDataMap = TableMetaDataBuilder.load(getAllTableNames(rules),
