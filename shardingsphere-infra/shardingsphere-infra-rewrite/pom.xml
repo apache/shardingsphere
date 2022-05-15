@@ -43,5 +43,10 @@
             <artifactId>shardingsphere-sql-translator-native-provider</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-sql-translator-jooq-provider</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>
