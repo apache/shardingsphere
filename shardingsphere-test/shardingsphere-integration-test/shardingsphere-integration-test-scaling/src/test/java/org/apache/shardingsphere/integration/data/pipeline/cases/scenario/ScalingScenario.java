@@ -15,25 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqltranslator.natived;
+package org.apache.shardingsphere.integration.data.pipeline.cases.scenario;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sqltranslator.spi.SQLTranslator;
+import com.google.common.collect.Sets;
+
+import java.util.Collection;
 
 /**
- * Native SQL translator.
+ * Manual scaling scenario.
  */
-public final class NativeSQLTranslator implements SQLTranslator {
+public final class ScalingScenario {
     
-    @Override
-    public String translate(final String sql, final SQLStatement statement, final DatabaseType frontendDatabaseType, final DatabaseType backendDatabaseType) {
-        // TODO
-        return sql;
-    }
+    public static final String SCENARIO_SUFFIX = "sql.xml";
     
-    @Override
-    public String getType() {
-        return "NATIVE";
+    /**
+     * Manual scenario list.
+     *
+     * @return scenario list
+     */
+    public static Collection<String> listScenario() {
+        return Sets.newHashSet("integer_primary_key");
     }
 }
