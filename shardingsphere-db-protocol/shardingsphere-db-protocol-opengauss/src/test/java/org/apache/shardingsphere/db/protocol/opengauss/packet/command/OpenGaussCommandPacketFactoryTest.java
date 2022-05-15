@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.db.protocol.opengauss.packet.command;
 
 import io.netty.buffer.ByteBuf;
-import org.apache.shardingsphere.db.protocol.packet.CommandPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLAggregatedCommandPacket;
@@ -29,8 +28,8 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -43,14 +42,11 @@ public final class OpenGaussCommandPacketFactoryTest {
     @Test
     public void assertNewOpenGaussComBatchBindPacket() {
         when(payload.getByteBuf()).thenReturn(mock(ByteBuf.class));
-        CommandPacket actual = OpenGaussCommandPacketFactory.newInstance(OpenGaussCommandPacketType.BATCH_BIND_COMMAND, payload);
-        assertTrue(actual instanceof PostgreSQLAggregatedCommandPacket);
+        assertThat(OpenGaussCommandPacketFactory.newInstance(OpenGaussCommandPacketType.BATCH_BIND_COMMAND, payload), instanceOf(PostgreSQLAggregatedCommandPacket.class));
     }
     
     @Test
     public void assertNewPostgreSQLPacket() {
-        CommandPacket actual = OpenGaussCommandPacketFactory.newInstance(mock(PostgreSQLCommandPacketType.class), payload);
-        assertTrue(actual instanceof PostgreSQLCommandPacket);
-        assertFalse(actual instanceof OpenGaussCommandPacket);
+        assertThat(OpenGaussCommandPacketFactory.newInstance(mock(PostgreSQLCommandPacketType.class), payload), instanceOf(PostgreSQLCommandPacket.class));
     }
 }

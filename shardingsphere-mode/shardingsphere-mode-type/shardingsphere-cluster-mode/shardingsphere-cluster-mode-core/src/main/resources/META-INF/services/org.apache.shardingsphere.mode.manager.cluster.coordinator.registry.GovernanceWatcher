@@ -22,5 +22,5 @@ org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.watch
 org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.watcher.ComputeNodeStateChangedWatcher
 org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.database.watcher.DatabaseLocksChangedWatcher
 org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.database.watcher.DatabaseAckChangedWatcher
-org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.general.watcher.GeneralLocksChangedWatcher
-org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.general.watcher.GeneralAckChangedWatcher
+org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.watcher.MutexAckChangedWatcher
+org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.watcher.MutexLocksChangedWatcher

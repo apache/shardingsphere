@@ -78,8 +78,8 @@ public final class AlterShardingKeyGeneratorStatementUpdater implements RuleDefi
     }
     
     @Override
-    public void updateCurrentRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeCreatedRuleConfig) {
-        currentRuleConfig.getKeyGenerators().putAll(toBeCreatedRuleConfig.getShardingAlgorithms());
+    public void updateCurrentRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeAlteredRuleConfig) {
+        currentRuleConfig.getKeyGenerators().putAll(toBeAlteredRuleConfig.getShardingAlgorithms());
     }
     
     @Override

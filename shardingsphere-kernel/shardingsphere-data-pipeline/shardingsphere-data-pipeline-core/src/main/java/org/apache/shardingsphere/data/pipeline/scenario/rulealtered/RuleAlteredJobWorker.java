@@ -139,7 +139,7 @@ public final class RuleAlteredJobWorker {
             log.error("rule altered action enabled but actor is not configured, ignored, ruleConfig={}", ruleConfig);
             throw new PipelineJobCreationException("rule altered actor not configured");
         }
-        return new RuleAlteredContext(onRuleAlteredActionConfig.get());
+        return new RuleAlteredContext(jobConfig.getJobId(), onRuleAlteredActionConfig.get());
     }
     
     /**
@@ -322,8 +322,8 @@ public final class RuleAlteredJobWorker {
     private void restoreSourceWriting(final String databaseName) {
         log.info("restoreSourceWriting, databaseName={}", databaseName);
         LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
-        ShardingSphereLock lock = lockContext.getGlobalLock(databaseName);
-        if (null != lock && lock.isLocked()) {
+        ShardingSphereLock lock = lockContext.getMutexLock(databaseName);
+        if (null != lock && lock.isLocked(databaseName)) {
             log.info("Source writing is still stopped on database '{}', restore it now", databaseName);
             lock.releaseLock(databaseName);
         }

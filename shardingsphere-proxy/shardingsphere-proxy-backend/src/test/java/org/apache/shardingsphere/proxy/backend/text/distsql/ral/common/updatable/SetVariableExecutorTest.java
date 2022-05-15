@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatabl
 
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.SetVariableStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -78,6 +79,6 @@ public final class SetVariableExecutorTest {
     }
     
     private HandlerParameter<SetVariableStatement> getParameter(final SetVariableStatement statement, final ConnectionSession connectionSession) {
-        return new HandlerParameter<SetVariableStatement>().setStatement(statement).setConnectionSession(connectionSession);
+        return new HandlerParameter<>(statement, new MySQLDatabaseType(), connectionSession);
     }
 }

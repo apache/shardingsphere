@@ -45,9 +45,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -89,7 +89,7 @@ public final class PostgreSQLComParseExecutorTest {
         assertThat(actualPackets.size(), is(1));
         assertThat(actualPackets.iterator().next(), is(PostgreSQLParseCompletePacket.getInstance()));
         PostgreSQLPreparedStatement actualPreparedStatement = PostgreSQLPreparedStatementRegistry.getInstance().get(CONNECTION_ID, statementId);
-        assertTrue(actualPreparedStatement.getSqlStatement() instanceof EmptyStatement);
+        assertThat(actualPreparedStatement.getSqlStatement(), instanceOf(EmptyStatement.class));
         assertThat(actualPreparedStatement.getSql(), is(expectedSQL));
         assertThat(actualPreparedStatement.getParameterTypes(), is(Collections.emptyList()));
     }
@@ -109,7 +109,7 @@ public final class PostgreSQLComParseExecutorTest {
         assertThat(actualPackets.size(), is(1));
         assertThat(actualPackets.iterator().next(), is(PostgreSQLParseCompletePacket.getInstance()));
         PostgreSQLPreparedStatement actualPreparedStatement = PostgreSQLPreparedStatementRegistry.getInstance().get(CONNECTION_ID, statementId);
-        assertTrue(actualPreparedStatement.getSqlStatement() instanceof PostgreSQLInsertStatement);
+        assertThat(actualPreparedStatement.getSqlStatement(), instanceOf(PostgreSQLInsertStatement.class));
         assertThat(actualPreparedStatement.getSql(), is(expectedSQL));
         assertThat(actualPreparedStatement.getParameterTypes(), is(Arrays.asList(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4, PostgreSQLColumnType.POSTGRESQL_TYPE_UNSPECIFIED)));
     }

@@ -28,15 +28,16 @@ import java.util.Optional;
 /**
  * Single table rule configuration.
  */
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Setter
 public final class SingleTableRuleConfiguration implements SchemaRuleConfiguration, EnhancedRuleConfiguration {
     
     private String defaultDataSource;
     
     /**
      * Get default data source.
+     * 
      * @return default data source
      */
     public Optional<String> getDefaultDataSource() {

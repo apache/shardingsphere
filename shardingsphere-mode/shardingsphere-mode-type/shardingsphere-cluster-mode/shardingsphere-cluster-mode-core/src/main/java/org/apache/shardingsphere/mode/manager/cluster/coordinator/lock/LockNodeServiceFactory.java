@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock;
 
-import org.apache.shardingsphere.infra.lock.LockType;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeType;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
 import java.util.EnumMap;
@@ -32,7 +32,7 @@ public final class LockNodeServiceFactory {
         ShardingSphereServiceLoader.register(LockNodeService.class);
     }
     
-    private static final Map<LockType, LockNodeService> SERVICES = new EnumMap<>(LockType.class);
+    private static final Map<LockNodeType, LockNodeService> SERVICES = new EnumMap<>(LockNodeType.class);
     
     private static final LockNodeServiceFactory INSTANCE = new LockNodeServiceFactory();
     
@@ -42,10 +42,11 @@ public final class LockNodeServiceFactory {
     
     private void loadLockNodeService() {
         for (LockNodeService each : ShardingSphereServiceLoader.getServiceInstances(LockNodeService.class)) {
-            if (SERVICES.containsKey(each.getLockType())) {
+            LockNodeType type = each.getType();
+            if (SERVICES.containsKey(type)) {
                 continue;
             }
-            SERVICES.put(each.getLockType(), each);
+            SERVICES.put(type, each);
         }
     }
     
@@ -61,10 +62,10 @@ public final class LockNodeServiceFactory {
     /**
      * Get lock node service.
      *
-     * @param lockType lock type
+     * @param lockNodeType lock node type
      * @return lock node service
      */
-    public LockNodeService getLockNodeService(final LockType lockType) {
-        return SERVICES.get(lockType);
+    public LockNodeService getLockNodeService(final LockNodeType lockNodeType) {
+        return SERVICES.get(lockNodeType);
     }
 }

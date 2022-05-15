@@ -29,12 +29,13 @@
     <name>${project.artifactId}</name>
     
     <modules>
+        <module>shardingsphere-parser</module>
         <module>shardingsphere-single-table</module>
         <module>shardingsphere-authority</module>
         <module>shardingsphere-transaction</module>
         <module>shardingsphere-schedule</module>
         <module>shardingsphere-data-pipeline</module>
-        <module>shardingsphere-parser</module>
+        <module>shardingsphere-sql-translator</module>
         <module>shardingsphere-traffic</module>
     </modules>
 </project>

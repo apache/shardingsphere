@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.text.admin.opengauss;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.postgresql.PostgreSQLAdminExecutorCreator;
@@ -31,6 +30,7 @@ import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.Optional;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -47,8 +47,7 @@ public final class OpenGaussAdminExecutorFactoryTest {
     private OpenGaussAdminExecutorCreator openGaussAdminExecutorFactory;
     
     @Before
-    @SneakyThrows
-    public void setup() {
+    public void setup() throws IllegalAccessException, NoSuchFieldException {
         Field field = OpenGaussAdminExecutorCreator.class.getDeclaredField("delegated");
         field.setAccessible(true);
         openGaussAdminExecutorFactory = new OpenGaussAdminExecutorCreator();
@@ -71,7 +70,7 @@ public final class OpenGaussAdminExecutorFactoryTest {
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("pg_database"));
         Optional<DatabaseAdminExecutor> actual = openGaussAdminExecutorFactory.create(sqlStatementContext, "select datcompatibility from pg_database where datname = 'sharding_db'", "");
         assertTrue(actual.isPresent());
-        assertTrue(actual.get() instanceof OpenGaussSelectDatabaseExecutor);
+        assertThat(actual.get(), instanceOf(OpenGaussSelectDatabaseExecutor.class));
     }
     
     @Test

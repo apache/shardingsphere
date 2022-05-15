@@ -95,7 +95,7 @@ public final class RuleAlteredJobPreparer {
         RuleAlteredJobConfiguration jobConfig = jobContext.getJobConfig();
         // TODO the lock will be replaced
         String lockName = "prepare-" + jobConfig.getJobId();
-        ShardingSphereLock lock = PipelineContext.getContextManager().getInstanceContext().getLockContext().getGlobalLock(lockName);
+        ShardingSphereLock lock = PipelineContext.getContextManager().getInstanceContext().getLockContext().getMutexLock(lockName);
         if (lock.tryLock(lockName, 1)) {
             try {
                 prepareAndCheckTarget(jobContext);
@@ -110,7 +110,7 @@ public final class RuleAlteredJobPreparer {
     private void waitUntilLockReleased(final ShardingSphereLock lock, final String lockName) {
         for (int loopCount = 0; loopCount < 30; loopCount++) {
             ThreadUtil.sleep(TimeUnit.SECONDS.toMillis(5));
-            if (!lock.isLocked()) {
+            if (!lock.isLocked(lockName)) {
                 log.info("unlocked, lockName={}", lockName);
                 return;
             }

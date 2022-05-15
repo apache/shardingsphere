@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global;
 
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeService;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeUtil;
 
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -46,11 +45,6 @@ public abstract class AbstractGlobalLockNodeService implements LockNodeService {
     @Override
     public String generateLocksName(final String locksName) {
         return getLocksNodePath() + "/" + locksName;
-    }
-    
-    @Override
-    public String generateAckLockName(final String ackLockName, final String lockedInstanceId) {
-        return getLockedAckNodePath() + "/" + LockNodeUtil.generateAckLockedName(ackLockName, lockedInstanceId);
     }
     
     @Override

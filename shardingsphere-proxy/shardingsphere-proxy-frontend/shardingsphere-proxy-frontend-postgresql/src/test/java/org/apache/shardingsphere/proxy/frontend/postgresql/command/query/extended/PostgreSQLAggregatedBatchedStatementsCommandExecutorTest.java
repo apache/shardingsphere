@@ -39,6 +39,8 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.JDBC
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
+import org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfiguration;
+import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -49,10 +51,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.nullable;
@@ -86,6 +89,8 @@ public final class PostgreSQLAggregatedBatchedStatementsCommandExecutorTest {
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE)).thenReturn(0);
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY)).thenReturn(1);
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
+        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(any(String.class)).getRuleMetaData().findSingleRule(SQLTranslatorRule.class))
+                .thenReturn(Optional.of(new SQLTranslatorRule(new SQLTranslatorRuleConfiguration())));
         PostgreSQLPreparedStatementRegistry.getInstance().register(CONNECTION_ID);
         PostgreSQLPreparedStatementRegistry.getInstance().register(CONNECTION_ID, STATEMENT_ID, SQL, SQL_PARSER_ENGINE.parse(SQL, false),
                 Collections.singletonList(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4));
@@ -107,7 +112,7 @@ public final class PostgreSQLAggregatedBatchedStatementsCommandExecutorTest {
         for (int i = 0; i < BATCH_SIZE; i++) {
             assertThat(actualPackets.get(i * 3), is(PostgreSQLBindCompletePacket.getInstance()));
             assertThat(actualPackets.get(i * 3 + 1), is(PostgreSQLNoDataPacket.getInstance()));
-            assertTrue(actualPackets.get(i * 3 + 2) instanceof PostgreSQLCommandCompletePacket);
+            assertThat(actualPackets.get(i * 3 + 2), instanceOf(PostgreSQLCommandCompletePacket.class));
         }
     }
     

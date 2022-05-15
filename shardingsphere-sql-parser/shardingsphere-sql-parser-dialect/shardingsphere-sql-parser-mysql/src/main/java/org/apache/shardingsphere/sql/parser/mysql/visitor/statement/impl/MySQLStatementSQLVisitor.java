@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
@@ -416,11 +417,27 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
     @Override
     public final ASTNode visitBooleanPrimary(final BooleanPrimaryContext ctx) {
         if (null != ctx.IS()) {
-            ExpressionSegment left = (ExpressionSegment) visit(ctx.booleanPrimary());
-            ExpressionSegment right = new LiteralExpressionSegment(ctx.IS().getSymbol().getStopIndex() + 1, ctx.stop.getStopIndex(), new Interval(ctx.IS().getSymbol().getStopIndex() + 1,
-                    ctx.stop.getStopIndex()));
-            String operator = "IS";
+            String rightText = "";
+            if (null != ctx.NOT()) {
+                rightText = rightText.concat(ctx.start.getInputStream().getText(new Interval(ctx.NOT().getSymbol().getStartIndex(),
+                        ctx.NOT().getSymbol().getStopIndex()))).concat(" ");
+            }
+            Token operatorToken = null;
+            if (null != ctx.NULL()) {
+                operatorToken = ctx.NULL().getSymbol();
+            }
+            if (null != ctx.TRUE()) {
+                operatorToken = ctx.TRUE().getSymbol();
+            }
+            if (null != ctx.FALSE()) {
+                operatorToken = ctx.FALSE().getSymbol();
+            }
+            int startIndex = null == operatorToken ? ctx.IS().getSymbol().getStopIndex() + 1 : operatorToken.getStartIndex();
+            rightText = rightText.concat(ctx.start.getInputStream().getText(new Interval(startIndex, ctx.stop.getStopIndex())));
+            ExpressionSegment right = new LiteralExpressionSegment(ctx.IS().getSymbol().getStopIndex() + 1, ctx.stop.getStopIndex(), rightText);
             String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+            ExpressionSegment left = (ExpressionSegment) visit(ctx.booleanPrimary());
+            String operator = "IS";
             return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
         }
         if (null != ctx.comparisonOperator() || null != ctx.SAFE_EQ_()) {

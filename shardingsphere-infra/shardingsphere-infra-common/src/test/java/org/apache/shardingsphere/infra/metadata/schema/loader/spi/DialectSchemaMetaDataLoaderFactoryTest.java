@@ -23,6 +23,8 @@ import org.junit.Test;
 
 import java.util.Optional;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class DialectSchemaMetaDataLoaderFactoryTest {
@@ -31,6 +33,6 @@ public final class DialectSchemaMetaDataLoaderFactoryTest {
     public void assertFindInstance() {
         Optional<DialectSchemaMetaDataLoader> actual = DialectSchemaMetaDataLoaderFactory.findInstance(new H2DatabaseType());
         assertTrue(actual.isPresent());
-        assertTrue(actual.get() instanceof H2SchemaMetaDataLoader);
+        assertThat(actual.get(), instanceOf(H2SchemaMetaDataLoader.class));
     }
 }
