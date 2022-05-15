@@ -172,9 +172,9 @@ public final class GeneratedKeyContextEngineTest {
         assertTrue(actual.isPresent());
         assertThat(actual.get().getGeneratedValues().size(), is(3));
         Iterator<Comparable<?>> generatedValuesIterator = actual.get().getGeneratedValues().iterator();
-        assertThat(generatedValuesIterator.next(), is((Comparable) 1));
-        assertThat(generatedValuesIterator.next(), is((Comparable) 100));
-        assertThat(generatedValuesIterator.next(), is((Comparable) "value"));
+        assertThat(generatedValuesIterator.next(), is(1));
+        assertThat(generatedValuesIterator.next(), is(100));
+        assertThat(generatedValuesIterator.next(), is("value"));
         assertTrue(new GeneratedKeyContextEngine(insertStatement, schema).createGenerateKeyContext(Collections.emptyList(), Collections.emptyList(), Collections.singletonList(1)).isPresent());
     }
 }

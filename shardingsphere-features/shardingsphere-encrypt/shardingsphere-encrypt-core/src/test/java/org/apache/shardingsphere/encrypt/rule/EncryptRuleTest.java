@@ -52,7 +52,7 @@ public final class EncryptRuleTest {
         EncryptColumnRuleConfiguration encryptColumnConfig = new EncryptColumnRuleConfiguration("encrypt_column", "encrypt_cipher", "", "", "test_encryptor");
         EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration("t_encrypt", Collections.singletonList(encryptColumnConfig), null);
         AlgorithmProvidedEncryptRuleConfiguration ruleConfig = new AlgorithmProvidedEncryptRuleConfiguration(
-                Collections.singleton(tableConfig), ImmutableMap.of("test_encryptor", new CoreEncryptAlgorithmFixture()), true);
+                Collections.singleton(tableConfig), Collections.singletonMap("test_encryptor", new CoreEncryptAlgorithmFixture()), true);
         EncryptRule actual = new EncryptRule(ruleConfig, Collections.emptyMap());
         assertTrue(actual.findEncryptTable("t_encrypt").isPresent());
     }
@@ -62,7 +62,7 @@ public final class EncryptRuleTest {
         ShardingSphereAlgorithmConfiguration encryptAlgorithmConfig = new ShardingSphereAlgorithmConfiguration("CORE.FIXTURE", new Properties());
         EncryptColumnRuleConfiguration encryptColumnConfig = new EncryptColumnRuleConfiguration("encrypt_column", "encrypt_cipher", "", "", "test_encryptor");
         EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration("t_encrypt", Collections.singletonList(encryptColumnConfig), null);
-        EncryptRuleConfiguration ruleConfig = new EncryptRuleConfiguration(Collections.singleton(tableConfig), ImmutableMap.of("invalid_encryptor", encryptAlgorithmConfig));
+        EncryptRuleConfiguration ruleConfig = new EncryptRuleConfiguration(Collections.singleton(tableConfig), Collections.singletonMap("invalid_encryptor", encryptAlgorithmConfig));
         new EncryptRule(ruleConfig, Collections.emptyMap());
     }
     
@@ -71,7 +71,7 @@ public final class EncryptRuleTest {
         EncryptColumnRuleConfiguration encryptColumnConfig = new EncryptColumnRuleConfiguration("encrypt_column", "encrypt_cipher", "", "", "test_encryptor");
         EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration("t_encrypt", Collections.singletonList(encryptColumnConfig), null);
         AlgorithmProvidedEncryptRuleConfiguration ruleConfig = new AlgorithmProvidedEncryptRuleConfiguration(
-                Collections.singleton(tableConfig), ImmutableMap.of("invalid_encryptor", new CoreEncryptAlgorithmFixture()), true);
+                Collections.singleton(tableConfig), Collections.singletonMap("invalid_encryptor", new CoreEncryptAlgorithmFixture()), true);
         new EncryptRule(ruleConfig, Collections.emptyMap());
     }
     
@@ -145,7 +145,7 @@ public final class EncryptRuleTest {
         EncryptColumnRuleConfiguration encryptColumnConfig = new EncryptColumnRuleConfiguration("encrypt_column", "encrypt_cipher", "", "", "test_encryptor");
         EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration("t_encrypt", Collections.singletonList(encryptColumnConfig), true);
         AlgorithmProvidedEncryptRuleConfiguration ruleConfig = new AlgorithmProvidedEncryptRuleConfiguration(
-                Collections.singleton(tableConfig), ImmutableMap.of("test_encryptor", new CoreEncryptAlgorithmFixture()), true);
+                Collections.singleton(tableConfig), Collections.singletonMap("test_encryptor", new CoreEncryptAlgorithmFixture()), true);
         EncryptRule actual = new EncryptRule(ruleConfig, Collections.emptyMap());
         assertTrue(actual.isQueryWithCipherColumn("t_encrypt"));
     }
