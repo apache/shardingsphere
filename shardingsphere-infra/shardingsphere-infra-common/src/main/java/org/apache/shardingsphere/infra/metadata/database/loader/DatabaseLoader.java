@@ -52,7 +52,7 @@ public final class DatabaseLoader {
                                               final DatabaseType backendDatabaseType, final Map<String, DataSource> dataSourceMap,
                                               final Collection<ShardingSphereRule> rules, final Properties props) throws SQLException {
         Map<String, ShardingSphereSchema> schemas = new LinkedHashMap<>();
-        schemas.putAll(SchemaLoader.load(databaseName, backendDatabaseType, dataSourceMap, rules, props));
+        schemas.putAll(SchemaLoader.load(databaseName, frontendDatabaseType, backendDatabaseType, dataSourceMap, rules, props));
         schemas.putAll(SystemSchemaBuilder.build(databaseName, frontendDatabaseType));
         return new ShardingSphereDatabase(schemas);
     }
