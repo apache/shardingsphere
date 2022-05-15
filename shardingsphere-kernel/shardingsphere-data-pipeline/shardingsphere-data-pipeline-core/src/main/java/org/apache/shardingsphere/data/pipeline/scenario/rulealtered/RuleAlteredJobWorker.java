@@ -213,6 +213,7 @@ public final class RuleAlteredJobWorker {
         result.setNewVersion(event.getNewVersion());
         result.setSource(createYamlPipelineDataSourceConfiguration(sourceRootConfig));
         result.setTarget(createYamlPipelineDataSourceConfiguration(targetRootConfig));
+        result.extendConfiguration();
         return Optional.of(new RuleAlteredJobConfigurationSwapper().swapToObject(result));
     }
     

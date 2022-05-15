@@ -91,13 +91,6 @@ public final class RuleAlteredJobConfiguration implements PipelineJobConfigurati
         return Splitter.on(',').splitToList(logicTables);
     }
     
-    // TODO now del
-    /**
-     * Build handle configuration.
-     */
-    public void buildHandleConfig() {
-    }
-    
     @Override
     public String toString() {
         return "RuleAlteredJobConfiguration{"

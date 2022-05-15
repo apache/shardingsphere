@@ -127,9 +127,9 @@ public final class YamlRuleAlteredJobConfiguration implements YamlConfiguration 
     }
     
     /**
-     * Build handle configuration.
+     * Extend configuration.
      */
-    public void buildHandleConfig() {
+    public void extendConfiguration() {
         if (null == getJobShardingDataNodes()) {
             RuleAlteredJobConfigurationPreparerFactory.getInstance().extendJobConfiguration(this);
         }
