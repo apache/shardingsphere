@@ -292,16 +292,12 @@ public final class RuleAlteredJobWorker {
                 continue;
             }
             RuleAlteredJobConfiguration jobConfig = RuleAlteredJobConfigurationSwapper.swapToObject(each.getJobParameter());
-            if (hasUncompletedJobOfSameDatabaseName(jobConfig, databaseName)) {
+            if (databaseName.equals(jobConfig.getDatabaseName())) {
                 result = true;
                 break;
             }
         }
         return result;
-    }
-    
-    private boolean hasUncompletedJobOfSameDatabaseName(final RuleAlteredJobConfiguration jobConfig, final String currentDatabaseName) {
-        return currentDatabaseName.equals(jobConfig.getDatabaseName());
     }
     
     /**

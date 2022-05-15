@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.config.rulealtered;
+package org.apache.shardingsphere.data.pipeline.api.config.rulealtered.yaml;
 
 import com.google.common.collect.Lists;
 import org.junit.Test;
@@ -25,23 +25,23 @@ import java.util.Arrays;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class RuleAlteredJobConfigurationTest {
+public final class YamlRuleAlteredJobConfigurationTest {
     
     @Test
     public void assertGetJobShardingCountByNull() {
-        assertThat(new RuleAlteredJobConfiguration().getJobShardingCount(), is(0));
+        assertThat(new YamlRuleAlteredJobConfiguration().getJobShardingCount(), is(0));
     }
     
     @Test
     public void assertGetJobShardingCount() {
-        RuleAlteredJobConfiguration jobConfig = new RuleAlteredJobConfiguration();
+        YamlRuleAlteredJobConfiguration jobConfig = new YamlRuleAlteredJobConfiguration();
         jobConfig.setJobShardingDataNodes(Arrays.asList("node1", "node2"));
         assertThat(jobConfig.getJobShardingCount(), is(2));
     }
     
     @Test
     public void assertSplitLogicTableNames() {
-        RuleAlteredJobConfiguration jobConfig = new RuleAlteredJobConfiguration();
+        YamlRuleAlteredJobConfiguration jobConfig = new YamlRuleAlteredJobConfiguration();
         jobConfig.setLogicTables("foo_tbl,bar_tbl");
         assertThat(jobConfig.splitLogicTableNames(), is(Lists.newArrayList("foo_tbl", "bar_tbl")));
     }

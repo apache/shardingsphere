@@ -21,6 +21,8 @@ import com.google.common.collect.ImmutableMap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.yaml.RuleAlteredJobConfigurationSwapper;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.yaml.YamlRuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
@@ -45,7 +47,7 @@ public final class JobConfigurationBuilder {
      * @return created job configuration
      */
     public static RuleAlteredJobConfiguration createJobConfiguration() {
-        RuleAlteredJobConfiguration result = new RuleAlteredJobConfiguration();
+        YamlRuleAlteredJobConfiguration result = new YamlRuleAlteredJobConfiguration();
         result.setDatabaseName("logic_db");
         result.setAlteredRuleYamlClassNameTablesMap(ImmutableMap.of(YamlShardingRuleConfiguration.class.getName(), Collections.singletonList("t_order")));
         result.setActiveVersion(0);
@@ -57,7 +59,7 @@ public final class JobConfigurationBuilder {
         result.buildHandleConfig();
         int activeVersion = ThreadLocalRandom.current().nextInt(Integer.MAX_VALUE - 10) + 1;
         result.setJobId(generateJobId(activeVersion, "logic_db"));
-        return result;
+        return new RuleAlteredJobConfigurationSwapper().swapToObject(result);
     }
     
     private static YamlPipelineDataSourceConfiguration createYamlPipelineDataSourceConfiguration(final PipelineDataSourceConfiguration config) {

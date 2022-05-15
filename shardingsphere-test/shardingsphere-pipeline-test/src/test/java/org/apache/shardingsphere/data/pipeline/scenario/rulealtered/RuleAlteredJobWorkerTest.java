@@ -19,6 +19,8 @@ package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.yaml.RuleAlteredJobConfigurationSwapper;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.yaml.YamlRuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
@@ -56,8 +58,10 @@ public final class RuleAlteredJobWorkerTest {
     @Test(expected = PipelineJobCreationException.class)
     public void assertCreateRuleAlteredContextNoAlteredRule() {
         RuleAlteredJobConfiguration jobConfig = JobConfigurationBuilder.createJobConfiguration();
-        jobConfig.setAlteredRuleYamlClassNameTablesMap(Collections.emptyMap());
-        RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
+        RuleAlteredJobConfigurationSwapper swapper = new RuleAlteredJobConfigurationSwapper();
+        YamlRuleAlteredJobConfiguration yamlJobConfig = swapper.swapToYamlConfiguration(jobConfig);
+        yamlJobConfig.setAlteredRuleYamlClassNameTablesMap(Collections.emptyMap());
+        RuleAlteredJobWorker.createRuleAlteredContext(swapper.swapToObject(yamlJobConfig));
     }
     
     @Test

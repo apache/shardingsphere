@@ -20,8 +20,8 @@ package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
-import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
 import org.apache.shardingsphere.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineContextUtil;
@@ -61,7 +61,7 @@ public final class RuleAlteredJobTest {
     
     @SneakyThrows(SQLException.class)
     private void initTableData(final RuleAlteredJobConfiguration jobConfig) {
-        YamlPipelineDataSourceConfiguration source = jobConfig.getSource();
+        PipelineDataSourceConfiguration source = jobConfig.getSource();
         try (
                 PipelineDataSourceWrapper dataSource = PipelineDataSourceFactory.newInstance(PipelineDataSourceConfigurationFactory.newInstance(source.getType(), source.getParameter()));
                 Connection connection = dataSource.getConnection();
