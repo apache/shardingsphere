@@ -193,7 +193,7 @@ public abstract class AbstractImporter extends AbstractLifecycleExecutor impleme
             }
             int updateCount = ps.executeUpdate();
             if (1 != updateCount) {
-                log.warn("executeUpdate failed, updateCount={}, updateSql={}, updatedColumns={}", updateCount, updateSql, updatedColumns);
+                log.warn("executeUpdate failed, updateCount={}, updateSql={}, updatedColumns={}, conditionColumns={}", updateCount, updateSql, updatedColumns, conditionColumns);
             }
         }
     }
