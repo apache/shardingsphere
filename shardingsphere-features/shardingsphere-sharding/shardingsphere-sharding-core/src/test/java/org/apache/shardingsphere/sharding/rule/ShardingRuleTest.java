@@ -582,7 +582,7 @@ public final class ShardingRuleTest {
         Collection<SimpleTableSegment> tableSegments = Arrays.asList(
                 new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("LOGIC_TABLE"))),
                 new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("SUB_LOGIC_TABLE"))));
-        TablesContext tablesContext = new TablesContext(tableSegments, Collections.emptyMap(), DatabaseTypeEngine.getDefaultDatabaseType());
+        TablesContext tablesContext = new TablesContext(tableSegments, Collections.emptyMap(), DatabaseTypeEngine.getDatabaseType("MySQL"));
         when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
         when(sqlStatementContext.getDatabaseType()).thenReturn(new MySQLDatabaseType());
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);

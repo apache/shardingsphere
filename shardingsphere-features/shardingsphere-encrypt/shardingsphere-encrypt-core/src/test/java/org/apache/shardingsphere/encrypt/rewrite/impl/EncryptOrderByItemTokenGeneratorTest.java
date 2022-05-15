@@ -78,7 +78,7 @@ public final class EncryptOrderByItemTokenGeneratorTest {
         when(result.getOrderByContext().getItems()).thenReturn(Collections.singletonList(orderByItem));
         when(result.getGroupByContext().getItems()).thenReturn(Collections.emptyList());
         when(result.getSubqueryContexts().values()).thenReturn(Collections.emptyList());
-        when(result.getTablesContext()).thenReturn(new TablesContext(Collections.singletonList(simpleTableSegment), DatabaseTypeEngine.getDefaultDatabaseType()));
+        when(result.getTablesContext()).thenReturn(new TablesContext(Collections.singletonList(simpleTableSegment), DatabaseTypeEngine.getDatabaseType("MySQL")));
         return result;
     }
     

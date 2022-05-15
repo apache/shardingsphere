@@ -281,13 +281,13 @@ public final class ShardingInsertStatementValidatorTest {
     private TablesContext createSingleTablesContext() {
         List<SimpleTableSegment> result = new LinkedList<>();
         result.add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user"))));
-        return new TablesContext(result, DatabaseTypeEngine.getDefaultDatabaseType());
+        return new TablesContext(result, DatabaseTypeEngine.getDatabaseType("MySQL"));
     }
     
     private TablesContext createMultiTablesContext() {
         List<SimpleTableSegment> result = new LinkedList<>();
         result.add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user"))));
         result.add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("order"))));
-        return new TablesContext(result, DatabaseTypeEngine.getDefaultDatabaseType());
+        return new TablesContext(result, DatabaseTypeEngine.getDatabaseType("MySQL"));
     }
 }
