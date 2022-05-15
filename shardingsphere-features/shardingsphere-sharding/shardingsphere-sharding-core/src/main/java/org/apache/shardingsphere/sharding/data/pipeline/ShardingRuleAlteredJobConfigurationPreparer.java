@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.schedule;
+package org.apache.shardingsphere.sharding.data.pipeline;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Maps;

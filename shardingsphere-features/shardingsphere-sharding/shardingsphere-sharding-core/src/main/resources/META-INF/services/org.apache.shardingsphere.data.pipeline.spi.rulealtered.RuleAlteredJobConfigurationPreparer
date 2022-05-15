@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sharding.schedule.ShardingRuleAlteredJobConfigurationPreparer
+org.apache.shardingsphere.sharding.data.pipeline.ShardingRuleAlteredJobConfigurationPreparer
