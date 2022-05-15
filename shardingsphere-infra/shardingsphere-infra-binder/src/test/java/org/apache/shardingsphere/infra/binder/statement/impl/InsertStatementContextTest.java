@@ -78,7 +78,6 @@ public final class InsertStatementContextTest {
     
     @Test
     public void assertOracleMultiInsertStatementContextWithColumnNames() {
-        OracleInsertStatement oracleInsertStatement = new OracleInsertStatement();
         OracleInsertStatement insertStatement1 = new OracleInsertStatement();
         insertStatement1.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
         InsertColumnsSegment insertColumnsSegment1 = new InsertColumnsSegment(0, 0, Arrays.asList(
@@ -91,8 +90,9 @@ public final class InsertStatementContextTest {
                 new ColumnSegment(0, 0, new IdentifierValue("id")), new ColumnSegment(0, 0, new IdentifierValue("name")), new ColumnSegment(0, 0, new IdentifierValue("status"))));
         insertStatement2.setInsertColumns(insertColumnsSegment2);
         setUpInsertValues(insertStatement2);
-        InsertMultiTableElementSegment insertMultiTableElementSegment = new InsertMultiTableElementSegment(0 ,0);
+        InsertMultiTableElementSegment insertMultiTableElementSegment = new InsertMultiTableElementSegment(0, 0);
         insertMultiTableElementSegment.getInsertStatements().addAll(Arrays.asList(insertStatement1, insertStatement2));
+        OracleInsertStatement oracleInsertStatement = new OracleInsertStatement();
         oracleInsertStatement.setInsertMultiTableElementSegment(insertMultiTableElementSegment);
         InsertStatementContext actual = createInsertStatementContext(Arrays.asList(1, "Tom", 2, "Jerry", 3, "Tom", 4, "Jerry"), oracleInsertStatement);
         actual.setUpParameters(Arrays.asList(1, "Tom", 2, "Jerry", 3, "Tom", 4, "Jerry"));
