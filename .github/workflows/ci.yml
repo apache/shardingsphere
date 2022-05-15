@@ -192,27 +192,19 @@ jobs:
     name: shardingsphere test-coverage report
     steps:
       - uses: actions/checkout@v2
-      - name: Maven resolve ranges
-        run: ./mvnw versions:resolve-ranges -ntp -Dincludes='org.springframework:*,org.springframework.boot:*'
       - name: Cache Maven Repos
         uses: actions/cache@v2
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
-            ${{ runner.os }}-maven-
-#      - name: Shutdown Ubuntu MySQL(SUDO)
-#        run: sudo service mysql stop
-#      - name: Set up MySQL
-#        uses: mirromutth/mysql-action@v1.1
-#        with:
-#          mysql root password: "root"
+            ${{ runner.os }}-maven- 
       - name: Set up JDK 8
         uses: actions/setup-java@v2
         with:
           distribution: 'temurin'
           java-version: 8
       - name: Test with Maven
-        run: ./mvnw -B --no-transfer-progress clean install cobertura:cobertura -Dmaven.javadoc.skip=true -Ddatabases=MySQL,PostgreSQL
+        run: ./mvnw -B --no-transfer-progress clean install cobertura:cobertura -Dmaven.javadoc.skip=true
       - name: Upload to Codecov
         run: bash <(curl -s https://codecov.io/bash)
