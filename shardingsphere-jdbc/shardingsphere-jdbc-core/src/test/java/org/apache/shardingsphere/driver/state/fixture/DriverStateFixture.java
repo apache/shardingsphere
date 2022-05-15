@@ -18,12 +18,11 @@
 package org.apache.shardingsphere.driver.state.fixture;
 
 import org.apache.shardingsphere.driver.state.DriverState;
-import org.apache.shardingsphere.infra.state.StateType;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.sql.Connection;
 
-public final class CircuitBreakDriverStateFixture implements DriverState {
+public final class DriverStateFixture implements DriverState {
     
     @Override
     public Connection getConnection(final String databaseName, final ContextManager contextManager) {
@@ -32,7 +31,7 @@ public final class CircuitBreakDriverStateFixture implements DriverState {
     
     @Override
     public String getType() {
-        return StateType.CIRCUIT_BREAK.name();
+        return "FIXTURE";
     }
     
 }

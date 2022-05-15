@@ -17,22 +17,22 @@
 
 package org.apache.shardingsphere.driver.state;
 
-import org.apache.shardingsphere.driver.state.fixture.CircuitBreakDriverStateFixture;
-import org.apache.shardingsphere.driver.state.fixture.LockDriverStateFixture;
-import org.apache.shardingsphere.driver.state.fixture.OKDriverStateFixture;
+import org.apache.shardingsphere.driver.state.fixture.DriverStateFixture;
 import org.apache.shardingsphere.infra.state.StateType;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.when;
 
 public final class DriverStateFactoryTest {
     
     @Test
     public void assertGetInstance() {
-        assertThat(DriverStateFactory.getInstance(StateType.OK), instanceOf(OKDriverStateFixture.class));
-        assertThat(DriverStateFactory.getInstance(StateType.LOCK), instanceOf(LockDriverStateFixture.class));
-        assertThat(DriverStateFactory.getInstance(StateType.CIRCUIT_BREAK), instanceOf(CircuitBreakDriverStateFixture.class));
+        StateType stateType = Mockito.mock(StateType.class);
+        when(stateType.name()).thenReturn("FIXTURE");
+        assertThat(DriverStateFactory.getInstance(stateType), instanceOf(DriverStateFixture.class));
     }
     
 }
