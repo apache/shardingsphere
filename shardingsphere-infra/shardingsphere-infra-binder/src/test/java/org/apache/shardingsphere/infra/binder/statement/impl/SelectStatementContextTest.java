@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.binder.statement.impl;
 
-import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -389,8 +388,8 @@ public final class SelectStatementContextTest {
         SelectStatementContext actual = new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, metaData),
                 Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
         assertThat(actual.getTablesContext().getTableNames(), is(Collections.emptySet()));
-        assertThat(actual.getAllTables(), is(Lists.newLinkedList()));
-        assertThat(actual.getGroupByContext().getItems(), is(Lists.newLinkedList()));
+        assertThat(actual.getAllTables(), is(Collections.emptyList()));
+        assertThat(actual.getGroupByContext().getItems(), is(Collections.emptyList()));
         assertThat(actual.getWhereSegments(), is(Collections.singletonList(whereSegment)));
     }
     
