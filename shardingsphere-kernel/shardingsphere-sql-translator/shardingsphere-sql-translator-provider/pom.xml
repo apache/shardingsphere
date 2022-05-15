@@ -30,13 +30,6 @@
     
     <modules>
         <module>shardingsphere-sql-translator-native-provider</module>
+        <module>shardingsphere-sql-translator-jooq-provider</module>
     </modules>
-    
-    <dependencies>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-sql-translator-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-    </dependencies>
 </project>

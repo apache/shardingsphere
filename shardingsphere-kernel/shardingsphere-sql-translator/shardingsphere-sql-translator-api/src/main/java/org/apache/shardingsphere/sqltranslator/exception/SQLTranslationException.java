@@ -20,11 +20,15 @@ package org.apache.shardingsphere.sqltranslator.exception;
 /**
  * SQL translation exception.
  */
-public final class SQLTranslationException extends Exception {
+public class SQLTranslationException extends Exception {
     
-    private static final String ERROR_MESSAGE = "SQL `%s` translation error.";
+    private static final long serialVersionUID = -7227697280221442049L;
     
-    public SQLTranslationException(final String sql, final Exception cause) {
-        super(String.format(ERROR_MESSAGE, sql), cause);
+    public SQLTranslationException(final String message) {
+        super(message);
+    }
+    
+    public SQLTranslationException(final String message, final Exception cause) {
+        super(message, cause);
     }
 }

@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sharding.schedule.ShardingRuleAlteredDetector
+org.apache.shardingsphere.sharding.data.pipeline.ShardingRuleAlteredDetector

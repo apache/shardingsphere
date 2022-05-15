@@ -8,7 +8,7 @@ ShardingSphere-JDBC Supports all JDBC drivers and database connection pools.
 
 ## Example
 
-In this example, the database driver is MySQL, and connection pool is HikariCP, which can be replaced with other database drivers and connection pools.
+In this example, the database driver is MySQL, and connection pool is HikariCP, which can be replaced with other database drivers and connection pools. When using ShardingSphere JDBC, the property name of the JDBC pool depends on the definition of the respective JDBC pool, and is not defined by ShardingSphere. For related processing, please refer to the class `org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator`.
 
 ```java
 Map<String, DataSource> dataSourceMap = new HashMap<>();
