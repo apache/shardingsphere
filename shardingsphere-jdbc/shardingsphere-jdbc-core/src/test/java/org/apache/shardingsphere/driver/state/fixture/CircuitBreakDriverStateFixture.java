@@ -23,10 +23,10 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.sql.Connection;
 
-public class CircuitBreakDriverStateFixture implements DriverState {
+public final class CircuitBreakDriverStateFixture implements DriverState {
     
     @Override
-    public Connection getConnection(String databaseName, ContextManager contextManager) {
+    public Connection getConnection(final String databaseName, final ContextManager contextManager) {
         return null;
     }
     
