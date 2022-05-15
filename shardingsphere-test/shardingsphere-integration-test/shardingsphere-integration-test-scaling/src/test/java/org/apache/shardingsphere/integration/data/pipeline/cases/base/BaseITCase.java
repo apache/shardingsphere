@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.data.pipeline.cases;
+package org.apache.shardingsphere.integration.data.pipeline.cases.base;
 
 import com.google.common.collect.Sets;
 import com.zaxxer.hikari.HikariDataSource;
@@ -143,19 +143,36 @@ public abstract class BaseITCase {
         }
     }
     
-    protected void initShardingRule() throws InterruptedException {
-        for (String sql : getCommonSQLCommand().getCreateShardingAlgorithm()) {
-            getJdbcTemplate().execute(sql);
-            // TODO sleep to wait for sharding algorithm table created,otherwise the next sql will fail.
-            TimeUnit.SECONDS.sleep(1);
-        }
-        jdbcTemplate.execute(getCommonSQLCommand().getCreateShardingTable());
+    protected void initShardingAlgorithm() {
+        jdbcTemplate.execute(getCommonSQLCommand().getCreateDatabaseShardingAlgorithm());
+        jdbcTemplate.execute(getCommonSQLCommand().getCreateOrderShardingAlgorithm());
+        jdbcTemplate.execute(getCommonSQLCommand().getCreateOrderItemShardingAlgorithm());
+    }
+    
+    protected void createAllSharingTableRule() {
+        jdbcTemplate.execute(commonSQLCommand.getCreateAllSharingTableRule());
+    }
+    
+    protected void createOrderSharingTableRule() {
+        jdbcTemplate.execute(commonSQLCommand.getCreateOrderShardingTableRule());
+    }
+    
+    protected void bindingShardingRule() {
         jdbcTemplate.execute("CREATE SHARDING BINDING TABLE RULES (t_order,t_order_item)");
+    }
+    
+    protected void createScalingRule() {
         jdbcTemplate.execute("CREATE SHARDING SCALING RULE scaling_manual (DATA_CONSISTENCY_CHECKER(TYPE(NAME=DATA_MATCH)))");
     }
     
     protected void createSchema(final String schemaName) {
         jdbcTemplate.execute(String.format("CREATE SCHEMA %s", schemaName));
+    }
+    
+    protected void assertOriginalSourceSuccess() {
+        List<Map<String, Object>> previewResults = getJdbcTemplate().queryForList("PREVIEW SELECT COUNT(1) FROM t_order");
+        Set<Object> originalSources = previewResults.stream().map(each -> each.get("data_source_name")).collect(Collectors.toSet());
+        assertThat(originalSources, is(Sets.newHashSet("ds_0", "ds_1")));
     }
     
     /**
@@ -165,7 +182,7 @@ public abstract class BaseITCase {
      * @param jobId job id
      * @throws InterruptedException interrupted exception
      */
-    protected void checkMatchConsistency(final JdbcTemplate jdbcTemplate, final String jobId) throws InterruptedException {
+    protected void assertCheckMatchConsistencySuccess(final JdbcTemplate jdbcTemplate, final String jobId) throws InterruptedException {
         Map<String, String> actualStatusMap = new HashMap<>(2, 1);
         for (int i = 0; i < 100; i++) {
             List<Map<String, Object>> showScalingStatusResMap = jdbcTemplate.queryForList(String.format("SHOW SCALING STATUS %s", jobId));
@@ -204,6 +221,9 @@ public abstract class BaseITCase {
     
     @After
     public void stopContainer() {
+        if (composedContainer instanceof DockerComposedContainer) {
+            log.info(((DockerComposedContainer) composedContainer).getProxyContainer().getLogs());
+        }
         composedContainer.stop();
     }
 }
