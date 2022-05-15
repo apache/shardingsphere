@@ -83,13 +83,13 @@ public final class RuleAlteredJobContext {
     
     private RuleAlteredJobPreparer jobPreparer;
     
-    public RuleAlteredJobContext(final RuleAlteredJobConfiguration jobConfig) {
+    public RuleAlteredJobContext(final RuleAlteredJobConfiguration jobConfig, final int jobShardingItem) {
         ruleAlteredContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
         this.jobConfig = jobConfig;
         jobConfig.buildHandleConfig();
         jobId = jobConfig.getJobId();
-        shardingItem = jobConfig.getJobShardingItem();
-        taskConfig = RuleAlteredJobWorker.buildTaskConfig(jobConfig, ruleAlteredContext.getOnRuleAlteredActionConfig());
+        this.shardingItem = jobShardingItem;
+        taskConfig = RuleAlteredJobWorker.buildTaskConfig(jobConfig, jobShardingItem, ruleAlteredContext.getOnRuleAlteredActionConfig());
     }
     
     /**

@@ -200,7 +200,7 @@ public final class RuleAlteredJobAPIImplTest {
         Optional<String> jobId = ruleAlteredJobAPI.start(jobConfig);
         assertTrue(jobId.isPresent());
         final GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
-        RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfig);
+        RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfig, 0);
         jobContext.setInitProgress(new JobProgress());
         repositoryAPI.persistJobProgress(jobContext);
         repositoryAPI.persistJobCheckResult(jobId.get(), true);
@@ -211,11 +211,10 @@ public final class RuleAlteredJobAPIImplTest {
     @Test
     public void assertSwitchClusterConfigurationSucceed() {
         final RuleAlteredJobConfiguration jobConfig = JobConfigurationBuilder.createJobConfiguration();
-        jobConfig.setJobShardingItem(0);
         Optional<String> jobId = ruleAlteredJobAPI.start(jobConfig);
         assertTrue(jobId.isPresent());
         GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
-        RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfig);
+        RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfig, 0);
         jobContext.setInitProgress(new JobProgress());
         repositoryAPI.persistJobProgress(jobContext);
         repositoryAPI.persistJobCheckResult(jobId.get(), true);

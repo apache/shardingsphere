@@ -15,52 +15,50 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.data.pipeline.cases.postgresql;
+package org.apache.shardingsphere.integration.data.pipeline.cases.base;
 
+import lombok.Getter;
 import lombok.SneakyThrows;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
-import org.apache.shardingsphere.integration.data.pipeline.cases.BaseITCase;
 import org.apache.shardingsphere.integration.data.pipeline.cases.command.ExtraSQLCommand;
+import org.apache.shardingsphere.integration.data.pipeline.cases.common.SimpleIncrementTaskRunnable;
+import org.apache.shardingsphere.integration.data.pipeline.framework.helper.ScalingTableSQLHelper;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
-import org.apache.shardingsphere.integration.data.pipeline.util.TableCrudUtil;
+import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
 import javax.xml.bind.JAXB;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Objects;
 import java.util.Properties;
 
 public abstract class BasePostgreSQLITCase extends BaseITCase {
     
-    protected static final DatabaseType DATABASE = new PostgreSQLDatabaseType();
+    protected static final DatabaseType DATABASE_TYPE = new PostgreSQLDatabaseType();
     
     private final ExtraSQLCommand extraSQLCommand;
     
+    @Getter
+    private final ScalingTableSQLHelper sqlHelper;
+    
     public BasePostgreSQLITCase(final ScalingParameterized parameterized) {
         super(parameterized);
-        extraSQLCommand = JAXB.unmarshal(Objects.requireNonNull(BasePostgreSQLITCase.class.getClassLoader().getResource(parameterized.getParentPath() + "/sql.xml")), ExtraSQLCommand.class);
-        initTableAndData();
+        extraSQLCommand = JAXB.unmarshal(BasePostgreSQLITCase.class.getClassLoader().getResource(parameterized.getScenario()), ExtraSQLCommand.class);
+        sqlHelper = new ScalingTableSQLHelper(DATABASE_TYPE, extraSQLCommand, getJdbcTemplate());
     }
     
-    @SneakyThrows({SQLException.class, InterruptedException.class})
-    protected void initTableAndData() {
+    @SneakyThrows(SQLException.class)
+    protected void addResource() {
         Properties queryProps = createQueryProperties();
         try (Connection connection = DriverManager.getConnection(JDBC_URL_APPENDER.appendQueryProperties(getComposedContainer().getProxyJdbcUrl("sharding_db"), queryProps), "root", "root")) {
             addResource(connection);
         }
-        initShardingRule();
-        createSchema("test");
-        setIncreaseTaskThread(new Thread(new PostgreSQLIncrementTaskRunnable(getJdbcTemplate(), extraSQLCommand)));
-        getJdbcTemplate().execute(extraSQLCommand.getCreateTableOrder());
-        getJdbcTemplate().execute(extraSQLCommand.getCreateTableOrderItem());
+    }
+    
+    protected void startIncrementTask(final KeyGenerateAlgorithm keyGenerateAlgorithm) {
+        setIncreaseTaskThread(new Thread(new SimpleIncrementTaskRunnable(getJdbcTemplate(), extraSQLCommand, keyGenerateAlgorithm)));
         getIncreaseTaskThread().start();
-        Pair<List<Object[]>, List<Object[]>> dataPair = TableCrudUtil.generatePostgresSQLInsertDataList(3000);
-        getJdbcTemplate().batchUpdate(extraSQLCommand.getFullInsertOrder(), dataPair.getLeft());
-        getJdbcTemplate().batchUpdate(extraSQLCommand.getInsertOrderItem(), dataPair.getRight());
     }
     
     @Override

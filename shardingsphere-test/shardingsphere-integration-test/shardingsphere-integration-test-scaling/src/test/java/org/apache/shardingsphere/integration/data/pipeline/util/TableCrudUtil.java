@@ -56,18 +56,6 @@ public final class TableCrudUtil {
     }
     
     /**
-     * Generate MySQL simple insert data.
-     *
-     * @return insert data
-     */
-    public static Pair<Object[], Object[]> generateSimpleInsertData() {
-        long uniqueKey = (Long) SNOWFLAKE_GENERATE.generateKey();
-        int orderId = RANDOM.nextInt(0, 5);
-        int userId = RANDOM.nextInt(0, 5);
-        return Pair.of(new Object[]{uniqueKey, orderId, userId}, new Object[]{uniqueKey, orderId, userId, "OK"});
-    }
-    
-    /**
      * Generate PostgreSQL simple insert data.
      *
      * @param insertRows insert rows

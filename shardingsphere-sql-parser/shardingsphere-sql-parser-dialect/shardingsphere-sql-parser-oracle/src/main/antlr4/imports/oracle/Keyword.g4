@@ -127,6 +127,10 @@ PROCEDURE
     : P R O C E D U R E
     ;
 
+SPECIFICATION
+    : S P E C I F I C A T I O N
+    ;
+
 VIEW
     : V I E W
     ;
