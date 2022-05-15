@@ -22,15 +22,18 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedSchemaMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.model.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 /**
  * Table meta data builder.
@@ -106,9 +109,10 @@ public final class TableMetaDataBuilder {
             return schemaMetaDataMap;
         }
         Map<String, SchemaMetaData> result = new LinkedHashMap<>();
-        SchemaMetaData backendSchemaMetaData = schemaMetaDataMap.get(backendDatabaseType.getDefaultSchema(materials.getDefaultSchemaName()));
+        Map<String, TableMetaData> tableMetaDataMap = Optional.ofNullable(schemaMetaDataMap.get(
+                backendDatabaseType.getDefaultSchema(materials.getDefaultSchemaName()))).map(SchemaMetaData::getTables).orElseGet(Collections::emptyMap);
         String frontendSchemaName = frontendDatabaseType.getDefaultSchema(materials.getDefaultSchemaName());
-        result.put(frontendSchemaName, new SchemaMetaData(frontendSchemaName, backendSchemaMetaData.getTables()));
+        result.put(frontendSchemaName, new SchemaMetaData(frontendSchemaName, tableMetaDataMap));
         return result;
     }
 }
