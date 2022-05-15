@@ -84,7 +84,7 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
             }
             builder.addDatabase(entry.getKey(), databaseType, entry.getValue(), props);
         }
-        builder.addSystemDatabases(databaseType);
+        builder.addSystemDatabases(DatabaseTypeEngine.getFrontendDatabaseType(databaseConfigMap, new ConfigurationProperties(props)));
         return builder.build(metaDataPersistService);
     }
     

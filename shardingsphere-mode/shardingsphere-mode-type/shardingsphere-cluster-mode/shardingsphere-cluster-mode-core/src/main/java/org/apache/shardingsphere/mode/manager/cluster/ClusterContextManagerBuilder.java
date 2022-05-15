@@ -140,7 +140,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
             }
             result.addDatabase(entry.getKey(), databaseType, entry.getValue(), props);
         }
-        result.addSystemDatabases(databaseType);
+        result.addSystemDatabases(DatabaseTypeEngine.getFrontendDatabaseType(databaseConfigMap, new ConfigurationProperties(props)));
         return result;
     }
     
