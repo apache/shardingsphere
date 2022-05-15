@@ -121,7 +121,7 @@
         
         <junit.version>4.12</junit.version>
         <hamcrest.version>1.3</hamcrest.version>
-        <mockito.version>4.0.0</mockito.version>
+        <mockito.version>4.5.1</mockito.version>
         
         <!-- Plugin versions -->
         <takari-maven-plugin.version>0.6.1</takari-maven-plugin.version>
