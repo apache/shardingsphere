@@ -152,7 +152,7 @@ public final class CreateShardingScalingRuleStatementUpdaterTest {
     }
     
     private InputOrOutputSegment createInputOrOutputSegment(final String type) {
-        return new InputOrOutputSegment(10, 1000, new AlgorithmSegment(type, new Properties()));
+        return new InputOrOutputSegment(10, 1000, 10, new AlgorithmSegment(type, new Properties()));
     }
     
     private ShardingScalingRuleConfigurationSegment createConfigurationWithInvalidStreamChannel() {

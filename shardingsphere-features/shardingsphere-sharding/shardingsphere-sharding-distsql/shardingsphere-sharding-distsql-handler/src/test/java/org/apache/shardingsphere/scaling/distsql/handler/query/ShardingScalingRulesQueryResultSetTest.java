@@ -81,7 +81,7 @@ public final class ShardingScalingRulesQueryResultSetTest {
     }
     
     private InputConfiguration createInputConfiguration(final String type, final Properties props) {
-        return new InputConfiguration(10, 100, createAlgorithm(type, props));
+        return new InputConfiguration(10, 100, 10, createAlgorithm(type, props));
     }
     
     private OutputConfiguration createOutputConfiguration(final String type, final Properties props) {

@@ -41,14 +41,10 @@ public final class OnRuleAlteredActionConfigurationYamlSwapperTest {
         Properties rateLimiterProps = new Properties();
         rateLimiterProps.setProperty("batch-size", "1000");
         rateLimiterProps.setProperty("qps", "50");
-        YamlInputConfiguration yamlInputConfig = new YamlInputConfiguration();
+        YamlInputConfiguration yamlInputConfig = YamlInputConfiguration.buildWithDefaultValue();
         yamlConfig.setInput(yamlInputConfig);
-        yamlInputConfig.setWorkerThread(40);
-        yamlInputConfig.setBatchSize(1000);
         yamlInputConfig.setRateLimiter(new YamlShardingSphereAlgorithmConfiguration("INPUT", rateLimiterProps));
-        YamlOutputConfiguration yamlOutputConfig = new YamlOutputConfiguration();
-        yamlOutputConfig.setWorkerThread(40);
-        yamlOutputConfig.setBatchSize(1000);
+        YamlOutputConfiguration yamlOutputConfig = YamlOutputConfiguration.buildWithDefaultValue();
         yamlOutputConfig.setRateLimiter(new YamlShardingSphereAlgorithmConfiguration("OUTPUT", rateLimiterProps));
         yamlConfig.setOutput(yamlOutputConfig);
         Properties streamChannelProps = new Properties();
