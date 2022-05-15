@@ -33,6 +33,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.L
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.InsertMultiTableElementSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
@@ -73,6 +74,29 @@ public final class InsertStatementContextTest {
     @Test
     public void assertOracleInsertStatementContextWithColumnNames() {
         assertInsertStatementContextWithColumnNames(new OracleInsertStatement());
+    }
+    
+    @Test
+    public void assertOracleMultiInsertStatementContextWithColumnNames() {
+        OracleInsertStatement oracleInsertStatement = new OracleInsertStatement();
+        OracleInsertStatement insertStatement1 = new OracleInsertStatement();
+        insertStatement1.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
+        InsertColumnsSegment insertColumnsSegment1 = new InsertColumnsSegment(0, 0, Arrays.asList(
+                new ColumnSegment(0, 0, new IdentifierValue("id")), new ColumnSegment(0, 0, new IdentifierValue("name")), new ColumnSegment(0, 0, new IdentifierValue("status"))));
+        insertStatement1.setInsertColumns(insertColumnsSegment1);
+        setUpInsertValues(insertStatement1);
+        OracleInsertStatement insertStatement2 = new OracleInsertStatement();
+        insertStatement2.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
+        InsertColumnsSegment insertColumnsSegment2 = new InsertColumnsSegment(0, 0, Arrays.asList(
+                new ColumnSegment(0, 0, new IdentifierValue("id")), new ColumnSegment(0, 0, new IdentifierValue("name")), new ColumnSegment(0, 0, new IdentifierValue("status"))));
+        insertStatement2.setInsertColumns(insertColumnsSegment2);
+        setUpInsertValues(insertStatement2);
+        InsertMultiTableElementSegment insertMultiTableElementSegment = new InsertMultiTableElementSegment(0 ,0);
+        insertMultiTableElementSegment.getInsertStatements().addAll(Arrays.asList(insertStatement1, insertStatement2));
+        oracleInsertStatement.setInsertMultiTableElementSegment(insertMultiTableElementSegment);
+        InsertStatementContext actual = createInsertStatementContext(Arrays.asList(1, "Tom", 2, "Jerry", 3, "Tom", 4, "Jerry"), oracleInsertStatement);
+        actual.setUpParameters(Arrays.asList(1, "Tom", 2, "Jerry", 3, "Tom", 4, "Jerry"));
+        assertInsertStatementContextWithMulti(actual);
     }
     
     @Test
@@ -183,6 +207,33 @@ public final class InsertStatementContextTest {
     private void assertInsertStatementContext(final InsertStatementContext actual) {
         assertThat(actual.getTablesContext().getTableNames(), is(Sets.newLinkedHashSet(Collections.singletonList("tbl"))));
         assertThat(actual.getAllTables().size(), is(1));
+        SimpleTableSegment simpleTableSegment = actual.getAllTables().iterator().next();
+        assertThat(simpleTableSegment.getTableName().getStartIndex(), is(0));
+        assertThat(simpleTableSegment.getTableName().getStopIndex(), is(0));
+        assertThat(simpleTableSegment.getTableName().getIdentifier().getValue(), is("tbl"));
+        List<String> columnNames = new ArrayList<>(3);
+        actual.getDescendingColumnNames().forEachRemaining(columnNames::add);
+        assertThat(columnNames, is(Arrays.asList("status", "name", "id")));
+        assertThat(actual.getGeneratedKeyContext(), is(Optional.empty()));
+        assertThat(actual.getColumnNames(), is(Arrays.asList("id", "name", "status")));
+        assertThat(actual.getInsertValueContexts().size(), is(2));
+        assertTrue(actual.getInsertValueContexts().get(0).getValue(0).isPresent());
+        assertTrue(actual.getInsertValueContexts().get(0).getValue(1).isPresent());
+        assertTrue(actual.getInsertValueContexts().get(0).getValue(2).isPresent());
+        assertTrue(actual.getInsertValueContexts().get(1).getValue(0).isPresent());
+        assertTrue(actual.getInsertValueContexts().get(1).getValue(1).isPresent());
+        assertTrue(actual.getInsertValueContexts().get(1).getValue(2).isPresent());
+        assertThat(actual.getInsertValueContexts().get(0).getValue(0).get(), is(1));
+        assertThat(actual.getInsertValueContexts().get(0).getValue(1).get(), is("Tom"));
+        assertThat(actual.getInsertValueContexts().get(0).getValue(2).get(), is("init"));
+        assertThat(actual.getInsertValueContexts().get(1).getValue(0).get(), is(2));
+        assertThat(actual.getInsertValueContexts().get(1).getValue(1).get(), is("Jerry"));
+        assertThat(actual.getInsertValueContexts().get(1).getValue(2).get(), is("init"));
+    }
+    
+    private void assertInsertStatementContextWithMulti(final InsertStatementContext actual) {
+        assertThat(actual.getTablesContext().getTableNames(), is(Sets.newLinkedHashSet(Collections.singletonList("tbl"))));
+        assertThat(actual.getAllTables().size(), is(2));
         SimpleTableSegment simpleTableSegment = actual.getAllTables().iterator().next();
         assertThat(simpleTableSegment.getTableName().getStartIndex(), is(0));
         assertThat(simpleTableSegment.getTableName().getStopIndex(), is(0));

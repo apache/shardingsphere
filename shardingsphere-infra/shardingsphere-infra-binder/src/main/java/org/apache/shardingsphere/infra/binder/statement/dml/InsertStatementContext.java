@@ -91,19 +91,17 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
         this.metaDataMap = metaDataMap;
         this.defaultDatabaseName = defaultDatabaseName;
         insertColumnNames = getInsertColumnNames();
-        
         tablesContext = new TablesContext(getAllSimpleTableSegments(), getDatabaseType());
         ShardingSphereSchema schema = getSchema(metaDataMap, defaultDatabaseName);
-        
         AtomicInteger parametersOffset = new AtomicInteger(0);
         List<InsertStatement> insertStatements = getInsertStatements();
-        for (int cursor = 0; cursor < insertStatements.size(); cursor++) {
-            InsertStatement insertStatement = insertStatements.get(cursor);
+        for (int index = 0; index < insertStatements.size(); index++) {
+            InsertStatement insertStatement = insertStatements.get(index);
             List<List<ExpressionSegment>> valueExpression = getAllValueExpressions(insertStatement);
-            valueExpressions.put(cursor, valueExpression);
-            insertValueContextsMap.put(cursor, getInsertValueContexts(parameters, parametersOffset, valueExpression));
-            columnNamesMap.put(cursor, useDefaultColumns() ? schema.getAllColumnNames(insertStatement.getTable().getTableName().getIdentifier().getValue()) : insertColumnNames);
-            generatedKeyContexts.put(cursor, new GeneratedKeyContextEngine(insertStatement, schema)
+            valueExpressions.put(index, valueExpression);
+            insertValueContextsMap.put(index, getInsertValueContexts(parameters, parametersOffset, valueExpression));
+            columnNamesMap.put(index, useDefaultColumns() ? schema.getAllColumnNames(insertStatement.getTable().getTableName().getIdentifier().getValue()) : insertColumnNames);
+            generatedKeyContexts.put(index, new GeneratedKeyContextEngine(insertStatement, schema)
                     .createGenerateKeyContext(insertColumnNames, getAllValueExpressions(insertStatement), parameters).orElse(null));
         }
         insertValueContexts = insertValueContextsMap.get(0);
@@ -317,11 +315,11 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
         AtomicInteger parametersOffset = new AtomicInteger(0);
         ShardingSphereSchema schema = getSchema(metaDataMap, defaultDatabaseName);
         List<InsertStatement> insertStatements = getInsertStatements();
-        for (int cursor = 0; cursor < insertStatements.size(); cursor++) {
-            List<InsertValueContext> insertValueContext = getInsertValueContexts(parameters, parametersOffset, valueExpressions.get(cursor));
-            insertValueContextsMap.put(cursor, insertValueContext);
-            generatedKeyContexts.put(cursor, new GeneratedKeyContextEngine(insertStatements.get(cursor), schema).createGenerateKeyContext(insertColumnNames,
-                    valueExpressions.get(cursor), parameters).orElse(null));
+        for (int index = 0; index < insertStatements.size(); index++) {
+            List<InsertValueContext> insertValueContext = getInsertValueContexts(parameters, parametersOffset, valueExpressions.get(index));
+            insertValueContextsMap.put(index, insertValueContext);
+            generatedKeyContexts.put(index, new GeneratedKeyContextEngine(insertStatements.get(index), schema).createGenerateKeyContext(insertColumnNames,
+                    valueExpressions.get(index), parameters).orElse(null));
         }
         insertValueContexts = insertValueContextsMap.get(0);
         onDuplicateKeyUpdateValueContext = getOnDuplicateKeyUpdateValueContext(parameters, parametersOffset).orElse(null);
