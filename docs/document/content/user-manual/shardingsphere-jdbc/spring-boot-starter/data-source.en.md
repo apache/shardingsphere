@@ -22,7 +22,7 @@ spring.shardingsphere.datasource.<actual-data-source-name>.<xxx>= # ... Other pr
 
 ### Example
 
-In this example, the database driver is MySQL, and connection pool is HikariCP, which can be replaced with other database drivers and connection pools.
+In this example, the database driver is MySQL, and connection pool is HikariCP, which can be replaced with other database drivers and connection pools. When using ShardingSphere JDBC, the property name of the JDBC pool depends on the definition of the respective JDBC pool, and is not defined by ShardingSphere. For related processing, please refer to the class `org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator` . For example, with Alibaba Druid 1.2.9, using `url` instead of `jdbc-url` in the example below is the expected behavior.
 
 ```properties
 # Configure actual data sources
