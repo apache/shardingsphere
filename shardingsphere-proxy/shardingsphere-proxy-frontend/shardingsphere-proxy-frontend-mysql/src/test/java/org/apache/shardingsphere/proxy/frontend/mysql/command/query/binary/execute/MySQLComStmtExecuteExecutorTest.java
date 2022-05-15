@@ -47,15 +47,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
-import org.mockito.internal.util.reflection.FieldSetter;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.plugins.MemberAccessor;
 
 import java.lang.reflect.Field;
 import java.sql.SQLException;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Properties;
+import java.util.*;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -102,40 +100,43 @@ public final class MySQLComStmtExecuteExecutorTest {
     }
     
     @Test
-    public void assertIsQueryResponse() throws NoSuchFieldException, SQLException {
+    public void assertIsQueryResponse() throws NoSuchFieldException, SQLException, IllegalAccessException {
         when(connectionSession.getDatabaseName()).thenReturn("logic_db");
         when(connectionSession.getDefaultDatabaseName()).thenReturn("logic_db");
         MySQLComStmtExecutePacket packet = mock(MySQLComStmtExecutePacket.class);
         when(packet.getSql()).thenReturn("SELECT 1");
         MySQLComStmtExecuteExecutor mysqlComStmtExecuteExecutor = new MySQLComStmtExecuteExecutor(packet, connectionSession);
-        FieldSetter.setField(mysqlComStmtExecuteExecutor, MySQLComStmtExecuteExecutor.class.getDeclaredField("databaseCommunicationEngine"), databaseCommunicationEngine);
+        MemberAccessor accessor = Plugins.getMemberAccessor();
+        accessor.set(MySQLComStmtExecuteExecutor.class.getDeclaredField("databaseCommunicationEngine"), mysqlComStmtExecuteExecutor, databaseCommunicationEngine);
         when(databaseCommunicationEngine.execute()).thenReturn(new QueryResponseHeader(Collections.singletonList(mock(QueryHeader.class))));
         mysqlComStmtExecuteExecutor.execute();
         assertThat(mysqlComStmtExecuteExecutor.getResponseType(), is(ResponseType.QUERY));
     }
     
     @Test
-    public void assertIsUpdateResponse() throws NoSuchFieldException, SQLException {
+    public void assertIsUpdateResponse() throws NoSuchFieldException, SQLException, IllegalAccessException {
         when(connectionSession.getDatabaseName()).thenReturn("logic_db");
         when(connectionSession.getDefaultDatabaseName()).thenReturn("logic_db");
         MySQLComStmtExecutePacket packet = mock(MySQLComStmtExecutePacket.class);
         when(packet.getSql()).thenReturn("SELECT 1");
         MySQLComStmtExecuteExecutor mysqlComStmtExecuteExecutor = new MySQLComStmtExecuteExecutor(packet, connectionSession);
-        FieldSetter.setField(mysqlComStmtExecuteExecutor, MySQLComStmtExecuteExecutor.class.getDeclaredField("databaseCommunicationEngine"), databaseCommunicationEngine);
+        MemberAccessor accessor = Plugins.getMemberAccessor();
+        accessor.set(MySQLComStmtExecuteExecutor.class.getDeclaredField("databaseCommunicationEngine"), mysqlComStmtExecuteExecutor, databaseCommunicationEngine);
         when(databaseCommunicationEngine.execute()).thenReturn(new UpdateResponseHeader(mock(SQLStatement.class)));
         mysqlComStmtExecuteExecutor.execute();
         assertThat(mysqlComStmtExecuteExecutor.getResponseType(), is(ResponseType.UPDATE));
     }
     
     @Test
-    public void assertExecutePreparedCommit() throws SQLException, NoSuchFieldException {
+    public void assertExecutePreparedCommit() throws SQLException, NoSuchFieldException, IllegalAccessException {
         when(connectionSession.getDatabaseName()).thenReturn("logic_db");
         when(connectionSession.getDefaultDatabaseName()).thenReturn("logic_db");
         MySQLComStmtExecutePacket packet = mock(MySQLComStmtExecutePacket.class);
         when(packet.getSql()).thenReturn("commit");
         MySQLComStmtExecuteExecutor mysqlComStmtExecuteExecutor = new MySQLComStmtExecuteExecutor(packet, connectionSession);
         TextProtocolBackendHandler textProtocolBackendHandler = mock(TextProtocolBackendHandler.class);
-        FieldSetter.setField(mysqlComStmtExecuteExecutor, MySQLComStmtExecuteExecutor.class.getDeclaredField("textProtocolBackendHandler"), textProtocolBackendHandler);
+        MemberAccessor accessor = Plugins.getMemberAccessor();
+        accessor.set(MySQLComStmtExecuteExecutor.class.getDeclaredField("textProtocolBackendHandler"), mysqlComStmtExecuteExecutor, textProtocolBackendHandler);
         when(textProtocolBackendHandler.execute()).thenReturn(new UpdateResponseHeader(mock(CommitStatement.class)));
         mysqlComStmtExecuteExecutor.execute();
         assertThat(mysqlComStmtExecuteExecutor.getResponseType(), is(ResponseType.UPDATE));

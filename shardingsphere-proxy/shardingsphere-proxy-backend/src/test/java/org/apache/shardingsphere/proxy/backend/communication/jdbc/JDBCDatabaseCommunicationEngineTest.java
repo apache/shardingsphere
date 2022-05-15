@@ -52,20 +52,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
-import org.mockito.internal.util.reflection.FieldSetter;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.plugins.MemberAccessor;
 
 import java.lang.reflect.Field;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Properties;
+import java.util.*;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -110,7 +106,7 @@ public final class JDBCDatabaseCommunicationEngineTest {
     }
     
     @Test
-    public void assertBinaryProtocolQueryHeader() throws SQLException, NoSuchFieldException {
+    public void assertBinaryProtocolQueryHeader() throws SQLException, NoSuchFieldException, IllegalAccessException {
         SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.emptyList());
         JDBCDatabaseCommunicationEngine engine =
@@ -119,10 +115,11 @@ public final class JDBCDatabaseCommunicationEngineTest {
         assertThat(engine, instanceOf(DatabaseCommunicationEngine.class));
         Field queryHeadersField = DatabaseCommunicationEngine.class.getDeclaredField("queryHeaders");
         ShardingSphereMetaData metaData = createMetaData();
-        FieldSetter.setField(engine, queryHeadersField, Collections.singletonList(
+        MemberAccessor accessor = Plugins.getMemberAccessor();
+        accessor.set(queryHeadersField, engine, Collections.singletonList(
                 new QueryHeaderBuilderEngine(new MySQLDatabaseType()).build(createQueryResultMetaData(), metaData, 1, getDataNodeContainedRule(metaData))));
         Field mergedResultField = DatabaseCommunicationEngine.class.getDeclaredField("mergedResult");
-        FieldSetter.setField(engine, mergedResultField, new MemoryMergedResult<ShardingSphereRule>(null, null, null, Collections.emptyList()) {
+        accessor.set(mergedResultField, engine, new MemoryMergedResult<ShardingSphereRule>(null, null, null, Collections.emptyList()) {
             
             @Override
             protected List<MemoryQueryResultRow> init(final ShardingSphereRule rule, final ShardingSphereSchema schema,
