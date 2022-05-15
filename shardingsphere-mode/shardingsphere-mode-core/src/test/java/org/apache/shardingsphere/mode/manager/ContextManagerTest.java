@@ -86,6 +86,7 @@ public final class ContextManagerTest {
         when(metaDataContexts.getOptimizerContext().getFederationMetaData().getDatabases()).thenReturn(new LinkedHashMap<>());
         when(metaDataContexts.getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         when(metaDataContexts.getMetaData("foo_db").getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        when(metaDataContexts.getMetaData("foo_db").getFrontendDatabaseType()).thenReturn(new MySQLDatabaseType());
     }
     
     @Test

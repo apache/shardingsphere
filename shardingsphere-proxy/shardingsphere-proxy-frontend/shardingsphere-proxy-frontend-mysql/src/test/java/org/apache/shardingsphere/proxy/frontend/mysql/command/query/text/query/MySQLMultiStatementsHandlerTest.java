@@ -89,6 +89,7 @@ public final class MySQLMultiStatementsHandlerTest {
         try (MockedStatic<ProxyContext> mockedStatic = mockStatic(ProxyContext.class)) {
             mockedStatic.when(ProxyContext::getInstance).thenReturn(proxyContext);
             when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData("").getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+            when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData("").getFrontendDatabaseType()).thenReturn(new MySQLDatabaseType());
             when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(SQLParserRule.class))
                     .thenReturn(Optional.of(new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build())));
             when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE)).thenReturn(1);

@@ -72,7 +72,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         Optional<SQLParserRule> sqlParserRule = metaDataContexts.getGlobalRuleMetaData().findSingleRule(SQLParserRule.class);
         Preconditions.checkState(sqlParserRule.isPresent());
         ShardingSphereSQLParserEngine sqlStatementParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(
-                metaDataContexts.getMetaData(connectionSession.getDatabaseName()).getResource().getDatabaseType()), sqlParserRule.get().toParserConfiguration());
+                metaDataContexts.getMetaData(connectionSession.getDatabaseName()).getFrontendDatabaseType()), sqlParserRule.get().toParserConfiguration());
         SQLStatement sqlStatement = sqlStatementParserEngine.parse(packet.getSql(), true);
         if (!MySQLComStmtPrepareChecker.isStatementAllowed(sqlStatement)) {
             throw new UnsupportedPreparedStatementException();

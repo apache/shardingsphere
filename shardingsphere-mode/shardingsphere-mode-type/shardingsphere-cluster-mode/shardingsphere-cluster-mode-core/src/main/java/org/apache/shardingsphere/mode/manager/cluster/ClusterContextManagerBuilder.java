@@ -136,7 +136,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         DatabaseType frontendDatabaseType = DatabaseTypeEngine.getFrontendDatabaseType(databaseConfigMap, new ConfigurationProperties(props));
         DatabaseType backendDatabaseType = DatabaseTypeEngine.getBackendDatabaseType(databaseConfigMap);
         for (Entry<String, ? extends DatabaseConfiguration> entry : databaseConfigMap.entrySet()) {
-            if (!backendDatabaseType.getSystemSchemas().contains(entry.getKey())) {
+            if (!frontendDatabaseType.getSystemSchemas().contains(entry.getKey())) {
                 result.addDatabase(entry.getKey(), frontendDatabaseType, backendDatabaseType, entry.getValue(), props);
             }
         }
