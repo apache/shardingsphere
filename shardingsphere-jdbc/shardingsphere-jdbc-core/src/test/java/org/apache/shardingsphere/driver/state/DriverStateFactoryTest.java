@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.driver.state;
 
-import org.apache.shardingsphere.driver.state.fixture.DriverStateFixture;
 import org.apache.shardingsphere.infra.state.StateType;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -32,7 +31,7 @@ public final class DriverStateFactoryTest {
     public void assertGetInstance() {
         StateType stateType = Mockito.mock(StateType.class);
         when(stateType.name()).thenReturn("FIXTURE");
-        assertThat(DriverStateFactory.getInstance(stateType), instanceOf(DriverStateFixture.class));
+        assertThat(DriverStateFactory.getInstance(stateType), instanceOf(DriverState.class));
     }
     
 }
