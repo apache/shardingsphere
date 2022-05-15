@@ -28,7 +28,6 @@ import java.util.Iterator;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -51,7 +50,6 @@ public final class TableExtractorTest {
         lockSegment.getTables().add(new SimpleTableSegment(new TableNameSegment(122, 128, new IdentifierValue("t_order"))));
         lockSegment.getTables().add(new SimpleTableSegment(new TableNameSegment(143, 154, new IdentifierValue("t_order_item"))));
         tableExtractor.extractTablesFromSelect(selectStatement);
-        assertNotNull(tableExtractor.getRewriteTables());
         assertThat(tableExtractor.getRewriteTables().size(), is(2));
         Iterator<SimpleTableSegment> tableSegmentIterator = tableExtractor.getRewriteTables().iterator();
         assertTableSegment(tableSegmentIterator.next(), 122, 128, "t_order");

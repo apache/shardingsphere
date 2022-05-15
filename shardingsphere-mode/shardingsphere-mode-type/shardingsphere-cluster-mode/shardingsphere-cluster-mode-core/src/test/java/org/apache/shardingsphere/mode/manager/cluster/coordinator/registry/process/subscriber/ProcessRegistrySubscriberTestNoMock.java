@@ -44,7 +44,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
@@ -91,9 +90,7 @@ public final class ProcessRegistrySubscriberTestNoMock {
         subscriber.reportExecuteProcessSummary(new ExecuteProcessSummaryReportEvent(executeProcessContext));
         String executionID = executeProcessContext.getExecutionID();
         YamlExecuteProcessContext yamlExecuteProcessContext = ShowProcessListManager.getInstance().getProcessContext(executionID);
-        assertNotNull(yamlExecuteProcessContext);
         assertThat(yamlExecuteProcessContext.getExecutionID(), is(executionID));
-        assertNotNull(yamlExecuteProcessContext.getStartTimeMillis());
         assertThat(yamlExecuteProcessContext.getStartTimeMillis(), is(executeProcessContext.getStartTimeMillis()));
         assertThat(yamlExecuteProcessContext.getDatabaseName(), is("sharding_db"));
         assertThat(yamlExecuteProcessContext.getUsername(), is("sharding"));
@@ -109,7 +106,6 @@ public final class ProcessRegistrySubscriberTestNoMock {
         ExecuteProcessUnitReportEvent event = new ExecuteProcessUnitReportEvent(executionID, new ExecuteProcessUnit(createExecuteUnit(), processConstants));
         subscriber.reportExecuteProcessUnit(event);
         YamlExecuteProcessContext yamlExecuteProcessContext = ShowProcessListManager.getInstance().getProcessContext(executionID);
-        assertNotNull(yamlExecuteProcessContext);
         assertThat(yamlExecuteProcessContext.getExecutionID(), is(executionID));
         YamlExecuteProcessUnit yamlExecuteProcessUnit = yamlExecuteProcessContext.getUnitStatuses().iterator().next();
         assertThat(yamlExecuteProcessUnit.getStatus(), is(processConstants));
@@ -122,7 +118,6 @@ public final class ProcessRegistrySubscriberTestNoMock {
         if (ExecuteProcessConstants.EXECUTE_STATUS_DONE == processConstants) {
             assertNull(yamlExecuteProcessContext);
         } else {
-            assertNotNull(yamlExecuteProcessContext);
             assertThat(yamlExecuteProcessContext.getExecutionID(), is(executionID));
             YamlExecuteProcessUnit yamlExecuteProcessUnit = yamlExecuteProcessContext.getUnitStatuses().iterator().next();
             assertThat(yamlExecuteProcessUnit.getStatus(), is(processConstants));

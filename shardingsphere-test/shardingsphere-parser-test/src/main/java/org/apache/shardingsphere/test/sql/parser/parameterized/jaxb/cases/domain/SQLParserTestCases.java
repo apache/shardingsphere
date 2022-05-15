@@ -117,6 +117,8 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterTextSearchStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterTriggerStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterViewStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterPackageStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropPackageStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AnalyzeStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AssociateStatisticsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AuditStatementTestCase;
@@ -144,6 +146,8 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateTypeStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateViewStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateSynonymStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropSynonymStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateDirectoryStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DeclareStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DisassociateStatisticsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DiscardStatementTestCase;
@@ -196,6 +200,12 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.RenameStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.RenameTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.TruncateStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropEditionStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropOutlineStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterOutlineStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterAnalyticViewStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterAttributeDimensionStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateContextStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AddShardingHintDatabaseValueStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AddShardingHintTableValueStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AlterInstanceStatementTestCase;
@@ -384,6 +394,15 @@ public final class SQLParserTestCases {
     @XmlElement(name = "truncate")
     private final List<TruncateStatementTestCase> truncateTestCases = new LinkedList<>();
     
+    @XmlElement(name = "drop-edition")
+    private final List<DropEditionStatementTestCase> dropEditionTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "drop-outline")
+    private final List<DropOutlineStatementTestCase> dropOutlineTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "alter-outline")
+    private final List<AlterOutlineStatementTestCase> alterOutlineTestCases = new LinkedList<>();
+    
     @XmlElement(name = "create-index")
     private final List<CreateIndexStatementTestCase> createIndexTestCases = new LinkedList<>();
     
@@ -570,6 +589,12 @@ public final class SQLParserTestCases {
     @XmlElement(name = "alter-view")
     private final List<AlterViewStatementTestCase> alterViewTestCases = new LinkedList<>();
     
+    @XmlElement(name = "alter-package")
+    private final List<AlterPackageStatementTestCase> alterPackageTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "drop-package")
+    private final List<DropPackageStatementTestCase> dropPackageTestCases = new LinkedList<>();
+    
     @XmlElement(name = "create-dimension")
     private final List<CreateDimensionStatementTestCase> createDimensionTestCase = new LinkedList<>();
     
@@ -590,6 +615,12 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "create-synonym")
     private final List<CreateSynonymStatementTestCase> createSynonymTestCase = new LinkedList<>();
+    
+    @XmlElement(name = "drop-synonym")
+    private final List<DropSynonymStatementTestCase> dropSynonymTestCase = new LinkedList<>();
+    
+    @XmlElement(name = "create-directory")
+    private final List<CreateDirectoryStatementTestCase> createDirectoryTestCase = new LinkedList<>();
     
     @XmlElement(name = "create-domain")
     private final List<CreateDomainStatementTestCase> createDomainStatementTestCases = new LinkedList<>();
@@ -1296,6 +1327,15 @@ public final class SQLParserTestCases {
     @XmlElement(name = "revert")
     private final List<RevertStatementTestCase> revertStatementTestCases = new LinkedList<>();
     
+    @XmlElement(name = "alter-analytic-view")
+    private final List<AlterAnalyticViewStatementTestCase> alterAnalyticViewStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "alter-attribute-dimension")
+    private final List<AlterAttributeDimensionStatementTestCase> alterAttributeDimensionTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "create-context")
+    private final List<CreateContextStatementTestCase> createContextStatementTestCases = new LinkedList<>();
+    
     /**
      * Get all SQL parser test cases.
      *
@@ -1314,6 +1354,9 @@ public final class SQLParserTestCases {
         putAll(dropTableTestCases, result);
         putAll(dropTextSearchTestCases, result);
         putAll(truncateTestCases, result);
+        putAll(dropEditionTestCases, result);
+        putAll(dropOutlineTestCases, result);
+        putAll(alterOutlineTestCases, result);
         putAll(createIndexTestCases, result);
         putAll(alterIndexTestCases, result);
         putAll(dropIndexTestCases, result);
@@ -1368,6 +1411,8 @@ public final class SQLParserTestCases {
         putAll(alterDimensionTestCase, result);
         putAll(createViewTestCase, result);
         putAll(createSynonymTestCase, result);
+        putAll(dropSynonymTestCase, result);
+        putAll(createDirectoryTestCase, result);
         putAll(createTriggerTestCase, result);
         putAll(createServerTestCase, result);
         putAll(createProcedureTestCase, result);
@@ -1378,6 +1423,8 @@ public final class SQLParserTestCases {
         putAll(alterDatabaseDictionaryTestCase, result);
         putAll(alterDatabaseLinkTestCase, result);
         putAll(alterViewTestCases, result);
+        putAll(alterPackageTestCases, result);
+        putAll(dropPackageTestCases, result);
         putAll(createDimensionTestCase, result);
         putAll(dropDimensionTestCase, result);
         putAll(dropDirectoryTestCase, result);
@@ -1619,6 +1666,9 @@ public final class SQLParserTestCases {
         putAll(dropOperatorFamilyStatementTestCases, result);
         putAll(dropAccessMethodStatementTestCases, result);
         putAll(revertStatementTestCases, result);
+        putAll(alterAnalyticViewStatementTestCases, result);
+        putAll(alterAttributeDimensionTestCases, result);
+        putAll(createContextStatementTestCases, result);
         return result;
     }
     // CHECKSTYLE:ON

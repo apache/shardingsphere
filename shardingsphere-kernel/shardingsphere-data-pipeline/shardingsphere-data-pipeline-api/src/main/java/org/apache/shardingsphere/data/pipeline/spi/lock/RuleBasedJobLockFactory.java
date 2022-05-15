@@ -33,11 +33,11 @@ public final class RuleBasedJobLockFactory {
     }
     
     /**
-     * Create new instance of rule based job lock.
+     * Get instance of rule based job lock.
      * 
-     * @return new instance of rule based job lock
+     * @return got instance
      */
-    public static RuleBasedJobLock newInstance() {
+    public static RuleBasedJobLock getInstance() {
         return RequiredSPIRegistry.getRegisteredService(RuleBasedJobLock.class);
     }
 }

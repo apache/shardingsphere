@@ -46,15 +46,21 @@ public final class DropTableStatementSchemaRefresher implements MetaDataRefreshe
         SchemaAlteredEvent event = new SchemaAlteredEvent(metaData.getDatabaseName(), schemaName);
         sqlStatement.getTables().forEach(each -> {
             metaData.getSchemaByName(schemaName).remove(each.getTableName().getIdentifier().getValue());
-            database.remove(schemaName, each.getTableName().getIdentifier().getValue());
+            database.removeTableMetadata(schemaName, each.getTableName().getIdentifier().getValue());
             optimizerPlanners.put(database.getName(), OptimizerPlannerContextFactory.create(database));
             event.getDroppedTables().add(each.getTableName().getIdentifier().getValue());
         });
         Collection<MutableDataNodeRule> rules = metaData.getRuleMetaData().findRules(MutableDataNodeRule.class);
         for (SimpleTableSegment each : sqlStatement.getTables()) {
-            rules.forEach(rule -> rule.remove(each.getTableName().getIdentifier().getValue()));
+            removeDataNode(rules, each, schemaName);
         }
         ShardingSphereEventBus.getInstance().post(event);
+    }
+    
+    private void removeDataNode(final Collection<MutableDataNodeRule> rules, final SimpleTableSegment tobeRemovedSegment, final String schemaName) {
+        for (MutableDataNodeRule each : rules) {
+            each.remove(schemaName, tobeRemovedSegment.getTableName().getIdentifier().getValue());
+        }
     }
     
     @Override

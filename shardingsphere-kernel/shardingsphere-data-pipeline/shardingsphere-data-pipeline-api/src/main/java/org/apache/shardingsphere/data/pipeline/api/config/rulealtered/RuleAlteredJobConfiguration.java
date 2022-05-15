@@ -54,9 +54,6 @@ public final class RuleAlteredJobConfiguration implements PipelineJobConfigurati
     
     private String databaseName;
     
-    // TODO it should not put in jobConfig since it's mutable
-    private Integer jobShardingItem;
-    
     /**
      * Map{altered rule yaml class name, re-shard needed table names}.
      */
@@ -143,21 +140,18 @@ public final class RuleAlteredJobConfiguration implements PipelineJobConfigurati
      */
     public void buildHandleConfig() {
         if (null == getJobShardingDataNodes()) {
-            RuleAlteredJobConfigurationPreparerFactory.newInstance().extendJobConfiguration(this);
+            RuleAlteredJobConfigurationPreparerFactory.getInstance().extendJobConfiguration(this);
         }
         if (null == jobId) {
             jobId = generateJobId();
         }
         if (Strings.isNullOrEmpty(getSourceDatabaseType())) {
             PipelineDataSourceConfiguration sourceDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(source.getType(), source.getParameter());
-            setSourceDatabaseType(sourceDataSourceConfig.getDatabaseType().getName());
+            setSourceDatabaseType(sourceDataSourceConfig.getDatabaseType().getType());
         }
         if (Strings.isNullOrEmpty(getTargetDatabaseType())) {
             PipelineDataSourceConfiguration targetDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(target.getType(), target.getParameter());
-            setTargetDatabaseType(targetDataSourceConfig.getDatabaseType().getName());
-        }
-        if (null == jobShardingItem) {
-            jobShardingItem = 0;
+            setTargetDatabaseType(targetDataSourceConfig.getDatabaseType().getType());
         }
     }
     

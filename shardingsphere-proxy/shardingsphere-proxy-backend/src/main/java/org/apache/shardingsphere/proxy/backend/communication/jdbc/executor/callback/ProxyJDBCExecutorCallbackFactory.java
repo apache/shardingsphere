@@ -42,7 +42,7 @@ public final class ProxyJDBCExecutorCallbackFactory {
      * @param isReturnGeneratedKeys is return generated keys or not
      * @param isExceptionThrown is exception thrown or not
      * @param isFetchMetaData is fetch meta data or not
-     * @return instance of Proxy JDBC executor callback
+     * @return created instance
      */
     public static ProxyJDBCExecutorCallback newInstance(final String type, final DatabaseType databaseType, final SQLStatement sqlStatement,
                                                         final JDBCDatabaseCommunicationEngine databaseCommunicationEngine, final boolean isReturnGeneratedKeys, final boolean isExceptionThrown,

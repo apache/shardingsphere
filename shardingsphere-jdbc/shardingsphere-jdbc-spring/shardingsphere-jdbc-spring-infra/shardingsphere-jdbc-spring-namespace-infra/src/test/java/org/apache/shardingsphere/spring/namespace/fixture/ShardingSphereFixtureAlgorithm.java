@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.spring.namespace.fixture;
 
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPostProcessor;
 
-public interface ShardingSphereFixtureAlgorithm extends ShardingSphereAlgorithm, ShardingSphereAlgorithmPostProcessor {
+public interface ShardingSphereFixtureAlgorithm extends ShardingSphereAlgorithm {
 }

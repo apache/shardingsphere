@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.proxy.backend.response.header.query.impl;
 
+import com.google.common.base.Preconditions;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -56,7 +57,7 @@ public final class MySQLQueryHeaderBuilderTest {
         ShardingSphereMetaData metaData = createMetaData();
         QueryHeader actual = queryHeaderBuilder.build(
                 queryResultMetaData, metaData, queryResultMetaData.getColumnName(1), queryResultMetaData.getColumnLabel(1), 1, getDataNodeContainedRule(metaData));
-        assertThat(actual.getSchema(), is(DefaultSchema.LOGIC_NAME));
+        assertThat(actual.getSchema(), is(DefaultDatabase.LOGIC_NAME));
         assertThat(actual.getTable(), is("t_logic_order"));
         assertThat(actual.getColumnLabel(), is("order_id"));
         assertThat(actual.getColumnName(), is("order_id"));
@@ -103,11 +104,11 @@ public final class MySQLQueryHeaderBuilderTest {
         DataSourcesMetaData dataSourcesMetaData = mock(DataSourcesMetaData.class);
         when(dataSourcesMetaData.getDataSourceMetaData("ds_0")).thenReturn(mock(DataSourceMetaData.class));
         when(result.getResource().getDataSourcesMetaData()).thenReturn(dataSourcesMetaData);
-        when(result.getSchemaByName(DefaultSchema.LOGIC_NAME)).thenReturn(schema);
+        when(result.getSchemaByName(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
         ShardingRule shardingRule = mock(ShardingRule.class);
         when(shardingRule.findLogicTableByActualTable("t_order")).thenReturn(Optional.of("t_logic_order"));
         when(result.getRuleMetaData().getRules()).thenReturn(Collections.singletonList(shardingRule));
-        when(result.getDatabaseName()).thenReturn(DefaultSchema.LOGIC_NAME);
+        when(result.getDatabaseName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         return result;
     }
     
@@ -132,7 +133,10 @@ public final class MySQLQueryHeaderBuilderTest {
             
             @Override
             protected DataNodeContainedRule initialize() {
-                return metaData.getRuleMetaData().getRules().stream().filter(each -> each instanceof DataNodeContainedRule).findFirst().map(rule -> (DataNodeContainedRule) rule).get();
+                Optional<DataNodeContainedRule> result = metaData.getRuleMetaData().getRules().stream()
+                        .filter(each -> each instanceof DataNodeContainedRule).findFirst().map(each -> (DataNodeContainedRule) each);
+                Preconditions.checkState(result.isPresent());
+                return result.get();
             }
         };
     }

@@ -48,10 +48,10 @@ public abstract class MemoryMergedResult<T extends ShardingSphereRule> implement
     private boolean wasNull;
     
     protected MemoryMergedResult(final T rule, final ShardingSphereSchema schema, final SQLStatementContext<?> sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
-        List<MemoryQueryResultRow> memoryQueryResultRowList = init(rule, schema, sqlStatementContext, queryResults);
-        memoryResultSetRows = memoryQueryResultRowList.iterator();
-        if (!memoryQueryResultRowList.isEmpty()) {
-            currentResultSetRow = memoryQueryResultRowList.get(0);
+        List<MemoryQueryResultRow> memoryQueryResultRows = init(rule, schema, sqlStatementContext, queryResults);
+        memoryResultSetRows = memoryQueryResultRows.iterator();
+        if (!memoryQueryResultRows.isEmpty()) {
+            currentResultSetRow = memoryQueryResultRows.get(0);
         }
     }
     

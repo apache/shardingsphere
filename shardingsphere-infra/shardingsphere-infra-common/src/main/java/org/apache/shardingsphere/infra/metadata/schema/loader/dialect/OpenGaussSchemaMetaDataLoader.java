@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.metadata.schema.loader.dialect;
 
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.metadata.schema.loader.common.DataTypeLoader;
 import org.apache.shardingsphere.infra.metadata.schema.loader.spi.DialectSchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
@@ -61,7 +61,7 @@ public final class OpenGaussSchemaMetaDataLoader implements DialectSchemaMetaDat
     
     @Override
     public Collection<SchemaMetaData> load(final DataSource dataSource, final Collection<String> tables, final String defaultSchemaName) throws SQLException {
-        Collection<String> schemaNames = loadSchemaNames(dataSource, DatabaseTypeRegistry.getActualDatabaseType(getType()));
+        Collection<String> schemaNames = loadSchemaNames(dataSource, DatabaseTypeFactory.getInstance(getType()));
         Map<String, Multimap<String, IndexMetaData>> schemaIndexMetaDataMap = loadIndexMetaDataMap(dataSource, schemaNames);
         Map<String, Multimap<String, ColumnMetaData>> schemaColumnMetaDataMap = loadColumnMetaDataMap(dataSource, tables, schemaNames);
         Collection<SchemaMetaData> result = new LinkedList<>();
@@ -134,9 +134,9 @@ public final class OpenGaussSchemaMetaDataLoader implements DialectSchemaMetaDat
     }
     
     private String getColumnMetaDataSQL(final Collection<String> schemaNames, final Collection<String> tables) {
-        String schemaNameParam = schemaNames.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(","));
-        return tables.isEmpty() ? String.format(TABLE_META_DATA_SQL_WITHOUT_TABLES, schemaNameParam)
-                : String.format(TABLE_META_DATA_SQL_WITH_TABLES, schemaNameParam, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
+        String schemaNameParameter = schemaNames.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(","));
+        return tables.isEmpty() ? String.format(TABLE_META_DATA_SQL_WITHOUT_TABLES, schemaNameParameter)
+                : String.format(TABLE_META_DATA_SQL_WITH_TABLES, schemaNameParameter, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
     
     private Map<String, Multimap<String, IndexMetaData>> loadIndexMetaDataMap(final DataSource dataSource, final Collection<String> schemaNames) throws SQLException {

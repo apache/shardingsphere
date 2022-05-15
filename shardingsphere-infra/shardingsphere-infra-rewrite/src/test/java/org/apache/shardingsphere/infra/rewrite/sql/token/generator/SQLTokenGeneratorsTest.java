@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.infra.rewrite.sql.token.generator;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
@@ -31,11 +30,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -73,15 +70,6 @@ public final class SQLTokenGeneratorsTest {
     }
     
     @Test
-    public void assertAddAllWithEmptyList() throws Exception {
-        SQLTokenGenerators sqlTokenGenerators = new SQLTokenGenerators();
-        sqlTokenGenerators.addAll(Collections.emptyList());
-        Map<Class<?>, SQLTokenGenerator> actualSqlTokenGeneratorsMap = getSqlTokenGeneratorsMap(sqlTokenGenerators);
-        assertNotNull(actualSqlTokenGeneratorsMap);
-        assertTrue(actualSqlTokenGeneratorsMap.isEmpty());
-    }
-    
-    @Test
     @SuppressWarnings({"unchecked", "rawtypes"})
     public void assertGenerateSQLTokensWithOptionalSQLTokenGenerator() {
         OptionalSQLTokenGenerator<SQLStatementContext> optionalSQLTokenGenerator = mock(OptionalSQLTokenGenerator.class);
@@ -90,7 +78,6 @@ public final class SQLTokenGeneratorsTest {
         SQLToken expectedToken = mock(SQLToken.class);
         when(optionalSQLTokenGenerator.generateSQLToken(any(SQLStatementContext.class))).thenReturn(expectedToken);
         Collection<SQLToken> actualSqlTokens = sqlTokenGenerators.generateSQLTokens("sharding_db", mockSchemaMap(), mock(SQLStatementContext.class), Collections.emptyList());
-        assertNotNull(actualSqlTokens);
         assertThat(actualSqlTokens.size(), is(1));
         assertThat(actualSqlTokens.iterator().next(), is(expectedToken));
     }
@@ -101,12 +88,11 @@ public final class SQLTokenGeneratorsTest {
         CollectionSQLTokenGenerator<SQLStatementContext<?>> collectionSQLTokenGenerator = mock(CollectionSQLTokenGenerator.class);
         SQLTokenGenerators sqlTokenGenerators = new SQLTokenGenerators();
         sqlTokenGenerators.addAll(Collections.singleton(collectionSQLTokenGenerator));
-        List<SQLToken> expectedCollection = Arrays.asList(mock(SQLToken.class), mock(SQLToken.class));
-        doReturn(expectedCollection).when(collectionSQLTokenGenerator).generateSQLTokens(any());
-        List<SQLToken> actualSqlTokens = sqlTokenGenerators.generateSQLTokens("sharding_db", mockSchemaMap(), mock(SQLStatementContext.class), Collections.emptyList());
-        assertNotNull(actualSqlTokens);
-        assertThat(actualSqlTokens.size(), is(2));
-        assertThat(actualSqlTokens, is(expectedCollection));
+        Collection<SQLToken> expectedSQLTokens = Arrays.asList(mock(SQLToken.class), mock(SQLToken.class));
+        doReturn(expectedSQLTokens).when(collectionSQLTokenGenerator).generateSQLTokens(any());
+        Collection<SQLToken> actualSQLTokens = sqlTokenGenerators.generateSQLTokens("sharding_db", mockSchemaMap(), mock(SQLStatementContext.class), Collections.emptyList());
+        assertThat(actualSQLTokens.size(), is(2));
+        assertThat(actualSQLTokens, is(expectedSQLTokens));
     }
     
     @SuppressWarnings("unchecked")

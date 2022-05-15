@@ -45,9 +45,9 @@ import java.util.Optional;
 @Setter
 public final class EncryptOrderByItemTokenGenerator implements CollectionSQLTokenGenerator, SchemaMetaDataAware, EncryptRuleAware {
     
-    private Map<String, ShardingSphereSchema> schemas;
-    
     private String databaseName;
+    
+    private Map<String, ShardingSphereSchema> schemas;
     
     private EncryptRule encryptRule;
     
@@ -92,7 +92,7 @@ public final class EncryptOrderByItemTokenGenerator implements CollectionSQLToke
                 }
             }
             Optional<String> assistedQueryColumn = encryptTable.get().findAssistedQueryColumn(column.getIdentifier().getValue());
-            SubstitutableColumnNameToken encryptColumnNameToken = assistedQueryColumn.map(columnName -> new SubstitutableColumnNameToken(startIndex, stopIndex, createColumnProjections(columnName)))
+            SubstitutableColumnNameToken encryptColumnNameToken = assistedQueryColumn.map(optional -> new SubstitutableColumnNameToken(startIndex, stopIndex, createColumnProjections(optional)))
                     .orElseGet(() -> new SubstitutableColumnNameToken(startIndex, stopIndex, createColumnProjections(encryptTable.get().getCipherColumn(column.getIdentifier().getValue()))));
             result.add(encryptColumnNameToken);
         }

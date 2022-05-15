@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 
 /**
@@ -69,39 +68,18 @@ public interface ClusterPersistRepository extends PersistRepository {
     void watchSessionConnection(InstanceContext instanceContext);
     
     /**
-     * Get global lock.
+     * Get internal mutex lock.
      *
      * @param lockName lock name
-     * @return internal lock
+     * @return internal mutex lock
      */
-    Lock getGlobalLock(String lockName);
+    Lock getInternalMutexLock(String lockName);
     
     /**
-     * Get standard lock.
+     * Get internal reentrant mutex lock.
      *
      * @param lockName lock name
-     * @return internal lock
+     * @return internal reentrant mutex lock
      */
-    Lock getStandardLock(String lockName);
-    
-    /**
-     * Try to get lock under the lock key.
-     *
-     * @param key lock key
-     * @param time time to wait
-     * @param timeUnit time unit
-     * @return true if get the lock, false if not
-     * @deprecated TODO remove after refactoring lock is complete
-     */
-    @Deprecated
-    boolean tryLock(String key, long time, TimeUnit timeUnit);
-    
-    /**
-     * Release lock.
-     *
-     * @param key lock key
-     * @deprecated TODO remove after refactoring lock is complete
-     */
-    @Deprecated
-    void releaseLock(String key);
+    Lock getInternalReentrantMutexLock(String lockName);
 }

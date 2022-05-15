@@ -90,7 +90,7 @@ public final class ShardingConditions {
         if (conditions.size() > 1) {
             List<ShardingCondition> result = new ArrayList<>();
             result.add(conditions.remove(conditions.size() - 1));
-            while (conditions.size() > 0) {
+            while (!conditions.isEmpty()) {
                 findUniqueShardingCondition(result, conditions.remove(conditions.size() - 1)).ifPresent(result::add);
             }
             conditions.addAll(result);

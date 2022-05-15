@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.binder.statement.impl;
 
 import com.google.common.collect.Sets;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
@@ -57,7 +57,6 @@ import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -105,10 +104,10 @@ public final class InsertStatementContextTest {
     private InsertStatementContext createInsertStatementContext(final List<Object> parameters, final InsertStatement insertStatement) {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        String defaultSchemaName = insertStatement instanceof PostgreSQLStatement || insertStatement instanceof OpenGaussStatement ? "public" : DefaultSchema.LOGIC_NAME;
+        String defaultSchemaName = insertStatement instanceof PostgreSQLStatement || insertStatement instanceof OpenGaussStatement ? "public" : DefaultDatabase.LOGIC_NAME;
         when(metaData.getSchemaByName(defaultSchemaName)).thenReturn(schema);
         when(schema.getAllColumnNames("tbl")).thenReturn(Arrays.asList("id", "name", "status"));
-        return new InsertStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), parameters, insertStatement, DefaultSchema.LOGIC_NAME);
+        return new InsertStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, metaData), parameters, insertStatement, DefaultDatabase.LOGIC_NAME);
     }
     
     @Test
@@ -182,9 +181,7 @@ public final class InsertStatementContextTest {
     }
     
     private void assertInsertStatementContext(final InsertStatementContext actual) {
-        assertNotNull(actual.getTablesContext());
         assertThat(actual.getTablesContext().getTableNames(), is(Sets.newLinkedHashSet(Collections.singletonList("tbl"))));
-        assertNotNull(actual.getAllTables());
         assertThat(actual.getAllTables().size(), is(1));
         SimpleTableSegment simpleTableSegment = actual.getAllTables().iterator().next();
         assertThat(simpleTableSegment.getTableName().getStartIndex(), is(0));
@@ -196,6 +193,12 @@ public final class InsertStatementContextTest {
         assertThat(actual.getGeneratedKeyContext(), is(Optional.empty()));
         assertThat(actual.getColumnNames(), is(Arrays.asList("id", "name", "status")));
         assertThat(actual.getInsertValueContexts().size(), is(2));
+        assertTrue(actual.getInsertValueContexts().get(0).getValue(0).isPresent());
+        assertTrue(actual.getInsertValueContexts().get(0).getValue(1).isPresent());
+        assertTrue(actual.getInsertValueContexts().get(0).getValue(2).isPresent());
+        assertTrue(actual.getInsertValueContexts().get(1).getValue(0).isPresent());
+        assertTrue(actual.getInsertValueContexts().get(1).getValue(1).isPresent());
+        assertTrue(actual.getInsertValueContexts().get(1).getValue(2).isPresent());
         assertThat(actual.getInsertValueContexts().get(0).getValue(0).get(), is(1));
         assertThat(actual.getInsertValueContexts().get(0).getValue(1).get(), is("Tom"));
         assertThat(actual.getInsertValueContexts().get(0).getValue(2).get(), is("init"));

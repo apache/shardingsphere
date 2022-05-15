@@ -233,7 +233,7 @@ The text of each license is the standard Apache 2.0 license.
     curator-client 5.1.0:  https://github.com/apache/curator, Apache 2.0
     curator-framework 5.1.0:  https://github.com/apache/curator, Apache 2.0
     curator-recipes 5.1.0:  https://github.com/apache/curator, Apache 2.0
-    cosid-core 1.8.6: https://github.com/Ahoo-Wang/CosId, Apache 2.0
+    cosid-core 1.10.0: https://github.com/Ahoo-Wang/CosId, Apache 2.0
     error_prone_annotations 2.3.4: https://github.com/google/error-prone, Apache 2.0
     esri-geometry-api 2.2.0: https://github.com/Esri/geometry-api-java, Apache 2.0
     failsafe 2.3.3: https://github.com/jhalterman/failsafe, Apache 2.0
@@ -354,4 +354,5 @@ The text of each license is also included at licenses/LICENSE-[project].txt.
     animal-sniffer-annotations 1.18: https://github.com/mojohaus/animal-sniffer, MIT
     bcprov-jdk15on 1.70: https://www.bouncycastle.org, MIT
     checker-qual 3.5.0: https://github.com/typetools/checker-framework/blob/master/checker-qual, MIT
+    jul-to-slf4j 1.7.7: https://www.slf4j.org, MIT
     slf4j 1.7.7: https://www.slf4j.org , MIT

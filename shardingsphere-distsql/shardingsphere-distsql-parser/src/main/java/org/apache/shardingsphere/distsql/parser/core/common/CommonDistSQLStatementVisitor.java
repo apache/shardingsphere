@@ -166,8 +166,8 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
             dbName = ctx.simpleSource().dbName().getText();
         }
         String password = null == ctx.password() ? "" : getPassword(ctx.password());
-        Properties properties = getProperties(ctx.propertiesDefinition());
-        return new DataSourceSegment(getIdentifierValue(ctx.dataSourceName()), url, hostname, port, dbName, ctx.user().getText(), password, properties);
+        Properties props = getProperties(ctx.propertiesDefinition());
+        return new DataSourceSegment(getIdentifierValue(ctx.dataSourceName()), url, hostname, port, dbName, ctx.user().getText(), password, props);
     }
     
     private String getPassword(final List<PasswordContext> passwordContexts) {
@@ -272,8 +272,7 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
         if (null == ctx || null == ctx.properties()) {
             return result;
         }
-        List<PropertyContext> properties = ctx.properties().property();
-        for (PropertyContext each : properties) {
+        for (PropertyContext each : ctx.properties().property()) {
             result.setProperty(IdentifierValue.getQuotedContent(each.key.getText()), IdentifierValue.getQuotedContent(each.value.getText()));
         }
         return result;
@@ -354,12 +353,8 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     
     @Override
     public ASTNode visitDropTrafficRule(final DropTrafficRuleContext ctx) {
-        DropTrafficRuleStatement result = new DropTrafficRuleStatement();
-        if (null != ctx.ruleName()) {
-            result.setRuleNames(ctx.ruleName().stream().map(this::getIdentifierValue).collect(Collectors.toSet()));
-        }
-        result.setContainsIfExistClause(null != ctx.ifExists());
-        return result;
+        Collection<String> ruleNames = null == ctx.ruleName() ? null : ctx.ruleName().stream().map(this::getIdentifierValue).collect(Collectors.toSet());
+        return new DropTrafficRuleStatement(ruleNames, null != ctx.ifExists());
     }
     
     @Override
@@ -371,9 +366,7 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     
     @Override
     public ASTNode visitProviderDefinition(final ProviderDefinitionContext ctx) {
-        String providerType = getIdentifierValue(ctx.providerName());
-        Properties props = getProperties(ctx.propertiesDefinition());
-        return new TransactionProviderSegment(providerType, props);
+        return new TransactionProviderSegment(getIdentifierValue(ctx.providerName()), getProperties(ctx.propertiesDefinition()));
     }
     
     @Override
@@ -445,12 +438,12 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
         return new AlgorithmSegment(getIdentifierValue(ctx.typeName()), buildProperties(ctx.algorithmProperties()));
     }
     
-    private Properties buildProperties(final AlgorithmPropertiesContext algorithmProperties) {
+    private Properties buildProperties(final AlgorithmPropertiesContext algorithmProps) {
         Properties result = new Properties();
-        if (null == algorithmProperties) {
+        if (null == algorithmProps) {
             return result;
         }
-        for (AlgorithmPropertyContext each : algorithmProperties.algorithmProperty()) {
+        for (AlgorithmPropertyContext each : algorithmProps.algorithmProperty()) {
             result.setProperty(IdentifierValue.getQuotedContent(each.key.getText()), IdentifierValue.getQuotedContent(each.value.getText()));
         }
         return result;

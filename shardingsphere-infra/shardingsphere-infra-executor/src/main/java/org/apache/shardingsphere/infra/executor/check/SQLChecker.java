@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.executor.check;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.spi.type.ordered.OrderedSPI;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -30,6 +31,7 @@ import java.util.function.BiPredicate;
 /**
  * SQL checker.
  */
+@SingletonSPI
 public interface SQLChecker<T extends ShardingSphereRule> extends OrderedSPI<T> {
     
     /**

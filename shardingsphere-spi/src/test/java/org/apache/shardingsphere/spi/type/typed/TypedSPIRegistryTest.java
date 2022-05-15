@@ -19,75 +19,66 @@ package org.apache.shardingsphere.spi.type.typed;
 
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.exception.ServiceProviderNotFoundException;
-import org.apache.shardingsphere.spi.type.typed.fixture.stateful.StatefulTypedSPIFixture;
-import org.apache.shardingsphere.spi.type.typed.fixture.stateless.StatelessTypedSPIFixture;
-import org.junit.Before;
+import org.apache.shardingsphere.spi.type.typed.fixture.TypedSPIFixture;
+import org.apache.shardingsphere.spi.type.typed.fixture.TypedSPIFixtureImpl;
 import org.junit.Test;
 
-import java.util.Optional;
 import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class TypedSPIRegistryTest {
     
-    @Before
-    public void init() {
-        ShardingSphereServiceLoader.register(StatelessTypedSPIFixture.class);
-        ShardingSphereServiceLoader.register(StatefulTypedSPIFixture.class);
+    static {
+        ShardingSphereServiceLoader.register(TypedSPIFixture.class);
     }
     
     @Test
-    public void assertFindStatelessRegisteredService() {
-        assertTrue(TypedSPIRegistry.findRegisteredService(StatelessTypedSPIFixture.class, "Stateless_Fixture").isPresent());
+    public void assertFindRegisteredServiceWithoutProperties() {
+        assertTrue(TypedSPIRegistry.findRegisteredService(TypedSPIFixture.class, "TYPED.FIXTURE").isPresent());
     }
     
     @Test
-    public void assertGetStatelessRegisteredService() {
-        assertNotNull(TypedSPIRegistry.getRegisteredService(StatelessTypedSPIFixture.class, "Stateless_Fixture"));
+    public void assertFindRegisteredServiceWithProperties() {
+        assertTrue(TypedSPIRegistry.findRegisteredService(TypedSPIFixture.class, "TYPED.FIXTURE", new Properties()).isPresent());
     }
     
     @Test
-    public void assertFindStatefulRegisteredService() {
-        Optional<StatefulTypedSPIFixture> actual = TypedSPIRegistry.findRegisteredService(StatefulTypedSPIFixture.class, "Stateful_Fixture", createProperties());
-        assertTrue(actual.isPresent());
-        assertProperties(actual.get());
+    public void assertGetRegisteredServiceWithoutProperties() {
+        assertThat(TypedSPIRegistry.getRegisteredService(TypedSPIFixture.class, "TYPED.FIXTURE"), instanceOf(TypedSPIFixtureImpl.class));
     }
     
     @Test
-    public void assertGetStatefulRegisteredService() {
-        StatefulTypedSPIFixture actual = TypedSPIRegistry.getRegisteredService(StatefulTypedSPIFixture.class, "Stateful_Fixture", createProperties());
-        assertNotNull(actual);
-        assertProperties(actual);
-    }
-    
-    private Properties createProperties() {
-        Properties result = new Properties();
-        result.put("key1", 1);
-        result.put("key2", 2L);
-        return result;
-    }
-    
-    private void assertProperties(final StatefulTypedSPIFixture actual) {
-        assertThat(actual.getProps().getProperty("key1"), is("1"));
-        assertThat(actual.getProps().getProperty("key2"), is("2"));
+    public void assertGetRegisteredServiceWithProperties() {
+        Properties props = new Properties();
+        props.put("key", 1);
+        TypedSPIFixtureImpl actual = (TypedSPIFixtureImpl) TypedSPIRegistry.getRegisteredService(TypedSPIFixture.class, "TYPED.FIXTURE", props);
+        assertThat(actual.getValue(), is("1"));
     }
     
     @Test
-    public void assertGetStatefulRegisteredServiceWithAlias() {
-        assertNotNull(TypedSPIRegistry.getRegisteredService(StatefulTypedSPIFixture.class, "Stateful_Alias", null));
+    public void assertGetRegisteredServiceWithNullProperties() {
+        TypedSPIFixtureImpl actual = (TypedSPIFixtureImpl) TypedSPIRegistry.getRegisteredService(TypedSPIFixture.class, "TYPED.FIXTURE", null);
+        assertNull(actual.getValue());
+    }
+    
+    @Test
+    public void assertGetRegisteredServiceWithAlias() {
+        assertNotNull(TypedSPIRegistry.getRegisteredService(TypedSPIFixture.class, "TYPED.ALIAS", new Properties()));
     }
     
     @Test(expected = ServiceProviderNotFoundException.class)
-    public void assertGetStatefulRegisteredServiceWhenTypeIsNotExist() {
-        TypedSPIRegistry.getRegisteredService(StatefulTypedSPIFixture.class, "NOT_EXISTED", new Properties());
+    public void assertGetRegisteredServiceWithoutPropertiesWhenTypeIsNotExist() {
+        TypedSPIRegistry.getRegisteredService(TypedSPIFixture.class, "NOT_EXISTED");
     }
     
     @Test(expected = ServiceProviderNotFoundException.class)
-    public void assertGetStatelessRegisteredServiceWhenTypeIsNotExist() {
-        TypedSPIRegistry.getRegisteredService(StatelessTypedSPIFixture.class, "NOT_EXISTED");
+    public void assertGetRegisteredServiceWithPropertiesWhenTypeIsNotExist() {
+        TypedSPIRegistry.getRegisteredService(TypedSPIFixture.class, "NOT_EXISTED", new Properties());
     }
 }

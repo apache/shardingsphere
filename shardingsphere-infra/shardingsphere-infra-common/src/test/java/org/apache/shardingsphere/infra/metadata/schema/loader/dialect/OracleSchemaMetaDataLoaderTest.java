@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.loader.dialect;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.metadata.schema.loader.spi.DialectSchemaMetaDataLoader;
-import org.apache.shardingsphere.infra.metadata.schema.loader.spi.DialectTableMetaDataLoaderFactory;
+import org.apache.shardingsphere.infra.metadata.schema.loader.spi.DialectSchemaMetaDataLoaderFactory;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.SchemaMetaData;
@@ -53,12 +53,13 @@ public final class OracleSchemaMetaDataLoaderTest {
     private static final String ALL_INDEXES_SQL = "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, INDEX_NAME FROM ALL_INDEXES WHERE OWNER = ? AND TABLE_NAME IN ('tbl')";
     
     private static final String ALL_TAB_COLUMNS_SQL_CONDITION1 = "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_ID , IDENTITY_COLUMN, COLLATION"
-            + " FROM ALL_TAB_COLUMNS WHERE OWNER = ? ORDER BY COLUMN_ID";
+            + " FROM ALL_TAB_COLUMNS WHERE OWNER = ? AND TABLE_NAME IN ('tbl') ORDER BY COLUMN_ID";
     
     private static final String ALL_TAB_COLUMNS_SQL_CONDITION2 = "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_ID , IDENTITY_COLUMN FROM ALL_TAB_COLUMNS WHERE OWNER = ?"
-            + " ORDER BY COLUMN_ID";
+            + " AND TABLE_NAME IN ('tbl') ORDER BY COLUMN_ID";
     
-    private static final String ALL_TAB_COLUMNS_SQL_CONDITION3 = "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_ID  FROM ALL_TAB_COLUMNS WHERE OWNER = ? ORDER BY COLUMN_ID";
+    private static final String ALL_TAB_COLUMNS_SQL_CONDITION3 = "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_ID  FROM ALL_TAB_COLUMNS WHERE OWNER = ?"
+            + " AND TABLE_NAME IN ('tbl') ORDER BY COLUMN_ID";
     
     private static final String ALL_TAB_COLUMNS_SQL_CONDITION4 = "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_ID , IDENTITY_COLUMN, COLLATION FROM ALL_TAB_COLUMNS"
             + " WHERE OWNER = ? AND TABLE_NAME IN ('tbl') ORDER BY COLUMN_ID";
@@ -80,11 +81,11 @@ public final class OracleSchemaMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(ALL_CONSTRAINTS_SQL_WITHOUT_TABLES).executeQuery()).thenReturn(primaryKeys);
         when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(12);
         when(dataSource.getConnection().getMetaData().getDatabaseMinorVersion()).thenReturn(2);
-        Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(dataSource, Collections.emptyList(), "sharding_db");
+        Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(dataSource, Collections.singleton("tbl"), "sharding_db");
         assertTableMetaDataMap(actual);
         TableMetaData actualTableMetaData = actual.iterator().next().getTables().get("tbl");
         List<String> actualColumnNames = new ArrayList<>(actualTableMetaData.getColumns().keySet());
-        assertThat(actualTableMetaData.getColumns().get(actualColumnNames.get(0)), is(new ColumnMetaData("id", 4, true, true, true)));
+        assertThat(actualTableMetaData.getColumns().get(actualColumnNames.get(0)), is(new ColumnMetaData("id", 4, false, true, true)));
         assertThat(actualTableMetaData.getColumns().get(actualColumnNames.get(1)), is(new ColumnMetaData("name", 12, false, false, false)));
     }
     
@@ -99,11 +100,11 @@ public final class OracleSchemaMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(ALL_CONSTRAINTS_SQL_WITHOUT_TABLES).executeQuery()).thenReturn(primaryKeys);
         when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(12);
         when(dataSource.getConnection().getMetaData().getDatabaseMinorVersion()).thenReturn(1);
-        Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(dataSource, Collections.emptyList(), "sharding_db");
+        Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(dataSource, Collections.singleton("tbl"), "sharding_db");
         assertTableMetaDataMap(actual);
         TableMetaData actualTableMetaData = actual.iterator().next().getTables().get("tbl");
         List<String> actualColumnNames = new ArrayList<>(actualTableMetaData.getColumns().keySet());
-        assertThat(actualTableMetaData.getColumns().get(actualColumnNames.get(0)), is(new ColumnMetaData("id", 4, true, true, false)));
+        assertThat(actualTableMetaData.getColumns().get(actualColumnNames.get(0)), is(new ColumnMetaData("id", 4, false, true, false)));
         assertThat(actualTableMetaData.getColumns().get(actualColumnNames.get(1)), is(new ColumnMetaData("name", 12, false, false, false)));
     }
     
@@ -118,11 +119,11 @@ public final class OracleSchemaMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(ALL_CONSTRAINTS_SQL_WITHOUT_TABLES).executeQuery()).thenReturn(primaryKeys);
         when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(11);
         when(dataSource.getConnection().getMetaData().getDatabaseMinorVersion()).thenReturn(2);
-        Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(dataSource, Collections.emptyList(), "sharding_db");
+        Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(dataSource, Collections.singleton("tbl"), "sharding_db");
         assertTableMetaDataMap(actual);
         TableMetaData actualTableMetaData = actual.iterator().next().getTables().get("tbl");
         List<String> actualColumnNames = new ArrayList<>(actualTableMetaData.getColumns().keySet());
-        assertThat(actualTableMetaData.getColumns().get(actualColumnNames.get(0)), is(new ColumnMetaData("id", 4, true, false, false)));
+        assertThat(actualTableMetaData.getColumns().get(actualColumnNames.get(0)), is(new ColumnMetaData("id", 4, false, false, false)));
         assertThat(actualTableMetaData.getColumns().get(actualColumnNames.get(1)), is(new ColumnMetaData("name", 12, false, false, false)));
     }
     
@@ -226,7 +227,7 @@ public final class OracleSchemaMetaDataLoaderTest {
     }
     
     private DialectSchemaMetaDataLoader getDialectTableMetaDataLoader() {
-        Optional<DialectSchemaMetaDataLoader> result = DialectTableMetaDataLoaderFactory.newInstance(DatabaseTypeRegistry.getActualDatabaseType("Oracle"));
+        Optional<DialectSchemaMetaDataLoader> result = DialectSchemaMetaDataLoaderFactory.findInstance(DatabaseTypeFactory.getInstance("Oracle"));
         assertTrue(result.isPresent());
         return result.get();
     }

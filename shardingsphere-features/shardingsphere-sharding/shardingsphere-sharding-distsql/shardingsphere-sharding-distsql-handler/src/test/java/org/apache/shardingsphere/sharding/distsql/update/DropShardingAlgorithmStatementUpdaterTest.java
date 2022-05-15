@@ -116,10 +116,10 @@ public final class DropShardingAlgorithmStatementUpdaterTest {
     
     private ShardingRuleConfiguration createCurrentRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        ShardingTableRuleConfiguration tableRuleConfiguration = new ShardingTableRuleConfiguration("t_order");
-        tableRuleConfiguration.setDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("column", "t_order_db_inline"));
-        tableRuleConfiguration.setTableShardingStrategy(new StandardShardingStrategyConfiguration("column", "t_order_tb_inline"));
-        result.getTables().add(tableRuleConfiguration);
+        ShardingTableRuleConfiguration tableRuleConfig = new ShardingTableRuleConfiguration("t_order");
+        tableRuleConfig.setDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("column", "t_order_db_inline"));
+        tableRuleConfig.setTableShardingStrategy(new StandardShardingStrategyConfiguration("column", "t_order_tb_inline"));
+        result.getTables().add(tableRuleConfig);
         result.getShardingAlgorithms().put("t_order_db_inline", new ShardingSphereAlgorithmConfiguration("standard", new Properties()));
         result.getShardingAlgorithms().put("t_order_tb_inline", new ShardingSphereAlgorithmConfiguration("standard", new Properties()));
         result.getShardingAlgorithms().put("t_test", new ShardingSphereAlgorithmConfiguration("standard", new Properties()));

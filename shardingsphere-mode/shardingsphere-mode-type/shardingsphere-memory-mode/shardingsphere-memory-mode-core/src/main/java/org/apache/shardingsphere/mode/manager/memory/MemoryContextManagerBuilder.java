@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.mode.manager.memory;
 
+import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.rule.identifier.type.InstanceAwareRule;
@@ -50,11 +50,12 @@ public final class MemoryContextManagerBuilder implements ContextManagerBuilder 
     @Override
     public ContextManager build(final ContextManagerBuilderParameter parameter) throws SQLException {
         MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(parameter.getGlobalRuleConfigs(), parameter.getProps());
-        DatabaseType databaseType = DatabaseTypeFactory.getDatabaseType(parameter.getDatabaseConfigs(), new ConfigurationProperties(parameter.getProps()));
+        DatabaseType frontendDatabaseType = DatabaseTypeEngine.getFrontendDatabaseType(parameter.getDatabaseConfigs(), new ConfigurationProperties(parameter.getProps()));
+        DatabaseType backendDatabaseType = DatabaseTypeEngine.getBackendDatabaseType(parameter.getDatabaseConfigs());
         for (Entry<String, ? extends DatabaseConfiguration> entry : parameter.getDatabaseConfigs().entrySet()) {
-            metaDataContextsBuilder.addDatabase(entry.getKey(), databaseType, entry.getValue(), parameter.getProps());
+            metaDataContextsBuilder.addDatabase(entry.getKey(), frontendDatabaseType, backendDatabaseType, entry.getValue(), parameter.getProps());
         }
-        metaDataContextsBuilder.addSystemDatabases(databaseType);
+        metaDataContextsBuilder.addSystemDatabases(frontendDatabaseType);
         MetaDataContexts metaDataContexts = metaDataContextsBuilder.build(null);
         InstanceContext instanceContext = buildInstanceContext(parameter);
         generateTransactionConfigurationFile(instanceContext, metaDataContexts);
@@ -75,15 +76,14 @@ public final class MemoryContextManagerBuilder implements ContextManagerBuilder 
         Optional<TransactionRule> transactionRule =
                 metaDataContexts.getGlobalRuleMetaData().getRules().stream().filter(each -> each instanceof TransactionRule).map(each -> (TransactionRule) each).findFirst();
         if (transactionRule.isPresent()) {
-            Optional<TransactionConfigurationFileGenerator> fileGenerator = TransactionConfigurationFileGeneratorFactory.newInstance(transactionRule.get().getProviderType());
+            Optional<TransactionConfigurationFileGenerator> fileGenerator = TransactionConfigurationFileGeneratorFactory.findInstance(transactionRule.get().getProviderType());
             fileGenerator.ifPresent(optional -> optional.generateFile(transactionRule.get().getProps(), instanceContext));
         }
     }
     
     private void setInstanceContext(final ContextManager contextManager) {
-        contextManager.getMetaDataContexts().getMetaDataMap()
-                .forEach((key, value) -> value.getRuleMetaData().getRules().stream().filter(each -> each instanceof InstanceAwareRule)
-                        .forEach(each -> ((InstanceAwareRule) each).setInstanceContext(contextManager.getInstanceContext())));
+        contextManager.getMetaDataContexts().getMetaDataMap().forEach((key, value) -> value.getRuleMetaData().getRules().stream().filter(each -> each instanceof InstanceAwareRule)
+                .forEach(each -> ((InstanceAwareRule) each).setInstanceContext(contextManager.getInstanceContext())));
     }
     
     private ModeConfiguration buildMemoryModeConfiguration(final ModeConfiguration modeConfiguration) {

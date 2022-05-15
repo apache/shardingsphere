@@ -35,6 +35,7 @@ import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -47,7 +48,7 @@ public final class CreateDefaultSingleTableRuleUpdaterTest {
     @Mock
     private SingleTableRuleConfiguration currentConfig;
     
-    private CreateDefaultSingleTableRuleStatementUpdater updater = new CreateDefaultSingleTableRuleStatementUpdater();
+    private final CreateDefaultSingleTableRuleStatementUpdater updater = new CreateDefaultSingleTableRuleStatementUpdater();
     
     @Before
     public void setUp() throws Exception {
@@ -71,16 +72,18 @@ public final class CreateDefaultSingleTableRuleUpdaterTest {
     @Test
     public void assertBuild() {
         CreateDefaultSingleTableRuleStatement statement = new CreateDefaultSingleTableRuleStatement("ds_0");
-        SingleTableRuleConfiguration configuration = updater.buildToBeCreatedRuleConfiguration(statement);
-        assertThat(configuration.getDefaultDataSource().get(), is("ds_0"));
+        SingleTableRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(statement);
+        assertTrue(toBeCreatedRuleConfig.getDefaultDataSource().isPresent());
+        assertThat(toBeCreatedRuleConfig.getDefaultDataSource().get(), is("ds_0"));
     }
     
     @Test
     public void assertUpdate() {
         CreateDefaultSingleTableRuleStatement statement = new CreateDefaultSingleTableRuleStatement("ds_0");
-        SingleTableRuleConfiguration configuration = updater.buildToBeCreatedRuleConfiguration(statement);
-        SingleTableRuleConfiguration currentConfiguration = new SingleTableRuleConfiguration();
-        updater.updateCurrentRuleConfiguration(currentConfiguration, configuration);
-        assertThat(currentConfiguration.getDefaultDataSource().get(), is("ds_0"));
+        SingleTableRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(statement);
+        SingleTableRuleConfiguration currentConfig = new SingleTableRuleConfiguration();
+        updater.updateCurrentRuleConfiguration(currentConfig, toBeCreatedRuleConfig);
+        assertTrue(currentConfig.getDefaultDataSource().isPresent());
+        assertThat(currentConfig.getDefaultDataSource().get(), is("ds_0"));
     }
 }

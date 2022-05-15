@@ -41,7 +41,7 @@ public final class DataNodes {
     
     public DataNodes(final Collection<ShardingSphereRule> rules) {
         this.rules = rules;
-        dataNodeBuilders = DataNodeBuilderFactory.newInstance(rules);
+        dataNodeBuilders = DataNodeBuilderFactory.getInstances(rules);
     }
     
     /**
@@ -64,7 +64,7 @@ public final class DataNodes {
     }
     
     private Optional<DataNodeContainedRule> findDataNodeContainedRule(final String tableName) {
-        return rules.stream().filter(each -> isDataNodeContainedRuleContainsTable(each, tableName)).findFirst().map(rule -> (DataNodeContainedRule) rule);
+        return rules.stream().filter(each -> isDataNodeContainedRuleContainsTable(each, tableName)).findFirst().map(optional -> (DataNodeContainedRule) optional);
     }
     
     private boolean isDataNodeContainedRuleContainsTable(final ShardingSphereRule each, final String tableName) {

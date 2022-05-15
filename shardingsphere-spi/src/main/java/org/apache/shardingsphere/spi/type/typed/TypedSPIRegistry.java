@@ -21,12 +21,10 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.exception.ServiceProviderNotFoundException;
+import org.apache.shardingsphere.spi.lifecycle.SPIPostProcessor;
 
-import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * Typed SPI registry.
@@ -37,13 +35,13 @@ public final class TypedSPIRegistry {
     /**
      * Find registered service.
      *
-     * @param spiClass stateless typed SPI class
+     * @param spiClass typed SPI class
      * @param type type
      * @param <T> SPI class type
      * @return registered service
      */
-    public static <T extends StatelessTypedSPI> Optional<T> findRegisteredService(final Class<T> spiClass, final String type) {
-        for (T each : ShardingSphereServiceLoader.getSingletonServiceInstances(spiClass)) {
+    public static <T extends TypedSPI> Optional<T> findRegisteredService(final Class<T> spiClass, final String type) {
+        for (T each : ShardingSphereServiceLoader.getServiceInstances(spiClass)) {
             if (matchesType(type, each)) {
                 return Optional.of(each);
             }
@@ -54,44 +52,47 @@ public final class TypedSPIRegistry {
     /**
      * Find registered service.
      *
-     * @param spiClass stateful typed SPI class
+     * @param spiClass typed SPI class
      * @param type type
      * @param props properties
      * @param <T> SPI class type
      * @return registered service
      */
-    public static <T extends StatefulTypedSPI> Optional<T> findRegisteredService(final Class<T> spiClass, final String type, final Properties props) {
-        for (T each : ShardingSphereServiceLoader.newServiceInstances(spiClass)) {
+    public static <T extends TypedSPI> Optional<T> findRegisteredService(final Class<T> spiClass, final String type, final Properties props) {
+        for (T each : ShardingSphereServiceLoader.getServiceInstances(spiClass)) {
             if (matchesType(type, each)) {
-                setProperties(each, props);
+                Properties stringTypeProps = convertToStringTypedProperties(props);
+                if (each instanceof SPIPostProcessor) {
+                    ((SPIPostProcessor) each).init(stringTypeProps);
+                }
                 return Optional.of(each);
             }
         }
         return Optional.empty();
     }
     
-    private static boolean matchesType(final String type, final TypedSPI typedSPI) {
-        return typedSPI.getType().equalsIgnoreCase(type) || typedSPI.getTypeAliases().contains(type);
+    private static boolean matchesType(final String type, final TypedSPI instance) {
+        return instance.getType().equalsIgnoreCase(type) || instance.getTypeAliases().contains(type);
     }
     
-    private static <T extends StatefulTypedSPI> void setProperties(final T statefulTypedSPI, final Properties props) {
+    private static Properties convertToStringTypedProperties(final Properties props) {
         if (null == props) {
-            return;
+            return new Properties();
         }
-        Properties newProps = new Properties();
-        props.forEach((key, value) -> newProps.setProperty(key.toString(), null == value ? null : value.toString()));
-        statefulTypedSPI.setProps(newProps);
+        Properties result = new Properties();
+        props.forEach((key, value) -> result.setProperty(key.toString(), null == value ? null : value.toString()));
+        return result;
     }
     
     /**
      * Get registered service.
      *
-     * @param spiClass stateless typed SPI class
+     * @param spiClass typed SPI class
      * @param type type
      * @param <T> SPI class type
      * @return registered service
      */
-    public static <T extends StatelessTypedSPI> T getRegisteredService(final Class<T> spiClass, final String type) {
+    public static <T extends TypedSPI> T getRegisteredService(final Class<T> spiClass, final String type) {
         Optional<T> result = findRegisteredService(spiClass, type);
         if (result.isPresent()) {
             return result.get();
@@ -102,28 +103,17 @@ public final class TypedSPIRegistry {
     /**
      * Get registered service.
      * 
-     * @param spiClass stateful typed SPI class
+     * @param spiClass typed SPI class
      * @param type type
      * @param props properties
      * @param <T> SPI class type
      * @return registered service
      */
-    public static <T extends StatefulTypedSPI> T getRegisteredService(final Class<T> spiClass, final String type, final Properties props) {
+    public static <T extends TypedSPI> T getRegisteredService(final Class<T> spiClass, final String type, final Properties props) {
         Optional<T> result = findRegisteredService(spiClass, type, props);
         if (result.isPresent()) {
             return result.get();
         }
         throw new ServiceProviderNotFoundException(spiClass, type);
-    }
-    
-    /**
-     * Get registered service meta data map.
-     *
-     * @param spiClass stateless typed SPI class
-     * @param <T> SPI class type
-     * @return registered service meta data map, key is type name, value is meta data it self
-     */
-    public static <T extends TypedSPIMetadataAware & TypedSPI> Map<String, T> getRegisteredServiceMetaDataMap(final Class<T> spiClass) {
-        return ShardingSphereServiceLoader.getSingletonServiceInstances(spiClass).stream().collect(Collectors.toMap(TypedSPI::getType, Function.identity()));
     }
 }

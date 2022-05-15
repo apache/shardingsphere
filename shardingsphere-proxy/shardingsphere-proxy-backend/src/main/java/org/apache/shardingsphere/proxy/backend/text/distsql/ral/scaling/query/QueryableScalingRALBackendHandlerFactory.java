@@ -21,8 +21,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.QueryableScalingRALStatement;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
@@ -42,11 +40,9 @@ public final class QueryableScalingRALBackendHandlerFactory {
      * Create new instance of queryable RAL backend handler.
      * 
      * @param sqlStatement queryable RAL statement
-     * @param connectionSession connection session
-     * @return queryable RAL backend handler
+     * @return created instance
      */
-    public static TextProtocolBackendHandler newInstance(final QueryableScalingRALStatement sqlStatement, final ConnectionSession connectionSession) {
-        DistSQLResultSet resultSet = TypedSPIRegistry.getRegisteredService(DistSQLResultSet.class, sqlStatement.getClass().getCanonicalName(), new Properties());
-        return new QueryableScalingRALBackendHandler(sqlStatement, connectionSession, resultSet);
+    public static DistSQLResultSet newInstance(final QueryableScalingRALStatement sqlStatement) {
+        return TypedSPIRegistry.getRegisteredService(DistSQLResultSet.class, sqlStatement.getClass().getCanonicalName(), new Properties());
     }
 }

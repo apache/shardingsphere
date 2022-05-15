@@ -29,12 +29,12 @@ import static org.junit.Assert.assertThat;
 public final class DataSourcePoolActiveDetectorFactoryTest {
     
     @Test
-    public void assertNewDefaultInstance() {
-        assertThat(DataSourcePoolActiveDetectorFactory.newInstance(MockedDataSource.class.getName()), instanceOf(DefaultDataSourcePoolActiveDetector.class));
+    public void assertGetDefaultInstance() {
+        assertThat(DataSourcePoolActiveDetectorFactory.getInstance(MockedDataSource.class.getName()), instanceOf(DefaultDataSourcePoolActiveDetector.class));
     }
     
     @Test
-    public void assertNewHikariInstance() {
-        assertThat(DataSourcePoolActiveDetectorFactory.newInstance(HikariDataSource.class.getName()), instanceOf(HikariDataSourcePoolActiveDetector.class));
+    public void assertGetHikariInstance() {
+        assertThat(DataSourcePoolActiveDetectorFactory.getInstance(HikariDataSource.class.getName()), instanceOf(HikariDataSourcePoolActiveDetector.class));
     }
 }

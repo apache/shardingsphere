@@ -57,7 +57,7 @@ public final class OpenTelemetryPluginIT extends BasePluginIT {
         JsonArray array = JsonParser.parseString(OkHttpUtils.getInstance().get(url)).getAsJsonArray().get(0).getAsJsonArray();
         Gson gson = new Gson();
         Collection<TracingResult> traces = new LinkedList<>();
-        array.forEach(element -> traces.add(gson.fromJson(element, TracingResult.class)));
+        array.forEach(each -> traces.add(gson.fromJson(each, TracingResult.class)));
         traces.forEach(this::assertTrace);
     }
     

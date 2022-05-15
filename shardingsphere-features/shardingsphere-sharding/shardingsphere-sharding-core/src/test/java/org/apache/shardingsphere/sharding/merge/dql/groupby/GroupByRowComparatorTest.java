@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.merge.dql.groupby;
 
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -81,7 +81,7 @@ public final class GroupByRowComparatorTest {
     
     private void assertCompareToForAscWithOrderByItems(final SelectStatement selectStatement) throws SQLException {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-        when(metaData.getSchemaByName(DefaultSchema.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
+        when(metaData.getSchemaByName(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
         selectStatement.setGroupBy(new GroupBySegment(0, 0, Arrays.asList(
                 new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC),
                 new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC))));
@@ -89,8 +89,8 @@ public final class GroupByRowComparatorTest {
                 new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC),
                 new IndexOrderByItemSegment(0, 0, 2, OrderDirection.ASC, OrderDirection.ASC))));
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
-        SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), Collections.emptyList(),
-                selectStatement, DefaultSchema.LOGIC_NAME);
+        SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, metaData), Collections.emptyList(),
+                selectStatement, DefaultDatabase.LOGIC_NAME);
         GroupByRowComparator groupByRowComparator = new GroupByRowComparator(selectStatementContext, caseSensitives);
         MemoryQueryResultRow o1 = new MemoryQueryResultRow(mockQueryResult("1", "2"));
         MemoryQueryResultRow o2 = new MemoryQueryResultRow(mockQueryResult("3", "4"));
@@ -124,7 +124,7 @@ public final class GroupByRowComparatorTest {
     
     private void assertCompareToForDecsWithOrderByItems(final SelectStatement selectStatement) throws SQLException {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-        when(metaData.getSchemaByName(DefaultSchema.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
+        when(metaData.getSchemaByName(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
         selectStatement.setGroupBy(new GroupBySegment(0, 0, Arrays.asList(
                 new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC),
                 new IndexOrderByItemSegment(0, 0, 2, OrderDirection.ASC, OrderDirection.ASC))));
@@ -132,8 +132,8 @@ public final class GroupByRowComparatorTest {
                 new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC),
                 new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC))));
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
-        SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), Collections.emptyList(),
-                selectStatement, DefaultSchema.LOGIC_NAME);
+        SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, metaData), Collections.emptyList(),
+                selectStatement, DefaultDatabase.LOGIC_NAME);
         GroupByRowComparator groupByRowComparator = new GroupByRowComparator(selectStatementContext, caseSensitives);
         MemoryQueryResultRow o1 = new MemoryQueryResultRow(mockQueryResult("1", "2"));
         MemoryQueryResultRow o2 = new MemoryQueryResultRow(mockQueryResult("3", "4"));
@@ -167,7 +167,7 @@ public final class GroupByRowComparatorTest {
     
     private void assertCompareToForEqualWithOrderByItems(final SelectStatement selectStatement) throws SQLException {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-        when(metaData.getSchemaByName(DefaultSchema.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
+        when(metaData.getSchemaByName(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
         selectStatement.setGroupBy(new GroupBySegment(0, 0, Arrays.asList(
                 new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC),
                 new IndexOrderByItemSegment(0, 0, 2, OrderDirection.ASC, OrderDirection.ASC))));
@@ -175,8 +175,8 @@ public final class GroupByRowComparatorTest {
                 new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC),
                 new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC))));
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
-        SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), Collections.emptyList(),
-                selectStatement, DefaultSchema.LOGIC_NAME);
+        SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, metaData), Collections.emptyList(),
+                selectStatement, DefaultDatabase.LOGIC_NAME);
         GroupByRowComparator groupByRowComparator = new GroupByRowComparator(selectStatementContext, caseSensitives);
         MemoryQueryResultRow o1 = new MemoryQueryResultRow(mockQueryResult("1", "2"));
         MemoryQueryResultRow o2 = new MemoryQueryResultRow(mockQueryResult("1", "2"));
@@ -210,14 +210,14 @@ public final class GroupByRowComparatorTest {
     
     private void assertCompareToForAscWithGroupByItems(final SelectStatement selectStatement) throws SQLException {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-        when(metaData.getSchemaByName(DefaultSchema.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
+        when(metaData.getSchemaByName(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
         selectStatement.setGroupBy(new GroupBySegment(0, 0, Arrays.asList(
                 new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC),
                 new IndexOrderByItemSegment(0, 0, 2, OrderDirection.ASC, OrderDirection.ASC))));
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.emptyList()));
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
-        SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), Collections.emptyList(),
-                selectStatement, DefaultSchema.LOGIC_NAME);
+        SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, metaData), Collections.emptyList(),
+                selectStatement, DefaultDatabase.LOGIC_NAME);
         GroupByRowComparator groupByRowComparator = new GroupByRowComparator(selectStatementContext, caseSensitives);
         MemoryQueryResultRow o1 = new MemoryQueryResultRow(mockQueryResult("1", "2"));
         MemoryQueryResultRow o2 = new MemoryQueryResultRow(mockQueryResult("3", "4"));
@@ -251,14 +251,14 @@ public final class GroupByRowComparatorTest {
     
     private void assertCompareToForDecsWithGroupByItems(final SelectStatement selectStatement) throws SQLException {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-        when(metaData.getSchemaByName(DefaultSchema.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
+        when(metaData.getSchemaByName(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
         selectStatement.setGroupBy(new GroupBySegment(0, 0, Arrays.asList(
                 new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC),
                 new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC))));
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.emptyList()));
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
-        SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), Collections.emptyList(),
-                selectStatement, DefaultSchema.LOGIC_NAME);
+        SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, metaData), Collections.emptyList(),
+                selectStatement, DefaultDatabase.LOGIC_NAME);
         GroupByRowComparator groupByRowComparator = new GroupByRowComparator(selectStatementContext, caseSensitives);
         MemoryQueryResultRow o1 = new MemoryQueryResultRow(mockQueryResult("1", "2"));
         MemoryQueryResultRow o2 = new MemoryQueryResultRow(mockQueryResult("3", "4"));
@@ -292,14 +292,14 @@ public final class GroupByRowComparatorTest {
     
     private void assertCompareToForEqualWithGroupByItems(final SelectStatement selectStatement) throws SQLException {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-        when(metaData.getSchemaByName(DefaultSchema.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
+        when(metaData.getSchemaByName(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
         selectStatement.setGroupBy(new GroupBySegment(0, 0, Arrays.asList(
                 new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC),
                 new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC))));
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.emptyList()));
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
-        SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), Collections.emptyList(),
-                selectStatement, DefaultSchema.LOGIC_NAME);
+        SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, metaData), Collections.emptyList(),
+                selectStatement, DefaultDatabase.LOGIC_NAME);
         GroupByRowComparator groupByRowComparator = new GroupByRowComparator(selectStatementContext, caseSensitives);
         MemoryQueryResultRow o1 = new MemoryQueryResultRow(mockQueryResult("1", "2"));
         MemoryQueryResultRow o2 = new MemoryQueryResultRow(mockQueryResult("1", "2"));

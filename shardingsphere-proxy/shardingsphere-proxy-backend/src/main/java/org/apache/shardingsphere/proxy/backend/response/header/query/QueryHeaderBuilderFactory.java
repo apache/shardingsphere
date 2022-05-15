@@ -35,12 +35,12 @@ public final class QueryHeaderBuilderFactory {
     }
     
     /**
-     * Create new instance of query header builder.
+     * Get instance of query header builder.
      *
      * @param databaseType database type
-     * @return new instance of query header builder
+     * @return got instance
      */
-    public static QueryHeaderBuilder newInstance(final DatabaseType databaseType) {
-        return TypedSPIRegistry.findRegisteredService(QueryHeaderBuilder.class, databaseType.getName()).orElseGet(() -> RequiredSPIRegistry.getRegisteredService(QueryHeaderBuilder.class));
+    public static QueryHeaderBuilder getInstance(final DatabaseType databaseType) {
+        return TypedSPIRegistry.findRegisteredService(QueryHeaderBuilder.class, databaseType.getType()).orElseGet(() -> RequiredSPIRegistry.getRegisteredService(QueryHeaderBuilder.class));
     }
 }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock;
 
-import org.apache.shardingsphere.infra.lock.LockType;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeType;
 
 import java.util.Optional;
 
@@ -64,11 +64,11 @@ public interface LockNodeService {
     /**
      * Generate ack lock name.
      *
-     * @param ackLockName ack lock name
+     * @param lockName lock name
      * @param lockedInstanceId locked instance id
      * @return ack lock name
      */
-    String generateAckLockName(String ackLockName, String lockedInstanceId);
+    String generateAckLockName(String lockName, String lockedInstanceId);
     
     /**
      * Parse Locks node path.
@@ -87,9 +87,9 @@ public interface LockNodeService {
     Optional<String> parseLockedAckNodePath(String nodePath);
     
     /**
-     * Get lock type.
+     * Get type.
      *
-     * @return lock type
+     * @return lock node type
      */
-    LockType getLockType();
+    LockNodeType getType();
 }

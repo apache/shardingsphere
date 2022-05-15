@@ -37,10 +37,6 @@ public final class ShardingSphereAlgorithmFactory {
      */
     @SuppressWarnings("unchecked")
     public static <T extends ShardingSphereAlgorithm> T createAlgorithm(final ShardingSphereAlgorithmConfiguration algorithmConfig, final Class<? extends ShardingSphereAlgorithm> algorithmClass) {
-        T result = (T) TypedSPIRegistry.getRegisteredService(algorithmClass, algorithmConfig.getType(), algorithmConfig.getProps());
-        if (result instanceof ShardingSphereAlgorithmPostProcessor) {
-            ((ShardingSphereAlgorithmPostProcessor) result).init();
-        }
-        return result;
+        return (T) TypedSPIRegistry.getRegisteredService(algorithmClass, algorithmConfig.getType(), algorithmConfig.getProps());
     }
 }

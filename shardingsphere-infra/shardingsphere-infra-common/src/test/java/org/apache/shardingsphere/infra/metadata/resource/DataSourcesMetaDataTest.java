@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.resource;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
 
@@ -27,7 +27,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -39,11 +38,11 @@ public final class DataSourcesMetaDataTest {
         Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
         dataSourceMap.put("ds_0", createDataSource("jdbc:mysql://127.0.0.1:3306/db_0"));
         dataSourceMap.put("ds_1", createDataSource("jdbc:mysql://127.0.0.1:3307/db_1"));
-        DataSourcesMetaData dataSourcesMetaData = new DataSourcesMetaData(DatabaseTypeRegistry.getActualDatabaseType("MySQL"), dataSourceMap);
+        DataSourcesMetaData dataSourcesMetaData = new DataSourcesMetaData(DatabaseTypeFactory.getInstance("MySQL"), dataSourceMap);
         Collection<String> allInstanceDataSourceNames = dataSourcesMetaData.getAllInstanceDataSourceNames();
-        assertNotNull(allInstanceDataSourceNames);
         assertThat(allInstanceDataSourceNames.size(), is(2));
-        assertTrue(allInstanceDataSourceNames.contains("ds_0") && allInstanceDataSourceNames.contains("ds_1"));
+        assertTrue(allInstanceDataSourceNames.contains("ds_0"));
+        assertTrue(allInstanceDataSourceNames.contains("ds_1"));
     }
     
     @Test
@@ -51,9 +50,8 @@ public final class DataSourcesMetaDataTest {
         Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
         dataSourceMap.put("ds_0", createDataSource("jdbc:mysql://127.0.0.1:3306/db_0"));
         dataSourceMap.put("ds_1", createDataSource("jdbc:mysql://127.0.0.1:3306/db_1"));
-        DataSourcesMetaData dataSourcesMetaData = new DataSourcesMetaData(DatabaseTypeRegistry.getActualDatabaseType("MySQL"), dataSourceMap);
+        DataSourcesMetaData dataSourcesMetaData = new DataSourcesMetaData(DatabaseTypeFactory.getInstance("MySQL"), dataSourceMap);
         Collection<String> allInstanceDataSourceNames = dataSourcesMetaData.getAllInstanceDataSourceNames();
-        assertNotNull(allInstanceDataSourceNames);
         assertThat(allInstanceDataSourceNames.size(), is(1));
         assertTrue(allInstanceDataSourceNames.contains("ds_0") || allInstanceDataSourceNames.contains("ds_1"));
     }
@@ -63,7 +61,7 @@ public final class DataSourcesMetaDataTest {
         Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
         dataSourceMap.put("ds_0", createDataSource("jdbc:mysql://127.0.0.1:3306/db_0"));
         dataSourceMap.put("ds_1", createDataSource("jdbc:mysql://127.0.0.1:3306/db_1"));
-        DataSourcesMetaData dataSourcesMetaData = new DataSourcesMetaData(DatabaseTypeRegistry.getActualDatabaseType("MySQL"), dataSourceMap);
+        DataSourcesMetaData dataSourcesMetaData = new DataSourcesMetaData(DatabaseTypeFactory.getInstance("MySQL"), dataSourceMap);
         assertThat(dataSourcesMetaData.getDataSourceMetaData("ds_0").getCatalog(), is("db_0"));
     }
     
@@ -72,7 +70,7 @@ public final class DataSourcesMetaDataTest {
         Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
         dataSourceMap.put("ds_0", createDataSource("jdbc:mysql://127.0.0.1:3306/db_0"));
         dataSourceMap.put("ds_1", createDataSource("jdbc:mysql://127.0.0.1:3306/db_1"));
-        DataSourcesMetaData dataSourcesMetaData = new DataSourcesMetaData(DatabaseTypeRegistry.getActualDatabaseType("MySQL"), dataSourceMap);
+        DataSourcesMetaData dataSourcesMetaData = new DataSourcesMetaData(DatabaseTypeFactory.getInstance("MySQL"), dataSourceMap);
         assertNull(dataSourcesMetaData.getDataSourceMetaData("ds_0").getSchema());
     }
     

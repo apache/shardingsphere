@@ -23,15 +23,15 @@ import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.exception.SchemaNotExistedException;
+import org.apache.shardingsphere.infra.exception.DatabaseNotExistedException;
 import org.apache.shardingsphere.infra.metadata.schema.QualifiedDatabase;
-import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
-import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
-import org.apache.shardingsphere.infra.storage.StorageNodeRole;
-import org.apache.shardingsphere.infra.storage.StorageNodeStatus;
+import org.apache.shardingsphere.mode.metadata.storage.StorageNodeDataSource;
+import org.apache.shardingsphere.mode.metadata.storage.StorageNodeRole;
+import org.apache.shardingsphere.mode.metadata.storage.StorageNodeStatus;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.service.StorageNodeStatusService;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.storage.event.DataSourceDisabledEvent;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
@@ -71,7 +71,7 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
         String databaseName = sqlStatement.getSchema().isPresent() ? sqlStatement.getSchema().get().getIdentifier().getValue() : connectionSession.getDatabaseName();
         String toBeUpdatedResource = sqlStatement.getResourceName();
         checkModeAndPersistRepository(contextManager);
-        checkDatabase(databaseName);
+        checkDatabaseName(databaseName);
         checkReadwriteSplittingRule(contextManager, databaseName);
         Map<String, String> replicaResources = getReplicaResources(contextManager, databaseName);
         Map<String, String> disabledResources = getDisabledResources(contextManager, databaseName);
@@ -103,12 +103,12 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
         }
     }
     
-    private void checkDatabase(final String databaseName) {
-        if (null == databaseName) {
+    private void checkDatabaseName(final String databaseName) {
+        if (Strings.isNullOrEmpty(databaseName)) {
             throw new NoDatabaseSelectedException();
         }
         if (!ProxyContext.getInstance().getAllDatabaseNames().contains(databaseName)) {
-            throw new SchemaNotExistedException(databaseName);
+            throw new DatabaseNotExistedException(databaseName);
         }
     }
     
@@ -200,9 +200,9 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
         contextManager.getMetaDataContexts().getMetaData(databaseName).getRuleMetaData().findRules(ReadwriteSplittingRule.class).stream().findAny()
                 .filter(each -> each.containExportableKey(Arrays.asList(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE, ExportableConstants.EXPORTABLE_KEY_ENABLED_DATA_SOURCE)))
                 .map(each -> each.export(Arrays.asList(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE, ExportableConstants.EXPORTABLE_KEY_ENABLED_DATA_SOURCE)))
-                .ifPresent(each -> {
-                    result.putAll((Map) each.getOrDefault(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE, Collections.emptyMap()));
-                    result.putAll((Map) each.getOrDefault(ExportableConstants.EXPORTABLE_KEY_ENABLED_DATA_SOURCE, Collections.emptyMap()));
+                .ifPresent(optional -> {
+                    result.putAll((Map) optional.getOrDefault(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE, Collections.emptyMap()));
+                    result.putAll((Map) optional.getOrDefault(ExportableConstants.EXPORTABLE_KEY_ENABLED_DATA_SOURCE, Collections.emptyMap()));
                 });
         return result;
     }

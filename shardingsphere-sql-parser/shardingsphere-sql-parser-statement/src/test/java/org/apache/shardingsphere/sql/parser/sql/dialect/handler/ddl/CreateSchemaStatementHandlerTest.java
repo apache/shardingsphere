@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl;
 
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateSchemaStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLCreateSchemaStatement;
 import org.junit.Test;
@@ -32,18 +33,18 @@ public final class CreateSchemaStatementHandlerTest {
     @Test
     public void assertGetUsernameForPostgreSQL() {
         PostgreSQLCreateSchemaStatement createSchemaStatement = new PostgreSQLCreateSchemaStatement();
-        createSchemaStatement.setUsername("root");
-        Optional<String> actual = CreateSchemaStatementHandler.getUsername(createSchemaStatement);
+        createSchemaStatement.setUsername(new IdentifierValue("root"));
+        Optional<IdentifierValue> actual = CreateSchemaStatementHandler.getUsername(createSchemaStatement);
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), is("root"));
+        assertThat(actual.get().getValue(), is("root"));
     }
     
     @Test
     public void assertGetUsernameForOpenGauss() {
         OpenGaussCreateSchemaStatement createSchemaStatement = new OpenGaussCreateSchemaStatement();
-        createSchemaStatement.setUsername("root");
-        Optional<String> actual = CreateSchemaStatementHandler.getUsername(createSchemaStatement);
+        createSchemaStatement.setUsername(new IdentifierValue("root"));
+        Optional<IdentifierValue> actual = CreateSchemaStatementHandler.getUsername(createSchemaStatement);
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), is("root"));
+        assertThat(actual.get().getValue(), is("root"));
     }
 }

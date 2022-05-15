@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRecognizer;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.metadata.resource.CachedDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
@@ -45,6 +45,8 @@ public final class ShardingSphereMetaData {
     
     private final String databaseName;
     
+    private final DatabaseType frontendDatabaseType;
+    
     private final ShardingSphereResource resource;
     
     private final ShardingSphereRuleMetaData ruleMetaData;
@@ -55,22 +57,22 @@ public final class ShardingSphereMetaData {
      * Create ShardingSphere meta data.
      * 
      * @param databaseName database name
+     * @param frontendDatabaseType frontend database type
      * @param schemas schemas
      * @param databaseConfig database configuration
      * @param rules rules
-     * @param defaultDatabaseType default database type
      * @return ShardingSphere meta data
      * @throws SQLException SQL exception
      */
-    public static ShardingSphereMetaData create(final String databaseName, final Map<String, ShardingSphereSchema> schemas, final DatabaseConfiguration databaseConfig,
-                                                final Collection<ShardingSphereRule> rules, final DatabaseType defaultDatabaseType) throws SQLException {
-        ShardingSphereResource resource = createResource(databaseConfig.getDataSources(), defaultDatabaseType);
+    public static ShardingSphereMetaData create(final String databaseName, final DatabaseType frontendDatabaseType, final Map<String, ShardingSphereSchema> schemas,
+                                                final DatabaseConfiguration databaseConfig, final Collection<ShardingSphereRule> rules) throws SQLException {
+        ShardingSphereResource resource = createResource(frontendDatabaseType, databaseConfig.getDataSources());
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(databaseConfig.getRuleConfigurations(), rules);
-        return new ShardingSphereMetaData(databaseName, resource, ruleMetaData, schemas);
+        return new ShardingSphereMetaData(databaseName, frontendDatabaseType, resource, ruleMetaData, schemas);
     }
     
-    private static ShardingSphereResource createResource(final Map<String, DataSource> dataSourceMap, final DatabaseType defaultDatabaseType) throws SQLException {
-        DatabaseType databaseType = dataSourceMap.isEmpty() ? defaultDatabaseType : DatabaseTypeRecognizer.getDatabaseType(dataSourceMap.values());
+    private static ShardingSphereResource createResource(final DatabaseType frontendDatabaseType, final Map<String, DataSource> dataSourceMap) throws SQLException {
+        DatabaseType databaseType = dataSourceMap.isEmpty() ? frontendDatabaseType : DatabaseTypeEngine.getDatabaseType(dataSourceMap.values());
         DataSourcesMetaData dataSourcesMetaData = new DataSourcesMetaData(databaseType, dataSourceMap);
         CachedDatabaseMetaData cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap).orElse(null);
         return new ShardingSphereResource(dataSourceMap, dataSourcesMetaData, cachedDatabaseMetaData, databaseType);

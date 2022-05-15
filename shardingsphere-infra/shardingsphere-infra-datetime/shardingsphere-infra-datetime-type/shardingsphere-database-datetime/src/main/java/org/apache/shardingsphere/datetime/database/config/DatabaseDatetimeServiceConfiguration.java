@@ -19,7 +19,7 @@ package org.apache.shardingsphere.datetime.database.config;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRecognizer;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
@@ -47,7 +47,7 @@ public final class DatabaseDatetimeServiceConfiguration {
     
     private DatabaseDatetimeServiceConfiguration() {
         dataSource = DataSourcePoolCreator.create(new YamlDataSourceConfigurationSwapper().swapToDataSourceProperties(loadDataSourceConfiguration()));
-        databaseType = DatabaseTypeRecognizer.getDatabaseType(Collections.singleton(dataSource));
+        databaseType = DatabaseTypeEngine.getDatabaseType(Collections.singleton(dataSource));
     }
     
     @SuppressWarnings("unchecked")

@@ -46,7 +46,7 @@ public final class EncryptDistSQLStatementParserFacade implements FeaturedDistSQ
     }
     
     @Override
-    public String getFeatureType() {
+    public String getType() {
         return "encrypt";
     }
 }

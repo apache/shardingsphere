@@ -55,7 +55,7 @@ public final class GlobalRulesBuilder {
     @SuppressWarnings("rawtypes")
     private static Map<RuleConfiguration, GlobalRuleBuilder> getRuleBuilderMap(final Collection<RuleConfiguration> globalRuleConfigs) {
         Map<RuleConfiguration, GlobalRuleBuilder> result = new LinkedHashMap<>();
-        result.putAll(GlobalRuleBuilderFactory.newInstanceMap(globalRuleConfigs));
+        result.putAll(GlobalRuleBuilderFactory.getInstanceMap(globalRuleConfigs));
         result.putAll(getMissedDefaultRuleBuilderMap(result));
         return result;
     }
@@ -63,7 +63,7 @@ public final class GlobalRulesBuilder {
     @SuppressWarnings("rawtypes")
     private static Map<RuleConfiguration, GlobalRuleBuilder> getMissedDefaultRuleBuilderMap(final Map<RuleConfiguration, GlobalRuleBuilder> builders) {
         Map<RuleConfiguration, GlobalRuleBuilder> result = new LinkedHashMap<>();
-        Map<GlobalRuleBuilder, DefaultGlobalRuleConfigurationBuilder> defaultBuilders = DefaultGlobalRuleConfigurationBuilderFactory.newInstance(getMissedDefaultRuleBuilders(builders.values()));
+        Map<GlobalRuleBuilder, DefaultGlobalRuleConfigurationBuilder> defaultBuilders = DefaultGlobalRuleConfigurationBuilderFactory.getInstance(getMissedDefaultRuleBuilders(builders.values()));
         for (Entry<GlobalRuleBuilder, DefaultGlobalRuleConfigurationBuilder> entry : defaultBuilders.entrySet()) {
             result.put(entry.getValue().build(), entry.getKey());
         }
@@ -73,6 +73,6 @@ public final class GlobalRulesBuilder {
     @SuppressWarnings({"unchecked", "rawtypes"})
     private static Collection<GlobalRuleBuilder> getMissedDefaultRuleBuilders(final Collection<GlobalRuleBuilder> configuredBuilders) {
         Collection<Class<GlobalRuleBuilder>> configuredBuilderClasses = configuredBuilders.stream().map(each -> (Class<GlobalRuleBuilder>) each.getClass()).collect(Collectors.toSet());
-        return GlobalRuleBuilderFactory.newInstances(configuredBuilderClasses);
+        return GlobalRuleBuilderFactory.getInstances(configuredBuilderClasses);
     }
 }

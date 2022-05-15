@@ -72,8 +72,8 @@ public final class AlterDefaultShardingStrategyStatementUpdater implements RuleD
     }
     
     private void checkExist(final String databaseName, final AlterDefaultShardingStrategyStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        Optional<ShardingStrategyConfiguration> strategyConfiguration = getStrategyConfiguration(currentRuleConfig, sqlStatement.getDefaultType());
-        DistSQLException.predictionThrow(strategyConfiguration.isPresent(), () -> new RequiredRuleMissedException(
+        Optional<ShardingStrategyConfiguration> strategyConfig = getStrategyConfiguration(currentRuleConfig, sqlStatement.getDefaultType());
+        DistSQLException.predictionThrow(strategyConfig.isPresent(), () -> new RequiredRuleMissedException(
                 String.format("Default sharding %s strategy", sqlStatement.getDefaultType().toLowerCase()), databaseName));
     }
     

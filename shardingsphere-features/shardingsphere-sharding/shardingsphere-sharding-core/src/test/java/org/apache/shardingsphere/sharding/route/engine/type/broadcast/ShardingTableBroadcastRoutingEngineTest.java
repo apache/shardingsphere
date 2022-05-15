@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.route.engine.type.broadcast;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.DropIndexStatementContext;
 import org.apache.shardingsphere.infra.binder.type.IndexAvailable;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
@@ -106,8 +106,9 @@ public final class ShardingTableBroadcastRoutingEngineTest extends AbstractRouti
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(tableNames);
         when(sqlStatementContext.getDatabaseType()).thenReturn(new MySQLDatabaseType());
         when(((IndexAvailable) sqlStatementContext).getIndexes()).thenReturn(Collections.singletonList(segment));
-        Map<String, ShardingSphereSchema> schemas = Collections.singletonMap(DefaultSchema.LOGIC_NAME, schema);
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(DefaultSchema.LOGIC_NAME, mock(ShardingSphereResource.class), mock(ShardingSphereRuleMetaData.class), schemas);
+        Map<String, ShardingSphereSchema> schemas = Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema);
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(
+                DefaultDatabase.LOGIC_NAME, new MySQLDatabaseType(), mock(ShardingSphereResource.class), mock(ShardingSphereRuleMetaData.class), schemas);
         ShardingTableBroadcastRoutingEngine shardingTableBroadcastRoutingEngine = new ShardingTableBroadcastRoutingEngine(metaData, sqlStatementContext, tableNames);
         RouteContext routeContext = shardingTableBroadcastRoutingEngine.route(createShardingRule(false));
         assertThat(routeContext.getActualDataSourceNames().size(), is(2));
@@ -127,20 +128,21 @@ public final class ShardingTableBroadcastRoutingEngineTest extends AbstractRouti
         SQLStatementContext<DropIndexStatement> sqlStatementContext = mock(DropIndexStatementContext.class, RETURNS_DEEP_STUBS);
         Collection<String> tableNames = Collections.emptyList();
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(tableNames);
-        Map<String, ShardingSphereSchema> schemas = Collections.singletonMap(DefaultSchema.LOGIC_NAME, schema);
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(DefaultSchema.LOGIC_NAME, mock(ShardingSphereResource.class), mock(ShardingSphereRuleMetaData.class), schemas);
+        Map<String, ShardingSphereSchema> schemas = Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema);
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(
+                DefaultDatabase.LOGIC_NAME, new MySQLDatabaseType(), mock(ShardingSphereResource.class), mock(ShardingSphereRuleMetaData.class), schemas);
         ShardingTableBroadcastRoutingEngine shardingTableBroadcastRoutingEngine = new ShardingTableBroadcastRoutingEngine(metaData, sqlStatementContext, tableNames);
         RouteContext routeContext = shardingTableBroadcastRoutingEngine.route(createShardingRule(false));
         assertRouteUnitWithoutTables(routeContext);
     }
     
     private ShardingRule createShardingRule(final boolean isContainBroadcastTable) {
-        ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
-        shardingRuleConfiguration.getTables().add(new ShardingTableRuleConfiguration("t_order", "ds${0..1}.t_order_${0..1}"));
+        ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
+        ruleConfig.getTables().add(new ShardingTableRuleConfiguration("t_order", "ds${0..1}.t_order_${0..1}"));
         if (isContainBroadcastTable) {
-            shardingRuleConfiguration.getBroadcastTables().add("t_order");
+            ruleConfig.getBroadcastTables().add("t_order");
         }
-        return new ShardingRule(shardingRuleConfiguration, Arrays.asList("ds_0", "ds_1"));
+        return new ShardingRule(ruleConfig, Arrays.asList("ds_0", "ds_1"));
     }
     
     private SQLStatementContext<?> createSQLStatementContext(final Collection<String> tableNames) {

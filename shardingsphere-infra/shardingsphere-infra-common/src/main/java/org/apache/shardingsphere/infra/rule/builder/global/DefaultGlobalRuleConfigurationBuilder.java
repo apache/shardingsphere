@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.rule.builder.global;
 
 import org.apache.shardingsphere.infra.config.scope.GlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.rule.builder.DefaultRuleConfigurationBuilder;
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
 
 /**
  * Default global rule configuration builder.
@@ -26,5 +27,6 @@ import org.apache.shardingsphere.infra.rule.builder.DefaultRuleConfigurationBuil
  * @param <T> type of global rule configuration
  * @param <B> type of global rule builder
  */
+@SingletonSPI
 public interface DefaultGlobalRuleConfigurationBuilder<T extends GlobalRuleConfiguration, B extends GlobalRuleBuilder<?>> extends DefaultRuleConfigurationBuilder<T, B> {
 }

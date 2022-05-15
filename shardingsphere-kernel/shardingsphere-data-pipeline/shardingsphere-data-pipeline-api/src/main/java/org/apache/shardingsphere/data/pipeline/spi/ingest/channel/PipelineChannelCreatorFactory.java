@@ -24,8 +24,6 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmF
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
-import java.util.Properties;
-
 /**
  * Pipeline channel creator factory.
  */
@@ -40,7 +38,7 @@ public final class PipelineChannelCreatorFactory {
      * Create new instance of pipeline channel creator.
      *
      * @param pipelineChannelCreatorConfig pipeline channel creator configuration
-     * @return new instance of pipeline channel creator
+     * @return created instance
      */
     public static PipelineChannelCreator newInstance(final ShardingSphereAlgorithmConfiguration pipelineChannelCreatorConfig) {
         return ShardingSphereAlgorithmFactory.createAlgorithm(pipelineChannelCreatorConfig, PipelineChannelCreator.class);
@@ -53,6 +51,6 @@ public final class PipelineChannelCreatorFactory {
      * @return contains pipeline channel creator or not
      */
     public static boolean contains(final String pipelineChannelCreatorType) {
-        return TypedSPIRegistry.findRegisteredService(PipelineChannelCreator.class, pipelineChannelCreatorType, new Properties()).isPresent();
+        return TypedSPIRegistry.findRegisteredService(PipelineChannelCreator.class, pipelineChannelCreatorType).isPresent();
     }
 }

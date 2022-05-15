@@ -33,6 +33,7 @@ import java.util.Optional;
 public enum ShardingStrategyType {
     
     STANDARD {
+        
         @Override
         public ShardingStrategyConfiguration createConfiguration(final String shardingAlgorithmName, final String shardingColumn) {
             return new StandardShardingStrategyConfiguration(shardingColumn, shardingAlgorithmName);
@@ -54,6 +55,7 @@ public enum ShardingStrategyType {
         }
     },
     NONE {
+        
         @Override
         public ShardingStrategyConfiguration createConfiguration(final String shardingAlgorithmName, final String shardingColumn) {
             return new NoneShardingStrategyConfiguration();
@@ -65,8 +67,8 @@ public enum ShardingStrategyType {
         }
         
         @Override
-        public Collection<String> getConfigurationContents(final ShardingStrategyConfiguration strategyConfiguration) {
-            return Arrays.asList("", strategyConfiguration.getShardingAlgorithmName());
+        public Collection<String> getConfigurationContents(final ShardingStrategyConfiguration strategyConfig) {
+            return Arrays.asList("", strategyConfig.getShardingAlgorithmName());
         }
         
         @Override
@@ -75,6 +77,7 @@ public enum ShardingStrategyType {
         }
     },
     HINT {
+        
         @Override
         public ShardingStrategyConfiguration createConfiguration(final String shardingAlgorithmName, final String shardingColumn) {
             return new HintShardingStrategyConfiguration(shardingAlgorithmName);
@@ -86,8 +89,8 @@ public enum ShardingStrategyType {
         }
         
         @Override
-        public Collection<String> getConfigurationContents(final ShardingStrategyConfiguration strategyConfiguration) {
-            return Arrays.asList("", strategyConfiguration.getShardingAlgorithmName());
+        public Collection<String> getConfigurationContents(final ShardingStrategyConfiguration strategyConfig) {
+            return Arrays.asList("", strategyConfig.getShardingAlgorithmName());
         }
         
         @Override
@@ -96,6 +99,7 @@ public enum ShardingStrategyType {
         }
     },
     COMPLEX {
+        
         @Override
         public ShardingStrategyConfiguration createConfiguration(final String shardingAlgorithmName, final String shardingColumn) {
             return new ComplexShardingStrategyConfiguration(shardingColumn, shardingAlgorithmName);
@@ -136,10 +140,10 @@ public enum ShardingStrategyType {
     /**
      * Get the content in the configuration.
      *
-     * @param strategyConfiguration sharding strategy configuration.
-     * @return Content list
+     * @param strategyConfig sharding strategy configuration.
+     * @return contents
      */
-    public abstract Collection<String> getConfigurationContents(ShardingStrategyConfiguration strategyConfiguration);
+    public abstract Collection<String> getConfigurationContents(ShardingStrategyConfiguration strategyConfig);
     
     /**
      * Check whether the configuration is valid.
@@ -166,13 +170,13 @@ public enum ShardingStrategyType {
     /**
      * Returns the sharding strategy type.
      *
-     * @param shardingStrategyConfiguration Implementation class of sharding strategy configuration
+     * @param shardingStrategyConfig Implementation class of sharding strategy configuration
      * @return sharding strategy type
      */
-    public static ShardingStrategyType getValueOf(final ShardingStrategyConfiguration shardingStrategyConfiguration) {
+    public static ShardingStrategyType getValueOf(final ShardingStrategyConfiguration shardingStrategyConfig) {
         Optional<ShardingStrategyType> type = Arrays.stream(values())
-                .filter(each -> shardingStrategyConfiguration.getClass().getCanonicalName().equals(each.getImplementedClass().getCanonicalName())).findFirst();
-        type.orElseThrow(() -> new UnsupportedOperationException(String.format("unsupported strategy type %s", shardingStrategyConfiguration.getClass().getName())));
+                .filter(each -> shardingStrategyConfig.getClass().getCanonicalName().equals(each.getImplementedClass().getCanonicalName())).findFirst();
+        type.orElseThrow(() -> new UnsupportedOperationException(String.format("unsupported strategy type %s", shardingStrategyConfig.getClass().getName())));
         return type.get();
     }
     

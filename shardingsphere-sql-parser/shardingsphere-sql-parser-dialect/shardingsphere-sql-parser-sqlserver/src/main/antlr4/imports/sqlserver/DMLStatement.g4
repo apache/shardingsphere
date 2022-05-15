@@ -154,7 +154,11 @@ subquery
     ;
 
 withClause
-    : WITH cteClause (COMMA_ cteClause)*
+    : WITH cteClauseSet
+    ;
+
+cteClauseSet
+    : cteClause (COMMA_ cteClause)*
     ;
 
 cteClause
@@ -248,7 +252,7 @@ forJsonClause
     ;
 
 selectWithClause
-    : WITH (xmlNamespacesClause COMMA_?)?
+    : WITH (xmlNamespacesClause COMMA_?)? cteClauseSet?
     ;
 
 xmlNamespacesClause

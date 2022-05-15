@@ -67,29 +67,30 @@ public final class AlterTableStatementSchemaRefresher implements MetaDataRefresh
     private void removeTableMetaData(final ShardingSphereMetaData metaData, final FederationDatabaseMetaData database,
                                      final Map<String, OptimizerPlannerContext> optimizerPlanners, final String schemaName, final String tableName) {
         metaData.getSchemaByName(schemaName).remove(tableName);
-        metaData.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.remove(tableName));
-        database.remove(schemaName, tableName);
+        metaData.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.remove(schemaName, tableName));
+        database.removeTableMetadata(schemaName, tableName);
         optimizerPlanners.put(database.getName(), OptimizerPlannerContextFactory.create(database));
     }
     
     private void putTableMetaData(final ShardingSphereMetaData metaData, final FederationDatabaseMetaData database, final Map<String, OptimizerPlannerContext> optimizerPlanners,
                                   final Collection<String> logicDataSourceNames, final String schemaName, final String tableName, final ConfigurationProperties props) throws SQLException {
-        if (!containsInDataNodeContainedRule(tableName, metaData)) {
-            metaData.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.put(tableName, logicDataSourceNames.iterator().next()));
+        if (!containsInImmutableDataNodeContainedRule(tableName, metaData)) {
+            metaData.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.put(logicDataSourceNames.iterator().next(), schemaName, tableName));
         }
         SchemaBuilderMaterials materials = new SchemaBuilderMaterials(
                 metaData.getResource().getDatabaseType(), metaData.getResource().getDataSources(), metaData.getRuleMetaData().getRules(), props, schemaName);
         Map<String, SchemaMetaData> metaDataMap = TableMetaDataBuilder.load(Collections.singletonList(tableName), materials);
         Optional<TableMetaData> actualTableMetaData = Optional.ofNullable(metaDataMap.get(schemaName)).map(optional -> optional.getTables().get(tableName));
-        actualTableMetaData.ifPresent(tableMetaData -> {
-            metaData.getSchemaByName(schemaName).put(tableName, tableMetaData);
-            database.put(schemaName, tableMetaData);
+        actualTableMetaData.ifPresent(optional -> {
+            metaData.getSchemaByName(schemaName).put(tableName, optional);
+            database.putTableMetadata(schemaName, optional);
             optimizerPlanners.put(database.getName(), OptimizerPlannerContextFactory.create(database));
         });
     }
     
-    private boolean containsInDataNodeContainedRule(final String tableName, final ShardingSphereMetaData metaData) {
-        return metaData.getRuleMetaData().findRules(DataNodeContainedRule.class).stream().anyMatch(each -> each.getAllTables().contains(tableName));
+    private boolean containsInImmutableDataNodeContainedRule(final String tableName, final ShardingSphereMetaData metaData) {
+        return metaData.getRuleMetaData().findRules(DataNodeContainedRule.class).stream()
+                .filter(each -> !(each instanceof MutableDataNodeRule)).anyMatch(each -> each.getAllTables().contains(tableName));
     }
     
     @Override

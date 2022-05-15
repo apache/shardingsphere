@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable;
 
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.yaml.swapper.DatabaseDiscoveryRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ExportDatabaseConfigurationStatement;
@@ -25,7 +26,7 @@ import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYa
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
-import org.apache.shardingsphere.infra.exception.SchemaNotExistedException;
+import org.apache.shardingsphere.infra.exception.DatabaseNotExistedException;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
@@ -117,7 +118,7 @@ public final class ExportDatabaseConfigurationHandler extends QueryableRALBacken
         StringBuilder result = new StringBuilder();
         configItem(ZERO, "databaseName", databaseName, result);
         getDataSourcesConfig(metaData, result);
-        getRulesConfig(metaData.getRuleMetaData().getConfigurations(), result);
+        getRuleConfigurations(metaData.getRuleMetaData().getConfigurations(), result);
         if (!sqlStatement.getFilePath().isPresent()) {
             return Collections.singleton(Collections.singletonList(result.toString()));
         }
@@ -142,21 +143,17 @@ public final class ExportDatabaseConfigurationHandler extends QueryableRALBacken
         for (Entry<String, DataSource> each : metaData.getResource().getDataSources().entrySet()) {
             configItem(ONE, each.getKey(), result);
             DataSourceProperties dataSourceProps = DataSourcePropertiesCreator.create(each.getValue());
-            dataSourceProps.getConnectionPropertySynonyms().getStandardProperties().entrySet().forEach(standard -> {
-                configItem(TWO, standard.getKey(), standard.getValue(), result);
-            });
-            dataSourceProps.getPoolPropertySynonyms().getStandardProperties().entrySet().forEach(standard -> {
-                configItem(TWO, standard.getKey(), standard.getValue(), result);
-            });
+            dataSourceProps.getConnectionPropertySynonyms().getStandardProperties().forEach((key, value) -> configItem(TWO, key, value, result));
+            dataSourceProps.getPoolPropertySynonyms().getStandardProperties().forEach((key, value) -> configItem(TWO, key, value, result));
         }
     }
     
-    private void getRulesConfig(final Collection<RuleConfiguration> ruleConfigurations, final StringBuilder result) {
-        if (null == ruleConfigurations || ruleConfigurations.isEmpty()) {
+    private void getRuleConfigurations(final Collection<RuleConfiguration> ruleConfigs, final StringBuilder result) {
+        if (null == ruleConfigs || ruleConfigs.isEmpty()) {
             return;
         }
         configItem(ZERO, "rules", result);
-        ruleConfigurations.forEach(each -> {
+        ruleConfigs.forEach(each -> {
             getRulesConfigForSharding(each, result);
             getRulesConfigForReadwriteSplitting(each, result);
             getRulesConfigForDBDiscovery(each, result);
@@ -166,10 +163,7 @@ public final class ExportDatabaseConfigurationHandler extends QueryableRALBacken
     }
     
     private boolean matchFeature(final RuleConfiguration ruleConfig, final String feature) {
-        if (null != ruleConfig && ruleConfig.getClass().getCanonicalName().equalsIgnoreCase(FEATURE_MAP.get(feature).getCanonicalName())) {
-            return true;
-        }
-        return false;
+        return null != ruleConfig && ruleConfig.getClass().getCanonicalName().equalsIgnoreCase(FEATURE_MAP.get(feature).getCanonicalName());
     }
     
     private void getRulesConfigForSharding(final RuleConfiguration ruleConfig, final StringBuilder result) {
@@ -227,11 +221,11 @@ public final class ExportDatabaseConfigurationHandler extends QueryableRALBacken
     
     private String getDatabaseName() {
         String result = sqlStatement.getSchema().isPresent() ? sqlStatement.getSchema().get().getIdentifier().getValue() : connectionSession.getDatabaseName();
-        if (null == result) {
+        if (Strings.isNullOrEmpty(result)) {
             throw new NoDatabaseSelectedException();
         }
         if (!ProxyContext.getInstance().getAllDatabaseNames().contains(result)) {
-            throw new SchemaNotExistedException(result);
+            throw new DatabaseNotExistedException(result);
         }
         return result;
     }

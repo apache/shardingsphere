@@ -38,7 +38,7 @@ public final class EncryptRuleConfigurationCheckerTest {
     @Test
     public void assertValidCheck() {
         EncryptRuleConfiguration config = createValidConfiguration();
-        Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.newInstance(config);
+        Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.findInstance(config);
         assertTrue(checker.isPresent());
         assertThat(checker.get(), instanceOf(EncryptRuleConfigurationChecker.class));
         checker.get().check("test", config);
@@ -54,7 +54,7 @@ public final class EncryptRuleConfigurationCheckerTest {
     @Test(expected = IllegalStateException.class)
     public void assertInvalidCheck() {
         EncryptRuleConfiguration config = createInvalidConfiguration();
-        Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.newInstance(config);
+        Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.findInstance(config);
         assertTrue(checker.isPresent());
         assertThat(checker.get(), instanceOf(EncryptRuleConfigurationChecker.class));
         checker.get().check("test", config);

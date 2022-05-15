@@ -28,11 +28,9 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -41,7 +39,6 @@ public final class DatabaseDiscoveryRuleStatementConverterTest {
     @Test
     public void assertConvert() {
         DatabaseDiscoveryRuleConfiguration ruleConfig = DatabaseDiscoveryRuleStatementConverter.convert(createDatabaseDiscoveryRuleSegments());
-        assertNotNull(ruleConfig);
         assertTrue(ruleConfig.getDiscoveryTypes().containsKey("definition_MySQL.MGR"));
         assertTrue(ruleConfig.getDiscoveryHeartbeats().containsKey("definition_heartbeat"));
         Iterator<DatabaseDiscoveryDataSourceRuleConfiguration> iterator = ruleConfig.getDataSources().iterator();
@@ -58,15 +55,17 @@ public final class DatabaseDiscoveryRuleStatementConverterTest {
     }
     
     private Collection<AbstractDatabaseDiscoverySegment> createDatabaseDiscoveryRuleSegments() {
-        Properties properties = new Properties();
-        properties.put("key", "value");
-        final Collection<AbstractDatabaseDiscoverySegment> result = new LinkedList<>();
+        Properties props = createProperties();
         DatabaseDiscoveryDefinitionSegment databaseDiscoveryDefinitionSegment =
-                new DatabaseDiscoveryDefinitionSegment("definition", Arrays.asList("resource0", "resource1"), new AlgorithmSegment("MySQL.MGR", properties), properties);
+                new DatabaseDiscoveryDefinitionSegment("definition", Arrays.asList("resource0", "resource1"), new AlgorithmSegment("MySQL.MGR", props), props);
         DatabaseDiscoveryConstructionSegment databaseDiscoveryConstructionSegment =
                 new DatabaseDiscoveryConstructionSegment("construction", Arrays.asList("resource0", "resource1"), "type", "heartbeat");
-        result.add(databaseDiscoveryConstructionSegment);
-        result.add(databaseDiscoveryDefinitionSegment);
+        return Arrays.asList(databaseDiscoveryConstructionSegment, databaseDiscoveryDefinitionSegment);
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.put("key", "value");
         return result;
     }
 }

@@ -51,23 +51,39 @@ public final class FederationDatabaseMetaData {
      * @param schemaName schema name
      * @param schemaMetaData schema metadata
      */
-    public void put(final String schemaName, final FederationSchemaMetaData schemaMetaData) {
-        schemas.put(schemaName, schemaMetaData);
+    public void putSchemaMetadata(final String schemaName, final FederationSchemaMetaData schemaMetaData) {
+        schemas.put(schemaName.toLowerCase(), schemaMetaData);
     }
     
     /**
-     * Add table meta data.
+     * Put table meta data.
      *
      * @param schemaName schema name
-     * @param metaData table meta data to be updated
+     * @param tableMetaData table meta data
      */
-    public void put(final String schemaName, final TableMetaData metaData) {
-        if (schemas.containsKey(schemaName)) {
-            schemas.get(schemaName).put(metaData);
-        } else {
-            Map<String, TableMetaData> tableMetaData = new LinkedHashMap<>();
-            tableMetaData.put(schemaName, metaData);
-            schemas.put(schemaName, new FederationSchemaMetaData(schemaName, tableMetaData));
+    public void putTableMetadata(final String schemaName, final TableMetaData tableMetaData) {
+        FederationSchemaMetaData schemaMetaData = schemas.computeIfAbsent(schemaName.toLowerCase(), key -> new FederationSchemaMetaData(schemaName, new LinkedHashMap<>()));
+        schemaMetaData.put(tableMetaData);
+    }
+    
+    /**
+     * Remove schema meta data.
+     *
+     * @param schemaName schema name
+     */
+    public void removeSchemaMetadata(final String schemaName) {
+        schemas.remove(schemaName.toLowerCase());
+    }
+    
+    /**
+     * Remove table meta data.
+     *
+     * @param schemaName schema name
+     * @param tableName table name
+     */
+    public void removeTableMetadata(final String schemaName, final String tableName) {
+        if (schemas.containsKey(schemaName.toLowerCase())) {
+            schemas.get(schemaName.toLowerCase()).remove(tableName.toLowerCase());
         }
     }
     
@@ -80,26 +96,5 @@ public final class FederationDatabaseMetaData {
      */
     public Optional<FederationSchemaMetaData> getSchemaMetadata(final String schemaName) {
         return Optional.of(schemas.get(schemaName));
-    }
-    
-    /**
-     * Remove table meta data.
-     *
-     * @param schemaName schema name
-     */
-    public void remove(final String schemaName) {
-        schemas.remove(schemaName);
-    }
-    
-    /**
-     * Remove table meta data.
-     *
-     * @param schemaName schema name
-     * @param tableName table name to be removed
-     */
-    public void remove(final String schemaName, final String tableName) {
-        if (schemas.containsKey(schemaName)) {
-            schemas.get(schemaName).remove(tableName);
-        }
     }
 }

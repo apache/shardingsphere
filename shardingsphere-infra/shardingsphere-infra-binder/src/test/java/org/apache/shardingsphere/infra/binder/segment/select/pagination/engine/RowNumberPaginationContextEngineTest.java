@@ -123,7 +123,7 @@ public final class RowNumberPaginationContextEngineTest {
         Optional<PaginationValueSegment> paginationValueSegmentOptional = paginationContext.getRowCountSegment();
         assertTrue(paginationValueSegmentOptional.isPresent());
         PaginationValueSegment paginationValueSegment = paginationValueSegmentOptional.get();
-        assertTrue(paginationValueSegment instanceof NumberLiteralRowNumberValueSegment);
+        assertThat(paginationValueSegment, instanceOf(NumberLiteralRowNumberValueSegment.class));
         NumberLiteralRowNumberValueSegment numberLiteralRowNumberValueSegment = (NumberLiteralRowNumberValueSegment) paginationValueSegment;
         assertThat(numberLiteralRowNumberValueSegment.getStartIndex(), is(0));
         assertThat(numberLiteralRowNumberValueSegment.getStopIndex(), is(10));
@@ -145,7 +145,6 @@ public final class RowNumberPaginationContextEngineTest {
         assertThat(actualPaginationValueSegment.getStartIndex(), is(0));
         assertThat(actualPaginationValueSegment.getStopIndex(), is(10));
         assertThat(((NumberLiteralRowNumberValueSegment) actualPaginationValueSegment).getValue(), is(100L));
-        Optional<PaginationValueSegment> rowCountSegment = rowNumberPaginationContextEngine.getRowCountSegment();
-        assertFalse(rowCountSegment.isPresent());
+        assertFalse(rowNumberPaginationContextEngine.getRowCountSegment().isPresent());
     }
 }

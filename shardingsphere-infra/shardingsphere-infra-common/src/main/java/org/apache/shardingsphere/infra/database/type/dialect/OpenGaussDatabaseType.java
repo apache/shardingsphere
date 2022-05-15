@@ -48,18 +48,13 @@ public final class OpenGaussDatabaseType implements DatabaseType {
     }
     
     @Override
-    public String getName() {
-        return "openGauss";
-    }
-    
-    @Override
     public QuoteCharacter getQuoteCharacter() {
         return QuoteCharacter.QUOTE;
     }
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
-        return Collections.singleton(String.format("jdbc:%s:", getName().toLowerCase()));
+        return Collections.singleton(String.format("jdbc:%s:", getType().toLowerCase()));
     }
     
     @Override
@@ -90,7 +85,17 @@ public final class OpenGaussDatabaseType implements DatabaseType {
     }
     
     @Override
+    public boolean isSchemaAvailable() {
+        return true;
+    }
+    
+    @Override
     public String getDefaultSchema(final String databaseName) {
         return "public";
+    }
+    
+    @Override
+    public String getType() {
+        return "openGauss";
     }
 }

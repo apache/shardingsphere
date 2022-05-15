@@ -34,12 +34,12 @@ public final class RawExecutorCallbackFactory {
     }
     
     /**
-     * Create new instances of raw executor callback.
+     * Get all instances of raw executor callback.
      * 
-     * @return new instances of raw executor callback
+     * @return got instances
      */
     @SuppressWarnings("rawtypes")
-    public static Collection<RawExecutorCallback> newInstances() {
+    public static Collection<RawExecutorCallback> getAllInstances() {
         return ShardingSphereServiceLoader.getServiceInstances(RawExecutorCallback.class);
     }
 }

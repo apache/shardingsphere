@@ -20,56 +20,50 @@ package org.apache.shardingsphere.sharding.route.strategy;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.HintShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.route.strategy.fixture.ComplexKeysShardingAlgorithmFixture;
-import org.apache.shardingsphere.sharding.route.strategy.fixture.HintShardingAlgorithmFixture;
-import org.apache.shardingsphere.sharding.route.strategy.fixture.StandardShardingAlgorithmFixture;
+import org.apache.shardingsphere.sharding.fixture.CoreComplexKeysShardingAlgorithmFixture;
+import org.apache.shardingsphere.sharding.fixture.CoreHintShardingAlgorithmFixture;
+import org.apache.shardingsphere.sharding.fixture.CoreStandardShardingAlgorithmFixture;
 import org.apache.shardingsphere.sharding.route.strategy.type.complex.ComplexShardingStrategy;
 import org.apache.shardingsphere.sharding.route.strategy.type.hint.HintShardingStrategy;
 import org.apache.shardingsphere.sharding.route.strategy.type.none.NoneShardingStrategy;
 import org.apache.shardingsphere.sharding.route.strategy.type.standard.StandardShardingStrategy;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class ShardingStrategyFactoryTest {
     
-    @Mock
-    private StandardShardingStrategyConfiguration standardShardingStrategyConfiguration;
-    
-    @Mock
-    private StandardShardingAlgorithmFixture standardShardingAlgorithmFixture;
-    
-    @Mock
-    private ComplexShardingStrategyConfiguration complexShardingStrategyConfiguration;
-    
-    @Mock
-    private ComplexKeysShardingAlgorithmFixture complexKeysShardingAlgorithmFixture;
-    
-    @Mock
-    private HintShardingStrategyConfiguration hintShardingStrategyConfiguration;
-    
-    @Mock
-    private HintShardingAlgorithmFixture hintShardingAlgorithmFixture;
+    @Test
+    public void assertNewInstanceForStandardShardingStrategy() {
+        StandardShardingStrategyConfiguration standardShardingStrategyConfig = mock(StandardShardingStrategyConfiguration.class);
+        when(standardShardingStrategyConfig.getShardingColumn()).thenReturn("standard_sharding_column");
+        assertThat(ShardingStrategyFactory.newInstance(standardShardingStrategyConfig, mock(CoreStandardShardingAlgorithmFixture.class), null), instanceOf(StandardShardingStrategy.class));
+    }
     
     @Test
-    public void assertNewInstance() {
-        when(standardShardingStrategyConfiguration.getShardingColumn()).thenReturn("standard_sharding_column");
-        ShardingStrategy actualStandardShardingStrategy = ShardingStrategyFactory.newInstance(standardShardingStrategyConfiguration, standardShardingAlgorithmFixture, null);
-        assertTrue(actualStandardShardingStrategy instanceof StandardShardingStrategy);
-        when(complexShardingStrategyConfiguration.getShardingColumns()).thenReturn("complex_sharding_column");
-        ShardingStrategy actualComplexShardingStrategy = ShardingStrategyFactory.newInstance(complexShardingStrategyConfiguration, complexKeysShardingAlgorithmFixture, null);
-        assertTrue(actualComplexShardingStrategy instanceof ComplexShardingStrategy);
-        ShardingStrategy actualHintShardingStrategy = ShardingStrategyFactory.newInstance(hintShardingStrategyConfiguration, hintShardingAlgorithmFixture, null);
-        assertTrue(actualHintShardingStrategy instanceof HintShardingStrategy);
-        ShardingStrategy actualNoneShardingStrategy = ShardingStrategyFactory.newInstance(null, null, null);
-        assertTrue(actualNoneShardingStrategy instanceof NoneShardingStrategy);
-        ShardingStrategy actualStandardWithDefaultColumnStrategy = ShardingStrategyFactory.newInstance(mock(StandardShardingStrategyConfiguration.class), standardShardingAlgorithmFixture, "order_id");
-        assertTrue(actualStandardWithDefaultColumnStrategy.getShardingColumns().contains("order_id"));
+    public void assertNewInstanceForStandardShardingStrategyWithDefaultColumnStrategy() {
+        ShardingStrategy actual = ShardingStrategyFactory.newInstance(mock(StandardShardingStrategyConfiguration.class), mock(CoreStandardShardingAlgorithmFixture.class), "order_id");
+        assertTrue(actual.getShardingColumns().contains("order_id"));
+    }
+    
+    @Test
+    public void assertNewInstanceForComplexShardingStrategy() {
+        ComplexShardingStrategyConfiguration complexShardingStrategyConfig = mock(ComplexShardingStrategyConfiguration.class);
+        when(complexShardingStrategyConfig.getShardingColumns()).thenReturn("complex_sharding_column");
+        assertThat(ShardingStrategyFactory.newInstance(complexShardingStrategyConfig, mock(CoreComplexKeysShardingAlgorithmFixture.class), null), instanceOf(ComplexShardingStrategy.class));
+    }
+    
+    @Test
+    public void assertNewInstanceForHintShardingStrategy() {
+        assertThat(ShardingStrategyFactory.newInstance(mock(HintShardingStrategyConfiguration.class), mock(CoreHintShardingAlgorithmFixture.class), null), instanceOf(HintShardingStrategy.class));
+    }
+    
+    @Test
+    public void assertNewInstanceForNoneShardingStrategy() {
+        assertThat(ShardingStrategyFactory.newInstance(null, null, null), instanceOf(NoneShardingStrategy.class));
     }
 }

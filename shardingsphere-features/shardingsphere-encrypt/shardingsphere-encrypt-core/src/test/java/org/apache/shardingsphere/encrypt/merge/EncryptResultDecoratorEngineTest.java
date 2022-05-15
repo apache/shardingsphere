@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.binder.statement.dal.ExplainStatementCont
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.merge.engine.ResultProcessEngineFactory;
 import org.apache.shardingsphere.infra.merge.engine.decorator.ResultDecorator;
@@ -60,9 +60,9 @@ public final class EncryptResultDecoratorEngineTest {
     
     @Test
     public void assertNewInstanceWithSelectStatement() {
-        EncryptResultDecoratorEngine engine = (EncryptResultDecoratorEngine) ResultProcessEngineFactory.newInstance(Collections.singleton(rule)).get(rule);
+        EncryptResultDecoratorEngine engine = (EncryptResultDecoratorEngine) ResultProcessEngineFactory.getInstances(Collections.singleton(rule)).get(rule);
         ResultDecorator<?> actual = engine.newInstance(
-                databaseType, DefaultSchema.LOGIC_NAME, metaData, rule, mock(ConfigurationProperties.class), mock(SelectStatementContext.class, RETURNS_DEEP_STUBS));
+                databaseType, DefaultDatabase.LOGIC_NAME, metaData, rule, mock(ConfigurationProperties.class), mock(SelectStatementContext.class, RETURNS_DEEP_STUBS));
         assertThat(actual, instanceOf(EncryptDQLResultDecorator.class));
     }
     
@@ -70,15 +70,15 @@ public final class EncryptResultDecoratorEngineTest {
     public void assertNewInstanceWithDALStatement() {
         SQLStatementContext<ExplainStatement> sqlStatementContext = mock(ExplainStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(MySQLExplainStatement.class));
-        EncryptResultDecoratorEngine engine = (EncryptResultDecoratorEngine) ResultProcessEngineFactory.newInstance(Collections.singleton(rule)).get(rule);
-        ResultDecorator<?> actual = engine.newInstance(databaseType, DefaultSchema.LOGIC_NAME, metaData, rule, mock(ConfigurationProperties.class), sqlStatementContext);
+        EncryptResultDecoratorEngine engine = (EncryptResultDecoratorEngine) ResultProcessEngineFactory.getInstances(Collections.singleton(rule)).get(rule);
+        ResultDecorator<?> actual = engine.newInstance(databaseType, DefaultDatabase.LOGIC_NAME, metaData, rule, mock(ConfigurationProperties.class), sqlStatementContext);
         assertThat(actual, instanceOf(EncryptDALResultDecorator.class));
     }
     
     @Test
     public void assertNewInstanceWithOtherStatement() {
-        EncryptResultDecoratorEngine engine = (EncryptResultDecoratorEngine) ResultProcessEngineFactory.newInstance(Collections.singleton(rule)).get(rule);
-        ResultDecorator<?> actual = engine.newInstance(databaseType, DefaultSchema.LOGIC_NAME, metaData, rule, mock(ConfigurationProperties.class), mock(InsertStatementContext.class));
+        EncryptResultDecoratorEngine engine = (EncryptResultDecoratorEngine) ResultProcessEngineFactory.getInstances(Collections.singleton(rule)).get(rule);
+        ResultDecorator<?> actual = engine.newInstance(databaseType, DefaultDatabase.LOGIC_NAME, metaData, rule, mock(ConfigurationProperties.class), mock(InsertStatementContext.class));
         assertThat(actual, instanceOf(TransparentResultDecorator.class));
     }
 }

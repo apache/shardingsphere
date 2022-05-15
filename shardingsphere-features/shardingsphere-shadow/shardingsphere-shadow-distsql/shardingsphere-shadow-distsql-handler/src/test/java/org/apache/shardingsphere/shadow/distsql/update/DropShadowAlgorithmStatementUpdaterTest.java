@@ -60,11 +60,11 @@ public final class DropShadowAlgorithmStatementUpdaterTest {
     public void assertUpdate() throws DistSQLException {
         DropShadowAlgorithmStatement sqlStatement = createSQLStatement("ds_0");
         sqlStatement.setContainsExistClause(true);
-        ShadowRuleConfiguration configuration = new ShadowRuleConfiguration();
-        configuration.getTables().put("t_order", new ShadowTableConfiguration(new ArrayList<>(Collections.singletonList("ds_0")), Collections.emptyList()));
-        updater.checkSQLStatement(shardingSphereMetaData, sqlStatement, configuration);
-        updater.updateCurrentRuleConfiguration(sqlStatement, configuration);
-        assertFalse(configuration.getTables().containsKey("ds_0"));
+        ShadowRuleConfiguration ruleConfig = new ShadowRuleConfiguration();
+        ruleConfig.getTables().put("t_order", new ShadowTableConfiguration(new ArrayList<>(Collections.singletonList("ds_0")), Collections.emptyList()));
+        updater.checkSQLStatement(shardingSphereMetaData, sqlStatement, ruleConfig);
+        updater.updateCurrentRuleConfiguration(sqlStatement, ruleConfig);
+        assertFalse(ruleConfig.getTables().containsKey("ds_0"));
     }
     
     private DropShadowAlgorithmStatement createSQLStatement(final String... ruleName) {

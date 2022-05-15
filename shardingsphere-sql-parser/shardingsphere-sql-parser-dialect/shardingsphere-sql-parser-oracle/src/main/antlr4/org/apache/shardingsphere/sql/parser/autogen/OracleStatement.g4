@@ -77,5 +77,16 @@ execute
     | alterDatabaseLink
     | alterDatabaseDictionary
     | createSynonym
+    | createDirectory
+    | dropSynonym
+    | dropPackage
+    | dropEdition
+    | dropOutline
+    | alterOutline
+    | alterAnalyticView
+    | alterAttributeDimension
+    | createSequence
+    | alterPackage
+    | createContext
     ) SEMI_?
     ;

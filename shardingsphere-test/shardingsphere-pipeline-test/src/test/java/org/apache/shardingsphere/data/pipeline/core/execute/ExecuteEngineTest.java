@@ -32,7 +32,7 @@ public final class ExecuteEngineTest {
     
     @Test
     public void assertSubmitMoreThanMaxWorkerNumber() {
-        ExecuteEngine executeEngine = ExecuteEngine.newFixedThreadInstance(2);
+        ExecuteEngine executeEngine = ExecuteEngine.newFixedThreadInstance(2, ExecuteEngineTest.class.getSimpleName());
         try {
             for (int i = 0; i < 5; i++) {
                 Future<?> submit = executeEngine.submit(mockScalingExecutor());
@@ -45,7 +45,7 @@ public final class ExecuteEngineTest {
     
     @Test
     public void assertSubmitAllMoreThanMaxWorkerNumber() {
-        ExecuteEngine executeEngine = ExecuteEngine.newFixedThreadInstance(2);
+        ExecuteEngine executeEngine = ExecuteEngine.newFixedThreadInstance(2, ExecuteEngineTest.class.getSimpleName());
         try {
             for (int i = 0; i < 5; i++) {
                 Future<?> submit = executeEngine.submitAll(Collections.singletonList(mockScalingExecutor()), mockExecuteCallback());
@@ -58,6 +58,7 @@ public final class ExecuteEngineTest {
     
     private ExecuteCallback mockExecuteCallback() {
         return new ExecuteCallback() {
+            
             @Override
             public void onSuccess() {
                 
@@ -73,6 +74,7 @@ public final class ExecuteEngineTest {
     private LifecycleExecutor mockScalingExecutor() {
         
         return new LifecycleExecutor() {
+            
             @Override
             public void run() {
                 ThreadUtil.sleep(100L);

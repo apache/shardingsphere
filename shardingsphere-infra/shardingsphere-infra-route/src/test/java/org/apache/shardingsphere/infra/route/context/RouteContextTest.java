@@ -89,9 +89,7 @@ public final class RouteContextTest {
     
     @Test
     public void assertGetActualTableNameGroups() {
-        Set<String> logicTableSet = new HashSet<>();
-        logicTableSet.add(LOGIC_TABLE);
-        List<Set<String>> actual = multiRouteContext.getActualTableNameGroups(DATASOURCE_NAME_1, logicTableSet);
+        List<Set<String>> actual = multiRouteContext.getActualTableNameGroups(DATASOURCE_NAME_1, new HashSet<>(Collections.singleton(LOGIC_TABLE)));
         assertThat(actual.size(), is(1));
         assertTrue(actual.get(0).contains(ACTUAL_TABLE));
     }

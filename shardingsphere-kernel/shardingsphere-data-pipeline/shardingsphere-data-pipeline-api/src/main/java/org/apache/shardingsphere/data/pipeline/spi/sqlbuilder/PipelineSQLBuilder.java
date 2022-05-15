@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.spi.sqlbuilder;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
-import org.apache.shardingsphere.spi.type.typed.StatefulTypedSPI;
+import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 
 import java.util.Collection;
 import java.util.List;
@@ -31,26 +31,50 @@ import java.util.Set;
 /**
  * Pipeline SQL builder.
  */
-public interface PipelineSQLBuilder extends StatefulTypedSPI {
+public interface PipelineSQLBuilder extends TypedSPI {
+    
+    /**
+     * Build create schema SQL.
+     *
+     * @param schemaName schema name
+     * @return create schema SQL
+     */
+    default String buildCreateSchemaSQL(String schemaName) {
+        throw new UnsupportedOperationException();
+    }
+    
+    /**
+     * Build inventory dump first SQL.
+     *
+     * @param schemaName schema name
+     * @param tableName table name
+     * @param uniqueKey unique key
+     * @param uniqueKeyDataType unique key data type
+     * @param firstQuery whether it's the first time query
+     * @return inventory dump SQL
+     */
+    String buildInventoryDumpSQL(String schemaName, String tableName, String uniqueKey, int uniqueKeyDataType, boolean firstQuery);
     
     /**
      * Build insert SQL.
      *
+     * @param schemaName schema name
      * @param dataRecord data record
      * @param shardingColumnsMap sharding columns map
      * @return insert SQL
      */
-    String buildInsertSQL(DataRecord dataRecord, Map<LogicTableName, Set<String>> shardingColumnsMap);
+    String buildInsertSQL(String schemaName, DataRecord dataRecord, Map<LogicTableName, Set<String>> shardingColumnsMap);
     
     /**
      * Build update SQL.
      *
+     * @param schemaName schema name
      * @param dataRecord data record
      * @param conditionColumns condition columns
      * @param shardingColumnsMap sharding columns map
      * @return update SQL
      */
-    String buildUpdateSQL(DataRecord dataRecord, Collection<Column> conditionColumns, Map<LogicTableName, Set<String>> shardingColumnsMap);
+    String buildUpdateSQL(String schemaName, DataRecord dataRecord, Collection<Column> conditionColumns, Map<LogicTableName, Set<String>> shardingColumnsMap);
     
     /**
      * Extract updated columns.
@@ -64,63 +88,70 @@ public interface PipelineSQLBuilder extends StatefulTypedSPI {
     /**
      * Build delete SQL.
      *
+     * @param schemaName schema name
      * @param dataRecord data record
      * @param conditionColumns condition columns
      * @return delete SQL
      */
-    String buildDeleteSQL(DataRecord dataRecord, Collection<Column> conditionColumns);
+    String buildDeleteSQL(String schemaName, DataRecord dataRecord, Collection<Column> conditionColumns);
     
     /**
      * Build truncate SQL.
      *
+     * @param schemaName schema name
      * @param tableName table name
      * @return truncate SQL
      */
-    String buildTruncateSQL(String tableName);
+    String buildTruncateSQL(String schemaName, String tableName);
     
     /**
      * Build count SQL.
      *
+     * @param schemaName schema name
      * @param tableName table name
      * @return count SQL
      */
-    String buildCountSQL(String tableName);
+    String buildCountSQL(String schemaName, String tableName);
     
     /**
      * Build query SQL.
      *
+     * @param schemaName schema name
      * @param tableName table name
      * @param uniqueKey unique key, it may be primary key, not null
-     * @param startUniqueValue start unique value, not null
+     * @param firstQuery first query
      * @return query SQL
      */
-    String buildChunkedQuerySQL(String tableName, String uniqueKey, Number startUniqueValue);
+    String buildChunkedQuerySQL(String schemaName, String tableName, String uniqueKey, boolean firstQuery);
     
     /**
      * Build check empty SQL.
      *
+     * @param schemaName schema name
      * @param tableName table name
      * @return check SQL
      */
-    String buildCheckEmptySQL(String tableName);
+    String buildCheckEmptySQL(String schemaName, String tableName);
     
     /**
      * Build split by primary key range SQL.
      *
+     * @param schemaName schema name
      * @param tableName table name
      * @param primaryKey primary key
      * @return split SQL
      */
-    String buildSplitByPrimaryKeyRangeSQL(String tableName, String primaryKey);
+    String buildSplitByPrimaryKeyRangeSQL(String schemaName, String tableName, String primaryKey);
     
     /**
      * Build CRC32 SQL.
      *
+     * @param schemaName schema name
      * @param tableName table Name
      * @param column column
      * @return CRC32 SQL
      */
-    default Optional<String> buildCRC32SQL(final String tableName, final String column) {
+    default Optional<String> buildCRC32SQL(final String schemaName, final String tableName, final String column) {
         return Optional.empty();
     }
 }

@@ -79,7 +79,7 @@ public final class RouteContext {
      * @return actual table groups
      */
     public List<Set<String>> getActualTableNameGroups(final String actualDataSourceName, final Set<String> logicTableNames) {
-        return logicTableNames.stream().map(each -> getActualTableNames(actualDataSourceName, each)).filter(actualTableNames -> !actualTableNames.isEmpty()).collect(Collectors.toList());
+        return logicTableNames.stream().map(each -> getActualTableNames(actualDataSourceName, each)).filter(each -> !each.isEmpty()).collect(Collectors.toList());
     }
     
     private Set<String> getActualTableNames(final String actualDataSourceName, final String logicTableName) {

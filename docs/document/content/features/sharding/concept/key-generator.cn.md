@@ -20,7 +20,7 @@ Apache ShardingSphere 不仅提供了内置的分布式主键生成器，例如 
 
 ### NanoID
 
-生成长度为21的字符串分布式主键。
+生成长度为 21 的字符串分布式主键。
 
 ### SNOWFLAKE
 

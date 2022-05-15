@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.data.pipeline.spi.check.datasource;
 
-import org.apache.shardingsphere.spi.type.typed.StatelessTypedSPI;
+import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -25,7 +27,8 @@ import java.util.Collection;
 /**
  * Data source checker.
  */
-public interface DataSourceChecker extends StatelessTypedSPI {
+@SingletonSPI
+public interface DataSourceChecker extends TypedSPI {
     
     /**
      * Check data source connections.
@@ -52,8 +55,9 @@ public interface DataSourceChecker extends StatelessTypedSPI {
      * Check table is empty.
      *
      * @param dataSources data sources
-     * @param tableNames table names
+     * @param tableNameSchemaNameMapping mapping
+     * @param logicTableNames logic table names
      */
     // TODO rename to common usage name
-    void checkTargetTable(Collection<? extends DataSource> dataSources, Collection<String> tableNames);
+    void checkTargetTable(Collection<? extends DataSource> dataSources, TableNameSchemaNameMapping tableNameSchemaNameMapping, Collection<String> logicTableNames);
 }

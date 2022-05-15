@@ -26,11 +26,9 @@ import org.apache.shardingsphere.sharding.rewrite.parameter.impl.ShardingGenerat
 import org.junit.Test;
 import org.mockito.stubbing.Answer;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.hasItem;
@@ -85,25 +83,17 @@ public final class ShardingGeneratedKeyInsertValueParameterRewriterTest {
             addedIndexAndParameters.put(index, parameters);
             return null;
         }).when(standardParameterBuilder).addAddedParameters(anyInt(), anyCollection());
-        List<StandardParameterBuilder> parameterBuildersList = new ArrayList<>();
-        parameterBuildersList.add(standardParameterBuilder);
         GroupedParameterBuilder result = mock(GroupedParameterBuilder.class);
-        when(result.getParameterBuilders()).thenReturn(parameterBuildersList);
+        when(result.getParameterBuilders()).thenReturn(Collections.singletonList(standardParameterBuilder));
         return result;
     }
     
     private InsertStatementContext getInsertStatementContext() {
         InsertStatementContext result = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
-        when(result.getGeneratedKeyContext().isPresent()).thenReturn(Boolean.TRUE);
+        when(result.getGeneratedKeyContext().isPresent()).thenReturn(true);
         when(result.getGeneratedKeyContext().get().getColumnName()).thenReturn("testColumnName");
-        Collection<Comparable<?>> generatedValuesCollection = new LinkedList<>();
-        generatedValuesCollection.add(TEST_GENERATED_VALUE);
-        when(result.getGeneratedKeyContext().get().getGeneratedValues()).thenReturn(generatedValuesCollection);
-        List<Object> groupedParameter = new LinkedList<>();
-        groupedParameter.add("testGroupedParameter");
-        List<List<Object>> groupedParametersList = new LinkedList<>();
-        groupedParametersList.add(groupedParameter);
-        when(result.getGroupedParameters()).thenReturn(groupedParametersList);
+        when(result.getGeneratedKeyContext().get().getGeneratedValues()).thenReturn(Collections.singleton(TEST_GENERATED_VALUE));
+        when(result.getGroupedParameters()).thenReturn(Collections.singletonList(Collections.singletonList("testGroupedParameter")));
         when(result.getInsertValueContexts().get(0).getParameterCount()).thenReturn(TEST_PARAMETER_COUNT);
         return result;
     }

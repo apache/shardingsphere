@@ -45,7 +45,6 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -63,10 +62,9 @@ public final class AuthorityCheckerTest {
         Collection<ShardingSphereUser> users = new LinkedList<>();
         ShardingSphereUser root = new ShardingSphereUser("root", "", "localhost");
         users.add(root);
-        AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(users, new ShardingSphereAlgorithmConfiguration("ALL_PRIVILEGES_PERMITTED", new Properties()));
+        AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(users, new ShardingSphereAlgorithmConfiguration("ALL_PERMITTED", new Properties()));
         AuthorityRule rule = new AuthorityRule(ruleConfig, Collections.emptyMap());
-        SQLChecker<AuthorityRule> sqlChecker = SQLCheckerFactory.newInstance(Collections.singleton(rule)).get(rule);
-        assertNotNull(sqlChecker);
+        SQLChecker<AuthorityRule> sqlChecker = SQLCheckerFactory.getInstance(Collections.singleton(rule)).get(rule);
         assertTrue(sqlChecker.check("db0", new Grantee("root", "localhost"), rule));
     }
     
@@ -78,8 +76,7 @@ public final class AuthorityCheckerTest {
         users.add(root);
         AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(users, new ShardingSphereAlgorithmConfiguration("NATIVE", new Properties()));
         AuthorityRule rule = new AuthorityRule(ruleConfig, createMetaDataMap(users));
-        SQLChecker<AuthorityRule> sqlChecker = SQLCheckerFactory.newInstance(Collections.singleton(rule)).get(rule);
-        assertNotNull(sqlChecker);
+        SQLChecker<AuthorityRule> sqlChecker = SQLCheckerFactory.getInstance(Collections.singleton(rule)).get(rule);
         assertTrue(sqlChecker.check("db0", new Grantee("root", "localhost"), rule));
         assertFalse(sqlChecker.check("db1", new Grantee("root", "localhost"), rule));
         assertFalse(sqlChecker.check("db0", new Grantee("other", "localhost"), rule));
@@ -93,8 +90,7 @@ public final class AuthorityCheckerTest {
         users.add(root);
         AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(users, new ShardingSphereAlgorithmConfiguration("NATIVE", new Properties()));
         AuthorityRule rule = new AuthorityRule(ruleConfig, Collections.emptyMap());
-        SQLChecker<AuthorityRule> sqlChecker = SQLCheckerFactory.newInstance(Collections.singleton(rule)).get(rule);
-        assertNotNull(sqlChecker);
+        SQLChecker<AuthorityRule> sqlChecker = SQLCheckerFactory.getInstance(Collections.singleton(rule)).get(rule);
         assertTrue(sqlChecker.check(new Grantee("root", "localhost"), rule));
         assertFalse(sqlChecker.check(new Grantee("root", "192.168.0.1"), rule));
         assertFalse(sqlChecker.check(new Grantee("admin", "localhost"), rule));
@@ -108,8 +104,7 @@ public final class AuthorityCheckerTest {
         users.add(root);
         AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(users, new ShardingSphereAlgorithmConfiguration("NATIVE", new Properties()));
         AuthorityRule rule = new AuthorityRule(ruleConfig, Collections.emptyMap());
-        SQLChecker<AuthorityRule> sqlChecker = SQLCheckerFactory.newInstance(Collections.singleton(rule)).get(rule);
-        assertNotNull(sqlChecker);
+        SQLChecker<AuthorityRule> sqlChecker = SQLCheckerFactory.getInstance(Collections.singleton(rule)).get(rule);
         SelectStatement selectStatement = mock(SelectStatement.class);
         CreateTableStatement createTableStatement = mock(CreateTableStatement.class);
         InsertStatement insertStatement = mock(InsertStatement.class);
@@ -134,7 +129,7 @@ public final class AuthorityCheckerTest {
         String globalPrivilegeSQL = "SELECT * FROM mysql.user WHERE (user, host) in (%s)";
         String schemaPrivilegeSQL = "SELECT * FROM mysql.db WHERE (user, host) in (%s)";
         String tablePrivilegeSQL = "SELECT Db, Table_name, Table_priv FROM mysql.tables_priv WHERE (user, host) in (%s)";
-        String useHostTuples = users.stream().map(item -> String.format("('%s', '%s')", item.getGrantee().getUsername(), item.getGrantee().getHostname())).collect(Collectors.joining(", "));
+        String useHostTuples = users.stream().map(each -> String.format("('%s', '%s')", each.getGrantee().getUsername(), each.getGrantee().getHostname())).collect(Collectors.joining(", "));
         when(result.getConnection().createStatement().executeQuery(String.format(globalPrivilegeSQL, useHostTuples))).thenReturn(globalPrivilegeResultSet);
         when(result.getConnection().createStatement().executeQuery(String.format(schemaPrivilegeSQL, useHostTuples))).thenReturn(schemaPrivilegeResultSet);
         when(result.getConnection().createStatement().executeQuery(String.format(tablePrivilegeSQL, useHostTuples))).thenReturn(tablePrivilegeResultSet);

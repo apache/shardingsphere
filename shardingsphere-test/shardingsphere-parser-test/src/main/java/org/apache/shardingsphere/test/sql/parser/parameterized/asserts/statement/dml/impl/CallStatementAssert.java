@@ -30,7 +30,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.e
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.call.ExpectedCallParameter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.CallStatementTestCase;
 
-import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -55,7 +55,7 @@ public final class CallStatementAssert {
         if (actual instanceof MySQLCallStatement) {
             MySQLCallStatement actualStatement = (MySQLCallStatement) actual;
             if (actualStatement.getParameters() != null && expected.getProcedureParameters() != null) {
-                assertThat(assertContext.getText("Procedure parameters assertion error: "), actualStatement.getParameters().size(), equalTo(expected.getProcedureParameters().getParameters().size()));
+                assertThat(assertContext.getText("Procedure parameters assertion error: "), actualStatement.getParameters().size(), is(expected.getProcedureParameters().getParameters().size()));
                 int count = 0;
                 for (ExpressionSegment each : actualStatement.getParameters()) {
                     assertParameter(assertContext, each, expected.getProcedureParameters().getParameters().get(count));
@@ -77,7 +77,7 @@ public final class CallStatementAssert {
     
     private static void assertProcedureName(final SQLCaseAssertContext assertContext, final CallStatement actual, final CallStatementTestCase expected) {
         if (actual instanceof MySQLCallStatement) {
-            assertThat(assertContext.getText("Procedure name assertion error: "), ((MySQLCallStatement) actual).getProcedureName(), equalTo(expected.getProcedureName().getName()));
+            assertThat(assertContext.getText("Procedure name assertion error: "), ((MySQLCallStatement) actual).getProcedureName(), is(expected.getProcedureName().getName()));
         }
     }
 }

@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateSchemaStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 import java.util.Optional;
@@ -33,14 +34,14 @@ import java.util.Optional;
 @ToString
 public final class PostgreSQLCreateSchemaStatement extends CreateSchemaStatement implements PostgreSQLStatement {
     
-    private String username;
+    private IdentifierValue username;
     
     /**
      * Get username.
      *
      * @return username
      */
-    public Optional<String> getUsername() {
+    public Optional<IdentifierValue> getUsername() {
         return Optional.ofNullable(username);
     }
 }

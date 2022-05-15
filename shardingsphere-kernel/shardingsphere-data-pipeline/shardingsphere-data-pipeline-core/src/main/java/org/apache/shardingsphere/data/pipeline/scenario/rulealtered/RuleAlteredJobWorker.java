@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPIFactory;
+import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
@@ -42,7 +42,7 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrlAppender;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.lock.LockContext;
@@ -89,7 +89,7 @@ public final class RuleAlteredJobWorker {
         if (null == ruleConfig) {
             return false;
         }
-        Optional<RuleAlteredDetector> detector = RuleAlteredDetectorFactory.newInstance(ruleConfig);
+        Optional<RuleAlteredDetector> detector = RuleAlteredDetectorFactory.findInstance(ruleConfig);
         return detector.isPresent() && detector.get().getOnRuleAlteredActionConfig(ruleConfig).isPresent();
     }
     
@@ -132,14 +132,14 @@ public final class RuleAlteredJobWorker {
             throw new PipelineJobCreationException("could not find altered rule");
         }
         RuleConfiguration ruleConfig = SWAPPER_ENGINE.swapToRuleConfiguration(yamlRuleConfig);
-        Optional<RuleAlteredDetector> detector = RuleAlteredDetectorFactory.newInstance(ruleConfig);
+        Optional<RuleAlteredDetector> detector = RuleAlteredDetectorFactory.findInstance(ruleConfig);
         Preconditions.checkState(detector.isPresent());
         Optional<OnRuleAlteredActionConfiguration> onRuleAlteredActionConfig = detector.get().getOnRuleAlteredActionConfig(ruleConfig);
         if (!onRuleAlteredActionConfig.isPresent()) {
             log.error("rule altered action enabled but actor is not configured, ignored, ruleConfig={}", ruleConfig);
             throw new PipelineJobCreationException("rule altered actor not configured");
         }
-        return new RuleAlteredContext(onRuleAlteredActionConfig.get());
+        return new RuleAlteredContext(jobConfig.getJobId(), onRuleAlteredActionConfig.get());
     }
     
     /**
@@ -165,13 +165,13 @@ public final class RuleAlteredJobWorker {
     @Subscribe
     public void start(final StartScalingEvent event) {
         log.info("Start scaling job by {}", event);
-        if (!hasUncompletedJobOfSameDatabaseName(event.getDatabaseName())) {
+        if (hasUncompletedJobOfSameDatabaseName(event.getDatabaseName())) {
             log.warn("There is uncompleted job with the same database name, please handle it first, current job will be ignored");
             return;
         }
         Optional<RuleAlteredJobConfiguration> jobConfigOptional = createJobConfig(event);
         if (jobConfigOptional.isPresent()) {
-            PipelineJobAPIFactory.newInstance().start(jobConfigOptional.get());
+            RuleAlteredJobAPIFactory.getInstance().start(jobConfigOptional.get());
         } else {
             log.info("Switch rule configuration immediately.");
             ScalingTaskFinishedEvent taskFinishedEvent = new ScalingTaskFinishedEvent(event.getDatabaseName(), event.getActiveVersion(), event.getNewVersion());
@@ -186,7 +186,7 @@ public final class RuleAlteredJobWorker {
         Map<String, List<String>> alteredRuleYamlClassNameTablesMap = new HashMap<>();
         for (Pair<YamlRuleConfiguration, YamlRuleConfiguration> each : groupSourceTargetRuleConfigsByType(sourceRootConfig.getRules(), targetRootConfig.getRules())) {
             YamlRuleConfiguration yamlRuleConfig = null == each.getLeft() ? each.getRight() : each.getLeft();
-            Optional<RuleAlteredDetector> detector = RuleAlteredDetectorFactory.newInstance(yamlRuleConfig);
+            Optional<RuleAlteredDetector> detector = RuleAlteredDetectorFactory.findInstance(yamlRuleConfig);
             if (!detector.isPresent()) {
                 continue;
             }
@@ -259,7 +259,7 @@ public final class RuleAlteredJobWorker {
             log.warn("disableSSLForMySQL, could not get jdbcUrl, jdbcUrlKey={}", jdbcUrlKey);
             return;
         }
-        DatabaseType databaseType = DatabaseTypeRegistry.getDatabaseTypeByURL(jdbcUrl);
+        DatabaseType databaseType = DatabaseTypeEngine.getDatabaseType(jdbcUrl);
         if (!(databaseType instanceof MySQLDatabaseType)) {
             return;
         }
@@ -274,30 +274,31 @@ public final class RuleAlteredJobWorker {
      * Build task configuration.
      *
      * @param jobConfig job configuration
+     * @param jobShardingItem job sharding item
      * @param onRuleAlteredActionConfig action configuration
      * @return task configuration
      */
-    public static TaskConfiguration buildTaskConfig(final RuleAlteredJobConfiguration jobConfig, final OnRuleAlteredActionConfiguration onRuleAlteredActionConfig) {
-        return RuleAlteredJobConfigurationPreparerFactory.newInstance().createTaskConfiguration(jobConfig, onRuleAlteredActionConfig);
+    public static TaskConfiguration buildTaskConfig(final RuleAlteredJobConfiguration jobConfig, final int jobShardingItem, final OnRuleAlteredActionConfiguration onRuleAlteredActionConfig) {
+        return RuleAlteredJobConfigurationPreparerFactory.getInstance().createTaskConfiguration(jobConfig, jobShardingItem, onRuleAlteredActionConfig);
     }
     
     private boolean hasUncompletedJobOfSameDatabaseName(final String databaseName) {
         boolean result = false;
-        for (JobInfo each : PipelineJobAPIFactory.newInstance().list()) {
-            if (PipelineJobAPIFactory.newInstance().getProgress(each.getJobId()).values().stream()
+        for (JobInfo each : RuleAlteredJobAPIFactory.getInstance().list()) {
+            if (RuleAlteredJobAPIFactory.getInstance().getProgress(each.getJobId()).values().stream()
                     .allMatch(progress -> null != progress && progress.getStatus().equals(JobStatus.FINISHED))) {
                 continue;
             }
             RuleAlteredJobConfiguration jobConfig = YamlEngine.unmarshal(each.getJobParameter(), RuleAlteredJobConfiguration.class, true);
-            if (hasUncompletedJobOfSameDatabaseName(jobConfig, each.getJobId(), databaseName)) {
+            if (hasUncompletedJobOfSameDatabaseName(jobConfig, databaseName)) {
                 result = true;
                 break;
             }
         }
-        return !result;
+        return result;
     }
     
-    private boolean hasUncompletedJobOfSameDatabaseName(final RuleAlteredJobConfiguration jobConfig, final String jobId, final String currentDatabaseName) {
+    private boolean hasUncompletedJobOfSameDatabaseName(final RuleAlteredJobConfiguration jobConfig, final String currentDatabaseName) {
         return currentDatabaseName.equals(jobConfig.getDatabaseName());
     }
     
@@ -322,8 +323,8 @@ public final class RuleAlteredJobWorker {
     private void restoreSourceWriting(final String databaseName) {
         log.info("restoreSourceWriting, databaseName={}", databaseName);
         LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
-        ShardingSphereLock lock = lockContext.getGlobalLock(databaseName);
-        if (null != lock && lock.isLocked()) {
+        ShardingSphereLock lock = lockContext.getMutexLock(databaseName);
+        if (null != lock && lock.isLocked(databaseName)) {
             log.info("Source writing is still stopped on database '{}', restore it now", databaseName);
             lock.releaseLock(databaseName);
         }

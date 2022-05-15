@@ -19,12 +19,12 @@ package org.apache.shardingsphere.mode.manager.cluster;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
+import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
@@ -56,7 +56,9 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -68,7 +70,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     @Override
     public ContextManager build(final ContextManagerBuilderParameter parameter) throws SQLException {
         ModeScheduleContextFactory.getInstance().init(parameter.getInstanceDefinition().getInstanceId().getId(), parameter.getModeConfig());
-        ClusterPersistRepository repository = ClusterPersistRepositoryFactory.newInstance((ClusterPersistRepositoryConfiguration) parameter.getModeConfig().getRepository());
+        ClusterPersistRepository repository = ClusterPersistRepositoryFactory.getInstance((ClusterPersistRepositoryConfiguration) parameter.getModeConfig().getRepository());
         MetaDataPersistService metaDataPersistService = new MetaDataPersistService(repository);
         persistConfigurations(metaDataPersistService, parameter);
         RegistryCenter registryCenter = new RegistryCenter(repository);
@@ -96,7 +98,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         Optional<TransactionRule> transactionRule =
                 metaDataContexts.getGlobalRuleMetaData().getRules().stream().filter(each -> each instanceof TransactionRule).map(each -> (TransactionRule) each).findFirst();
         Optional<TransactionConfigurationFileGenerator> fileGenerator = transactionRule.isPresent()
-                ? TransactionConfigurationFileGeneratorFactory.newInstance(transactionRule.get().getProviderType())
+                ? TransactionConfigurationFileGeneratorFactory.findInstance(transactionRule.get().getProviderType())
                 : Optional.empty();
         if (!databaseName.isPresent() || !fileGenerator.isPresent()) {
             return transactionRule.isPresent() ? transactionRule.get().getProps() : new Properties();
@@ -130,14 +132,22 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         Collection<RuleConfiguration> globalRuleConfigs = metaDataPersistService.getGlobalRuleService().load();
         Properties props = metaDataPersistService.getPropsService().load();
         MetaDataContextsBuilder result = new MetaDataContextsBuilder(globalRuleConfigs, props);
-        DatabaseType databaseType = DatabaseTypeFactory.getDatabaseType(parameter.getDatabaseConfigs(), new ConfigurationProperties(parameter.getProps()));
-        for (String each : databaseNames) {
-            if (databaseType.getSystemSchemas().contains(each)) {
-                continue;
+        Map<String, ? extends DatabaseConfiguration> databaseConfigMap = getDatabaseConfigMap(databaseNames, metaDataPersistService, parameter);
+        DatabaseType frontendDatabaseType = DatabaseTypeEngine.getFrontendDatabaseType(databaseConfigMap, new ConfigurationProperties(props));
+        DatabaseType backendDatabaseType = DatabaseTypeEngine.getBackendDatabaseType(databaseConfigMap);
+        for (Entry<String, ? extends DatabaseConfiguration> entry : databaseConfigMap.entrySet()) {
+            if (!backendDatabaseType.getSystemSchemas().contains(entry.getKey())) {
+                result.addDatabase(entry.getKey(), frontendDatabaseType, backendDatabaseType, entry.getValue(), props);
             }
-            result.addDatabase(each, databaseType, createDatabaseConfiguration(each, metaDataPersistService, parameter), props);
         }
-        result.addSystemDatabases(databaseType);
+        result.addSystemDatabases(frontendDatabaseType);
+        return result;
+    }
+    
+    private Map<String, DatabaseConfiguration> getDatabaseConfigMap(final Collection<String> databaseNames, final MetaDataPersistService metaDataPersistService,
+                                                                    final ContextManagerBuilderParameter parameter) {
+        Map<String, DatabaseConfiguration> result = new HashMap<>(databaseNames.size(), 1);
+        databaseNames.forEach(each -> result.put(each, createDatabaseConfiguration(each, metaDataPersistService, parameter)));
         return result;
     }
     
@@ -178,7 +188,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         Optional<TransactionRule> transactionRule = metaDataContexts.getGlobalRuleMetaData().getRules()
                 .stream().filter(each -> each instanceof TransactionRule).map(each -> (TransactionRule) each).findFirst();
         if (transactionRule.isPresent()) {
-            Optional<TransactionConfigurationFileGenerator> fileGenerator = TransactionConfigurationFileGeneratorFactory.newInstance(transactionRule.get().getProviderType());
+            Optional<TransactionConfigurationFileGenerator> fileGenerator = TransactionConfigurationFileGeneratorFactory.findInstance(transactionRule.get().getProviderType());
             fileGenerator.ifPresent(optional -> optional.generateFile(transactionProps, instanceContext));
         }
     }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.transaction.context;
 
-import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
 import org.junit.Test;
 
@@ -43,19 +43,18 @@ public final class TransactionContextsTest {
     
     @Test
     public void assertGetDefaultTransactionManagerEngine() {
-        Map<String, ShardingSphereTransactionManagerEngine> actualEngines = Collections.singletonMap(DefaultSchema.LOGIC_NAME, new ShardingSphereTransactionManagerEngine());
+        Map<String, ShardingSphereTransactionManagerEngine> actualEngines = Collections.singletonMap(DefaultDatabase.LOGIC_NAME, new ShardingSphereTransactionManagerEngine());
         TransactionContexts transactionContexts = new TransactionContexts(actualEngines);
         Map<String, ShardingSphereTransactionManagerEngine> engines = transactionContexts.getEngines();
         assertThat(engines.size(), is(1));
         assertThat(engines, is(actualEngines));
-        ShardingSphereTransactionManagerEngine defaultEngine = transactionContexts.getEngines().get(DefaultSchema.LOGIC_NAME);
-        assertNotNull(defaultEngine);
+        assertNotNull(transactionContexts.getEngines().get(DefaultDatabase.LOGIC_NAME));
     }
     
     @Test
     public void assertClose() throws Exception {
         ShardingSphereTransactionManagerEngine shardingSphereTransactionManagerEngine = mock(ShardingSphereTransactionManagerEngine.class);
-        TransactionContexts transactionContexts = new TransactionContexts(Collections.singletonMap(DefaultSchema.LOGIC_NAME, shardingSphereTransactionManagerEngine));
+        TransactionContexts transactionContexts = new TransactionContexts(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, shardingSphereTransactionManagerEngine));
         transactionContexts.close();
         verify(shardingSphereTransactionManagerEngine).close();
     }
@@ -64,7 +63,7 @@ public final class TransactionContextsTest {
     public void assertCloseThrowsException() throws Exception {
         ShardingSphereTransactionManagerEngine shardingSphereTransactionManagerEngine = mock(ShardingSphereTransactionManagerEngine.class);
         doThrow(new RuntimeException("")).when(shardingSphereTransactionManagerEngine).close();
-        TransactionContexts transactionContexts = new TransactionContexts(Collections.singletonMap(DefaultSchema.LOGIC_NAME, shardingSphereTransactionManagerEngine));
+        TransactionContexts transactionContexts = new TransactionContexts(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, shardingSphereTransactionManagerEngine));
         transactionContexts.close();
     }
 }

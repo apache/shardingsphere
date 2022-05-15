@@ -52,7 +52,7 @@ public final class MySQLPrivilegeHandlerTest {
         Collection<ShardingSphereUser> newUsers = createUsers();
         newUsers.add(new ShardingSphereUser("root", "", "127.0.0.2"));
         DataSource dataSource = mockDataSourceForUsers(newUsers);
-        Optional<StoragePrivilegeHandler> storagePrivilegeHandler = StoragePrivilegeHandlerFactory.newInstance("MySQL");
+        Optional<StoragePrivilegeHandler> storagePrivilegeHandler = StoragePrivilegeHandlerFactory.findInstance("MySQL");
         assertTrue(storagePrivilegeHandler.isPresent());
         assertDiffUsers(storagePrivilegeHandler.get().diff(newUsers, dataSource));
     }
@@ -61,7 +61,7 @@ public final class MySQLPrivilegeHandlerTest {
     public void assertCreate() throws SQLException {
         Collection<ShardingSphereUser> users = createUsers();
         DataSource dataSource = mockDataSourceForUsers(users);
-        Optional<StoragePrivilegeHandler> storagePrivilegeHandler = StoragePrivilegeHandlerFactory.newInstance("MySQL");
+        Optional<StoragePrivilegeHandler> storagePrivilegeHandler = StoragePrivilegeHandlerFactory.findInstance("MySQL");
         assertTrue(storagePrivilegeHandler.isPresent());
         storagePrivilegeHandler.get().create(users, dataSource);
         assertCreateUsers(users, dataSource.getConnection().createStatement());
@@ -71,7 +71,7 @@ public final class MySQLPrivilegeHandlerTest {
     public void assertGrantAll() throws SQLException {
         Collection<ShardingSphereUser> users = createUsers();
         DataSource dataSource = mockDataSourceForUsers(users);
-        Optional<StoragePrivilegeHandler> storagePrivilegeHandler = StoragePrivilegeHandlerFactory.newInstance("MySQL");
+        Optional<StoragePrivilegeHandler> storagePrivilegeHandler = StoragePrivilegeHandlerFactory.findInstance("MySQL");
         assertTrue(storagePrivilegeHandler.isPresent());
         storagePrivilegeHandler.get().grantAll(users, dataSource);
         assertGrantUsersAll(users, dataSource.getConnection().createStatement());
@@ -81,7 +81,7 @@ public final class MySQLPrivilegeHandlerTest {
     public void assertLoad() throws SQLException {
         Collection<ShardingSphereUser> users = createUsers();
         DataSource dataSource = mockDataSourceForPrivileges(users);
-        Optional<StoragePrivilegeHandler> storagePrivilegeHandler = StoragePrivilegeHandlerFactory.newInstance("MySQL");
+        Optional<StoragePrivilegeHandler> storagePrivilegeHandler = StoragePrivilegeHandlerFactory.findInstance("MySQL");
         assertTrue(storagePrivilegeHandler.isPresent());
         assertPrivileges(storagePrivilegeHandler.get().load(users, dataSource));
     }
@@ -99,7 +99,7 @@ public final class MySQLPrivilegeHandlerTest {
         Statement statement = mock(Statement.class);
         Connection connection = mock(Connection.class);
         String diffUsersSQL = "SELECT * FROM mysql.user WHERE (user, host) in (%s)";
-        String useHostTuples = users.stream().map(item -> String.format("('%s', '%s')", item.getGrantee().getUsername(), item.getGrantee().getHostname())).collect(Collectors.joining(", "));
+        String useHostTuples = users.stream().map(each -> String.format("('%s', '%s')", each.getGrantee().getUsername(), each.getGrantee().getHostname())).collect(Collectors.joining(", "));
         when(statement.executeQuery(String.format(diffUsersSQL, useHostTuples))).thenReturn(usersResultSet);
         when(connection.createStatement()).thenReturn(statement);
         when(result.getConnection()).thenReturn(connection);
@@ -114,7 +114,7 @@ public final class MySQLPrivilegeHandlerTest {
         String globalPrivilegeSQL = "SELECT * FROM mysql.user WHERE (user, host) in (%s)";
         String schemaPrivilegeSQL = "SELECT * FROM mysql.db WHERE (user, host) in (%s)";
         String tablePrivilegeSQL = "SELECT Db, Table_name, Table_priv FROM mysql.tables_priv WHERE (user, host) in (%s)";
-        String useHostTuples = users.stream().map(item -> String.format("('%s', '%s')", item.getGrantee().getUsername(), item.getGrantee().getHostname())).collect(Collectors.joining(", "));
+        String useHostTuples = users.stream().map(each -> String.format("('%s', '%s')", each.getGrantee().getUsername(), each.getGrantee().getHostname())).collect(Collectors.joining(", "));
         when(result.getConnection().createStatement().executeQuery(String.format(globalPrivilegeSQL, useHostTuples))).thenReturn(globalPrivilegeResultSet);
         when(result.getConnection().createStatement().executeQuery(String.format(schemaPrivilegeSQL, useHostTuples))).thenReturn(schemaPrivilegeResultSet);
         when(result.getConnection().createStatement().executeQuery(String.format(tablePrivilegeSQL, useHostTuples))).thenReturn(tablePrivilegeResultSet);

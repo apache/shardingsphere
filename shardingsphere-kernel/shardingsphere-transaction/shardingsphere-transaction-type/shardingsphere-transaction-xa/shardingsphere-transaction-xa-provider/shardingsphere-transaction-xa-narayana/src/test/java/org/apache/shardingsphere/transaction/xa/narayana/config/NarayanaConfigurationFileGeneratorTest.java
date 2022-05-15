@@ -63,20 +63,20 @@ public final class NarayanaConfigurationFileGeneratorTest {
     
     @Before
     public void setUp() {
-        transactionRule = new TransactionRule(createTransactionRuleConfiguration());
+        transactionRule = new TransactionRule(new TransactionRuleConfiguration("XA", "Narayana", createProperties()));
         jdbcAccess = "com.arjuna.ats.internal.arjuna.objectstore.jdbc.accessors.DynamicDataSourceJDBCAccess;ClassName=com.mysql.jdbc.jdbc2.optional.MysqlDataSource;"
                 + "URL=jdbc:mysql://127.0.0.1:3306/jbossts;User=root;Password=12345678";
         when(instanceContext.getInstance().getInstanceDefinition().getInstanceId().getId()).thenReturn("127.0.0.1@3307");
         when(instanceContext.getInstance().getXaRecoveryId()).thenReturn("127.0.0.1@3307");
     }
     
-    private TransactionRuleConfiguration createTransactionRuleConfiguration() {
-        Properties props = new Properties();
-        props.setProperty("recoveryStoreUrl", "jdbc:mysql://127.0.0.1:3306/jbossts");
-        props.setProperty("recoveryStoreDataSource", "com.mysql.jdbc.jdbc2.optional.MysqlDataSource");
-        props.setProperty("recoveryStoreUser", "root");
-        props.setProperty("recoveryStorePassword", "12345678");
-        return new TransactionRuleConfiguration("XA", "Narayana", props);
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty("recoveryStoreUrl", "jdbc:mysql://127.0.0.1:3306/jbossts");
+        result.setProperty("recoveryStoreDataSource", "com.mysql.jdbc.jdbc2.optional.MysqlDataSource");
+        result.setProperty("recoveryStoreUser", "root");
+        result.setProperty("recoveryStorePassword", "12345678");
+        return result;
     }
     
     @Test
@@ -225,7 +225,7 @@ public final class NarayanaConfigurationFileGeneratorTest {
         Optional<NarayanaConfigEntry> entry = narayanaConfig.getEntries().stream().filter(each -> "ObjectStoreEnvironmentBean.dropTable".equals(each.getKey())).findFirst();
         assertTrue(entry.isPresent());
         assertThat(entry.get().getValue().size(), is(1));
-        assertTrue(entry.get().getValue().contains("true"));
+        assertTrue(entry.get().getValue().contains(Boolean.TRUE.toString()));
     }
     
     private void assertStateStoreJdbcAccess(final NarayanaConfiguration narayanaConfig) {
@@ -253,7 +253,7 @@ public final class NarayanaConfigurationFileGeneratorTest {
         Optional<NarayanaConfigEntry> entry = narayanaConfig.getEntries().stream().filter(each -> "ObjectStoreEnvironmentBean.stateStore.dropTable".equals(each.getKey())).findFirst();
         assertTrue(entry.isPresent());
         assertThat(entry.get().getValue().size(), is(1));
-        assertTrue(entry.get().getValue().contains("true"));
+        assertTrue(entry.get().getValue().contains(Boolean.TRUE.toString()));
     }
     
     private void assertCommunicationStoreObjectStoreType(final NarayanaConfiguration narayanaConfig) {
@@ -281,6 +281,6 @@ public final class NarayanaConfigurationFileGeneratorTest {
         Optional<NarayanaConfigEntry> entry = narayanaConfig.getEntries().stream().filter(each -> "ObjectStoreEnvironmentBean.communicationStore.dropTable".equals(each.getKey())).findFirst();
         assertTrue(entry.isPresent());
         assertThat(entry.get().getValue().size(), is(1));
-        assertTrue(entry.get().getValue().contains("true"));
+        assertTrue(entry.get().getValue().contains(Boolean.TRUE.toString()));
     }
 }

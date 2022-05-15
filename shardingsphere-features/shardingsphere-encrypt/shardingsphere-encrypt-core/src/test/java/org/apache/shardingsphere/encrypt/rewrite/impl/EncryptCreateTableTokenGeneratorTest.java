@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.impl;
 
-import org.apache.shardingsphere.encrypt.spi.context.EncryptColumnDataType;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.EncryptCreateTableTokenGenerator;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptConfigDataTypeToken;
 import org.apache.shardingsphere.encrypt.rule.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.context.EncryptColumnDataType;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CreateTableStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.RemoveToken;
@@ -42,9 +42,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -64,7 +64,7 @@ public final class EncryptCreateTableTokenGeneratorTest {
         Collection<SQLToken> sqlTokens = generator.generateSQLTokens(buildCreateTableStatementContext());
         assertThat(sqlTokens.size(), is(4));
         Iterator<SQLToken> iterator = sqlTokens.iterator();
-        assertTrue(iterator.next() instanceof RemoveToken);
+        assertThat(iterator.next(), instanceOf(RemoveToken.class));
         EncryptConfigDataTypeToken cipherToken = (EncryptConfigDataTypeToken) iterator.next();
         assertThat(cipherToken.toString(), is("cipher_certificate_number varchar(200) not null default ''"));
         assertThat(cipherToken.getStartIndex(), is(79));

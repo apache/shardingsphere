@@ -23,8 +23,8 @@ import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.lock.LockType;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
-import org.apache.shardingsphere.mode.manager.ShardingSphereLockManager;
-import org.apache.shardingsphere.mode.manager.ShardingSphereLockManagerFactory;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.ShardingSphereDistributeMutexLock;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.ShardingSphereMutexLockHolder;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 import java.util.Collection;
@@ -36,11 +36,13 @@ import java.util.Map;
  */
 public final class DistributeLockContext implements LockContext {
     
-    private final Map<LockType, ShardingSphereLockManager> lockManagers = new EnumMap<>(LockType.class);
+    private final Map<LockType, ShardingSphereDistributeLockManager> lockManagers = new EnumMap<>(LockType.class);
     
     private final ClusterPersistRepository repository;
     
     private final ComputeNodeInstance currentInstance;
+    
+    private ShardingSphereDistributeMutexLock mutexLock;
     
     public DistributeLockContext(final ClusterPersistRepository repository, final ComputeNodeInstance currentInstance) {
         this.repository = repository;
@@ -49,7 +51,7 @@ public final class DistributeLockContext implements LockContext {
     }
     
     private void loadLockManager() {
-        for (ShardingSphereLockManager each : ShardingSphereLockManagerFactory.newInstances()) {
+        for (ShardingSphereDistributeLockManager each : ShardingSphereLockManagerFactory.getAllInstances()) {
             if (lockManagers.containsKey(each.getLockType())) {
                 continue;
             }
@@ -60,25 +62,27 @@ public final class DistributeLockContext implements LockContext {
     @Override
     public void initLockState(final InstanceContext instanceContext) {
         Collection<ComputeNodeInstance> computeNodeInstances = instanceContext.getComputeNodeInstances();
-        for (ShardingSphereLockManager each : lockManagers.values()) {
+        for (ShardingSphereDistributeLockManager each : lockManagers.values()) {
             each.initLocksState(repository, currentInstance, computeNodeInstances);
         }
+        initMutexLock(computeNodeInstances);
+    }
+    
+    private void initMutexLock(final Collection<ComputeNodeInstance> computeNodeInstances) {
+        ShardingSphereMutexLockHolder lockHolder = new ShardingSphereMutexLockHolder(repository, currentInstance, computeNodeInstances);
+        mutexLock = new ShardingSphereDistributeMutexLock(lockHolder);
     }
     
     @Override
-    public synchronized boolean tryLockWriteDatabase(final String databaseName, final long timeoutMillis) {
+    public synchronized boolean tryLockWriteDatabase(final String databaseName) {
         Preconditions.checkNotNull(databaseName, "Try lock write database args database name can not be null.");
-        ShardingSphereLockManager shardingSphereLockManager = lockManagers.get(LockType.DATABASE);
-        ShardingSphereLock lock = shardingSphereLockManager.getOrCreateLock(databaseName);
-        return lock.tryLock(databaseName, timeoutMillis);
+        return lockManagers.get(LockType.DATABASE).getOrCreateLock(databaseName).tryLock(databaseName);
     }
     
     @Override
     public void releaseLockWriteDatabase(final String databaseName) {
         Preconditions.checkNotNull(databaseName, "Try lock write database args database name can not be null.");
-        ShardingSphereLockManager shardingSphereLockManager = lockManagers.get(LockType.DATABASE);
-        ShardingSphereLock lock = shardingSphereLockManager.getOrCreateLock(databaseName);
-        lock.releaseLock(databaseName);
+        lockManagers.get(LockType.DATABASE).getOrCreateLock(databaseName).releaseLock(databaseName);
     }
     
     @Override
@@ -88,19 +92,8 @@ public final class DistributeLockContext implements LockContext {
     }
     
     @Override
-    public synchronized ShardingSphereLock getOrCreateGlobalLock(final String lockName) {
-        Preconditions.checkNotNull(lockName, "Get or create global lock args lock name can not be null.");
-        return lockManagers.get(LockType.GENERAL).getOrCreateLock(lockName);
-    }
-    
-    @Override
-    public synchronized ShardingSphereLock getOrCreateStandardLock(final String lockName) {
-        return lockManagers.get(LockType.STANDARD).getOrCreateLock(lockName);
-    }
-    
-    @Override
-    public ShardingSphereLock getGlobalLock(final String lockName) {
-        Preconditions.checkNotNull(lockName, "Get global lock args lock name can not be null.");
-        return lockManagers.get(LockType.GENERAL).getLock(lockName);
+    public ShardingSphereLock getMutexLock(final String lockName) {
+        Preconditions.checkNotNull(lockName, "Get mutex lock args lock name can not be null.");
+        return mutexLock;
     }
 }

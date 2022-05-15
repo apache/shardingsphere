@@ -40,9 +40,9 @@ public final class IndexTokenGenerator implements CollectionSQLTokenGenerator<SQ
     
     private ShardingRule shardingRule;
     
-    private Map<String, ShardingSphereSchema> schemas;
-    
     private String databaseName;
+    
+    private Map<String, ShardingSphereSchema> schemas;
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext<?> sqlStatementContext) {

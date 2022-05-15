@@ -46,6 +46,7 @@ import java.util.Optional;
 public final class PipelineAPIFactory {
     
     private static final LazyInitializer<GovernanceRepositoryAPI> REPOSITORY_API_LAZY_INITIALIZER = new LazyInitializer<GovernanceRepositoryAPI>() {
+        
         @Override
         protected GovernanceRepositoryAPI initialize() {
             Optional<MetaDataPersistService> persistServiceOptional = PipelineContext.getContextManager().getMetaDataContexts().getMetaDataPersistService();

@@ -37,15 +37,18 @@ public final class IntegrationTestEnvironment {
     
     private final ITEnvTypeEnum itEnvType;
     
-    private final List<String> mysqlVersionList;
+    private final List<String> mysqlVersions;
     
-    private final List<String> postgresVersionList;
+    private final List<String> postgresVersions;
+    
+    private final List<String> openGaussVersions;
     
     private IntegrationTestEnvironment() {
         props = loadProperties();
-        itEnvType = ITEnvTypeEnum.valueOf(props.getProperty("it.env.type", ITEnvTypeEnum.DOCKER.name()).toUpperCase());
-        mysqlVersionList = Splitter.on(",").trimResults().splitToList(props.getOrDefault("it.env.mysql.version", "").toString());
-        postgresVersionList = Splitter.on(",").trimResults().splitToList(props.getOrDefault("it.env.postgresql.version", "").toString());
+        itEnvType = ITEnvTypeEnum.valueOf(props.getProperty("it.cluster.env.type", ITEnvTypeEnum.DOCKER.name()).toUpperCase());
+        mysqlVersions = Splitter.on(",").trimResults().splitToList(props.getOrDefault("it.env.mysql.version", "").toString());
+        postgresVersions = Splitter.on(",").trimResults().splitToList(props.getOrDefault("it.env.postgresql.version", "").toString());
+        openGaussVersions = Splitter.on(",").trimResults().splitToList(props.getOrDefault("it.env.opengauss.version", "").toString());
     }
     
     private Properties loadProperties() {

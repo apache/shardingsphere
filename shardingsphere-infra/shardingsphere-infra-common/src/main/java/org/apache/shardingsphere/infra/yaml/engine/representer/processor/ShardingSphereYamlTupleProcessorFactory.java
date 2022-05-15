@@ -34,11 +34,11 @@ public final class ShardingSphereYamlTupleProcessorFactory {
     }
     
     /**
-     * Create new instances of ShardingSphere YAML tuple processor.
+     * Get all instances of ShardingSphere YAML tuple processor.
      *
-     * @return new instances of ShardingSphere YAML tuple processor
+     * @return got instances
      */
-    public static Collection<ShardingSphereYamlTupleProcessor> newInstances() {
+    public static Collection<ShardingSphereYamlTupleProcessor> getAllInstances() {
         return ShardingSphereServiceLoader.getServiceInstances(ShardingSphereYamlTupleProcessor.class);
     }
 }

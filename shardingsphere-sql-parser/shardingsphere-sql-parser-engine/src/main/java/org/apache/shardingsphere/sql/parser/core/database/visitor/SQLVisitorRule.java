@@ -146,6 +146,10 @@ public enum SQLVisitorRule {
     
     CREATE_SYNONYM("CreateSynonym", SQLStatementType.DDL),
     
+    DROP_SYNONYM("DropSynonym", SQLStatementType.DDL),
+    
+    CREATE_DIRECTORY("CreateDirectory", SQLStatementType.DDL),
+    
     ALTER_SERVER("AlterServer", SQLStatementType.DDL),
     
     ALTER_SESSION("AlterSession", SQLStatementType.DDL),
@@ -165,6 +169,10 @@ public enum SQLVisitorRule {
     CREATE_VIEW("CreateView", SQLStatementType.DDL),
     
     ALTER_VIEW("AlterView", SQLStatementType.DDL),
+    
+    DROP_PACKAGE("DropPackage", SQLStatementType.DDL),
+    
+    ALTER_PACKAGE("AlterPackage", SQLStatementType.DDL),
     
     DROP_VIEW("DropView", SQLStatementType.DDL),
     
@@ -488,7 +496,19 @@ public enum SQLVisitorRule {
     
     DROP_OPERATOR_FAMILY("DropOperatorFamily", SQLStatementType.DDL),
     
-    DROP_ACCESS_METHOD("DropAccessMethod", SQLStatementType.DDL);
+    DROP_ACCESS_METHOD("DropAccessMethod", SQLStatementType.DDL),
+    
+    DROP_OUTLINE("DropOutline", SQLStatementType.DDL),
+    
+    ALTER_OUTLINE("AlterOutline", SQLStatementType.DDL),
+    
+    ALTER_ANALYTIC_VIEW("AlterAnalyticView", SQLStatementType.DDL),
+    
+    DROP_EDITION("DropEdition", SQLStatementType.DDL),
+    
+    ALTER_ATTRIBUTE_DIMENSION("AlterAttributeDimension", SQLStatementType.DDL),
+    
+    CREATE_CONTEXT("CreateContext", SQLStatementType.DDL);
     
     private final String name;
     

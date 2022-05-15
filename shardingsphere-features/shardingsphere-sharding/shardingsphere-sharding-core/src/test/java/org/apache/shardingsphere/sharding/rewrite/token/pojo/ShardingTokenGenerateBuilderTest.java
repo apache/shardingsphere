@@ -36,7 +36,6 @@ import java.util.Iterator;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -89,7 +88,6 @@ public final class ShardingTokenGenerateBuilderTest {
     private void assertField(final SQLTokenGenerator sqlTokenGenerator, final Object filedInstance, final String fieldName) throws Exception {
         Field field = sqlTokenGenerator.getClass().getDeclaredField(fieldName);
         field.setAccessible(true);
-        assertNotNull(field.get(sqlTokenGenerator));
         assertThat(field.get(sqlTokenGenerator), is(filedInstance));
     }
 }

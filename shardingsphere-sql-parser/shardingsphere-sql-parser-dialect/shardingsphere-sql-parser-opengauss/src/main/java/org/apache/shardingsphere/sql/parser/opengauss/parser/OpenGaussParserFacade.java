@@ -37,7 +37,7 @@ public final class OpenGaussParserFacade implements DatabaseTypedSQLParserFacade
     }
     
     @Override
-    public String getDatabaseType() {
+    public String getType() {
         return "openGauss";
     }
 }

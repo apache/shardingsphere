@@ -18,9 +18,10 @@
 package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeLine;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
@@ -34,6 +35,7 @@ import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.PositionInitializerFactory;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.DataSourcePreparer;
+import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.PrepareTargetSchemasParameter;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.PrepareTargetTablesParameter;
 import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
@@ -44,7 +46,7 @@ import org.apache.shardingsphere.data.pipeline.spi.check.datasource.DataSourceCh
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreator;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.position.PositionInitializer;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
@@ -77,6 +79,7 @@ public final class RuleAlteredJobPreparer {
         // But InventoryTaskSplitter need to check target tables. It need to do some refactoring for appendJDBCQueryProperties vocations.
         checkSourceDataSource(jobContext);
         prepareAndCheckTargetWithLock(jobContext);
+        // TODO check metadata
         try {
             initIncrementalTasks(jobContext);
             initInventoryTasks(jobContext);
@@ -92,7 +95,7 @@ public final class RuleAlteredJobPreparer {
         RuleAlteredJobConfiguration jobConfig = jobContext.getJobConfig();
         // TODO the lock will be replaced
         String lockName = "prepare-" + jobConfig.getJobId();
-        ShardingSphereLock lock = PipelineContext.getContextManager().getInstanceContext().getLockContext().getOrCreateGlobalLock(lockName);
+        ShardingSphereLock lock = PipelineContext.getContextManager().getInstanceContext().getLockContext().getMutexLock(lockName);
         if (lock.tryLock(lockName, 1)) {
             try {
                 prepareAndCheckTarget(jobContext);
@@ -107,7 +110,7 @@ public final class RuleAlteredJobPreparer {
     private void waitUntilLockReleased(final ShardingSphereLock lock, final String lockName) {
         for (int loopCount = 0; loopCount < 30; loopCount++) {
             ThreadUtil.sleep(TimeUnit.SECONDS.toMillis(5));
-            if (!lock.isLocked()) {
+            if (!lock.isLocked(lockName)) {
                 log.info("unlocked, lockName={}", lockName);
                 return;
             }
@@ -115,7 +118,7 @@ public final class RuleAlteredJobPreparer {
     }
     
     private void prepareAndCheckTarget(final RuleAlteredJobContext jobContext) {
-        prepareTarget(jobContext.getJobConfig(), jobContext.getDataSourceManager());
+        prepareTarget(jobContext);
         JobProgress initProgress = jobContext.getInitProgress();
         if (null == initProgress || initProgress.getStatus() == JobStatus.PREPARING_FAILURE) {
             PipelineDataSourceWrapper targetDataSource = jobContext.getDataSourceManager().getDataSource(jobContext.getTaskConfig().getImporterConfig().getDataSourceConfig());
@@ -123,19 +126,22 @@ public final class RuleAlteredJobPreparer {
         }
     }
     
-    private void prepareTarget(final RuleAlteredJobConfiguration jobConfig, final PipelineDataSourceManager dataSourceManager) {
+    private void prepareTarget(final RuleAlteredJobContext jobContext) {
+        RuleAlteredJobConfiguration jobConfig = jobContext.getJobConfig();
         Optional<DataSourcePreparer> dataSourcePreparer = EnvironmentCheckerFactory.getDataSourcePreparer(jobConfig.getTargetDatabaseType());
         if (!dataSourcePreparer.isPresent()) {
             log.info("dataSourcePreparer null, ignore prepare target");
             return;
         }
-        JobDataNodeLine tablesFirstDataNodes = JobDataNodeLine.unmarshal(jobConfig.getTablesFirstDataNodes());
-        PrepareTargetTablesParameter prepareTargetTablesParameter = new PrepareTargetTablesParameter(tablesFirstDataNodes, jobConfig, dataSourceManager);
+        TableNameSchemaNameMapping tableNameSchemaNameMapping = jobContext.getTaskConfig().getDumperConfig().getTableNameSchemaNameMapping();
+        PrepareTargetSchemasParameter prepareTargetSchemasParameter = new PrepareTargetSchemasParameter(jobContext.getTaskConfig(), jobContext.getDataSourceManager(), tableNameSchemaNameMapping);
+        dataSourcePreparer.get().prepareTargetSchemas(prepareTargetSchemasParameter);
+        PrepareTargetTablesParameter prepareTargetTablesParameter = new PrepareTargetTablesParameter(jobContext.getTaskConfig(), jobContext.getDataSourceManager(), tableNameSchemaNameMapping);
         dataSourcePreparer.get().prepareTargetTables(prepareTargetTablesParameter);
     }
     
     private void checkSourceDataSource(final RuleAlteredJobContext jobContext) {
-        DataSourceChecker dataSourceChecker = DataSourceCheckerFactory.newInstance(jobContext.getJobConfig().getSourceDatabaseType());
+        DataSourceChecker dataSourceChecker = DataSourceCheckerFactory.getInstance(jobContext.getJobConfig().getSourceDatabaseType());
         Collection<PipelineDataSourceWrapper> sourceDataSources = Collections.singleton(jobContext.getSourceDataSource());
         dataSourceChecker.checkConnection(sourceDataSources);
         dataSourceChecker.checkPrivilege(sourceDataSources);
@@ -143,10 +149,11 @@ public final class RuleAlteredJobPreparer {
     }
     
     private void checkTargetDataSource(final RuleAlteredJobContext jobContext, final PipelineDataSourceWrapper targetDataSource) {
-        DataSourceChecker dataSourceChecker = DataSourceCheckerFactory.newInstance(jobContext.getJobConfig().getTargetDatabaseType());
+        DataSourceChecker dataSourceChecker = DataSourceCheckerFactory.getInstance(jobContext.getJobConfig().getTargetDatabaseType());
         Collection<PipelineDataSourceWrapper> targetDataSources = Collections.singletonList(targetDataSource);
         dataSourceChecker.checkConnection(targetDataSources);
-        dataSourceChecker.checkTargetTable(targetDataSources, jobContext.getTaskConfig().getImporterConfig().getLogicTableNames());
+        ImporterConfiguration importerConfig = jobContext.getTaskConfig().getImporterConfig();
+        dataSourceChecker.checkTargetTable(targetDataSources, importerConfig.getTableNameSchemaNameMapping(), importerConfig.getLogicTableNames());
     }
     
     private void initInventoryTasks(final RuleAlteredJobContext jobContext) {
@@ -176,7 +183,7 @@ public final class RuleAlteredJobPreparer {
         }
         String databaseType = taskConfig.getJobConfig().getSourceDatabaseType();
         DataSource dataSource = dataSourceManager.getDataSource(taskConfig.getDumperConfig().getDataSourceConfig());
-        return PositionInitializerFactory.getPositionInitializer(databaseType).init(dataSource);
+        return PositionInitializerFactory.getInstance(databaseType).init(dataSource);
     }
     
     /**
@@ -193,8 +200,8 @@ public final class RuleAlteredJobPreparer {
     }
     
     private void cleanup0(final RuleAlteredJobConfiguration jobConfig) throws SQLException {
-        DatabaseType databaseType = DatabaseTypeRegistry.getActualDatabaseType(jobConfig.getSourceDatabaseType());
-        PositionInitializer positionInitializer = PositionInitializerFactory.getPositionInitializer(databaseType.getName());
+        DatabaseType databaseType = DatabaseTypeFactory.getInstance(jobConfig.getSourceDatabaseType());
+        PositionInitializer positionInitializer = PositionInitializerFactory.getInstance(databaseType.getType());
         ShardingSpherePipelineDataSourceConfiguration sourceDataSourceConfig = (ShardingSpherePipelineDataSourceConfiguration) PipelineDataSourceConfigurationFactory
                 .newInstance(jobConfig.getSource().getType(), jobConfig.getSource().getParameter());
         for (DataSourceProperties each : new YamlDataSourceConfigurationSwapper().getDataSourcePropertiesMap(sourceDataSourceConfig.getRootConfig()).values()) {

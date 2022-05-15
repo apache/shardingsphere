@@ -26,9 +26,9 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
@@ -76,8 +76,7 @@ public abstract class AbstractSQLRewriterParameterizedTest {
     private final SQLRewriteEngineTestParameters testParameters;
     
     private final SQLParserRule sqlParserRule = new SQLParserRule(new SQLParserRuleConfiguration(true,
-            DefaultSQLParserRuleConfigurationBuilder.PARSE_TREE_CACHE_OPTION,
-            DefaultSQLParserRuleConfigurationBuilder.SQL_STATEMENT_CACHE_OPTION));
+            DefaultSQLParserRuleConfigurationBuilder.PARSE_TREE_CACHE_OPTION, DefaultSQLParserRuleConfigurationBuilder.SQL_STATEMENT_CACHE_OPTION));
     
     @Test
     public final void assertRewrite() throws IOException, SQLException {
@@ -99,28 +98,28 @@ public abstract class AbstractSQLRewriterParameterizedTest {
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(
                 new YamlDataSourceConfigurationSwapper().swapToDataSources(rootConfig.getDataSources()), new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(rootConfig.getRules()));
         mockDataSource(databaseConfig.getDataSources());
-        Collection<ShardingSphereRule> rules = SchemaRulesBuilder.buildRules("schema_name", databaseConfig, new ConfigurationProperties(new Properties()));
-        mockRules(rules);
+        ShardingSphereResource resource = mock(ShardingSphereResource.class);
+        DatabaseType databaseType = DatabaseTypeFactory.getInstance(getTestParameters().getDatabaseType());
+        when(resource.getDatabaseType()).thenReturn(databaseType);
+        String schemaName = databaseType.getDefaultSchema(DefaultDatabase.LOGIC_NAME);
+        Map<String, ShardingSphereSchema> schemas = mockSchemas(schemaName);
+        Collection<ShardingSphereRule> rules = SchemaRulesBuilder.buildRules(DefaultDatabase.LOGIC_NAME, databaseConfig, new ConfigurationProperties(new Properties()));
+        mockRules(rules, schemaName);
         rules.add(sqlParserRule);
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(schemaName, databaseType, resource, new ShardingSphereRuleMetaData(Collections.emptyList(), rules), schemas);
+        Map<String, ShardingSphereMetaData> metaDataMap = new HashMap<>(2, 1);
+        metaDataMap.put(schemaName, metaData);
         SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine(getTestParameters().getDatabaseType(),
                 sqlParserRule.getSqlStatementCache(), sqlParserRule.getParseTreeCache(), sqlParserRule.isSqlCommentParseEnabled());
-        ShardingSphereResource resource = mock(ShardingSphereResource.class);
-        DatabaseType databaseType = DatabaseTypeRegistry.getActualDatabaseType(getTestParameters().getDatabaseType());
-        when(resource.getDatabaseType()).thenReturn(databaseType);
-        String databaseName = databaseType.getDefaultSchema(DefaultSchema.LOGIC_NAME);
-        Map<String, ShardingSphereSchema> schemas = mockSchemas(databaseName);
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(databaseName, resource, new ShardingSphereRuleMetaData(Collections.emptyList(), rules), schemas);
-        Map<String, ShardingSphereMetaData> metaDataMap = new HashMap<>(2, 1);
-        metaDataMap.put(databaseName, metaData);
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataMap,
-                sqlStatementParserEngine.parse(getTestParameters().getInputSQL(), false), databaseName);
+                sqlStatementParserEngine.parse(getTestParameters().getInputSQL(), false), schemaName);
         if (sqlStatementContext instanceof ParameterAware) {
             ((ParameterAware) sqlStatementContext).setUpParameters(getTestParameters().getInputParameters());
         }
         LogicSQL logicSQL = new LogicSQL(sqlStatementContext, getTestParameters().getInputSQL(), getTestParameters().getInputParameters());
         ConfigurationProperties props = new ConfigurationProperties(rootConfig.getProps());
         RouteContext routeContext = new SQLRouteEngine(rules, props).route(logicSQL, metaData);
-        SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(databaseName, schemas, props, rules);
+        SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(metaData, props);
         SQLRewriteResult sqlRewriteResult = sqlRewriteEntry.rewrite(getTestParameters().getInputSQL(), getTestParameters().getInputParameters(), sqlStatementContext, routeContext);
         return sqlRewriteResult instanceof GenericSQLRewriteResult
                 ? Collections.singletonList(((GenericSQLRewriteResult) sqlRewriteResult).getSqlRewriteUnit())
@@ -131,7 +130,7 @@ public abstract class AbstractSQLRewriterParameterizedTest {
     
     protected abstract YamlRootConfiguration createRootConfiguration() throws IOException;
     
-    protected abstract Map<String, ShardingSphereSchema> mockSchemas(String databaseName);
+    protected abstract Map<String, ShardingSphereSchema> mockSchemas(String schemaName);
     
-    protected abstract void mockRules(Collection<ShardingSphereRule> rules);
+    protected abstract void mockRules(Collection<ShardingSphereRule> rules, String schemaName);
 }

@@ -96,7 +96,7 @@ public final class ShowProcessListExecutor implements DatabaseAdminQueryExecutor
             rowValues.add(processContext.getDatabaseName());
             rowValues.add("Execute");
             rowValues.add(TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - processContext.getStartTimeMillis()));
-            int processDoneCount = processContext.getUnitStatuses().stream().map(processUnit -> ExecuteProcessConstants.EXECUTE_STATUS_DONE == processUnit.getStatus() ? 1 : 0).reduce(0, Integer::sum);
+            int processDoneCount = processContext.getUnitStatuses().stream().map(each -> ExecuteProcessConstants.EXECUTE_STATUS_DONE == each.getStatus() ? 1 : 0).reduce(0, Integer::sum);
             String statePrefix = "Executing ";
             rowValues.add(statePrefix + processDoneCount + "/" + processContext.getUnitStatuses().size());
             String sql = processContext.getSql();

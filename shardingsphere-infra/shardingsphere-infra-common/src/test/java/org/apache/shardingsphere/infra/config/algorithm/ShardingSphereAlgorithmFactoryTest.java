@@ -17,8 +17,7 @@
 
 package org.apache.shardingsphere.infra.config.algorithm;
 
-import org.apache.shardingsphere.infra.config.fixture.WithInitAlgorithm;
-import org.apache.shardingsphere.infra.config.fixture.WithoutInitAlgorithm;
+import org.apache.shardingsphere.infra.config.fixture.ShardingSphereAlgorithmFixture;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -37,21 +36,11 @@ public final class ShardingSphereAlgorithmFactoryTest {
     }
     
     @Test
-    public void assertCreateAlgorithmWithoutInit() {
+    public void assertCreateAlgorithm() {
         Properties props = new Properties();
         props.setProperty("key", "value");
-        ShardingSphereAlgorithm actual = ShardingSphereAlgorithmFactory.createAlgorithm(new ShardingSphereAlgorithmConfiguration("WITHOUT_INIT", props), ShardingSphereAlgorithm.class);
-        assertThat(actual, instanceOf(WithoutInitAlgorithm.class));
-        assertThat(actual.getProps().getProperty("key"), is("value"));
-    }
-    
-    @Test
-    public void assertCreateAlgorithmWithInit() {
-        Properties props = new Properties();
-        props.setProperty("key", "value");
-        ShardingSphereAlgorithm actual = ShardingSphereAlgorithmFactory.createAlgorithm(new ShardingSphereAlgorithmConfiguration("WITH_INIT", props), ShardingSphereAlgorithm.class);
-        assertThat(actual, instanceOf(WithInitAlgorithm.class));
-        assertThat(actual.getProps().getProperty("key"), is("value"));
-        assertThat(((WithInitAlgorithm) actual).getTestValue(), is("value"));
+        ShardingSphereAlgorithm actual = ShardingSphereAlgorithmFactory.createAlgorithm(new ShardingSphereAlgorithmConfiguration("FIXTURE", props), ShardingSphereAlgorithm.class);
+        assertThat(actual, instanceOf(ShardingSphereAlgorithmFixture.class));
+        assertThat(((ShardingSphereAlgorithmFixture) actual).getTestValue(), is("value"));
     }
 }

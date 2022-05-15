@@ -130,8 +130,8 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
         return Collections.emptyMap();
     }
     
-    private boolean containsConfigDataTypeColumn(final Collection<EncryptTableRuleConfiguration> tableRuleConfigurations) {
-        for (EncryptTableRuleConfiguration each : tableRuleConfigurations) {
+    private boolean containsConfigDataTypeColumn(final Collection<EncryptTableRuleConfiguration> tableRuleConfigs) {
+        for (EncryptTableRuleConfiguration each : tableRuleConfigs) {
             for (EncryptColumnRuleConfiguration column : each.getColumns()) {
                 if (null != column.getLogicDataType() && !column.getLogicDataType().isEmpty()) {
                     return true;
@@ -159,7 +159,7 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
      * @return encrypt column
      */
     public Optional<EncryptColumn> findEncryptColumn(final String logicTable, final String columnName) {
-        return findEncryptTable(logicTable).flatMap(encryptTable -> encryptTable.findEncryptColumn(columnName));
+        return findEncryptTable(logicTable).flatMap(optional -> optional.findEncryptColumn(columnName));
     }
     
     /**
@@ -314,16 +314,16 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
     }
     
     /**
-     * Set up encryptor schema.
+     * Set schema meta data.
      *
-     * @param schemas schema map
      * @param databaseName database name
+     * @param schemas schema map
      */
-    public void setUpEncryptorSchema(final Map<String, ShardingSphereSchema> schemas, final String databaseName) {
+    public void setSchemaMetaData(final String databaseName, final Map<String, ShardingSphereSchema> schemas) {
         for (EncryptAlgorithm<?, ?> each : encryptors.values()) {
             if (each instanceof SchemaMetaDataAware) {
-                ((SchemaMetaDataAware) each).setSchemas(schemas);
                 ((SchemaMetaDataAware) each).setDatabaseName(databaseName);
+                ((SchemaMetaDataAware) each).setSchemas(schemas);
             }
         }
     }
@@ -336,7 +336,6 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
      * @return boolean whether contains config data type or not
      */
     public boolean containsConfigDataType(final String tableName, final String columnName) {
-        return findEncryptTable(tableName).flatMap(encryptTable -> encryptTable.findEncryptColumn(columnName)
-                .filter(encryptColumn -> null != encryptColumn.getLogicDataType())).isPresent();
+        return findEncryptTable(tableName).flatMap(optional -> optional.findEncryptColumn(columnName).filter(encryptColumn -> null != encryptColumn.getLogicDataType())).isPresent();
     }
 }

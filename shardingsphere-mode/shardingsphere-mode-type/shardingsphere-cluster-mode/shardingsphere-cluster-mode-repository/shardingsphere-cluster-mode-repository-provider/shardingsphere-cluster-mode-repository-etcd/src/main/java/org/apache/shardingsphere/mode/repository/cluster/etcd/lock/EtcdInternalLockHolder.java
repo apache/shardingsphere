@@ -35,44 +35,44 @@ import java.util.concurrent.locks.Lock;
 /**
  * Etcd internal lock holder.
  */
-@Slf4j
 @RequiredArgsConstructor
+@Slf4j
 public class EtcdInternalLockHolder {
     
     private final Map<String, EtcdInternalLock> locks = new ConcurrentHashMap<>();
     
     private final Client client;
     
-    private final EtcdProperties etcdProperties;
+    private final EtcdProperties etcdProps;
     
     /**
-     * Get global lock.
+     * Get internal mutex lock.
      *
      * @param lockName lock name
-     * @return global lock
+     * @return internal mutex lock
      */
-    public Lock getGlobalLock(final String lockName) {
-        return getStandardLock(lockName);
+    public Lock getInternalMutexLock(final String lockName) {
+        return getInternalReentrantMutexLock(lockName);
     }
     
     /**
-     * Get standard lock.
+     * Get internal reentrant mutex lock.
      *
      * @param lockName lock name
-     * @return standard lock
+     * @return internal reentrant mutex lock
      */
-    public Lock getStandardLock(final String lockName) {
-        EtcdInternalLock lock = locks.get(lockName);
-        if (Objects.isNull(lock)) {
-            lock = createLock(lockName);
-            locks.put(lockName, lock);
+    public Lock getInternalReentrantMutexLock(final String lockName) {
+        EtcdInternalLock result = locks.get(lockName);
+        if (Objects.isNull(result)) {
+            result = createLock(lockName);
+            locks.put(lockName, result);
         }
-        return lock;
+        return result;
     }
     
     private EtcdInternalLock createLock(final String lockName) {
         try {
-            long leaseId = client.getLeaseClient().grant(etcdProperties.getValue(EtcdPropertyKey.TIME_TO_LIVE_SECONDS)).get().getID();
+            long leaseId = client.getLeaseClient().grant(etcdProps.getValue(EtcdPropertyKey.TIME_TO_LIVE_SECONDS)).get().getID();
             return new EtcdInternalLock(client.getLockClient(), lockName, leaseId);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {

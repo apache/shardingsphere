@@ -39,27 +39,27 @@ public final class MemoryLockContext implements LockContext {
     }
     
     @Override
-    public boolean tryLockWriteDatabase(final String databaseName, final long timeoutMillis) {
-        ShardingSphereLock lock = getOrCreateGlobalLock(databaseName);
-        return lock.tryLock(databaseName, timeoutMillis);
+    public boolean tryLockWriteDatabase(final String databaseName) {
+        Preconditions.checkNotNull(databaseName, "Try lock write database args database name can not be null.");
+        return getMutexLock(databaseName).tryLock(databaseName);
     }
     
     @Override
     public void releaseLockWriteDatabase(final String databaseName) {
-        ShardingSphereLock lock = getOrCreateGlobalLock(databaseName);
-        lock.releaseLock(databaseName);
+        Preconditions.checkNotNull(databaseName, "Release lock write database args database name can not be null.");
+        getMutexLock(databaseName).releaseLock(databaseName);
     }
     
     @Override
     public boolean isLockedDatabase(final String databaseName) {
         Preconditions.checkNotNull(databaseName, "Is locked database args database name can not be null.");
         ShardingSphereLock shardingSphereLock = locks.get(databaseName);
-        return null != shardingSphereLock && shardingSphereLock.isLocked();
+        return null != shardingSphereLock && shardingSphereLock.isLocked(databaseName);
     }
     
     @Override
-    public ShardingSphereLock getOrCreateGlobalLock(final String lockName) {
-        Preconditions.checkNotNull(lockName, "Get or create global lock args lock name can not be null.");
+    public ShardingSphereLock getMutexLock(final String lockName) {
+        Preconditions.checkNotNull(lockName, "Get global lock args lock name can not be null.");
         ShardingSphereLock result = locks.get(lockName);
         if (null != result) {
             return result;
@@ -73,16 +73,5 @@ public final class MemoryLockContext implements LockContext {
             locks.put(lockName, result);
             return result;
         }
-    }
-    
-    @Override
-    public ShardingSphereLock getOrCreateStandardLock(final String lockName) {
-        return getOrCreateGlobalLock(lockName);
-    }
-    
-    @Override
-    public ShardingSphereLock getGlobalLock(final String lockName) {
-        Preconditions.checkNotNull(lockName, "Get global lock args lock name can not be null.");
-        return locks.get(lockName);
     }
 }

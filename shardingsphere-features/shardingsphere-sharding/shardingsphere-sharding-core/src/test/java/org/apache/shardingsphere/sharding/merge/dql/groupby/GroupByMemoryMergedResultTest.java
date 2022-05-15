@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.sharding.merge.dql.groupby;
 
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -45,6 +45,8 @@ import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -59,7 +61,7 @@ public final class GroupByMemoryMergedResultTest {
     
     @Test
     public void assertNextForResultSetsAllEmpty() throws SQLException {
-        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
+        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeFactory.getInstance("MySQL"));
         MergedResult actual = resultMerger.merge(Arrays.asList(createQueryResult(), createQueryResult(), createQueryResult()), createSelectStatementContext(), mock(ShardingSphereMetaData.class));
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Object.class), is(0));
@@ -84,7 +86,7 @@ public final class GroupByMemoryMergedResultTest {
         when(queryResult3.getValue(3, Object.class)).thenReturn(2, 3);
         when(queryResult3.getValue(4, Object.class)).thenReturn(2, 2, 3);
         when(queryResult3.getValue(5, Object.class)).thenReturn(20, 20, 30);
-        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
+        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeFactory.getInstance("MySQL"));
         MergedResult actual = resultMerger.merge(Arrays.asList(queryResult1, queryResult2, queryResult3), createSelectStatementContext(), mock(ShardingSphereMetaData.class));
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Object.class), is(new BigDecimal(30)));
@@ -110,10 +112,10 @@ public final class GroupByMemoryMergedResultTest {
         selectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, OrderDirection.ASC))));
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.DESC, OrderDirection.ASC))));
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-        when(metaData.getSchemaByName(DefaultSchema.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
-        when(metaData.getDatabaseName()).thenReturn(DefaultSchema.LOGIC_NAME);
+        when(metaData.getSchemaByName(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
+        when(metaData.getDatabaseName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         selectStatement.setProjections(projectionsSegment);
-        return new SelectStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), Collections.emptyList(), selectStatement, DefaultSchema.LOGIC_NAME);
+        return new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, metaData), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
     }
     
     private SelectStatementContext createSelectStatementContext(final ShardingSphereMetaData metaData) {
@@ -125,7 +127,7 @@ public final class GroupByMemoryMergedResultTest {
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.DESC, OrderDirection.ASC))));
         selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         selectStatement.setProjections(projectionsSegment);
-        return new SelectStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), Collections.emptyList(), selectStatement, DefaultSchema.LOGIC_NAME);
+        return new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, metaData), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
     }
     
     @Test
@@ -145,7 +147,7 @@ public final class GroupByMemoryMergedResultTest {
         when(queryResult3.getValue(3, Object.class)).thenReturn(2, 3);
         when(queryResult3.getValue(4, Object.class)).thenReturn(2, 2, 3);
         when(queryResult3.getValue(5, Object.class)).thenReturn(20, 20, 30);
-        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
+        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeFactory.getInstance("MySQL"));
         MergedResult actual = resultMerger.merge(Arrays.asList(queryResult1, queryResult2, queryResult3), createSelectStatementContext(), mock(ShardingSphereMetaData.class));
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Object.class), is(new BigDecimal(30)));
@@ -184,11 +186,18 @@ public final class GroupByMemoryMergedResultTest {
         when(schema.get("t_order")).thenReturn(tableMetaData);
         when(tableMetaData.getColumns()).thenReturn(Collections.emptyMap());
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-        when(metaData.getSchemaByName(DefaultSchema.LOGIC_NAME)).thenReturn(schema);
-        when(metaData.getDatabaseName()).thenReturn(DefaultSchema.LOGIC_NAME);
+        when(metaData.getSchemaByName(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
+        when(metaData.getSchemas()).thenReturn(mockSchemas(schema));
+        when(metaData.getDatabaseName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         when(schema.getAllColumnNames("t_order")).thenReturn(Arrays.asList("order_id", "content"));
-        ShardingDQLResultMerger merger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("MySQL"));
+        ShardingDQLResultMerger merger = new ShardingDQLResultMerger(DatabaseTypeFactory.getInstance("MySQL"));
         MergedResult actual = merger.merge(Arrays.asList(queryResult, queryResult, queryResult), createSelectStatementContext(metaData), metaData);
         assertFalse(actual.next());
+    }
+    
+    private Map<String, ShardingSphereSchema> mockSchemas(final ShardingSphereSchema schema) {
+        Map<String, ShardingSphereSchema> result = new LinkedHashMap<>();
+        result.put(DefaultDatabase.LOGIC_NAME, schema);
+        return result;
     }
 }

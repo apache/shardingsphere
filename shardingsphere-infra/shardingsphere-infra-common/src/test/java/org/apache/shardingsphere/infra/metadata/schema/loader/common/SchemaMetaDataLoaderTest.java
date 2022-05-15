@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.loader.common;
 
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.junit.Before;
 import org.junit.Test;
@@ -58,6 +59,7 @@ public final class SchemaMetaDataLoaderTest {
     
     @Test
     public void assertLoadSchemaTableNames() throws SQLException {
-        assertThat(SchemaMetaDataLoader.loadSchemaTableNames(new PostgreSQLDatabaseType(), dataSource), is(Collections.singletonMap("public", Collections.singletonList("tbl"))));
+        assertThat(SchemaMetaDataLoader.loadSchemaTableNames(DefaultDatabase.LOGIC_NAME,
+                new PostgreSQLDatabaseType(), dataSource), is(Collections.singletonMap("public", Collections.singletonList("tbl"))));
     }
 }

@@ -69,10 +69,14 @@ public class ShowTrafficRulesHandlerTest {
         result.getTrafficStrategies().add(new TrafficStrategyConfiguration("rule_name_2", Collections.singletonList("oltp"), "algorithm_2", "load_balancer_2"));
         result.getLoadBalancers().put("load_balancer_1", new ShardingSphereAlgorithmConfiguration("RANDOM", new Properties()));
         result.getLoadBalancers().put("load_balancer_2", new ShardingSphereAlgorithmConfiguration("ROBIN", new Properties()));
-        Properties algorithmProperties = new Properties();
-        algorithmProperties.put("sql", "select * from t_order");
-        result.getTrafficAlgorithms().put("algorithm_1", new ShardingSphereAlgorithmConfiguration("SQL_MATCH", algorithmProperties));
+        result.getTrafficAlgorithms().put("algorithm_1", new ShardingSphereAlgorithmConfiguration("SQL_MATCH", createProperties()));
         result.getTrafficAlgorithms().put("algorithm_2", new ShardingSphereAlgorithmConfiguration("SQL_HINT", new Properties()));
-        return Collections.singletonList(result);
+        return Collections.singleton(result);
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.put("sql", "select * from t_order");
+        return result;
     }
 }

@@ -21,7 +21,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
@@ -57,8 +56,7 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
     private static final String INTERVAL_UNIT_KEY = "datetime-interval-unit";
     
     @Getter
-    @Setter
-    private Properties props = new Properties();
+    private Properties props;
     
     private DateTimeFormatter dateTimeFormatter;
     
@@ -75,28 +73,29 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
     private ChronoUnit stepUnit;
     
     @Override
-    public void init() {
-        String dateTimePattern = getDateTimePattern();
+    public void init(final Properties props) {
+        this.props = props;
+        String dateTimePattern = getDateTimePattern(props);
         dateTimeFormatter = DateTimeFormatter.ofPattern(dateTimePattern);
         dateTimePatternLength = dateTimePattern.length();
-        dateTimeLower = getDateTimeLower(dateTimePattern);
-        dateTimeUpper = getDateTimeUpper(dateTimePattern);
-        tableSuffixPattern = getTableSuffixPattern();
+        dateTimeLower = getDateTimeLower(props, dateTimePattern);
+        dateTimeUpper = getDateTimeUpper(props, dateTimePattern);
+        tableSuffixPattern = getTableSuffixPattern(props);
         stepAmount = Integer.parseInt(props.getOrDefault(INTERVAL_AMOUNT_KEY, 1).toString());
         stepUnit = props.containsKey(INTERVAL_UNIT_KEY) ? getStepUnit(props.getProperty(INTERVAL_UNIT_KEY)) : ChronoUnit.DAYS;
     }
     
-    private String getDateTimePattern() {
+    private String getDateTimePattern(final Properties props) {
         Preconditions.checkArgument(props.containsKey(DATE_TIME_PATTERN_KEY), "%s can not be null.", DATE_TIME_PATTERN_KEY);
         return props.getProperty(DATE_TIME_PATTERN_KEY);
     }
     
-    private LocalDateTime getDateTimeLower(final String dateTimePattern) {
+    private LocalDateTime getDateTimeLower(final Properties props, final String dateTimePattern) {
         Preconditions.checkArgument(props.containsKey(DATE_TIME_LOWER_KEY), "%s can not be null.", DATE_TIME_LOWER_KEY);
         return getDateTime(DATE_TIME_LOWER_KEY, props.getProperty(DATE_TIME_LOWER_KEY), dateTimePattern);
     }
     
-    private LocalDateTime getDateTimeUpper(final String dateTimePattern) {
+    private LocalDateTime getDateTimeUpper(final Properties props, final String dateTimePattern) {
         return props.containsKey(DATE_TIME_UPPER_KEY) ? getDateTime(DATE_TIME_UPPER_KEY, props.getProperty(DATE_TIME_UPPER_KEY), dateTimePattern) : LocalDateTime.now();
     }
     
@@ -108,7 +107,7 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
         }
     }
     
-    private DateTimeFormatter getTableSuffixPattern() {
+    private DateTimeFormatter getTableSuffixPattern(final Properties props) {
         Preconditions.checkArgument(props.containsKey(SHARDING_SUFFIX_FORMAT_KEY), "%s can not be null.", SHARDING_SUFFIX_FORMAT_KEY);
         return DateTimeFormatter.ofPattern(props.getProperty(SHARDING_SUFFIX_FORMAT_KEY));
     }

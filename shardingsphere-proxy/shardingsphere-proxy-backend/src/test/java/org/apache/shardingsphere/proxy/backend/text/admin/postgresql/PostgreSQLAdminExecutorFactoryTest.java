@@ -38,7 +38,6 @@ import java.sql.SQLException;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -48,7 +47,7 @@ import static org.mockito.Mockito.when;
 
 public final class PostgreSQLAdminExecutorFactoryTest {
     
-    private final PostgreSQLAdminExecutorFactory postgreSQLAdminExecutorFactory = new PostgreSQLAdminExecutorFactory();
+    private final PostgreSQLAdminExecutorCreator postgreSQLAdminExecutorFactory = new PostgreSQLAdminExecutorCreator();
     
     @Test
     public void assertNewInstanceWithPostgreSQLSelectPgDatabaseStatement() {
@@ -58,40 +57,35 @@ public final class PostgreSQLAdminExecutorFactoryTest {
         when(statement.getFrom()).thenReturn(tableSegment);
         SelectStatementContext statementContext = mock(SelectStatementContext.class);
         when(statementContext.getSqlStatement()).thenReturn(statement);
-        Optional<DatabaseAdminExecutor> executorOptional = postgreSQLAdminExecutorFactory.newInstance(statementContext, "", null);
+        Optional<DatabaseAdminExecutor> executorOptional = postgreSQLAdminExecutorFactory.create(statementContext, "", null);
         assertTrue(executorOptional.isPresent());
         assertThat(executorOptional.get(), instanceOf(SelectDatabaseExecutor.class));
     }
     
     @Test
     public void assertNewInstanceWithSQLStatementOnly() {
-        assertFalse(postgreSQLAdminExecutorFactory.newInstance(null).isPresent());
+        assertFalse(postgreSQLAdminExecutorFactory.create(null).isPresent());
     }
     
     @Test
     public void assertNewInstanceWithUnknownStatement() {
-        assertFalse(postgreSQLAdminExecutorFactory.newInstance(mock(SQLStatementContext.class), null, null).isPresent());
-    }
-    
-    @Test
-    public void assertType() {
-        assertThat(postgreSQLAdminExecutorFactory.getType(), is("PostgreSQL"));
+        assertFalse(postgreSQLAdminExecutorFactory.create(mock(SQLStatementContext.class), null, null).isPresent());
     }
     
     @Test
     public void assertNewInstanceWithSetClientEncoding() {
         SetStatement setStatement = createSetStatement("client_encoding");
         CommonSQLStatementContext<SetStatement> statementContext = new CommonSQLStatementContext<>(setStatement);
-        Optional<DatabaseAdminExecutor> actual = postgreSQLAdminExecutorFactory.newInstance(statementContext, null, null);
+        Optional<DatabaseAdminExecutor> actual = postgreSQLAdminExecutorFactory.create(statementContext, null, null);
         assertTrue(actual.isPresent());
-        assertTrue(actual.get() instanceof PostgreSQLSetCharsetExecutor);
+        assertThat(actual.get(), instanceOf(PostgreSQLSetCharsetExecutor.class));
     }
     
     @Test
     public void assertNewInstanceWithSetExtraFloatDigits() throws SQLException {
         SetStatement setStatement = createSetStatement("extra_float_digits");
         CommonSQLStatementContext<SetStatement> statementContext = new CommonSQLStatementContext<>(setStatement);
-        Optional<DatabaseAdminExecutor> actual = postgreSQLAdminExecutorFactory.newInstance(statementContext, null, null);
+        Optional<DatabaseAdminExecutor> actual = postgreSQLAdminExecutorFactory.create(statementContext, null, null);
         assertTrue(actual.isPresent());
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         actual.get().execute(connectionSession);
@@ -102,7 +96,7 @@ public final class PostgreSQLAdminExecutorFactoryTest {
     public void assertNewInstanceWithSetApplicationName() throws SQLException {
         SetStatement setStatement = createSetStatement("application_name");
         CommonSQLStatementContext<SetStatement> statementContext = new CommonSQLStatementContext<>(setStatement);
-        Optional<DatabaseAdminExecutor> actual = postgreSQLAdminExecutorFactory.newInstance(statementContext, null, null);
+        Optional<DatabaseAdminExecutor> actual = postgreSQLAdminExecutorFactory.create(statementContext, null, null);
         assertTrue(actual.isPresent());
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         actual.get().execute(connectionSession);
@@ -114,8 +108,8 @@ public final class PostgreSQLAdminExecutorFactoryTest {
         variableSegment.setVariable(configurationParameter);
         VariableAssignSegment variableAssignSegment = new VariableAssignSegment();
         variableAssignSegment.setVariable(variableSegment);
-        SetStatement setStatement = new PostgreSQLSetStatement();
-        setStatement.getVariableAssigns().add(variableAssignSegment);
-        return setStatement;
+        SetStatement result = new PostgreSQLSetStatement();
+        result.getVariableAssigns().add(variableAssignSegment);
+        return result;
     }
 }

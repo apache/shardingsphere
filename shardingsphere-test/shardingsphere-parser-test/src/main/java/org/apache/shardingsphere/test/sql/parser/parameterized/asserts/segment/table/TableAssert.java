@@ -112,8 +112,7 @@ public final class TableAssert {
         assertIs(assertContext, actual.getLeft(), expected.getLeft());
         assertIs(assertContext, actual.getRight(), expected.getRight());
         ExpressionAssert.assertExpression(assertContext, actual.getCondition(), expected.getOnCondition());
-        assertThat(assertContext.getText("Column size assertion error: "),
-                actual.getUsing() != null ? actual.getUsing().size() : 0, is(expected.getUsingColumns().size()));
+        assertThat(assertContext.getText("Column size assertion error: "), actual.getUsing().size(), is(expected.getUsingColumns().size()));
         int count = 0;
         for (ExpectedColumn each : expected.getUsingColumns()) {
             ColumnAssert.assertIs(assertContext, actual.getUsing().get(count), each);

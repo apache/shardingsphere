@@ -19,7 +19,6 @@ package org.apache.shardingsphere.shadow.algorithm.shadow.column;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.shadow.algorithm.shadow.validator.ShadowValueValidator;
 import org.apache.shardingsphere.shadow.algorithm.shadow.validator.column.ShadowDateValueValidator;
 import org.apache.shardingsphere.shadow.algorithm.shadow.validator.column.ShadowEnumValueValidator;
@@ -44,41 +43,32 @@ public abstract class AbstractColumnMatchShadowAlgorithm implements ColumnShadow
     private static final Collection<ShadowValueValidator> SHADOW_VALUE_VALIDATORS = new LinkedList<>();
     
     @Getter
-    @Setter
-    private Properties props = new Properties();
+    private Properties props;
+    
+    private String shadowColumn;
     
     private ShadowOperationType shadowOperationType;
     
     @Override
-    public boolean isShadow(final PreciseColumnShadowValue<Comparable<?>> shadowValue) {
-        String table = shadowValue.getLogicTableName();
-        String column = shadowValue.getColumnName();
-        Comparable<?> value = shadowValue.getValue();
-        if (shadowOperationType == shadowValue.getShadowOperationType() && String.valueOf(props.get(COLUMN_PROPS_KEY)).equals(column)) {
-            SHADOW_VALUE_VALIDATORS.forEach(each -> each.preValidate(table, column, value));
-            return isMatchValue(value);
-        }
-        return false;
-    }
-    
-    @Override
-    public void init() {
-        checkColumn();
-        checkOperation();
-        checkProps();
+    public void init(final Properties props) {
+        this.props = props;
+        shadowColumn = getShadowColumn(props);
+        shadowOperationType = getShadowOperationType(props);
         initShadowValueValidator();
     }
     
-    private void checkColumn() {
-        Preconditions.checkNotNull(props.get(COLUMN_PROPS_KEY), "Column shadow algorithm column cannot be null.");
+    private String getShadowColumn(final Properties props) {
+        String result = props.getProperty(COLUMN_PROPS_KEY);
+        Preconditions.checkNotNull(result, "Column shadow algorithm column cannot be null.");
+        return result;
     }
     
-    private void checkOperation() {
-        String operationType = String.valueOf(props.get(OPERATION_PROPS_KEY));
+    private ShadowOperationType getShadowOperationType(final Properties props) {
+        String operationType = props.getProperty(OPERATION_PROPS_KEY);
         Preconditions.checkNotNull(operationType, "Column shadow algorithm operation cannot be null.");
-        Optional<ShadowOperationType> shadowOperationType = ShadowOperationType.contains(operationType);
-        Preconditions.checkState(shadowOperationType.isPresent(), "Column shadow algorithm operation must be one of [select, insert, update, delete].");
-        this.shadowOperationType = shadowOperationType.get();
+        Optional<ShadowOperationType> result = ShadowOperationType.contains(operationType);
+        Preconditions.checkState(result.isPresent(), "Column shadow algorithm operation must be one of [select, insert, update, delete].");
+        return result.get();
     }
     
     private void initShadowValueValidator() {
@@ -86,15 +76,17 @@ public abstract class AbstractColumnMatchShadowAlgorithm implements ColumnShadow
         SHADOW_VALUE_VALIDATORS.add(new ShadowEnumValueValidator());
     }
     
-    /**
-     * Check props.
-     */
-    protected abstract void checkProps();
+    @Override
+    public boolean isShadow(final PreciseColumnShadowValue<Comparable<?>> shadowValue) {
+        String table = shadowValue.getLogicTableName();
+        String column = shadowValue.getColumnName();
+        Comparable<?> value = shadowValue.getValue();
+        if (shadowOperationType == shadowValue.getShadowOperationType() && shadowColumn.equals(column)) {
+            SHADOW_VALUE_VALIDATORS.forEach(each -> each.preValidate(table, column, value));
+            return isMatchValue(value);
+        }
+        return false;
+    }
     
-    /**
-     * Is matching of value.
-     * @param value value
-     * @return is matching or not
-     */
     protected abstract boolean isMatchValue(Comparable<?> value);
 }

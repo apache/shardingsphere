@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
@@ -44,9 +45,9 @@ import java.sql.Statement;
 import java.util.Arrays;
 import java.util.Collections;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public final class WalEventConverterTest {
     
@@ -70,6 +71,7 @@ public final class WalEventConverterTest {
         DumperConfiguration result = new DumperConfiguration();
         result.setDataSourceConfig(new StandardPipelineDataSourceConfiguration("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=PostgreSQL", "root", "root"));
         result.setTableNameMap(Collections.singletonMap(new ActualTableName("t_order"), new LogicTableName("t_order")));
+        result.setTableNameSchemaNameMapping(new TableNameSchemaNameMapping(Collections.emptyMap()));
         return result;
     }
     
@@ -88,34 +90,34 @@ public final class WalEventConverterTest {
     @Test
     public void assertConvertWriteRowEvent() {
         Record record = walEventConverter.convert(mockWriteRowEvent());
-        assertTrue(record instanceof DataRecord);
+        assertThat(record, instanceOf(DataRecord.class));
         assertThat(((DataRecord) record).getType(), is(IngestDataChangeType.INSERT));
     }
     
     @Test
     public void assertConvertUpdateRowEvent() {
         Record record = walEventConverter.convert(mockUpdateRowEvent());
-        assertTrue(record instanceof DataRecord);
+        assertThat(record, instanceOf(DataRecord.class));
         assertThat(((DataRecord) record).getType(), is(IngestDataChangeType.UPDATE));
     }
     
     @Test
     public void assertConvertDeleteRowEvent() {
         Record record = walEventConverter.convert(mockDeleteRowEvent());
-        assertTrue(record instanceof DataRecord);
+        assertThat(record, instanceOf(DataRecord.class));
         assertThat(((DataRecord) record).getType(), is(IngestDataChangeType.DELETE));
     }
     
     @Test
     public void assertConvertPlaceholderEvent() {
         Record record = walEventConverter.convert(new PlaceholderEvent());
-        assertTrue(record instanceof PlaceholderRecord);
+        assertThat(record, instanceOf(PlaceholderRecord.class));
     }
     
     @Test
     public void assertUnknownTable() {
         Record record = walEventConverter.convert(mockUnknownTableEvent());
-        assertTrue(record instanceof PlaceholderRecord);
+        assertThat(record, instanceOf(PlaceholderRecord.class));
     }
     
     @Test(expected = UnsupportedOperationException.class)

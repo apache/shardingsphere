@@ -76,9 +76,17 @@ public final class DropShardingTableRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertDropRule() {
+    public void assertUpdate() {
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         updater.updateCurrentRuleConfiguration(createSQLStatement("t_order"), currentRuleConfig);
+        assertFalse(getShardingTables(currentRuleConfig).contains("t_order"));
+        assertTrue(getBindingTables(currentRuleConfig).contains("t_order_item"));
+    }
+    
+    @Test
+    public void assertUpdateWithDifferentCase() {
+        ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
+        updater.updateCurrentRuleConfiguration(createSQLStatement("T_ORDER"), currentRuleConfig);
         assertFalse(getShardingTables(currentRuleConfig).contains("t_order"));
         assertTrue(getBindingTables(currentRuleConfig).contains("t_order_item"));
     }
@@ -100,9 +108,9 @@ public final class DropShardingTableRuleStatementUpdaterTest {
     
     private ShardingRuleConfiguration createCurrentRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        ShardingTableRuleConfiguration tableRuleConfiguration = new ShardingTableRuleConfiguration("t_order_item");
-        tableRuleConfiguration.setDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "t_order_item_algorithm"));
-        result.getTables().add(tableRuleConfiguration);
+        ShardingTableRuleConfiguration tableRuleConfig = new ShardingTableRuleConfiguration("t_order_item");
+        tableRuleConfig.setDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "t_order_item_algorithm"));
+        result.getTables().add(tableRuleConfig);
         result.getAutoTables().add(new ShardingAutoTableRuleConfiguration("t_order"));
         result.setBindingTableGroups(Collections.singleton("t_order_item"));
         result.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "default_table_strategy"));

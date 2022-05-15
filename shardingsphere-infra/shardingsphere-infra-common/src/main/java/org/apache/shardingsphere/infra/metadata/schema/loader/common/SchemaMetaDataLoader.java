@@ -20,6 +20,8 @@ package org.apache.shardingsphere.infra.metadata.schema.loader.common;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.loader.adapter.MetaDataLoaderConnectionAdapter;
 
 import javax.sql.DataSource;
@@ -49,22 +51,25 @@ public final class SchemaMetaDataLoader {
     /**
      * Load schema table names.
      *
+     * @param databaseName database name
      * @param databaseType database type
      * @param dataSource data source
      * @return loaded schema table names
      * @throws SQLException SQL exception
      */
-    public static Map<String, Collection<String>> loadSchemaTableNames(final DatabaseType databaseType, final DataSource dataSource) throws SQLException {
+    public static Map<String, Collection<String>> loadSchemaTableNames(final String databaseName, final DatabaseType databaseType, final DataSource dataSource) throws SQLException {
         try (MetaDataLoaderConnectionAdapter connectionAdapter = new MetaDataLoaderConnectionAdapter(databaseType, dataSource.getConnection())) {
             Collection<String> schemaNames = loadSchemaNames(connectionAdapter, databaseType);
-            return loadSchemaTableNames(connectionAdapter, schemaNames);
+            return loadSchemaTableNames(connectionAdapter, databaseName, databaseType, schemaNames);
         }
     }
     
-    private static Map<String, Collection<String>> loadSchemaTableNames(final Connection connection, final Collection<String> schemaNames) throws SQLException {
+    private static Map<String, Collection<String>> loadSchemaTableNames(final Connection connection, final String databaseName,
+                                                                        final DatabaseType databaseType, final Collection<String> schemaNames) throws SQLException {
         Map<String, Collection<String>> result = new HashMap<>(schemaNames.size(), 1);
         for (String each : schemaNames) {
-            result.put(each, loadSchemaTableNames(connection, each));
+            String schemaName = databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType ? each : databaseName;
+            result.put(schemaName, loadSchemaTableNames(connection, each));
         }
         return result;
     }
@@ -83,6 +88,9 @@ public final class SchemaMetaDataLoader {
     }
     
     private static Collection<String> loadSchemaNames(final Connection connection, final DatabaseType databaseType) throws SQLException {
+        if (!(databaseType instanceof PostgreSQLDatabaseType) && !(databaseType instanceof OpenGaussDatabaseType)) {
+            return Collections.singletonList(connection.getSchema());
+        }
         Collection<String> result = new LinkedList<>();
         try (ResultSet resultSet = connection.getMetaData().getSchemas()) {
             while (resultSet.next()) {

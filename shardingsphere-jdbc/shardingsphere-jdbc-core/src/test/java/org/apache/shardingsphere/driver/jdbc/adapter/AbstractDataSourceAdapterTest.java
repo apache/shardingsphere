@@ -19,7 +19,7 @@ package org.apache.shardingsphere.driver.jdbc.adapter;
 
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
@@ -44,7 +44,7 @@ public final class AbstractDataSourceAdapterTest {
     
     @Before
     public void setUp() throws SQLException {
-        shardingSphereDataSource = new ShardingSphereDataSource(DefaultSchema.LOGIC_NAME, null, Collections.singletonMap("ds", new MockedDataSource()), getRuleConfigurations(), new Properties());
+        shardingSphereDataSource = new ShardingSphereDataSource(DefaultDatabase.LOGIC_NAME, null, Collections.singletonMap("ds", new MockedDataSource()), getRuleConfigurations(), new Properties());
     }
     
     private Collection<RuleConfiguration> getRuleConfigurations() {

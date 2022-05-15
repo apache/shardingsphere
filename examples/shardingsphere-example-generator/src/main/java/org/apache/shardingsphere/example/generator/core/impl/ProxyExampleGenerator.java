@@ -37,15 +37,15 @@ public final class ProxyExampleGenerator implements ExampleGenerator {
         processFile(templateConfig, dataModel, outputPath);
     }
     
-    public String getType() {
-        return "proxy";
-    }
-    
     private void processFile(final Configuration templateConfig, final Map<String, String> dataModel,
                              final String baseOutputPath) throws TemplateException, IOException {
         String outputPath = baseOutputPath + RESOURCES_PATH + "/conf/";
         GenerateUtil.processFile(templateConfig, dataModel, getType() + "/config-example_db.ftl", outputPath + "config-example_db.yaml");
         GenerateUtil.processFile(templateConfig, dataModel, getType() + "/server.ftl", outputPath + "server.yaml");
         GenerateUtil.processFile(templateConfig, dataModel, getType() + "/pom.ftl", baseOutputPath + "pom.xml");
+    }
+    
+    public String getType() {
+        return "proxy";
     }
 }

@@ -70,7 +70,7 @@ public final class AlterTrafficRuleHandlerTest {
         when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(any())).thenReturn(createTrafficRule());
         ProxyContext.getInstance().init(contextManager);
         TrafficRuleSegment trafficRuleSegment = new TrafficRuleSegment("rule_name_3", Arrays.asList("olap", "order_by"),
-                new AlgorithmSegment("TEST", new Properties()), new AlgorithmSegment("TEST", new Properties()));
+                new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()), new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()));
         new AlterTrafficRuleHandler().initStatement(getSQLStatement(trafficRuleSegment)).execute();
     }
     
@@ -80,9 +80,9 @@ public final class AlterTrafficRuleHandlerTest {
         when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(any())).thenReturn(createTrafficRule());
         ProxyContext.getInstance().init(contextManager);
         TrafficRuleSegment trafficRuleSegment1 = new TrafficRuleSegment("rule_name_1", Arrays.asList("olap", "order_by"),
-                new AlgorithmSegment("TEST", new Properties()), new AlgorithmSegment("TEST", new Properties()));
+                new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()), new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()));
         TrafficRuleSegment trafficRuleSegment2 = new TrafficRuleSegment("rule_name_2", Collections.emptyList(),
-                new AlgorithmSegment("TEST", new Properties()), null);
+                new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()), null);
         new AlterTrafficRuleHandler().initStatement(getSQLStatement(trafficRuleSegment1, trafficRuleSegment2)).execute();
     }
     
@@ -90,13 +90,17 @@ public final class AlterTrafficRuleHandlerTest {
         TrafficRuleConfiguration ruleConfig = new TrafficRuleConfiguration();
         ruleConfig.getTrafficStrategies().add(new TrafficStrategyConfiguration("rule_name_1", Arrays.asList("olap", "order_by"), "algorithm_1", "load_balancer_1"));
         ruleConfig.getTrafficStrategies().add(new TrafficStrategyConfiguration("rule_name_2", Collections.singletonList("oltp"), "algorithm_2", "load_balancer_2"));
-        Properties algorithmProperties = new Properties();
-        algorithmProperties.put("sql", "select * from t_order");
-        ruleConfig.getTrafficAlgorithms().put("algorithm_1", new ShardingSphereAlgorithmConfiguration("SQL_MATCH", algorithmProperties));
+        ruleConfig.getTrafficAlgorithms().put("algorithm_1", new ShardingSphereAlgorithmConfiguration("SQL_MATCH", createProperties()));
         ruleConfig.getTrafficAlgorithms().put("algorithm_2", new ShardingSphereAlgorithmConfiguration("SQL_HINT", new Properties()));
         ruleConfig.getLoadBalancers().put("load_balancer_1", new ShardingSphereAlgorithmConfiguration("RANDOM", new Properties()));
         ruleConfig.getLoadBalancers().put("load_balancer_2", new ShardingSphereAlgorithmConfiguration("ROBIN", new Properties()));
         return Collections.singletonList(ruleConfig);
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.put("sql", "select * from t_order");
+        return result;
     }
     
     private AlterTrafficRuleStatement getSQLStatement(final TrafficRuleSegment... segments) {

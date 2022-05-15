@@ -97,8 +97,8 @@ public final class CountInstanceRulesHandler extends QueryableRALBackendHandler<
     }
     
     private boolean hasRuleConfiguration(final ShardingSphereMetaData metaData) {
-        Collection<RuleConfiguration> configurations = metaData.getRuleMetaData().getConfigurations();
-        return null != configurations && !configurations.isEmpty();
+        Collection<RuleConfiguration> configs = metaData.getRuleMetaData().getConfigurations();
+        return null != configs && !configs.isEmpty();
     }
     
     private void initData(final Map<String, List<Object>> dataMap) {

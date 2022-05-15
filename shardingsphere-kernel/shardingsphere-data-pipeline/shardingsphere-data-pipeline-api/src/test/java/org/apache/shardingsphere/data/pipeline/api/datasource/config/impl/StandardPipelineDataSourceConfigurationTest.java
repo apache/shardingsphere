@@ -46,7 +46,7 @@ public final class StandardPipelineDataSourceConfigurationTest {
     }
     
     private void assertGetConfig(final StandardPipelineDataSourceConfiguration actual) {
-        assertThat(actual.getDatabaseType().getName(), is("MySQL"));
+        assertThat(actual.getDatabaseType().getType(), is("MySQL"));
         assertThat(actual.getType(), is("JDBC"));
         assertThat(((DataSourceProperties) actual.getDataSourceConfiguration()).getDataSourceClassName(), is("com.zaxxer.hikari.HikariDataSource"));
         assertGetJdbcConfig(actual.getJdbcConfig());

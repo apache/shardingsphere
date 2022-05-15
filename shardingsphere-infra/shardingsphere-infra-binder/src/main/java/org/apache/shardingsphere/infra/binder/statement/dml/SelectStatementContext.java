@@ -39,7 +39,7 @@ import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
-import org.apache.shardingsphere.infra.exception.SchemaNotExistedException;
+import org.apache.shardingsphere.infra.exception.DatabaseNotExistedException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.ParameterMarkerType;
@@ -67,6 +67,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.util.SubqueryExtractUtil;
 import org.apache.shardingsphere.sql.parser.sql.common.util.WhereExtractUtil;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -108,10 +109,11 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         ColumnExtractor.extractColumnSegments(columnSegments, whereSegments);
         subqueryContexts = createSubqueryContexts(metaDataMap, parameters, defaultDatabaseName);
         tablesContext = new TablesContext(getAllTableSegments(), subqueryContexts, getDatabaseType());
-        ShardingSphereSchema schema = getSchema(metaDataMap, defaultDatabaseName);
+        String databaseName = tablesContext.getDatabaseName().orElse(defaultDatabaseName);
+        Map<String, ShardingSphereSchema> schemas = getSchemas(metaDataMap, databaseName);
         groupByContext = new GroupByContextEngine().createGroupByContext(sqlStatement);
         orderByContext = new OrderByContextEngine().createOrderBy(sqlStatement, groupByContext);
-        projectionsContext = new ProjectionsContextEngine(schema, getDatabaseType())
+        projectionsContext = new ProjectionsContextEngine(databaseName, schemas, getDatabaseType())
                 .createProjectionsContext(getSqlStatement().getFrom(), getSqlStatement().getProjections(), groupByContext, orderByContext);
         paginationContext = new PaginationContextEngine().createPaginationContext(sqlStatement, projectionsContext, parameters, whereSegments);
     }
@@ -128,18 +130,16 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         return result;
     }
     
-    private ShardingSphereSchema getSchema(final Map<String, ShardingSphereMetaData> metaDataMap, final String defaultDatabaseName) {
-        String databaseName = tablesContext.getDatabaseName().orElse(defaultDatabaseName);
+    private Map<String, ShardingSphereSchema> getSchemas(final Map<String, ShardingSphereMetaData> metaDataMap, final String databaseName) {
         ShardingSphereMetaData metaData = metaDataMap.get(databaseName);
         if (null == metaData) {
             if (tablesContext.getTables().isEmpty()) {
-                return new ShardingSphereSchema();
+                return Collections.emptyMap();
             } else {
-                throw new SchemaNotExistedException(databaseName);
+                throw new DatabaseNotExistedException(databaseName);
             }
         }
-        String defaultSchemaName = getDatabaseType().getDefaultSchema(databaseName);
-        return tablesContext.getSchemaName().map(metaData::getSchemaByName).orElseGet(() -> metaData.getSchemaByName(defaultSchemaName));
+        return metaData.getSchemas();
     }
     
     /**
@@ -213,7 +213,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     public boolean isContainsPartialDistinctAggregation() {
         Collection<Projection> aggregationProjections = projectionsContext.getProjections().stream().filter(each -> each instanceof AggregationProjection).collect(Collectors.toList());
         Collection<AggregationDistinctProjection> aggregationDistinctProjections = projectionsContext.getAggregationDistinctProjections();
-        return aggregationProjections.size() > 1 && aggregationDistinctProjections.size() > 0 && aggregationProjections.size() != aggregationDistinctProjections.size();
+        return aggregationProjections.size() > 1 && !aggregationDistinctProjections.isEmpty() && aggregationProjections.size() != aggregationDistinctProjections.size();
     }
     
     /**

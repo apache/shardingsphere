@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable;
 
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
-import org.apache.shardingsphere.infra.exception.SchemaNotExistedException;
+import org.apache.shardingsphere.infra.exception.DatabaseNotExistedException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.QualifiedDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.type.ExportableRule;
-import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
-import org.apache.shardingsphere.infra.storage.StorageNodeStatus;
+import org.apache.shardingsphere.mode.metadata.storage.StorageNodeDataSource;
+import org.apache.shardingsphere.mode.metadata.storage.StorageNodeStatus;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.service.StorageNodeStatusService;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -73,18 +74,23 @@ public final class ShowReadwriteSplittingReadResourcesHandler extends QueryableR
     
     @Override
     protected Collection<List<Object>> getRows(final ContextManager contextManager) {
-        String databaseName = sqlStatement.getSchema().isPresent() ? sqlStatement.getSchema().get().getIdentifier().getValue() : connectionSession.getDatabaseName();
-        if (null == databaseName) {
-            throw new NoDatabaseSelectedException();
-        }
-        if (!ProxyContext.getInstance().getAllDatabaseNames().contains(databaseName)) {
-            throw new SchemaNotExistedException(databaseName);
-        }
+        String databaseName = getDatabaseName();
         MetaDataContexts metaDataContexts = contextManager.getMetaDataContexts();
         ShardingSphereMetaData metaData = metaDataContexts.getMetaData(databaseName);
         Collection<String> allReadResources = getAllReadResources(metaData);
         Map<String, StorageNodeDataSource> persistentReadResources = getPersistentReadResources(databaseName, metaDataContexts.getMetaDataPersistService().orElse(null));
         return buildRows(allReadResources, persistentReadResources);
+    }
+    
+    private String getDatabaseName() {
+        String result = sqlStatement.getSchema().isPresent() ? sqlStatement.getSchema().get().getIdentifier().getValue() : connectionSession.getDatabaseName();
+        if (Strings.isNullOrEmpty(result)) {
+            throw new NoDatabaseSelectedException();
+        }
+        if (!ProxyContext.getInstance().getAllDatabaseNames().contains(result)) {
+            throw new DatabaseNotExistedException(result);
+        }
+        return result;
     }
     
     private Collection<String> getAllReadResources(final ShardingSphereMetaData metaData) {

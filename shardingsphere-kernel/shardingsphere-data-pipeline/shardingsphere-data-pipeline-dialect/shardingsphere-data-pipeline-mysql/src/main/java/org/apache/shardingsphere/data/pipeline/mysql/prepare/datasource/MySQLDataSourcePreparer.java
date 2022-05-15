@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public final class MySQLDataSourcePreparer extends AbstractDataSourcePreparer {
     
-    private static final MySQLPipelineSQLBuilder SQL_BUILDER = (MySQLPipelineSQLBuilder) PipelineSQLBuilderFactory.newInstance("MySQL");
+    private static final MySQLPipelineSQLBuilder SQL_BUILDER = (MySQLPipelineSQLBuilder) PipelineSQLBuilderFactory.getInstance("MySQL");
     
     @Override
     public void prepareTargetTables(final PrepareTargetTablesParameter parameter) {
@@ -48,7 +48,7 @@ public final class MySQLDataSourcePreparer extends AbstractDataSourcePreparer {
         PipelineDataSourceManager dataSourceManager = parameter.getDataSourceManager();
         try (
                 Connection sourceConnection = getSourceCachedDataSource(jobConfig, dataSourceManager).getConnection();
-                Connection targetConnection = getTargetCachedDataSource(jobConfig, dataSourceManager).getConnection()) {
+                Connection targetConnection = getTargetCachedDataSource(parameter.getTaskConfig(), dataSourceManager).getConnection()) {
             Collection<String> logicTableNames = parameter.getTablesFirstDataNodes().getEntries().stream().map(JobDataNodeEntry::getLogicTableName).collect(Collectors.toList());
             for (String each : logicTableNames) {
                 String createTableSQL = getCreateTableSQL(sourceConnection, each);

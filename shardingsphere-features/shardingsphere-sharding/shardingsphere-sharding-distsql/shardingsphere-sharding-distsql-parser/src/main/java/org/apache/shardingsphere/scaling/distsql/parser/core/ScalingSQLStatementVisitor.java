@@ -139,11 +139,8 @@ public final class ScalingSQLStatementVisitor extends ScalingStatementBaseVisito
     
     @Override
     public ASTNode visitCreateShardingScalingRule(final CreateShardingScalingRuleContext ctx) {
-        CreateShardingScalingRuleStatement result = new CreateShardingScalingRuleStatement(getIdentifierValue(ctx.scalingName()));
-        if (null != ctx.scalingRuleDefinition()) {
-            result.setConfigurationSegment((ShardingScalingRuleConfigurationSegment) visit(ctx.scalingRuleDefinition()));
-        }
-        return result;
+        ShardingScalingRuleConfigurationSegment scalingRuleConfigSegment = null == ctx.scalingRuleDefinition() ? null : (ShardingScalingRuleConfigurationSegment) visit(ctx.scalingRuleDefinition());
+        return new CreateShardingScalingRuleStatement(getIdentifierValue(ctx.scalingName()), scalingRuleConfigSegment);
     }
     
     @Override

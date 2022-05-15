@@ -18,12 +18,16 @@
 package org.apache.shardingsphere.scaling.core.job.environment;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
+import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -47,11 +51,15 @@ public final class ScalingEnvironmentManager {
         Collection<String> tables = jobConfig.splitLogicTableNames();
         log.info("cleanupTargetTables, tables={}", tables);
         YamlPipelineDataSourceConfiguration target = jobConfig.getTarget();
+        PipelineSQLBuilder pipelineSQLBuilder = PipelineSQLBuilderFactory.getInstance(jobConfig.getTargetDatabaseType());
+        ShardingSphereMetaData metaData = PipelineContext.getContextManager().getMetaDataContexts().getMetaData(jobConfig.getDatabaseName());
+        TableNameSchemaNameMapping tableNameSchemaNameMapping = new TableNameSchemaNameMapping(TableNameSchemaNameMapping.convert(metaData.getSchemas()));
         try (
                 PipelineDataSourceWrapper dataSource = PipelineDataSourceFactory.newInstance(PipelineDataSourceConfigurationFactory.newInstance(target.getType(), target.getParameter()));
                 Connection connection = dataSource.getConnection()) {
             for (String each : tables) {
-                String sql = PipelineSQLBuilderFactory.newInstance(jobConfig.getTargetDatabaseType()).buildTruncateSQL(each);
+                String sql = pipelineSQLBuilder.buildTruncateSQL(tableNameSchemaNameMapping.getSchemaName(each), each);
+                log.info("cleanupTargetTables, tableName={}, sql={}", each, sql);
                 try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
                     preparedStatement.execute();
                 }

@@ -23,8 +23,8 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.integration.data.pipeline.env.enums.ITEnvTypeEnum;
-import org.apache.shardingsphere.integration.data.pipeline.framework.container.proxy.JDBCConnectionWaitStrategy;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
+import org.apache.shardingsphere.test.integration.framework.container.wait.JDBCConnectionWaitStrategy;
 import org.testcontainers.containers.BindMode;
 
 import java.sql.DriverManager;
@@ -40,12 +40,12 @@ public final class MySQLContainer extends DockerDatabaseContainer {
     
     @Override
     protected void configure() {
+        super.configure();
         withCommand("--sql_mode=", "--default-authentication-plugin=mysql_native_password");
         setEnv(Lists.newArrayList("LANG=C.UTF-8", "MYSQL_ROOT_PASSWORD=root", "MYSQL_ROOT_HOST=%"));
         withClasspathResourceMapping("/env/mysql/my.cnf", "/etc/mysql/my.cnf", BindMode.READ_ONLY);
-        super.configure();
         withExposedPorts(getPort());
-        if (IntegrationTestEnvironment.getInstance().getItEnvType() == ITEnvTypeEnum.LOCAL) {
+        if (ITEnvTypeEnum.NATIVE == IntegrationTestEnvironment.getInstance().getItEnvType()) {
             addFixedExposedPort(3306, 3306);
         }
         setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(DATABASE_TYPE, "localhost", getFirstMappedPort()), "root", "root")));

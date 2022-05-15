@@ -74,7 +74,7 @@ rules:
       completionDetector: # 作业是否接近完成检测算法。如果不配置则无法自动进行后续步骤，可以通过 DistSQL 手动操作。
         type: # 算法类型。可选项：IDLE
         props: # 算法属性
-          incremental-task-idle-minute-threshold: # 如果增量同步任务不再活动超过一定时间，那么可以认为增量同步任务接近完成。适用算法类型：IDLE
+          incremental-task-idle-seconds-threshold: # 如果增量同步任务不再活动超过一定时间，那么可以认为增量同步任务接近完成。适用算法类型：IDLE
       dataConsistencyChecker: # 数据一致性校验算法。如果不配置则跳过这个步骤。
         type: # 算法类型。可选项：DATA_MATCH, CRC32_MATCH
         props: # 算法属性
@@ -107,7 +107,7 @@ rules:
       completionDetector:
         type: IDLE
         props:
-          incremental-task-idle-minute-threshold: 30
+          incremental-task-idle-seconds-threshold: 1800
       dataConsistencyChecker:
         type: DATA_MATCH
         props:
@@ -153,7 +153,7 @@ OUTPUT(
   BATCH_SIZE=1000
 ),
 STREAM_CHANNEL(TYPE(NAME=MEMORY, PROPERTIES("block-queue-size"=10000))),
-COMPLETION_DETECTOR(TYPE(NAME=IDLE, PROPERTIES("incremental-task-idle-minute-threshold"=30))),
+COMPLETION_DETECTOR(TYPE(NAME=IDLE, PROPERTIES("incremental-task-idle-seconds-threshold"=1800))),
 DATA_CONSISTENCY_CHECKER(TYPE(NAME=DATA_MATCH, PROPERTIES("chunk-size"=1000)))
 );
 ```

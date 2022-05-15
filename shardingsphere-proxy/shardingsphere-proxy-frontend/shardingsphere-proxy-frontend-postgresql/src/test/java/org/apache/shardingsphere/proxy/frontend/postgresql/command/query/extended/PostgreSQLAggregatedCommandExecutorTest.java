@@ -24,12 +24,13 @@ import org.junit.Test;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -39,17 +40,15 @@ public final class PostgreSQLAggregatedCommandExecutorTest {
     public void assertExecute() throws SQLException {
         int commandCount = 16;
         List<CommandExecutor> executors = new ArrayList<>(commandCount);
-        List<DatabasePacket<?>> expectedPackets = new ArrayList<>(commandCount);
         for (int i = 0; i < commandCount; i++) {
             CommandExecutor executor = mock(CommandExecutor.class);
-            DatabasePacket expectedPacket = mock(DatabasePacket.class);
-            expectedPackets.add(expectedPacket);
-            when(executor.execute()).thenReturn(Collections.singletonList(expectedPacket));
+            DatabasePacket<?> expectedPacket = mock(DatabasePacket.class);
+            when(executor.execute()).thenReturn(Collections.singleton(expectedPacket));
             executors.add(executor);
         }
         PostgreSQLAggregatedCommandExecutor actualExecutor = new PostgreSQLAggregatedCommandExecutor(executors);
-        List<DatabasePacket<?>> actualPackets = new ArrayList<>(actualExecutor.execute());
+        Collection<DatabasePacket<?>> actualPackets = actualExecutor.execute();
         assertThat(actualPackets.size(), is(1));
-        assertTrue(actualPackets.iterator().next() instanceof PostgreSQLAggregatedResponsesPacket);
+        assertThat(actualPackets.iterator().next(), instanceOf(PostgreSQLAggregatedResponsesPacket.class));
     }
 }

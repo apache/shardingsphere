@@ -23,7 +23,6 @@ import io.etcd.jetcd.Client;
 import io.etcd.jetcd.KV;
 import io.etcd.jetcd.KeyValue;
 import io.etcd.jetcd.Lease;
-import io.etcd.jetcd.Lock;
 import io.etcd.jetcd.Watch;
 import io.etcd.jetcd.kv.GetResponse;
 import io.etcd.jetcd.lease.LeaseGrantResponse;
@@ -51,7 +50,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -67,7 +65,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class EtcdRepositoryTest {
     
-    private static final String CENTER_TYPE = "etcd";
+    private final EtcdRepository repository = new EtcdRepository();
     
     @Mock
     private Client client;
@@ -96,14 +94,6 @@ public final class EtcdRepositoryTest {
     @Mock
     private CompletableFuture putFuture;
     
-    @Mock
-    private CompletableFuture lockFuture;
-    
-    @Mock
-    private Lock etcdLock;
-    
-    private final EtcdRepository repository = new EtcdRepository();
-    
     @Before
     public void setUp() {
         setClient();
@@ -118,7 +108,7 @@ public final class EtcdRepositoryTest {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void setProperties() {
-        FieldSetter.setField(repository, repository.getClass().getDeclaredField("etcdProperties"), new EtcdProperties(new Properties()));
+        FieldSetter.setField(repository, repository.getClass().getDeclaredField("etcdProps"), new EtcdProperties(new Properties()));
     }
     
     @SuppressWarnings("unchecked")
@@ -131,13 +121,10 @@ public final class EtcdRepositoryTest {
         when(kv.put(any(ByteSequence.class), any(ByteSequence.class), any(PutOption.class))).thenReturn(putFuture);
         when(getFuture.get()).thenReturn(getResponse);
         when(client.getLeaseClient()).thenReturn(lease);
-        when(client.getLockClient()).thenReturn(etcdLock);
         when(lease.grant(anyLong())).thenReturn(leaseFuture);
         when(leaseFuture.get()).thenReturn(leaseGrantResponse);
         when(leaseGrantResponse.getID()).thenReturn(123L);
         when(client.getWatchClient()).thenReturn(watch);
-        when(etcdLock.lock(any(ByteSequence.class), anyLong())).thenReturn(lockFuture);
-        when(etcdLock.unlock(any(ByteSequence.class))).thenReturn(lockFuture);
         return client;
     }
     
@@ -182,7 +169,7 @@ public final class EtcdRepositoryTest {
             listener.onNext(buildWatchResponse(WatchEvent.EventType.PUT));
             return mock(Watch.Watcher.class);
         }).when(watch).watch(any(ByteSequence.class), any(WatchOption.class), any(Watch.Listener.class));
-        repository.watch("key1", dataChangedEvent -> {
+        repository.watch("key1", event -> {
         });
         verify(watch).watch(any(ByteSequence.class), any(WatchOption.class), any(Watch.Listener.class));
     }
@@ -194,7 +181,7 @@ public final class EtcdRepositoryTest {
             listener.onNext(buildWatchResponse(WatchEvent.EventType.DELETE));
             return mock(Watch.Watcher.class);
         }).when(watch).watch(any(ByteSequence.class), any(WatchOption.class), any(Watch.Listener.class));
-        repository.watch("key1", dataChangedEvent -> {
+        repository.watch("key1", event -> {
         });
         verify(watch).watch(any(ByteSequence.class), any(WatchOption.class), any(Watch.Listener.class));
     }
@@ -206,7 +193,7 @@ public final class EtcdRepositoryTest {
             listener.onNext(buildWatchResponse(WatchEvent.EventType.UNRECOGNIZED));
             return mock(Watch.Watcher.class);
         }).when(watch).watch(any(ByteSequence.class), any(WatchOption.class), any(Watch.Listener.class));
-        repository.watch("key1", dataChangedEvent -> {
+        repository.watch("key1", event -> {
         });
         verify(watch).watch(any(ByteSequence.class), any(WatchOption.class), any(Watch.Listener.class));
     }
@@ -227,18 +214,6 @@ public final class EtcdRepositoryTest {
     public void assertClose() {
         repository.close();
         verify(client).close();
-    }
-    
-    @Test
-    public void assertGetType() {
-        assertThat(repository.getType(), is(CENTER_TYPE));
-    }
-    
-    @Test
-    public void assertProperties() {
-        Properties props = new Properties();
-        repository.setProps(props);
-        assertThat(repository.getProps(), is(props));
     }
     
     @Test
@@ -300,19 +275,5 @@ public final class EtcdRepositoryTest {
         events.add(new WatchEvent(keyValue, mock(KeyValue.class), eventType));
         FieldSetter.setField(result, result.getClass().getDeclaredField("events"), events);
         return result;
-    }
-    
-    @Test
-    @SneakyThrows
-    public void assertTryLock() {
-        repository.tryLock("test", 5, TimeUnit.SECONDS);
-        verify(etcdLock).lock(ByteSequence.from("test", StandardCharsets.UTF_8), 123L);
-    }
-    
-    @Test
-    @SneakyThrows
-    public void assertReleaseLock() {
-        repository.releaseLock("test");
-        verify(etcdLock).unlock(ByteSequence.from("test", StandardCharsets.UTF_8));
     }
 }

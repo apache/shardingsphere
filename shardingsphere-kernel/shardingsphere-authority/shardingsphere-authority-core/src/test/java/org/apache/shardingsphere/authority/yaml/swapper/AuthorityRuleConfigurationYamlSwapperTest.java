@@ -59,7 +59,6 @@ public final class AuthorityRuleConfigurationYamlSwapperTest {
         authorityRuleConfig.setUsers(Collections.singletonList("root@localhost:pass"));
         AuthorityRuleConfiguration actual = swapper.swapToObject(authorityRuleConfig);
         assertThat(actual.getUsers().size(), is(1));
-        assertNotNull(actual.getProvider());
-        assertThat(actual.getProvider().getType(), is("ALL_PRIVILEGES_PERMITTED"));
+        assertThat(actual.getProvider().getType(), is("ALL_PERMITTED"));
     }
 }

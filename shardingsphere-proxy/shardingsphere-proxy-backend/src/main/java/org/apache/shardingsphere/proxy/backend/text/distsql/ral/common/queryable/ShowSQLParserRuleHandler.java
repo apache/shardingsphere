@@ -56,11 +56,11 @@ public final class ShowSQLParserRuleHandler extends QueryableRALBackendHandler<S
         if (!sqlParserRuleConfigurationOptional.isPresent()) {
             return Collections.emptyList();
         }
-        SQLParserRuleConfiguration sqlParserRuleConfiguration = sqlParserRuleConfigurationOptional.get();
+        SQLParserRuleConfiguration sqlParserRuleConfig = sqlParserRuleConfigurationOptional.get();
         List<Object> row = new LinkedList<>();
-        row.add(String.valueOf(sqlParserRuleConfiguration.isSqlCommentParseEnabled()));
-        row.add(GSON.toJson(sqlParserRuleConfiguration.getParseTreeCache()));
-        row.add(GSON.toJson(sqlParserRuleConfiguration.getSqlStatementCache()));
+        row.add(String.valueOf(sqlParserRuleConfig.isSqlCommentParseEnabled()));
+        row.add(GSON.toJson(sqlParserRuleConfig.getParseTreeCache()));
+        row.add(GSON.toJson(sqlParserRuleConfig.getSqlStatementCache()));
         Collection<List<Object>> result = new LinkedList<>();
         result.add(row);
         return result;

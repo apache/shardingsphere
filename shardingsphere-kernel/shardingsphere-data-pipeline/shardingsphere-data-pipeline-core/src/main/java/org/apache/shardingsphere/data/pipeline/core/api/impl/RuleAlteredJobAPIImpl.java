@@ -164,8 +164,8 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     private void verifySourceWritingStopped(final RuleAlteredJobConfiguration jobConfig) {
         LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
         String databaseName = jobConfig.getDatabaseName();
-        ShardingSphereLock lock = lockContext.getGlobalLock(databaseName);
-        if (null == lock || !lock.isLocked()) {
+        ShardingSphereLock lock = lockContext.getMutexLock(databaseName);
+        if (null == lock || !lock.isLocked(databaseName)) {
             throw new PipelineVerifyFailedException("Source writing is not stopped. You could run `STOP SCALING SOURCE WRITING {jobId}` to stop it.");
         }
     }
@@ -186,8 +186,8 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     @Override
     public void stopClusterWriteDB(final String databaseName, final String jobId) {
         LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
-        ShardingSphereLock lock = lockContext.getOrCreateGlobalLock(databaseName);
-        if (lock.isLocked()) {
+        ShardingSphereLock lock = lockContext.getMutexLock(databaseName);
+        if (lock.isLocked(databaseName)) {
             log.info("stopClusterWriteDB, already stopped");
             return;
         }
@@ -212,12 +212,12 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     @Override
     public void restoreClusterWriteDB(final String databaseName, final String jobId) {
         LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
-        ShardingSphereLock lock = lockContext.getGlobalLock(databaseName);
+        ShardingSphereLock lock = lockContext.getMutexLock(databaseName);
         if (null == lock) {
             log.info("restoreClusterWriteDB, lock is null");
             return;
         }
-        boolean isLocked = lock.isLocked();
+        boolean isLocked = lock.isLocked(databaseName);
         if (!isLocked) {
             log.info("restoreClusterWriteDB, isLocked false, databaseName={}", databaseName);
             return;

@@ -49,22 +49,10 @@ public final class TableCrudUtil {
             int orderId = RANDOM.nextInt(0, 5);
             int userId = RANDOM.nextInt(0, 5);
             orderData.add(new Object[]{SNOWFLAKE_GENERATE.generateKey(), orderId, userId, "varchar" + i, (byte) 1, new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis()),
-                    "hello".getBytes(StandardCharsets.UTF_8), null, new BigDecimal("100.00"), "test", Math.random(), "{}"});
+                    "hello".getBytes(StandardCharsets.UTF_8), null, new BigDecimal("100.00"), "test", Math.random(), "{}", RANDOM.nextInt(0, 10000000)});
             orderItemData.add(new Object[]{SNOWFLAKE_GENERATE.generateKey(), orderId, userId, "SUCCESS"});
         }
         return Pair.of(orderData, orderItemData);
-    }
-    
-    /**
-     * Generate MySQL simple insert data.
-     *
-     * @return insert data
-     */
-    public static Pair<Object[], Object[]> generateSimpleInsertData() {
-        long uniqueKey = (Long) SNOWFLAKE_GENERATE.generateKey();
-        int orderId = RANDOM.nextInt(0, 5);
-        int userId = RANDOM.nextInt(0, 5);
-        return Pair.of(new Object[]{uniqueKey, orderId, userId}, new Object[]{uniqueKey, orderId, userId, "OK"});
     }
     
     /**

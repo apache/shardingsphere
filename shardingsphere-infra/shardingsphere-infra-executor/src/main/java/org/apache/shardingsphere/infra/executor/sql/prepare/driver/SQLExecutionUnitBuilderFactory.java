@@ -33,13 +33,13 @@ public final class SQLExecutionUnitBuilderFactory {
     }
     
     /**
-     * Create new instance of SQL execution unit builder.
+     * Get instance of SQL execution unit builder.
      * 
      * @param type type of SQL execution unit builder
-     * @return new instance of SQL execution unit builder
+     * @return got instance
      */
     @SuppressWarnings("rawtypes")
-    public static SQLExecutionUnitBuilder newInstance(final String type) {
+    public static SQLExecutionUnitBuilder getInstance(final String type) {
         return TypedSPIRegistry.getRegisteredService(SQLExecutionUnitBuilder.class, type);
     }
 }

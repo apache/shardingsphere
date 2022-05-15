@@ -73,8 +73,7 @@ public final class StoragePrivilegeBuilderTest {
     private ShardingSphereMetaData mockShardingSphereMetaData(final Collection<ShardingSphereUser> users) throws SQLException {
         ShardingSphereMetaData result = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         DataSource dataSource = mockDataSourceForPrivileges(users);
-        Collection<DataSource> dataSourceList = Collections.singletonList(dataSource);
-        when(result.getResource().getAllInstanceDataSources()).thenReturn(dataSourceList);
+        when(result.getResource().getAllInstanceDataSources()).thenReturn(Collections.singleton(dataSource));
         when(result.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         return result;
     }
@@ -87,7 +86,7 @@ public final class StoragePrivilegeBuilderTest {
         String globalPrivilegeSQL = "SELECT * FROM mysql.user WHERE (user, host) in (%s)";
         String schemaPrivilegeSQL = "SELECT * FROM mysql.db WHERE (user, host) in (%s)";
         String tablePrivilegeSQL = "SELECT Db, Table_name, Table_priv FROM mysql.tables_priv WHERE (user, host) in (%s)";
-        String useHostTuples = users.stream().map(item -> String.format("('%s', '%s')", item.getGrantee().getUsername(), item.getGrantee().getHostname())).collect(Collectors.joining(", "));
+        String useHostTuples = users.stream().map(each -> String.format("('%s', '%s')", each.getGrantee().getUsername(), each.getGrantee().getHostname())).collect(Collectors.joining(", "));
         when(result.getConnection().createStatement().executeQuery(String.format(globalPrivilegeSQL, useHostTuples))).thenReturn(globalPrivilegeResultSet);
         when(result.getConnection().createStatement().executeQuery(String.format(schemaPrivilegeSQL, useHostTuples))).thenReturn(schemaPrivilegeResultSet);
         when(result.getConnection().createStatement().executeQuery(String.format(tablePrivilegeSQL, useHostTuples))).thenReturn(tablePrivilegeResultSet);

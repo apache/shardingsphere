@@ -23,13 +23,13 @@ rules:
       tableStrategy:
         standard:
           shardingColumn: order_id
-          shardingAlgorithmName: standard_test
+          shardingAlgorithmName: it_standard_fixture
     t_order_item:
       actualDataNodes: tbl.t_order_item_${0..9}
       tableStrategy:
         standard:
           shardingColumn: order_id
-          shardingAlgorithmName: standard_test
+          shardingAlgorithmName: it_standard_fixture
       keyGenerateStrategy:
         column: item_id
         keyGeneratorName: constant
@@ -38,7 +38,7 @@ rules:
       tableStrategy:
         standard:
           shardingColumn: order_id
-          shardingAlgorithmName: standard_test
+          shardingAlgorithmName: it_standard_fixture
     t_order_federate_sharding:
       actualDataNodes: tbl.t_order_federate_sharding_${0..1}
       tableStrategy:
@@ -58,8 +58,8 @@ rules:
     - t_broadcast_table_for_ddl
   
   shardingAlgorithms:
-    standard_test:
-      type: STANDARD_TEST
+    it_standard_fixture:
+      type: IT.STANDARD.FIXTURE
     table_inline_item_id:
       type: INLINE
       props:
@@ -72,7 +72,7 @@ rules:
   
   keyGenerators:
     constant:
-      type: Constant
+      type: IT.FIXTURE
 
 props:
   sql-federation-enabled: true

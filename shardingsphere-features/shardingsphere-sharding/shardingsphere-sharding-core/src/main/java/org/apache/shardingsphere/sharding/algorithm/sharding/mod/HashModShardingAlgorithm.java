@@ -19,37 +19,35 @@ package org.apache.shardingsphere.sharding.algorithm.sharding.mod;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Properties;
 
 /**
  * Hash sharding algorithm.
  */
-@Getter
-@Setter
 public final class HashModShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>>, ShardingAutoTableAlgorithm {
     
     private static final String SHARDING_COUNT_KEY = "sharding-count";
     
-    private Properties props = new Properties();
+    @Getter
+    private Properties props;
     
     private int shardingCount;
     
     @Override
-    public void init() {
-        shardingCount = getShardingCount();
+    public void init(final Properties props) {
+        this.props = props;
+        shardingCount = getShardingCount(props);
     }
     
-    private int getShardingCount() {
+    private int getShardingCount(final Properties props) {
         Preconditions.checkArgument(props.containsKey(SHARDING_COUNT_KEY), "Sharding count cannot be null.");
-        return Integer.parseInt(props.get(SHARDING_COUNT_KEY).toString());
+        return Integer.parseInt(props.getProperty(SHARDING_COUNT_KEY));
     }
     
     @Override
@@ -75,10 +73,5 @@ public final class HashModShardingAlgorithm implements StandardShardingAlgorithm
     @Override
     public String getType() {
         return "HASH_MOD";
-    }
-    
-    @Override
-    public Collection<String> getAllPropertyKeys() {
-        return Collections.singletonList(SHARDING_COUNT_KEY);
     }
 }
