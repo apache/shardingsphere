@@ -53,7 +53,10 @@ import org.mockito.plugins.MemberAccessor;
 
 import java.lang.reflect.Field;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
