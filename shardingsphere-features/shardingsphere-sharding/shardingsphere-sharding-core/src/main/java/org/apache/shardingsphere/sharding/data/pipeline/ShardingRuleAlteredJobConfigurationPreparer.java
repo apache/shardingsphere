@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sharding.data.pipeline;
 
 import com.google.common.base.Joiner;
-import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
@@ -53,6 +52,7 @@ import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfigurat
 import org.apache.shardingsphere.sharding.yaml.swapper.ShardingRuleConfigurationConverter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -199,10 +199,10 @@ public final class ShardingRuleAlteredJobConfigurationPreparer implements RuleAl
     
     private static Set<String> extractShardingColumns(final ShardingStrategyConfiguration shardingStrategy) {
         if (shardingStrategy instanceof StandardShardingStrategyConfiguration) {
-            return Sets.newHashSet(((StandardShardingStrategyConfiguration) shardingStrategy).getShardingColumn());
+            return new HashSet<>(Collections.singleton(((StandardShardingStrategyConfiguration) shardingStrategy).getShardingColumn()));
         }
         if (shardingStrategy instanceof ComplexShardingStrategyConfiguration) {
-            return Sets.newHashSet(((ComplexShardingStrategyConfiguration) shardingStrategy).getShardingColumns().split(","));
+            return new HashSet<>(Arrays.asList(((ComplexShardingStrategyConfiguration) shardingStrategy).getShardingColumns().split(",")));
         }
         return Collections.emptySet();
     }
