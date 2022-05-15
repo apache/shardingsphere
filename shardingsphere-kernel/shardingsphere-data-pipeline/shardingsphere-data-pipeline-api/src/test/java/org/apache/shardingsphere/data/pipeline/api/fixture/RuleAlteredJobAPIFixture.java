@@ -32,17 +32,17 @@ import java.util.Optional;
 public class RuleAlteredJobAPIFixture implements RuleAlteredJobAPI {
     
     @Override
-    public void startDisabledJob(String jobId) {
+    public void startDisabledJob(final String jobId) {
         
     }
     
     @Override
-    public void stop(String jobId) {
+    public void stop(final String jobId) {
         
     }
     
     @Override
-    public void remove(String jobId) {
+    public void remove(final String jobId) {
         
     }
     
@@ -52,37 +52,37 @@ public class RuleAlteredJobAPIFixture implements RuleAlteredJobAPI {
     }
     
     @Override
-    public Optional<String> start(RuleAlteredJobConfiguration jobConfig) {
+    public Optional<String> start(final RuleAlteredJobConfiguration jobConfig) {
         return Optional.empty();
     }
     
     @Override
-    public Map<Integer, JobProgress> getProgress(String jobId) {
+    public Map<Integer, JobProgress> getProgress(final String jobId) {
         return null;
     }
     
     @Override
-    public Map<Integer, JobProgress> getProgress(RuleAlteredJobConfiguration jobConfig) {
+    public Map<Integer, JobProgress> getProgress(final RuleAlteredJobConfiguration jobConfig) {
         return null;
     }
     
     @Override
-    public void stopClusterWriteDB(String jobId) {
+    public void stopClusterWriteDB(final String jobId) {
         
     }
     
     @Override
-    public void stopClusterWriteDB(String databaseName, String jobId) {
+    public void stopClusterWriteDB(final String databaseName, final String jobId) {
         
     }
     
     @Override
-    public void restoreClusterWriteDB(String jobId) {
+    public void restoreClusterWriteDB(final String jobId) {
         
     }
     
     @Override
-    public void restoreClusterWriteDB(String databaseName, String jobId) {
+    public void restoreClusterWriteDB(final String databaseName, final String jobId) {
         
     }
     
@@ -92,52 +92,52 @@ public class RuleAlteredJobAPIFixture implements RuleAlteredJobAPI {
     }
     
     @Override
-    public boolean isDataConsistencyCheckNeeded(String jobId) {
+    public boolean isDataConsistencyCheckNeeded(final String jobId) {
         return false;
     }
     
     @Override
-    public boolean isDataConsistencyCheckNeeded(RuleAlteredJobConfiguration jobConfig) {
+    public boolean isDataConsistencyCheckNeeded(final RuleAlteredJobConfiguration jobConfig) {
         return false;
     }
     
     @Override
-    public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(String jobId) {
+    public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final String jobId) {
         return null;
     }
     
     @Override
-    public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(RuleAlteredJobConfiguration jobConfig) {
+    public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final RuleAlteredJobConfiguration jobConfig) {
         return null;
     }
     
     @Override
-    public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(String jobId, String algorithmType) {
+    public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final String jobId, final String algorithmType) {
         return null;
     }
     
     @Override
-    public boolean aggregateDataConsistencyCheckResults(String jobId, Map<String, DataConsistencyCheckResult> checkResults) {
+    public boolean aggregateDataConsistencyCheckResults(final String jobId, final Map<String, DataConsistencyCheckResult> checkResults) {
         return false;
     }
     
     @Override
-    public void switchClusterConfiguration(String jobId) {
+    public void switchClusterConfiguration(final String jobId) {
         
     }
     
     @Override
-    public void switchClusterConfiguration(RuleAlteredJobConfiguration jobConfig) {
+    public void switchClusterConfiguration(final RuleAlteredJobConfiguration jobConfig) {
         
     }
     
     @Override
-    public void reset(String jobId) {
+    public void reset(final String jobId) {
         
     }
     
     @Override
-    public RuleAlteredJobConfiguration getJobConfig(String jobId) {
+    public RuleAlteredJobConfiguration getJobConfig(final String jobId) {
         return null;
     }
     

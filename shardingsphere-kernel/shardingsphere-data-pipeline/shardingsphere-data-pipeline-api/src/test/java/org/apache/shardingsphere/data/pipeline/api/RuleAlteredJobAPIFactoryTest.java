@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.api;
 import org.apache.shardingsphere.data.pipeline.api.fixture.RuleAlteredJobAPIFixture;
 import org.junit.Test;
 
-import static org.hamcrest.core.IsInstanceOf.instanceOf;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
 public final class RuleAlteredJobAPIFactoryTest {

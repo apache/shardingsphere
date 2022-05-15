@@ -26,7 +26,7 @@ import java.util.Collection;
 public class QueryableScalingFixtureQueryResultSet implements DistSQLResultSet {
     
     @Override
-    public void init(ShardingSphereMetaData metaData, SQLStatement sqlStatement) {
+    public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
         
     }
     
