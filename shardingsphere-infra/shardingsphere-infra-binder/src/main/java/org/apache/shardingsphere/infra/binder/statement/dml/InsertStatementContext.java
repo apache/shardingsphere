@@ -96,7 +96,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
         ShardingSphereSchema schema = getSchema(metaDataMap, defaultDatabaseName);
         
         AtomicInteger parametersOffset = new AtomicInteger(0);
-        List<InsertStatement> insertStatements = getInsertStatements(sqlStatement);
+        List<InsertStatement> insertStatements = getInsertStatements();
         for (int cursor = 0; cursor < insertStatements.size(); cursor++) {
             InsertStatement insertStatement = insertStatements.get(cursor);
             List<List<ExpressionSegment>> valueExpression = getAllValueExpressions(insertStatement);
@@ -124,7 +124,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     
     private Collection<SimpleTableSegment> getAllSimpleTableSegments() {
         TableExtractor tableExtractor = new TableExtractor();
-        tableExtractor.extractTablesFromInsert(getInsertStatements(getSqlStatement()));
+        tableExtractor.extractTablesFromInsert(getInsertStatements());
         return tableExtractor.getRewriteTables();
     }
     
@@ -240,7 +240,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
      * @return column names collection
      */
     public List<String> getInsertColumnNames() {
-        InsertStatement insertStatement = getInsertStatements(getSqlStatement()).get(0);
+        InsertStatement insertStatement = getInsertStatements().get(0);
         Optional<SetAssignmentSegment> setAssignment = InsertStatementHandler.getSetAssignmentSegment(insertStatement);
         return setAssignment.map(this::getColumnNamesForSetAssignment).orElseGet(() -> getColumnNamesForInsertColumns(insertStatement.getColumns()));
     }
@@ -285,31 +285,29 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     
     /**
      * Get first index on MultiInsertStatement.
-     * @param sqlStatementContext InsertStatementContext
      *
      * @return column names collection
      */
-    public static SimpleTableSegment getTable(final InsertStatementContext sqlStatementContext) {
-        return getInsertStatements(sqlStatementContext.getSqlStatement()).get(0).getTable();
+    public SimpleTableSegment getTable() {
+        return getInsertStatements().get(0).getTable();
     }
     
     /**
      * Get InsertStatement collection from MultiInsertStatement.
-     * @param sqlStatement InsertStatement
      *
      * @return InsertStatement collection
      */
-    public static List<InsertStatement> getInsertStatements(final InsertStatement sqlStatement) {
-        Optional<InsertMultiTableElementSegment> optional = getInsertMultiTableElementSegment(sqlStatement);
+    public List<InsertStatement> getInsertStatements() {
+        Optional<InsertMultiTableElementSegment> optional = getInsertMultiTableElementSegment();
         if (optional.isPresent()) {
             return new LinkedList<>(optional.get().getInsertStatements());
         }
-        return Collections.singletonList(sqlStatement);
+        return Collections.singletonList(getSqlStatement());
     }
     
-    private static Optional<InsertMultiTableElementSegment> getInsertMultiTableElementSegment(final InsertStatement sqlStatement) {
-        if (sqlStatement instanceof OracleInsertStatement) {
-            return ((OracleInsertStatement) sqlStatement).getInsertMultiTableElementSegment();
+    private Optional<InsertMultiTableElementSegment> getInsertMultiTableElementSegment() {
+        if (getSqlStatement() instanceof OracleInsertStatement) {
+            return ((OracleInsertStatement) getSqlStatement()).getInsertMultiTableElementSegment();
         }
         return Optional.empty();
     }
@@ -318,7 +316,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     public void setUpParameters(final List<Object> parameters) {
         AtomicInteger parametersOffset = new AtomicInteger(0);
         ShardingSphereSchema schema = getSchema(metaDataMap, defaultDatabaseName);
-        List<InsertStatement> insertStatements = getInsertStatements(getSqlStatement());
+        List<InsertStatement> insertStatements = getInsertStatements();
         for (int cursor = 0; cursor < insertStatements.size(); cursor++) {
             List<InsertValueContext> insertValueContext = getInsertValueContexts(parameters, parametersOffset, valueExpressions.get(cursor));
             insertValueContextsMap.put(cursor, insertValueContext);
