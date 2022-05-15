@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.dbdiscovery.rule;
 
-import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHeartBeatConfiguration;
@@ -29,6 +28,7 @@ import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
@@ -63,8 +63,15 @@ public final class DatabaseDiscoveryRuleTest {
     public void assertGetDataSourceMapper() {
         DatabaseDiscoveryRule databaseDiscoveryRule = createRule();
         Map<String, Collection<String>> actual = databaseDiscoveryRule.getDataSourceMapper();
-        Map<String, Collection<String>> expected = ImmutableMap.of("ds_0", Collections.singletonList("ds_0"), "ds_1", Collections.singletonList("ds_1"));
+        Map<String, Collection<String>> expected = getDataSourceMapper();
         assertThat(actual, is(expected));
+    }
+    
+    private Map<String, Collection<String>> getDataSourceMapper() {
+        Map<String, Collection<String>> result = new HashMap<>(2, 1);
+        result.put("ds_0", Collections.singletonList("ds_0"));
+        result.put("ds_1", Collections.singletonList("ds_1"));
+        return result;
     }
     
     @Test

@@ -17,13 +17,12 @@
 
 package org.apache.shardingsphere.encrypt.rule;
 
-import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.fixture.CoreSchemaMetaDataAwareEncryptAlgorithmFixture;
 import org.apache.shardingsphere.encrypt.fixture.CoreEncryptAlgorithmFixture;
+import org.apache.shardingsphere.encrypt.fixture.CoreSchemaMetaDataAwareEncryptAlgorithmFixture;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
@@ -33,7 +32,9 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -188,7 +189,7 @@ public final class EncryptRuleTest {
         EncryptColumnRuleConfiguration creditCardColumnConfig = new EncryptColumnRuleConfiguration("credit_card", "credit_card_cipher", "", "credit_card_plain", "test_encryptor");
         EncryptColumnRuleConfiguration nameColumnConfig = new EncryptColumnRuleConfiguration("name", "name_cipher", "", "name_plain", "customized_encryptor");
         EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration("t_encrypt", Arrays.asList(pwdColumnConfig, creditCardColumnConfig, nameColumnConfig), null);
-        return new EncryptRuleConfiguration(Collections.singleton(tableConfig), ImmutableMap.of("test_encryptor", queryAssistedEncryptConfig, "customized_encryptor", metaDataAwareEncryptConfig));
+        return new EncryptRuleConfiguration(Collections.singleton(tableConfig), getEncryptors(queryAssistedEncryptConfig, metaDataAwareEncryptConfig));
     }
     
     private EncryptRuleConfiguration createEncryptRuleConfigurationWithUpperCaseLogicTable() {
@@ -198,6 +199,14 @@ public final class EncryptRuleTest {
         EncryptColumnRuleConfiguration creditCardColumnConfig = new EncryptColumnRuleConfiguration("credit_card", "credit_card_cipher", "", "credit_card_plain", "test_encryptor");
         EncryptColumnRuleConfiguration nameColumnConfig = new EncryptColumnRuleConfiguration("name", "name_cipher", "", "name_plain", "customized_encryptor");
         EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration("T_ENCRYPT", Arrays.asList(pwdColumnConfig, creditCardColumnConfig, nameColumnConfig), null);
-        return new EncryptRuleConfiguration(Collections.singleton(tableConfig), ImmutableMap.of("test_encryptor", queryAssistedEncryptConfig, "customized_encryptor", metaDataAwareEncryptConfig));
+        return new EncryptRuleConfiguration(Collections.singleton(tableConfig), getEncryptors(queryAssistedEncryptConfig, metaDataAwareEncryptConfig));
+    }
+    
+    private Map<String, ShardingSphereAlgorithmConfiguration> getEncryptors(final ShardingSphereAlgorithmConfiguration queryAssistedEncryptConfig, 
+                                                                            final ShardingSphereAlgorithmConfiguration metaDataAwareEncryptConfig) {
+        Map<String, ShardingSphereAlgorithmConfiguration> result = new HashMap<>(2, 1);
+        result.put("test_encryptor", queryAssistedEncryptConfig);
+        result.put("customized_encryptor", metaDataAwareEncryptConfig);
+        return result;
     }
 }
