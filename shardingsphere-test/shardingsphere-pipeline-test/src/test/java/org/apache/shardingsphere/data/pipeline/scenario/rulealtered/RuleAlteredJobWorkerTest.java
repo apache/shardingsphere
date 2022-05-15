@@ -90,7 +90,7 @@ public final class RuleAlteredJobWorkerTest {
     // @Test
     public void assertHasUncompletedJob() throws InvocationTargetException, NoSuchMethodException, IllegalAccessException, IOException {
         final RuleAlteredJobConfiguration jobConfig = JobConfigurationBuilder.createJobConfiguration();
-        RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfig);
+        RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfig, 0);
         jobContext.setStatus(JobStatus.PREPARING);
         GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
         repositoryAPI.persistJobProgress(jobContext);
