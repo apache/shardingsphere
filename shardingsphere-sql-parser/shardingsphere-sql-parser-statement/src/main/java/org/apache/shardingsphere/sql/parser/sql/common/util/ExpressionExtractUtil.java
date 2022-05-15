@@ -83,27 +83,27 @@ public final class ExpressionExtractUtil {
     
     private static AndPredicate createAndPredicate(final ExpressionSegment expression) {
         AndPredicate result = new AndPredicate();
-        checkAndGetExpressionSegment(expression).ifPresent(each -> result.getPredicates().add(each));
+        findNotContainsNullLiteralsExpression(expression).ifPresent(optional -> result.getPredicates().add(optional));
         return result;
     }
     
     /**
-     * Check and get the expressionSegment.
+     * Find not contains null literals expression.
      *
      * @param expression ExpressionSegment
-     * @return expression while it is not and it's right side not LiteralExpressionSegment
+     * @return expression which not contains null literals
      */
-    public static Optional<ExpressionSegment> checkAndGetExpressionSegment(final ExpressionSegment expression) {
-        if (isNullLiterals(expression)) {
+    public static Optional<ExpressionSegment> findNotContainsNullLiteralsExpression(final ExpressionSegment expression) {
+        if (isContainsNullLiterals(expression)) {
             return Optional.empty();
         }
-        if (expression instanceof BinaryOperationExpression && isNullLiterals(((BinaryOperationExpression) expression).getRight())) {
+        if (expression instanceof BinaryOperationExpression && isContainsNullLiterals(((BinaryOperationExpression) expression).getRight())) {
             return Optional.empty();
         }
         return Optional.ofNullable(expression);
     }
     
-    private static boolean isNullLiterals(final ExpressionSegment expression) {
+    private static boolean isContainsNullLiterals(final ExpressionSegment expression) {
         if (!(expression instanceof LiteralExpressionSegment)) {
             return false;
         }
