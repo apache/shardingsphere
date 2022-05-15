@@ -183,6 +183,7 @@ public final class InventoryTaskSplitter {
         RuleAlteredJobConfiguration jobConfig = jobContext.getJobConfig();
         String sql = PipelineSQLBuilderFactory.getInstance(jobConfig.getSourceDatabaseType())
                 .buildSplitByPrimaryKeyRangeSQL(dumperConfig.getSchemaName(new LogicTableName(dumperConfig.getLogicTableName())), dumperConfig.getActualTableName(), dumperConfig.getPrimaryKey());
+        int shardingSize = jobContext.getRuleAlteredContext().getOnRuleAlteredActionConfig().getInput().getShardingSize();
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -190,7 +191,7 @@ public final class InventoryTaskSplitter {
             long beginId = 0;
             for (int i = 0; i < Integer.MAX_VALUE; i++) {
                 ps.setLong(1, beginId);
-                ps.setLong(2, jobConfig.getShardingSize());
+                ps.setLong(2, shardingSize);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (!rs.next()) {
                         log.info("getPositionByPrimaryKeyRange, rs.next false, break");

@@ -84,9 +84,6 @@ public final class RuleAlteredJobConfiguration implements PipelineJobConfigurati
     
     private String logicTables;
     
-    // TODO shardingSize should be configurable
-    private int shardingSize = 1000 * 10000;
-    
     private String sourceDatabaseType;
     
     private String targetDatabaseType;
@@ -171,7 +168,7 @@ public final class RuleAlteredJobConfiguration implements PipelineJobConfigurati
     public String toString() {
         return "RuleAlteredJobConfiguration{"
                 + "jobId='" + jobId + '\'' + ", databaseName='" + databaseName + '\''
-                + ", activeVersion=" + activeVersion + ", newVersion=" + newVersion + ", shardingSize=" + shardingSize
+                + ", activeVersion=" + activeVersion + ", newVersion=" + newVersion
                 + ", sourceDatabaseType='" + sourceDatabaseType + '\'' + ", targetDatabaseType='" + targetDatabaseType + '\''
                 + '}';
     }

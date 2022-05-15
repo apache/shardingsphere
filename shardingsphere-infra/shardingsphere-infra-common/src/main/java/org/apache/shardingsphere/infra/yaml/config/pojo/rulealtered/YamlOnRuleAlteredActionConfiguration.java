@@ -49,6 +49,8 @@ public final class YamlOnRuleAlteredActionConfiguration implements YamlConfigura
         
         private Integer batchSize;
         
+        private Integer shardingSize;
+        
         private YamlShardingSphereAlgorithmConfiguration rateLimiter;
         
         /**
@@ -60,6 +62,7 @@ public final class YamlOnRuleAlteredActionConfiguration implements YamlConfigura
             YamlInputConfiguration result = new YamlInputConfiguration();
             result.setWorkerThread(40);
             result.setBatchSize(1000);
+            result.setShardingSize(1000_0000);
             return result;
         }
     }
