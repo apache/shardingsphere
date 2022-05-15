@@ -91,7 +91,7 @@ public final class DatabaseTypeEngine {
             Preconditions.checkState(null == result || result == databaseType, "Database type inconsistent with '%s' and '%s'", result, databaseType);
             result = databaseType;
         }
-        return null == result ? DatabaseTypeEngine.getDefaultDatabaseType() : result;
+        return null == result ? DatabaseTypeFactory.getInstance(DEFAULT_DATABASE_TYPE) : result;
     }
     
     private static DatabaseType getDatabaseType(final DataSource dataSource) {
@@ -134,14 +134,5 @@ public final class DatabaseTypeEngine {
      */
     public static String getTrunkDatabaseTypeName(final DatabaseType databaseType) {
         return databaseType instanceof BranchDatabaseType ? ((BranchDatabaseType) databaseType).getTrunkDatabaseType().getType() : databaseType.getType();
-    }
-    
-    /**
-     * Get default database type.
-     *
-     * @return default database type
-     */
-    public static DatabaseType getDefaultDatabaseType() {
-        return DatabaseTypeFactory.getInstance(DEFAULT_DATABASE_TYPE);
     }
 }
