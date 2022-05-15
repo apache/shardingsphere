@@ -38,8 +38,9 @@ public interface RuleAlteredJobConfigurationPreparer extends RequiredSPI {
      * Create task configuration, used by underlying scheduler.
      *
      * @param jobConfig job configuration
+     * @param jobShardingItem job sharding item
      * @param onRuleAlteredActionConfig action configuration
      * @return task configuration
      */
-    TaskConfiguration createTaskConfiguration(RuleAlteredJobConfiguration jobConfig, OnRuleAlteredActionConfiguration onRuleAlteredActionConfig);
+    TaskConfiguration createTaskConfiguration(RuleAlteredJobConfiguration jobConfig, int jobShardingItem, OnRuleAlteredActionConfiguration onRuleAlteredActionConfig);
 }
