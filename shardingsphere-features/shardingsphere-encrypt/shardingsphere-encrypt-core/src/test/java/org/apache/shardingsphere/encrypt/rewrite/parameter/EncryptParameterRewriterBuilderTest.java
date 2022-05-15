@@ -61,7 +61,7 @@ public final class EncryptParameterRewriterBuilderTest {
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("t_order"));
         when(sqlStatementContext.getWhereSegments()).thenReturn(Collections.emptyList());
-        assertTrue(new EncryptParameterRewriterBuilder(encryptRule, 
+        assertTrue(new EncryptParameterRewriterBuilder(encryptRule,
                 DefaultDatabase.LOGIC_NAME, Collections.singletonMap("test", mock(ShardingSphereSchema.class)), sqlStatementContext, Collections.emptyList()).getParameterRewriters().isEmpty());
     }
 }
