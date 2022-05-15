@@ -54,6 +54,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -120,8 +121,8 @@ public class SpringBootStarterTest {
         assertThat(actual.getDatasourceToTablesMap(), is(getExpectedDatasourceToTablesMap()));
     }
     
-    private Map<String, HashSet<String>> getExpectedDatasourceToTablesMap() {
-        Map<String, HashSet<String>> result = new HashMap<>(2, 1);
+    private Map<String, Set<String>> getExpectedDatasourceToTablesMap() {
+        Map<String, Set<String>> result = new HashMap<>(2, 1);
         result.put("ds0", new HashSet<>(Arrays.asList("t_order_0", "t_order_1")));
         result.put("ds1", new HashSet<>(Arrays.asList("t_order_0", "t_order_1")));
         return result;

@@ -202,7 +202,7 @@ public final class EncryptRuleTest {
         return new EncryptRuleConfiguration(Collections.singleton(tableConfig), getEncryptors(queryAssistedEncryptConfig, metaDataAwareEncryptConfig));
     }
     
-    private Map<String, ShardingSphereAlgorithmConfiguration> getEncryptors(final ShardingSphereAlgorithmConfiguration queryAssistedEncryptConfig, 
+    private Map<String, ShardingSphereAlgorithmConfiguration> getEncryptors(final ShardingSphereAlgorithmConfiguration queryAssistedEncryptConfig,
                                                                             final ShardingSphereAlgorithmConfiguration metaDataAwareEncryptConfig) {
         Map<String, ShardingSphereAlgorithmConfiguration> result = new HashMap<>(2, 1);
         result.put("test_encryptor", queryAssistedEncryptConfig);
