@@ -50,11 +50,12 @@ public final class MemoryContextManagerBuilder implements ContextManagerBuilder 
     @Override
     public ContextManager build(final ContextManagerBuilderParameter parameter) throws SQLException {
         MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(parameter.getGlobalRuleConfigs(), parameter.getProps());
-        DatabaseType databaseType = DatabaseTypeEngine.getDatabaseType(parameter.getDatabaseConfigs(), new ConfigurationProperties(parameter.getProps()));
+        DatabaseType frontendDatabaseType = DatabaseTypeEngine.getFrontendDatabaseType(parameter.getDatabaseConfigs(), new ConfigurationProperties(parameter.getProps()));
+        DatabaseType backendDatabaseType = DatabaseTypeEngine.getBackendDatabaseType(parameter.getDatabaseConfigs());
         for (Entry<String, ? extends DatabaseConfiguration> entry : parameter.getDatabaseConfigs().entrySet()) {
-            metaDataContextsBuilder.addDatabase(entry.getKey(), databaseType, entry.getValue(), parameter.getProps());
+            metaDataContextsBuilder.addDatabase(entry.getKey(), frontendDatabaseType, backendDatabaseType, entry.getValue(), parameter.getProps());
         }
-        metaDataContextsBuilder.addSystemDatabases(DatabaseTypeEngine.getFrontendDatabaseType(parameter.getDatabaseConfigs(), new ConfigurationProperties(parameter.getProps())));
+        metaDataContextsBuilder.addSystemDatabases(frontendDatabaseType);
         MetaDataContexts metaDataContexts = metaDataContextsBuilder.build(null);
         InstanceContext instanceContext = buildInstanceContext(parameter);
         generateTransactionConfigurationFile(instanceContext, metaDataContexts);

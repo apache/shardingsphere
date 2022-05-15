@@ -74,14 +74,16 @@ public final class MetaDataContextsBuilder {
      * Add database information.
      * 
      * @param databaseName schema name
-     * @param databaseType database type
+     * @param frontendDatabaseType frontend database type
+     * @param backendDatabaseType backend database type
      * @param databaseConfig database configuration
      * @param props properties
      * @throws SQLException SQL exception
      */
-    public void addDatabase(final String databaseName, final DatabaseType databaseType, final DatabaseConfiguration databaseConfig, final Properties props) throws SQLException {
+    public void addDatabase(final String databaseName, final DatabaseType frontendDatabaseType, final DatabaseType backendDatabaseType,
+                            final DatabaseConfiguration databaseConfig, final Properties props) throws SQLException {
         Collection<ShardingSphereRule> databaseRules = getDatabaseRules(databaseName, databaseConfig, props);
-        ShardingSphereDatabase database = DatabaseLoader.load(databaseName, databaseType, databaseConfig.getDataSources(), databaseRules, props);
+        ShardingSphereDatabase database = DatabaseLoader.load(databaseName, frontendDatabaseType, backendDatabaseType, databaseConfig.getDataSources(), databaseRules, props);
         databaseConfigMap.put(databaseName, databaseConfig);
         databaseRulesMap.put(databaseName, databaseRules);
         databaseMap.put(databaseName, database);
@@ -90,12 +92,12 @@ public final class MetaDataContextsBuilder {
     /**
      * Add system databases.
      *
-     * @param databaseType database type
+     * @param frontendDatabaseType frontend database type
      */
-    public void addSystemDatabases(final DatabaseType databaseType) {
-        for (String each : databaseType.getSystemDatabaseSchemaMap().keySet()) {
+    public void addSystemDatabases(final DatabaseType frontendDatabaseType) {
+        for (String each : frontendDatabaseType.getSystemDatabaseSchemaMap().keySet()) {
             if (!databaseMap.containsKey(each)) {
-                databaseMap.put(each, DatabaseLoader.load(each, databaseType));
+                databaseMap.put(each, DatabaseLoader.load(each, frontendDatabaseType));
             }
         }
     }

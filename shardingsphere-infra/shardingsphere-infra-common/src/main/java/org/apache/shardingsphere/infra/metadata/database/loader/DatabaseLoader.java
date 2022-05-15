@@ -40,18 +40,20 @@ public final class DatabaseLoader {
      * Load database.
      * 
      * @param databaseName database name
-     * @param databaseType database type
+     * @param frontendDatabaseType frontend database type
+     * @param backendDatabaseType backend database type
      * @param dataSourceMap data source map
      * @param rules rules
      * @param props properties
      * @return loaded database
      * @throws SQLException SQL exception
      */
-    public static ShardingSphereDatabase load(final String databaseName, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
+    public static ShardingSphereDatabase load(final String databaseName, final DatabaseType frontendDatabaseType,
+                                              final DatabaseType backendDatabaseType, final Map<String, DataSource> dataSourceMap,
                                               final Collection<ShardingSphereRule> rules, final Properties props) throws SQLException {
         Map<String, ShardingSphereSchema> schemas = new LinkedHashMap<>();
-        schemas.putAll(SchemaLoader.load(databaseName, databaseType, dataSourceMap, rules, props));
-        schemas.putAll(SystemSchemaBuilder.build(databaseName, databaseType));
+        schemas.putAll(SchemaLoader.load(databaseName, backendDatabaseType, dataSourceMap, rules, props));
+        schemas.putAll(SystemSchemaBuilder.build(databaseName, frontendDatabaseType));
         return new ShardingSphereDatabase(schemas);
     }
     
@@ -59,10 +61,10 @@ public final class DatabaseLoader {
      * Load database.
      * 
      * @param databaseName database name
-     * @param databaseType database type
+     * @param frontendDatabaseType frontend database type
      * @return loaded database
      */
-    public static ShardingSphereDatabase load(final String databaseName, final DatabaseType databaseType) {
-        return new ShardingSphereDatabase(SystemSchemaBuilder.build(databaseName, databaseType));
+    public static ShardingSphereDatabase load(final String databaseName, final DatabaseType frontendDatabaseType) {
+        return new ShardingSphereDatabase(SystemSchemaBuilder.build(databaseName, frontendDatabaseType));
     }
 }
