@@ -133,14 +133,14 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         Properties props = metaDataPersistService.getPropsService().load();
         MetaDataContextsBuilder result = new MetaDataContextsBuilder(globalRuleConfigs, props);
         Map<String, ? extends DatabaseConfiguration> databaseConfigMap = getDatabaseConfigMap(databaseNames, metaDataPersistService, parameter);
-        DatabaseType databaseType = DatabaseTypeEngine.getDatabaseType(databaseConfigMap, new ConfigurationProperties(props));
+        DatabaseType frontendDatabaseType = DatabaseTypeEngine.getFrontendDatabaseType(databaseConfigMap, new ConfigurationProperties(props));
+        DatabaseType backendDatabaseType = DatabaseTypeEngine.getBackendDatabaseType(databaseConfigMap);
         for (Entry<String, ? extends DatabaseConfiguration> entry : databaseConfigMap.entrySet()) {
-            if (databaseType.getSystemSchemas().contains(entry.getKey())) {
-                continue;
+            if (!backendDatabaseType.getSystemSchemas().contains(entry.getKey())) {
+                result.addDatabase(entry.getKey(), frontendDatabaseType, backendDatabaseType, entry.getValue(), props);
             }
-            result.addDatabase(entry.getKey(), databaseType, entry.getValue(), props);
         }
-        result.addSystemDatabases(DatabaseTypeEngine.getFrontendDatabaseType(databaseConfigMap, new ConfigurationProperties(props)));
+        result.addSystemDatabases(frontendDatabaseType);
         return result;
     }
     
