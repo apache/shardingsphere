@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.api.impl;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPIFactory;
+import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPI;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyContentCheckResult;
@@ -66,7 +66,7 @@ public final class RuleAlteredJobAPIImplTest {
     @BeforeClass
     public static void beforeClass() {
         PipelineContextUtil.mockModeConfigAndContextManager();
-        ruleAlteredJobAPI = PipelineJobAPIFactory.getInstance();
+        ruleAlteredJobAPI = RuleAlteredJobAPIFactory.getInstance();
     }
     
     @Test
@@ -200,7 +200,7 @@ public final class RuleAlteredJobAPIImplTest {
         Optional<String> jobId = ruleAlteredJobAPI.start(jobConfig);
         assertTrue(jobId.isPresent());
         final GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
-        RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfig);
+        RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfig, 0);
         jobContext.setInitProgress(new JobProgress());
         repositoryAPI.persistJobProgress(jobContext);
         repositoryAPI.persistJobCheckResult(jobId.get(), true);
@@ -211,11 +211,10 @@ public final class RuleAlteredJobAPIImplTest {
     @Test
     public void assertSwitchClusterConfigurationSucceed() {
         final RuleAlteredJobConfiguration jobConfig = JobConfigurationBuilder.createJobConfiguration();
-        jobConfig.setJobShardingItem(0);
         Optional<String> jobId = ruleAlteredJobAPI.start(jobConfig);
         assertTrue(jobId.isPresent());
         GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
-        RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfig);
+        RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfig, 0);
         jobContext.setInitProgress(new JobProgress());
         repositoryAPI.persistJobProgress(jobContext);
         repositoryAPI.persistJobCheckResult(jobId.get(), true);

@@ -17,9 +17,15 @@
 
 package org.apache.shardingsphere.proxy.arguments;
 
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoader;
+import org.apache.shardingsphere.proxy.backend.config.YamlProxyConfiguration;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.Optional;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -61,5 +67,20 @@ public final class BootstrapArgumentsTest {
         assertThat(new BootstrapArguments(new String[]{"3306", "/test_conf"}).getConfigurationPath(), is("/test_conf/"));
         assertThat(new BootstrapArguments(new String[]{"3306", "test_conf/"}).getConfigurationPath(), is("/test_conf/"));
         assertThat(new BootstrapArguments(new String[]{"3306", "/test_conf/"}).getConfigurationPath(), is("/test_conf/"));
+    }
+
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty("proxy-default-port", "3306");
+        return result;
+    }
+
+    @Test
+    public void assertGetPortWithConfiguration() throws IOException {
+        BootstrapArguments bootstrapArgs = new BootstrapArguments(new String[]{});
+        YamlProxyConfiguration yamlConfig = ProxyConfigurationLoader.load("/conf/local");
+        yamlConfig.getServerConfiguration().setProps(createProperties());
+        int port = bootstrapArgs.getPort().orElseGet(() -> new ConfigurationProperties(yamlConfig.getServerConfiguration().getProps()).getValue(ConfigurationPropertyKey.PROXY_DEFAULT_PORT));
+        assertThat(port, is(3306));
     }
 }

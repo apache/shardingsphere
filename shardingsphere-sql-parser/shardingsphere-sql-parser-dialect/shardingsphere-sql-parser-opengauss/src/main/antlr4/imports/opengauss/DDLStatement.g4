@@ -1869,7 +1869,74 @@ schemaEltList
 
 schemaStmt
     : createTable | createIndex | createSequence | createTrigger | grant | createView
-    ;    
+    ;
+
+grant
+    : GRANT (privilegeClause | roleClause)
+    ;
+    
+privilegeClause
+    : privilegeTypes ON onObjectClause (FROM | TO) granteeList (WITH GRANT OPTION)?
+    ;
+    
+roleClause
+    : privilegeList (FROM | TO) roleList (WITH ADMIN OPTION)? (GRANTED BY roleSpec)?
+    ;
+
+privilegeTypes
+    : privilegeType columnNames? (COMMA_ privilegeType columnNames?)*
+    ;
+    
+onObjectClause
+    : DATABASE nameList
+    | SCHEMA nameList
+    | DOMAIN anyNameList
+    | FUNCTION functionWithArgtypesList
+    | PROCEDURE functionWithArgtypesList
+    | ROUTINE functionWithArgtypesList
+    | LANGUAGE nameList
+    | LARGE OBJECT numericOnlyList
+    | TABLESPACE nameList
+    | TYPE anyNameList
+    | SEQUENCE qualifiedNameList
+    | TABLE? privilegeLevel
+    | FOREIGN DATA WRAPPER nameList
+    | FOREIGN SERVER nameList
+    | ALL TABLES IN SCHEMA nameList
+    | ALL SEQUENCES IN SCHEMA nameList
+    | ALL FUNCTIONS IN SCHEMA nameList
+    | ALL PROCEDURES IN SCHEMA nameList
+    | ALL ROUTINES IN SCHEMA nameList
+    ;
+    
+numericOnlyList
+    : numericOnly (COMMA_ numericOnly)*
+    ;
+    
+privilegeLevel
+    : ASTERISK_ | ASTERISK_ DOT_ASTERISK_ | identifier DOT_ASTERISK_ | tableNames | schemaName DOT_ routineName
+    ;
+
+routineName
+    : identifier
+    ;
+
+privilegeType
+    : SELECT
+    | INSERT
+    | UPDATE
+    | DELETE
+    | TRUNCATE
+    | REFERENCES
+    | TRIGGER
+    | CREATE
+    | CONNECT
+    | TEMPORARY
+    | TEMP
+    | EXECUTE
+    | USAGE
+    | ALL PRIVILEGES?
+    ;
 
 alterSchema
     : ALTER SCHEMA name (RENAME TO name | OWNER TO roleSpec)

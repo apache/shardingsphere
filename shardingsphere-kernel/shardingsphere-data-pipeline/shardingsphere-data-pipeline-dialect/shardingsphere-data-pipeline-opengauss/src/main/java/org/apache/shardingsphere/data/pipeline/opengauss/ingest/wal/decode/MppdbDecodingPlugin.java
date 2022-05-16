@@ -38,7 +38,7 @@ import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.sql.Date;
 import java.sql.SQLException;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -122,27 +122,26 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
     }
     
     private List<Object> getColumnDataFromMppDataEvent(final MppTableData data) {
-        List<Object> columns = new LinkedList<>();
+        List<Object> result = new ArrayList<>(data.getColumnsType().length);
         for (int i = 0; i < data.getColumnsType().length; i++) {
-            columns.add(readColumnData(data.getColumnsVal()[i], data.getColumnsType()[i]));
+            result.add(readColumnData(data.getColumnsVal()[i], data.getColumnsType()[i]));
         }
-        return columns;
+        return result;
     }
     
     private List<Object> getDeleteColumnDataFromMppDataEvent(final MppTableData data) {
-        List<Object> columns = new LinkedList<>();
-        
+        List<Object> result = new ArrayList<>(data.getOldKeysType().length);
         for (int i = 0; i < data.getOldKeysType().length; i++) {
-            columns.add(readColumnData(data.getOldKeysVal()[i], data.getOldKeysType()[i]));
+            result.add(readColumnData(data.getOldKeysVal()[i], data.getOldKeysType()[i]));
         }
-        return columns;
+        return result;
     }
     
     private Object readColumnData(final String data, final String columnType) {
         if (columnType.startsWith("numeric")) {
             return new BigDecimal(data);
         }
-        if (columnType.startsWith("bit") || columnType.startsWith("bit varying")) {
+        if (columnType.startsWith("bit")) {
             return decodeString(data.substring(1));
         }
         switch (columnType) {
@@ -203,10 +202,10 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
     
     private static PGobject decodePgObject(final String data, final String type) {
         try {
-            PGobject pgObject = new PGobject();
-            pgObject.setType(type);
-            pgObject.setValue(decodeString(data));
-            return pgObject;
+            PGobject result = new PGobject();
+            result.setType(type);
+            result.setValue(decodeString(data));
+            return result;
         } catch (final SQLException ignored) {
             return null;
         }
@@ -214,25 +213,24 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
     
     private static PGobject decodeBytea(final String data) {
         try {
-            PGobject pgObject = new PGobject();
-            pgObject.setType("bytea");
+            PGobject result = new PGobject();
+            result.setType("bytea");
             byte[] decodeByte = decodeHex(decodeString(data).substring(2));
-            pgObject.setValue(new String(decodeByte));
-            return pgObject;
+            result.setValue(new String(decodeByte));
+            return result;
         } catch (final SQLException ignored) {
             return null;
         }
     }
     
     private static String decodeMoney(final String data) {
-        String unquotedMoney = decodeString(data);
-        int begin = unquotedMoney.charAt(0) == '$' ? 1 : 0;
-        return unquotedMoney.substring(begin);
+        String result = decodeString(data);
+        return '$' == result.charAt(0) ? result.substring(1) : result;
     }
     
     private static String decodeString(final String data) {
         if (data.length() > 1) {
-            int begin = data.charAt(0) == '\'' ? 1 : 0;
+            int begin = '\'' == data.charAt(0) ? 1 : 0;
             int end = data.length() + (data.charAt(data.length() - 1) == '\'' ? -1 : 0);
             return data.substring(begin, end);
         }

@@ -23,9 +23,9 @@ import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEn
 import org.apache.shardingsphere.integration.data.pipeline.env.enums.ITEnvTypeEnum;
 import org.apache.shardingsphere.integration.data.pipeline.util.DatabaseTypeUtil;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
+import org.apache.shardingsphere.test.integration.framework.container.wait.JDBCConnectionWaitStrategy;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.DockerITContainer;
 import org.testcontainers.containers.BindMode;
-import org.testcontainers.containers.output.Slf4jLogConsumer;
 
 import java.sql.DriverManager;
 
@@ -46,12 +46,11 @@ public final class ShardingSphereProxyDockerContainer extends DockerITContainer 
     protected void configure() {
         withExposedPorts(3307);
         mapConfigurationFiles();
-        if (DatabaseTypeUtil.isPostgreSQL(databaseType)) {
+        if (DatabaseTypeUtil.isPostgreSQL(databaseType) || DatabaseTypeUtil.isOpenGauss(databaseType)) {
             setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(3307), "postgres"), "root", "root")));
         } else {
             setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(3307), ""), "root", "root")));
         }
-        withLogConsumer(new Slf4jLogConsumer(log).withSeparateOutputStreams());
     }
     
     private void mapConfigurationFiles() {

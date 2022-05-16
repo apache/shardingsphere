@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.metadata.persist.service;
 
-import com.google.common.collect.Lists;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
@@ -78,7 +77,7 @@ public final class SchemaMetaDataPersistServiceTest {
     @Test
     public void assertLoad() {
         SchemaMetaDataPersistService schemaMetaDataPersistService = new SchemaMetaDataPersistService(repository);
-        when(repository.getChildrenKeys("/metadata/foo_db/schemas/foo_schema/tables")).thenReturn(Lists.newArrayList("t_order"));
+        when(repository.getChildrenKeys("/metadata/foo_db/schemas/foo_schema/tables")).thenReturn(Collections.singletonList("t_order"));
         when(repository.get("/metadata/foo_db/schemas/foo_schema/tables/t_order")).thenReturn(readYAML());
         Optional<ShardingSphereSchema> schemaOptional = schemaMetaDataPersistService.load("foo_db", "foo_schema");
         assertTrue(schemaOptional.isPresent());

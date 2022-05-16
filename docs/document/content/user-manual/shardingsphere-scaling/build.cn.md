@@ -176,13 +176,22 @@ DATA_CONSISTENCY_CHECKER(TYPE(NAME=DATA_MATCH, PROPERTIES("chunk-size"=1000)))
 
 详情请参见 [RDL#数据分片](/cn/user-manual/shardingsphere-proxy/distsql/syntax/rdl/rule-definition/sharding/)。
 
-5. 启动 ShardingSphere-Proxy：
+5. 引入 JDBC 驱动
+
+如果后端连接以下数据库，请下载相应 JDBC 驱动 jar 包，并将其放入 `${shardingsphere-proxy}/lib` 目录。
+
+| 数据库                 | JDBC 驱动                              | 参考                 |
+| --------------------- | ------------------------------------ | -------------------- |
+| MySQL                 | [mysql-connector-java-5.1.47.jar]( https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.47/mysql-connector-java-5.1.47.jar ) | [Connector/J Versions]( https://dev.mysql.com/doc/connector-j/5.1/en/connector-j-versions.html ) |
+| openGauss             | [opengauss-jdbc-2.0.1-compatibility.jar]( https://repo1.maven.org/maven2/org/opengauss/opengauss-jdbc/2.0.1-compatibility/opengauss-jdbc-2.0.1-compatibility.jar ) | |
+
+6. 启动 ShardingSphere-Proxy：
 
 ```
 sh bin/start.sh
 ```
 
-6. 查看 proxy 日志 `logs/stdout.log`，看到日志中出现：
+7. 查看 proxy 日志 `logs/stdout.log`，看到日志中出现：
 
 ```
 [INFO ] [main] o.a.s.p.frontend.ShardingSphereProxy - ShardingSphere-Proxy start success

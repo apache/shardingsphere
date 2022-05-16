@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.opengauss.ingest.wal.decode;
 
 import com.google.gson.Gson;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.DecodingException;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.DeleteRowEvent;
@@ -36,9 +35,9 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.stream.IntStream;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -129,8 +128,7 @@ public final class MppdbDecodingPluginTest {
     }
     
     @Test
-    @SneakyThrows(SQLException.class)
-    public void assertDecodeWriteRowEventWithDateAndTime() {
+    public void assertDecodeWriteRowEventWithDateAndTime() throws SQLException {
         MppTableData tableData = new MppTableData();
         tableData.setTableName("public.test");
         tableData.setOpType("INSERT");
@@ -168,7 +166,7 @@ public final class MppdbDecodingPluginTest {
         assertThat(actual.getLogSequenceNumber(), is(logSequenceNumber));
         assertThat(actual.getTableName(), is("test"));
         Object byteaObj = actual.getAfterRow().get(0);
-        assertTrue(byteaObj instanceof PGobject);
+        assertThat(byteaObj, instanceOf(PGobject.class));
         assertThat(byteaObj.toString(), is(new String(new byte[]{(byte) 0xff, (byte) 0, (byte) 0xab})));
     }
     
@@ -185,14 +183,14 @@ public final class MppdbDecodingPluginTest {
         assertThat(actual.getLogSequenceNumber(), is(logSequenceNumber));
         assertThat(actual.getTableName(), is("test"));
         Object byteaObj = actual.getAfterRow().get(0);
-        assertTrue(byteaObj instanceof PGobject);
+        assertThat(byteaObj, instanceOf(PGobject.class));
         assertThat(byteaObj.toString(), is("7D"));
     }
     
     @Test
     public void assertDecodeUnknownTableType() {
         ByteBuffer data = ByteBuffer.wrap("unknown".getBytes());
-        assertTrue(new MppdbDecodingPlugin(null).decode(data, logSequenceNumber) instanceof PlaceholderEvent);
+        assertThat(new MppdbDecodingPlugin(null).decode(data, logSequenceNumber), instanceOf(PlaceholderEvent.class));
     }
     
     @Test(expected = IngestException.class)
@@ -208,8 +206,7 @@ public final class MppdbDecodingPluginTest {
     }
     
     @Test(expected = DecodingException.class)
-    @SneakyThrows(SQLException.class)
-    public void assertDecodeTime() {
+    public void assertDecodeTime() throws SQLException {
         MppTableData tableData = new MppTableData();
         tableData.setTableName("public.test");
         tableData.setOpType("INSERT");

@@ -44,7 +44,7 @@ scalingRuleDefinition
     ;
 
 inputDefinition
-    : INPUT LP workerThread? (COMMA? batchSize)? (COMMA? rateLimiter)? RP
+    : INPUT LP workerThread? (COMMA? batchSize)? (COMMA? shardingSize)? (COMMA? rateLimiter)? RP
     ;
 
 outputDefinition
@@ -65,6 +65,10 @@ workerThread
 
 batchSize
     : BATCH_SIZE EQ intValue
+    ;
+
+shardingSize
+    : SHARDING_SIZE EQ intValue
     ;
 
 rateLimiter

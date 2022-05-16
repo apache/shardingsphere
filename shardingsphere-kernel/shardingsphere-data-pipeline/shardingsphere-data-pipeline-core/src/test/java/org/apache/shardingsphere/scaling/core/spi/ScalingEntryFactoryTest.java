@@ -20,12 +20,13 @@ package org.apache.shardingsphere.scaling.core.spi;
 import org.apache.shardingsphere.scaling.core.spi.fixture.ScalingEntryFixture;
 import org.junit.Test;
 
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
 
 public final class ScalingEntryFactoryTest {
     
     @Test
     public void assertGetInstance() {
-        assertTrue(ScalingEntryFactory.getInstance("FIXTURE") instanceof ScalingEntryFixture);
+        assertThat(ScalingEntryFactory.getInstance("FIXTURE"), instanceOf(ScalingEntryFixture.class));
     }
 }

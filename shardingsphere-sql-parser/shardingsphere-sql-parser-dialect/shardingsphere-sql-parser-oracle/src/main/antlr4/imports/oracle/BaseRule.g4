@@ -1257,3 +1257,11 @@ externalDatatype
 capacityUnit
     : ('K' | 'M' | 'G' | 'T' | 'P' | 'E')
     ;
+
+attributeDimensionName
+    : identifier
+    ;
+
+sequenceName
+    : identifier
+    ;

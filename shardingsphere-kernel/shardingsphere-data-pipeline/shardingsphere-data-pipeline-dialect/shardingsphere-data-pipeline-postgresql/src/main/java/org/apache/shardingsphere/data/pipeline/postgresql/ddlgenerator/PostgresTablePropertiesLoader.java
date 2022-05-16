@@ -29,7 +29,7 @@ import java.util.Map;
 /**
  * Postgres table properties loader.
  */
-public final class PostgresTablePropertiesLoader extends PostgresAbstractLoader {
+public final class PostgresTablePropertiesLoader extends AbstractPostgresDDLAdapter {
     
     private final String tableName;
     

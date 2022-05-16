@@ -27,6 +27,8 @@ import org.junit.Test;
 
 import java.util.Optional;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class MySQLDataTypeHandlerFactoryTest {
@@ -35,34 +37,34 @@ public final class MySQLDataTypeHandlerFactoryTest {
     public void assertFindInstanceWithMySQLUnsignedTinyintHandler() {
         Optional<MySQLDataTypeHandler> actual = MySQLDataTypeHandlerFactory.findInstance("TINYINT UNSIGNED");
         assertTrue(actual.isPresent());
-        assertTrue(actual.get() instanceof MySQLUnsignedTinyintHandler);
+        assertThat(actual.get(), instanceOf(MySQLUnsignedTinyintHandler.class));
     }
     
     @Test
     public void assertFindInstanceWithMySQLUnsignedSmallintHandler() {
         Optional<MySQLDataTypeHandler> actual = MySQLDataTypeHandlerFactory.findInstance("SMALLINT UNSIGNED");
         assertTrue(actual.isPresent());
-        assertTrue(actual.get() instanceof MySQLUnsignedSmallintHandler);
+        assertThat(actual.get(), instanceOf(MySQLUnsignedSmallintHandler.class));
     }
     
     @Test
     public void assertFindInstanceWithMySQLUnsignedMediumintHandler() {
         Optional<MySQLDataTypeHandler> actual = MySQLDataTypeHandlerFactory.findInstance("MEDIUMINT UNSIGNED");
         assertTrue(actual.isPresent());
-        assertTrue(actual.get() instanceof MySQLUnsignedMediumintHandler);
+        assertThat(actual.get(), instanceOf(MySQLUnsignedMediumintHandler.class));
     }
     
     @Test
     public void assertFindInstanceWithMySQLUnsignedIntHandler() {
         Optional<MySQLDataTypeHandler> actual = MySQLDataTypeHandlerFactory.findInstance("INT UNSIGNED");
         assertTrue(actual.isPresent());
-        assertTrue(actual.get() instanceof MySQLUnsignedIntHandler);
+        assertThat(actual.get(), instanceOf(MySQLUnsignedIntHandler.class));
     }
     
     @Test
     public void assertFindInstanceWithMySQLUnsignedBigintHandler() {
         Optional<MySQLDataTypeHandler> actual = MySQLDataTypeHandlerFactory.findInstance("BIGINT UNSIGNED");
         assertTrue(actual.isPresent());
-        assertTrue(actual.get() instanceof MySQLUnsignedBigintHandler);
+        assertThat(actual.get(), instanceOf(MySQLUnsignedBigintHandler.class));
     }
 }

@@ -41,6 +41,34 @@ public final class DatabaseTypeEngine {
     private static final String DEFAULT_DATABASE_TYPE = "MySQL";
     
     /**
+     * Get frontend database type.
+     *
+     * @param databaseConfigs database configs
+     * @param props props
+     * @return frontend database type
+     */
+    public static DatabaseType getFrontendDatabaseType(final Map<String, ? extends DatabaseConfiguration> databaseConfigs, final ConfigurationProperties props) {
+        Optional<DatabaseType> configuredDatabaseType = findConfiguredDatabaseType(props);
+        if (configuredDatabaseType.isPresent()) {
+            return configuredDatabaseType.get();
+        }
+        Collection<DataSource> dataSources = databaseConfigs.values().stream()
+                .filter(DatabaseTypeEngine::isComplete).findFirst().map(optional -> optional.getDataSources().values()).orElseGet(Collections::emptyList);
+        return getDatabaseType(dataSources);
+    }
+    
+    /**
+     * Get backend database type.
+     *
+     * @param databaseConfigs database configs
+     * @return backend database type
+     */
+    public static DatabaseType getBackendDatabaseType(final Map<String, ? extends DatabaseConfiguration> databaseConfigs) {
+        return getDatabaseType(
+                databaseConfigs.values().stream().filter(DatabaseTypeEngine::isComplete).findFirst().map(optional -> optional.getDataSources().values()).orElseGet(Collections::emptyList));
+    }
+    
+    /**
      * Get database type.
      *
      * @param url database URL
@@ -63,7 +91,7 @@ public final class DatabaseTypeEngine {
             Preconditions.checkState(null == result || result == databaseType, "Database type inconsistent with '%s' and '%s'", result, databaseType);
             result = databaseType;
         }
-        return null == result ? DatabaseTypeEngine.getDefaultDatabaseType() : result;
+        return null == result ? DatabaseTypeFactory.getInstance(DEFAULT_DATABASE_TYPE) : result;
     }
     
     private static DatabaseType getDatabaseType(final DataSource dataSource) {
@@ -72,23 +100,6 @@ public final class DatabaseTypeEngine {
         } catch (final SQLException ex) {
             throw new IllegalArgumentException(ex.getMessage(), ex);
         }
-    }
-    
-    /**
-     * Get database type.
-     *
-     * @param databaseConfigs database configs
-     * @param props props
-     * @return database type
-     */
-    public static DatabaseType getDatabaseType(final Map<String, ? extends DatabaseConfiguration> databaseConfigs, final ConfigurationProperties props) {
-        Optional<DatabaseType> configuredDatabaseType = findConfiguredDatabaseType(props);
-        if (configuredDatabaseType.isPresent()) {
-            return configuredDatabaseType.get();
-        }
-        Collection<DataSource> dataSources = databaseConfigs.values().stream()
-                .filter(DatabaseTypeEngine::isComplete).findFirst().map(optional -> optional.getDataSources().values()).orElseGet(Collections::emptyList);
-        return getDatabaseType(dataSources);
     }
     
     private static Optional<DatabaseType> findConfiguredDatabaseType(final ConfigurationProperties props) {
@@ -123,14 +134,5 @@ public final class DatabaseTypeEngine {
      */
     public static String getTrunkDatabaseTypeName(final DatabaseType databaseType) {
         return databaseType instanceof BranchDatabaseType ? ((BranchDatabaseType) databaseType).getTrunkDatabaseType().getType() : databaseType.getType();
-    }
-    
-    /**
-     * Get default database type.
-     *
-     * @return default database type
-     */
-    public static DatabaseType getDefaultDatabaseType() {
-        return DatabaseTypeFactory.getInstance(DEFAULT_DATABASE_TYPE);
     }
 }

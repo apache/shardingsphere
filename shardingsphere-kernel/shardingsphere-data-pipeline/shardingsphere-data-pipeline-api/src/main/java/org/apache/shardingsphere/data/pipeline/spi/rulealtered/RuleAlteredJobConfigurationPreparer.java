@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.spi.rulealtered;
 
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.yaml.YamlRuleAlteredJobConfiguration;
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.spi.type.required.RequiredSPI;
 
@@ -30,16 +31,17 @@ public interface RuleAlteredJobConfigurationPreparer extends RequiredSPI {
     /**
      * Extend job configuration.
      *
-     * @param jobConfig job configuration
+     * @param yamlJobConfig YAML job configuration
      */
-    void extendJobConfiguration(RuleAlteredJobConfiguration jobConfig);
+    void extendJobConfiguration(YamlRuleAlteredJobConfiguration yamlJobConfig);
     
     /**
      * Create task configuration, used by underlying scheduler.
      *
      * @param jobConfig job configuration
+     * @param jobShardingItem job sharding item
      * @param onRuleAlteredActionConfig action configuration
      * @return task configuration
      */
-    TaskConfiguration createTaskConfiguration(RuleAlteredJobConfiguration jobConfig, OnRuleAlteredActionConfiguration onRuleAlteredActionConfig);
+    TaskConfiguration createTaskConfiguration(RuleAlteredJobConfiguration jobConfig, int jobShardingItem, OnRuleAlteredActionConfiguration onRuleAlteredActionConfig);
 }

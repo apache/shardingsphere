@@ -108,7 +108,8 @@ public final class ShardingSphereOptimizerTest {
         Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(2, 1);
         tableMetaDataMap.put("t_order_federate", createOrderTableMetaData());
         tableMetaDataMap.put("t_user_info", createUserInfoTableMetaData());
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(databaseName, mockResource(), null, Collections.singletonMap(schemaName, new ShardingSphereSchema(tableMetaDataMap)));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(
+                databaseName, new H2DatabaseType(), mockResource(), null, Collections.singletonMap(schemaName, new ShardingSphereSchema(tableMetaDataMap)));
         optimizer = new ShardingSphereOptimizer(OptimizerContextFactory.create(Collections.singletonMap(databaseName, metaData), createGlobalRuleMetaData()));
     }
     

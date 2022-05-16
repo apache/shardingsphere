@@ -33,6 +33,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class AlterShardingBindingTableRulesStatementUpdaterTest {
@@ -49,15 +50,20 @@ public final class AlterShardingBindingTableRulesStatementUpdaterTest {
     
     @Test(expected = DuplicateRuleException.class)
     public void assertCheckSQLStatementWithDuplicateTables() throws RuleDefinitionViolationException {
-        updater.checkSQLStatement(shardingSphereMetaData, createDuplicatedSQLStatement(), createCurrentRuleConfiguration());
+        List<BindingTableRuleSegment> segments = Arrays.asList(new BindingTableRuleSegment("t_order,t_order_item"), new BindingTableRuleSegment("t_order,t_order_item"));
+        AlterShardingBindingTableRulesStatement statement = new AlterShardingBindingTableRulesStatement(segments);
+        updater.checkSQLStatement(shardingSphereMetaData, statement, createCurrentRuleConfiguration());
+    }
+    
+    @Test(expected = DuplicateRuleException.class)
+    public void assertCheckSQLStatementWithDifferentCaseDuplicateTables() throws RuleDefinitionViolationException {
+        List<BindingTableRuleSegment> segments = Arrays.asList(new BindingTableRuleSegment("T_ORDER,T_ORDER_ITEM"), new BindingTableRuleSegment("t_order,t_order_item"));
+        AlterShardingBindingTableRulesStatement statement = new AlterShardingBindingTableRulesStatement(segments);
+        updater.checkSQLStatement(shardingSphereMetaData, statement, createCurrentRuleConfiguration());
     }
     
     private AlterShardingBindingTableRulesStatement createSQLStatement() {
         return new AlterShardingBindingTableRulesStatement(Arrays.asList(new BindingTableRuleSegment("t_order,t_order_item"), new BindingTableRuleSegment("t_1,t_2")));
-    }
-    
-    private AlterShardingBindingTableRulesStatement createDuplicatedSQLStatement() {
-        return new AlterShardingBindingTableRulesStatement(Arrays.asList(new BindingTableRuleSegment("t_order,t_order_item"), new BindingTableRuleSegment("t_order,t_order_item")));
     }
     
     private ShardingRuleConfiguration createCurrentRuleConfiguration() {

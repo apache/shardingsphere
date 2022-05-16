@@ -70,7 +70,7 @@ public interface DataNodeContainedRule extends ShardingSphereRule {
     
     /**
      * Find actual table name via catalog.
-     * 
+     *
      * @param catalog catalog
      * @param logicTable logic table name
      * @return actual table name

@@ -60,9 +60,9 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -123,14 +123,14 @@ public final class JDBCPortalTest {
         when(databaseCommunicationEngine.getQueryResponseRow())
                 .thenReturn(new QueryResponseRow(Collections.singletonList(new TextQueryResponseCell(0))), new QueryResponseRow(Collections.singletonList(new TextQueryResponseCell(1))));
         portal.bind();
-        assertTrue(portal.describe() instanceof PostgreSQLRowDescriptionPacket);
+        assertThat(portal.describe(), instanceOf(PostgreSQLRowDescriptionPacket.class));
         setField(portal, "sqlStatement", mock(SelectStatement.class));
         List<PostgreSQLPacket> actualPackets = portal.execute(0);
         assertThat(actualPackets.size(), is(3));
         Iterator<PostgreSQLPacket> actualPacketsIterator = actualPackets.iterator();
-        assertTrue(actualPacketsIterator.next() instanceof PostgreSQLDataRowPacket);
-        assertTrue(actualPacketsIterator.next() instanceof PostgreSQLDataRowPacket);
-        assertTrue(actualPacketsIterator.next() instanceof PostgreSQLCommandCompletePacket);
+        assertThat(actualPacketsIterator.next(), instanceOf(PostgreSQLDataRowPacket.class));
+        assertThat(actualPacketsIterator.next(), instanceOf(PostgreSQLDataRowPacket.class));
+        assertThat(actualPacketsIterator.next(), instanceOf(PostgreSQLCommandCompletePacket.class));
     }
     
     @Test
@@ -147,14 +147,14 @@ public final class JDBCPortalTest {
                 new QueryResponseRow(Collections.singletonList(new BinaryQueryResponseCell(Types.INTEGER, 1))));
         setField(portal, "resultFormats", Collections.singletonList(PostgreSQLValueFormat.BINARY));
         portal.bind();
-        assertTrue(portal.describe() instanceof PostgreSQLRowDescriptionPacket);
+        assertThat(portal.describe(), instanceOf(PostgreSQLRowDescriptionPacket.class));
         setField(portal, "sqlStatement", mock(SelectStatement.class));
         List<PostgreSQLPacket> actualPackets = portal.execute(2);
         assertThat(actualPackets.size(), is(3));
         Iterator<PostgreSQLPacket> actualPacketsIterator = actualPackets.iterator();
-        assertTrue(actualPacketsIterator.next() instanceof PostgreSQLDataRowPacket);
-        assertTrue(actualPacketsIterator.next() instanceof PostgreSQLDataRowPacket);
-        assertTrue(actualPacketsIterator.next() instanceof PostgreSQLPortalSuspendedPacket);
+        assertThat(actualPacketsIterator.next(), instanceOf(PostgreSQLDataRowPacket.class));
+        assertThat(actualPacketsIterator.next(), instanceOf(PostgreSQLDataRowPacket.class));
+        assertThat(actualPacketsIterator.next(), instanceOf(PostgreSQLPortalSuspendedPacket.class));
     }
     
     @Test
@@ -167,7 +167,7 @@ public final class JDBCPortalTest {
         assertThat(portal.describe(), is(PostgreSQLNoDataPacket.getInstance()));
         setField(portal, "sqlStatement", mock(InsertStatement.class));
         List<PostgreSQLPacket> actualPackets = portal.execute(0);
-        assertTrue(actualPackets.iterator().next() instanceof PostgreSQLCommandCompletePacket);
+        assertThat(actualPackets.iterator().next(), instanceOf(PostgreSQLCommandCompletePacket.class));
     }
     
     @Test
@@ -179,7 +179,7 @@ public final class JDBCPortalTest {
         portal.bind();
         assertThat(portal.describe(), is(PostgreSQLNoDataPacket.getInstance()));
         List<PostgreSQLPacket> actualPackets = portal.execute(0);
-        assertTrue(actualPackets.iterator().next() instanceof PostgreSQLEmptyQueryResponsePacket);
+        assertThat(actualPackets.iterator().next(), instanceOf(PostgreSQLEmptyQueryResponsePacket.class));
     }
     
     @Test(expected = IllegalStateException.class)
