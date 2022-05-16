@@ -526,11 +526,10 @@ public final class ContextManager implements AutoCloseable {
                                                                             final Map<String, DataSourceProperties> addedDataSourceProps) throws SQLException {
         Map<String, DataSource> dataSourceMap = new HashMap<>(originalMetaData.getResource().getDataSources());
         dataSourceMap.putAll(DataSourcePoolCreator.create(addedDataSourceProps));
-        Properties props = metaDataContexts.getProps().getProps();
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(dataSourceMap, originalMetaData.getRuleMetaData().getConfigurations());
         Optional<MetaDataPersistService> metaDataPersistService = metaDataContexts.getMetaDataPersistService();
         metaDataPersistService.ifPresent(optional -> persistTransactionConfiguration(databaseConfig, optional));
-        MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(metaDataContexts.getGlobalRuleMetaData().getConfigurations(), props);
+        MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(metaDataContexts.getGlobalRuleMetaData().getConfigurations(), metaDataContexts.getProps());
         metaDataContextsBuilder.addDatabase(originalMetaData.getDatabaseName(), originalMetaData.getFrontendDatabaseType(), originalMetaData.getResource().getDatabaseType(), databaseConfig);
         metaDataContexts.getMetaDataPersistService().ifPresent(optional -> optional.getSchemaMetaDataService()
                 .persistTables(originalMetaData.getDatabaseName(), originalMetaData.getDatabaseName(), metaDataContextsBuilder.getSchemaMap(originalMetaData.getDatabaseName())));
@@ -546,8 +545,7 @@ public final class ContextManager implements AutoCloseable {
     }
     
     private MetaDataContexts buildChangedMetaDataContext(final ShardingSphereMetaData originalMetaData, final Collection<RuleConfiguration> ruleConfigs) throws SQLException {
-        Properties props = metaDataContexts.getProps().getProps();
-        MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(metaDataContexts.getGlobalRuleMetaData().getConfigurations(), props);
+        MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(metaDataContexts.getGlobalRuleMetaData().getConfigurations(), metaDataContexts.getProps());
         metaDataContextsBuilder.addDatabase(originalMetaData.getDatabaseName(), originalMetaData.getFrontendDatabaseType(), originalMetaData.getResource().getDatabaseType(),
                 new DataSourceProvidedDatabaseConfiguration(originalMetaData.getResource().getDataSources(), ruleConfigs));
         metaDataContexts.getMetaDataPersistService().ifPresent(optional -> optional.getSchemaMetaDataService()
@@ -559,8 +557,7 @@ public final class ContextManager implements AutoCloseable {
                                                                               final Map<String, DataSourceProperties> newDataSourceProps) throws SQLException {
         Collection<String> deletedDataSources = getDeletedDataSources(originalMetaData, newDataSourceProps).keySet();
         Map<String, DataSource> changedDataSources = buildChangedDataSources(originalMetaData, newDataSourceProps);
-        Properties props = metaDataContexts.getProps().getProps();
-        MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(metaDataContexts.getGlobalRuleMetaData().getConfigurations(), props);
+        MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(metaDataContexts.getGlobalRuleMetaData().getConfigurations(), metaDataContexts.getProps());
         metaDataContextsBuilder.addDatabase(originalMetaData.getDatabaseName(), originalMetaData.getFrontendDatabaseType(), originalMetaData.getResource().getDatabaseType(),
                 new DataSourceProvidedDatabaseConfiguration(
                         getNewDataSources(originalMetaData.getResource().getDataSources(), getAddedDataSources(originalMetaData, newDataSourceProps), changedDataSources, deletedDataSources),
@@ -574,8 +571,7 @@ public final class ContextManager implements AutoCloseable {
                                                                                      final Collection<RuleConfiguration> ruleConfigs) throws SQLException {
         Collection<String> deletedDataSources = getDeletedDataSources(originalMetaData, newDataSourceProps).keySet();
         Map<String, DataSource> changedDataSources = buildChangedDataSources(originalMetaData, newDataSourceProps);
-        Properties props = metaDataContexts.getProps().getProps();
-        MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(metaDataContexts.getGlobalRuleMetaData().getConfigurations(), props);
+        MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(metaDataContexts.getGlobalRuleMetaData().getConfigurations(), metaDataContexts.getProps());
         metaDataContextsBuilder.addDatabase(originalMetaData.getDatabaseName(), originalMetaData.getFrontendDatabaseType(), originalMetaData.getResource().getDatabaseType(),
                 new DataSourceProvidedDatabaseConfiguration(getNewDataSources(originalMetaData.getResource().getDataSources(),
                         getAddedDataSources(originalMetaData, newDataSourceProps), changedDataSources, deletedDataSources), ruleConfigs));
@@ -633,9 +629,8 @@ public final class ContextManager implements AutoCloseable {
     }
     
     private MetaDataContexts buildNewMetaDataContext(final String databaseName) throws SQLException {
-        ConfigurationProperties configurationProps = metaDataContexts.getProps();
-        MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(metaDataContexts.getGlobalRuleMetaData().getConfigurations(), configurationProps.getProps());
-        DatabaseType frontendDatabaseType = DatabaseTypeEngine.getFrontendDatabaseType(Collections.emptyMap(), configurationProps);
+        MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(metaDataContexts.getGlobalRuleMetaData().getConfigurations(), metaDataContexts.getProps());
+        DatabaseType frontendDatabaseType = DatabaseTypeEngine.getFrontendDatabaseType(Collections.emptyMap(), metaDataContexts.getProps());
         DatabaseType backendDatabaseType = DatabaseTypeEngine.getBackendDatabaseType(Collections.emptyMap());
         metaDataContextsBuilder.addDatabase(databaseName, frontendDatabaseType, backendDatabaseType, new DataSourceProvidedDatabaseConfiguration(new HashMap<>(), new LinkedList<>()));
         return metaDataContextsBuilder.build(metaDataContexts.getMetaDataPersistService().orElse(null));
