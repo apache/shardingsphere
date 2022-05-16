@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.binder.statement.ddl;
 
-import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.AddColumnDefinitionSegment;
@@ -41,10 +40,10 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.ddl.SQL9
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerAlterTableStatement;
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
-import java.util.Collection;
-import java.util.Arrays;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -116,7 +115,7 @@ public final class AlterTableStatementContextTest {
         assertThat(actual.getSqlStatement(), is(alterTableStatement));
         assertThat(actual.getAllTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()),
                 is(Arrays.asList("tbl_1", "rename_tbl_1", "tbl_1", "tbl_1", "tbl_1")));
-        assertThat(actual.getIndexes().stream().map(each -> each.getIndexName().getIdentifier().getValue()).collect(Collectors.toList()), is(Lists.newArrayList("index", "drop_index")));
+        assertThat(actual.getIndexes().stream().map(each -> each.getIndexName().getIdentifier().getValue()).collect(Collectors.toList()), is(Arrays.asList("index", "drop_index")));
         assertThat(actual.getConstraints().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList()),
                 is(Arrays.asList("constraint", "constraint", "constraint")));
     }

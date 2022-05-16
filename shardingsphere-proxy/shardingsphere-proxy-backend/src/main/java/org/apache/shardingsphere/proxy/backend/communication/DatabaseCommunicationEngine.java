@@ -117,7 +117,7 @@ public abstract class DatabaseCommunicationEngine<T> {
         int columnCount = getColumnCount(executionContext, queryResultSample);
         List<QueryHeader> result = new ArrayList<>(columnCount);
         LazyInitializer<DataNodeContainedRule> dataNodeContainedRule = getDataNodeContainedRuleLazyInitializer(metaData);
-        QueryHeaderBuilderEngine queryHeaderBuilderEngine = new QueryHeaderBuilderEngine(metaData.getResource().getDatabaseType());
+        QueryHeaderBuilderEngine queryHeaderBuilderEngine = new QueryHeaderBuilderEngine(metaData.getFrontendDatabaseType());
         for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
             result.add(createQueryHeader(queryHeaderBuilderEngine, executionContext, queryResultSample, metaData, columnIndex, dataNodeContainedRule));
         }

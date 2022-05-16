@@ -17,15 +17,14 @@
 
 package org.apache.shardingsphere.sharding.data.pipeline;
 
-import com.google.common.base.Joiner;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.yaml.RuleAlteredJobConfigurationSwapper;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.yaml.YamlRuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeEntry;
 import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeLine;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
@@ -54,6 +53,7 @@ import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfigurat
 import org.apache.shardingsphere.sharding.yaml.swapper.ShardingRuleConfigurationConverter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -64,6 +64,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -73,14 +74,14 @@ import java.util.stream.Collectors;
 public final class ShardingRuleAlteredJobConfigurationPreparer implements RuleAlteredJobConfigurationPreparer {
     
     @Override
-    public void extendJobConfiguration(final RuleAlteredJobConfiguration jobConfig) {
-        Map<String, List<DataNode>> shouldScalingActualDataNodes = getShouldScalingActualDataNodes(jobConfig);
-        jobConfig.setJobShardingDataNodes(getJobShardingDataNodes(shouldScalingActualDataNodes));
-        jobConfig.setLogicTables(getLogicTables(shouldScalingActualDataNodes.keySet()));
-        jobConfig.setTablesFirstDataNodes(getTablesFirstDataNodes(shouldScalingActualDataNodes));
+    public void extendJobConfiguration(final YamlRuleAlteredJobConfiguration yamlJobConfig) {
+        Map<String, List<DataNode>> actualDataNodes = getActualDataNodes(new RuleAlteredJobConfigurationSwapper().swapToObject(yamlJobConfig));
+        yamlJobConfig.setJobShardingDataNodes(getJobShardingDataNodes(actualDataNodes));
+        yamlJobConfig.setLogicTables(getLogicTables(actualDataNodes.keySet()));
+        yamlJobConfig.setTablesFirstDataNodes(getTablesFirstDataNodes(actualDataNodes));
     }
     
-    private static Map<String, List<DataNode>> getShouldScalingActualDataNodes(final RuleAlteredJobConfiguration jobConfig) {
+    private static Map<String, List<DataNode>> getActualDataNodes(final RuleAlteredJobConfiguration jobConfig) {
         PipelineDataSourceConfiguration sourceDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(jobConfig.getSource().getType(), jobConfig.getSource().getParameter());
         ShardingSpherePipelineDataSourceConfiguration source = (ShardingSpherePipelineDataSourceConfiguration) sourceDataSourceConfig;
         ShardingRuleConfiguration sourceRuleConfig = ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(source.getRootConfig().getRules());
@@ -121,7 +122,7 @@ public final class ShardingRuleAlteredJobConfigurationPreparer implements RuleAl
     }
     
     private static String getLogicTables(final Set<String> logicTables) {
-        return Joiner.on(',').join(logicTables);
+        return String.join(",", logicTables);
     }
     
     private static String getTablesFirstDataNodes(final Map<String, List<DataNode>> actualDataNodes) {
@@ -174,7 +175,7 @@ public final class ShardingRuleAlteredJobConfigurationPreparer implements RuleAl
     private static Map<LogicTableName, Set<String>> getShardingColumnsMap(final ShardingRuleConfiguration shardingRuleConfig, final Set<LogicTableName> reShardNeededTables) {
         Set<String> defaultDatabaseShardingColumns = extractShardingColumns(shardingRuleConfig.getDefaultDatabaseShardingStrategy());
         Set<String> defaultTableShardingColumns = extractShardingColumns(shardingRuleConfig.getDefaultTableShardingStrategy());
-        Map<LogicTableName, Set<String>> result = Maps.newConcurrentMap();
+        Map<LogicTableName, Set<String>> result = new ConcurrentHashMap<>();
         for (ShardingTableRuleConfiguration each : shardingRuleConfig.getTables()) {
             LogicTableName logicTableName = new LogicTableName(each.getLogicTable());
             if (!reShardNeededTables.contains(logicTableName)) {
@@ -199,10 +200,10 @@ public final class ShardingRuleAlteredJobConfigurationPreparer implements RuleAl
     
     private static Set<String> extractShardingColumns(final ShardingStrategyConfiguration shardingStrategy) {
         if (shardingStrategy instanceof StandardShardingStrategyConfiguration) {
-            return Sets.newHashSet(((StandardShardingStrategyConfiguration) shardingStrategy).getShardingColumn());
+            return new HashSet<>(Collections.singleton(((StandardShardingStrategyConfiguration) shardingStrategy).getShardingColumn()));
         }
         if (shardingStrategy instanceof ComplexShardingStrategyConfiguration) {
-            return Sets.newHashSet(((ComplexShardingStrategyConfiguration) shardingStrategy).getShardingColumns().split(","));
+            return new HashSet<>(Arrays.asList(((ComplexShardingStrategyConfiguration) shardingStrategy).getShardingColumns().split(",")));
         }
         return Collections.emptySet();
     }

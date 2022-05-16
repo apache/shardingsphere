@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.integration.data.pipeline.cases.postgresql;
 
-import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.data.pipeline.spi.ddlgenerator.DialectDDLSQLGeneratorFactory;
@@ -81,10 +80,9 @@ public final class PostgreSQLDDLGeneratorIT {
     public static Collection<ScalingParameterized> getParameters() {
         Collection<ScalingParameterized> result = new LinkedList<>();
         for (String each : ENV.getPostgresVersions()) {
-            if (Strings.isNullOrEmpty(each)) {
-                continue;
+            if (!Strings.isNullOrEmpty(each)) {
+                result.add(new ScalingParameterized(new PostgreSQLDatabaseType(), each, String.join("/", PARENT_PATH, CASE_FILE_PATH)));
             }
-            result.add(new ScalingParameterized(new PostgreSQLDatabaseType(), each, Joiner.on("/").join(PARENT_PATH, CASE_FILE_PATH)));
         }
         return result;
     }

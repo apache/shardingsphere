@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.integration.data.pipeline.cases.openguass;
 
-import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.integration.data.pipeline.cases.base.BaseOpenGaussITCase;
@@ -54,7 +53,7 @@ public final class OpenGaussManualScalingIT extends BaseOpenGaussITCase {
                 continue;
             }
             for (String scenario : ScalingScenario.listScenario()) {
-                result.add(new ScalingParameterized(DATABASE_TYPE, dockerImageName, Joiner.on("/").join("env/scenario/manual/postgresql", scenario, ScalingScenario.SCENARIO_SUFFIX)));
+                result.add(new ScalingParameterized(DATABASE_TYPE, dockerImageName, String.join("/", "env/scenario/manual/postgresql", scenario, ScalingScenario.SCENARIO_SUFFIX)));
             }
         }
         return result;

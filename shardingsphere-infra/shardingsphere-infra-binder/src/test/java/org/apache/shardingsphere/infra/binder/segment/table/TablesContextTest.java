@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.binder.segment.table;
 
-import com.google.common.collect.Sets;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -33,6 +32,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -50,7 +50,7 @@ public final class TablesContextTest {
     public void assertGetTableNames() {
         TablesContext tablesContext = new TablesContext(Arrays.asList(createTableSegment("table_1", "tbl_1"),
                 createTableSegment("table_2", "tbl_2")), DatabaseTypeEngine.getDatabaseType("MySQL"));
-        assertThat(tablesContext.getTableNames(), is(Sets.newHashSet("table_1", "table_2")));
+        assertThat(tablesContext.getTableNames(), is(new HashSet<>(Arrays.asList("table_1", "table_2"))));
     }
     
     @Test

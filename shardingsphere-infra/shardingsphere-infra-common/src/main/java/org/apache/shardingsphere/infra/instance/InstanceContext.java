@@ -34,9 +34,10 @@ import java.util.Optional;
 
 /**
  * Instance context.
+ * 
  */
-@Getter
 @RequiredArgsConstructor
+@Getter
 public final class InstanceContext {
     
     private final ComputeNodeInstance instance;
@@ -53,7 +54,7 @@ public final class InstanceContext {
      * Update instance status.
      *
      * @param instanceId instance id
-     * @param status collection of status
+     * @param status status
      */
     public void updateInstanceStatus(final String instanceId, final Collection<String> status) {
         if (instance.getInstanceDefinition().getInstanceId().getId().equals(instanceId)) {
@@ -95,9 +96,9 @@ public final class InstanceContext {
     }
     
     /**
-     * Update instance xa recovery id.
+     * Update instance XA recovery id.
      *
-     * @param xaRecoveryId xa recovery id
+     * @param xaRecoveryId XA recovery id
      */
     public void updateXaRecoveryId(final String xaRecoveryId) {
         if (!Objects.equals(xaRecoveryId, instance.getXaRecoveryId())) {

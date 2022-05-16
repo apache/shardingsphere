@@ -108,6 +108,7 @@ public final class MySQLCommandExecutorFactoryTest {
         ShardingSphereMetaData result = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         when(result.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         when(result.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        when(result.getFrontendDatabaseType()).thenReturn(new MySQLDatabaseType());
         return result;
     }
     

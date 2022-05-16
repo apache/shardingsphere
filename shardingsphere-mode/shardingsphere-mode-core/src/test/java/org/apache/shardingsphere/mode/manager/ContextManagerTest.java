@@ -86,6 +86,7 @@ public final class ContextManagerTest {
         when(metaDataContexts.getOptimizerContext().getFederationMetaData().getDatabases()).thenReturn(new LinkedHashMap<>());
         when(metaDataContexts.getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         when(metaDataContexts.getMetaData("foo_db").getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        when(metaDataContexts.getMetaData("foo_db").getFrontendDatabaseType()).thenReturn(new MySQLDatabaseType());
     }
     
     @Test
@@ -120,8 +121,8 @@ public final class ContextManagerTest {
     }
     
     @Test
-    public void assertAlterDatabase() {
-        contextManager.alterDatabase("foo_db", Collections.singletonMap("foo_db", new ShardingSphereSchema(Collections.singletonMap("foo_table",
+    public void assertAlterSchemas() {
+        contextManager.alterSchemas("foo_db", Collections.singletonMap("foo_db", new ShardingSphereSchema(Collections.singletonMap("foo_table",
                 new TableMetaData("foo_table", Collections.emptyList(), Collections.emptyList(), Collections.emptyList())))));
         assertTrue(contextManager.getMetaDataContexts().getMetaDataMap().get("foo_db").getSchemaByName("foo_db").containsTable("foo_table"));
         assertTrue(contextManager.getMetaDataContexts().getOptimizerContext().getFederationMetaData().getDatabases().containsKey("foo_db"));

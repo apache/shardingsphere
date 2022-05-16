@@ -167,7 +167,7 @@ public final class JDBCDatabaseCommunicationEngine extends DatabaseCommunication
         setQueryHeaders(new ArrayList<>(columnCount));
         ShardingSphereMetaData metaData = metaDataContexts.getMetaData(backendConnection.getConnectionSession().getDatabaseName());
         LazyInitializer<DataNodeContainedRule> dataNodeContainedRule = getDataNodeContainedRuleLazyInitializer(metaData);
-        QueryHeaderBuilderEngine queryHeaderBuilderEngine = new QueryHeaderBuilderEngine(null == metaData ? null : metaData.getResource().getDatabaseType());
+        QueryHeaderBuilderEngine queryHeaderBuilderEngine = new QueryHeaderBuilderEngine(null == metaData ? null : metaData.getFrontendDatabaseType());
         for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
             getQueryHeaders().add(queryHeaderBuilderEngine.build(new JDBCQueryResultMetaData(resultSet.getMetaData()), metaData, columnIndex, dataNodeContainedRule));
         }
