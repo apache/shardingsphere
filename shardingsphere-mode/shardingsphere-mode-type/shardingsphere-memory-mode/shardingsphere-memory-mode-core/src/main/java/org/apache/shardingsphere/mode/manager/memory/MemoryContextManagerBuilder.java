@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.manager.memory;
 
-import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -39,7 +38,6 @@ import org.apache.shardingsphere.transaction.spi.TransactionConfigurationFileGen
 import org.apache.shardingsphere.transaction.spi.TransactionConfigurationFileGeneratorFactory;
 
 import java.sql.SQLException;
-import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
@@ -62,11 +60,7 @@ public final class MemoryContextManagerBuilder implements ContextManagerBuilder 
     private MetaDataContextsBuilder createMetaDataContextsBuilder(final ContextManagerBuilderParameter parameter) throws SQLException {
         ConfigurationProperties props = new ConfigurationProperties(parameter.getProps());
         DatabaseType frontendDatabaseType = DatabaseTypeEngine.getFrontendDatabaseType(parameter.getDatabaseConfigs(), props);
-        DatabaseType backendDatabaseType = DatabaseTypeEngine.getBackendDatabaseType(parameter.getDatabaseConfigs());
-        MetaDataContextsBuilder result = new MetaDataContextsBuilder(parameter.getGlobalRuleConfigs(), props);
-        for (Entry<String, ? extends DatabaseConfiguration> entry : parameter.getDatabaseConfigs().entrySet()) {
-            result.addDatabase(entry.getKey(), frontendDatabaseType, backendDatabaseType, entry.getValue());
-        }
+        MetaDataContextsBuilder result = new MetaDataContextsBuilder(parameter.getDatabaseConfigs(), parameter.getGlobalRuleConfigs(), props);
         result.addSystemDatabases(frontendDatabaseType);
         return result;
     }

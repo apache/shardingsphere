@@ -58,7 +58,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -99,15 +98,9 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
                 : metaDataPersistService.getSchemaMetaDataService().loadAllDatabaseNames();
         Collection<RuleConfiguration> globalRuleConfigs = metaDataPersistService.getGlobalRuleService().load();
         ConfigurationProperties props = new ConfigurationProperties(metaDataPersistService.getPropsService().load());
-        MetaDataContextsBuilder result = new MetaDataContextsBuilder(globalRuleConfigs, props);
         Map<String, ? extends DatabaseConfiguration> databaseConfigMap = getDatabaseConfigMap(databaseNames, metaDataPersistService, parameter);
         DatabaseType frontendDatabaseType = DatabaseTypeEngine.getFrontendDatabaseType(databaseConfigMap, props);
-        DatabaseType backendDatabaseType = DatabaseTypeEngine.getBackendDatabaseType(databaseConfigMap);
-        for (Entry<String, ? extends DatabaseConfiguration> entry : databaseConfigMap.entrySet()) {
-            if (!frontendDatabaseType.getSystemSchemas().contains(entry.getKey())) {
-                result.addDatabase(entry.getKey(), frontendDatabaseType, backendDatabaseType, entry.getValue());
-            }
-        }
+        MetaDataContextsBuilder result = new MetaDataContextsBuilder(databaseConfigMap, globalRuleConfigs, props);
         result.addSystemDatabases(frontendDatabaseType);
         return result;
     }

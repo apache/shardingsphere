@@ -46,7 +46,6 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
@@ -76,13 +75,7 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
         ConfigurationProperties props = new ConfigurationProperties(metaDataPersistService.getPropsService().load());
         Map<String, ? extends DatabaseConfiguration> databaseConfigMap = getDatabaseConfigMap(databaseNames, metaDataPersistService, parameter);
         DatabaseType frontendDatabaseType = DatabaseTypeEngine.getFrontendDatabaseType(databaseConfigMap, props);
-        DatabaseType backendDatabaseType = DatabaseTypeEngine.getBackendDatabaseType(databaseConfigMap);
-        MetaDataContextsBuilder result = new MetaDataContextsBuilder(globalRuleConfigs, props);
-        for (Entry<String, ? extends DatabaseConfiguration> entry : databaseConfigMap.entrySet()) {
-            if (!frontendDatabaseType.getSystemSchemas().contains(entry.getKey())) {
-                result.addDatabase(entry.getKey(), frontendDatabaseType, backendDatabaseType, entry.getValue());
-            }
-        }
+        MetaDataContextsBuilder result = new MetaDataContextsBuilder(databaseConfigMap, globalRuleConfigs, props);
         result.addSystemDatabases(frontendDatabaseType);
         return result;
     }

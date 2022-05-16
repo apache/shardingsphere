@@ -63,22 +63,20 @@ public final class MetaDataContextsBuilder {
     
     private final ExecutorEngine executorEngine;
     
-    public MetaDataContextsBuilder(final Collection<RuleConfiguration> globalRuleConfigs, final ConfigurationProperties props) {
+    public MetaDataContextsBuilder(final Map<String, ? extends DatabaseConfiguration> databaseConfigMap, final Collection<RuleConfiguration> globalRuleConfigs, final ConfigurationProperties props) throws SQLException {
         this.globalRuleConfigs = globalRuleConfigs;
         this.props = props;
         executorEngine = ExecutorEngine.createExecutorEngineWithSize(props.<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE));
+        DatabaseType frontendDatabaseType = DatabaseTypeEngine.getFrontendDatabaseType(databaseConfigMap, props);
+        DatabaseType backendDatabaseType = DatabaseTypeEngine.getBackendDatabaseType(databaseConfigMap);
+        for (Entry<String, ? extends DatabaseConfiguration> entry : databaseConfigMap.entrySet()) {
+            if (!frontendDatabaseType.getSystemSchemas().contains(entry.getKey())) {
+                addDatabase(entry.getKey(), frontendDatabaseType, backendDatabaseType, entry.getValue());
+            }
+        }
     }
     
-    /**
-     * Add database information.
-     * 
-     * @param databaseName schema name
-     * @param frontendDatabaseType frontend database type
-     * @param backendDatabaseType backend database type
-     * @param databaseConfig database configuration
-     * @throws SQLException SQL exception
-     */
-    public void addDatabase(final String databaseName, final DatabaseType frontendDatabaseType, final DatabaseType backendDatabaseType,
+    private void addDatabase(final String databaseName, final DatabaseType frontendDatabaseType, final DatabaseType backendDatabaseType,
                             final DatabaseConfiguration databaseConfig) throws SQLException {
         Collection<ShardingSphereRule> databaseRules = SchemaRulesBuilder.buildRules(databaseName, databaseConfig, props);
         ShardingSphereDatabase database = DatabaseLoader.load(databaseName, frontendDatabaseType, backendDatabaseType, databaseConfig.getDataSources(), databaseRules, props);
