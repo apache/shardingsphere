@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.spring.boot;
 
-import com.google.common.collect.Sets;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
@@ -97,7 +96,7 @@ public class SpringBootStarterTest {
     }
     
     private void assertShardingRule(final ShardingRule actual) {
-        assertThat(actual.getDataSourceNames(), is(Sets.newHashSet("ds0", "ds1")));
+        assertThat(actual.getDataSourceNames(), is(new HashSet<>(Arrays.asList("ds0", "ds1"))));
         InlineShardingAlgorithm databaseShardingAlgorithm = (InlineShardingAlgorithm) actual.getShardingAlgorithms().get("databaseShardingAlgorithm");
         assertThat(databaseShardingAlgorithm.getProps().getProperty("algorithm-expression"), is("ds$->{user_id % 2}"));
         InlineShardingAlgorithm orderTableShardingAlgorithm = (InlineShardingAlgorithm) actual.getShardingAlgorithms().get("orderTableShardingAlgorithm");
@@ -116,7 +115,7 @@ public class SpringBootStarterTest {
         assertThat(actual.getLogicTable(), is("t_order"));
         Collection<DataNode> dataNodes = Arrays.asList(new DataNode("ds0.t_order_0"), new DataNode("ds0.t_order_1"), new DataNode("ds1.t_order_0"), new DataNode("ds1.t_order_1"));
         assertThat(actual.getActualDataNodes(), is(dataNodes));
-        assertThat(actual.getActualDatasourceNames(), is(Sets.newHashSet("ds0", "ds1")));
+        assertThat(actual.getActualDatasourceNames(), is(new HashSet<>(Arrays.asList("ds0", "ds1"))));
         assertThat(actual.getDataNodeGroups(), is(DataNodeUtil.getDataNodeGroups(dataNodes)));
         assertThat(actual.getDatasourceToTablesMap(), is(getExpectedDatasourceToTablesMap()));
     }

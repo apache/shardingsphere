@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.driver.mix;
 
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.driver.AbstractYamlDataSourceTest;
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
@@ -64,7 +62,11 @@ public final class YamlShardingWithReadwriteSplittingIntegrateTest extends Abstr
         if (hasDataSource) {
             dataSource = YamlShardingSphereDataSourceFactory.createDataSource(yamlFile);
         } else {
-            Map<String, DataSource> dataSourceMap = Maps.asMap(Sets.newHashSet("write_ds_0", "read_ds_0", "write_ds_1", "read_ds_1"), AbstractYamlDataSourceTest::createDataSource);
+            Map<String, DataSource> dataSourceMap = new HashMap<>(4, 1);
+            dataSourceMap.put("write_ds_0", createDataSource("write_ds_0"));
+            dataSourceMap.put("read_ds_0", createDataSource("read_ds_0"));
+            dataSourceMap.put("write_ds_1", createDataSource("write_ds_1"));
+            dataSourceMap.put("read_ds_1", createDataSource("read_ds_1"));
             Map<String, DataSource> result = new HashMap<>(dataSourceMap.size(), 1);
             for (Entry<String, DataSource> each : dataSourceMap.entrySet()) {
                 result.put(each.getKey(), each.getValue());

@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.integration.data.pipeline.cases.scenario;
 
-import com.google.common.collect.Sets;
-
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 
 /**
  * Manual scaling scenario.
@@ -34,6 +34,6 @@ public final class ScalingScenario {
      * @return scenario list
      */
     public static Collection<String> listScenario() {
-        return Sets.newHashSet("integer_primary_key");
+        return new HashSet<>(Collections.singleton("integer_primary_key"));
     }
 }
