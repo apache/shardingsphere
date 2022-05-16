@@ -54,7 +54,7 @@ public final class InstanceContext {
      * Update instance status.
      *
      * @param instanceId instance id
-     * @param status collection of status
+     * @param status status
      */
     public void updateInstanceStatus(final String instanceId, final Collection<String> status) {
         if (instance.getInstanceDefinition().getInstanceId().getId().equals(instanceId)) {
