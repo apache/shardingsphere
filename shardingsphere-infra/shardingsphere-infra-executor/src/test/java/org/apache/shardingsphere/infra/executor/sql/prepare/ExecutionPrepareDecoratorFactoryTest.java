@@ -19,28 +19,18 @@ package org.apache.shardingsphere.infra.executor.sql.prepare;
 
 import org.apache.shardingsphere.infra.executor.sql.fixture.FixtureExecutionPrepareDecorator;
 import org.apache.shardingsphere.infra.executor.sql.fixture.FixtureRule;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.junit.Test;
 
 import java.util.Collections;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public final class ExecutionPrepareDecoratorFactoryTest {
     
     @Test
-    @SuppressWarnings("rawtypes")
     public void assertGetInstance() {
         FixtureRule rule = new FixtureRule();
-        Map<ShardingSphereRule, ExecutionPrepareDecorator> actual = ExecutionPrepareDecoratorFactory.getInstance(Collections.singleton(rule));
-        assertNotNull(actual);
-        assertFalse(actual.isEmpty());
-        assertTrue(actual.containsKey(rule));
-        assertThat(actual.get(rule), instanceOf(FixtureExecutionPrepareDecorator.class));
+        assertThat(ExecutionPrepareDecoratorFactory.getInstance(Collections.singleton(rule)).get(rule), instanceOf(FixtureExecutionPrepareDecorator.class));
     }
 }

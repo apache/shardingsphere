@@ -17,25 +17,20 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.builder;
 
-import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedSchemaMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.fixture.loader.CommonFixtureSchemaMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.fixture.rule.CommonFixtureRule;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.junit.Test;
 
 import java.util.Collections;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
 public final class RuleBasedSchemaMetaDataBuilderFactoryTest {
     
-    @SuppressWarnings("rawtypes")
     @Test
     public void assertGetInstances() {
         CommonFixtureRule rule = new CommonFixtureRule();
-        Map<ShardingSphereRule, RuleBasedSchemaMetaDataBuilder> actual = RuleBasedSchemaMetaDataBuilderFactory.getInstances(Collections.singleton(rule));
-        assertThat(actual.get(rule), instanceOf(CommonFixtureSchemaMetaDataBuilder.class));
+        assertThat(RuleBasedSchemaMetaDataBuilderFactory.getInstances(Collections.singleton(rule)).get(rule), instanceOf(CommonFixtureSchemaMetaDataBuilder.class));
     }
 }

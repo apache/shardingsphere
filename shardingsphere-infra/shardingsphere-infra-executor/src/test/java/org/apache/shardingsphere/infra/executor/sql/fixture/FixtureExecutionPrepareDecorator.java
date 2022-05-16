@@ -17,17 +17,17 @@
 
 package org.apache.shardingsphere.infra.executor.sql.fixture;
 
-import java.util.Collection;
-import java.util.Collections;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.sql.prepare.ExecutionPrepareDecorator;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 
+import java.util.Collection;
+import java.util.Collections;
+
 public final class FixtureExecutionPrepareDecorator implements ExecutionPrepareDecorator<Object, FixtureRule> {
     
     @Override
-    public Collection<ExecutionGroup<Object>> decorate(final RouteContext routeContext, final FixtureRule rule,
-                                                       final Collection<ExecutionGroup<Object>> executionGroups) {
+    public Collection<ExecutionGroup<Object>> decorate(final RouteContext routeContext, final FixtureRule rule, final Collection<ExecutionGroup<Object>> executionGroups) {
         return Collections.emptyList();
     }
     
