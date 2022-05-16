@@ -42,6 +42,8 @@ public final class DataSourceEnvironment {
                 return "com.microsoft.sqlserver.jdbc.SQLServerDriver";
             case "Oracle":
                 return "oracle.jdbc.driver.OracleDriver";
+            case "openGauss":
+                return "org.opengauss.Driver";
             default:
                 throw new UnsupportedOperationException(databaseType.getType());
         }
@@ -93,6 +95,8 @@ public final class DataSourceEnvironment {
                 return String.format("jdbc:sqlserver://%s:%s;DatabaseName=%s", host, port, dataSourceName);
             case "Oracle":
                 return String.format("jdbc:oracle:thin:@%s:%s/%s", host, port, dataSourceName);
+            case "openGauss":
+                return String.format("jdbc:opengauss://%s:%s/%s", host, port, dataSourceName);
             default:
                 throw new UnsupportedOperationException(databaseType.getType());
         }

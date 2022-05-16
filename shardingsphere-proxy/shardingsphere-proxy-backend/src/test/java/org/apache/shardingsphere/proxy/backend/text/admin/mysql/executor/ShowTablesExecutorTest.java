@@ -85,7 +85,7 @@ public final class ShowTablesExecutorTest {
     
     @Test
     public void assertShowTablesExecutorWithoutFilter() throws SQLException {
-        ShowTablesExecutor showTablesExecutor = new ShowTablesExecutor(new MySQLShowTablesStatement(), DatabaseTypeEngine.getDefaultDatabaseType());
+        ShowTablesExecutor showTablesExecutor = new ShowTablesExecutor(new MySQLShowTablesStatement(), DatabaseTypeEngine.getDatabaseType("MySQL"));
         showTablesExecutor.execute(mockConnectionSession());
         assertThat(showTablesExecutor.getQueryResultMetaData().getColumnCount(), is(2));
         showTablesExecutor.getMergedResult().next();

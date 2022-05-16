@@ -86,6 +86,7 @@ import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable.SetReadwriteSplittingStatusHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable.SetVariableHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable.UnlabelInstanceHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.scaling.query.QueryableScalingRALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.scaling.query.QueryableScalingRALBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.scaling.update.UpdatableScalingRALBackendHandler;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.ShowReadwriteSplittingReadResourcesStatement;
@@ -156,21 +157,16 @@ public final class RALBackendHandlerFactory {
      * @throws SQLException SQL exception
      */
     public static TextProtocolBackendHandler newInstance(final DatabaseType databaseType, final RALStatement sqlStatement, final ConnectionSession connectionSession) throws SQLException {
-        TextProtocolBackendHandler result = null;
         if (sqlStatement instanceof HintDistSQLStatement) {
             return new HintDistSQLBackendHandler((HintDistSQLStatement) sqlStatement, connectionSession);
         }
         if (sqlStatement instanceof QueryableScalingRALStatement) {
-            result = QueryableScalingRALBackendHandlerFactory.newInstance((QueryableScalingRALStatement) sqlStatement, connectionSession);
+            return new QueryableScalingRALBackendHandler(sqlStatement, connectionSession, QueryableScalingRALBackendHandlerFactory.newInstance((QueryableScalingRALStatement) sqlStatement));
         }
         if (sqlStatement instanceof UpdatableScalingRALStatement) {
-            result = new UpdatableScalingRALBackendHandler((UpdatableScalingRALStatement) sqlStatement);
+            return new UpdatableScalingRALBackendHandler((UpdatableScalingRALStatement) sqlStatement);
         }
-        if (null == result) {
-            HandlerParameter parameter = new HandlerParameter(sqlStatement, databaseType, connectionSession);
-            result = getHandler(sqlStatement, parameter);
-        }
-        return result;
+        return getHandler(sqlStatement, new HandlerParameter(sqlStatement, databaseType, connectionSession));
     }
     
     private static RALBackendHandler newInstance(final Class<? extends RALBackendHandler> clazz) {

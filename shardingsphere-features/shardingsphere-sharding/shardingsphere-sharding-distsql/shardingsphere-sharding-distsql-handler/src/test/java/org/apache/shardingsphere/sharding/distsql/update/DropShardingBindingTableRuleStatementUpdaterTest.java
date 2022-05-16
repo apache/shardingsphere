@@ -67,12 +67,6 @@ public final class DropShardingBindingTableRuleStatementUpdaterTest {
         updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(true, "t_1,t_2"), shardingRuleConfig);
     }
     
-    @Test(expected = RequiredRuleMissedException.class)
-    public void assertCheckSQLStatementIsNotTheSame() throws DistSQLException {
-        ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement("t"), currentRuleConfig);
-    }
-    
     @Test
     public void assertDropAllCurrentRuleConfiguration() {
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
@@ -106,10 +100,22 @@ public final class DropShardingBindingTableRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertDropWrongOrderRulesCurrentRuleConfiguration() throws DistSQLException {
+    public void assertDropRulesCurrentRuleConfigurationWithNoOrder() throws DistSQLException {
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         currentRuleConfig.getBindingTableGroups().add("t_1,t_2,t_3");
         DropShardingBindingTableRulesStatement sqlStatement = createSQLStatement("t_3,t_2,t_1");
+        updater.checkSQLStatement(shardingSphereMetaData, sqlStatement, currentRuleConfig);
+        updater.updateCurrentRuleConfiguration(sqlStatement, currentRuleConfig);
+        assertThat(currentRuleConfig.getBindingTableGroups().size(), is(1));
+        assertTrue(currentRuleConfig.getBindingTableGroups().contains("t_order,t_order_item"));
+        assertFalse(currentRuleConfig.getBindingTableGroups().contains("t_1,t_2,t_3"));
+    }
+    
+    @Test
+    public void assertDropRulesCurrentRuleConfigurationWithDifferentCase() throws DistSQLException {
+        ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
+        currentRuleConfig.getBindingTableGroups().add("t_1,t_2,t_3");
+        DropShardingBindingTableRulesStatement sqlStatement = createSQLStatement("T_3,T_2,T_1");
         updater.checkSQLStatement(shardingSphereMetaData, sqlStatement, currentRuleConfig);
         updater.updateCurrentRuleConfiguration(sqlStatement, currentRuleConfig);
         assertThat(currentRuleConfig.getBindingTableGroups().size(), is(1));

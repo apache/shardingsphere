@@ -21,6 +21,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlJdbcConfiguration;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.BaseLogSequenceNumber;
+import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrl;
+import org.apache.shardingsphere.infra.database.metadata.url.StandardJdbcUrlParser;
+import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.opengauss.PGProperty;
 import org.opengauss.jdbc.PgConnection;
 import org.opengauss.replication.LogSequenceNumber;
@@ -37,6 +40,8 @@ import java.util.Properties;
 @Slf4j
 public final class OpenGaussLogicalReplication {
     
+    private static final String HA_PORT_ERROR_MESSAGE_KEY = "HA port";
+    
     /**
      * Create connection.
      *
@@ -52,7 +57,28 @@ public final class OpenGaussLogicalReplication {
         PGProperty.ASSUME_MIN_SERVER_VERSION.set(props, "9.4");
         PGProperty.REPLICATION.set(props, "database");
         PGProperty.PREFER_QUERY_MODE.set(props, "simple");
-        return DriverManager.getConnection(jdbcConfig.getJdbcUrl(), props);
+        try {
+            return DriverManager.getConnection(jdbcConfig.getJdbcUrl(), props);
+        } catch (final SQLException ex) {
+            if (failedBecauseOfNonHAPort(ex)) {
+                log.info("Failed to connect to openGauss caused by: {} - {}. Try connecting to HA port.", ex.getSQLState(), ex.getMessage());
+                return tryConnectingToHAPort(jdbcConfig.getJdbcUrl(), props);
+            }
+            throw ex;
+        }
+    }
+    
+    private boolean failedBecauseOfNonHAPort(final SQLException ex) {
+        return ex.getMessage().contains(HA_PORT_ERROR_MESSAGE_KEY);
+    }
+    
+    private Connection tryConnectingToHAPort(final String jdbcUrl, final Properties props) throws SQLException {
+        JdbcUrl parseResult = new StandardJdbcUrlParser().parse(jdbcUrl);
+        PGProperty.PG_HOST.set(props, parseResult.getHostname());
+        PGProperty.PG_DBNAME.set(props, parseResult.getDatabase());
+        int haPort = parseResult.getPort() + 1;
+        PGProperty.PG_PORT.set(props, haPort);
+        return DriverManager.getConnection(new OpenGaussDatabaseType().getJdbcUrlPrefixes().iterator().next(), props);
     }
     
     /**

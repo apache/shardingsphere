@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sharding.route.strategy.type.complex;
 
 import com.google.common.collect.Range;
-import com.google.common.collect.Sets;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.sharding.fixture.CoreComplexKeysShardingAlgorithmFixture;
@@ -30,6 +29,7 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 
@@ -42,7 +42,7 @@ public final class ComplexShardingStrategyTest {
     
     @Test
     public void assertDoSharding() {
-        Collection<String> targets = Sets.newHashSet("1", "2", "3");
+        Collection<String> targets = new HashSet<>(Arrays.asList("1", "2", "3"));
         ComplexShardingStrategy complexShardingStrategy = new ComplexShardingStrategy("column1, column2", new CoreComplexKeysShardingAlgorithmFixture());
         List<ShardingConditionValue> shardingConditionValues =
                 Arrays.asList(new ListShardingConditionValue<>("column1", "logicTable", Collections.singletonList(1)), new RangeShardingConditionValue<>("column2", "logicTable", Range.open(1, 3)));

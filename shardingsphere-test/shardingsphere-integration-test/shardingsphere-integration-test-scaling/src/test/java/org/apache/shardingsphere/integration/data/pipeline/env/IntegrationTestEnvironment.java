@@ -41,11 +41,14 @@ public final class IntegrationTestEnvironment {
     
     private final List<String> postgresVersions;
     
+    private final List<String> openGaussVersions;
+    
     private IntegrationTestEnvironment() {
         props = loadProperties();
         itEnvType = ITEnvTypeEnum.valueOf(props.getProperty("it.cluster.env.type", ITEnvTypeEnum.DOCKER.name()).toUpperCase());
         mysqlVersions = Splitter.on(",").trimResults().splitToList(props.getOrDefault("it.env.mysql.version", "").toString());
         postgresVersions = Splitter.on(",").trimResults().splitToList(props.getOrDefault("it.env.postgresql.version", "").toString());
+        openGaussVersions = Splitter.on(",").trimResults().splitToList(props.getOrDefault("it.env.opengauss.version", "").toString());
     }
     
     private Properties loadProperties() {

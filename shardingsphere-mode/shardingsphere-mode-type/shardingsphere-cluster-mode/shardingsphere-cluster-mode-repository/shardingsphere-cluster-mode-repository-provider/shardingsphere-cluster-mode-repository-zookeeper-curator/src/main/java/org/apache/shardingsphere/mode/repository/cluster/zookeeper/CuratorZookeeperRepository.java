@@ -268,13 +268,13 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     }
     
     @Override
-    public Lock getGlobalLock(final String lockName) {
-        return internalLockHolder.getGlobalLock(lockName);
+    public Lock getInternalMutexLock(final String lockName) {
+        return internalLockHolder.getInternalMutexLock(lockName);
     }
     
     @Override
-    public Lock getStandardLock(final String lockName) {
-        return internalLockHolder.getStandardLock(lockName);
+    public Lock getInternalReentrantMutexLock(final String lockName) {
+        return internalLockHolder.getInternalReentrantMutexLock(lockName);
     }
     
     @Override

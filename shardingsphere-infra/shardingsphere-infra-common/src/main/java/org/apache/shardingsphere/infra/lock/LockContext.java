@@ -55,18 +55,10 @@ public interface LockContext {
     boolean isLockedDatabase(String databaseName);
     
     /**
-     * Get or create global lock.
+     * Get or create mutex lock.
      *
      * @param lockName lock name
-     * @return global lock
+     * @return mutex lock
      */
-    ShardingSphereLock getGlobalLock(String lockName);
-    
-    /**
-     * Get or create standard lock.
-     *
-     * @param lockName lock name
-     * @return standard lock
-     */
-    ShardingSphereLock getStandardLock(String lockName);
+    ShardingSphereLock getMutexLock(String lockName);
 }

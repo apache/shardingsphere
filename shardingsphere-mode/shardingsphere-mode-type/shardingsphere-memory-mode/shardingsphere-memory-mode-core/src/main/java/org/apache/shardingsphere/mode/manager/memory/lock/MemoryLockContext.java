@@ -41,24 +41,24 @@ public final class MemoryLockContext implements LockContext {
     @Override
     public boolean tryLockWriteDatabase(final String databaseName) {
         Preconditions.checkNotNull(databaseName, "Try lock write database args database name can not be null.");
-        return getGlobalLock(databaseName).tryLock(databaseName);
+        return getMutexLock(databaseName).tryLock(databaseName);
     }
     
     @Override
     public void releaseLockWriteDatabase(final String databaseName) {
         Preconditions.checkNotNull(databaseName, "Release lock write database args database name can not be null.");
-        getGlobalLock(databaseName).releaseLock(databaseName);
+        getMutexLock(databaseName).releaseLock(databaseName);
     }
     
     @Override
     public boolean isLockedDatabase(final String databaseName) {
         Preconditions.checkNotNull(databaseName, "Is locked database args database name can not be null.");
         ShardingSphereLock shardingSphereLock = locks.get(databaseName);
-        return null != shardingSphereLock && shardingSphereLock.isLocked();
+        return null != shardingSphereLock && shardingSphereLock.isLocked(databaseName);
     }
     
     @Override
-    public ShardingSphereLock getGlobalLock(final String lockName) {
+    public ShardingSphereLock getMutexLock(final String lockName) {
         Preconditions.checkNotNull(lockName, "Get global lock args lock name can not be null.");
         ShardingSphereLock result = locks.get(lockName);
         if (null != result) {
@@ -70,24 +70,6 @@ public final class MemoryLockContext implements LockContext {
                 return result;
             }
             result = new ShardingSphereNonReentrantLock(new ReentrantLock());
-            locks.put(lockName, result);
-            return result;
-        }
-    }
-    
-    @Override
-    public ShardingSphereLock getStandardLock(final String lockName) {
-        Preconditions.checkNotNull(lockName, "Get standard lock args lock name can not be null.");
-        ShardingSphereLock result = locks.get(lockName);
-        if (null != result) {
-            return result;
-        }
-        synchronized (locks) {
-            result = locks.get(lockName);
-            if (null != result) {
-                return result;
-            }
-            result = new ShardingSphereReentrantLock(new ReentrantLock());
             locks.put(lockName, result);
             return result;
         }

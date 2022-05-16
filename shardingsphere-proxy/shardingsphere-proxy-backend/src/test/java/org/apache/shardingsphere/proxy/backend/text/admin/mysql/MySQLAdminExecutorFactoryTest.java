@@ -37,14 +37,14 @@ import static org.mockito.Mockito.when;
 
 public final class MySQLAdminExecutorFactoryTest {
     
-    private final MySQLAdminExecutorFactory mySQLAdminExecutorFactory = new MySQLAdminExecutorFactory();
+    private final MySQLAdminExecutorCreator mySQLAdminExecutorFactory = new MySQLAdminExecutorCreator();
     
     @Test
     public void assertNewInstanceWithMySQLShowFunctionStatusStatement() {
         MySQLShowFunctionStatusStatement statement = mock(MySQLShowFunctionStatusStatement.class);
         CommonSQLStatementContext statementContext = mock(CommonSQLStatementContext.class);
         when(statementContext.getSqlStatement()).thenReturn(statement);
-        Optional<DatabaseAdminExecutor> executorOptional = mySQLAdminExecutorFactory.newInstance(statementContext);
+        Optional<DatabaseAdminExecutor> executorOptional = mySQLAdminExecutorFactory.create(statementContext);
         assertTrue(executorOptional.isPresent());
         assertThat(executorOptional.get(), instanceOf(ShowFunctionStatusExecutor.class));
     }
@@ -54,7 +54,7 @@ public final class MySQLAdminExecutorFactoryTest {
         MySQLShowProcedureStatusStatement statement = mock(MySQLShowProcedureStatusStatement.class);
         CommonSQLStatementContext statementContext = mock(CommonSQLStatementContext.class);
         when(statementContext.getSqlStatement()).thenReturn(statement);
-        Optional<DatabaseAdminExecutor> executorOptional = mySQLAdminExecutorFactory.newInstance(statementContext);
+        Optional<DatabaseAdminExecutor> executorOptional = mySQLAdminExecutorFactory.create(statementContext);
         assertTrue(executorOptional.isPresent());
         assertThat(executorOptional.get(), instanceOf(ShowProcedureStatusExecutor.class));
     }
@@ -64,7 +64,7 @@ public final class MySQLAdminExecutorFactoryTest {
         MySQLShowTablesStatement statement = mock(MySQLShowTablesStatement.class);
         CommonSQLStatementContext statementContext = mock(CommonSQLStatementContext.class);
         when(statementContext.getSqlStatement()).thenReturn(statement);
-        Optional<DatabaseAdminExecutor> executorOptional = mySQLAdminExecutorFactory.newInstance(statementContext);
+        Optional<DatabaseAdminExecutor> executorOptional = mySQLAdminExecutorFactory.create(statementContext);
         assertTrue(executorOptional.isPresent());
         assertThat(executorOptional.get(), instanceOf(ShowTablesExecutor.class));
     }

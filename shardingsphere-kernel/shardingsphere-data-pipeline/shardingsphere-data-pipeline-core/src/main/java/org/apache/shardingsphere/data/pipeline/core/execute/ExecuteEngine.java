@@ -40,27 +40,33 @@ import java.util.concurrent.Future;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ExecuteEngine {
     
-    public static final String THREAD_NAME_FORMAT = "Scaling-execute-%d";
+    private static final String SCALING_THREAD_PREFIX = "Scaling-";
+    
+    private static final String SCALING_THREAD_SUFFIX = "-%d";
     
     private final ListeningExecutorService executorService;
     
     /**
      * Create task execute engine instance with cached thread pool.
      *
+     * @param threadName thread name
      * @return task execute engine instance
      */
-    public static ExecuteEngine newCachedThreadInstance() {
-        return new ExecuteEngine(MoreExecutors.listeningDecorator(Executors.newCachedThreadPool(ExecutorThreadFactoryBuilder.build(THREAD_NAME_FORMAT))));
+    public static ExecuteEngine newCachedThreadInstance(final String threadName) {
+        String threadNameFormat = SCALING_THREAD_PREFIX + threadName + SCALING_THREAD_SUFFIX;
+        return new ExecuteEngine(MoreExecutors.listeningDecorator(Executors.newCachedThreadPool(ExecutorThreadFactoryBuilder.build(threadNameFormat))));
     }
     
     /**
      * Create task execute engine instance with fixed thread pool.
      *
      * @param threadNumber thread number
+     * @param threadName thread name
      * @return task execute engine instance
      */
-    public static ExecuteEngine newFixedThreadInstance(final int threadNumber) {
-        return new ExecuteEngine(MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(threadNumber, ExecutorThreadFactoryBuilder.build(THREAD_NAME_FORMAT))));
+    public static ExecuteEngine newFixedThreadInstance(final int threadNumber, final String threadName) {
+        String threadNameFormat = SCALING_THREAD_PREFIX + threadName + SCALING_THREAD_SUFFIX;
+        return new ExecuteEngine(MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(threadNumber, ExecutorThreadFactoryBuilder.build(threadNameFormat))));
     }
     
     /**

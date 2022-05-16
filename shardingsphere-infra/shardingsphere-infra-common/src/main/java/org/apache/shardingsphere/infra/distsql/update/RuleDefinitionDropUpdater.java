@@ -69,6 +69,6 @@ public interface RuleDefinitionDropUpdater<T extends SQLStatement, R extends Rul
      * @return identical data
      */
     default Collection<String> getIdenticalData(Collection<String> currentRules, Collection<String> toBeDroppedRules) {
-        return currentRules.stream().filter(toBeDroppedRules::contains).collect(Collectors.toSet());
+        return currentRules.stream().filter(each -> toBeDroppedRules.stream().anyMatch(each::equalsIgnoreCase)).collect(Collectors.toSet());
     }
 }

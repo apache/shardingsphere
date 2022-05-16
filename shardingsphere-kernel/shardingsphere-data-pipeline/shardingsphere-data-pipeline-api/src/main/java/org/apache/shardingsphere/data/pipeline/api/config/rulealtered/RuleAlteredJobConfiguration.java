@@ -17,62 +17,46 @@
 
 package org.apache.shardingsphere.data.pipeline.api.config.rulealtered;
 
-import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.job.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
-import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.job.JobSubType;
-import org.apache.shardingsphere.data.pipeline.api.job.JobType;
-import org.apache.shardingsphere.data.pipeline.api.job.RuleAlteredJobId;
-import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredJobConfigurationPreparerFactory;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 /**
- * Scaling job configuration.
+ * Rule altered job configuration.
  */
-@NoArgsConstructor
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Getter
-@Setter
 @Slf4j
-// TODO share for totally new scenario
-// TODO rename to Yaml, add config class
 public final class RuleAlteredJobConfiguration implements PipelineJobConfiguration {
     
-    private String jobId;
+    private final String jobId;
     
-    private String databaseName;
+    private final String databaseName;
     
-    // TODO it should not put in jobConfig since it's mutable
-    private Integer jobShardingItem;
+    private final Integer activeVersion;
+    
+    private final Integer newVersion;
+    
+    private final String sourceDatabaseType;
+    
+    private final String targetDatabaseType;
+    
+    private final PipelineDataSourceConfiguration source;
+    
+    private final PipelineDataSourceConfiguration target;
     
     /**
      * Map{altered rule yaml class name, re-shard needed table names}.
      */
-    private Map<String, List<String>> alteredRuleYamlClassNameTablesMap;
+    private final Map<String, List<String>> alteredRuleYamlClassNameTablesMap;
     
-    private Integer activeVersion;
-    
-    private Integer newVersion;
-    
-    private YamlPipelineDataSourceConfiguration source;
-    
-    private YamlPipelineDataSourceConfiguration target;
-    
-    private int concurrency = 3;
-    
-    private int retryTimes = 3;
+    private final String logicTables;
     
     /**
      * Collection of each logic table's first data node.
@@ -81,44 +65,13 @@ public final class RuleAlteredJobConfiguration implements PipelineJobConfigurati
      * then value may be: {@code t_order:ds_0.t_order_0|t_order_item:ds_0.t_order_item_0}.
      * </p>
      */
-    private String tablesFirstDataNodes;
+    private final String tablesFirstDataNodes;
     
-    private List<String> jobShardingDataNodes;
+    private final List<String> jobShardingDataNodes;
     
-    private String logicTables;
+    private final int concurrency;
     
-    // TODO shardingSize should be configurable
-    private int shardingSize = 1000 * 10000;
-    
-    private String sourceDatabaseType;
-    
-    private String targetDatabaseType;
-    
-    /**
-     * Set source.
-     *
-     * @param source source configuration
-     */
-    public void setSource(final YamlPipelineDataSourceConfiguration source) {
-        checkParameters(source);
-        this.source = source;
-    }
-    
-    /**
-     * Set target.
-     *
-     * @param target target configuration
-     */
-    public void setTarget(final YamlPipelineDataSourceConfiguration target) {
-        checkParameters(target);
-        this.target = target;
-    }
-    
-    private void checkParameters(final YamlPipelineDataSourceConfiguration yamlConfig) {
-        Preconditions.checkNotNull(yamlConfig);
-        Preconditions.checkNotNull(yamlConfig.getType());
-        Preconditions.checkNotNull(yamlConfig.getParameter());
-    }
+    private final int retryTimes;
     
     /**
      * Get job sharding count.
@@ -138,46 +91,11 @@ public final class RuleAlteredJobConfiguration implements PipelineJobConfigurati
         return Splitter.on(',').splitToList(logicTables);
     }
     
-    /**
-     * Build handle configuration.
-     */
-    public void buildHandleConfig() {
-        if (null == getJobShardingDataNodes()) {
-            RuleAlteredJobConfigurationPreparerFactory.getInstance().extendJobConfiguration(this);
-        }
-        if (null == jobId) {
-            jobId = generateJobId();
-        }
-        if (Strings.isNullOrEmpty(getSourceDatabaseType())) {
-            PipelineDataSourceConfiguration sourceDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(source.getType(), source.getParameter());
-            setSourceDatabaseType(sourceDataSourceConfig.getDatabaseType().getType());
-        }
-        if (Strings.isNullOrEmpty(getTargetDatabaseType())) {
-            PipelineDataSourceConfiguration targetDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(target.getType(), target.getParameter());
-            setTargetDatabaseType(targetDataSourceConfig.getDatabaseType().getType());
-        }
-        if (null == jobShardingItem) {
-            jobShardingItem = 0;
-        }
-    }
-    
-    private String generateJobId() {
-        RuleAlteredJobId jobId = new RuleAlteredJobId();
-        // TODO type, subTypes
-        jobId.setType(JobType.RULE_ALTERED.getValue());
-        jobId.setFormatVersion(RuleAlteredJobId.CURRENT_VERSION);
-        jobId.setSubTypes(Collections.singletonList(JobSubType.SCALING.getValue()));
-        jobId.setCurrentMetadataVersion(activeVersion);
-        jobId.setNewMetadataVersion(newVersion);
-        jobId.setDatabaseName(databaseName);
-        return jobId.marshal();
-    }
-    
     @Override
     public String toString() {
         return "RuleAlteredJobConfiguration{"
                 + "jobId='" + jobId + '\'' + ", databaseName='" + databaseName + '\''
-                + ", activeVersion=" + activeVersion + ", newVersion=" + newVersion + ", shardingSize=" + shardingSize
+                + ", activeVersion=" + activeVersion + ", newVersion=" + newVersion
                 + ", sourceDatabaseType='" + sourceDatabaseType + '\'' + ", targetDatabaseType='" + targetDatabaseType + '\''
                 + '}';
     }

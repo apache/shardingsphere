@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.spring.boot;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Sets;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
@@ -52,7 +50,10 @@ import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -95,7 +96,7 @@ public class SpringBootStarterTest {
     }
     
     private void assertShardingRule(final ShardingRule actual) {
-        assertThat(actual.getDataSourceNames(), is(Sets.newHashSet("ds0", "ds1")));
+        assertThat(actual.getDataSourceNames(), is(new HashSet<>(Arrays.asList("ds0", "ds1"))));
         InlineShardingAlgorithm databaseShardingAlgorithm = (InlineShardingAlgorithm) actual.getShardingAlgorithms().get("databaseShardingAlgorithm");
         assertThat(databaseShardingAlgorithm.getProps().getProperty("algorithm-expression"), is("ds$->{user_id % 2}"));
         InlineShardingAlgorithm orderTableShardingAlgorithm = (InlineShardingAlgorithm) actual.getShardingAlgorithms().get("orderTableShardingAlgorithm");
@@ -114,9 +115,16 @@ public class SpringBootStarterTest {
         assertThat(actual.getLogicTable(), is("t_order"));
         Collection<DataNode> dataNodes = Arrays.asList(new DataNode("ds0.t_order_0"), new DataNode("ds0.t_order_1"), new DataNode("ds1.t_order_0"), new DataNode("ds1.t_order_1"));
         assertThat(actual.getActualDataNodes(), is(dataNodes));
-        assertThat(actual.getActualDatasourceNames(), is(Sets.newHashSet("ds0", "ds1")));
+        assertThat(actual.getActualDatasourceNames(), is(new HashSet<>(Arrays.asList("ds0", "ds1"))));
         assertThat(actual.getDataNodeGroups(), is(DataNodeUtil.getDataNodeGroups(dataNodes)));
-        assertThat(actual.getDatasourceToTablesMap(), is(ImmutableMap.of("ds1", Sets.newHashSet("t_order_0", "t_order_1"), "ds0", Sets.newHashSet("t_order_0", "t_order_1"))));
+        assertThat(actual.getDatasourceToTablesMap(), is(getExpectedDatasourceToTablesMap()));
+    }
+    
+    private Map<String, Set<String>> getExpectedDatasourceToTablesMap() {
+        Map<String, Set<String>> result = new HashMap<>(2, 1);
+        result.put("ds0", new HashSet<>(Arrays.asList("t_order_0", "t_order_1")));
+        result.put("ds1", new HashSet<>(Arrays.asList("t_order_0", "t_order_1")));
+        return result;
     }
     
     private void assertReadwriteSplittingRule(final ReadwriteSplittingRule actual) {
