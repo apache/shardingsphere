@@ -33,6 +33,8 @@ import org.apache.shardingsphere.mode.metadata.persist.service.impl.PropertiesPe
 import org.apache.shardingsphere.mode.metadata.persist.service.impl.DatabaseRulePersistService;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
+import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
+import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,12 +52,16 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Properties;
 import java.util.stream.Collectors;
+import java.util.Properties;
+import java.util.Optional;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class MetaDataPersistServiceTest {
@@ -164,4 +170,31 @@ public final class MetaDataPersistServiceTest {
         Map<String, DataSource> resultEffectiveDataSources = metaDataPersistService.getEffectiveDataSources("foo_db", databaseConfigs);
         assertTrue(resultEffectiveDataSources.isEmpty());
     }
+    
+    @Test
+    public void assertPersistTransactionRule() {
+        initGlobalRulePersistService();
+        Properties properties = createTransactionProperties();
+        metaDataPersistService.persistTransactionRule(properties, true);
+        Collection<RuleConfiguration> ruleConfigs = globalRuleService.load();
+        Optional<RuleConfiguration> ruleConfig = ruleConfigs.stream().filter(each -> each instanceof TransactionRuleConfiguration).findFirst();
+        assertThat(ruleConfig.get(), is(createAssertTransactionRuleConfiguration()));
+    }
+    
+    private Properties createTransactionProperties() {
+        Properties result = new Properties();
+        result.setProperty("type", TransactionType.LOCAL.name());
+        return result;
+    }
+    
+    private void initGlobalRulePersistService() {
+        RuleConfiguration ruleConfiguration = new TransactionRuleConfiguration(TransactionType.LOCAL.name(), null, new Properties());
+        when(globalRuleService.load()).thenReturn(Collections.singleton(ruleConfiguration));
+    }
+    
+    private RuleConfiguration createAssertTransactionRuleConfiguration() {
+        RuleConfiguration result = new TransactionRuleConfiguration(TransactionType.LOCAL.name(), null, createTransactionProperties());
+        return result;
+    }
+    
 }
