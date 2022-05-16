@@ -153,9 +153,9 @@ public final class ContextManager implements AutoCloseable {
         if (null != metaDataContexts.getMetaData(databaseName).getSchemaByName(schemaName)) {
             return;
         }
-        FederationDatabaseMetaData databaseMetaData = metaDataContexts.getOptimizerContext().getFederationMetaData().getDatabases().get(databaseName);
-        databaseMetaData.putTableMetadata(schemaName, new TableMetaData());
-        metaDataContexts.getOptimizerContext().getPlannerContexts().put(databaseName, OptimizerPlannerContextFactory.create(databaseMetaData));
+        FederationDatabaseMetaData federationDatabaseMetaData = metaDataContexts.getOptimizerContext().getFederationMetaData().getDatabases().get(databaseName);
+        federationDatabaseMetaData.putTableMetadata(schemaName, new TableMetaData());
+        metaDataContexts.getOptimizerContext().getPlannerContexts().put(databaseName, OptimizerPlannerContextFactory.create(federationDatabaseMetaData));
         metaDataContexts.getMetaDataMap().get(databaseName).getSchemas().put(schemaName, new ShardingSphereSchema());
     }
     
