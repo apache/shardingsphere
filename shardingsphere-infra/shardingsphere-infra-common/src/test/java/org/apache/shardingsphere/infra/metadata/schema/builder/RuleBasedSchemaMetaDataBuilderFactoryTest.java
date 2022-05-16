@@ -27,10 +27,7 @@ import java.util.Collections;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public final class RuleBasedSchemaMetaDataBuilderFactoryTest {
     
@@ -39,9 +36,6 @@ public final class RuleBasedSchemaMetaDataBuilderFactoryTest {
     public void assertGetInstances() {
         CommonFixtureRule rule = new CommonFixtureRule();
         Map<ShardingSphereRule, RuleBasedSchemaMetaDataBuilder> actual = RuleBasedSchemaMetaDataBuilderFactory.getInstances(Collections.singleton(rule));
-        assertNotNull(actual);
-        assertFalse(actual.isEmpty());
-        assertTrue(actual.containsKey(rule));
         assertThat(actual.get(rule), instanceOf(CommonFixtureSchemaMetaDataBuilder.class));
     }
 }
