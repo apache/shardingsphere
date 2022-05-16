@@ -19,7 +19,7 @@ package org.apache.shardingsphere.encrypt.rewrite.token.pojo;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.stream.Collectors;
+import java.util.StringJoiner;
 
 /**
  * Parameter assignment token for encrypt.
@@ -43,6 +43,10 @@ public final class EncryptParameterAssignmentToken extends EncryptAssignmentToke
     
     @Override
     public String toString() {
-        return columnNames.stream().map(each -> each + " = ?").collect(Collectors.joining(", "));
+        StringJoiner result = new StringJoiner(", ");
+        for (String each : columnNames) {
+            result.add(each + " = ?");
+        }
+        return result.toString();
     }
 }
