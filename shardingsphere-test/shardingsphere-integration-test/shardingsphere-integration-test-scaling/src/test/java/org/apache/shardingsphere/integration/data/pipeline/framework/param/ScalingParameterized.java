@@ -31,5 +31,5 @@ public final class ScalingParameterized {
     
     private String dockerImageName;
     
-    private String parentPath;
+    private String scenario;
 }

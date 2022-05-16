@@ -15,54 +15,62 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.data.pipeline.cases.mysql;
+package org.apache.shardingsphere.integration.data.pipeline.cases.base;
 
+import lombok.Getter;
 import lombok.SneakyThrows;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.integration.data.pipeline.cases.BaseITCase;
 import org.apache.shardingsphere.integration.data.pipeline.cases.command.ExtraSQLCommand;
-import org.apache.shardingsphere.integration.data.pipeline.cases.postgresql.BasePostgreSQLITCase;
+import org.apache.shardingsphere.integration.data.pipeline.cases.common.SimpleIncrementTaskRunnable;
+import org.apache.shardingsphere.integration.data.pipeline.framework.helper.ScalingTableSQLHelper;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
-import org.apache.shardingsphere.integration.data.pipeline.util.TableCrudUtil;
+import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
 import javax.xml.bind.JAXB;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Objects;
 import java.util.Properties;
 
 public abstract class BaseMySQLITCase extends BaseITCase {
     
-    protected static final DatabaseType DATABASE = new MySQLDatabaseType();
+    protected static final DatabaseType DATABASE_TYPE = new MySQLDatabaseType();
     
     private final ExtraSQLCommand extraSQLCommand;
     
+    @Getter
+    private final ScalingTableSQLHelper sqlHelper;
+    
     public BaseMySQLITCase(final ScalingParameterized parameterized) {
         super(parameterized);
-        extraSQLCommand = JAXB.unmarshal(Objects.requireNonNull(BasePostgreSQLITCase.class.getClassLoader().getResource(parameterized.getParentPath() + "/sql.xml")), ExtraSQLCommand.class);
-        initTableAndData();
+        extraSQLCommand = JAXB.unmarshal(BaseMySQLITCase.class.getClassLoader().getResource(parameterized.getScenario()), ExtraSQLCommand.class);
+        sqlHelper = new ScalingTableSQLHelper(DATABASE_TYPE, extraSQLCommand, getJdbcTemplate());
     }
     
-    @SneakyThrows({SQLException.class, InterruptedException.class})
-    protected void initTableAndData() {
+    @SneakyThrows(SQLException.class)
+    protected void addResource() {
         Properties queryProps = createQueryProperties();
         // TODO if use jdbcurl like "jdbc:mysql:localhost:3307/sharding_db", will throw exception show "Datasource or ShardingSphere rule does not exist"
         try (Connection connection = DriverManager.getConnection(JDBC_URL_APPENDER.appendQueryProperties(getComposedContainer().getProxyJdbcUrl(""), queryProps), "root", "root")) {
             connection.createStatement().execute("USE sharding_db");
             addResource(connection);
         }
-        initShardingRule();
-        setIncreaseTaskThread(new Thread(new MySQLIncrementTaskRunnable(getJdbcTemplate(), extraSQLCommand)));
-        getJdbcTemplate().execute(extraSQLCommand.getCreateTableOrder());
-        getJdbcTemplate().execute(extraSQLCommand.getCreateTableOrderItem());
+    }
+    
+    protected void startIncrementTask(final KeyGenerateAlgorithm keyGenerateAlgorithm) {
+        setIncreaseTaskThread(new Thread(new SimpleIncrementTaskRunnable(getJdbcTemplate(), extraSQLCommand, keyGenerateAlgorithm)));
         getIncreaseTaskThread().start();
-        Pair<List<Object[]>, List<Object[]>> dataPair = TableCrudUtil.generateMySQLInsertDataList(3000);
-        getJdbcTemplate().batchUpdate(extraSQLCommand.getFullInsertOrder(), dataPair.getLeft());
-        getJdbcTemplate().batchUpdate(extraSQLCommand.getInsertOrderItem(), dataPair.getRight());
+    }
+    
+    /**
+     * Add no use table, to test part of the table.
+     */
+    protected void createNoUseTable() {
+        getJdbcTemplate().execute("CREATE SHARDING TABLE RULE no_use (RESOURCES(ds_0, ds_1), SHARDING_COLUMN=sharding_id, TYPE(NAME=MOD,PROPERTIES('sharding-count'=4)))");
+        getJdbcTemplate().execute("CREATE TABLE no_use(id int(11) NOT NULL,sharding_id int(11) NOT NULL, PRIMARY KEY (id))");
+        getJdbcTemplate().execute("INSERT INTO no_use(id,sharding_id) values (1,1)");
+        getJdbcTemplate().execute("INSERT INTO no_use(id,sharding_id) values (2,2)");
     }
     
     @Override

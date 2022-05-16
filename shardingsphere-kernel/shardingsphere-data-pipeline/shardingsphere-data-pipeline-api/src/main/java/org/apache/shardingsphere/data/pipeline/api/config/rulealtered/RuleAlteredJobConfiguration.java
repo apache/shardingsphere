@@ -54,9 +54,6 @@ public final class RuleAlteredJobConfiguration implements PipelineJobConfigurati
     
     private String databaseName;
     
-    // TODO it should not put in jobConfig since it's mutable
-    private Integer jobShardingItem;
-    
     /**
      * Map{altered rule yaml class name, re-shard needed table names}.
      */
@@ -86,9 +83,6 @@ public final class RuleAlteredJobConfiguration implements PipelineJobConfigurati
     private List<String> jobShardingDataNodes;
     
     private String logicTables;
-    
-    // TODO shardingSize should be configurable
-    private int shardingSize = 1000 * 10000;
     
     private String sourceDatabaseType;
     
@@ -156,9 +150,6 @@ public final class RuleAlteredJobConfiguration implements PipelineJobConfigurati
             PipelineDataSourceConfiguration targetDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(target.getType(), target.getParameter());
             setTargetDatabaseType(targetDataSourceConfig.getDatabaseType().getType());
         }
-        if (null == jobShardingItem) {
-            jobShardingItem = 0;
-        }
     }
     
     private String generateJobId() {
@@ -177,7 +168,7 @@ public final class RuleAlteredJobConfiguration implements PipelineJobConfigurati
     public String toString() {
         return "RuleAlteredJobConfiguration{"
                 + "jobId='" + jobId + '\'' + ", databaseName='" + databaseName + '\''
-                + ", activeVersion=" + activeVersion + ", newVersion=" + newVersion + ", shardingSize=" + shardingSize
+                + ", activeVersion=" + activeVersion + ", newVersion=" + newVersion
                 + ", sourceDatabaseType='" + sourceDatabaseType + '\'' + ", targetDatabaseType='" + targetDatabaseType + '\''
                 + '}';
     }

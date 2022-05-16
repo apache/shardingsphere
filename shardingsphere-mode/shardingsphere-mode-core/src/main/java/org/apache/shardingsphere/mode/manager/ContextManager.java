@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.manager;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +24,6 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
@@ -414,7 +412,7 @@ public final class ContextManager implements AutoCloseable {
      */
     public void reloadMetaData(final String databaseName, final String schemaName, final String tableName) {
         try {
-            SchemaBuilderMaterials materials = new SchemaBuilderMaterials(
+            SchemaBuilderMaterials materials = new SchemaBuilderMaterials(metaDataContexts.getMetaData(databaseName).getFrontendDatabaseType(),
                     metaDataContexts.getMetaData(databaseName).getResource().getDatabaseType(), metaDataContexts.getMetaData(databaseName).getResource().getDataSources(),
                     metaDataContexts.getMetaData(databaseName).getRuleMetaData().getRules(), metaDataContexts.getProps(), schemaName);
             loadTableMetaData(databaseName, schemaName, tableName, materials);
@@ -433,7 +431,7 @@ public final class ContextManager implements AutoCloseable {
      */
     public void reloadMetaData(final String databaseName, final String schemaName, final String tableName, final String dataSourceName) {
         try {
-            SchemaBuilderMaterials materials = new SchemaBuilderMaterials(
+            SchemaBuilderMaterials materials = new SchemaBuilderMaterials(metaDataContexts.getMetaData(databaseName).getFrontendDatabaseType(),
                     metaDataContexts.getMetaData(databaseName).getResource().getDatabaseType(), Collections.singletonMap(dataSourceName,
                             metaDataContexts.getMetaData(databaseName).getResource().getDataSources().get(dataSourceName)),
                     metaDataContexts.getMetaData(databaseName).getRuleMetaData().getRules(), metaDataContexts.getProps(), schemaName);
@@ -453,10 +451,11 @@ public final class ContextManager implements AutoCloseable {
     }
     
     private Map<String, ShardingSphereSchema> loadActualSchema(final String databaseName, final String schemaName) throws SQLException {
-        Map<String, DataSource> dataSourceMap = metaDataContexts.getMetaData(databaseName).getResource().getDataSources();
+        ShardingSphereMetaData metaData = metaDataContexts.getMetaData(databaseName);
+        Map<String, DataSource> dataSourceMap = metaData.getResource().getDataSources();
         Collection<ShardingSphereRule> rules = metaDataContexts.getMetaDataMap().get(databaseName).getRuleMetaData().getRules();
         DatabaseType databaseType = DatabaseTypeEngine.getDatabaseType(dataSourceMap.values());
-        return SchemaLoader.load(schemaName, databaseType, dataSourceMap, rules, metaDataContexts.getProps().getProps());
+        return SchemaLoader.load(schemaName, metaData.getFrontendDatabaseType(), databaseType, dataSourceMap, rules, metaDataContexts.getProps().getProps());
     }
     
     private Collection<DataSource> getPendingClosedDataSources(final String databaseName, final Map<String, DataSourceProperties> dataSourcePropsMap) {
@@ -532,7 +531,7 @@ public final class ContextManager implements AutoCloseable {
         Optional<MetaDataPersistService> metaDataPersistService = metaDataContexts.getMetaDataPersistService();
         metaDataPersistService.ifPresent(optional -> persistTransactionConfiguration(databaseConfig, optional));
         MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(metaDataContexts.getGlobalRuleMetaData().getConfigurations(), props);
-        metaDataContextsBuilder.addDatabase(originalMetaData.getDatabaseName(), originalMetaData.getResource().getDatabaseType(), databaseConfig, props);
+        metaDataContextsBuilder.addDatabase(originalMetaData.getDatabaseName(), originalMetaData.getFrontendDatabaseType(), originalMetaData.getResource().getDatabaseType(), databaseConfig, props);
         metaDataContexts.getMetaDataPersistService().ifPresent(optional -> optional.getSchemaMetaDataService()
                 .persistTables(originalMetaData.getDatabaseName(), originalMetaData.getDatabaseName(), metaDataContextsBuilder.getSchemaMap(originalMetaData.getDatabaseName())));
         return metaDataContextsBuilder.build(metaDataContexts.getMetaDataPersistService().orElse(null));
@@ -549,7 +548,7 @@ public final class ContextManager implements AutoCloseable {
     private MetaDataContexts buildChangedMetaDataContext(final ShardingSphereMetaData originalMetaData, final Collection<RuleConfiguration> ruleConfigs) throws SQLException {
         Properties props = metaDataContexts.getProps().getProps();
         MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(metaDataContexts.getGlobalRuleMetaData().getConfigurations(), props);
-        metaDataContextsBuilder.addDatabase(originalMetaData.getDatabaseName(), originalMetaData.getResource().getDatabaseType(),
+        metaDataContextsBuilder.addDatabase(originalMetaData.getDatabaseName(), originalMetaData.getFrontendDatabaseType(), originalMetaData.getResource().getDatabaseType(),
                 new DataSourceProvidedDatabaseConfiguration(originalMetaData.getResource().getDataSources(), ruleConfigs), props);
         metaDataContexts.getMetaDataPersistService().ifPresent(optional -> optional.getSchemaMetaDataService()
                 .persistTables(originalMetaData.getDatabaseName(), originalMetaData.getDatabaseName(), metaDataContextsBuilder.getSchemaMap(originalMetaData.getDatabaseName())));
@@ -562,9 +561,11 @@ public final class ContextManager implements AutoCloseable {
         Map<String, DataSource> changedDataSources = buildChangedDataSources(originalMetaData, newDataSourceProps);
         Properties props = metaDataContexts.getProps().getProps();
         MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(metaDataContexts.getGlobalRuleMetaData().getConfigurations(), props);
-        metaDataContextsBuilder.addDatabase(originalMetaData.getDatabaseName(), originalMetaData.getResource().getDatabaseType(), new DataSourceProvidedDatabaseConfiguration(
-                getNewDataSources(originalMetaData.getResource().getDataSources(), getAddedDataSources(originalMetaData, newDataSourceProps), changedDataSources, deletedDataSources),
-                originalMetaData.getRuleMetaData().getConfigurations()), props);
+        metaDataContextsBuilder.addDatabase(originalMetaData.getDatabaseName(), originalMetaData.getFrontendDatabaseType(), originalMetaData.getResource().getDatabaseType(),
+                new DataSourceProvidedDatabaseConfiguration(
+                        getNewDataSources(originalMetaData.getResource().getDataSources(), getAddedDataSources(originalMetaData, newDataSourceProps), changedDataSources, deletedDataSources),
+                        originalMetaData.getRuleMetaData().getConfigurations()),
+                props);
         metaDataContexts.getMetaDataPersistService().ifPresent(optional -> optional.getSchemaMetaDataService()
                 .persistTables(originalMetaData.getDatabaseName(), originalMetaData.getDatabaseName(), metaDataContextsBuilder.getSchemaMap(originalMetaData.getDatabaseName())));
         return metaDataContextsBuilder.build(metaDataContexts.getMetaDataPersistService().orElse(null));
@@ -576,7 +577,7 @@ public final class ContextManager implements AutoCloseable {
         Map<String, DataSource> changedDataSources = buildChangedDataSources(originalMetaData, newDataSourceProps);
         Properties props = metaDataContexts.getProps().getProps();
         MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(metaDataContexts.getGlobalRuleMetaData().getConfigurations(), props);
-        metaDataContextsBuilder.addDatabase(originalMetaData.getDatabaseName(), originalMetaData.getResource().getDatabaseType(),
+        metaDataContextsBuilder.addDatabase(originalMetaData.getDatabaseName(), originalMetaData.getFrontendDatabaseType(), originalMetaData.getResource().getDatabaseType(),
                 new DataSourceProvidedDatabaseConfiguration(getNewDataSources(originalMetaData.getResource().getDataSources(),
                         getAddedDataSources(originalMetaData, newDataSourceProps), changedDataSources, deletedDataSources), ruleConfigs),
                 props);
@@ -636,10 +637,10 @@ public final class ContextManager implements AutoCloseable {
     private MetaDataContexts buildNewMetaDataContext(final String databaseName) throws SQLException {
         ConfigurationProperties configurationProps = metaDataContexts.getProps();
         MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(metaDataContexts.getGlobalRuleMetaData().getConfigurations(), configurationProps.getProps());
-        metaDataContextsBuilder.addDatabase(databaseName, Strings.isNullOrEmpty(configurationProps.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE))
-                ? DatabaseTypeEngine.getDefaultDatabaseType()
-                : DatabaseTypeEngine.getTrunkDatabaseType(configurationProps.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE)),
-                new DataSourceProvidedDatabaseConfiguration(new HashMap<>(), new LinkedList<>()), configurationProps.getProps());
+        DatabaseType frontendDatabaseType = DatabaseTypeEngine.getFrontendDatabaseType(Collections.emptyMap(), configurationProps);
+        DatabaseType backendDatabaseType = DatabaseTypeEngine.getBackendDatabaseType(Collections.emptyMap());
+        metaDataContextsBuilder.addDatabase(databaseName,
+                frontendDatabaseType, backendDatabaseType, new DataSourceProvidedDatabaseConfiguration(new HashMap<>(), new LinkedList<>()), configurationProps.getProps());
         return metaDataContextsBuilder.build(metaDataContexts.getMetaDataPersistService().orElse(null));
     }
     

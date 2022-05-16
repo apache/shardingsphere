@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.core.util;
 
-import com.google.common.collect.ImmutableMap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
@@ -47,7 +46,7 @@ public final class JobConfigurationBuilder {
     public static RuleAlteredJobConfiguration createJobConfiguration() {
         RuleAlteredJobConfiguration result = new RuleAlteredJobConfiguration();
         result.setDatabaseName("logic_db");
-        result.setAlteredRuleYamlClassNameTablesMap(ImmutableMap.of(YamlShardingRuleConfiguration.class.getName(), Collections.singletonList("t_order")));
+        result.setAlteredRuleYamlClassNameTablesMap(Collections.singletonMap(YamlShardingRuleConfiguration.class.getName(), Collections.singletonList("t_order")));
         result.setActiveVersion(0);
         result.setNewVersion(1);
         // TODO add autoTables in config file

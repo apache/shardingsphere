@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.api.config.rulealtered;
 
-import com.google.common.collect.Lists;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -43,6 +42,6 @@ public final class RuleAlteredJobConfigurationTest {
     public void assertSplitLogicTableNames() {
         RuleAlteredJobConfiguration jobConfig = new RuleAlteredJobConfiguration();
         jobConfig.setLogicTables("foo_tbl,bar_tbl");
-        assertThat(jobConfig.splitLogicTableNames(), is(Lists.newArrayList("foo_tbl", "bar_tbl")));
+        assertThat(jobConfig.splitLogicTableNames(), is(Arrays.asList("foo_tbl", "bar_tbl")));
     }
 }

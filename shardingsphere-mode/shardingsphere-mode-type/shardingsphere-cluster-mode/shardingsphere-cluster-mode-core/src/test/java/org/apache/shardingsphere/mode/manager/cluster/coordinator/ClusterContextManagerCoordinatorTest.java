@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
@@ -151,6 +150,7 @@ public final class ClusterContextManagerCoordinatorTest {
         ShardingSphereResource resource = mock(ShardingSphereResource.class);
         when(resource.getDatabaseType()).thenReturn(new MySQLDatabaseType());
         when(metaData.getResource()).thenReturn(resource);
+        when(metaData.getFrontendDatabaseType()).thenReturn(new MySQLDatabaseType());
         when(metaData.getSchemaByName(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
         when(metaData.getRuleMetaData().getRules()).thenReturn(new LinkedList<>());
         when(metaData.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
@@ -388,8 +388,8 @@ public final class ClusterContextManagerCoordinatorTest {
     
     private Map<String, DataSource> initContextManager() {
         Map<String, DataSource> result = getDataSourceMap();
-        ShardingSphereResource resource = new ShardingSphereResource(result, mock(DataSourcesMetaData.class), mock(CachedDatabaseMetaData.class), mock(DatabaseType.class));
-        ShardingSphereMetaData mockedMetaData = new ShardingSphereMetaData("db", mock(DatabaseType.class), resource, mock(ShardingSphereRuleMetaData.class), Collections.emptyMap());
+        ShardingSphereResource resource = new ShardingSphereResource(result, mock(DataSourcesMetaData.class), mock(CachedDatabaseMetaData.class), new MySQLDatabaseType());
+        ShardingSphereMetaData mockedMetaData = new ShardingSphereMetaData("db", new MySQLDatabaseType(), resource, mock(ShardingSphereRuleMetaData.class), Collections.emptyMap());
         contextManager.getMetaDataContexts().getMetaDataMap().put("db", mockedMetaData);
         return result;
     }

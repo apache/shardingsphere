@@ -54,6 +54,6 @@ public final class TestStatementContext implements SQLStatementContext<SQLStatem
     
     @Override
     public DatabaseType getDatabaseType() {
-        return DatabaseTypeEngine.getDefaultDatabaseType();
+        return DatabaseTypeEngine.getDatabaseType("MySQL");
     }
 }

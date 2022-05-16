@@ -274,11 +274,12 @@ public final class RuleAlteredJobWorker {
      * Build task configuration.
      *
      * @param jobConfig job configuration
+     * @param jobShardingItem job sharding item
      * @param onRuleAlteredActionConfig action configuration
      * @return task configuration
      */
-    public static TaskConfiguration buildTaskConfig(final RuleAlteredJobConfiguration jobConfig, final OnRuleAlteredActionConfiguration onRuleAlteredActionConfig) {
-        return RuleAlteredJobConfigurationPreparerFactory.getInstance().createTaskConfiguration(jobConfig, onRuleAlteredActionConfig);
+    public static TaskConfiguration buildTaskConfig(final RuleAlteredJobConfiguration jobConfig, final int jobShardingItem, final OnRuleAlteredActionConfiguration onRuleAlteredActionConfig) {
+        return RuleAlteredJobConfigurationPreparerFactory.getInstance().createTaskConfiguration(jobConfig, jobShardingItem, onRuleAlteredActionConfig);
     }
     
     private boolean hasUncompletedJobOfSameDatabaseName(final String databaseName) {

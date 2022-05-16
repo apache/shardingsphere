@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mode.repository.standalone.h2;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepository;
@@ -30,6 +29,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -115,8 +115,7 @@ public final class H2Repository implements StandalonePersistRepository {
     public void persist(final String key, final String value) {
         // Single quotation marks are the keywords executed by H2. Replace with double quotation marks.
         String insensitiveValue = value.replace("'", "\"");
-        String[] paths = Lists.newArrayList(key.split(SEPARATOR))
-                .stream().filter(each -> !Strings.isNullOrEmpty(each)).toArray(String[]::new);
+        String[] paths = Arrays.stream(key.split(SEPARATOR)).filter(each -> !Strings.isNullOrEmpty(each)).toArray(String[]::new);
         String tempPrefix = "";
         String parent = SEPARATOR;
         try {

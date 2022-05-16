@@ -53,7 +53,7 @@ public final class DataConsistencyCheckerTest {
     }
     
     private RuleAlteredJobConfiguration createJobConfiguration() throws SQLException {
-        RuleAlteredJobContext jobContext = new RuleAlteredJobContext(JobConfigurationBuilder.createJobConfiguration());
+        RuleAlteredJobContext jobContext = new RuleAlteredJobContext(JobConfigurationBuilder.createJobConfiguration(), 0);
         initTableData(jobContext.getTaskConfig().getDumperConfig().getDataSourceConfig());
         initTableData(jobContext.getTaskConfig().getImporterConfig().getDataSourceConfig());
         return jobContext.getJobConfig();

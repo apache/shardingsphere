@@ -109,6 +109,7 @@ public final class MySQLComQueryPacketExecutorTest {
             ProxyContext mockedProxyContext = mock(ProxyContext.class, RETURNS_DEEP_STUBS);
             mockedStatic.when(ProxyContext::getInstance).thenReturn(mockedProxyContext);
             when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData("db_name").getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+            when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData("db_name").getFrontendDatabaseType()).thenReturn(new MySQLDatabaseType());
             when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(SQLParserRule.class))
                     .thenReturn(Optional.of(new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build())));
             when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE)).thenReturn(1);

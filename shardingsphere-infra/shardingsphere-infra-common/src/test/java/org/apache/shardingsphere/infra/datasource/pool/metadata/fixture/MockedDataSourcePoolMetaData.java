@@ -28,9 +28,7 @@ public final class MockedDataSourcePoolMetaData implements DataSourcePoolMetaDat
     
     @Override
     public Map<String, Object> getDefaultProperties() {
-        Map<String, Object> result = new HashMap<>(1, 1);
-        result.put("maxPoolSize", 100);
-        return result;
+        return Collections.singletonMap("maxPoolSize", 100);
     }
     
     @Override

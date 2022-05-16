@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.metadata.schema;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
@@ -35,13 +34,13 @@ public final class ShardingSphereSchemaTest {
     
     @Test
     public void assertGetAllTableNames() {
-        assertThat(new ShardingSphereSchema(ImmutableMap.of("tbl", mock(TableMetaData.class))).getAllTableNames(), is(Sets.newHashSet("tbl")));
+        assertThat(new ShardingSphereSchema(Collections.singletonMap("tbl", mock(TableMetaData.class))).getAllTableNames(), is(Sets.newHashSet("tbl")));
     }
     
     @Test
     public void assertGet() {
         TableMetaData tableMetaData = mock(TableMetaData.class);
-        assertThat(new ShardingSphereSchema(ImmutableMap.of("tbl", tableMetaData)).get("tbl"), is(tableMetaData));
+        assertThat(new ShardingSphereSchema(Collections.singletonMap("tbl", tableMetaData)).get("tbl"), is(tableMetaData));
     }
     
     @Test
@@ -54,31 +53,31 @@ public final class ShardingSphereSchemaTest {
     
     @Test
     public void assertRemove() {
-        ShardingSphereSchema actual = new ShardingSphereSchema(ImmutableMap.of("tbl", mock(TableMetaData.class)));
+        ShardingSphereSchema actual = new ShardingSphereSchema(Collections.singletonMap("tbl", mock(TableMetaData.class)));
         actual.remove("tbl");
         assertNull(actual.get("tbl"));
     }
     
     @Test
     public void assertContainsTable() {
-        assertTrue(new ShardingSphereSchema(ImmutableMap.of("tbl", mock(TableMetaData.class))).containsTable("tbl"));
+        assertTrue(new ShardingSphereSchema(Collections.singletonMap("tbl", mock(TableMetaData.class))).containsTable("tbl"));
     }
     
     @Test
     public void assertContainsColumn() {
         TableMetaData tableMetaData = new TableMetaData("tbl", Collections.singletonList(new ColumnMetaData("col", 0, false, false, false)), Collections.emptyList(), Collections.emptyList());
-        assertTrue(new ShardingSphereSchema(ImmutableMap.of("tbl", tableMetaData)).containsColumn("tbl", "col"));
+        assertTrue(new ShardingSphereSchema(Collections.singletonMap("tbl", tableMetaData)).containsColumn("tbl", "col"));
     }
     
     @Test
     public void assertGetAllColumnNamesWhenContainsKey() {
         TableMetaData tableMetaData = new TableMetaData("tbl", Collections.singletonList(new ColumnMetaData("col", 0, false, false, false)), Collections.emptyList(), Collections.emptyList());
-        assertThat(new ShardingSphereSchema(ImmutableMap.of("tbl", tableMetaData)).getAllColumnNames("tbl"), is(Collections.singletonList("col")));
+        assertThat(new ShardingSphereSchema(Collections.singletonMap("tbl", tableMetaData)).getAllColumnNames("tbl"), is(Collections.singletonList("col")));
     }
     
     @Test
     public void assertGetAllColumnNamesWhenNotContainsKey() {
         TableMetaData tableMetaData = new TableMetaData("tbl", Collections.singletonList(new ColumnMetaData("col", 0, false, false, false)), Collections.emptyList(), Collections.emptyList());
-        assertThat(new ShardingSphereSchema(ImmutableMap.of("tbl1", tableMetaData)).getAllColumnNames("tbl2"), is(Collections.<String>emptyList()));
+        assertThat(new ShardingSphereSchema(Collections.singletonMap("tbl1", tableMetaData)).getAllColumnNames("tbl2"), is(Collections.<String>emptyList()));
     }
 }

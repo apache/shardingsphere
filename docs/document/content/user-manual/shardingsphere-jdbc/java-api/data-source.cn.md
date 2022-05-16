@@ -8,7 +8,7 @@ ShardingSphere-JDBC 支持所有的数据库 JDBC 驱动和连接池。
 
 ## 配置示例
 
-示例的数据库驱动为 MySQL，连接池为 HikariCP，可以更换为其他数据库驱动和连接池。
+示例的数据库驱动为 MySQL，连接池为 HikariCP，可以更换为其他数据库驱动和连接池。当使用 ShardingSphere JDBC 时，JDBC 池的属性名取决于各自 JDBC 池自己的定义，并不由 ShardingSphere 硬定义，相关的处理可以参考类`org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator`。
 
 ```java
 Map<String, DataSource> dataSourceMap = new HashMap<>();
