@@ -62,7 +62,7 @@ public final class DatabaseLockChangedWatcherTest {
         Optional<GovernanceEvent> addGovernanceEvent = watcher.createGovernanceEvent(addDataChangedEvent);
         assertTrue(addGovernanceEvent.isPresent());
         assertThat(addGovernanceEvent.get(), instanceOf(DatabaseLockedEvent.class));
-        assertThat(((DatabaseLockReleasedEvent) addGovernanceEvent.get()).getDatabase(), is("sharding_db"));
+        assertThat(((DatabaseLockedEvent) addGovernanceEvent.get()).getDatabase(), is("sharding_db"));
         DataChangedEvent deleteDataChangedEvent = new DataChangedEvent(eventKey, "127.0.0.1@3307", DataChangedEvent.Type.DELETED);
         Optional<GovernanceEvent> deleteGovernanceEvent = watcher.createGovernanceEvent(deleteDataChangedEvent);
         assertTrue(deleteGovernanceEvent.isPresent());
