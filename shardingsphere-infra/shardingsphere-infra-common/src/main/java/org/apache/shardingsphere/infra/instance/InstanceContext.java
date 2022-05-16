@@ -34,9 +34,10 @@ import java.util.Optional;
 
 /**
  * Instance context.
+ * 
  */
-@Getter
 @RequiredArgsConstructor
+@Getter
 public final class InstanceContext {
     
     private final ComputeNodeInstance instance;
