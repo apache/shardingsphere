@@ -31,7 +31,7 @@ import static org.mockito.Mockito.mock;
 public final class ComposeConstructorAdviceTest {
 
     @Test
-    public void onConstructorTest() {
+    public void assertOnConstructor() {
         ConstructorAdvice constructorAdvice = mock(ConstructorAdvice.class);
         AdviceTargetObject adviceTargetObject = mock(AdviceTargetObject.class);
         ComposeConstructorAdvice actual = new ComposeConstructorAdvice(Collections.singletonList(constructorAdvice));
