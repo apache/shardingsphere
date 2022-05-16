@@ -58,7 +58,7 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
     public ContextManager build(final ContextManagerBuilderParameter parameter) throws SQLException {
         MetaDataPersistService metaDataPersistService = new MetaDataPersistService(StandalonePersistRepositoryFactory.getInstance(parameter.getModeConfig().getRepository()));
         persistConfigurations(metaDataPersistService, parameter);
-        MetaDataContexts metaDataContexts = createMetaDataContexts(metaDataPersistService, parameter);
+        MetaDataContexts metaDataContexts = createMetaDataContextsBuilder(metaDataPersistService, parameter).build(metaDataPersistService);
         return createContextManager(metaDataPersistService, parameter, metaDataContexts);
     }
     
@@ -68,24 +68,23 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
         }
     }
     
-    private MetaDataContexts createMetaDataContexts(final MetaDataPersistService metaDataPersistService, final ContextManagerBuilderParameter parameter) throws SQLException {
+    private MetaDataContextsBuilder createMetaDataContextsBuilder(final MetaDataPersistService metaDataPersistService, final ContextManagerBuilderParameter parameter) throws SQLException {
         Collection<String> databaseNames = InstanceType.JDBC == parameter.getInstanceDefinition().getInstanceType()
                 ? parameter.getDatabaseConfigs().keySet()
                 : metaDataPersistService.getSchemaMetaDataService().loadAllDatabaseNames();
         Collection<RuleConfiguration> globalRuleConfigs = metaDataPersistService.getGlobalRuleService().load();
         ConfigurationProperties props = new ConfigurationProperties(metaDataPersistService.getPropsService().load());
-        MetaDataContextsBuilder builder = new MetaDataContextsBuilder(globalRuleConfigs, props);
         Map<String, ? extends DatabaseConfiguration> databaseConfigMap = getDatabaseConfigMap(databaseNames, metaDataPersistService, parameter);
         DatabaseType frontendDatabaseType = DatabaseTypeEngine.getFrontendDatabaseType(databaseConfigMap, props);
         DatabaseType backendDatabaseType = DatabaseTypeEngine.getBackendDatabaseType(databaseConfigMap);
+        MetaDataContextsBuilder result = new MetaDataContextsBuilder(globalRuleConfigs, props);
         for (Entry<String, ? extends DatabaseConfiguration> entry : databaseConfigMap.entrySet()) {
-            if (frontendDatabaseType.getSystemSchemas().contains(entry.getKey())) {
-                continue;
+            if (!frontendDatabaseType.getSystemSchemas().contains(entry.getKey())) {
+                result.addDatabase(entry.getKey(), frontendDatabaseType, backendDatabaseType, entry.getValue());
             }
-            builder.addDatabase(entry.getKey(), frontendDatabaseType, backendDatabaseType, entry.getValue());
         }
-        builder.addSystemDatabases(frontendDatabaseType);
-        return builder.build(metaDataPersistService);
+        result.addSystemDatabases(frontendDatabaseType);
+        return result;
     }
     
     private Map<String, DatabaseConfiguration> getDatabaseConfigMap(final Collection<String> databaseNames, final MetaDataPersistService metaDataPersistService,

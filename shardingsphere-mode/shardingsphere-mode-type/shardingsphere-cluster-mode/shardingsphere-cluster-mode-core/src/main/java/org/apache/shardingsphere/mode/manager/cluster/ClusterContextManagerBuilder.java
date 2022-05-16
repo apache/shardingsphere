@@ -74,10 +74,10 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         MetaDataPersistService metaDataPersistService = new MetaDataPersistService(repository);
         persistConfigurations(metaDataPersistService, parameter);
         RegistryCenter registryCenter = new RegistryCenter(repository);
-        MetaDataContextsBuilder metaDataContextsBuilder = createMetaDataContextsBuilder(metaDataPersistService, parameter);
-        Map<String, ShardingSphereDatabase> databaseMap = metaDataContextsBuilder.getDatabaseMap().isEmpty() ? Collections.emptyMap() : metaDataContextsBuilder.getDatabaseMap();
+        MetaDataContextsBuilder builder = createMetaDataContextsBuilder(metaDataPersistService, parameter);
+        Map<String, ShardingSphereDatabase> databaseMap = builder.getDatabaseMap().isEmpty() ? Collections.emptyMap() : builder.getDatabaseMap();
         persistMetaData(metaDataPersistService, databaseMap);
-        MetaDataContexts metaDataContexts = metaDataContextsBuilder.build(metaDataPersistService);
+        MetaDataContexts metaDataContexts = builder.build(metaDataPersistService);
         Properties transactionProps = getTransactionProperties(metaDataContexts);
         persistTransactionConfiguration(parameter, metaDataPersistService, transactionProps);
         ContextManager result = createContextManager(repository, metaDataPersistService, parameter.getInstanceDefinition(), metaDataContexts, transactionProps, parameter.getModeConfig());
@@ -91,6 +91,25 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
             metaDataPersistService.persistConfigurations(parameter.getDatabaseConfigs(), parameter.getGlobalRuleConfigs(), parameter.getProps(), isOverwrite);
         }
         metaDataPersistService.persistInstanceLabels(parameter.getInstanceDefinition().getInstanceId().getId(), parameter.getLabels(), isOverwrite);
+    }
+    
+    private MetaDataContextsBuilder createMetaDataContextsBuilder(final MetaDataPersistService metaDataPersistService, final ContextManagerBuilderParameter parameter) throws SQLException {
+        Collection<String> databaseNames = InstanceType.JDBC == parameter.getInstanceDefinition().getInstanceType()
+                ? parameter.getDatabaseConfigs().keySet()
+                : metaDataPersistService.getSchemaMetaDataService().loadAllDatabaseNames();
+        Collection<RuleConfiguration> globalRuleConfigs = metaDataPersistService.getGlobalRuleService().load();
+        ConfigurationProperties props = new ConfigurationProperties(metaDataPersistService.getPropsService().load());
+        MetaDataContextsBuilder result = new MetaDataContextsBuilder(globalRuleConfigs, props);
+        Map<String, ? extends DatabaseConfiguration> databaseConfigMap = getDatabaseConfigMap(databaseNames, metaDataPersistService, parameter);
+        DatabaseType frontendDatabaseType = DatabaseTypeEngine.getFrontendDatabaseType(databaseConfigMap, props);
+        DatabaseType backendDatabaseType = DatabaseTypeEngine.getBackendDatabaseType(databaseConfigMap);
+        for (Entry<String, ? extends DatabaseConfiguration> entry : databaseConfigMap.entrySet()) {
+            if (!frontendDatabaseType.getSystemSchemas().contains(entry.getKey())) {
+                result.addDatabase(entry.getKey(), frontendDatabaseType, backendDatabaseType, entry.getValue());
+            }
+        }
+        result.addSystemDatabases(frontendDatabaseType);
+        return result;
     }
     
     private Properties getTransactionProperties(final MetaDataContexts metaDataContexts) {
@@ -123,25 +142,6 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         if (!metaDataPersistService.getComputeNodePersistService().loadXaRecoveryId(instanceId).isPresent()) {
             metaDataPersistService.getComputeNodePersistService().persistInstanceXaRecoveryId(instanceId, instanceId);
         }
-    }
-    
-    private MetaDataContextsBuilder createMetaDataContextsBuilder(final MetaDataPersistService metaDataPersistService, final ContextManagerBuilderParameter parameter) throws SQLException {
-        Collection<String> databaseNames = InstanceType.JDBC == parameter.getInstanceDefinition().getInstanceType()
-                ? parameter.getDatabaseConfigs().keySet()
-                : metaDataPersistService.getSchemaMetaDataService().loadAllDatabaseNames();
-        Collection<RuleConfiguration> globalRuleConfigs = metaDataPersistService.getGlobalRuleService().load();
-        ConfigurationProperties props = new ConfigurationProperties(metaDataPersistService.getPropsService().load());
-        MetaDataContextsBuilder result = new MetaDataContextsBuilder(globalRuleConfigs, props);
-        Map<String, ? extends DatabaseConfiguration> databaseConfigMap = getDatabaseConfigMap(databaseNames, metaDataPersistService, parameter);
-        DatabaseType frontendDatabaseType = DatabaseTypeEngine.getFrontendDatabaseType(databaseConfigMap, props);
-        DatabaseType backendDatabaseType = DatabaseTypeEngine.getBackendDatabaseType(databaseConfigMap);
-        for (Entry<String, ? extends DatabaseConfiguration> entry : databaseConfigMap.entrySet()) {
-            if (!frontendDatabaseType.getSystemSchemas().contains(entry.getKey())) {
-                result.addDatabase(entry.getKey(), frontendDatabaseType, backendDatabaseType, entry.getValue());
-            }
-        }
-        result.addSystemDatabases(frontendDatabaseType);
-        return result;
     }
     
     private Map<String, DatabaseConfiguration> getDatabaseConfigMap(final Collection<String> databaseNames, final MetaDataPersistService metaDataPersistService,
