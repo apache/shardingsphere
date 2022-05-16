@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.federation.optimizer.context.planner.Opti
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContextFactory;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.event.DropSchemaEvent;
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropSchemaStatement;
@@ -35,6 +34,7 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Schema refresher for drop schema statement.
@@ -50,8 +50,7 @@ public final class DropSchemaStatementSchemaRefresher implements MetaDataRefresh
         Collection<String> tobeRemovedSchemas = new LinkedHashSet<>();
         Collection<String> schemaNames = getSchemaNames(sqlStatement);
         for (String each : schemaNames) {
-            ShardingSphereSchema schema = metaData.getSchemas().remove(each);
-            tobeRemovedTables.addAll(schema.getAllTableNames());
+            Optional.ofNullable(metaData.getSchemas().remove(each)).ifPresent(optional -> tobeRemovedTables.addAll(optional.getAllTableNames()));
             tobeRemovedSchemas.add(each.toLowerCase());
             database.removeSchemaMetadata(each);
             optimizerPlanners.put(database.getName(), OptimizerPlannerContextFactory.create(database));
