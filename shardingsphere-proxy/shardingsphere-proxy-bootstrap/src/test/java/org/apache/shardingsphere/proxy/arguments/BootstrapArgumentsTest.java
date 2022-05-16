@@ -78,7 +78,7 @@ public final class BootstrapArgumentsTest {
     @Test
     public void assertGetPortWithConfiguration() throws IOException {
         BootstrapArguments bootstrapArgs = new BootstrapArguments(new String[]{});
-        YamlProxyConfiguration yamlConfig = ProxyConfigurationLoader.load(bootstrapArgs.getConfigurationPath());
+        YamlProxyConfiguration yamlConfig = ProxyConfigurationLoader.load("/conf/local");
         yamlConfig.getServerConfiguration().setProps(createProperties());
         int port = bootstrapArgs.getPort().orElseGet(() -> new ConfigurationProperties(yamlConfig.getServerConfiguration().getProps()).getValue(ConfigurationPropertyKey.PROXY_DEFAULT_PORT));
         assertThat(port, is(3306));
