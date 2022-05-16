@@ -97,7 +97,6 @@ public final class TextProtocolBackendHandlerFactory {
         checkUnsupportedSQLStatement(sqlStatement);
         if (sqlStatement instanceof DistSQLStatement) {
             if (connectionSession.getTransactionStatus().isInTransaction() && !(sqlStatement instanceof RQLStatement || sqlStatement instanceof QueryableRALStatement)) {
-                
                 throw new UnsupportedOperationException("Non-query dist sql is not supported within a transaction");
             }
             return DistSQLBackendHandlerFactory.newInstance(databaseType, (DistSQLStatement) sqlStatement, connectionSession);
