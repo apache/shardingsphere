@@ -61,13 +61,10 @@ public final class MetaDataContextsBuilder {
     
     private final ConfigurationProperties props;
     
-    private final ExecutorEngine executorEngine;
-    
     public MetaDataContextsBuilder(final Map<String, ? extends DatabaseConfiguration> databaseConfigMap,
                                    final Collection<RuleConfiguration> globalRuleConfigs, final ConfigurationProperties props) throws SQLException {
         this.globalRuleConfigs = globalRuleConfigs;
         this.props = props;
-        executorEngine = ExecutorEngine.createExecutorEngineWithSize(props.<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE));
         DatabaseType frontendDatabaseType = DatabaseTypeEngine.getFrontendDatabaseType(databaseConfigMap, props);
         DatabaseType backendDatabaseType = DatabaseTypeEngine.getBackendDatabaseType(databaseConfigMap);
         for (Entry<String, ? extends DatabaseConfiguration> entry : databaseConfigMap.entrySet()) {
@@ -105,6 +102,7 @@ public final class MetaDataContextsBuilder {
     public MetaDataContexts build(final MetaDataPersistService metaDataPersistService) throws SQLException {
         Map<String, ShardingSphereMetaData> metaDataMap = getMetaDataMap();
         ShardingSphereRuleMetaData globalMetaData = new ShardingSphereRuleMetaData(globalRuleConfigs, GlobalRulesBuilder.buildRules(globalRuleConfigs, metaDataMap));
+        ExecutorEngine executorEngine = ExecutorEngine.createExecutorEngineWithSize(props.<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE));
         return new MetaDataContexts(metaDataPersistService, metaDataMap, globalMetaData, executorEngine, OptimizerContextFactory.create(metaDataMap, globalMetaData), props);
     }
     
