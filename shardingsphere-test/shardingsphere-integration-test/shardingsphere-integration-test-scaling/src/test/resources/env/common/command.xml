@@ -86,7 +86,7 @@
         )
     </auto-alter-table-rule>
     
-    <add-resource-template>
+    <source-add-resource-template>
         ADD RESOURCE ds_0 (
         URL="${ds0}",
         USER=${user},
@@ -95,7 +95,11 @@
         URL="${ds1}",
         USER=${user},
         PASSWORD=${password}
-        ),ds_2 (
+        )
+    </source-add-resource-template>
+    
+    <target-add-resource-template>
+        ADD RESOURCE ds_2 (
         URL="${ds2}",
         USER=${user},
         PASSWORD=${password}
@@ -108,5 +112,5 @@
         USER=${user},
         PASSWORD=${password}
         )
-    </add-resource-template>
+    </target-add-resource-template>
 </command>

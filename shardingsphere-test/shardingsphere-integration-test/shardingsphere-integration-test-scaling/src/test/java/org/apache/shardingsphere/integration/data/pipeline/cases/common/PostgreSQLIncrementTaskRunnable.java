@@ -34,6 +34,24 @@ public final class PostgreSQLIncrementTaskRunnable extends BaseTaskRunnable {
     }
     
     @Override
+    public void run() {
+        int executeCount = 0;
+        while (executeCount < 20 && !Thread.currentThread().isInterrupted()) {
+            Object orderPrimaryKey = insertOrder();
+            Object orderItemPrimaryKey = insertOrderItem();
+            if (executeCount % 2 == 0) {
+                deleteOrderByPrimaryKey(orderPrimaryKey);
+                deleteOrderItemByPrimaryKey(orderItemPrimaryKey);
+            } else {
+                updateOrderByPrimaryKey(orderPrimaryKey);
+                updateOrderItemByPrimaryKey(orderItemPrimaryKey);
+            }
+            executeCount++;
+        }
+        log.info("PostgreSQL increment task runnable execute successfully.");
+    }
+    
+    @Override
     protected Object[] getOrderInsertData() {
         return new Object[]{getKeyGenerateAlgorithm().generateKey(), ThreadLocalRandom.current().nextInt(0, 6), ThreadLocalRandom.current().nextInt(0, 6)};
     }

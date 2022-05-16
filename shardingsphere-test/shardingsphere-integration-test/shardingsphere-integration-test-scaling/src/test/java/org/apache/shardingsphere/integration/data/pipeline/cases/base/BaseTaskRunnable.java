@@ -43,24 +43,6 @@ public abstract class BaseTaskRunnable implements Runnable {
     
     protected abstract Object[] getOrderUpdateData(Object primaryKey);
     
-    @Override
-    public void run() {
-        int executeCount = 0;
-        while (executeCount < 20 && !Thread.currentThread().isInterrupted()) {
-            Object orderPrimaryKey = insertOrder();
-            Object orderItemPrimaryKey = insertOrderItem();
-            if (executeCount % 2 == 0) {
-                deleteOrderByPrimaryKey(orderPrimaryKey);
-                deleteOrderItemByPrimaryKey(orderItemPrimaryKey);
-            } else {
-                updateOrderByPrimaryKey(orderPrimaryKey);
-                updateOrderItemByPrimaryKey(orderItemPrimaryKey);
-            }
-            executeCount++;
-            log.info("Simple increment task runnable execute successfully.");
-        }
-    }
-    
     /**
      * Insert order.
      *
@@ -89,12 +71,7 @@ public abstract class BaseTaskRunnable implements Runnable {
      * @param primaryKey primary key
      */
     public void updateOrderByPrimaryKey(final Object primaryKey) {
-        Object[] orderUpdateData = getOrderUpdateData(primaryKey);
-        jdbcTemplate.update(extraSQLCommand.getUpdateOrderById(), orderUpdateData);
-        for (int i = 0; i < orderUpdateData.length - 1; i++) {
-            orderUpdateData[i] = null;
-        }
-        jdbcTemplate.update(extraSQLCommand.getUpdateOrderById(), orderUpdateData);
+        jdbcTemplate.update(extraSQLCommand.getUpdateOrderById(), getOrderUpdateData(primaryKey));
     }
     
     /**

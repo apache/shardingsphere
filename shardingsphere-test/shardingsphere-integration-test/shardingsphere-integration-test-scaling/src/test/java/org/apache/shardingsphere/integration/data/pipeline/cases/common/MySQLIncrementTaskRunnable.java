@@ -34,6 +34,29 @@ public final class MySQLIncrementTaskRunnable extends BaseTaskRunnable {
     }
     
     @Override
+    public void run() {
+        int executeCount = 0;
+        while (executeCount < 20 && !Thread.currentThread().isInterrupted()) {
+            Object orderPrimaryKey = insertOrder();
+            Object orderItemPrimaryKey = insertOrderItem();
+            if (executeCount % 2 == 0) {
+                deleteOrderByPrimaryKey(orderPrimaryKey);
+                deleteOrderItemByPrimaryKey(orderItemPrimaryKey);
+            } else {
+                updateOrderByPrimaryKey(orderPrimaryKey);
+                setFieldsToNull(orderPrimaryKey);
+                updateOrderItemByPrimaryKey(orderItemPrimaryKey);
+            }
+            executeCount++;
+        }
+        log.info("MySQL increment task runnable execute successfully.");
+    }
+    
+    private void setFieldsToNull(final Object primaryKey) {
+        getJdbcTemplate().update(" UPDATE t_order SET t_unsigned_int = null WHERE id = ?", primaryKey);
+    }
+    
+    @Override
     protected Object[] getOrderInsertData() {
         return new Object[]{getKeyGenerateAlgorithm().generateKey(), ThreadLocalRandom.current().nextInt(0, 6), ThreadLocalRandom.current().nextInt(0, 6)};
     }

@@ -53,6 +53,9 @@ public final class CommonSQLCommand {
     @XmlElement(name = "auto-alter-table-rule")
     private String autoAlterTableRule;
     
-    @XmlElement(name = "add-resource-template")
-    private String addResourceTemplate;
+    @XmlElement(name = "source-add-resource-template")
+    private String sourceAddResourceTemplate;
+    
+    @XmlElement(name = "target-add-resource-template")
+    private String targetAddResourceTemplate;
 }
