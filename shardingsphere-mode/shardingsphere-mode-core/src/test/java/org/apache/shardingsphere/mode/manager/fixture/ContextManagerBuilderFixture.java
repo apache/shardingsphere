@@ -23,20 +23,22 @@ import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 
 import java.sql.SQLException;
 
-public final class FixtureContextManagerBuilder implements ContextManagerBuilder {
+import static org.mockito.Mockito.mock;
+
+public final class ContextManagerBuilderFixture implements ContextManagerBuilder {
     
     @Override
     public ContextManager build(final ContextManagerBuilderParameter parameter) throws SQLException {
-        return null;
+        return mock(ContextManager.class);
+    }
+    
+    @Override
+    public String getType() {
+        return "FIXTURE";
     }
     
     @Override
     public boolean isDefault() {
         return true;
-    }
-    
-    @Override
-    public String getType() {
-        return "Test";
     }
 }
