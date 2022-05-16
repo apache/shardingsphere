@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.converter;
 
-import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
@@ -111,7 +110,7 @@ public final class ShardingTableRuleStatementConverter {
     }
     
     private static ShardingAutoTableRuleConfiguration createAutoTableRuleConfiguration(final AutoTableRuleSegment rule) {
-        ShardingAutoTableRuleConfiguration result = new ShardingAutoTableRuleConfiguration(rule.getLogicTable(), Joiner.on(",").join(rule.getDataSourceNodes()));
+        ShardingAutoTableRuleConfiguration result = new ShardingAutoTableRuleConfiguration(rule.getLogicTable(), String.join(",", rule.getDataSourceNodes()));
         result.setShardingStrategy(createAutoTableStrategyConfiguration(rule));
         Optional.ofNullable(rule.getKeyGenerateStrategySegment())
                 .ifPresent(optional -> result.setKeyGenerateStrategy(createKeyGenerateStrategyConfiguration(rule.getLogicTable(), rule.getKeyGenerateStrategySegment())));

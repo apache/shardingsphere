@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.pojo;
 
-import com.google.common.base.Joiner;
 import com.google.common.collect.Collections2;
 
 import java.util.Collection;
@@ -46,6 +45,6 @@ public final class EncryptParameterAssignmentToken extends EncryptAssignmentToke
     @Override
     public String toString() {
         Collection<String> items = Collections2.transform(columnNames, input -> input + " = ?");
-        return Joiner.on(", ").join(items);
+        return String.join(", ", items);
     }
 }

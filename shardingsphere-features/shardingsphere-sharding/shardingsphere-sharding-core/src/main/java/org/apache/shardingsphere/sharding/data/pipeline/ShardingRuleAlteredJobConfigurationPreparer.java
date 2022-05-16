@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.data.pipeline;
 
-import com.google.common.base.Joiner;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
@@ -123,7 +122,7 @@ public final class ShardingRuleAlteredJobConfigurationPreparer implements RuleAl
     }
     
     private static String getLogicTables(final Set<String> logicTables) {
-        return Joiner.on(',').join(logicTables);
+        return String.join(",", logicTables);
     }
     
     private static String getTablesFirstDataNodes(final Map<String, List<DataNode>> actualDataNodes) {
