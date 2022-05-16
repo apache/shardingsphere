@@ -20,7 +20,7 @@
         `id` BIGINT NOT NULL COMMENT 'pk id',
         `order_id` INT NOT NULL,
         `user_id` INT NOT NULL,
-        `t_varchar` VARCHAR ( 255 ) NULL,
+        `status` VARCHAR ( 255 ) NULL,
         `t_tinyint` TINYINT ( 1 ) NULL,
         `t_timestamp` TIMESTAMP NULL,
         `t_datetime` datetime NULL ON UPDATE CURRENT_TIMESTAMP,
@@ -51,7 +51,7 @@
         id,
         order_id,
         user_id,
-        t_varchar,
+        status,
         t_tinyint,
         t_timestamp,
         t_datetime,
@@ -75,7 +75,7 @@
     </insert-order-item>
     
     <update-order-by-id>
-        UPDATE t_order SET t_varchar = ?,t_unsigned_int = ? WHERE id = ?
+        UPDATE t_order SET status = ?,t_unsigned_int = ? WHERE id = ?
     </update-order-by-id>
     
     <update-order-item-by-id>

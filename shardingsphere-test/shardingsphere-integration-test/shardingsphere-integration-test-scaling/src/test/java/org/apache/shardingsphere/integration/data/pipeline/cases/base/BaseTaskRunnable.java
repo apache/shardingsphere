@@ -17,17 +17,18 @@
 
 package org.apache.shardingsphere.integration.data.pipeline.cases.base;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.integration.data.pipeline.cases.command.ExtraSQLCommand;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.time.Instant;
-import java.util.concurrent.ThreadLocalRandom;
 
 @Getter
-@AllArgsConstructor
+@RequiredArgsConstructor
+@Slf4j
 public abstract class BaseTaskRunnable implements Runnable {
     
     private final JdbcTemplate jdbcTemplate;
@@ -36,9 +37,11 @@ public abstract class BaseTaskRunnable implements Runnable {
     
     private final KeyGenerateAlgorithm keyGenerateAlgorithm;
     
-    protected abstract Object[] getOrderInsertDate();
+    protected abstract Object[] getOrderInsertData();
     
-    protected abstract Object[] getOrderInsertItemDate();
+    protected abstract Object[] getOrderInsertItemData();
+    
+    protected abstract Object[] getOrderUpdateData(Object primaryKey);
     
     /**
      * Insert order.
@@ -46,7 +49,7 @@ public abstract class BaseTaskRunnable implements Runnable {
      * @return primary key of insert data
      */
     public Object insertOrder() {
-        Object[] orderInsertDate = getOrderInsertDate();
+        Object[] orderInsertDate = getOrderInsertData();
         jdbcTemplate.update(extraSQLCommand.getInsertOrder(), orderInsertDate);
         return orderInsertDate[0];
     }
@@ -57,7 +60,7 @@ public abstract class BaseTaskRunnable implements Runnable {
      * @return primary key of insert data
      */
     public Object insertOrderItem() {
-        Object[] orderInsertItemDate = getOrderInsertItemDate();
+        Object[] orderInsertItemDate = getOrderInsertItemData();
         jdbcTemplate.update(extraSQLCommand.getInsertOrderItem(), orderInsertItemDate);
         return orderInsertItemDate[0];
     }
@@ -68,8 +71,7 @@ public abstract class BaseTaskRunnable implements Runnable {
      * @param primaryKey primary key
      */
     public void updateOrderByPrimaryKey(final Object primaryKey) {
-        jdbcTemplate.update(extraSQLCommand.getUpdateOrderById(), "updated" + Instant.now().getEpochSecond(), null, primaryKey);
-        jdbcTemplate.update(extraSQLCommand.getUpdateOrderById(), "updated" + Instant.now().getEpochSecond(), ThreadLocalRandom.current().nextInt(0, 100), primaryKey);
+        jdbcTemplate.update(extraSQLCommand.getUpdateOrderById(), getOrderUpdateData(primaryKey));
     }
     
     /**

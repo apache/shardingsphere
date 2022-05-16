@@ -61,7 +61,7 @@ public final class OpenGaussManualScalingIT extends BaseOpenGaussITCase {
     
     @Before
     public void setUp() throws InterruptedException {
-        addResource();
+        addSourceResource();
         initShardingAlgorithm();
         // TODO wait for algorithm init
         TimeUnit.SECONDS.sleep(2);
@@ -81,6 +81,7 @@ public final class OpenGaussManualScalingIT extends BaseOpenGaussITCase {
         getJdbcTemplate().batchUpdate(getExtraSQLCommand().getInsertOrderItem(), dataPair.getRight());
         startIncrementTask(new SnowflakeKeyGenerateAlgorithm());
         assertOriginalSourceSuccess();
+        addTargetSourceResource("gaussdb", "Root@123");
         getJdbcTemplate().execute(getCommonSQLCommand().getAutoAlterTableRule());
         String jobId = String.valueOf(getJdbcTemplate().queryForMap("SHOW SCALING LIST").get("id"));
         getIncreaseTaskThread().join(60 * 1000L);

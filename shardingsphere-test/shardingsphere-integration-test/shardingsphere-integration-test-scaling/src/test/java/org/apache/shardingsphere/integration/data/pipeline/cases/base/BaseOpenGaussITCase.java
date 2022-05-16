@@ -22,7 +22,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.cases.command.ExtraSQLCommand;
-import org.apache.shardingsphere.integration.data.pipeline.cases.common.SimpleIncrementTaskRunnable;
+import org.apache.shardingsphere.integration.data.pipeline.cases.common.PostgreSQLIncrementTaskRunnable;
 import org.apache.shardingsphere.integration.data.pipeline.framework.helper.ScalingTableSQLHelper;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
@@ -49,16 +49,17 @@ public abstract class BaseOpenGaussITCase extends BaseITCase {
         sqlHelper = new ScalingTableSQLHelper(DATABASE_TYPE, extraSQLCommand, getJdbcTemplate());
     }
     
+    // TODO add source resource should be common,after all problem be solved.
     @SneakyThrows(SQLException.class)
-    protected void addResource() {
+    protected void addSourceResource() {
         Properties queryProps = createQueryProperties();
         try (Connection connection = DriverManager.getConnection(JDBC_URL_APPENDER.appendQueryProperties(getComposedContainer().getProxyJdbcUrl("sharding_db"), queryProps), "root", "root")) {
-            addResource(connection, "gaussdb", "Root@123");
+            addSourceResource(connection, "gaussdb", "Root@123");
         }
     }
     
     protected void startIncrementTask(final KeyGenerateAlgorithm keyGenerateAlgorithm) {
-        setIncreaseTaskThread(new Thread(new SimpleIncrementTaskRunnable(getJdbcTemplate(), extraSQLCommand, keyGenerateAlgorithm)));
+        setIncreaseTaskThread(new Thread(new PostgreSQLIncrementTaskRunnable(getJdbcTemplate(), extraSQLCommand, keyGenerateAlgorithm)));
         getIncreaseTaskThread().start();
     }
     
