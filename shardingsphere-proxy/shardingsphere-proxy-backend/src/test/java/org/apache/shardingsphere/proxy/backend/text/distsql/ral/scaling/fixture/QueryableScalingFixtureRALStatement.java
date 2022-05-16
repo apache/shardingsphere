@@ -19,6 +19,5 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.scaling.fixture
 
 import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.QueryableScalingRALStatement;
 
-public class QueryableScalingFixtureRALStatement extends QueryableScalingRALStatement {
-    
+public final class QueryableScalingFixtureRALStatement extends QueryableScalingRALStatement {
 }

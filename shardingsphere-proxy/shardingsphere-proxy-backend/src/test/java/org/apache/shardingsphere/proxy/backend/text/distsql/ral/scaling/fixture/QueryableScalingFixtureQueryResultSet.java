@@ -23,11 +23,10 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Collection;
 
-public class QueryableScalingFixtureQueryResultSet implements DistSQLResultSet {
+public final class QueryableScalingFixtureQueryResultSet implements DistSQLResultSet {
     
     @Override
     public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
-        
     }
     
     @Override

@@ -29,21 +29,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public class RuleAlteredJobAPIFixture implements RuleAlteredJobAPI {
+public final class RuleAlteredJobAPIFixture implements RuleAlteredJobAPI {
     
     @Override
     public void startDisabledJob(final String jobId) {
-        
     }
     
     @Override
     public void stop(final String jobId) {
-        
     }
     
     @Override
     public void remove(final String jobId) {
-        
     }
     
     @Override
@@ -68,22 +65,18 @@ public class RuleAlteredJobAPIFixture implements RuleAlteredJobAPI {
     
     @Override
     public void stopClusterWriteDB(final String jobId) {
-        
     }
     
     @Override
     public void stopClusterWriteDB(final String databaseName, final String jobId) {
-        
     }
     
     @Override
     public void restoreClusterWriteDB(final String jobId) {
-        
     }
     
     @Override
     public void restoreClusterWriteDB(final String databaseName, final String jobId) {
-        
     }
     
     @Override
@@ -123,17 +116,14 @@ public class RuleAlteredJobAPIFixture implements RuleAlteredJobAPI {
     
     @Override
     public void switchClusterConfiguration(final String jobId) {
-        
     }
     
     @Override
     public void switchClusterConfiguration(final RuleAlteredJobConfiguration jobConfig) {
-        
     }
     
     @Override
     public void reset(final String jobId) {
-        
     }
     
     @Override

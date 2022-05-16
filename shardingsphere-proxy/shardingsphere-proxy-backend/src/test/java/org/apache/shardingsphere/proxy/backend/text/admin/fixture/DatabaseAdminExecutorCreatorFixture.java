@@ -24,7 +24,7 @@ import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdmin
 import java.util.Collection;
 import java.util.Optional;
 
-public class DatabaseAdminExecutorCreatorFixture implements DatabaseAdminExecutorCreator {
+public final class DatabaseAdminExecutorCreatorFixture implements DatabaseAdminExecutorCreator {
     
     @Override
     public Optional<DatabaseAdminExecutor> create(final SQLStatementContext<?> sqlStatementContext) {
