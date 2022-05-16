@@ -19,29 +19,18 @@ package org.apache.shardingsphere.infra.rewrite.context;
 
 import org.apache.shardingsphere.infra.rewrite.fixture.FixtureRule;
 import org.apache.shardingsphere.infra.rewrite.fixture.FixtureSQLRewriteContextDecorator;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.junit.Test;
 
 import java.util.Collections;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public final class SQLRewriteContextDecoratorFactoryTest {
     
     @Test
-    @SuppressWarnings("rawtypes")
     public void assertGetInstance() {
         FixtureRule rule = new FixtureRule();
-        Map<ShardingSphereRule, SQLRewriteContextDecorator> actual = SQLRewriteContextDecoratorFactory.getInstance(
-                Collections.singleton(rule));
-        assertNotNull(actual);
-        assertFalse(actual.isEmpty());
-        assertTrue(actual.containsKey(rule));
-        assertThat(actual.get(rule), instanceOf(FixtureSQLRewriteContextDecorator.class));
+        assertThat(SQLRewriteContextDecoratorFactory.getInstance(Collections.singleton(rule)).get(rule), instanceOf(FixtureSQLRewriteContextDecorator.class));
     }
 }
