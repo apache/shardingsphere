@@ -44,7 +44,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Properties;
 
 /**
  * Meta data contexts builder.
@@ -64,9 +63,9 @@ public final class MetaDataContextsBuilder {
     
     private final ExecutorEngine executorEngine;
     
-    public MetaDataContextsBuilder(final Collection<RuleConfiguration> globalRuleConfigs, final Properties props) {
+    public MetaDataContextsBuilder(final Collection<RuleConfiguration> globalRuleConfigs, final ConfigurationProperties props) {
         this.globalRuleConfigs = globalRuleConfigs;
-        this.props = new ConfigurationProperties(props);
+        this.props = props;
         executorEngine = ExecutorEngine.createExecutorEngineWithSize(this.props.<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE));
     }
     
