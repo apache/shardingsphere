@@ -20,7 +20,7 @@
         id int8 NOT NULL,
         order_id int4 NOT NULL,
         user_id int NOT NULL,
-        t_varchar varchar(50) DEFAULT NULL,
+        status varchar(50) DEFAULT NULL,
         PRIMARY KEY (id)
         )
     </create-table-order>
@@ -36,7 +36,7 @@
     </create-table-order-item>
     
     <full-insert-order>
-        INSERT INTO test.t_order(id, order_id, user_id, t_varchar) VALUES (?,?,?,?)
+        INSERT INTO test.t_order(id, order_id, user_id, status) VALUES (?,?,?,?)
     </full-insert-order>
     
     <insert-order>
@@ -48,7 +48,7 @@
     </insert-order-item>
     
     <update-order-by-id>
-        UPDATE test.t_order SET t_varchar = ? WHERE id = ?
+        UPDATE test.t_order SET status = ? WHERE id = ?
     </update-order-by-id>
     
     <update-order-item-by-id>

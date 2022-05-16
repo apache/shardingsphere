@@ -23,40 +23,28 @@ import org.apache.shardingsphere.integration.data.pipeline.cases.command.ExtraSQ
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import java.time.Instant;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
-public final class SimpleIncrementTaskRunnable extends BaseTaskRunnable {
+public final class MySQLIncrementTaskRunnable extends BaseTaskRunnable {
     
-    public SimpleIncrementTaskRunnable(final JdbcTemplate jdbcTemplate, final ExtraSQLCommand extraSQLCommand, final KeyGenerateAlgorithm keyGenerateAlgorithm) {
+    public MySQLIncrementTaskRunnable(final JdbcTemplate jdbcTemplate, final ExtraSQLCommand extraSQLCommand, final KeyGenerateAlgorithm keyGenerateAlgorithm) {
         super(jdbcTemplate, extraSQLCommand, keyGenerateAlgorithm);
     }
     
     @Override
-    public void run() {
-        int executeCount = 0;
-        while (executeCount < 20 && !Thread.currentThread().isInterrupted()) {
-            Object orderPrimaryKey = insertOrder();
-            Object orderItemPrimaryKey = insertOrderItem();
-            if (executeCount % 2 == 0) {
-                deleteOrderByPrimaryKey(orderPrimaryKey);
-                deleteOrderItemByPrimaryKey(orderItemPrimaryKey);
-            } else {
-                updateOrderByPrimaryKey(orderPrimaryKey);
-                updateOrderItemByPrimaryKey(orderItemPrimaryKey);
-            }
-            executeCount++;
-            log.info("Simple increment task runnable execute successfully.");
-        }
-    }
-    
-    @Override
-    protected Object[] getOrderInsertDate() {
+    protected Object[] getOrderInsertData() {
         return new Object[]{getKeyGenerateAlgorithm().generateKey(), ThreadLocalRandom.current().nextInt(0, 6), ThreadLocalRandom.current().nextInt(0, 6)};
     }
     
     @Override
-    protected Object[] getOrderInsertItemDate() {
+    protected Object[] getOrderInsertItemData() {
         return new Object[]{getKeyGenerateAlgorithm().generateKey(), ThreadLocalRandom.current().nextInt(0, 6), ThreadLocalRandom.current().nextInt(0, 6), "OK"};
+    }
+    
+    @Override
+    protected Object[] getOrderUpdateData(final Object primaryKey) {
+        return new Object[]{"updated" + Instant.now().getEpochSecond(), ThreadLocalRandom.current().nextInt(0, 100), primaryKey};
     }
 }

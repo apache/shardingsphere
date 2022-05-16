@@ -22,7 +22,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.cases.command.ExtraSQLCommand;
-import org.apache.shardingsphere.integration.data.pipeline.cases.common.SimpleIncrementTaskRunnable;
+import org.apache.shardingsphere.integration.data.pipeline.cases.common.MySQLIncrementTaskRunnable;
 import org.apache.shardingsphere.integration.data.pipeline.framework.helper.ScalingTableSQLHelper;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
@@ -59,7 +59,7 @@ public abstract class BaseMySQLITCase extends BaseITCase {
     }
     
     protected void startIncrementTask(final KeyGenerateAlgorithm keyGenerateAlgorithm) {
-        setIncreaseTaskThread(new Thread(new SimpleIncrementTaskRunnable(getJdbcTemplate(), extraSQLCommand, keyGenerateAlgorithm)));
+        setIncreaseTaskThread(new Thread(new MySQLIncrementTaskRunnable(getJdbcTemplate(), extraSQLCommand, keyGenerateAlgorithm)));
         getIncreaseTaskThread().start();
     }
     

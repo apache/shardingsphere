@@ -61,7 +61,7 @@ public final class PostgreSQLManualScalingIT extends BasePostgreSQLITCase {
         addResource();
         initShardingAlgorithm();
         // TODO wait for algorithm init
-        TimeUnit.SECONDS.sleep(2);
+        TimeUnit.SECONDS.sleep(3);
         createScalingRule();
         createSchema("test");
     }
