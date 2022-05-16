@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.builder.schema;
+package org.apache.shardingsphere.infra.rule.builder.global;
 
-import org.apache.shardingsphere.infra.rule.builder.fixture.FixtureSchemaRuleBuilder;
-import org.apache.shardingsphere.infra.rule.builder.fixture.FixtureSchemaRuleConfigurationBuilder;
+import org.apache.shardingsphere.infra.rule.builder.fixture.FixtureGlobalRuleBuilder;
+import org.apache.shardingsphere.infra.rule.builder.fixture.FixtureGlobalRuleConfigurationBuilder;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -30,16 +30,17 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class DefaultSchemaRuleConfigurationBuilderFactoryTest {
+public final class DefaultGlobalRuleConfigurationBuilderFactoryTest {
     
     @Test
     @SuppressWarnings("rawtypes")
-    public void assertGetInstances() {
-        FixtureSchemaRuleBuilder builder = new FixtureSchemaRuleBuilder();
-        Map<SchemaRuleBuilder, DefaultSchemaRuleConfigurationBuilder> actual = DefaultSchemaRuleConfigurationBuilderFactory.getInstances(Collections.singleton(builder));
+    public void assertGetInstance() {
+        FixtureGlobalRuleBuilder builder = new FixtureGlobalRuleBuilder();
+        Map<GlobalRuleBuilder, DefaultGlobalRuleConfigurationBuilder> actual = DefaultGlobalRuleConfigurationBuilderFactory.getInstance(
+                Collections.singleton(builder));
         assertNotNull(actual);
         assertFalse(actual.isEmpty());
         assertTrue(actual.containsKey(builder));
-        assertThat(actual.get(builder), instanceOf(FixtureSchemaRuleConfigurationBuilder.class));
+        assertThat(actual.get(builder), instanceOf(FixtureGlobalRuleConfigurationBuilder.class));
     }
 }
