@@ -28,6 +28,9 @@ public final class PipelineDataSourceConfigurationSwapper implements YamlConfigu
     
     @Override
     public YamlPipelineDataSourceConfiguration swapToYamlConfiguration(final PipelineDataSourceConfiguration data) {
+        if (null == data) {
+            return null;
+        }
         YamlPipelineDataSourceConfiguration result = new YamlPipelineDataSourceConfiguration();
         result.setType(data.getType());
         result.setParameter(data.getParameter());
@@ -36,6 +39,9 @@ public final class PipelineDataSourceConfigurationSwapper implements YamlConfigu
     
     @Override
     public PipelineDataSourceConfiguration swapToObject(final YamlPipelineDataSourceConfiguration yamlConfig) {
+        if (null == yamlConfig) {
+            return null;
+        }
         return PipelineDataSourceConfigurationFactory.newInstance(yamlConfig.getType(), yamlConfig.getParameter());
     }
 }
