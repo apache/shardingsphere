@@ -18,32 +18,16 @@
 package org.apache.shardingsphere.mode.metadata;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
-import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
-import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
-import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContextFactory;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.loader.DatabaseLoader;
-import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilder;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * Database Meta data contexts builder.
@@ -57,7 +41,7 @@ public final class DatabaseMetaDataContextsBuilder {
     
     private final ShardingSphereDatabase database;
     
-    public DatabaseMetaDataContextsBuilder(final String databaseName, final DatabaseType frontendDatabaseType, final DatabaseType backendDatabaseType, 
+    public DatabaseMetaDataContextsBuilder(final String databaseName, final DatabaseType frontendDatabaseType, final DatabaseType backendDatabaseType,
                                            final DatabaseConfiguration databaseConfig, final ConfigurationProperties props) throws SQLException {
         this.databaseConfig = databaseConfig;
         databaseRules = SchemaRulesBuilder.buildRules(databaseName, databaseConfig, props);

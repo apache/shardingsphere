@@ -146,7 +146,6 @@ public final class ContextManagerTest {
     @Test
     public void assertAddResource() throws SQLException {
         ShardingSphereResource resource = mock(ShardingSphereResource.class);
-        when(resource.getDatabaseType()).thenReturn(new MySQLDatabaseType());
         when(metaDataContexts.getMetaDataMap()).thenReturn(new HashMap<>(Collections.singletonMap("foo_db", new ShardingSphereMetaData(
                 "foo_db", new MySQLDatabaseType(), resource, new ShardingSphereRuleMetaData(new LinkedList<>(), new LinkedList<>()), Collections.emptyMap()))));
         contextManager.addResource("foo_db", createToBeAddedDataSourceProperties());
@@ -183,7 +182,6 @@ public final class ContextManagerTest {
     private ShardingSphereMetaData createOriginalMetaData() {
         ShardingSphereResource resource = mock(ShardingSphereResource.class);
         when(resource.getDataSources()).thenReturn(Collections.singletonMap("foo_db", new MockedDataSource()));
-        when(resource.getDatabaseType()).thenReturn(new MySQLDatabaseType());
         ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class);
         when(ruleMetaData.getConfigurations()).thenReturn(new LinkedList<>());
         return new ShardingSphereMetaData("foo_db", new MySQLDatabaseType(), resource, ruleMetaData, Collections.emptyMap());
@@ -205,7 +203,6 @@ public final class ContextManagerTest {
     @Test
     public void assertAlterRuleConfiguration() {
         ShardingSphereResource resource = mock(ShardingSphereResource.class);
-        when(resource.getDatabaseType()).thenReturn(new MySQLDatabaseType());
         when(metaDataContexts.getMetaDataMap()).thenReturn(Collections.singletonMap("foo_db",
                 new ShardingSphereMetaData("foo_db", new MySQLDatabaseType(), resource, mock(ShardingSphereRuleMetaData.class), Collections.emptyMap())));
         when(metaDataContexts.getMetaDataPersistService()).thenReturn(Optional.of(mock(MetaDataPersistService.class, RETURNS_DEEP_STUBS)));
@@ -230,7 +227,6 @@ public final class ContextManagerTest {
         originalDataSources.put("ds_1", new MockedDataSource());
         originalDataSources.put("ds_2", new MockedDataSource());
         when(result.getDataSources()).thenReturn(originalDataSources);
-        when(result.getDatabaseType()).thenReturn(new MySQLDatabaseType());
         return result;
     }
     
