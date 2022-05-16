@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.infra.datanode;
 
+import org.apache.shardingsphere.infra.fixture.TestDataSourceContainedDataNodeBuilder;
 import org.apache.shardingsphere.infra.fixture.TestShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.junit.Test;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
@@ -32,13 +32,12 @@ import static org.mockito.Mockito.mock;
 
 public final class DataNodeBuilderFactoryTest {
     
+    @SuppressWarnings("rawtypes")
     @Test
     public void assertGetInstances() {
-        TestShardingSphereRule key = mock(TestShardingSphereRule.class);
-        Collection<ShardingSphereRule> rules = Collections.singletonList(key);
-        Map<ShardingSphereRule, DataNodeBuilder> actual = DataNodeBuilderFactory.getInstances(rules);
+        TestShardingSphereRule rule = mock(TestShardingSphereRule.class);
+        Map<ShardingSphereRule, DataNodeBuilder> actual = DataNodeBuilderFactory.getInstances(Collections.singleton(rule));
         assertThat(actual.size(), is(1));
-        assertThat(actual.get(key), instanceOf(DataNodeBuilder.class));
+        assertThat(actual.get(rule), instanceOf(TestDataSourceContainedDataNodeBuilder.class));
     }
-    
 }
