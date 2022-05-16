@@ -43,8 +43,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
-import org.mockito.internal.util.reflection.FieldSetter;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.plugins.MemberAccessor;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -82,25 +83,27 @@ public final class MySQLComQueryPacketExecutorTest {
     }
     
     @Test
-    public void assertIsQueryResponse() throws SQLException, NoSuchFieldException {
+    public void assertIsQueryResponse() throws SQLException, NoSuchFieldException, IllegalAccessException {
         MySQLComQueryPacketExecutor mysqlComQueryPacketExecutor = new MySQLComQueryPacketExecutor(packet, connectionSession);
-        FieldSetter.setField(mysqlComQueryPacketExecutor, MySQLComQueryPacketExecutor.class.getDeclaredField("textProtocolBackendHandler"), textProtocolBackendHandler);
+        MemberAccessor accessor = Plugins.getMemberAccessor();
+        accessor.set(MySQLComQueryPacketExecutor.class.getDeclaredField("textProtocolBackendHandler"), mysqlComQueryPacketExecutor, textProtocolBackendHandler);
         when(textProtocolBackendHandler.execute()).thenReturn(new QueryResponseHeader(Collections.singletonList(mock(QueryHeader.class))));
         mysqlComQueryPacketExecutor.execute();
         assertThat(mysqlComQueryPacketExecutor.getResponseType(), is(ResponseType.QUERY));
     }
     
     @Test
-    public void assertIsUpdateResponse() throws SQLException, NoSuchFieldException {
+    public void assertIsUpdateResponse() throws SQLException, NoSuchFieldException, IllegalAccessException {
         MySQLComQueryPacketExecutor mysqlComQueryPacketExecutor = new MySQLComQueryPacketExecutor(packet, connectionSession);
-        FieldSetter.setField(mysqlComQueryPacketExecutor, MySQLComQueryPacketExecutor.class.getDeclaredField("textProtocolBackendHandler"), textProtocolBackendHandler);
+        MemberAccessor accessor = Plugins.getMemberAccessor();
+        accessor.set(MySQLComQueryPacketExecutor.class.getDeclaredField("textProtocolBackendHandler"), mysqlComQueryPacketExecutor, textProtocolBackendHandler);
         when(textProtocolBackendHandler.execute()).thenReturn(new UpdateResponseHeader(mock(SQLStatement.class)));
         mysqlComQueryPacketExecutor.execute();
         assertThat(mysqlComQueryPacketExecutor.getResponseType(), is(ResponseType.UPDATE));
     }
     
     @Test
-    public void assertExecuteMultiUpdateStatements() throws SQLException, NoSuchFieldException {
+    public void assertExecuteMultiUpdateStatements() throws SQLException, NoSuchFieldException, IllegalAccessException {
         when(connectionSession.getAttributeMap().hasAttr(MySQLConstants.MYSQL_OPTION_MULTI_STATEMENTS)).thenReturn(true);
         when(connectionSession.getAttributeMap().attr(MySQLConstants.MYSQL_OPTION_MULTI_STATEMENTS).get()).thenReturn(0);
         when(connectionSession.getDatabaseName()).thenReturn("db_name");
@@ -117,7 +120,8 @@ public final class MySQLComQueryPacketExecutorTest {
             when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(any(String.class)).getRuleMetaData().findSingleRule(SQLTranslatorRule.class))
                     .thenReturn(Optional.of(new SQLTranslatorRule(new SQLTranslatorRuleConfiguration())));
             MySQLComQueryPacketExecutor actual = new MySQLComQueryPacketExecutor(packet, connectionSession);
-            FieldSetter.setField(actual, MySQLComQueryPacketExecutor.class.getDeclaredField("textProtocolBackendHandler"), textProtocolBackendHandler);
+            MemberAccessor accessor = Plugins.getMemberAccessor();
+            accessor.set(MySQLComQueryPacketExecutor.class.getDeclaredField("textProtocolBackendHandler"), actual, textProtocolBackendHandler);
             when(textProtocolBackendHandler.execute()).thenReturn(new UpdateResponseHeader(mock(SQLStatement.class)));
             Collection<DatabasePacket<?>> actualPackets = actual.execute();
             assertThat(actualPackets.size(), is(1));
@@ -126,9 +130,10 @@ public final class MySQLComQueryPacketExecutorTest {
     }
     
     @Test
-    public void assertNext() throws SQLException, NoSuchFieldException {
+    public void assertNext() throws SQLException, NoSuchFieldException, IllegalAccessException {
         MySQLComQueryPacketExecutor actual = new MySQLComQueryPacketExecutor(packet, connectionSession);
-        FieldSetter.setField(actual, MySQLComQueryPacketExecutor.class.getDeclaredField("textProtocolBackendHandler"), textProtocolBackendHandler);
+        MemberAccessor accessor = Plugins.getMemberAccessor();
+        accessor.set(MySQLComQueryPacketExecutor.class.getDeclaredField("textProtocolBackendHandler"), actual, textProtocolBackendHandler);
         when(textProtocolBackendHandler.next()).thenReturn(true, false);
         assertTrue(actual.next());
         assertFalse(actual.next());
@@ -140,9 +145,10 @@ public final class MySQLComQueryPacketExecutorTest {
     }
     
     @Test
-    public void assertClose() throws SQLException, NoSuchFieldException {
+    public void assertClose() throws SQLException, NoSuchFieldException, IllegalAccessException {
         MySQLComQueryPacketExecutor actual = new MySQLComQueryPacketExecutor(packet, connectionSession);
-        FieldSetter.setField(actual, MySQLComQueryPacketExecutor.class.getDeclaredField("textProtocolBackendHandler"), textProtocolBackendHandler);
+        MemberAccessor accessor = Plugins.getMemberAccessor();
+        accessor.set(MySQLComQueryPacketExecutor.class.getDeclaredField("textProtocolBackendHandler"), actual, textProtocolBackendHandler);
         actual.close();
         verify(textProtocolBackendHandler).close();
     }

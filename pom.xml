@@ -94,7 +94,7 @@
         <springframework.version>[4.3.6.RELEASE,5.0.0.M1)</springframework.version>
         <spring-boot.version>[1.5.20.RELEASE,2.0.0.M1)</spring-boot.version>
         
-        <bytebuddy.version>1.11.18</bytebuddy.version>
+        <bytebuddy.version>1.12.10</bytebuddy.version>
         <prometheus.version>0.11.0</prometheus.version>
         <prometheus.jmx.version>0.16.1</prometheus.jmx.version>
         <opentracing.version>0.31.0</opentracing.version>
@@ -121,7 +121,7 @@
         
         <junit.version>4.12</junit.version>
         <hamcrest.version>1.3</hamcrest.version>
-        <mockito.version>3.4.2</mockito.version>
+        <mockito.version>4.5.1</mockito.version>
         
         <!-- Plugin versions -->
         <takari-maven-plugin.version>0.6.1</takari-maven-plugin.version>
