@@ -86,11 +86,27 @@
         )
     </auto-alter-table-rule>
     
-    <simple-insert-order>
-        INSERT INTO t_order ( id, order_id, user_id) VALUES (?, ?, ?)
-    </simple-insert-order>
-    
-    <insert-order-item>
-        INSERT INTO t_order_item(item_id, order_id, user_id, status) VALUES(?,?,?,?)
-    </insert-order-item>
+    <add-resource-template>
+        ADD RESOURCE ds_0 (
+        URL="${ds0}",
+        USER=${user},
+        PASSWORD=${password}
+        ), ds_1 (
+        URL="${ds1}",
+        USER=${user},
+        PASSWORD=${password}
+        ),ds_2 (
+        URL="${ds2}",
+        USER=${user},
+        PASSWORD=${password}
+        ),ds_3 (
+        URL="${ds3}",
+        USER=${user},
+        PASSWORD=${password}
+        ),ds_4 (
+        URL="${ds4}",
+        USER=${user},
+        PASSWORD=${password}
+        )
+    </add-resource-template>
 </command>
