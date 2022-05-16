@@ -25,8 +25,7 @@ import org.apache.shardingsphere.infra.route.context.RouteContext;
 public final class FixtureSQLRewriteContextDecorator implements SQLRewriteContextDecorator<FixtureRule> {
     
     @Override
-    public void decorate(final FixtureRule rule, final ConfigurationProperties props, final SQLRewriteContext sqlRewriteContext,
-                         final RouteContext routeContext) {
+    public void decorate(final FixtureRule rule, final ConfigurationProperties props, final SQLRewriteContext sqlRewriteContext, final RouteContext routeContext) {
     }
     
     @Override
