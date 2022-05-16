@@ -49,6 +49,7 @@ public final class ComposeConstructorAdviceTest {
         AdviceTargetObject adviceTargetObject = mock(AdviceTargetObject.class);
         Object[] args = new Object[2];
         args[0] = new LinkedList<String>();
+        args[1] = new LinkedList<String>();
         actual.onConstructor(adviceTargetObject, args);
         verify(constructorAdvice).onConstructor(adviceTargetObject, args);
     }
