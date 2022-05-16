@@ -173,12 +173,12 @@ public final class MetaDataPersistServiceTest {
     
     @Test
     public void assertPersistTransactionRule() {
-        mockGlobalRulePersistServiceForLoad();
-        Properties properties = createTransactionProperties();
-        metaDataPersistService.persistTransactionRule(properties, true);
-        Collection<RuleConfiguration> ruleConfigs = globalRuleService.load();
-        Optional<RuleConfiguration> ruleConfig = ruleConfigs.stream().filter(each -> each instanceof TransactionRuleConfiguration).findFirst();
-        assertThat(ruleConfig.get(), is(createAssertTransactionRuleConfiguration()));
+        when(globalRuleService.load()).thenReturn(Collections.singleton(new TransactionRuleConfiguration(TransactionType.LOCAL.name(), null, new Properties())));
+        Properties props = createTransactionProperties();
+        metaDataPersistService.persistTransactionRule(props, true);
+        Optional<RuleConfiguration> actual = globalRuleService.load().stream().filter(each -> each instanceof TransactionRuleConfiguration).findFirst();
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is(new TransactionRuleConfiguration(TransactionType.LOCAL.name(), null, createTransactionProperties())));
     }
     
     private Properties createTransactionProperties() {
@@ -186,15 +186,4 @@ public final class MetaDataPersistServiceTest {
         result.setProperty("type", TransactionType.LOCAL.name());
         return result;
     }
-    
-    private void mockGlobalRulePersistServiceForLoad() {
-        RuleConfiguration ruleConfiguration = new TransactionRuleConfiguration(TransactionType.LOCAL.name(), null, new Properties());
-        when(globalRuleService.load()).thenReturn(Collections.singleton(ruleConfiguration));
-    }
-    
-    private RuleConfiguration createAssertTransactionRuleConfiguration() {
-        RuleConfiguration result = new TransactionRuleConfiguration(TransactionType.LOCAL.name(), null, createTransactionProperties());
-        return result;
-    }
-    
 }
