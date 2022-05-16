@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.core.metadata.node;
 
-import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -36,7 +35,7 @@ public final class PipelineMetaDataNode {
      * @return job config path.
      */
     public static String getJobConfigPath(final String jobId) {
-        return Joiner.on("/").join(getScalingRootPath(), jobId, "config");
+        return String.join("/", getScalingRootPath(), jobId, "config");
     }
     
     /**
@@ -56,6 +55,6 @@ public final class PipelineMetaDataNode {
      * @return job offset path.
      */
     public static String getScalingJobOffsetPath(final String jobId, final int shardingItem) {
-        return Joiner.on("/").join(getScalingRootPath(), jobId, "offset", shardingItem);
+        return String.join("/", getScalingRootPath(), jobId, "offset", Integer.toString(shardingItem));
     }
 }

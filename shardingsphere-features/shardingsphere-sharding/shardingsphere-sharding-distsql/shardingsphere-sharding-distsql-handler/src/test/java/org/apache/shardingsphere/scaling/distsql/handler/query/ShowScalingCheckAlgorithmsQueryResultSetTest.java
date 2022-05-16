@@ -29,7 +29,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
-import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -53,7 +52,7 @@ public final class ShowScalingCheckAlgorithmsQueryResultSetTest {
     public void assertGetRowData() {
         ShowScalingCheckAlgorithmsQueryResultSet resultSet = new ShowScalingCheckAlgorithmsQueryResultSet();
         resultSet.init(shardingSphereMetaData, showScalingCheckAlgorithmsStatement);
-        Set<Object> algorithmTypes = new LinkedHashSet<>();
+        Collection<Object> algorithmTypes = new LinkedHashSet<>();
         while (resultSet.next()) {
             Collection<Object> actual = resultSet.getRowData();
             assertThat(actual.size(), is(3));
