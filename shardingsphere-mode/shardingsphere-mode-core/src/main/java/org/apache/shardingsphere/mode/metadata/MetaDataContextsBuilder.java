@@ -61,47 +61,35 @@ public final class MetaDataContextsBuilder {
     
     private final ConfigurationProperties props;
     
-    private final ExecutorEngine executorEngine;
-    
-    public MetaDataContextsBuilder(final Collection<RuleConfiguration> globalRuleConfigs, final ConfigurationProperties props) {
+    public MetaDataContextsBuilder(final Map<String, ? extends DatabaseConfiguration> databaseConfigMap,
+                                   final Collection<RuleConfiguration> globalRuleConfigs, final ConfigurationProperties props) throws SQLException {
         this.globalRuleConfigs = globalRuleConfigs;
         this.props = props;
-        executorEngine = ExecutorEngine.createExecutorEngineWithSize(this.props.<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE));
+        DatabaseType frontendDatabaseType = DatabaseTypeEngine.getFrontendDatabaseType(databaseConfigMap, props);
+        DatabaseType backendDatabaseType = DatabaseTypeEngine.getBackendDatabaseType(databaseConfigMap);
+        for (Entry<String, ? extends DatabaseConfiguration> entry : databaseConfigMap.entrySet()) {
+            if (!frontendDatabaseType.getSystemSchemas().contains(entry.getKey())) {
+                addDatabase(entry.getKey(), frontendDatabaseType, backendDatabaseType, entry.getValue());
+            }
+        }
+        addSystemDatabases(frontendDatabaseType);
     }
     
-    /**
-     * Add database information.
-     * 
-     * @param databaseName schema name
-     * @param frontendDatabaseType frontend database type
-     * @param backendDatabaseType backend database type
-     * @param databaseConfig database configuration
-     * @throws SQLException SQL exception
-     */
-    public void addDatabase(final String databaseName, final DatabaseType frontendDatabaseType, final DatabaseType backendDatabaseType,
-                            final DatabaseConfiguration databaseConfig) throws SQLException {
-        Collection<ShardingSphereRule> databaseRules = getDatabaseRules(databaseName, databaseConfig);
+    private void addDatabase(final String databaseName, final DatabaseType frontendDatabaseType, final DatabaseType backendDatabaseType,
+                             final DatabaseConfiguration databaseConfig) throws SQLException {
+        Collection<ShardingSphereRule> databaseRules = SchemaRulesBuilder.buildRules(databaseName, databaseConfig, props);
         ShardingSphereDatabase database = DatabaseLoader.load(databaseName, frontendDatabaseType, backendDatabaseType, databaseConfig.getDataSources(), databaseRules, props);
         databaseConfigMap.put(databaseName, databaseConfig);
         databaseRulesMap.put(databaseName, databaseRules);
         databaseMap.put(databaseName, database);
     }
     
-    /**
-     * Add system databases.
-     *
-     * @param frontendDatabaseType frontend database type
-     */
-    public void addSystemDatabases(final DatabaseType frontendDatabaseType) {
+    private void addSystemDatabases(final DatabaseType frontendDatabaseType) {
         for (String each : frontendDatabaseType.getSystemDatabaseSchemaMap().keySet()) {
             if (!databaseMap.containsKey(each)) {
                 databaseMap.put(each, DatabaseLoader.load(each, frontendDatabaseType));
             }
         }
-    }
-    
-    private Collection<ShardingSphereRule> getDatabaseRules(final String databaseName, final DatabaseConfiguration databaseConfig) {
-        return SchemaRulesBuilder.buildRules(databaseName, databaseConfig, props);
     }
     
     /**
@@ -114,6 +102,7 @@ public final class MetaDataContextsBuilder {
     public MetaDataContexts build(final MetaDataPersistService metaDataPersistService) throws SQLException {
         Map<String, ShardingSphereMetaData> metaDataMap = getMetaDataMap();
         ShardingSphereRuleMetaData globalMetaData = new ShardingSphereRuleMetaData(globalRuleConfigs, GlobalRulesBuilder.buildRules(globalRuleConfigs, metaDataMap));
+        ExecutorEngine executorEngine = ExecutorEngine.createExecutorEngineWithSize(props.<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE));
         return new MetaDataContexts(metaDataPersistService, metaDataMap, globalMetaData, executorEngine, OptimizerContextFactory.create(metaDataMap, globalMetaData), props);
     }
     
