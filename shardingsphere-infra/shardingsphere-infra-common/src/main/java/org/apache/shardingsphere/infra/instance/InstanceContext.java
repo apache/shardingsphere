@@ -96,9 +96,9 @@ public final class InstanceContext {
     }
     
     /**
-     * Update instance xa recovery id.
+     * Update instance XA recovery id.
      *
-     * @param xaRecoveryId xa recovery id
+     * @param xaRecoveryId XA recovery id
      */
     public void updateXaRecoveryId(final String xaRecoveryId) {
         if (!Objects.equals(xaRecoveryId, instance.getXaRecoveryId())) {
