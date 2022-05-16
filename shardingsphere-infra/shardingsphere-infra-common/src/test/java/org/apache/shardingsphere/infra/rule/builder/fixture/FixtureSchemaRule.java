@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.rule.builder.fixture;
 
 import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
 
-public class FixtureSchemaRule implements SchemaRule {
+public final class FixtureSchemaRule implements SchemaRule {
     
     @Override
     public String getType() {

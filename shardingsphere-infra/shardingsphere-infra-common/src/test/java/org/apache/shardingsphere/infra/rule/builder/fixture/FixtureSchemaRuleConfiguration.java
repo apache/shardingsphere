@@ -19,6 +19,5 @@ package org.apache.shardingsphere.infra.rule.builder.fixture;
 
 import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
 
-public class FixtureSchemaRuleConfiguration implements SchemaRuleConfiguration {
-    
+public final class FixtureSchemaRuleConfiguration implements SchemaRuleConfiguration {
 }

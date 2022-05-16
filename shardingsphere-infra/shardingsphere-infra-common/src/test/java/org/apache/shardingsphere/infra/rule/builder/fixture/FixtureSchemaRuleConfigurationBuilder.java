@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.rule.builder.fixture;
 
 import org.apache.shardingsphere.infra.rule.builder.schema.DefaultSchemaRuleConfigurationBuilder;
 
-public class FixtureSchemaRuleConfigurationBuilder implements DefaultSchemaRuleConfigurationBuilder<FixtureSchemaRuleConfiguration, FixtureSchemaRuleBuilder> {
+public final class FixtureSchemaRuleConfigurationBuilder implements DefaultSchemaRuleConfigurationBuilder<FixtureSchemaRuleConfiguration, FixtureSchemaRuleBuilder> {
     
     @Override
     public FixtureSchemaRuleConfiguration build() {
