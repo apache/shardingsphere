@@ -15,25 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.database.event;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.database.node;
 
-import lombok.Getter;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeUtil;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
+import org.junit.Test;
 
-/**
- * Database ack locked event.
- */
-@Getter
-public final class DatabaseAckLockedEvent implements GovernanceEvent {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class DatabaseLockNodeServiceTest {
     
-    private final String database;
+    private static final DatabaseLockNodeService SERVICE = new DatabaseLockNodeService();
     
-    private final String lockedInstance;
+    @Test
+    public void assertGetSequenceNodePath() {
+        assertThat(SERVICE.getSequenceNodePath(), is("/lock/database/sequence"));
+    }
     
-    public DatabaseAckLockedEvent(final String ackLockedName) {
-        String[] databaseInstance = LockNodeUtil.parseAckLockName(ackLockedName);
-        this.database = databaseInstance[0];
-        this.lockedInstance = databaseInstance[1];
+    @Test
+    public void assertGetLockLevel() {
+        assertThat(SERVICE.getLockLevel(), is("database"));
     }
 }

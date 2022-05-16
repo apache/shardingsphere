@@ -37,7 +37,7 @@ public final class DistributeLockContextTest {
     @Test
     public void assertTryLockWriteDatabase() {
         ComputeNodeInstance currentInstance = new ComputeNodeInstance(new InstanceDefinition(InstanceType.PROXY, "127.0.0.1@3307"));
-        DistributeLockContext distributeLockContext = new DistributeLockContext(mock(ClusterPersistRepository.class), currentInstance);
+        DistributeLockContext distributeLockContext = new DistributeLockContext(mock(ClusterPersistRepository.class));
         new InstanceContext(currentInstance, mock(WorkerIdGenerator.class), mock(ModeConfiguration.class), distributeLockContext).initLockContext();
         assertNotNull(distributeLockContext.getMutexLock("database"));
     }
@@ -45,7 +45,7 @@ public final class DistributeLockContextTest {
     @Test
     public void assertReleaseLockWriteDatabase() {
         ComputeNodeInstance currentInstance = new ComputeNodeInstance(new InstanceDefinition(InstanceType.PROXY, "127.0.0.1@3307"));
-        DistributeLockContext distributeLockContext = new DistributeLockContext(mock(ClusterPersistRepository.class), currentInstance);
+        DistributeLockContext distributeLockContext = new DistributeLockContext(mock(ClusterPersistRepository.class));
         new InstanceContext(currentInstance, mock(WorkerIdGenerator.class), mock(ModeConfiguration.class), distributeLockContext).initLockContext();
         distributeLockContext.releaseLockWriteDatabase("database");
     }
@@ -53,22 +53,14 @@ public final class DistributeLockContextTest {
     @Test
     public void assertIsLockedDatabase() {
         ComputeNodeInstance currentInstance = new ComputeNodeInstance(new InstanceDefinition(InstanceType.PROXY, "127.0.0.1@3307"));
-        DistributeLockContext distributeLockContext = new DistributeLockContext(mock(ClusterPersistRepository.class), currentInstance);
+        DistributeLockContext distributeLockContext = new DistributeLockContext(mock(ClusterPersistRepository.class));
         new InstanceContext(currentInstance, mock(WorkerIdGenerator.class), mock(ModeConfiguration.class), distributeLockContext).initLockContext();
         distributeLockContext.isLockedDatabase("database");
     }
     
     @Test
-    public void assertGetOrCreateGlobalLock() {
-        DistributeLockContext distributeLockContext = new DistributeLockContext(mock(ClusterPersistRepository.class), mock(ComputeNodeInstance.class));
-        ComputeNodeInstance currentInstance = new ComputeNodeInstance(new InstanceDefinition(InstanceType.PROXY, "127.0.0.1@3307"));
-        new InstanceContext(currentInstance, mock(WorkerIdGenerator.class), mock(ModeConfiguration.class), distributeLockContext).initLockContext();
-        assertNotNull(distributeLockContext.getMutexLock("database"));
-    }
-    
-    @Test
-    public void assertGetGlobalLock() {
-        DistributeLockContext distributeLockContext = new DistributeLockContext(mock(ClusterPersistRepository.class), mock(ComputeNodeInstance.class));
+    public void assertGetMutexLock() {
+        DistributeLockContext distributeLockContext = new DistributeLockContext(mock(ClusterPersistRepository.class));
         ComputeNodeInstance currentInstance = new ComputeNodeInstance(new InstanceDefinition(InstanceType.PROXY, "127.0.0.1@3307"));
         new InstanceContext(currentInstance, mock(WorkerIdGenerator.class), mock(ModeConfiguration.class), distributeLockContext).initLockContext();
         distributeLockContext.getMutexLock("database");

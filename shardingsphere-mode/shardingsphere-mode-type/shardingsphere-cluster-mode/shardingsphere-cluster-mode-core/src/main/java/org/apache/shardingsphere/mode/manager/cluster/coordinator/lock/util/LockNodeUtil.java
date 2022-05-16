@@ -29,13 +29,23 @@ public final class LockNodeUtil {
     private static final String LOCK_DELIMITER = "#@#";
     
     /**
-     * Generate mutex Lock leases node path.
+     * Generate Lock leases node path.
      *
      * @param lockName lock name
-     * @return mutex lock leases
+     * @return lock leases
      */
-    public static String generateMutexLockReleasedNodePath(final String lockName) {
+    public static String generateLockLeasesNodePath(final String lockName) {
         return lockName + "/leases";
+    }
+    
+    /**
+     * generate ack path name.
+     *
+     * @param lockName lock name
+     * @return ack path name
+     */
+    public static String generateAckPathName(final String lockName) {
+        return lockName + "/ack";
     }
     
     /**

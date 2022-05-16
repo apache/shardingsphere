@@ -15,30 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.database.event;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-
-import java.util.Collection;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 
 /**
- * ShardingSphere lock manager factory.
+ * Database locked event.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingSphereLockManagerFactory {
+@RequiredArgsConstructor
+@Getter
+public final class DatabaseLockedEvent implements GovernanceEvent {
     
-    static {
-        ShardingSphereServiceLoader.register(ShardingSphereDistributeLockManager.class);
-    }
-    
-    /**
-     * Get all instances of ShardingSphere lock manager.
-     * 
-     * @return got instances
-     */
-    public static Collection<ShardingSphereDistributeLockManager> getAllInstances() {
-        return ShardingSphereServiceLoader.getServiceInstances(ShardingSphereDistributeLockManager.class);
-    }
+    private final String database;
 }

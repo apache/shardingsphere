@@ -19,6 +19,8 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.wa
 
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeServiceFactory;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.event.MutexAckLockReleasedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.event.MutexAckLockedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.event.MutexLockReleasedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.event.MutexLockedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeType;
@@ -32,10 +34,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 
-/**
- * Global locks changed watcher.
- */
-public final class MutexLocksChangedWatcher implements GovernanceWatcher<GovernanceEvent> {
+public final class MutexLockChangedWatcher implements GovernanceWatcher<GovernanceEvent> {
     
     private final LockNodeService lockNode = LockNodeServiceFactory.getInstance().getLockNodeService(LockNodeType.MUTEX);
     
@@ -53,16 +52,29 @@ public final class MutexLocksChangedWatcher implements GovernanceWatcher<Governa
     public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
         Optional<String> lockedName = lockNode.parseLocksNodePath(event.getKey());
         if (lockedName.isPresent()) {
-            return handleMutexSchemaLocksEvent(event.getType(), lockedName.get());
+            return handleMutexLocksEvent(event.getType(), lockedName.get());
+        }
+        lockedName = lockNode.parseLocksAckNodePath(event.getKey());
+        if (lockedName.isPresent()) {
+            return handleMutexLocksAckEvent(event.getType(), lockedName.get());
         }
         return Optional.empty();
     }
     
-    private Optional<GovernanceEvent> handleMutexSchemaLocksEvent(final Type eventType, final String lockedName) {
+    private Optional<GovernanceEvent> handleMutexLocksEvent(final Type eventType, final String lockedName) {
         if (Type.ADDED == eventType) {
             return Optional.of(new MutexLockedEvent(lockedName));
         } else if (Type.DELETED == eventType) {
             return Optional.of(new MutexLockReleasedEvent(lockedName));
+        }
+        return Optional.empty();
+    }
+    
+    private Optional<GovernanceEvent> handleMutexLocksAckEvent(final Type eventType, final String ackLockedName) {
+        if (Type.ADDED == eventType) {
+            return Optional.of(new MutexAckLockedEvent(ackLockedName));
+        } else if (Type.DELETED == eventType) {
+            return Optional.of(new MutexAckLockReleasedEvent(ackLockedName));
         }
         return Optional.empty();
     }

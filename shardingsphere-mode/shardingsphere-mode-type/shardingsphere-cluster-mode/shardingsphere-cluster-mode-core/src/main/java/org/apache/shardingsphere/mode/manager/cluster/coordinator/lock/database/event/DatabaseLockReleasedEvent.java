@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.database.event;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.database.event;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

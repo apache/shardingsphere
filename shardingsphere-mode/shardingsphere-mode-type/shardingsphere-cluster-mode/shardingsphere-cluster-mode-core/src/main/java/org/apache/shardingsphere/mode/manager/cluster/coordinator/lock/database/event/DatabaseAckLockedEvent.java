@@ -15,18 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.database.event;
+
+import lombok.Getter;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeUtil;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 
 /**
- * Timeout milliseconds.
+ * Database ack locked event.
  */
-public final class TimeoutMilliseconds {
+@Getter
+public final class DatabaseAckLockedEvent implements GovernanceEvent {
     
-    public static final long MAX_TRY_LOCK = 3 * 60 * 1000L;
+    private final String database;
     
-    public static final long MIN_TRY_LOCK = 200L;
+    private final String lockedInstance;
     
-    public static final long DEFAULT_REGISTRY = 50L;
-    
-    public static final long MAX_ACK_EXPEND = 100L;
+    public DatabaseAckLockedEvent(final String ackLockedName) {
+        String[] databaseInstance = LockNodeUtil.parseAckLockName(ackLockedName);
+        this.database = databaseInstance[0];
+        this.lockedInstance = databaseInstance[1];
+    }
 }

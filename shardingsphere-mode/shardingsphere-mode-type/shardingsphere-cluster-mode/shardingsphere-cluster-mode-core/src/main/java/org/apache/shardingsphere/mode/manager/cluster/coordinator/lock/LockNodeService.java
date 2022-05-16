@@ -32,6 +32,8 @@ public interface LockNodeService {
     
     String LOCKS_NODE = "locks";
     
+    String LOCKED_ACK_NODE = "ack";
+    
     /**
      * Get sequence node path.
      *
@@ -55,13 +57,6 @@ public interface LockNodeService {
     String generateLocksName(String locksName);
     
     /**
-     * Get locked ack node path.
-     *
-     * @return locked ack node path
-     */
-    String getLockedAckNodePath();
-    
-    /**
      * Generate ack lock name.
      *
      * @param lockName lock name
@@ -79,12 +74,12 @@ public interface LockNodeService {
     Optional<String> parseLocksNodePath(String nodePath);
     
     /**
-     * Parse locked ack node path.
+     * Parse locks ack node path.
      *
-     * @param nodePath locked ack node path
-     * @return locked ack node path
+     * @param nodePath node path
+     * @return locks ack node path
      */
-    Optional<String> parseLockedAckNodePath(String nodePath);
+    Optional<String> parseLocksAckNodePath(String nodePath);
     
     /**
      * Get type.

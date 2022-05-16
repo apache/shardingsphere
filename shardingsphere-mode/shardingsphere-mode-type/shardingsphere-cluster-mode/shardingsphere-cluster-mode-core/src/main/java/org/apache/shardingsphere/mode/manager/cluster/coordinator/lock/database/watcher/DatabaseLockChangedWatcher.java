@@ -15,12 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.database.watcher;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.database.watcher;
 
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeServiceFactory;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.database.event.DatabaseLockReleasedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.database.event.DatabaseLockedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.database.event.DatabaseAckLockReleasedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.database.event.DatabaseAckLockedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.database.event.DatabaseLockReleasedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.database.event.DatabaseLockedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeType;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
@@ -32,10 +34,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 
-/**
- * Database locks changed watcher.
- */
-public final class DatabaseLocksChangedWatcher implements GovernanceWatcher<GovernanceEvent> {
+public final class DatabaseLockChangedWatcher implements GovernanceWatcher<GovernanceEvent> {
     
     private final LockNodeService lockNode = LockNodeServiceFactory.getInstance().getLockNodeService(LockNodeType.DATABASE);
     
@@ -45,24 +44,37 @@ public final class DatabaseLocksChangedWatcher implements GovernanceWatcher<Gove
     }
     
     @Override
-    public Collection<Type> getWatchingTypes() {
-        return Arrays.asList(Type.ADDED, Type.DELETED);
+    public Collection<DataChangedEvent.Type> getWatchingTypes() {
+        return Arrays.asList(DataChangedEvent.Type.ADDED, DataChangedEvent.Type.DELETED);
     }
     
     @Override
     public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
         Optional<String> lockedName = lockNode.parseLocksNodePath(event.getKey());
         if (lockedName.isPresent()) {
-            return handleGlobalSchemaLocksEvent(event.getType(), lockedName.get());
+            return handleDatabaseLocksEvent(event.getType(), lockedName.get());
+        }
+        lockedName = lockNode.parseLocksAckNodePath(event.getKey());
+        if (lockedName.isPresent()) {
+            return handleDatabaseLocksAckEvent(event.getType(), lockedName.get());
         }
         return Optional.empty();
     }
     
-    private Optional<GovernanceEvent> handleGlobalSchemaLocksEvent(final Type eventType, final String lockedName) {
+    private Optional<GovernanceEvent> handleDatabaseLocksEvent(final Type eventType, final String lockedName) {
         if (Type.ADDED == eventType) {
             return Optional.of(new DatabaseLockedEvent(lockedName));
         } else if (Type.DELETED == eventType) {
             return Optional.of(new DatabaseLockReleasedEvent(lockedName));
+        }
+        return Optional.empty();
+    }
+    
+    private Optional<GovernanceEvent> handleDatabaseLocksAckEvent(final Type eventType, final String ackLockedName) {
+        if (DataChangedEvent.Type.ADDED == eventType) {
+            return Optional.of(new DatabaseAckLockedEvent(ackLockedName));
+        } else if (DataChangedEvent.Type.DELETED == eventType) {
+            return Optional.of(new DatabaseAckLockReleasedEvent(ackLockedName));
         }
         return Optional.empty();
     }

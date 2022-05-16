@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockRegistryService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.MutexLockRegistryService;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.ReentrantMutexLockRegistryService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 import java.util.Collection;
@@ -29,26 +28,26 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public final class ShardingSphereMutexLockHolder {
+/**
+ * Inter mutex lock holder of ShardingSphere.
+ */
+public final class ShardingSphereInterMutexLockHolder {
     
-    private final Map<String, MutexLock> interMutexLocks = new LinkedHashMap<>();
+    private final Map<String, InterMutexLock> interMutexLocks = new LinkedHashMap<>();
     
-    private final Map<String, MutexLock> interReentrantMutexLocks = new LinkedHashMap<>();
+    private final Map<String, InterReentrantMutexLock> interReentrantMutexLocks = new LinkedHashMap<>();
     
     private final ClusterPersistRepository repository;
     
     private final LockRegistryService mutexLockRegistryService;
     
-    private final LockRegistryService reentrantMutexLockRegistryService;
-    
     private final ComputeNodeInstance currentInstance;
     
     private final Collection<ComputeNodeInstance> computeNodeInstances;
     
-    public ShardingSphereMutexLockHolder(final ClusterPersistRepository repository, final ComputeNodeInstance instance, final Collection<ComputeNodeInstance> nodeInstances) {
+    public ShardingSphereInterMutexLockHolder(final ClusterPersistRepository repository, final ComputeNodeInstance instance, final Collection<ComputeNodeInstance> nodeInstances) {
         this.repository = repository;
         mutexLockRegistryService = new MutexLockRegistryService(repository);
-        reentrantMutexLockRegistryService = new ReentrantMutexLockRegistryService(repository);
         currentInstance = instance;
         computeNodeInstances = nodeInstances;
     }
@@ -59,8 +58,8 @@ public final class ShardingSphereMutexLockHolder {
      * @param locksName locks name
      * @return inter mutex lock
      */
-    public synchronized MutexLock getInterMutexLock(final String locksName) {
-        MutexLock result = interMutexLocks.get(locksName);
+    public synchronized InterMutexLock getInterMutexLock(final String locksName) {
+        InterMutexLock result = interMutexLocks.get(locksName);
         if (null == result) {
             result = createInterMutexLock(locksName);
             interMutexLocks.put(locksName, result);
@@ -68,7 +67,7 @@ public final class ShardingSphereMutexLockHolder {
         return result;
     }
     
-    private MutexLock createInterMutexLock(final String locksName) {
+    private InterMutexLock createInterMutexLock(final String locksName) {
         return new InterMutexLock(locksName, mutexLockRegistryService, currentInstance, computeNodeInstances);
     }
     
@@ -78,10 +77,10 @@ public final class ShardingSphereMutexLockHolder {
      * @param locksName locks name
      * @return inter reentrant mutex lock
      */
-    public MutexLock getInterReentrantMutexLock(final String locksName) {
-        MutexLock result = interReentrantMutexLocks.get(locksName);
+    public InterReentrantMutexLock getInterReentrantMutexLock(final String locksName) {
+        InterReentrantMutexLock result = interReentrantMutexLocks.get(locksName);
         if (null == result) {
-            result = new InterReentrantMutexLock(locksName, reentrantMutexLockRegistryService);
+            result = new InterReentrantMutexLock(repository.getInternalReentrantMutexLock(locksName));
             interReentrantMutexLocks.put(locksName, result);
         }
         return result;
