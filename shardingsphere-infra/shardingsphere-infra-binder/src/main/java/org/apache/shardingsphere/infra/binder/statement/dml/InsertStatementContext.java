@@ -301,7 +301,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
      *
      * @return column names collection
      */
-    public Map<Integer, SimpleTableSegment> getTable() {
+    public Map<Integer, SimpleTableSegment> getTables() {
         Collection<InsertStatement> insertStatements = getInsertStatements();
         Map<Integer, SimpleTableSegment> result = new HashMap<>(insertStatements.size(), 1);
         Integer index = 0;

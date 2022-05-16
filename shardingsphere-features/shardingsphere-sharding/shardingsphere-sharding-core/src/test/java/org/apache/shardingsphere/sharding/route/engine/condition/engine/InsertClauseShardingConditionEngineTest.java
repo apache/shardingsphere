@@ -67,7 +67,7 @@ public final class InsertClauseShardingConditionEngineTest {
         shardingConditionEngine = new InsertClauseShardingConditionEngine(shardingRule, mock(ShardingSphereMetaData.class));
         when(insertStatementContext.getColumnNames()).thenReturn(Collections.singletonMap(0, Collections.singletonList("foo_col")));
         when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonMap(0, Collections.singletonList(createInsertValueContext())));
-        when(insertStatementContext.getTable()).thenReturn(Collections.singletonMap(0, new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_table")))));
+        when(insertStatementContext.getTables()).thenReturn(Collections.singletonMap(0, new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_table")))));
     }
     
     private InsertValueContext createInsertValueContext() {
