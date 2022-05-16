@@ -77,12 +77,11 @@ public final class MetaDataContextsBuilder {
      * @param frontendDatabaseType frontend database type
      * @param backendDatabaseType backend database type
      * @param databaseConfig database configuration
-     * @param props properties
      * @throws SQLException SQL exception
      */
     public void addDatabase(final String databaseName, final DatabaseType frontendDatabaseType, final DatabaseType backendDatabaseType,
-                            final DatabaseConfiguration databaseConfig, final Properties props) throws SQLException {
-        Collection<ShardingSphereRule> databaseRules = getDatabaseRules(databaseName, databaseConfig, props);
+                            final DatabaseConfiguration databaseConfig) throws SQLException {
+        Collection<ShardingSphereRule> databaseRules = getDatabaseRules(databaseName, databaseConfig);
         ShardingSphereDatabase database = DatabaseLoader.load(databaseName, frontendDatabaseType, backendDatabaseType, databaseConfig.getDataSources(), databaseRules, props);
         databaseConfigMap.put(databaseName, databaseConfig);
         databaseRulesMap.put(databaseName, databaseRules);
@@ -102,8 +101,8 @@ public final class MetaDataContextsBuilder {
         }
     }
     
-    private Collection<ShardingSphereRule> getDatabaseRules(final String databaseName, final DatabaseConfiguration databaseConfig, final Properties props) {
-        return SchemaRulesBuilder.buildRules(databaseName, databaseConfig, new ConfigurationProperties(props));
+    private Collection<ShardingSphereRule> getDatabaseRules(final String databaseName, final DatabaseConfiguration databaseConfig) {
+        return SchemaRulesBuilder.buildRules(databaseName, databaseConfig, props);
     }
     
     /**

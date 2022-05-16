@@ -33,7 +33,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
@@ -49,15 +48,15 @@ public final class SchemaLoader {
      * @param backendDatabaseType backend database type
      * @param dataSourceMap data source map
      * @param rules rules
-     * @param props properties
+     * @param props configuration properties
      * @return loaded schema
      * @throws SQLException SQL exception
      */
     public static Map<String, ShardingSphereSchema> load(final String defaultSchemaName, final DatabaseType frontendDatabaseType,
                                                          final DatabaseType backendDatabaseType, final Map<String, DataSource> dataSourceMap,
-                                                         final Collection<ShardingSphereRule> rules, final Properties props) throws SQLException {
+                                                         final Collection<ShardingSphereRule> rules, final ConfigurationProperties props) throws SQLException {
         Map<String, SchemaMetaData> schemaMetaDataMap = TableMetaDataBuilder.load(getAllTableNames(rules),
-                new SchemaBuilderMaterials(frontendDatabaseType, backendDatabaseType, dataSourceMap, rules, new ConfigurationProperties(props), defaultSchemaName));
+                new SchemaBuilderMaterials(frontendDatabaseType, backendDatabaseType, dataSourceMap, rules, props, defaultSchemaName));
         if (schemaMetaDataMap.isEmpty()) {
             return Collections.singletonMap(defaultSchemaName, new ShardingSphereSchema());
         }

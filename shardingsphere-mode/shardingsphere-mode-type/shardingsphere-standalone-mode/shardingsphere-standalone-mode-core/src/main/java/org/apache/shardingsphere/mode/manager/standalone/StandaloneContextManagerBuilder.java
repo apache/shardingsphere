@@ -83,7 +83,7 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
             if (frontendDatabaseType.getSystemSchemas().contains(entry.getKey())) {
                 continue;
             }
-            builder.addDatabase(entry.getKey(), frontendDatabaseType, backendDatabaseType, entry.getValue(), props);
+            builder.addDatabase(entry.getKey(), frontendDatabaseType, backendDatabaseType, entry.getValue());
         }
         builder.addSystemDatabases(frontendDatabaseType);
         return builder.build(metaDataPersistService);
