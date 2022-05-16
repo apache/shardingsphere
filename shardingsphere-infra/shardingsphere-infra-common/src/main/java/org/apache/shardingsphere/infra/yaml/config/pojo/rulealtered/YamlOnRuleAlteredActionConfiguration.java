@@ -105,7 +105,7 @@ public final class YamlOnRuleAlteredActionConfiguration implements YamlConfigura
         public static YamlOutputConfiguration buildWithDefaultValue() {
             return new YamlOutputConfiguration();
         }
-    
+        
         /**
          * Fill in null fields with default value.
          */

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.example.cluster.mode.raw.jdbc.config.local;
 
-import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
@@ -46,7 +45,7 @@ public final class LocalEncryptConfiguration implements ExampleConfiguration {
     }
     
     private EncryptRuleConfiguration getEncryptRuleConfiguration() {
-        return new EncryptRuleConfiguration(Collections.singleton(createEncryptTableRuleConfiguration()), ImmutableMap.of("status_encryptor", createEncryptAlgorithmConfiguration()));
+        return new EncryptRuleConfiguration(Collections.singleton(createEncryptTableRuleConfiguration()), Collections.singletonMap("status_encryptor", createEncryptAlgorithmConfiguration()));
     }
     
     private EncryptTableRuleConfiguration createEncryptTableRuleConfiguration() {

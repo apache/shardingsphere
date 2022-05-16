@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sharding.data.pipeline;
 
 import com.google.common.base.Joiner;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
@@ -66,6 +65,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -176,7 +176,7 @@ public final class ShardingRuleAlteredJobConfigurationPreparer implements RuleAl
     private static Map<LogicTableName, Set<String>> getShardingColumnsMap(final ShardingRuleConfiguration shardingRuleConfig, final Set<LogicTableName> reShardNeededTables) {
         Set<String> defaultDatabaseShardingColumns = extractShardingColumns(shardingRuleConfig.getDefaultDatabaseShardingStrategy());
         Set<String> defaultTableShardingColumns = extractShardingColumns(shardingRuleConfig.getDefaultTableShardingStrategy());
-        Map<LogicTableName, Set<String>> result = Maps.newConcurrentMap();
+        Map<LogicTableName, Set<String>> result = new ConcurrentHashMap<>();
         for (ShardingTableRuleConfiguration each : shardingRuleConfig.getTables()) {
             LogicTableName logicTableName = new LogicTableName(each.getLogicTable());
             if (!reShardNeededTables.contains(logicTableName)) {

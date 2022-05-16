@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.rule;
 
-import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
@@ -729,8 +728,7 @@ public final class ShardingRuleTest {
     @Test
     public void assertGetLogicAndActualTablesFromBindingTable() {
         ShardingRule actual = createMaximumShardingRule();
-        Map<String, String> logicAndActualTablesFromBindingTable =
-                actual.getLogicAndActualTablesFromBindingTable("ds_0", "LOGIC_TABLE", "table_0", Lists.newArrayList("logic_table", "sub_logic_table"));
+        Map<String, String> logicAndActualTablesFromBindingTable = actual.getLogicAndActualTablesFromBindingTable("ds_0", "LOGIC_TABLE", "table_0", Arrays.asList("logic_table", "sub_logic_table"));
         assertThat(logicAndActualTablesFromBindingTable.get("sub_logic_table"), is("sub_table_0"));
     }
     

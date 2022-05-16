@@ -78,7 +78,7 @@ public final class SingleTableSchemaBuilderTest {
         Collection<ShardingSphereRule> rules = Collections.singletonList(mockSingleTableRuleLoad(connection));
         mockSQLLoad(connection);
         Map<String, SchemaMetaData> actual = TableMetaDataBuilder.load(Arrays.asList(singleTableNames),
-                new SchemaBuilderMaterials(databaseType, Collections.singletonMap(DefaultDatabase.LOGIC_NAME, dataSource), rules, props, DefaultDatabase.LOGIC_NAME));
+                new SchemaBuilderMaterials(databaseType, databaseType, Collections.singletonMap(DefaultDatabase.LOGIC_NAME, dataSource), rules, props, DefaultDatabase.LOGIC_NAME));
         assertThat(actual.size(), is(1));
         assertThat(actual.values().iterator().next().getTables().size(), is(2));
         assertActualOfSingleTables(actual.values().iterator().next().getTables().values());

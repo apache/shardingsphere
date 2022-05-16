@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.api.config.rulealtered;
 
-import com.google.common.collect.Lists;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.yaml.RuleAlteredJobConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.yaml.YamlRuleAlteredJobConfiguration;
 import org.junit.Test;
@@ -51,6 +50,6 @@ public final class RuleAlteredJobConfigurationTest {
         YamlRuleAlteredJobConfiguration yamlJobConfig = new YamlRuleAlteredJobConfiguration();
         yamlJobConfig.setLogicTables("foo_tbl,bar_tbl");
         RuleAlteredJobConfiguration jobConfig = JOB_CONFIG_SWAPPER.swapToObject(yamlJobConfig);
-        assertThat(jobConfig.splitLogicTableNames(), is(Lists.newArrayList("foo_tbl", "bar_tbl")));
+        assertThat(jobConfig.splitLogicTableNames(), is(Arrays.asList("foo_tbl", "bar_tbl")));
     }
 }
