@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.instance;
 
-import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.instance.definition.InstanceId;
@@ -29,6 +28,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Random;
 import java.util.Set;
@@ -52,10 +52,10 @@ public final class InstanceContextTest {
         InstanceContext context = new InstanceContext(new ComputeNodeInstance(instanceDefinition), new WorkerIdGeneratorFixture(Long.MIN_VALUE), modeConfig, lockContext);
         StateType actual = context.getInstance().getState().getCurrentState();
         assertThat(actual, is(StateType.OK));
-        context.updateInstanceStatus(instanceDefinition.getInstanceId().getId(), Lists.newArrayList(StateType.CIRCUIT_BREAK.name()));
+        context.updateInstanceStatus(instanceDefinition.getInstanceId().getId(), Collections.singleton(StateType.CIRCUIT_BREAK.name()));
         actual = context.getInstance().getState().getCurrentState();
         assertThat(actual, is(StateType.CIRCUIT_BREAK));
-        context.updateInstanceStatus(instanceDefinition.getInstanceId().getId(), Lists.newArrayList());
+        context.updateInstanceStatus(instanceDefinition.getInstanceId().getId(), Collections.emptyList());
         actual = context.getInstance().getState().getCurrentState();
         assertThat(actual, is(StateType.OK));
     }

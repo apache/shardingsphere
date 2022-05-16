@@ -32,7 +32,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -69,13 +68,11 @@ public final class DatabaseDiscoveryRuleQueryResultSetTest {
     }
     
     private RuleConfiguration createRuleConfiguration() {
-        DatabaseDiscoveryDataSourceRuleConfiguration databaseDiscoveryDataSourceRuleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("ms_group", Arrays.asList("ds_0", "ds_1"),
-                "heartbeat_test", "type_test");
+        DatabaseDiscoveryDataSourceRuleConfiguration databaseDiscoveryDataSourceRuleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration(
+                "ms_group", Arrays.asList("ds_0", "ds_1"), "heartbeat_test", "type_test");
         ShardingSphereAlgorithmConfiguration shardingSphereAlgorithmConfig = new ShardingSphereAlgorithmConfiguration("MySQL.MGR", new Properties());
-        Map<String, ShardingSphereAlgorithmConfiguration> discoverTypes = new HashMap<>(1, 1);
-        discoverTypes.put("type_test", shardingSphereAlgorithmConfig);
-        Map<String, DatabaseDiscoveryHeartBeatConfiguration> discoveryHeartbeat = new HashMap<>(1, 1);
-        discoveryHeartbeat.put("heartbeat_test", new DatabaseDiscoveryHeartBeatConfiguration(new Properties()));
+        Map<String, DatabaseDiscoveryHeartBeatConfiguration> discoveryHeartbeat = Collections.singletonMap("heartbeat_test", new DatabaseDiscoveryHeartBeatConfiguration(new Properties()));
+        Map<String, ShardingSphereAlgorithmConfiguration> discoverTypes = Collections.singletonMap("type_test", shardingSphereAlgorithmConfig);
         return new DatabaseDiscoveryRuleConfiguration(Collections.singleton(databaseDiscoveryDataSourceRuleConfig), discoveryHeartbeat, discoverTypes);
     }
 }

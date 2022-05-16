@@ -44,8 +44,6 @@ import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJ
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreator;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration.InputConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rulealtered.YamlOnRuleAlteredActionConfiguration.YamlInputConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rulealtered.OnRuleAlteredActionConfigurationYamlSwapper.InputConfigurationSwapper;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -110,9 +108,6 @@ public final class InventoryTaskSplitter {
         Collection<InventoryDumperConfiguration> result = new LinkedList<>();
         RuleAlteredContext ruleAlteredContext = jobContext.getRuleAlteredContext();
         InputConfiguration inputConfig = ruleAlteredContext.getOnRuleAlteredActionConfig().getInput();
-        if (null == inputConfig) {
-            inputConfig = new InputConfigurationSwapper().swapToObject(YamlInputConfiguration.buildWithDefaultValue());
-        }
         int batchSize = inputConfig.getBatchSize();
         JobRateLimitAlgorithm rateLimitAlgorithm = ruleAlteredContext.getInputRateLimitAlgorithm();
         Collection<IngestPosition<?>> inventoryPositions = getInventoryPositions(jobContext, dumperConfig, dataSource, metaDataLoader);
@@ -183,6 +178,7 @@ public final class InventoryTaskSplitter {
         RuleAlteredJobConfiguration jobConfig = jobContext.getJobConfig();
         String sql = PipelineSQLBuilderFactory.getInstance(jobConfig.getSourceDatabaseType())
                 .buildSplitByPrimaryKeyRangeSQL(dumperConfig.getSchemaName(new LogicTableName(dumperConfig.getLogicTableName())), dumperConfig.getActualTableName(), dumperConfig.getPrimaryKey());
+        int shardingSize = jobContext.getRuleAlteredContext().getOnRuleAlteredActionConfig().getInput().getShardingSize();
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -190,7 +186,7 @@ public final class InventoryTaskSplitter {
             long beginId = 0;
             for (int i = 0; i < Integer.MAX_VALUE; i++) {
                 ps.setLong(1, beginId);
-                ps.setLong(2, jobConfig.getShardingSize());
+                ps.setLong(2, shardingSize);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (!rs.next()) {
                         log.info("getPositionByPrimaryKeyRange, rs.next false, break");

@@ -87,7 +87,7 @@ public final class EncryptProjectionTokenGeneratorTest {
         when(sqlStatementContext.getSqlStatement().getProjections()).thenReturn(projections);
         when(sqlStatementContext.getSubqueryContexts().values()).thenReturn(Collections.emptyList());
         SimpleTableSegment doctorOneTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("doctor1")));
-        when(sqlStatementContext.getTablesContext()).thenReturn(new TablesContext(Arrays.asList(doctorTable, doctorOneTable), DatabaseTypeEngine.getDefaultDatabaseType()));
+        when(sqlStatementContext.getTablesContext()).thenReturn(new TablesContext(Arrays.asList(doctorTable, doctorOneTable), DatabaseTypeEngine.getDatabaseType("MySQL")));
         when(sqlStatementContext.getProjectionsContext().getProjections()).thenReturn(Collections.singletonList(new ColumnProjection("a", "mobile", null)));
         Collection<SubstitutableColumnNameToken> actual = generator.generateSQLTokens(sqlStatementContext);
         assertThat(actual.size(), is(1));
@@ -105,7 +105,7 @@ public final class EncryptProjectionTokenGeneratorTest {
         when(sqlStatementContext.getSqlStatement().getProjections()).thenReturn(projections);
         when(sqlStatementContext.getSubqueryContexts().values()).thenReturn(Collections.emptyList());
         SimpleTableSegment sameDoctorTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("doctor")));
-        when(sqlStatementContext.getTablesContext()).thenReturn(new TablesContext(Arrays.asList(doctorTable, sameDoctorTable), DatabaseTypeEngine.getDefaultDatabaseType()));
+        when(sqlStatementContext.getTablesContext()).thenReturn(new TablesContext(Arrays.asList(doctorTable, sameDoctorTable), DatabaseTypeEngine.getDatabaseType("MySQL")));
         when(sqlStatementContext.getProjectionsContext().getProjections()).thenReturn(Collections.singletonList(new ColumnProjection("a", "mobile", null)));
         Collection<SubstitutableColumnNameToken> actual = generator.generateSQLTokens(sqlStatementContext);
         assertThat(actual.size(), is(1));
@@ -122,7 +122,7 @@ public final class EncryptProjectionTokenGeneratorTest {
         when(sqlStatementContext.getSubqueryContexts().values()).thenReturn(Collections.emptyList());
         SimpleTableSegment doctorTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("doctor")));
         SimpleTableSegment doctorOneTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("doctor1")));
-        when(sqlStatementContext.getTablesContext()).thenReturn(new TablesContext(Arrays.asList(doctorTable, doctorOneTable), DatabaseTypeEngine.getDefaultDatabaseType()));
+        when(sqlStatementContext.getTablesContext()).thenReturn(new TablesContext(Arrays.asList(doctorTable, doctorOneTable), DatabaseTypeEngine.getDatabaseType("MySQL")));
         when(sqlStatementContext.getProjectionsContext().getProjections()).thenReturn(Collections.singletonList(new ColumnProjection("doctor", "mobile", null)));
         Collection<SubstitutableColumnNameToken> actual = generator.generateSQLTokens(sqlStatementContext);
         assertThat(actual.size(), is(1));

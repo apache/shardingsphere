@@ -30,7 +30,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -64,8 +63,7 @@ public final class DatabaseDiscoveryHeartbeatQueryResultSetTest {
         Properties discoveryTypeProps = new Properties();
         discoveryTypeProps.put("type_key", "type_value");
         DatabaseDiscoveryHeartBeatConfiguration shardingSphereAlgorithmConfig = new DatabaseDiscoveryHeartBeatConfiguration(discoveryTypeProps);
-        Map<String, DatabaseDiscoveryHeartBeatConfiguration> discoverHeartbeat = new HashMap<>(1, 1);
-        discoverHeartbeat.put("test_name", shardingSphereAlgorithmConfig);
+        Map<String, DatabaseDiscoveryHeartBeatConfiguration> discoverHeartbeat = Collections.singletonMap("test_name", shardingSphereAlgorithmConfig);
         return new DatabaseDiscoveryRuleConfiguration(Collections.singleton(databaseDiscoveryDataSourceRuleConfig), discoverHeartbeat, Collections.emptyMap());
     }
 }

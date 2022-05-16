@@ -308,6 +308,7 @@ The text of each license is also included at licenses/LICENSE-[project].txt.
     transactions-jdbc 5.0.8: https://www.atomikos.com, Apache 2.0
     transactions-jta 5.0.8: https://www.atomikos.com, Apache 2.0
     vertx-core 4.2.3: https://github.com/eclipse-vertx/vert.x, Apache 2.0
+    jooq 3.14.15: https://www.jooq.org, Apache 2.0
     
 ========================================================================
 BSD licenses
@@ -355,4 +356,14 @@ The text of each license is also included at licenses/LICENSE-[project].txt.
     bcprov-jdk15on 1.70: https://www.bouncycastle.org, MIT
     checker-qual 3.5.0: https://github.com/typetools/checker-framework/blob/master/checker-qual, MIT
     jul-to-slf4j 1.7.7: https://www.slf4j.org, MIT
-    slf4j 1.7.7: https://www.slf4j.org , MIT
+    slf4j 1.7.7: https://www.slf4j.org, MIT
+    jnanoid 2.0.0: https://github.com/aventrix/jnanoid, MIT 
+
+========================================================================
+CC0 1.0 licenses
+========================================================================
+
+The following components are provided under the CC0 1.0 License. See project link for details.
+The text of each license is also included at licenses/LICENSE-[project].txt.
+
+    reactive-streams 1.0.2: http://www.reactive-streams.org, CC0 1.0

@@ -74,7 +74,6 @@ public final class InventoryTaskSplitterTest {
     
     @Test
     public void assertSplitInventoryDataWithEmptyTable() throws SQLException {
-        taskConfig.getJobConfig().setShardingSize(10);
         initEmptyTablePrimaryEnvironment(taskConfig.getDumperConfig());
         List<InventoryTask> actual = inventoryTaskSplitter.splitInventoryData(jobContext);
         assertThat(actual.size(), is(1));
@@ -84,7 +83,6 @@ public final class InventoryTaskSplitterTest {
     
     @Test
     public void assertSplitInventoryDataWithIntPrimary() throws SQLException {
-        taskConfig.getJobConfig().setShardingSize(10);
         initIntPrimaryEnvironment(taskConfig.getDumperConfig());
         List<InventoryTask> actual = inventoryTaskSplitter.splitInventoryData(jobContext);
         assertThat(actual.size(), is(10));

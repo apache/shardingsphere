@@ -47,7 +47,7 @@ public final class TableMetaDataUtilTest {
     public void assertGetTableMetaDataLoadMaterialWhenConfigCheckMetaDataEnable() {
         DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class);
         when(dataNodeContainedRule.getDataNodesByTableName("t_order")).thenReturn(mockShardingDataNodes());
-        SchemaBuilderMaterials materials = new SchemaBuilderMaterials(mock(DatabaseType.class), mockDataSourceMap(),
+        SchemaBuilderMaterials materials = new SchemaBuilderMaterials(mock(DatabaseType.class), mock(DatabaseType.class), mockDataSourceMap(),
                 Arrays.asList(dataNodeContainedRule, mock(DataSourceContainedRule.class)), mock(ConfigurationProperties.class), "sharding_db");
         Collection<TableMetaDataLoaderMaterial> actual = TableMetaDataUtil.getTableMetaDataLoadMaterial(Collections.singleton("t_order"), materials, true);
         assertThat(actual.size(), is(2));
@@ -64,7 +64,7 @@ public final class TableMetaDataUtilTest {
     public void assertGetTableMetaDataLoadMaterialWhenNotConfigCheckMetaDataEnable() {
         DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class);
         when(dataNodeContainedRule.getDataNodesByTableName("t_order")).thenReturn(mockShardingDataNodes());
-        SchemaBuilderMaterials materials = new SchemaBuilderMaterials(mock(DatabaseType.class), mockDataSourceMap(),
+        SchemaBuilderMaterials materials = new SchemaBuilderMaterials(mock(DatabaseType.class), mock(DatabaseType.class), mockDataSourceMap(),
                 Arrays.asList(dataNodeContainedRule, mock(DataSourceContainedRule.class)), mock(ConfigurationProperties.class), "sharding_db");
         Collection<TableMetaDataLoaderMaterial> actual = TableMetaDataUtil.getTableMetaDataLoadMaterial(Collections.singleton("t_order"), materials, false);
         assertThat(actual.size(), is(1));
@@ -78,7 +78,7 @@ public final class TableMetaDataUtilTest {
     public void assertGetTableMetaDataLoadMaterialWhenNotConfigCheckMetaDataEnableForSingleTableDataNode() {
         DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class);
         when(dataNodeContainedRule.getDataNodesByTableName("t_single")).thenReturn(mockSingleTableDataNodes());
-        SchemaBuilderMaterials materials = new SchemaBuilderMaterials(mock(DatabaseType.class), mockDataSourceMap(),
+        SchemaBuilderMaterials materials = new SchemaBuilderMaterials(mock(DatabaseType.class), mock(DatabaseType.class), mockDataSourceMap(),
                 Arrays.asList(dataNodeContainedRule, mock(DataSourceContainedRule.class)), mock(ConfigurationProperties.class), "public");
         Collection<TableMetaDataLoaderMaterial> actual = TableMetaDataUtil.getTableMetaDataLoadMaterial(Collections.singleton("t_single"), materials, false);
         assertThat(actual.size(), is(1));

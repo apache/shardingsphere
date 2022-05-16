@@ -44,7 +44,6 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,7 +71,7 @@ public final class ExportDatabaseConfigurationHandlerTest {
     
     @Test
     public void assertExportDatabaseExecutor() throws SQLException {
-        ExportDatabaseConfigurationHandler handler = new ExportDatabaseConfigurationHandler().init(getParameter(createSQLStatement(), mock(ConnectionSession.class)));
+        ExportDatabaseConfigurationHandler handler = new ExportDatabaseConfigurationHandler().init(createParameter(createSQLStatement(), mock(ConnectionSession.class)));
         handler.execute();
         handler.next();
         List<Object> data = new ArrayList<>(handler.getRowData());
@@ -119,11 +118,9 @@ public final class ExportDatabaseConfigurationHandlerTest {
     }
     
     private Map<String, TableMetaData> createTableMap() {
-        Map<String, TableMetaData> result = new HashMap<>(1, 1);
         List<ColumnMetaData> columns = Collections.singletonList(new ColumnMetaData("order_id", 0, false, false, false));
         List<IndexMetaData> indexes = Collections.singletonList(new IndexMetaData("primary"));
-        result.put("t_order", new TableMetaData("t_order", columns, indexes, Collections.emptyList()));
-        return result;
+        return Collections.singletonMap("t_order", new TableMetaData("t_order", columns, indexes, Collections.emptyList()));
     }
     
     private ShardingTableRuleConfiguration createTableRuleConfiguration() {
@@ -136,7 +133,7 @@ public final class ExportDatabaseConfigurationHandlerTest {
         return new ExportDatabaseConfigurationStatement(new SchemaSegment(0, 0, new IdentifierValue("sharding_db")), null);
     }
     
-    private HandlerParameter<ExportDatabaseConfigurationStatement> getParameter(final ExportDatabaseConfigurationStatement statement, final ConnectionSession connectionSession) {
+    private HandlerParameter<ExportDatabaseConfigurationStatement> createParameter(final ExportDatabaseConfigurationStatement statement, final ConnectionSession connectionSession) {
         return new HandlerParameter<>(statement, new MySQLDatabaseType(), connectionSession);
     }
 }
