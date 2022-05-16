@@ -25,6 +25,11 @@ import static org.junit.Assert.assertThat;
 public final class PipelineMetaDataNodeTest {
     
     @Test
+    public void assertGetScalingRootPath() {
+        assertThat(PipelineMetaDataNode.getScalingRootPath(), is("/scaling"));
+    }
+    
+    @Test
     public void assertGetJobConfigPath() {
         String actualOffsetPath = PipelineMetaDataNode.getScalingJobOffsetPath("0130317c30317c3054317c7368617264696e675f6462");
         assertThat(actualOffsetPath, is("/scaling/0130317c30317c3054317c7368617264696e675f6462/offset"));
