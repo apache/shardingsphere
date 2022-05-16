@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.database.loader;
 
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -29,7 +30,6 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Properties;
 
 /**
  * Database loader.
@@ -44,13 +44,13 @@ public final class DatabaseLoader {
      * @param backendDatabaseType backend database type
      * @param dataSourceMap data source map
      * @param rules rules
-     * @param props properties
+     * @param props configuration properties
      * @return loaded database
      * @throws SQLException SQL exception
      */
     public static ShardingSphereDatabase load(final String databaseName, final DatabaseType frontendDatabaseType,
                                               final DatabaseType backendDatabaseType, final Map<String, DataSource> dataSourceMap,
-                                              final Collection<ShardingSphereRule> rules, final Properties props) throws SQLException {
+                                              final Collection<ShardingSphereRule> rules, final ConfigurationProperties props) throws SQLException {
         Map<String, ShardingSphereSchema> schemas = new LinkedHashMap<>();
         schemas.putAll(SchemaLoader.load(databaseName, frontendDatabaseType, backendDatabaseType, dataSourceMap, rules, props));
         schemas.putAll(SystemSchemaBuilder.build(databaseName, frontendDatabaseType));

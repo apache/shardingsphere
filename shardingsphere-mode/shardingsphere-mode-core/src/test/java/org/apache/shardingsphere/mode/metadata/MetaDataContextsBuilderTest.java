@@ -57,7 +57,7 @@ public final class MetaDataContextsBuilderTest {
                 new ShardingSphereAlgorithmConfiguration("ALL_PERMITTED", new Properties()));
         MetaDataContextsBuilder builder = new MetaDataContextsBuilder(Collections.singleton(authorityRuleConfig), props);
         builder.addDatabase("logic_db", DatabaseTypeEngine.getDatabaseType("MySQL"), DatabaseTypeEngine.getDatabaseType("MySQL"),
-                new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.singletonList(new FixtureRuleConfiguration())), props);
+                new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.singletonList(new FixtureRuleConfiguration())));
         MetaDataContexts actual = builder.build(mock(MetaDataPersistService.class));
         assertRules(actual);
         assertTrue(actual.getMetaData("logic_db").getResource().getDataSources().isEmpty());
