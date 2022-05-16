@@ -21,8 +21,6 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.infra.rule.identifier.type.InstanceAwareRule;
@@ -74,10 +72,7 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
         Collection<RuleConfiguration> globalRuleConfigs = metaDataPersistService.getGlobalRuleService().load();
         ConfigurationProperties props = new ConfigurationProperties(metaDataPersistService.getPropsService().load());
         Map<String, ? extends DatabaseConfiguration> databaseConfigMap = getDatabaseConfigMap(databaseNames, metaDataPersistService, parameter);
-        DatabaseType frontendDatabaseType = DatabaseTypeEngine.getFrontendDatabaseType(databaseConfigMap, props);
-        MetaDataContextsBuilder result = new MetaDataContextsBuilder(databaseConfigMap, globalRuleConfigs, props);
-        result.addSystemDatabases(frontendDatabaseType);
-        return result;
+        return new MetaDataContextsBuilder(databaseConfigMap, globalRuleConfigs, props);
     }
     
     private Map<String, DatabaseConfiguration> getDatabaseConfigMap(final Collection<String> databaseNames, final MetaDataPersistService metaDataPersistService,

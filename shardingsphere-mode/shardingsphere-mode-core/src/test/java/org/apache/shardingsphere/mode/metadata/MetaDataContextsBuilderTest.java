@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.mode.metadata.fixture.FixtureRule;
@@ -80,7 +79,6 @@ public final class MetaDataContextsBuilderTest {
     @Test
     public void assertBuildWithEmptyRuleConfigurations() throws SQLException {
         MetaDataContextsBuilder builder = new MetaDataContextsBuilder(Collections.emptyMap(), Collections.emptyList(), new ConfigurationProperties(new Properties()));
-        builder.addSystemDatabases(new MySQLDatabaseType());
         MetaDataContexts actual = builder.build(mock(MetaDataPersistService.class));
         assertThat(actual.getMetaDataMap().size(), is(4));
         assertTrue(actual.getMetaDataMap().containsKey("information_schema"));

@@ -19,8 +19,6 @@ package org.apache.shardingsphere.mode.manager.memory;
 
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.rule.identifier.type.InstanceAwareRule;
@@ -59,10 +57,7 @@ public final class MemoryContextManagerBuilder implements ContextManagerBuilder 
     
     private MetaDataContextsBuilder createMetaDataContextsBuilder(final ContextManagerBuilderParameter parameter) throws SQLException {
         ConfigurationProperties props = new ConfigurationProperties(parameter.getProps());
-        DatabaseType frontendDatabaseType = DatabaseTypeEngine.getFrontendDatabaseType(parameter.getDatabaseConfigs(), props);
-        MetaDataContextsBuilder result = new MetaDataContextsBuilder(parameter.getDatabaseConfigs(), parameter.getGlobalRuleConfigs(), props);
-        result.addSystemDatabases(frontendDatabaseType);
-        return result;
+        return new MetaDataContextsBuilder(parameter.getDatabaseConfigs(), parameter.getGlobalRuleConfigs(), props);
     }
     
     private InstanceContext buildInstanceContext(final ContextManagerBuilderParameter parameter) {

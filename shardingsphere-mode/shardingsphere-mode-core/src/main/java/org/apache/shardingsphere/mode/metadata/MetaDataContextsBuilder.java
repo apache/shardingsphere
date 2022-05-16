@@ -75,6 +75,7 @@ public final class MetaDataContextsBuilder {
                 addDatabase(entry.getKey(), frontendDatabaseType, backendDatabaseType, entry.getValue());
             }
         }
+        addSystemDatabases(frontendDatabaseType);
     }
     
     private void addDatabase(final String databaseName, final DatabaseType frontendDatabaseType, final DatabaseType backendDatabaseType,
@@ -86,12 +87,7 @@ public final class MetaDataContextsBuilder {
         databaseMap.put(databaseName, database);
     }
     
-    /**
-     * Add system databases.
-     *
-     * @param frontendDatabaseType frontend database type
-     */
-    public void addSystemDatabases(final DatabaseType frontendDatabaseType) {
+    private void addSystemDatabases(final DatabaseType frontendDatabaseType) {
         for (String each : frontendDatabaseType.getSystemDatabaseSchemaMap().keySet()) {
             if (!databaseMap.containsKey(each)) {
                 databaseMap.put(each, DatabaseLoader.load(each, frontendDatabaseType));
