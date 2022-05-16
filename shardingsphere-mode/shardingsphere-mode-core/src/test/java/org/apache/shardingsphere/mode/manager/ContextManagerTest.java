@@ -121,7 +121,7 @@ public final class ContextManagerTest {
     }
     
     @Test
-    public void assertAlterDatabase() {
+    public void assertAlterSchemas() {
         contextManager.alterSchemas("foo_db", Collections.singletonMap("foo_db", new ShardingSphereSchema(Collections.singletonMap("foo_table",
                 new TableMetaData("foo_table", Collections.emptyList(), Collections.emptyList(), Collections.emptyList())))));
         assertTrue(contextManager.getMetaDataContexts().getMetaDataMap().get("foo_db").getSchemaByName("foo_db").containsTable("foo_table"));
