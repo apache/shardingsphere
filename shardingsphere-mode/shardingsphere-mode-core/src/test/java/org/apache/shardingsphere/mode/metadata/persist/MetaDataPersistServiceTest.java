@@ -173,7 +173,7 @@ public final class MetaDataPersistServiceTest {
     
     @Test
     public void assertPersistTransactionRule() {
-        initGlobalRulePersistService();
+        mockGlobalRulePersistServiceForLoad();
         Properties properties = createTransactionProperties();
         metaDataPersistService.persistTransactionRule(properties, true);
         Collection<RuleConfiguration> ruleConfigs = globalRuleService.load();
@@ -187,7 +187,7 @@ public final class MetaDataPersistServiceTest {
         return result;
     }
     
-    private void initGlobalRulePersistService() {
+    private void mockGlobalRulePersistServiceForLoad() {
         RuleConfiguration ruleConfiguration = new TransactionRuleConfiguration(TransactionType.LOCAL.name(), null, new Properties());
         when(globalRuleService.load()).thenReturn(Collections.singleton(ruleConfiguration));
     }
