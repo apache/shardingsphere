@@ -33,17 +33,17 @@ import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class ComposeConstructorAdviceTest {
-
+    
     @Mock
     private ConstructorAdvice constructorAdvice;
-
+    
     private ComposeConstructorAdvice actual;
-
+    
     @Before
     public void setUp() {
         actual = new ComposeConstructorAdvice(Collections.singleton(constructorAdvice));
     }
-
+    
     @Test
     public void assertOnConstructor() {
         AdviceTargetObject adviceTargetObject = mock(AdviceTargetObject.class);
