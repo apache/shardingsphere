@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.sql.parser.api;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
+import com.github.benmanes.caffeine.cache.CacheLoader;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.LoadingCache;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.core.database.parser.SQLParserExecutor;
 import org.junit.Test;
@@ -47,8 +47,8 @@ public final class SQLParserEngineTest {
         sqlParserExecutorFiled.setAccessible(true);
         parseTreeCacheField.setAccessible(true);
         sqlParserExecutorFiled.set(sqlParserEngine, sqlParserExecutor);
-        LoadingCache<String, ParseASTNode> parseTreeCache = CacheBuilder.newBuilder().softValues().initialCapacity(128)
-                .maximumSize(1024).concurrencyLevel(4).build(new CacheLoader<String, ParseASTNode>() {
+        LoadingCache<String, ParseASTNode> parseTreeCache = Caffeine.newBuilder().softValues().initialCapacity(128)
+                .maximumSize(1024).build(new CacheLoader<String, ParseASTNode>() {
                     
                     @ParametersAreNonnullByDefault
                     @Override
