@@ -120,21 +120,21 @@ public abstract class BaseITCase {
         return result;
     }
     
-    protected void addResource(final Connection connection) throws SQLException {
-        addResource(connection, "root", "root");
-    }
-    
-    protected void addResource(final Connection connection, final String username, final String password) throws SQLException {
+    protected void addSourceResource(final Connection connection, final String username, final String password) throws SQLException {
         Properties queryProps = createQueryProperties();
         String addSourceResource = commonSQLCommand.getSourceAddResourceTemplate().replace("${user}", username).replace("${password}", password)
                 .replace("${ds0}", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_0"), queryProps))
                 .replace("${ds1}", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_1"), queryProps));
         connection.createStatement().execute(addSourceResource);
+    }
+    
+    protected void addTargetSourceResource(final String username, final String password) {
+        Properties queryProps = createQueryProperties();
         String addTargetResource = commonSQLCommand.getTargetAddResourceTemplate().replace("${user}", username).replace("${password}", password)
                 .replace("${ds2}", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_2"), queryProps))
                 .replace("${ds3}", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_3"), queryProps))
                 .replace("${ds4}", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_4"), queryProps));
-        connection.createStatement().execute(addTargetResource);
+        getJdbcTemplate().execute(addTargetResource);
     }
     
     private String getActualJdbcUrlTemplate(final String databaseName) {

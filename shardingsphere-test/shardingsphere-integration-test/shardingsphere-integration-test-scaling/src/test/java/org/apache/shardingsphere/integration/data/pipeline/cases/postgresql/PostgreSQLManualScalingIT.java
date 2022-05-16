@@ -58,7 +58,7 @@ public final class PostgreSQLManualScalingIT extends BasePostgreSQLITCase {
     
     @Before
     public void setUp() throws InterruptedException {
-        addResource();
+        addSourceResource();
         initShardingAlgorithm();
         // TODO wait for algorithm init
         TimeUnit.SECONDS.sleep(3);
@@ -75,6 +75,7 @@ public final class PostgreSQLManualScalingIT extends BasePostgreSQLITCase {
         getSqlHelper().initTableData(true);
         startIncrementTask(new SnowflakeKeyGenerateAlgorithm());
         assertOriginalSourceSuccess();
+        addTargetSourceResource("root", "root");
         getJdbcTemplate().execute(getCommonSQLCommand().getAutoAlterTableRule());
         String jobId = String.valueOf(getJdbcTemplate().queryForMap("SHOW SCALING LIST").get("id"));
         getIncreaseTaskThread().join(60 * 1000L);

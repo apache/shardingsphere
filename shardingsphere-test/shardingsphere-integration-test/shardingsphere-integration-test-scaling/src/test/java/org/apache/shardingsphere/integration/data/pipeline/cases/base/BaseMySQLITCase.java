@@ -49,12 +49,12 @@ public abstract class BaseMySQLITCase extends BaseITCase {
     }
     
     @SneakyThrows(SQLException.class)
-    protected void addResource() {
+    protected void addSourceResource() {
         Properties queryProps = createQueryProperties();
         // TODO if use jdbcurl like "jdbc:mysql:localhost:3307/sharding_db", will throw exception show "Datasource or ShardingSphere rule does not exist"
         try (Connection connection = DriverManager.getConnection(JDBC_URL_APPENDER.appendQueryProperties(getComposedContainer().getProxyJdbcUrl(""), queryProps), "root", "root")) {
             connection.createStatement().execute("USE sharding_db");
-            addResource(connection);
+            addSourceResource(connection, "root", "root");
         }
     }
     

@@ -49,10 +49,10 @@ public abstract class BasePostgreSQLITCase extends BaseITCase {
     }
     
     @SneakyThrows(SQLException.class)
-    protected void addResource() {
+    protected void addSourceResource() {
         Properties queryProps = createQueryProperties();
         try (Connection connection = DriverManager.getConnection(JDBC_URL_APPENDER.appendQueryProperties(getComposedContainer().getProxyJdbcUrl("sharding_db"), queryProps), "root", "root")) {
-            addResource(connection);
+            addSourceResource(connection, "root", "root");
         }
     }
     

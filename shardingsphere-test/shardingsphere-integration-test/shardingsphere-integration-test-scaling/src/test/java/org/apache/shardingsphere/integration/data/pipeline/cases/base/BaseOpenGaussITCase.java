@@ -49,11 +49,12 @@ public abstract class BaseOpenGaussITCase extends BaseITCase {
         sqlHelper = new ScalingTableSQLHelper(DATABASE_TYPE, extraSQLCommand, getJdbcTemplate());
     }
     
+    // TODO add source resource should be common,after all problem be solved.
     @SneakyThrows(SQLException.class)
-    protected void addResource() {
+    protected void addSourceResource() {
         Properties queryProps = createQueryProperties();
         try (Connection connection = DriverManager.getConnection(JDBC_URL_APPENDER.appendQueryProperties(getComposedContainer().getProxyJdbcUrl("sharding_db"), queryProps), "root", "root")) {
-            addResource(connection, "gaussdb", "Root@123");
+            addSourceResource(connection, "gaussdb", "Root@123");
         }
     }
     
