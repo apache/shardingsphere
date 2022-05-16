@@ -38,6 +38,7 @@ import org.apache.shardingsphere.proxy.backend.text.data.impl.UnicastDatabaseBac
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.QueryableRALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.HintDistSQLBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable.SetVariableHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rql.RQLBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.skip.SkipBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.transaction.TransactionAutoCommitHandler;
 import org.apache.shardingsphere.proxy.backend.text.transaction.TransactionBackendHandler;
@@ -243,14 +244,35 @@ public final class TextProtocolBackendHandlerFactoryTest {
     @Test(expected = SQLParsingException.class)
     public void assertNewInstanceWithErrorSQL() throws SQLException {
         String sql = "SELECT";
-        TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, Optional::empty, connectionSession);
-        assertThat(actual, instanceOf(SkipBackendHandler.class));
+        TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, Optional::empty, connectionSession);
     }
     
     @Test(expected = SQLParsingException.class)
     public void assertNewInstanceWithErrorRDL() throws SQLException {
         String sql = "CREATE SHARDING";
+        TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, Optional::empty, connectionSession);
+    }
+    
+    @Test(expected = UnsupportedOperationException.class)
+    public void assertUnsupportedNonQueryDistSQLInTransaction() throws SQLException {
+        when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(true);
+        String sql = "CREATE SHARDING KEY GENERATOR snowflake_key_generator (TYPE(NAME=SNOWFLAKE, PROPERTIES(\"max-vibration-offset\"=3)));";
+        TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, Optional::empty, connectionSession);
+    }
+    
+    @Test
+    public void assertUnsupportedQueryableRALStatementInTransaction() throws SQLException {
+        when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(true);
+        String sql = "SHOW TRANSACTION RULE;";
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, Optional::empty, connectionSession);
-        assertThat(actual, instanceOf(SkipBackendHandler.class));
+        assertThat(actual, instanceOf(QueryableRALBackendHandler.class));
+    }
+    
+    @Test
+    public void assertUnsupportedRQLStatementInTransaction() throws SQLException {
+        when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(true);
+        String sql = "SHOW SINGLE TABLE RULES";
+        TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, Optional::empty, connectionSession);
+        assertThat(actual, instanceOf(RQLBackendHandler.class));
     }
 }

@@ -38,8 +38,6 @@ import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -66,16 +64,15 @@ public final class SetVariableExecutorTest {
     
     @Test
     public void assertExecuteWithConfigurationKey() throws SQLException {
-        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        ContextManager contextManager = new ContextManager();
         MetaDataContexts metaDataContexts = new MetaDataContexts(null);
-        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
+        contextManager.init(metaDataContexts, null, null);
         ProxyContext.getInstance().init(contextManager);
         SetVariableStatement statement = new SetVariableStatement("proxy_frontend_flush_threshold", "1024");
         new SetVariableHandler().init(getParameter(statement, connectionSession)).execute();
         Object actualValue = contextManager.getMetaDataContexts().getProps().getProps().get("proxy-frontend-flush-threshold");
         assertThat(actualValue.toString(), is("1024"));
-        // FIXME should be 1024, but is 128
-        assertThat(contextManager.getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD), is(128));
+        assertThat(contextManager.getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD), is(1024));
     }
     
     private HandlerParameter<SetVariableStatement> getParameter(final SetVariableStatement statement, final ConnectionSession connectionSession) {

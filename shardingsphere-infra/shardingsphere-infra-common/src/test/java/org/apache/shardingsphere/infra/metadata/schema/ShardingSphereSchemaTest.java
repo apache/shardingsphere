@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.infra.metadata.schema;
 
-import com.google.common.collect.Sets;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.HashSet;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
@@ -34,7 +34,7 @@ public final class ShardingSphereSchemaTest {
     
     @Test
     public void assertGetAllTableNames() {
-        assertThat(new ShardingSphereSchema(Collections.singletonMap("tbl", mock(TableMetaData.class))).getAllTableNames(), is(Sets.newHashSet("tbl")));
+        assertThat(new ShardingSphereSchema(Collections.singletonMap("tbl", mock(TableMetaData.class))).getAllTableNames(), is(new HashSet<>(Collections.singleton("tbl"))));
     }
     
     @Test

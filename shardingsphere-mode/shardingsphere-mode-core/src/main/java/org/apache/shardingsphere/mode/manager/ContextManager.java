@@ -153,19 +153,19 @@ public final class ContextManager implements AutoCloseable {
         if (null != metaDataContexts.getMetaData(databaseName).getSchemaByName(schemaName)) {
             return;
         }
-        FederationDatabaseMetaData databaseMetaData = metaDataContexts.getOptimizerContext().getFederationMetaData().getDatabases().get(databaseName);
-        databaseMetaData.putTableMetadata(schemaName, new TableMetaData());
-        metaDataContexts.getOptimizerContext().getPlannerContexts().put(databaseName, OptimizerPlannerContextFactory.create(databaseMetaData));
+        FederationDatabaseMetaData federationDatabaseMetaData = metaDataContexts.getOptimizerContext().getFederationMetaData().getDatabases().get(databaseName);
+        federationDatabaseMetaData.putTableMetadata(schemaName, new TableMetaData());
+        metaDataContexts.getOptimizerContext().getPlannerContexts().put(databaseName, OptimizerPlannerContextFactory.create(federationDatabaseMetaData));
         metaDataContexts.getMetaDataMap().get(databaseName).getSchemas().put(schemaName, new ShardingSphereSchema());
     }
     
     /**
-     * Alter database.
+     * Alter schemas.
      *
      * @param databaseName database name
      * @param schemas schemas
      */
-    public void alterDatabase(final String databaseName, final Map<String, ShardingSphereSchema> schemas) {
+    public void alterSchemas(final String databaseName, final Map<String, ShardingSphereSchema> schemas) {
         ShardingSphereMetaData alteredMetaData = new ShardingSphereMetaData(databaseName, metaDataContexts.getMetaData(databaseName).getFrontendDatabaseType(),
                 metaDataContexts.getMetaData(databaseName).getResource(), metaDataContexts.getMetaData(databaseName).getRuleMetaData(), schemas);
         Map<String, ShardingSphereMetaData> alteredMetaDataMap = new HashMap<>(metaDataContexts.getMetaDataMap());
@@ -177,14 +177,14 @@ public final class ContextManager implements AutoCloseable {
     }
     
     /**
-     * Alter database.
+     * Alter schema.
      *
      * @param databaseName database name
      * @param schemaName schema name
      * @param changedTableMetaData changed table meta data
      * @param deletedTable deleted table
      */
-    public void alterDatabase(final String databaseName, final String schemaName, final TableMetaData changedTableMetaData, final String deletedTable) {
+    public void alterSchema(final String databaseName, final String schemaName, final TableMetaData changedTableMetaData, final String deletedTable) {
         if (null != metaDataContexts.getMetaData(databaseName)) {
             Optional.ofNullable(changedTableMetaData).ifPresent(optional -> alterTableSchema(databaseName, schemaName, optional));
             Optional.ofNullable(deletedTable).ifPresent(optional -> deleteTable(databaseName, schemaName, optional));
@@ -394,7 +394,7 @@ public final class ContextManager implements AutoCloseable {
     public void reloadMetaData(final String databaseName, final String schemaName) {
         try {
             Map<String, ShardingSphereSchema> schemas = loadActualSchema(databaseName, schemaName);
-            alterDatabase(databaseName, schemas);
+            alterSchemas(databaseName, schemas);
             for (ShardingSphereSchema each : schemas.values()) {
                 metaDataContexts.getMetaDataPersistService().ifPresent(optional -> optional.getSchemaMetaDataService().persistTables(databaseName, schemaName, each));
             }
