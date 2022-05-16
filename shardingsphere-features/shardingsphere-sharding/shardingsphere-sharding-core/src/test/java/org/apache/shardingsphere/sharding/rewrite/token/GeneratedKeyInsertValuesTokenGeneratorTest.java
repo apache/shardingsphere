@@ -45,10 +45,10 @@ public final class GeneratedKeyInsertValuesTokenGeneratorTest {
     public void assertGenerateSQLToken() {
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class);
         GeneratedKeyContext generatedKeyContext = getGeneratedKeyContext();
-        when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Optional.of(generatedKeyContext));
-        when(insertStatementContext.getInsertValueContexts().get(0)).thenReturn(Collections.singletonList(mock(InsertValueContext.class)));
+        when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Collections.singletonMap(0, Optional.of(generatedKeyContext)));
+        when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonMap(0, Collections.singletonList(mock(InsertValueContext.class))));
         List<List<Object>> parameterGroups = Collections.singletonList(new ArrayList<>(Collections.singletonList(new Object())));
-        when(insertStatementContext.getGroupedParameters().get(0)).thenReturn(parameterGroups);
+        when(insertStatementContext.getGroupedParameters()).thenReturn(Collections.singletonMap(0, parameterGroups));
         GeneratedKeyInsertValuesTokenGenerator generator = new GeneratedKeyInsertValuesTokenGenerator();
         generator.setPreviousSQLTokens(getPreviousSQLTokens());
         SQLToken sqlToken = generator.generateSQLToken(insertStatementContext);

@@ -44,15 +44,15 @@ public final class GeneratedKeyInsertValuesTokenGenerator extends BaseGeneratedK
     
     @Override
     protected boolean isGenerateSQLToken(final InsertStatementContext insertStatementContext) {
-        return !insertStatementContext.getSqlStatement().getValues().isEmpty() && insertStatementContext.getGeneratedKeyContext().isPresent()
-                && !insertStatementContext.getGeneratedKeyContext().get().getGeneratedValues().isEmpty();
+        return !insertStatementContext.getSqlStatement().getValues().isEmpty() && insertStatementContext.getGeneratedKeyContext().get(0).isPresent()
+                && !insertStatementContext.getGeneratedKeyContext().get(0).get().getGeneratedValues().isEmpty();
     }
     
     @Override
     public SQLToken generateSQLToken(final InsertStatementContext insertStatementContext) {
         Optional<InsertValuesToken> result = findPreviousSQLToken();
         Preconditions.checkState(result.isPresent());
-        Optional<GeneratedKeyContext> generatedKey = insertStatementContext.getGeneratedKeyContext();
+        Optional<GeneratedKeyContext> generatedKey = insertStatementContext.getGeneratedKeyContext().get(0);
         Preconditions.checkState(generatedKey.isPresent());
         Iterator<Comparable<?>> generatedValues = generatedKey.get().getGeneratedValues().iterator();
         int count = 0;

@@ -55,12 +55,12 @@ public final class ShardingGeneratedKeyInsertValueParameterRewriterTest {
         assertFalse(shardingGeneratedKeyInsertValueParameterRewriter.isNeedRewrite(selectStatementContext));
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
         assertFalse(shardingGeneratedKeyInsertValueParameterRewriter.isNeedRewrite(insertStatementContext));
-        when(insertStatementContext.getGeneratedKeyContext().isPresent()).thenReturn(Boolean.TRUE);
+        when(insertStatementContext.getGeneratedKeyContext().get(0).isPresent()).thenReturn(Boolean.TRUE);
         assertFalse(shardingGeneratedKeyInsertValueParameterRewriter.isNeedRewrite(insertStatementContext));
-        when(insertStatementContext.getGeneratedKeyContext().get().isGenerated()).thenReturn(Boolean.TRUE);
-        when(insertStatementContext.getGeneratedKeyContext().get().getGeneratedValues().isEmpty()).thenReturn(Boolean.TRUE);
+        when(insertStatementContext.getGeneratedKeyContext().get(0).get().isGenerated()).thenReturn(Boolean.TRUE);
+        when(insertStatementContext.getGeneratedKeyContext().get(0).get().getGeneratedValues().isEmpty()).thenReturn(Boolean.TRUE);
         assertFalse(shardingGeneratedKeyInsertValueParameterRewriter.isNeedRewrite(insertStatementContext));
-        when(insertStatementContext.getGeneratedKeyContext().get().getGeneratedValues().isEmpty()).thenReturn(Boolean.FALSE);
+        when(insertStatementContext.getGeneratedKeyContext().get(0).get().getGeneratedValues().isEmpty()).thenReturn(Boolean.FALSE);
         assertTrue(shardingGeneratedKeyInsertValueParameterRewriter.isNeedRewrite(insertStatementContext));
     }
     
@@ -90,9 +90,9 @@ public final class ShardingGeneratedKeyInsertValueParameterRewriterTest {
     
     private InsertStatementContext getInsertStatementContext() {
         InsertStatementContext result = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
-        when(result.getGeneratedKeyContext().isPresent()).thenReturn(true);
-        when(result.getGeneratedKeyContext().get().getColumnName()).thenReturn("testColumnName");
-        when(result.getGeneratedKeyContext().get().getGeneratedValues()).thenReturn(Collections.singleton(TEST_GENERATED_VALUE));
+        when(result.getGeneratedKeyContext().get(0).isPresent()).thenReturn(true);
+        when(result.getGeneratedKeyContext().get(0).get().getColumnName()).thenReturn("testColumnName");
+        when(result.getGeneratedKeyContext().get(0).get().getGeneratedValues()).thenReturn(Collections.singleton(TEST_GENERATED_VALUE));
         when(result.getGroupedParameters().get(0)).thenReturn(Collections.singletonList(Collections.singletonList("testGroupedParameter")));
         when(result.getInsertValueContexts().get(0).get(0).getParameterCount()).thenReturn(TEST_PARAMETER_COUNT);
         return result;

@@ -518,7 +518,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private Optional<GeneratedKeyContext> findGeneratedKey(final ExecutionContext executionContext) {
         return executionContext.getSqlStatementContext() instanceof InsertStatementContext
-                ? ((InsertStatementContext) executionContext.getSqlStatementContext()).getGeneratedKeyContext()
+                ? ((InsertStatementContext) executionContext.getSqlStatementContext()).getGeneratedKeyContext().get(0)
                 : Optional.empty();
     }
     

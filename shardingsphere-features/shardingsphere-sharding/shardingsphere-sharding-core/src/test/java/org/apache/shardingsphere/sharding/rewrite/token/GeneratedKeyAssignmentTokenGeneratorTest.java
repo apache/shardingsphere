@@ -45,7 +45,7 @@ public final class GeneratedKeyAssignmentTokenGeneratorTest {
         when(generatedKeyContext.getColumnName()).thenReturn("testColumnName");
         when(generatedKeyContext.getGeneratedValues()).thenReturn(Collections.singleton(4));
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class);
-        when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Optional.of(generatedKeyContext));
+        when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Collections.singletonMap(0, Optional.of(generatedKeyContext)));
         MySQLInsertStatement insertStatement = mock(MySQLInsertStatement.class);
         when(insertStatementContext.getSqlStatement()).thenReturn(insertStatement);
         SetAssignmentSegment setAssignmentSegment = mock(SetAssignmentSegment.class);

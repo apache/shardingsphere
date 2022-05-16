@@ -23,6 +23,7 @@ import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.keygen.Ge
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.InsertColumnsSegment;
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -39,7 +40,7 @@ public final class GeneratedKeyInsertColumnTokenGeneratorTest {
         final String testColumnName = "TEST_COLUMN_NAME";
         when(generatedKeyContext.getColumnName()).thenReturn(testColumnName);
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
-        when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Optional.of(generatedKeyContext));
+        when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Collections.singletonMap(0, Optional.of(generatedKeyContext)));
         InsertColumnsSegment insertColumnsSegment = mock(InsertColumnsSegment.class);
         final int testStopIndex = 4;
         when(insertColumnsSegment.getStopIndex()).thenReturn(testStopIndex);

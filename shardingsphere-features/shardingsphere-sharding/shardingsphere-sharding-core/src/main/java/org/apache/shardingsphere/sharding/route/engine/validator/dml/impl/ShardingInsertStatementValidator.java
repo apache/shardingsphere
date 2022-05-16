@@ -57,7 +57,7 @@ public final class ShardingInsertStatementValidator extends ShardingDMLStatement
         if (null == insertStatementContext.getInsertSelectContext()) {
             validateMultipleTable(shardingRule, sqlStatementContext);
         }
-        String tableName = insertStatementContext.getTable().getTableName().getIdentifier().getValue();
+        String tableName = insertStatementContext.getTable().get(0).getTableName().getIdentifier().getValue();
         Optional<SubquerySegment> insertSelectSegment = sqlStatementContext.getSqlStatement().getInsertSelect();
         if (insertSelectSegment.isPresent() && isContainsKeyGenerateStrategy(shardingRule, tableName)
                 && !isContainsKeyGenerateColumn(shardingRule, sqlStatementContext.getSqlStatement().getColumns(), tableName)) {
@@ -91,7 +91,7 @@ public final class ShardingInsertStatementValidator extends ShardingDMLStatement
             boolean singleRoutingOrSameShardingCondition = routeContext.isSingleRouting() || shardingConditions.isSameShardingCondition();
             Preconditions.checkState(singleRoutingOrSameShardingCondition, "Subquery sharding conditions must be same with primary query.");
         }
-        String tableName = insertStatementContext.getTable().getTableName().getIdentifier().getValue();
+        String tableName = insertStatementContext.getTable().get(0).getTableName().getIdentifier().getValue();
         Collection<AssignmentSegment> assignments = InsertStatementHandler.getOnDuplicateKeyColumnsSegment(sqlStatementContext.getSqlStatement())
                 .map(OnDuplicateKeyColumnsSegment::getColumns).orElse(Collections.emptyList());
         Optional<ShardingConditions> onDuplicateKeyShardingConditions = createShardingConditions(sqlStatementContext, shardingRule, assignments, parameters);

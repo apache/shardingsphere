@@ -46,7 +46,7 @@ public final class GeneratedKeyAssignmentTokenGenerator extends BaseGeneratedKey
     
     @Override
     public GeneratedKeyAssignmentToken generateSQLToken(final InsertStatementContext insertStatementContext) {
-        Optional<GeneratedKeyContext> generatedKey = insertStatementContext.getGeneratedKeyContext();
+        Optional<GeneratedKeyContext> generatedKey = insertStatementContext.getGeneratedKeyContext().get(0);
         Preconditions.checkState(generatedKey.isPresent());
         InsertStatement insertStatement = insertStatementContext.getSqlStatement();
         Preconditions.checkState(InsertStatementHandler.getSetAssignmentSegment(insertStatement).isPresent());

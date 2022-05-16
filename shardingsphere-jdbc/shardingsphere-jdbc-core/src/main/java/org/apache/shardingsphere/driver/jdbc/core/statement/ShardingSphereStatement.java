@@ -601,7 +601,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     private Optional<GeneratedKeyContext> findGeneratedKey() {
         return executionContext.getSqlStatementContext() instanceof InsertStatementContext
-                ? ((InsertStatementContext) executionContext.getSqlStatementContext()).getGeneratedKeyContext()
+                ? ((InsertStatementContext) executionContext.getSqlStatementContext()).getGeneratedKeyContext().get(0)
                 : Optional.empty();
     }
 }

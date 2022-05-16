@@ -45,9 +45,9 @@ public final class GeneratedKeyForUseDefaultInsertColumnsTokenGenerator extends 
     }
     
     private List<String> getColumnNames(final InsertStatementContext insertStatementContext) {
-        Optional<GeneratedKeyContext> generatedKey = insertStatementContext.getGeneratedKeyContext();
+        Optional<GeneratedKeyContext> generatedKey = insertStatementContext.getGeneratedKeyContext().get(0);
         Preconditions.checkState(generatedKey.isPresent());
-        List<String> result = new ArrayList<>(insertStatementContext.getColumnNames());
+        List<String> result = new ArrayList<>(insertStatementContext.getColumnNames().get(0));
         result.remove(generatedKey.get().getColumnName());
         result.add(generatedKey.get().getColumnName());
         return result;

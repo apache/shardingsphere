@@ -38,16 +38,16 @@ public final class ShardingGeneratedKeyInsertValueParameterRewriter implements P
     @Override
     public boolean isNeedRewrite(final SQLStatementContext<?> sqlStatementContext) {
         return sqlStatementContext instanceof InsertStatementContext
-                && ((InsertStatementContext) sqlStatementContext).getGeneratedKeyContext().isPresent()
-                && ((InsertStatementContext) sqlStatementContext).getGeneratedKeyContext().get().isGenerated()
-                && !((InsertStatementContext) sqlStatementContext).getGeneratedKeyContext().get().getGeneratedValues().isEmpty();
+                && ((InsertStatementContext) sqlStatementContext).getGeneratedKeyContext().get(0).isPresent()
+                && ((InsertStatementContext) sqlStatementContext).getGeneratedKeyContext().get(0).get().isGenerated()
+                && !((InsertStatementContext) sqlStatementContext).getGeneratedKeyContext().get(0).get().getGeneratedValues().isEmpty();
     }
     
     @Override
     public void rewrite(final ParameterBuilder parameterBuilder, final InsertStatementContext insertStatementContext, final List<Object> parameters) {
-        Preconditions.checkState(insertStatementContext.getGeneratedKeyContext().isPresent());
-        ((GroupedParameterBuilder) parameterBuilder).setDerivedColumnName(insertStatementContext.getGeneratedKeyContext().get().getColumnName());
-        Iterator<Comparable<?>> generatedValues = insertStatementContext.getGeneratedKeyContext().get().getGeneratedValues().iterator();
+        Preconditions.checkState(insertStatementContext.getGeneratedKeyContext().get(0).isPresent());
+        ((GroupedParameterBuilder) parameterBuilder).setDerivedColumnName(insertStatementContext.getGeneratedKeyContext().get(0).get().getColumnName());
+        Iterator<Comparable<?>> generatedValues = insertStatementContext.getGeneratedKeyContext().get(0).get().getGeneratedValues().iterator();
         int count = 0;
         int parameterCount = 0;
         for (List<Object> each : insertStatementContext.getGroupedParameters().get(0)) {

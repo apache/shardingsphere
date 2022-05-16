@@ -56,7 +56,8 @@ public final class ShardingInsertValuesTokenGeneratorTest {
     @Test
     public void assertGenerateSQLToken() {
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
-        when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(new InsertValueContext(Collections.emptyList(), Collections.emptyList(), 4)));
+        InsertValueContext insertValueContext = new InsertValueContext(Collections.emptyList(), Collections.emptyList(), 4);
+        when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonMap(0, Collections.singletonList(insertValueContext)));
         when(insertStatementContext.getSqlStatement().getValues()).thenReturn(Collections.singleton(new InsertValuesSegment(1, 2, Collections.emptyList())));
         ShardingInsertValuesTokenGenerator generator = new ShardingInsertValuesTokenGenerator();
         InsertValuesToken insertValuesToken = generator.generateSQLToken(insertStatementContext);
