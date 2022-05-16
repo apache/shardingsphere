@@ -44,8 +44,8 @@ public final class EncryptParameterAssignmentToken extends EncryptAssignmentToke
     @Override
     public String toString() {
         StringJoiner result = new StringJoiner(", ");
-        for (String input : columnNames) {
-            result.add(input + " = ?");
+        for (String each : columnNames) {
+            result.add(each + " = ?");
         }
         return result.toString();
     }
