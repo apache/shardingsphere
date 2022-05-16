@@ -50,8 +50,8 @@ public final class ShardingGeneratedKeyInsertValueParameterRewriter implements P
         Iterator<Comparable<?>> generatedValues = insertStatementContext.getGeneratedKeyContext().get().getGeneratedValues().iterator();
         int count = 0;
         int parameterCount = 0;
-        for (List<Object> each : insertStatementContext.getGroupedParameters()) {
-            parameterCount += insertStatementContext.getInsertValueContexts().get(count).getParameterCount();
+        for (List<Object> each : insertStatementContext.getGroupedParameters().get(0)) {
+            parameterCount += insertStatementContext.getInsertValueContexts().get(0).get(count).getParameterCount();
             Comparable<?> generatedValue = generatedValues.next();
             if (!each.isEmpty()) {
                 ((GroupedParameterBuilder) parameterBuilder).getParameterBuilders().get(count).addAddedParameters(parameterCount, Lists.newArrayList(generatedValue));

@@ -47,6 +47,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.Ora
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -63,21 +64,17 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     
     private final TablesContext tablesContext;
     
-    private final List<String> columnNames;
-    
-    private final Map<Integer, List<String>> columnNamesMap = new LinkedHashMap<>();
+    private final Map<Integer, List<String>> columnNames = new LinkedHashMap<>();
     
     private final Map<String, ShardingSphereMetaData> metaDataMap;
     
     private final String defaultDatabaseName;
     
-    private final List<String> insertColumnNames;
+    private Map<Integer, List<String>> insertColumnNames = new LinkedHashMap<>();
     
     private final Map<Integer, List<List<ExpressionSegment>>> valueExpressions = new LinkedHashMap<>();
     
-    private List<InsertValueContext> insertValueContexts;
-    
-    private Map<Integer, List<InsertValueContext>> insertValueContextsMap = new LinkedHashMap<>();
+    private Map<Integer, List<InsertValueContext>> insertValueContexts = new LinkedHashMap<>();
     
     private InsertSelectContext insertSelectContext;
     
@@ -90,22 +87,21 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
         super(sqlStatement);
         this.metaDataMap = metaDataMap;
         this.defaultDatabaseName = defaultDatabaseName;
-        insertColumnNames = getInsertColumnNames();
         tablesContext = new TablesContext(getAllSimpleTableSegments(), getDatabaseType());
         ShardingSphereSchema schema = getSchema(metaDataMap, defaultDatabaseName);
         AtomicInteger parametersOffset = new AtomicInteger(0);
-        List<InsertStatement> insertStatements = getInsertStatements();
-        for (int index = 0; index < insertStatements.size(); index++) {
-            InsertStatement insertStatement = insertStatements.get(index);
+        Integer index = 0;
+        for (InsertStatement insertStatement : getInsertStatements()) {
             List<List<ExpressionSegment>> valueExpression = getAllValueExpressions(insertStatement);
             valueExpressions.put(index, valueExpression);
-            insertValueContextsMap.put(index, getInsertValueContexts(parameters, parametersOffset, valueExpression));
-            columnNamesMap.put(index, useDefaultColumns() ? schema.getAllColumnNames(insertStatement.getTable().getTableName().getIdentifier().getValue()) : insertColumnNames);
+            insertValueContexts.put(index, getInsertValueContexts(parameters, parametersOffset, valueExpression));
+            List<String> insertColumnNameList = getInsertColumnNames(insertStatement);
+            insertColumnNames.put(index, insertColumnNameList);
+            columnNames.put(index, useDefaultColumns() ? schema.getAllColumnNames(insertStatement.getTable().getTableName().getIdentifier().getValue()) : insertColumnNameList);
             generatedKeyContexts.put(index, new GeneratedKeyContextEngine(insertStatement, schema)
-                    .createGenerateKeyContext(insertColumnNames, getAllValueExpressions(insertStatement), parameters).orElse(null));
+                    .createGenerateKeyContext(insertColumnNameList, getAllValueExpressions(insertStatement), parameters).orElse(null));
+            index++;
         }
-        insertValueContexts = insertValueContextsMap.get(0);
-        columnNames = columnNamesMap.get(0);
         onDuplicateKeyUpdateValueContext = getOnDuplicateKeyUpdateValueContext(parameters, parametersOffset).orElse(null);
         insertSelectContext = getInsertSelectContext(metaDataMap, parameters, parametersOffset, defaultDatabaseName).orElse(null);
     }
@@ -122,7 +118,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     
     private Collection<SimpleTableSegment> getAllSimpleTableSegments() {
         TableExtractor tableExtractor = new TableExtractor();
-        tableExtractor.extractTablesFromInsert(getInsertStatements());
+        getInsertStatements().stream().forEach(each -> tableExtractor.extractTablesFromInsert(each));
         return tableExtractor.getRewriteTables();
     }
     
@@ -164,8 +160,12 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
      *
      * @return column names for descending order
      */
-    public Iterator<String> getDescendingColumnNames() {
-        return new LinkedList<>(columnNames).descendingIterator();
+    public Map<Integer, Iterator<String>> getDescendingColumnNames() {
+        Map<Integer, Iterator<String>> result = new HashMap<>(columnNames.size(), 1);
+        for (Integer index : columnNames.keySet()) {
+            result.put(index, new LinkedList<>(columnNames.get(index)).descendingIterator());
+        }
+        return result;
     }
     
     /**
@@ -173,9 +173,17 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
      *
      * @return grouped parameters
      */
-    public List<List<Object>> getGroupedParameters() {
+    public Map<Integer, List<List<Object>>> getGroupedParameters() {
+        Map<Integer, List<List<Object>>> result = new HashMap<>(insertValueContexts.size(), 1);
+        for (Integer index : insertValueContexts.keySet()) {
+            result.put(index, getGroupedParameters(index));
+        }
+        return result;
+    }
+    
+    private List<List<Object>> getGroupedParameters(Integer index) {
         List<List<Object>> result = new LinkedList<>();
-        for (InsertValueContext each : insertValueContexts) {
+        for (InsertValueContext each : insertValueContexts.get(index)) {
             result.add(each.getParameters());
         }
         if (null != insertSelectContext) {
@@ -201,8 +209,12 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
      *
      * @return generated key context
      */
-    public Optional<GeneratedKeyContext> getGeneratedKeyContext() {
-        return Optional.ofNullable(generatedKeyContexts.get(0));
+    public Map<Integer, Optional<GeneratedKeyContext>> getGeneratedKeyContext() {
+        Map<Integer, Optional<GeneratedKeyContext>> result = new HashMap<>(generatedKeyContexts.size(), 1);
+        for (Integer index : generatedKeyContexts.keySet()) {
+            result.put(index, Optional.ofNullable(generatedKeyContexts.get(index)));
+        }
+        return result;
     }
     
     @Override
@@ -232,15 +244,18 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
         return setAssignment.isPresent() ? 1 : insertStatement.getValues().size();
     }
     
+    private List<String> getInsertColumnNames(final InsertStatement insertStatement) {
+        Optional<SetAssignmentSegment> setAssignment = InsertStatementHandler.getSetAssignmentSegment(insertStatement);
+        return setAssignment.map(this::getColumnNamesForSetAssignment).orElseGet(() -> getColumnNamesForInsertColumns(insertStatement.getColumns()));
+    }
+    
     /**
      * Get insert column names.
      *
      * @return column names collection
      */
-    public List<String> getInsertColumnNames() {
-        InsertStatement insertStatement = getInsertStatements().get(0);
-        Optional<SetAssignmentSegment> setAssignment = InsertStatementHandler.getSetAssignmentSegment(insertStatement);
-        return setAssignment.map(this::getColumnNamesForSetAssignment).orElseGet(() -> getColumnNamesForInsertColumns(insertStatement.getColumns()));
+    public Map<Integer, List<String>> getInsertColumnNames() {
+        return insertColumnNames;
     }
     
     private List<String> getColumnNamesForSetAssignment(final SetAssignmentSegment setAssignment) {
@@ -286,8 +301,15 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
      *
      * @return column names collection
      */
-    public SimpleTableSegment getTable() {
-        return getInsertStatements().get(0).getTable();
+    public Map<Integer, SimpleTableSegment> getTable() {
+        Collection<InsertStatement> insertStatements = getInsertStatements();
+        Map<Integer, SimpleTableSegment> result = new HashMap<>(insertStatements.size(), 1);
+        Integer index = 0;
+        for (InsertStatement insertStatement : insertStatements) {
+            result.put(index, insertStatement.getTable());
+            index++;
+        }
+        return result;
     }
     
     /**
@@ -295,7 +317,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
      *
      * @return InsertStatement collection
      */
-    public List<InsertStatement> getInsertStatements() {
+    public Collection<InsertStatement> getInsertStatements() {
         Optional<InsertMultiTableElementSegment> optional = getInsertMultiTableElementSegment();
         if (optional.isPresent()) {
             return new LinkedList<>(optional.get().getInsertStatements());
@@ -314,14 +336,15 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     public void setUpParameters(final List<Object> parameters) {
         AtomicInteger parametersOffset = new AtomicInteger(0);
         ShardingSphereSchema schema = getSchema(metaDataMap, defaultDatabaseName);
-        List<InsertStatement> insertStatements = getInsertStatements();
-        for (int index = 0; index < insertStatements.size(); index++) {
+        Collection<InsertStatement> insertStatements = getInsertStatements();
+        Integer index = 0;
+        for (InsertStatement insertStatement : insertStatements) {
             List<InsertValueContext> insertValueContext = getInsertValueContexts(parameters, parametersOffset, valueExpressions.get(index));
-            insertValueContextsMap.put(index, insertValueContext);
-            generatedKeyContexts.put(index, new GeneratedKeyContextEngine(insertStatements.get(index), schema).createGenerateKeyContext(insertColumnNames,
+            insertValueContexts.put(index, insertValueContext);
+            generatedKeyContexts.put(index, new GeneratedKeyContextEngine(insertStatement, schema).createGenerateKeyContext(getInsertColumnNames(insertStatement),
                     valueExpressions.get(index), parameters).orElse(null));
+            index++;
         }
-        insertValueContexts = insertValueContextsMap.get(0);
         onDuplicateKeyUpdateValueContext = getOnDuplicateKeyUpdateValueContext(parameters, parametersOffset).orElse(null);
         insertSelectContext = getInsertSelectContext(metaDataMap, parameters, parametersOffset, defaultDatabaseName).orElse(null);
     }

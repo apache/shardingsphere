@@ -63,7 +63,7 @@ public final class EncryptInsertValueParameterRewriter implements ParameterRewri
     @Override
     public void rewrite(final ParameterBuilder parameterBuilder, final InsertStatementContext insertStatementContext, final List<Object> parameters) {
         String tableName = insertStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
-        Iterator<String> descendingColumnNames = insertStatementContext.getDescendingColumnNames();
+        Iterator<String> descendingColumnNames = insertStatementContext.getDescendingColumnNames().get(0);
         String schemaName = insertStatementContext.getTablesContext().getSchemaName().orElseGet(() -> insertStatementContext.getDatabaseType().getDefaultSchema(databaseName));
         while (descendingColumnNames.hasNext()) {
             String columnName = descendingColumnNames.next();
@@ -76,14 +76,14 @@ public final class EncryptInsertValueParameterRewriter implements ParameterRewri
                                      final EncryptAlgorithm<?, ?> encryptAlgorithm, final EncryptContext encryptContext) {
         int columnIndex = getColumnIndex(parameterBuilder, insertStatementContext, encryptContext.getColumnName());
         int count = 0;
-        for (List<Object> each : insertStatementContext.getGroupedParameters()) {
-            int parameterIndex = insertStatementContext.getInsertValueContexts().get(count).getParameterIndex(columnIndex);
+        for (List<Object> each : insertStatementContext.getGroupedParameters().get(0)) {
+            int parameterIndex = insertStatementContext.getInsertValueContexts().get(0).get(count).getParameterIndex(columnIndex);
             if (!each.isEmpty()) {
                 StandardParameterBuilder standardParameterBuilder = parameterBuilder.getParameterBuilders().get(count);
-                ExpressionSegment expressionSegment = insertStatementContext.getInsertValueContexts().get(count).getValueExpressions().get(columnIndex);
+                ExpressionSegment expressionSegment = insertStatementContext.getInsertValueContexts().get(0).get(count).getValueExpressions().get(columnIndex);
                 if (expressionSegment instanceof ParameterMarkerExpressionSegment) {
                     encryptInsertValue(
-                            encryptAlgorithm, parameterIndex, insertStatementContext.getInsertValueContexts().get(count).getValue(columnIndex)
+                            encryptAlgorithm, parameterIndex, insertStatementContext.getInsertValueContexts().get(0).get(count).getValue(columnIndex)
                                     .orElseThrow(() -> new ShardingSphereException("Not support for encrypt!")),
                             standardParameterBuilder, encryptContext);
                 }
@@ -95,10 +95,10 @@ public final class EncryptInsertValueParameterRewriter implements ParameterRewri
     private int getColumnIndex(final GroupedParameterBuilder parameterBuilder, final InsertStatementContext insertStatementContext, final String encryptLogicColumnName) {
         List<String> columnNames;
         if (parameterBuilder.getDerivedColumnName().isPresent()) {
-            columnNames = new ArrayList<>(insertStatementContext.getColumnNames());
+            columnNames = new ArrayList<>(insertStatementContext.getColumnNames().get(0));
             columnNames.remove(parameterBuilder.getDerivedColumnName().get());
         } else {
-            columnNames = insertStatementContext.getColumnNames();
+            columnNames = insertStatementContext.getColumnNames().get(0);
         }
         return columnNames.indexOf(encryptLogicColumnName);
     }

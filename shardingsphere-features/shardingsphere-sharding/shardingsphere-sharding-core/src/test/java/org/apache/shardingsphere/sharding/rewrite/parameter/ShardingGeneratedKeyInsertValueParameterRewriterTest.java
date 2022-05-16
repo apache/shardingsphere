@@ -93,8 +93,8 @@ public final class ShardingGeneratedKeyInsertValueParameterRewriterTest {
         when(result.getGeneratedKeyContext().isPresent()).thenReturn(true);
         when(result.getGeneratedKeyContext().get().getColumnName()).thenReturn("testColumnName");
         when(result.getGeneratedKeyContext().get().getGeneratedValues()).thenReturn(Collections.singleton(TEST_GENERATED_VALUE));
-        when(result.getGroupedParameters()).thenReturn(Collections.singletonList(Collections.singletonList("testGroupedParameter")));
-        when(result.getInsertValueContexts().get(0).getParameterCount()).thenReturn(TEST_PARAMETER_COUNT);
+        when(result.getGroupedParameters().get(0)).thenReturn(Collections.singletonList(Collections.singletonList("testGroupedParameter")));
+        when(result.getInsertValueContexts().get(0).get(0).getParameterCount()).thenReturn(TEST_PARAMETER_COUNT);
         return result;
     }
 }

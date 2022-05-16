@@ -151,7 +151,7 @@ public final class InsertStatementContextTest {
         setUpInsertValues(insertStatement);
         InsertStatementContext actual = createInsertStatementContext(Arrays.asList(1, "Tom", 2, "Jerry"), insertStatement);
         actual.setUpParameters(Arrays.asList(1, "Tom", 2, "Jerry"));
-        assertThat(actual.getGroupedParameters().size(), is(2));
+        assertThat(actual.getGroupedParameters().size(), is(1));
         assertNull(actual.getOnDuplicateKeyUpdateValueContext());
         assertTrue(actual.getOnDuplicateKeyUpdateParameters().isEmpty());
     }
@@ -164,7 +164,7 @@ public final class InsertStatementContextTest {
         setUpOnDuplicateValues(insertStatement);
         InsertStatementContext actual = createInsertStatementContext(Arrays.asList(1, "Tom", 2, "Jerry", "onDuplicateKeyUpdateColumnValue"), insertStatement);
         actual.setUpParameters(Arrays.asList(1, "Tom", 2, "Jerry", "onDuplicateKeyUpdateColumnValue"));
-        assertThat(actual.getGroupedParameters().size(), is(2));
+        assertThat(actual.getGroupedParameters().size(), is(1));
         assertThat(actual.getOnDuplicateKeyUpdateValueContext().getColumns().size(), is(2));
         assertThat(actual.getOnDuplicateKeyUpdateParameters().size(), is(1));
     }
@@ -181,7 +181,7 @@ public final class InsertStatementContextTest {
         actual.setUpParameters(Collections.singletonList("param"));
         assertThat(actual.getInsertSelectContext().getParameterCount(), is(0));
         assertThat(actual.getGroupedParameters().size(), is(1));
-        assertThat(actual.getGroupedParameters().iterator().next(), is(Collections.emptyList()));
+        assertThat(actual.getGroupedParameters().get(0).iterator().next(), is(Collections.emptyList()));
     }
     
     private void setUpInsertValues(final InsertStatement insertStatement) {
@@ -212,23 +212,23 @@ public final class InsertStatementContextTest {
         assertThat(simpleTableSegment.getTableName().getStopIndex(), is(0));
         assertThat(simpleTableSegment.getTableName().getIdentifier().getValue(), is("tbl"));
         List<String> columnNames = new ArrayList<>(3);
-        actual.getDescendingColumnNames().forEachRemaining(columnNames::add);
+        actual.getDescendingColumnNames().get(0).forEachRemaining(columnNames::add);
         assertThat(columnNames, is(Arrays.asList("status", "name", "id")));
-        assertThat(actual.getGeneratedKeyContext(), is(Optional.empty()));
-        assertThat(actual.getColumnNames(), is(Arrays.asList("id", "name", "status")));
-        assertThat(actual.getInsertValueContexts().size(), is(2));
-        assertTrue(actual.getInsertValueContexts().get(0).getValue(0).isPresent());
-        assertTrue(actual.getInsertValueContexts().get(0).getValue(1).isPresent());
-        assertTrue(actual.getInsertValueContexts().get(0).getValue(2).isPresent());
-        assertTrue(actual.getInsertValueContexts().get(1).getValue(0).isPresent());
-        assertTrue(actual.getInsertValueContexts().get(1).getValue(1).isPresent());
-        assertTrue(actual.getInsertValueContexts().get(1).getValue(2).isPresent());
-        assertThat(actual.getInsertValueContexts().get(0).getValue(0).get(), is(1));
-        assertThat(actual.getInsertValueContexts().get(0).getValue(1).get(), is("Tom"));
-        assertThat(actual.getInsertValueContexts().get(0).getValue(2).get(), is("init"));
-        assertThat(actual.getInsertValueContexts().get(1).getValue(0).get(), is(2));
-        assertThat(actual.getInsertValueContexts().get(1).getValue(1).get(), is("Jerry"));
-        assertThat(actual.getInsertValueContexts().get(1).getValue(2).get(), is("init"));
+        assertThat(actual.getGeneratedKeyContext().get(0), is(Optional.empty()));
+        assertThat(actual.getColumnNames().get(0), is(Arrays.asList("id", "name", "status")));
+        assertThat(actual.getInsertValueContexts().size(), is(1));
+        assertTrue(actual.getInsertValueContexts().get(0).get(0).getValue(0).isPresent());
+        assertTrue(actual.getInsertValueContexts().get(0).get(0).getValue(1).isPresent());
+        assertTrue(actual.getInsertValueContexts().get(0).get(0).getValue(2).isPresent());
+        assertTrue(actual.getInsertValueContexts().get(0).get(1).getValue(0).isPresent());
+        assertTrue(actual.getInsertValueContexts().get(0).get(1).getValue(1).isPresent());
+        assertTrue(actual.getInsertValueContexts().get(0).get(1).getValue(2).isPresent());
+        assertThat(actual.getInsertValueContexts().get(0).get(0).getValue(0).get(), is(1));
+        assertThat(actual.getInsertValueContexts().get(0).get(0).getValue(1).get(), is("Tom"));
+        assertThat(actual.getInsertValueContexts().get(0).get(0).getValue(2).get(), is("init"));
+        assertThat(actual.getInsertValueContexts().get(0).get(1).getValue(0).get(), is(2));
+        assertThat(actual.getInsertValueContexts().get(0).get(1).getValue(1).get(), is("Jerry"));
+        assertThat(actual.getInsertValueContexts().get(0).get(1).getValue(2).get(), is("init"));
     }
     
     private void assertInsertStatementContextWithMulti(final InsertStatementContext actual) {
@@ -239,23 +239,23 @@ public final class InsertStatementContextTest {
         assertThat(simpleTableSegment.getTableName().getStopIndex(), is(0));
         assertThat(simpleTableSegment.getTableName().getIdentifier().getValue(), is("tbl"));
         List<String> columnNames = new ArrayList<>(3);
-        actual.getDescendingColumnNames().forEachRemaining(columnNames::add);
+        actual.getDescendingColumnNames().get(0).forEachRemaining(columnNames::add);
         assertThat(columnNames, is(Arrays.asList("status", "name", "id")));
-        assertThat(actual.getGeneratedKeyContext(), is(Optional.empty()));
-        assertThat(actual.getColumnNames(), is(Arrays.asList("id", "name", "status")));
+        assertThat(actual.getGeneratedKeyContext().get(0), is(Optional.empty()));
+        assertThat(actual.getColumnNames().get(0), is(Arrays.asList("id", "name", "status")));
         assertThat(actual.getInsertValueContexts().size(), is(2));
-        assertTrue(actual.getInsertValueContexts().get(0).getValue(0).isPresent());
-        assertTrue(actual.getInsertValueContexts().get(0).getValue(1).isPresent());
-        assertTrue(actual.getInsertValueContexts().get(0).getValue(2).isPresent());
-        assertTrue(actual.getInsertValueContexts().get(1).getValue(0).isPresent());
-        assertTrue(actual.getInsertValueContexts().get(1).getValue(1).isPresent());
-        assertTrue(actual.getInsertValueContexts().get(1).getValue(2).isPresent());
-        assertThat(actual.getInsertValueContexts().get(0).getValue(0).get(), is(1));
-        assertThat(actual.getInsertValueContexts().get(0).getValue(1).get(), is("Tom"));
-        assertThat(actual.getInsertValueContexts().get(0).getValue(2).get(), is("init"));
-        assertThat(actual.getInsertValueContexts().get(1).getValue(0).get(), is(2));
-        assertThat(actual.getInsertValueContexts().get(1).getValue(1).get(), is("Jerry"));
-        assertThat(actual.getInsertValueContexts().get(1).getValue(2).get(), is("init"));
+        assertTrue(actual.getInsertValueContexts().get(0).get(0).getValue(0).isPresent());
+        assertTrue(actual.getInsertValueContexts().get(0).get(0).getValue(1).isPresent());
+        assertTrue(actual.getInsertValueContexts().get(0).get(0).getValue(2).isPresent());
+        assertTrue(actual.getInsertValueContexts().get(0).get(1).getValue(0).isPresent());
+        assertTrue(actual.getInsertValueContexts().get(0).get(1).getValue(1).isPresent());
+        assertTrue(actual.getInsertValueContexts().get(0).get(1).getValue(2).isPresent());
+        assertThat(actual.getInsertValueContexts().get(0).get(0).getValue(0).get(), is(1));
+        assertThat(actual.getInsertValueContexts().get(0).get(0).getValue(1).get(), is("Tom"));
+        assertThat(actual.getInsertValueContexts().get(0).get(0).getValue(2).get(), is("init"));
+        assertThat(actual.getInsertValueContexts().get(0).get(1).getValue(0).get(), is(2));
+        assertThat(actual.getInsertValueContexts().get(0).get(1).getValue(1).get(), is("Jerry"));
+        assertThat(actual.getInsertValueContexts().get(0).get(1).getValue(2).get(), is("init"));
     }
     
     @Test
@@ -406,7 +406,7 @@ public final class InsertStatementContextTest {
         insertStatement.setInsertColumns(insertColumnsSegment);
         insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue(""))));
         InsertStatementContext insertStatementContext = createInsertStatementContext(Collections.emptyList(), insertStatement);
-        List<String> columnNames = insertStatementContext.getInsertColumnNames();
+        List<String> columnNames = insertStatementContext.getInsertColumnNames().get(0);
         assertThat(columnNames.size(), is(1));
         assertThat(columnNames.iterator().next(), is("col"));
     }
@@ -420,7 +420,7 @@ public final class InsertStatementContextTest {
         insertStatement.setSetAssignment(new SetAssignmentSegment(0, 0, Collections.singletonList(insertStatementAssignment)));
         insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue(""))));
         InsertStatementContext insertStatementContext = createInsertStatementContext(Collections.emptyList(), insertStatement);
-        List<String> columnNames = insertStatementContext.getInsertColumnNames();
+        List<String> columnNames = insertStatementContext.getInsertColumnNames().get(0);
         assertThat(columnNames.size(), is(1));
         assertThat(columnNames.iterator().next(), is("col"));
     }

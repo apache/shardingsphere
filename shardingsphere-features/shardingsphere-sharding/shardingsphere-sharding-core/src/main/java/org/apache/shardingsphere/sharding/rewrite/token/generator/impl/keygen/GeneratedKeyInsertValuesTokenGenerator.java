@@ -56,8 +56,8 @@ public final class GeneratedKeyInsertValuesTokenGenerator extends BaseGeneratedK
         Preconditions.checkState(generatedKey.isPresent());
         Iterator<Comparable<?>> generatedValues = generatedKey.get().getGeneratedValues().iterator();
         int count = 0;
-        List<List<Object>> parameters = insertStatementContext.getGroupedParameters();
-        for (InsertValueContext each : insertStatementContext.getInsertValueContexts()) {
+        List<List<Object>> parameters = insertStatementContext.getGroupedParameters().get(0);
+        for (InsertValueContext each : insertStatementContext.getInsertValueContexts().get(0)) {
             InsertValue insertValueToken = result.get().getInsertValues().get(count);
             DerivedSimpleExpressionSegment expressionSegment = isToAddDerivedLiteralExpression(parameters, count)
                     ? new DerivedLiteralExpressionSegment(generatedValues.next())

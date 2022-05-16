@@ -57,11 +57,11 @@ public final class ShadowInsertStatementRoutingEngine extends AbstractShadowDMLS
     
     @Override
     protected Iterator<Optional<ShadowColumnCondition>> getShadowColumnConditionIterator() {
-        return new ShadowColumnConditionIterator(parseColumnNames().iterator(), insertStatementContext.getInsertValueContexts());
+        return new ShadowColumnConditionIterator(parseColumnNames().iterator(), insertStatementContext.getInsertValueContexts().get(0));
     }
     
     private Collection<String> parseColumnNames() {
-        return insertStatementContext.getInsertColumnNames();
+        return insertStatementContext.getInsertColumnNames().get(0);
     }
     
     private class ShadowColumnConditionIterator implements Iterator<Optional<ShadowColumnCondition>> {

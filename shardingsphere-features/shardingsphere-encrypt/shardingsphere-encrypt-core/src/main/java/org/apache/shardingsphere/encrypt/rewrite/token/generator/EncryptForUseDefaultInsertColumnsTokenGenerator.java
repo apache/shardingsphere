@@ -83,12 +83,12 @@ public final class EncryptForUseDefaultInsertColumnsTokenGenerator implements Op
         Preconditions.checkState(insertColumnsSegment.isPresent());
         Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
         Preconditions.checkState(encryptTable.isPresent());
-        return new UseDefaultInsertColumnsToken(insertColumnsSegment.get().getStopIndex(), getColumnNames(insertStatementContext, encryptTable.get(), insertStatementContext.getColumnNames()));
+        return new UseDefaultInsertColumnsToken(insertColumnsSegment.get().getStopIndex(), getColumnNames(insertStatementContext, encryptTable.get(), insertStatementContext.getColumnNames().get(0)));
     }
     
     private List<String> getColumnNames(final InsertStatementContext sqlStatementContext, final EncryptTable encryptTable, final List<String> currentColumnNames) {
         List<String> result = new LinkedList<>(currentColumnNames);
-        Iterator<String> descendingColumnNames = sqlStatementContext.getDescendingColumnNames();
+        Iterator<String> descendingColumnNames = sqlStatementContext.getDescendingColumnNames().get(0);
         while (descendingColumnNames.hasNext()) {
             String columnName = descendingColumnNames.next();
             if (encryptTable.findEncryptorName(columnName).isPresent()) {

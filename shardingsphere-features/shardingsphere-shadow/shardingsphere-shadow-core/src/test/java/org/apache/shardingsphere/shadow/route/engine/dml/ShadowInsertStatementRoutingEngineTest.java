@@ -65,10 +65,10 @@ public final class ShadowInsertStatementRoutingEngineTest {
     private InsertStatementContext createInsertStatementContext() {
         InsertStatementContext result = mock(InsertStatementContext.class);
         when(result.getAllTables()).thenReturn(Collections.singleton(new SimpleTableSegment(new TableNameSegment(20, 25, new IdentifierValue("t_order")))));
-        when(result.getInsertColumnNames()).thenReturn(Arrays.asList("user_id", "order_code", "order_name"));
+        when(result.getInsertColumnNames().get(0)).thenReturn(Arrays.asList("user_id", "order_code", "order_name"));
         List<ExpressionSegment> valueExpressions = Arrays.asList(new LiteralExpressionSegment(0, 10, "1"),
                 new LiteralExpressionSegment(11, 20, "orderCode"), new LiteralExpressionSegment(21, 30, "orderName"));
-        when(result.getInsertValueContexts()).thenReturn(Collections.singletonList(new InsertValueContext(valueExpressions, Collections.emptyList(), 0)));
+        when(result.getInsertValueContexts().get(0)).thenReturn(Collections.singletonList(new InsertValueContext(valueExpressions, Collections.emptyList(), 0)));
         MySQLInsertStatement insertStatement = new MySQLInsertStatement();
         insertStatement.getCommentSegments().add(new CommentSegment("/*shadow:true,foo:bar*/", 0, 20));
         insertStatement.getCommentSegments().add(new CommentSegment("/*aaa:bbb*/", 21, 30));

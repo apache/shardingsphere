@@ -89,7 +89,7 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
         String tableName = insertStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
         int count = 0;
         String schemaName = insertStatementContext.getTablesContext().getSchemaName().orElseGet(() -> insertStatementContext.getDatabaseType().getDefaultSchema(databaseName));
-        for (InsertValueContext each : insertStatementContext.getInsertValueContexts()) {
+        for (InsertValueContext each : insertStatementContext.getInsertValueContexts().get(0)) {
             encryptToken(insertValuesToken.getInsertValues().get(count), schemaName, tableName, insertStatementContext, each);
             count++;
         }
@@ -100,7 +100,7 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
         Collection<InsertValuesSegment> insertValuesSegments = insertStatementContext.getSqlStatement().getValues();
         InsertValuesToken result = new EncryptInsertValuesToken(getStartIndex(insertValuesSegments), getStopIndex(insertValuesSegments));
         String schemaName = insertStatementContext.getTablesContext().getSchemaName().orElseGet(() -> insertStatementContext.getDatabaseType().getDefaultSchema(databaseName));
-        for (InsertValueContext each : insertStatementContext.getInsertValueContexts()) {
+        for (InsertValueContext each : insertStatementContext.getInsertValueContexts().get(0)) {
             InsertValue insertValueToken = new InsertValue(each.getValueExpressions());
             encryptToken(insertValueToken, schemaName, tableName, insertStatementContext, each);
             result.getInsertValues().add(insertValueToken);
@@ -127,13 +127,13 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
     private void encryptToken(final InsertValue insertValueToken, final String schemaName, final String tableName,
                               final InsertStatementContext insertStatementContext, final InsertValueContext insertValueContext) {
         Optional<SQLToken> useDefaultInsertColumnsToken = findPreviousSQLToken(UseDefaultInsertColumnsToken.class);
-        Iterator<String> descendingColumnNames = insertStatementContext.getDescendingColumnNames();
+        Iterator<String> descendingColumnNames = insertStatementContext.getDescendingColumnNames().get(0);
         while (descendingColumnNames.hasNext()) {
             String columnName = descendingColumnNames.next();
             Optional<EncryptAlgorithm> encryptor = encryptRule.findEncryptor(tableName, columnName);
             if (encryptor.isPresent()) {
                 int columnIndex = useDefaultInsertColumnsToken.map(optional -> ((UseDefaultInsertColumnsToken) optional).getColumns().indexOf(columnName))
-                        .orElseGet(() -> insertStatementContext.getColumnNames().indexOf(columnName));
+                        .orElseGet(() -> insertStatementContext.getColumnNames().get(0).indexOf(columnName));
                 Object originalValue = insertValueContext.getValue(columnIndex).orElseThrow(() -> new ShardingSphereException("Not support for encrypt!"));
                 EncryptContext encryptContext = EncryptContextBuilder.build(databaseName, schemaName, tableName, columnName, encryptRule);
                 addPlainColumn(insertValueToken, columnIndex, encryptContext, insertValueContext, originalValue);
