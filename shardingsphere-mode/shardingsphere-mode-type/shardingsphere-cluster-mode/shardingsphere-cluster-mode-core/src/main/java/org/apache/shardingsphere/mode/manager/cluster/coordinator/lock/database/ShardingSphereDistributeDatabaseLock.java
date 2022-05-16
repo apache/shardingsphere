@@ -15,34 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.database;
 
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeServiceFactory;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.event.MutexAckLockReleasedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.event.MutexAckLockedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.event.MutexLockReleasedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.event.MutexLockedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.database.event.DatabaseAckLockReleasedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.database.event.DatabaseAckLockedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.database.event.DatabaseLockReleasedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.database.event.DatabaseLockedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.InterMutexLock;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.ShardingSphereInterMutexLockHolder;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeType;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.TimeoutMilliseconds;
 
 /**
- * Distribute mutex lock of ShardingSphere.
+ * Distribute database lock of ShardingSphere.
  */
-public final class ShardingSphereDistributeMutexLock implements ShardingSphereLock {
+public final class ShardingSphereDistributeDatabaseLock implements ShardingSphereLock {
     
-    private final LockNodeService lockNodeService = LockNodeServiceFactory.getInstance().getLockNodeService(LockNodeType.MUTEX);
-    
-    private final MutexLock sequencedLock;
+    private final LockNodeService lockNodeService = LockNodeServiceFactory.getInstance().getLockNodeService(LockNodeType.DATABASE);
     
     private final ShardingSphereInterMutexLockHolder lockHolder;
     
-    public ShardingSphereDistributeMutexLock(final ShardingSphereInterMutexLockHolder lockHolder) {
+    public ShardingSphereDistributeDatabaseLock(final ShardingSphereInterMutexLockHolder lockHolder) {
         this.lockHolder = lockHolder;
-        this.sequencedLock = lockHolder.getInterReentrantMutexLock(lockNodeService.getSequenceNodePath());
         ShardingSphereEventBus.getInstance().register(this);
         lockHolder.synchronizeMutexLock(lockNodeService);
     }
@@ -58,14 +57,7 @@ public final class ShardingSphereDistributeMutexLock implements ShardingSphereLo
     }
     
     private boolean innerTryLock(final String lockName, final long timeoutMillis) {
-        if (!sequencedLock.tryLock(TimeoutMilliseconds.DEFAULT_REGISTRY)) {
-            return false;
-        }
-        try {
-            return getInterMutexLock(lockName).tryLock(timeoutMillis);
-        } finally {
-            sequencedLock.unlock();
-        }
+        return getInterMutexLock(lockName).tryLock(timeoutMillis);
     }
     
     private InterMutexLock getInterMutexLock(final String lockName) {
@@ -83,52 +75,52 @@ public final class ShardingSphereDistributeMutexLock implements ShardingSphereLo
     }
     
     /**
-     * Mutex locked.
+     * Database locked.
      *
-     * @param event mutex locked event
+     * @param event database locked event
      */
     @Subscribe
-    public synchronized void locked(final MutexLockedEvent event) {
-        String lockName = event.getLockedName();
-        InterMutexLock interMutexLock = getInterMutexLock(lockName);
+    public synchronized void locked(final DatabaseLockedEvent event) {
+        String database = event.getDatabase();
+        InterMutexLock interMutexLock = getInterMutexLock(database);
         String lockedInstanceId = lockHolder.getCurrentInstanceId();
-        interMutexLock.ackLock(lockNodeService.generateAckLockName(lockName, lockedInstanceId), lockedInstanceId);
+        interMutexLock.ackLock(lockNodeService.generateAckLockName(database, lockedInstanceId), lockedInstanceId);
     }
     
     /**
-     * Mutex lock released.
+     * Database lock released.
      *
-     * @param event mutex lock released event
+     * @param event database lock released event
      */
     @Subscribe
-    public synchronized void lockReleased(final MutexLockReleasedEvent event) {
-        String lockName = event.getLockedName();
-        InterMutexLock interMutexLock = getInterMutexLock(lockName);
+    public synchronized void lockReleased(final DatabaseLockReleasedEvent event) {
+        String database = event.getDatabase();
+        InterMutexLock interMutexLock = getInterMutexLock(database);
         String lockedInstanceId = lockHolder.getCurrentInstanceId();
-        interMutexLock.releaseAckLock(lockNodeService.generateAckLockName(lockName, lockedInstanceId), lockedInstanceId);
+        interMutexLock.releaseAckLock(lockNodeService.generateAckLockName(database, lockedInstanceId), lockedInstanceId);
     }
     
     /**
-     * Mutex ack locked.
+     * Database ack locked.
      *
-     * @param event mutex ack locked event
+     * @param event database ack locked event
      */
     @Subscribe
-    public synchronized void ackLocked(final MutexAckLockedEvent event) {
-        String lockName = event.getLockName();
-        InterMutexLock interMutexLock = getInterMutexLock(lockName);
+    public synchronized void ackLocked(final DatabaseAckLockedEvent event) {
+        String database = event.getDatabase();
+        InterMutexLock interMutexLock = getInterMutexLock(database);
         interMutexLock.addLockedInstance(event.getLockedInstance());
     }
     
     /**
-     * Mutex ack lock released.
+     * Database ack lock released.
      *
-     * @param event mutex ack lock released event
+     * @param event database ack lock released event
      */
     @Subscribe
-    public synchronized void ackLockReleased(final MutexAckLockReleasedEvent event) {
-        String lockName = event.getLockName();
-        InterMutexLock interMutexLock = getInterMutexLock(lockName);
+    public synchronized void ackLockReleased(final DatabaseAckLockReleasedEvent event) {
+        String database = event.getDatabase();
+        InterMutexLock interMutexLock = getInterMutexLock(database);
         interMutexLock.removeLockedInstance(event.getLockedInstance());
     }
 }

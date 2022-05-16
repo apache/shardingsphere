@@ -15,36 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock;
 
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeService;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeUtil;
 
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Abstract global lock node service.
+ * Abstract distribute lock node service.
  */
-public abstract class AbstractGlobalLockNodeService implements LockNodeService {
-    
-    protected static final String LOCK_SCOPE_GLOBAL = "global";
-    
-    protected static final String LOCKED_ACK_NODE = "ack";
+public abstract class AbstractDistributeLockNodeService implements LockNodeService {
     
     @Override
     public String getLocksNodePath() {
-        return PATH_DELIMITER + LOCK_ROOT + PATH_DELIMITER + LOCK_SCOPE_GLOBAL + PATH_DELIMITER + getLockLevel() + PATH_DELIMITER + LOCKS_NODE;
-    }
-    
-    @Override
-    public String getLockedAckNodePath() {
-        return PATH_DELIMITER + LOCK_ROOT + PATH_DELIMITER + LOCK_SCOPE_GLOBAL + PATH_DELIMITER + getLockLevel() + PATH_DELIMITER + LOCKED_ACK_NODE;
+        return PATH_DELIMITER + LOCK_ROOT + PATH_DELIMITER + getLockLevel() + PATH_DELIMITER + LOCKS_NODE;
     }
     
     @Override
     public String generateLocksName(final String locksName) {
         return getLocksNodePath() + "/" + locksName;
+    }
+    
+    @Override
+    public String generateAckLockName(final String lockName, final String lockedInstanceId) {
+        return getLocksNodePath() + "/" + lockName + "/" + LOCKED_ACK_NODE + "/" + LockNodeUtil.generateAckLockedName(lockName, lockedInstanceId);
     }
     
     @Override
@@ -55,10 +51,10 @@ public abstract class AbstractGlobalLockNodeService implements LockNodeService {
     }
     
     @Override
-    public Optional<String> parseLockedAckNodePath(final String nodePath) {
-        Pattern pattern = Pattern.compile(getLockedAckNodePath() + "/(.+)$", Pattern.CASE_INSENSITIVE);
+    public Optional<String> parseLocksAckNodePath(final String nodePath) {
+        Pattern pattern = Pattern.compile(getLocksNodePath() + "/" + "(.+)/ack/(.+)$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(nodePath);
-        return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
+        return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
     }
     
     protected abstract String getLockLevel();

@@ -15,18 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.database.event;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.database.event;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeUtil;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 
 /**
- * Database locked event.
+ * Database ack released Lock event.
  */
-@RequiredArgsConstructor
 @Getter
-public final class DatabaseLockedEvent implements GovernanceEvent {
+public final class DatabaseAckLockReleasedEvent implements GovernanceEvent {
     
     private final String database;
+    
+    private final String lockedInstance;
+    
+    public DatabaseAckLockReleasedEvent(final String ackLockedName) {
+        String[] databaseInstance = LockNodeUtil.parseAckLockName(ackLockedName);
+        this.database = databaseInstance[0];
+        this.lockedInstance = databaseInstance[1];
+    }
 }

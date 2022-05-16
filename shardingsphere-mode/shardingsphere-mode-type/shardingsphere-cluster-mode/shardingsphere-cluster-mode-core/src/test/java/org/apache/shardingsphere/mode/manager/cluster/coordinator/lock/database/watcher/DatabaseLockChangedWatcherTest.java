@@ -15,13 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.database.watcher;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.database.watcher;
 
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.database.event.DatabaseAckLockReleasedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.database.event.DatabaseAckLockedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.database.event.DatabaseAckLockReleasedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.database.event.DatabaseAckLockedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.database.event.DatabaseLockReleasedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.database.event.DatabaseLockedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -34,20 +35,15 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class DatabaseAckChangedWatcherTest {
+public final class DatabaseLockChangedWatcherTest {
     
-    private DatabaseAckChangedWatcher watcher;
-    
-    @Before
-    public void init() {
-        watcher = new DatabaseAckChangedWatcher();
-    }
+    private final DatabaseLockChangedWatcher watcher = new DatabaseLockChangedWatcher();
     
     @Test
     public void assertGetWatchingKeys() {
         Collection<String> keys = watcher.getWatchingKeys();
         assertThat(keys.size(), is(1));
-        assertThat("/lock/global/database/ack", is(keys.iterator().next()));
+        assertThat("/lock/database/locks", is(keys.iterator().next()));
     }
     
     @Test
@@ -60,23 +56,45 @@ public final class DatabaseAckChangedWatcherTest {
     }
     
     @Test
-    public void assertCreateGovernanceEvent() {
-        DataChangedEvent addDataChangedEvent = new DataChangedEvent("/lock/global/database/ack/sharding_db#@#127.0.0.1@3307", "127.0.0.1@3307", DataChangedEvent.Type.ADDED);
+    public void assertLocksCreateGovernanceEvent() {
+        String eventKey = "/lock/database/locks/sharding_db/leases/c_l_0000000";
+        DataChangedEvent addDataChangedEvent = new DataChangedEvent(eventKey, "127.0.0.1@3307", DataChangedEvent.Type.ADDED);
+        Optional<GovernanceEvent> addGovernanceEvent = watcher.createGovernanceEvent(addDataChangedEvent);
+        assertTrue(addGovernanceEvent.isPresent());
+        assertThat(addGovernanceEvent.get(), instanceOf(DatabaseLockedEvent.class));
+        assertThat(((DatabaseLockReleasedEvent) addGovernanceEvent.get()).getDatabase(), is("sharding_db"));
+        DataChangedEvent deleteDataChangedEvent = new DataChangedEvent(eventKey, "127.0.0.1@3307", DataChangedEvent.Type.DELETED);
+        Optional<GovernanceEvent> deleteGovernanceEvent = watcher.createGovernanceEvent(deleteDataChangedEvent);
+        assertTrue(deleteGovernanceEvent.isPresent());
+        assertThat(deleteGovernanceEvent.get(), instanceOf(DatabaseLockReleasedEvent.class));
+        assertThat(((DatabaseLockReleasedEvent) deleteGovernanceEvent.get()).getDatabase(), is("sharding_db"));
+        DataChangedEvent updateDataChangedEvent = new DataChangedEvent(eventKey, "127.0.0.1@3307", DataChangedEvent.Type.UPDATED);
+        Optional<GovernanceEvent> updateGovernanceEvent = watcher.createGovernanceEvent(updateDataChangedEvent);
+        assertFalse(updateGovernanceEvent.isPresent());
+        DataChangedEvent ignoredDataChangedEvent = new DataChangedEvent(eventKey, "127.0.0.1@3307", DataChangedEvent.Type.IGNORED);
+        Optional<GovernanceEvent> ignoredGovernanceEvent = watcher.createGovernanceEvent(ignoredDataChangedEvent);
+        assertFalse(ignoredGovernanceEvent.isPresent());
+    }
+    
+    @Test
+    public void assertLocksAckCreateGovernanceEvent() {
+        String eventKey = "/lock/database/locks/sharding_db/ack/sharding_db#@#127.0.0.1@3307";
+        DataChangedEvent addDataChangedEvent = new DataChangedEvent(eventKey, "127.0.0.1@3307", DataChangedEvent.Type.ADDED);
         Optional<GovernanceEvent> addGovernanceEvent = watcher.createGovernanceEvent(addDataChangedEvent);
         assertTrue(addGovernanceEvent.isPresent());
         assertThat(addGovernanceEvent.get(), instanceOf(DatabaseAckLockedEvent.class));
         assertThat(((DatabaseAckLockedEvent) addGovernanceEvent.get()).getDatabase(), is("sharding_db"));
         assertThat(((DatabaseAckLockedEvent) addGovernanceEvent.get()).getLockedInstance(), is("127.0.0.1@3307"));
-        DataChangedEvent deleteDataChangedEvent = new DataChangedEvent("/lock/global/database/ack/sharding_db#@#127.0.0.1@3307", "127.0.0.1@3307", DataChangedEvent.Type.DELETED);
+        DataChangedEvent deleteDataChangedEvent = new DataChangedEvent(eventKey, "127.0.0.1@3307", DataChangedEvent.Type.DELETED);
         Optional<GovernanceEvent> deleteGovernanceEvent = watcher.createGovernanceEvent(deleteDataChangedEvent);
         assertTrue(deleteGovernanceEvent.isPresent());
         assertThat(deleteGovernanceEvent.get(), instanceOf(DatabaseAckLockReleasedEvent.class));
         assertThat(((DatabaseAckLockReleasedEvent) deleteGovernanceEvent.get()).getDatabase(), is("sharding_db"));
         assertThat(((DatabaseAckLockReleasedEvent) deleteGovernanceEvent.get()).getLockedInstance(), is("127.0.0.1@3307"));
-        DataChangedEvent updateDataChangedEvent = new DataChangedEvent("/lock/global/database/ack/sharding_db#@#127.0.0.1@3307", "127.0.0.1@3307", DataChangedEvent.Type.UPDATED);
+        DataChangedEvent updateDataChangedEvent = new DataChangedEvent(eventKey, "127.0.0.1@3307", DataChangedEvent.Type.UPDATED);
         Optional<GovernanceEvent> updateGovernanceEvent = watcher.createGovernanceEvent(updateDataChangedEvent);
         assertFalse(updateGovernanceEvent.isPresent());
-        DataChangedEvent ignoredDataChangedEvent = new DataChangedEvent("/lock/global/database/ack/sharding_db#@#127.0.0.1@3307", "127.0.0.1@3307", DataChangedEvent.Type.IGNORED);
+        DataChangedEvent ignoredDataChangedEvent = new DataChangedEvent(eventKey, "127.0.0.1@3307", DataChangedEvent.Type.IGNORED);
         Optional<GovernanceEvent> ignoredGovernanceEvent = watcher.createGovernanceEvent(ignoredDataChangedEvent);
         assertFalse(ignoredGovernanceEvent.isPresent());
     }

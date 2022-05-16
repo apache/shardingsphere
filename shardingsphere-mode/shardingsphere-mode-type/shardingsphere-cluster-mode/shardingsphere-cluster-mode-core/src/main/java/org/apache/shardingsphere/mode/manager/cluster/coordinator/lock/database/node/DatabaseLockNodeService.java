@@ -15,25 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.database.event;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.database.node;
 
-import lombok.Getter;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeUtil;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.AbstractDistributeLockNodeService;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeType;
 
 /**
- * Database ack released Lock event.
+ * Database lock node service.
  */
-@Getter
-public final class DatabaseAckLockReleasedEvent implements GovernanceEvent {
+public final class DatabaseLockNodeService extends AbstractDistributeLockNodeService {
     
-    private final String database;
+    @Override
+    public String getSequenceNodePath() {
+        return PATH_DELIMITER + LOCK_ROOT + PATH_DELIMITER + getLockLevel() + PATH_DELIMITER + "sequence";
+    }
     
-    private final String lockedInstance;
+    @Override
+    protected String getLockLevel() {
+        return "database";
+    }
     
-    public DatabaseAckLockReleasedEvent(final String ackLockedName) {
-        String[] databaseInstance = LockNodeUtil.parseAckLockName(ackLockedName);
-        this.database = databaseInstance[0];
-        this.lockedInstance = databaseInstance[1];
+    @Override
+    public LockNodeType getType() {
+        return LockNodeType.DATABASE;
     }
 }

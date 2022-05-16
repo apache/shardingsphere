@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockRegistryService;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeUtil;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockState;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.TimeoutMilliseconds;
 
@@ -125,8 +126,8 @@ public final class InterMutexLock implements MutexLock, LockAckAble {
     }
     
     private boolean isAckCompleted(final long expend) {
-        if (expend > 100L) {
-            lockedInstances.addAll(lockService.acquireAckLockedInstances(lockName + "/ack"));
+        if (expend > TimeoutMilliseconds.MAX_ACK_EXPEND) {
+            lockedInstances.addAll(lockService.acquireAckLockedInstances(LockNodeUtil.generateAckPathName(lockName)));
         }
         if (computeNodeInstances.size() > lockedInstances.size()) {
             return false;
