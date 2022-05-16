@@ -90,7 +90,7 @@ public final class ModShardingAlgorithmTest {
                 new RangeShardingValue<>("t_order", "order_id", DATA_NODE_INFO, Range.closed(1L, 16L)));
         assertThat(actual.size(), is(16));
     }
-
+    
     @Test(expected = IllegalArgumentException.class)
     public void assertRangeDoShardingWithWrongArgument() {
         Properties properties = createZeroPaddingProperties();
