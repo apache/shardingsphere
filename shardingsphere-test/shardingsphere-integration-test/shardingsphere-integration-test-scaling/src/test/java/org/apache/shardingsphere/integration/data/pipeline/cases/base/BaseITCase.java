@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.integration.data.pipeline.cases.base;
 
-import com.google.common.collect.Sets;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -49,7 +48,9 @@ import javax.xml.bind.JAXB;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -172,7 +173,7 @@ public abstract class BaseITCase {
     protected void assertOriginalSourceSuccess() {
         List<Map<String, Object>> previewResults = getJdbcTemplate().queryForList("PREVIEW SELECT COUNT(1) FROM t_order");
         Set<Object> originalSources = previewResults.stream().map(each -> each.get("data_source_name")).collect(Collectors.toSet());
-        assertThat(originalSources, is(Sets.newHashSet("ds_0", "ds_1")));
+        assertThat(originalSources, is(new HashSet<>(Arrays.asList("ds_0", "ds_1"))));
     }
     
     /**
@@ -216,7 +217,7 @@ public abstract class BaseITCase {
         ThreadUtil.sleep(2000);
         List<Map<String, Object>> previewResults = jdbcTemplate.queryForList("PREVIEW SELECT COUNT(1) FROM t_order");
         Set<Object> originalSources = previewResults.stream().map(each -> each.get("data_source_name")).collect(Collectors.toSet());
-        assertThat(originalSources, is(Sets.newHashSet("ds_2", "ds_3", "ds_4")));
+        assertThat(originalSources, is(new HashSet<>(Arrays.asList("ds_2", "ds_3", "ds_4"))));
     }
     
     @After

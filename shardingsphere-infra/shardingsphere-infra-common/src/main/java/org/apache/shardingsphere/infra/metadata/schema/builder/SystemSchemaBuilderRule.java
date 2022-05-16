@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.builder;
 
-import com.google.common.collect.Sets;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 /**
@@ -33,18 +34,18 @@ import java.util.Map;
 @Getter
 public enum SystemSchemaBuilderRule {
     
-    MYSQL_INFORMATION_SCHEMA("MySQL", "information_schema", Sets.newHashSet("columns", "engines",
-            "parameters", "routines", "schemata", "tables", "views")),
+    MYSQL_INFORMATION_SCHEMA("MySQL", "information_schema", new HashSet<>(Arrays.asList("columns", "engines",
+            "parameters", "routines", "schemata", "tables", "views"))),
     
-    MYSQL_MYSQL("MySQL", "mysql", Sets.newHashSet("db")),
+    MYSQL_MYSQL("MySQL", "mysql", new HashSet<>(Collections.singleton("db"))),
     
-    MYSQL_PERFORMANCE_SCHEMA("MySQL", "performance_schema", Sets.newHashSet("accounts")),
+    MYSQL_PERFORMANCE_SCHEMA("MySQL", "performance_schema", new HashSet<>(Collections.singleton("accounts"))),
     
-    MYSQL_SYS("MySQL", "sys", Sets.newHashSet("sys")),
+    MYSQL_SYS("MySQL", "sys", new HashSet<>(Collections.singleton("sys"))),
     
-    POSTGRESQL_INFORMATION_SCHEMA("PostgreSQL", "information_schema", Sets.newHashSet("columns", "tables", "views")),
+    POSTGRESQL_INFORMATION_SCHEMA("PostgreSQL", "information_schema", new HashSet<>(Arrays.asList("columns", "tables", "views"))),
     
-    POSTGRESQL_PG_CATALOG("PostgreSQL", "pg_catalog", Sets.newHashSet("pg_class", "pg_database", "pg_inherits", "pg_tablespace", "pg_trigger")),
+    POSTGRESQL_PG_CATALOG("PostgreSQL", "pg_catalog", new HashSet<>(Arrays.asList("pg_class", "pg_database", "pg_inherits", "pg_tablespace", "pg_trigger"))),
     
     OPEN_GAUSS_INFORMATION_SCHEMA("openGauss", "information_schema", Collections.emptySet()),
     

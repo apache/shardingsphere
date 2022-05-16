@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.integration.data.pipeline.cases.mysql;
 
-import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.integration.data.pipeline.cases.base.BaseMySQLITCase;
@@ -56,7 +55,7 @@ public final class MySQLManualScalingIT extends BaseMySQLITCase {
                 continue;
             }
             for (String scenario : ScalingScenario.listScenario()) {
-                result.add(new ScalingParameterized(DATABASE_TYPE, version, Joiner.on("/").join("env/scenario/manual/mysql", scenario, ScalingScenario.SCENARIO_SUFFIX)));
+                result.add(new ScalingParameterized(DATABASE_TYPE, version, String.join("/", "env/scenario/manual/mysql", scenario, ScalingScenario.SCENARIO_SUFFIX)));
             }
         }
         return result;
