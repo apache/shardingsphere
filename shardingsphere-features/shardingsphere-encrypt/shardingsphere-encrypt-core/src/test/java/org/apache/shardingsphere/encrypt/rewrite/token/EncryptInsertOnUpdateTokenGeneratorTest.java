@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token;
 
-import com.google.common.collect.Lists;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.EncryptInsertOnUpdateTokenGenerator;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptAssignmentToken;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
@@ -38,6 +37,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQ
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -127,6 +127,6 @@ public final class EncryptInsertOnUpdateTokenGeneratorTest {
         AssignmentSegment assignmentSegment2 = new ColumnAssignmentSegment(0, 0, columnSegments, functionSegment);
         AssignmentSegment assignmentSegment3 = new ColumnAssignmentSegment(0, 0, columnSegments,
                 new LiteralExpressionSegment(0, 0, 0));
-        return Lists.newArrayList(assignmentSegment1, assignmentSegment2, assignmentSegment3);
+        return Arrays.asList(assignmentSegment1, assignmentSegment2, assignmentSegment3);
     }
 }
