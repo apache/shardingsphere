@@ -1,3 +1,8 @@
++++
+title = "使用 Helm"
+weight = 3
++++
+
 # 使用 Helm
 
 使用 [Helm](https://helm.sh/) 在 Kubernetes 集群中引导 ShardingSphere-Proxy 实例进行安装。
