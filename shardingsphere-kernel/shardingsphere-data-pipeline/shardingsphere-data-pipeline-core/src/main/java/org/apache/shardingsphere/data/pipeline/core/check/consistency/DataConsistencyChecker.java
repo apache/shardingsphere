@@ -80,7 +80,7 @@ public final class DataConsistencyChecker {
         this.jobConfig = jobConfig;
         logicTableNames = jobConfig.splitLogicTableNames();
         ShardingSphereMetaData metaData = PipelineContext.getContextManager().getMetaDataContexts().getMetaData(jobConfig.getDatabaseName());
-        tableNameSchemaNameMapping = new TableNameSchemaNameMapping(TableNameSchemaNameMapping.convert(metaData.getSchemas()));
+        tableNameSchemaNameMapping = new TableNameSchemaNameMapping(TableNameSchemaNameMapping.convert(metaData.getDatabase().getSchemas()));
     }
     
     /**

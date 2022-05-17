@@ -38,7 +38,7 @@ public final class DropDefaultShadowAlgorithmStatementUpdater implements RuleDef
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData metaData, final DropDefaultShadowAlgorithmStatement sqlStatement,
                                   final ShadowRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String databaseName = metaData.getDatabaseName();
+        String databaseName = metaData.getDatabase().getName();
         if (sqlStatement.isContainsExistClause() && !isExistRuleConfig(currentRuleConfig)) {
             return;
         }

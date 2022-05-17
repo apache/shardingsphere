@@ -68,7 +68,7 @@ public final class AlterShadowRuleStatementUpdater implements RuleDefinitionAlte
     
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData metaData, final AlterShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String databaseName = metaData.getDatabaseName();
+        String databaseName = metaData.getDatabase().getName();
         Collection<ShadowRuleSegment> rules = sqlStatement.getRules();
         checkConfigurationExist(databaseName, currentRuleConfig);
         checkRuleNames(databaseName, rules, currentRuleConfig);

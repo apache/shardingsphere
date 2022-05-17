@@ -40,7 +40,7 @@ public final class MySQLQueryHeaderBuilder implements QueryHeaderBuilder {
     @Override
     public QueryHeader build(final QueryResultMetaData queryResultMetaData, final ShardingSphereMetaData metaData, final String columnName, final String columnLabel,
                              final int columnIndex, final LazyInitializer<DataNodeContainedRule> dataNodeContainedRule) throws SQLException {
-        String schemaName = null == metaData ? "" : metaData.getDatabaseName();
+        String schemaName = null == metaData ? "" : metaData.getDatabase().getName();
         String actualTableName = queryResultMetaData.getTableName(columnIndex);
         String tableName;
         boolean primaryKey;

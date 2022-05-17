@@ -41,7 +41,7 @@ public final class CreateShardingBindingTableRuleStatementUpdater implements Rul
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final CreateShardingBindingTableRulesStatement sqlStatement,
                                   final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String databaseName = shardingSphereMetaData.getDatabaseName();
+        String databaseName = shardingSphereMetaData.getDatabase().getName();
         checkCurrentRuleConfiguration(databaseName, currentRuleConfig);
         checkToBeCreatedBindingTables(databaseName, sqlStatement, currentRuleConfig);
         checkToBeCreatedDuplicateBindingTables(databaseName, sqlStatement, currentRuleConfig);

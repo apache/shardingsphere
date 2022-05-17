@@ -42,7 +42,7 @@ public final class DropShardingAlgorithmStatementUpdater implements RuleDefiniti
         if (null == currentRuleConfig && sqlStatement.isContainsExistClause()) {
             return;
         }
-        String databaseName = shardingSphereMetaData.getDatabaseName();
+        String databaseName = shardingSphereMetaData.getDatabase().getName();
         checkCurrentRuleConfiguration(databaseName, currentRuleConfig);
         checkToBeDroppedShardingAlgorithms(databaseName, sqlStatement, currentRuleConfig);
         checkShardingAlgorithmsInUsed(databaseName, sqlStatement, currentRuleConfig);
