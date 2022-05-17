@@ -47,11 +47,6 @@ public final class ReadwriteSplittingDataSourceRule {
     
     private final ReadwriteSplittingStrategy readwriteSplittingStrategy;
     
-    /**
-     * 0 只路由到主
-     * 1 读路由到相同备
-     * 2 读路由到不同备
-     */
     private final int routeMode;
     
     @Getter(AccessLevel.NONE)
