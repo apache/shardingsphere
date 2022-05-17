@@ -31,11 +31,11 @@ import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.cases.command.CommonSQLCommand;
 import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.integration.data.pipeline.env.enums.ITEnvTypeEnum;
-import org.apache.shardingsphere.integration.data.pipeline.framework.helper.ScalingCaseHelper;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.BaseComposedContainer;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.DockerComposedContainer;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.NativeComposedContainer;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.database.DockerDatabaseContainer;
+import org.apache.shardingsphere.integration.data.pipeline.framework.helper.ScalingCaseHelper;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
 import org.apache.shardingsphere.integration.data.pipeline.util.DatabaseTypeUtil;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
@@ -134,53 +134,37 @@ public abstract class BaseITCase {
     @SneakyThrows
     protected void addSourceResource() {
         Properties queryProps = ScalingCaseHelper.getQueryPropertiesByDatabaseType(databaseType);
-        Connection connection = null;
-        try {
-            if (databaseType instanceof MySQLDatabaseType) {
-                connection = DriverManager.getConnection(JDBC_URL_APPENDER.appendQueryProperties(getComposedContainer().getProxyJdbcUrl(""), queryProps), "root", "root");
+        // TODO if mysql can append database firstly, they can be combined
+        if (databaseType instanceof MySQLDatabaseType) {
+            try (Connection connection = DriverManager.getConnection(JDBC_URL_APPENDER.appendQueryProperties(getComposedContainer().getProxyJdbcUrl(""), queryProps), "root", "root")) {
                 connection.createStatement().execute("USE sharding_db");
-            } else {
-                connection = DriverManager.getConnection(JDBC_URL_APPENDER.appendQueryProperties(getComposedContainer().getProxyJdbcUrl("sharding_db"), queryProps), "root", "root");
+                addSourceResource0(connection);
             }
-            String addSourceResource = commonSQLCommand.getSourceAddResourceTemplate().replace("${user}", ScalingCaseHelper.getUsername(databaseType))
-                    .replace("${password}", ScalingCaseHelper.getPassword(databaseType))
-                    .replace("${ds0}", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_0"), queryProps))
-                    .replace("${ds1}", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_1"), queryProps));
-            connection.createStatement().execute(addSourceResource);
-        } catch (SQLException ex) {
-            log.error("add source resource error", ex);
-        } finally {
-            if (connection != null) {
-                connection.close();
+        } else {
+            try (Connection connection = DriverManager.getConnection(JDBC_URL_APPENDER.appendQueryProperties(getComposedContainer().getProxyJdbcUrl("sharding_db"), queryProps), "root", "root")) {
+                addSourceResource0(connection);
             }
         }
+    }
+    
+    private void addSourceResource0(final Connection connection) throws SQLException {
+        Properties queryProps = ScalingCaseHelper.getQueryPropertiesByDatabaseType(databaseType);
+        String addSourceResource = commonSQLCommand.getSourceAddResourceTemplate().replace("${user}", ScalingCaseHelper.getUsername(databaseType))
+                .replace("${password}", ScalingCaseHelper.getPassword(databaseType))
+                .replace("${ds0}", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_0"), queryProps))
+                .replace("${ds1}", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_1"), queryProps));
+        connection.createStatement().execute(addSourceResource);
     }
     
     @SneakyThrows
     protected void addTargetResource() {
         Properties queryProps = ScalingCaseHelper.getQueryPropertiesByDatabaseType(databaseType);
-        
-        Connection connection = null;
-        try {
-            if (databaseType instanceof MySQLDatabaseType) {
-                connection = DriverManager.getConnection(JDBC_URL_APPENDER.appendQueryProperties(getComposedContainer().getProxyJdbcUrl(""), queryProps), "root", "root");
-                connection.createStatement().execute("USE sharding_db");
-            } else {
-                connection = DriverManager.getConnection(JDBC_URL_APPENDER.appendQueryProperties(getComposedContainer().getProxyJdbcUrl("sharding_db"), queryProps), "root", "root");
-            }
-            String addTargetResource = commonSQLCommand.getTargetAddResourceTemplate().replace("${user}", ScalingCaseHelper.getUsername(databaseType))
-                    .replace("${password}", ScalingCaseHelper.getPassword(databaseType))
-                    .replace("${ds2}", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_2"), queryProps))
-                    .replace("${ds3}", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_3"), queryProps))
-                    .replace("${ds4}", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_4"), queryProps));
-            getJdbcTemplate().execute(addTargetResource);
-        } catch (SQLException ex) {
-            log.error("add source resource error", ex);
-        } finally {
-            if (connection != null) {
-                connection.close();
-            }
-        }
+        String addTargetResource = commonSQLCommand.getTargetAddResourceTemplate().replace("${user}", ScalingCaseHelper.getUsername(databaseType))
+                .replace("${password}", ScalingCaseHelper.getPassword(databaseType))
+                .replace("${ds2}", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_2"), queryProps))
+                .replace("${ds3}", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_3"), queryProps))
+                .replace("${ds4}", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_4"), queryProps));
+        getJdbcTemplate().execute(addTargetResource);
     }
     
     private String getActualJdbcUrlTemplate(final String databaseName) {
