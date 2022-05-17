@@ -21,6 +21,7 @@ import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.cases.base.BasePostgreSQLITCase;
+import org.apache.shardingsphere.integration.data.pipeline.cases.task.PostgreSQLIncrementTask;
 import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
 import org.apache.shardingsphere.sharding.algorithm.keygen.UUIDKeyGenerateAlgorithm;
@@ -67,6 +68,7 @@ public class OpenGaussTextPrimaryKeyIT extends BasePostgreSQLITCase {
         UUIDKeyGenerateAlgorithm keyGenerateAlgorithm = new UUIDKeyGenerateAlgorithm();
         batchInsertOrder(keyGenerateAlgorithm);
         assertOriginalSourceSuccess();
+        startIncrementTask(new PostgreSQLIncrementTask(getJdbcTemplate(), new UUIDKeyGenerateAlgorithm(), "", false));
         addTargetResource("gaussdb", "Root@123");
         getJdbcTemplate().execute(getCommonSQLCommand().getAutoAlterOrderShardingTableRule());
         assertCheckMatchConsistencySuccess();

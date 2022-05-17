@@ -19,6 +19,7 @@ package org.apache.shardingsphere.integration.data.pipeline.cases.task;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.integration.data.pipeline.cases.base.BaseIncrementTask;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -71,11 +72,15 @@ public final class PostgreSQLIncrementTask extends BaseIncrementTask {
     }
     
     private void updateOrderByPrimaryKey(final Object primaryKey) {
-        Object[] updateData = {"updated" + Instant.now().getEpochSecond(), ThreadLocalRandom.current().nextInt(0, 100), primaryKey};
+        Object[] updateData = {"updated" + Instant.now().getEpochSecond(), primaryKey};
         jdbcTemplate.update(prefixSchema("UPDATE ${schema}t_order SET status = ? WHERE id = ?", schema), updateData);
     }
     
     private String prefixSchema(final String sql, final String schema) {
-        return sql.replace("${schema}", schema + ".");
+        if (StringUtils.isNotBlank(schema)) {
+            return sql.replace("${schema}", schema + ".");
+        } else {
+            return sql.replace("${schema}", "");
+        }
     }
 }

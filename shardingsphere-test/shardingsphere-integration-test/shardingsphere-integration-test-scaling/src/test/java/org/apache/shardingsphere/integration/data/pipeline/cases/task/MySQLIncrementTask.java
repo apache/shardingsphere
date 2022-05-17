@@ -44,6 +44,7 @@ public final class MySQLIncrementTask extends BaseIncrementTask {
             if (executeCount % 2 == 0) {
                 jdbcTemplate.update("DELETE FROM t_order WHERE id = ?", orderPrimaryKey);
             } else {
+                setNullToOrderFields(orderPrimaryKey);
                 updateOrderByPrimaryKey(orderPrimaryKey);
             }
             if (incrementOrderItemTogether) {
@@ -56,8 +57,9 @@ public final class MySQLIncrementTask extends BaseIncrementTask {
     }
     
     private Object insertOrder() {
-        Object[] orderInsertDate = new Object[]{keyGenerateAlgorithm.generateKey(), ThreadLocalRandom.current().nextInt(0, 6), ThreadLocalRandom.current().nextInt(0, 6)};
-        jdbcTemplate.update("INSERT INTO t_order (id,order_id,user_id) VALUES (?, ?, ?)", orderInsertDate);
+        ThreadLocalRandom random = ThreadLocalRandom.current();
+        Object[] orderInsertDate = new Object[]{keyGenerateAlgorithm.generateKey(), random.nextInt(0, 6), random.nextInt(0, 6), random.nextInt(1, 99)};
+        jdbcTemplate.update("INSERT INTO t_order (id,order_id,user_id,t_unsigned_int) VALUES (?, ?, ?, ?)", orderInsertDate);
         return orderInsertDate[0];
     }
     

@@ -31,7 +31,6 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.cases.command.CommonSQLCommand;
 import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.integration.data.pipeline.env.enums.ITEnvTypeEnum;
-import org.apache.shardingsphere.integration.data.pipeline.framework.ITWatcher;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.BaseComposedContainer;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.DockerComposedContainer;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.NativeComposedContainer;
@@ -40,7 +39,6 @@ import org.apache.shardingsphere.integration.data.pipeline.framework.param.Scali
 import org.apache.shardingsphere.integration.data.pipeline.util.DatabaseTypeUtil;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
 import org.junit.After;
-import org.junit.Rule;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
@@ -71,10 +69,6 @@ public abstract class BaseITCase {
     protected static final JdbcUrlAppender JDBC_URL_APPENDER = new JdbcUrlAppender();
     
     private static final IntegrationTestEnvironment ENV = IntegrationTestEnvironment.getInstance();
-    
-    @Rule
-    @Getter(AccessLevel.NONE)
-    public ITWatcher watcher = new ITWatcher();
     
     private final BaseComposedContainer composedContainer;
     
@@ -121,10 +115,12 @@ public abstract class BaseITCase {
     }
     
     protected boolean waitShardingAlgorithmEffect(final int maxWaitTimes) throws InterruptedException {
+        long startTime = System.currentTimeMillis();
         int waitTimes = 0;
         do {
             List<Map<String, Object>> result = jdbcTemplate.queryForList("SHOW SHARDING ALGORITHMS");
             if (result.size() >= 3) {
+                log.info("waitShardingAlgorithmEffect time consume: {}", System.currentTimeMillis() - startTime);
                 return true;
             }
             TimeUnit.SECONDS.sleep(2);
