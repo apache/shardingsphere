@@ -107,7 +107,7 @@ public abstract class AbstractSQLRewriterParameterizedTest {
         Collection<ShardingSphereRule> rules = SchemaRulesBuilder.buildRules(DefaultDatabase.LOGIC_NAME, databaseConfig, new ConfigurationProperties(new Properties()));
         mockRules(rules, schemaName);
         rules.add(sqlParserRule);
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(databaseType, resource, 
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(databaseType, resource,
                 new ShardingSphereRuleMetaData(Collections.emptyList(), rules), new ShardingSphereDatabase(schemaName, schemas));
         Map<String, ShardingSphereMetaData> metaDataMap = new HashMap<>(2, 1);
         metaDataMap.put(schemaName, metaData);
