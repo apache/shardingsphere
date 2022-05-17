@@ -53,14 +53,14 @@ governance:
         memory: 256Mi
         cpu: 250m
 
-## @section Computer-Node parameters
+## @section Compute-Node parameters
 ## 
-computer:
-  ## @section Computer-Node ShardingSphere-Proxy  parameters
+compute:
+  ## @section Compute-Node ShardingSphere-Proxy  parameters
   ## ref: https://kubernetes.io/docs/concepts/containers/images/
-  ## @param computer.image.repository Image name of ShardingSphere-Proxy.
-  ## @param computer.image.pullPolicy The policy for pulling ShardingSphere-Proxy image
-  ## @param computer.image.tag ShardingSphere-Proxy image tag
+  ## @param compute.image.repository Image name of ShardingSphere-Proxy.
+  ## @param compute.image.pullPolicy The policy for pulling ShardingSphere-Proxy image
+  ## @param compute.image.tag ShardingSphere-Proxy image tag
   ##
   image:
     repository: "apache/shardingsphere-proxy"
@@ -68,17 +68,17 @@ computer:
     ## Overrides the image tag whose default is the chart appVersion.
     ##
     tag: "5.1.2"
-  ## @param computer.imagePullSecrets Specify docker-registry secret names as an array
+  ## @param compute.imagePullSecrets Specify docker-registry secret names as an array
   ## e.g：
   ## imagePullSecrets:
-  ##   - myRegistryKeySecretName
+  ##   - name: myRegistryKeySecretName
   ##
   imagePullSecrets: []
   ## ShardingSphere-Proxy resource requests and limits
   ## ref: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
-  ## @param computer.resources.limits The resources limits for the ShardingSphere-Proxy containers
-  ## @param computer.resources.requests.memory The requested memory for the ShardingSphere-Proxy containers
-  ## @param computer.resources.requests.cpu The requested cpu for the ShardingSphere-Proxy containers
+  ## @param compute.resources.limits The resources limits for the ShardingSphere-Proxy containers
+  ## @param compute.resources.requests.memory The requested memory for the ShardingSphere-Proxy containers
+  ## @param compute.resources.requests.cpu The requested cpu for the ShardingSphere-Proxy containers
   ##
   resources:
     limits: {}
@@ -88,27 +88,27 @@ computer:
   ## ShardingSphere-Proxy Deployment Configuration
   ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/
   ## ref: https://kubernetes.io/docs/concepts/services-networking/service/
-  ## @param computer.replicas Number of cluster replicas
+  ## @param compute.replicas Number of cluster replicas
   ##
   replicas: 3
-  ## @param computer.service.type ShardingSphere-Proxy network mode
-  ## @param computer.service.port ShardingSphere-Proxy expose port
+  ## @param compute.service.type ShardingSphere-Proxy network mode
+  ## @param compute.service.port ShardingSphere-Proxy expose port
   ##
   service:
     type: ClusterIP
     port: 3307
   ## MySQL connector Configuration
   ## ref: https://shardingsphere.apache.org/document/current/en/quick-start/shardingsphere-proxy-quick-start/
-  ## @param computer.mysqlConnector.version MySQL connector version
+  ## @param compute.mysqlConnector.version MySQL connector version
   ##
   mysqlConnector:
     version: "5.1.49"
-  ## @param computer.startPort ShardingSphere-Proxy start port
+  ## @param compute.startPort ShardingSphere-Proxy start port
   ## ShardingSphere-Proxy start port
   ## ref: https://shardingsphere.apache.org/document/current/en/user-manual/shardingsphere-proxy/startup/docker/
   ##
   startPort: 3307
-  ## @param computer.serverConfig ServerConfiguration file for ShardingSphere-Proxy
+  ## @param compute.serverConfig ServerConfiguration file for ShardingSphere-Proxy
   ## NOTE: If you use the sub-charts to deploy Zookeeper, the server-lists field must be "{{ printf \"%s-zookeeper.%s:2181\" .Release.Name .Release.Namespace }}",
   ## otherwise please fill in the correct zookeeper address
   ## The server.yaml is auto-generated based on this parameter.

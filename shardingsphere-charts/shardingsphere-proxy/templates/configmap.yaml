@@ -22,4 +22,4 @@ metadata:
   name: {{ printf "%s-configuration" (include "common.names.fullname" .) }}
 data:
   server.yaml: |-
-  {{- include "common.tplvalues.render" (dict "value" .Values.computer.serverConfig "context" $) | nindent 4 }}
+  {{- include "common.tplvalues.render" (dict "value" .Values.compute.serverConfig "context" $) | nindent 4 }}

@@ -22,7 +22,7 @@ metadata:
     app: {{ template "common.names.fullname" . }}
   name: {{ template "common.names.fullname" . }}
 spec:
-  replicas: {{ .Values.computer.replicas | default 1 }}
+  replicas: {{ .Values.compute.replicas | default 1 }}
   selector:
     matchLabels:
       app: {{ template "common.names.fullname" . }}
@@ -36,59 +36,59 @@ spec:
       labels:
         app: {{ template "common.names.fullname" . }}
     spec:
-      {{- if .Values.computer.mysqlConnector.version }}
+      {{- if .Values.compute.mysqlConnector.version }}
       initContainers:
         - name: download-mysql-jar
           image: busybox:1.35.0
-          command: ["sh","-c","wget https://repo1.maven.org/maven2/mysql/mysql-connector-java/{{.Values.computer.mysqlConnector.version}}/mysql-connector-java-{{.Values.computer.mysqlConnector.version}}.jar;
-          wget https://repo1.maven.org/maven2/mysql/mysql-connector-java/{{.Values.computer.mysqlConnector.version}}/mysql-connector-java-{{.Values.computer.mysqlConnector.version}}.jar.md5;
-          if [ $(md5sum /mysql-connector-java-{{.Values.computer.mysqlConnector.version}}.jar | cut -d ' ' -f1) = $(cat /mysql-connector-java-{{.Values.computer.mysqlConnector.version}}.jar.md5) ];
+          command: ["sh","-c","wget https://repo1.maven.org/maven2/mysql/mysql-connector-java/{{.Values.compute.mysqlConnector.version}}/mysql-connector-java-{{.Values.compute.mysqlConnector.version}}.jar;
+          wget https://repo1.maven.org/maven2/mysql/mysql-connector-java/{{.Values.compute.mysqlConnector.version}}/mysql-connector-java-{{.Values.compute.mysqlConnector.version}}.jar.md5;
+          if [ $(md5sum /mysql-connector-java-{{.Values.compute.mysqlConnector.version}}.jar | cut -d ' ' -f1) = $(cat /mysql-connector-java-{{.Values.compute.mysqlConnector.version}}.jar.md5) ];
           then echo success;
-          else echo failed;exit 1;fi;mv /mysql-connector-java-{{.Values.computer.mysqlConnector.version}}.jar /opt/shardingsphere-proxy/ext-lib"]
+          else echo failed;exit 1;fi;mv /mysql-connector-java-{{.Values.compute.mysqlConnector.version}}.jar /opt/shardingsphere-proxy/ext-lib"]
           volumeMounts:
             - name: mysql-connect-jar
               mountPath: /opt/shardingsphere-proxy/ext-lib
       {{- end }}
       containers:
-        - image: "{{ .Values.computer.image.repository }}:{{ .Values.computer.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.computer.image.pullPolicy }}
+        - image: "{{ .Values.compute.image.repository }}:{{ .Values.compute.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.compute.image.pullPolicy }}
           name: shardingsphere-proxy
           startupProbe:
             tcpSocket:
-              port: {{ .Values.computer.startPort }}
+              port: {{ .Values.compute.startPort }}
             failureThreshold: 6
             periodSeconds: 10
           livenessProbe:
             periodSeconds: 5
             tcpSocket:
-              port: {{ .Values.computer.startPort }}
+              port: {{ .Values.compute.startPort }}
           readinessProbe:
             periodSeconds: 5
             tcpSocket:
-              port: {{ .Values.computer.startPort }}
+              port: {{ .Values.compute.startPort }}
           env:
             - name: PORT
-              value: "{{ .Values.computer.startPort }}"
+              value: "{{ .Values.compute.startPort }}"
           ports:
             - name: start-port
-              containerPort: {{ .Values.computer.startPort }}
-          {{- if .Values.computer.resources }}
-          resources: {{- toYaml .Values.computer.resources | nindent 12 }}
+              containerPort: {{ .Values.compute.startPort }}
+          {{- if .Values.compute.resources }}
+          resources: {{- toYaml .Values.compute.resources | nindent 12 }}
           {{- end }}
           volumeMounts:
             - name: config
               mountPath: /opt/shardingsphere-proxy/conf
-            {{- if .Values.computer.mysqlConnector.version }}
+            {{- if .Values.compute.mysqlConnector.version }}
             - name: mysql-connect-jar
               mountPath: /opt/shardingsphere-proxy/ext-lib
             {{- end }}
       imagePullSecrets:
-      {{- toYaml .Values.computer.imagePullSecrets | nindent 8 }}
+      {{- toYaml .Values.compute.imagePullSecrets | nindent 8 }}
       volumes:
         - name: config
           configMap:
             name: {{ printf "%s-configuration" (include "common.names.fullname" .) }}
-      {{- if .Values.computer.mysqlConnector.version}}
+      {{- if .Values.compute.mysqlConnector.version}}
         - name: mysql-connect-jar
           emptyDir: { }
       {{- end}}

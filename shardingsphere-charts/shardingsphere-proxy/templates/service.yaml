@@ -24,9 +24,9 @@ metadata:
 spec:
   ports:
     - name: tcp
-      targetPort: {{.Values.computer.startPort}}
-      port: {{ .Values.computer.service.port }}
+      targetPort: {{.Values.compute.startPort}}
+      port: {{ .Values.compute.service.port }}
       protocol: TCP
   selector:
     app: {{ template "common.names.fullname" . }}
-  type: {{.Values.computer.service.type}}
+  type: {{.Values.compute.service.type}}
