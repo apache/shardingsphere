@@ -24,15 +24,13 @@ import org.apache.shardingsphere.infra.rule.builder.fixture.FixtureSchemaRuleBui
 import org.apache.shardingsphere.infra.rule.builder.fixture.FixtureSchemaRuleConfiguration;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
 public final class SchemaRuleBuilderFactoryTest {
@@ -40,30 +38,24 @@ public final class SchemaRuleBuilderFactoryTest {
     @SuppressWarnings("rawtypes")
     @Test
     public void assertGetInstances() {
-        Collection<SchemaRuleBuilder> actual = SchemaRuleBuilderFactory.getInstances();
-        assertThat(actual.size(), is(2));
-        Iterator<SchemaRuleBuilder> iterator = actual.iterator();
-        assertThat(iterator.next(), instanceOf(TestShardingSphereRuleBuilder.class));
-        assertThat(iterator.next(), instanceOf(FixtureSchemaRuleBuilder.class));
+        Iterator<SchemaRuleBuilder> actual = SchemaRuleBuilderFactory.getInstances().iterator();
+        assertThat(actual.next(), instanceOf(TestShardingSphereRuleBuilder.class));
+        assertThat(actual.next(), instanceOf(FixtureSchemaRuleBuilder.class));
+        assertFalse(actual.hasNext());
     }
     
-    @SuppressWarnings("rawtypes")
     @Test
     public void assertGetInstanceMap() {
-        FixtureSchemaRuleConfiguration configuration = new FixtureSchemaRuleConfiguration();
-        Map<RuleConfiguration, SchemaRuleBuilder> actual = SchemaRuleBuilderFactory.getInstanceMap(Collections.singleton(configuration));
-        assertThat(actual.get(configuration), instanceOf(FixtureSchemaRuleBuilder.class));
+        FixtureSchemaRuleConfiguration ruleConfig = new FixtureSchemaRuleConfiguration();
+        assertThat(SchemaRuleBuilderFactory.getInstanceMap(Collections.singleton(ruleConfig)).get(ruleConfig), instanceOf(FixtureSchemaRuleBuilder.class));
     }
     
-    @SuppressWarnings("rawtypes")
     @Test
     public void assertGetInstanceMapWithComparator() {
-        Collection<RuleConfiguration> ruleConfigs = new ArrayList<>(2);
-        ruleConfigs.add(new FixtureSchemaRuleConfiguration());
-        ruleConfigs.add(new TestRuleConfiguration());
-        Map<RuleConfiguration, SchemaRuleBuilder> actual = SchemaRuleBuilderFactory.getInstanceMap(ruleConfigs, Comparator.naturalOrder());
-        Iterator<RuleConfiguration> iterator = actual.keySet().iterator();
-        assertThat(iterator.next(), instanceOf(TestRuleConfiguration.class));
-        assertThat(iterator.next(), instanceOf(FixtureSchemaRuleConfiguration.class));
+        Iterator<RuleConfiguration> actual = SchemaRuleBuilderFactory.getInstanceMap(
+                Arrays.asList(new FixtureSchemaRuleConfiguration(), new TestRuleConfiguration()), Comparator.naturalOrder()).keySet().iterator();
+        assertThat(actual.next(), instanceOf(TestRuleConfiguration.class));
+        assertThat(actual.next(), instanceOf(FixtureSchemaRuleConfiguration.class));
+        assertFalse(actual.hasNext());
     }
 }

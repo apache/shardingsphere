@@ -30,7 +30,7 @@ import static org.mockito.Mockito.mock;
 public final class GlobalRulesBuilderTest {
     
     @Test
-    public void assertBuildRulesWithGlobalRules() {
+    public void assertBuildRules() {
         assertThat(GlobalRulesBuilder.buildRules(Collections.singletonList(mock(RuleConfiguration.class)), Collections.singletonMap("logic_db", mock(ShardingSphereMetaData.class))).size(), is(1));
     }
 }

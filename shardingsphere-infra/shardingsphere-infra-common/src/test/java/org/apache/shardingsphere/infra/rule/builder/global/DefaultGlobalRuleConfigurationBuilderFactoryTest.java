@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.rule.builder.fixture.FixtureGlobalRuleCon
 import org.junit.Test;
 
 import java.util.Collections;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
@@ -30,11 +29,8 @@ import static org.junit.Assert.assertThat;
 public final class DefaultGlobalRuleConfigurationBuilderFactoryTest {
     
     @Test
-    @SuppressWarnings("rawtypes")
     public void assertGetInstance() {
         FixtureGlobalRuleBuilder builder = new FixtureGlobalRuleBuilder();
-        Map<GlobalRuleBuilder, DefaultGlobalRuleConfigurationBuilder> actual = DefaultGlobalRuleConfigurationBuilderFactory.getInstance(
-                Collections.singleton(builder));
-        assertThat(actual.get(builder), instanceOf(FixtureGlobalRuleConfigurationBuilder.class));
+        assertThat(DefaultGlobalRuleConfigurationBuilderFactory.getInstance(Collections.singleton(builder)).get(builder), instanceOf(FixtureGlobalRuleConfigurationBuilder.class));
     }
 }
