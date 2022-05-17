@@ -111,22 +111,10 @@ public final class MetaDataContextsBuilder {
         DatabaseType frontendDatabaseType = DatabaseTypeEngine.getFrontendDatabaseType(databaseConfigMap, props);
         for (Entry<String, ShardingSphereDatabase> entry : databaseMap.entrySet()) {
             String databaseName = entry.getKey();
-            // TODO support database and schema configuration separately
             DatabaseConfiguration databaseConfig = databaseConfigMap.getOrDefault(databaseName, new DataSourceProvidedDatabaseConfiguration(new LinkedHashMap<>(), new LinkedList<>()));
             Collection<ShardingSphereRule> rules = databaseRulesMap.getOrDefault(databaseName, new LinkedList<>());
             result.put(databaseName, ShardingSphereMetaData.create(databaseName, frontendDatabaseType, entry.getValue().getSchemas(), databaseConfig, rules));
         }
         return result;
-    }
-    
-    /**
-     * Get schema map.
-     * 
-     * @param databaseName database name
-     * @return ShardingSphere schema
-     */
-    public ShardingSphereSchema getSchemaMap(final String databaseName) {
-        // TODO remove these logic when mode support persist ShardingSphereDatabase
-        return databaseMap.get(databaseName).getSchemas().get(databaseName);
     }
 }
