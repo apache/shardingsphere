@@ -155,9 +155,11 @@ public abstract class BaseITCase {
         }
     }
     
-    protected void initShardingAlgorithm() {
+    protected void initShardingAlgorithm() throws InterruptedException {
         jdbcTemplate.execute(getCommonSQLCommand().getCreateDatabaseShardingAlgorithm());
+        TimeUnit.SECONDS.sleep(2);
         jdbcTemplate.execute(getCommonSQLCommand().getCreateOrderShardingAlgorithm());
+        TimeUnit.SECONDS.sleep(2);
         jdbcTemplate.execute(getCommonSQLCommand().getCreateOrderItemShardingAlgorithm());
     }
     
