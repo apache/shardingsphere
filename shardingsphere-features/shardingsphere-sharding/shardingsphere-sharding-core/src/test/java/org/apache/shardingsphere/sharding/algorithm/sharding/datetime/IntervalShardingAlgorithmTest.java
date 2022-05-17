@@ -27,9 +27,13 @@ import org.apache.shardingsphere.sharding.factory.ShardingAlgorithmFactory;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -251,6 +255,46 @@ public final class IntervalShardingAlgorithmTest {
         Collection<String> actual = shardingAlgorithmByDayWithMillisecond.doSharding(availableTablesForDayWithMillisecondDataSources,
                 new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO,
                         Range.closed(simpleDateFormat.parse("2021-06-15 02:25:27.000"), simpleDateFormat.parse("2021-07-31 02:25:27.000"))));
+        assertThat(actual.size(), is(24));
+    }
+
+    @Test
+    public void assertInstantWithZeroMillisecond() {
+        Collection<String> actual = shardingAlgorithmByDayWithMillisecond.doSharding(availableTablesForDayWithMillisecondDataSources,
+                new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO,
+                        Range.closed(
+                                LocalDateTime.of(2021, 6, 15, 2, 25, 27).atZone(ZoneId.systemDefault()).toInstant(),
+                                LocalDateTime.of(2021, 7, 31, 2, 25, 27).atZone(ZoneId.systemDefault()).toInstant())));
+        assertThat(actual.size(), is(24));
+    }
+
+    @Test
+    public void assertTimestampWithZeroMillisecond() {
+        Collection<String> actual = shardingAlgorithmByDayWithMillisecond.doSharding(availableTablesForDayWithMillisecondDataSources,
+                new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO,
+                        Range.closed(
+                                Timestamp.valueOf(LocalDateTime.of(2021, 6, 15, 2, 25, 27)),
+                                Timestamp.valueOf(LocalDateTime.of(2021, 7, 31, 2, 25, 27)))));
+        assertThat(actual.size(), is(24));
+    }
+
+    @Test
+    public void assertOffsetDateTimeWithZeroMillisecond() {
+        Collection<String> actual = shardingAlgorithmByDayWithMillisecond.doSharding(availableTablesForDayWithMillisecondDataSources,
+                new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO,
+                        Range.closed(
+                                OffsetDateTime.of(LocalDateTime.of(2021, 6, 15, 2, 25, 27), OffsetDateTime.now().getOffset()),
+                                OffsetDateTime.of(LocalDateTime.of(2021, 7, 31, 2, 25, 27), OffsetDateTime.now().getOffset()))));
+        assertThat(actual.size(), is(24));
+    }
+
+    @Test
+    public void assertZonedDateTimeWithZeroMillisecond() {
+        Collection<String> actual = shardingAlgorithmByDayWithMillisecond.doSharding(availableTablesForDayWithMillisecondDataSources,
+                new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO,
+                        Range.closed(
+                                ZonedDateTime.of(LocalDateTime.of(2021, 6, 15, 2, 25, 27), ZoneId.systemDefault()),
+                                ZonedDateTime.of(LocalDateTime.of(2021, 7, 31, 2, 25, 27), ZoneId.systemDefault()))));
         assertThat(actual.size(), is(24));
     }
 }
