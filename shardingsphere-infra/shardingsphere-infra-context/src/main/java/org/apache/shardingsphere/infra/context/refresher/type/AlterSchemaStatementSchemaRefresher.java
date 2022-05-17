@@ -54,7 +54,7 @@ public final class AlterSchemaStatementSchemaRefresher implements MetaDataRefres
         String actualSchemaName = sqlStatement.getSchemaName().getValue();
         putSchemaMetaData(metaData, database, optimizerPlanners, actualSchemaName, renameSchemaName.get().getValue(), logicDataSourceNames);
         removeSchemaMetaData(metaData, database, optimizerPlanners, actualSchemaName);
-        AlterSchemaEvent event = new AlterSchemaEvent(metaData.getDatabase().getName(), 
+        AlterSchemaEvent event = new AlterSchemaEvent(metaData.getDatabase().getName(),
                 actualSchemaName, renameSchemaName.get().getValue(), metaData.getSchemaByName(renameSchemaName.get().getValue()));
         ShardingSphereEventBus.getInstance().post(event);
     }

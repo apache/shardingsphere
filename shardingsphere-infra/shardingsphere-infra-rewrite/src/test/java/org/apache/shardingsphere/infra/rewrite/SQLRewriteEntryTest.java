@@ -49,7 +49,7 @@ public final class SQLRewriteEntryTest {
     
     @Test
     public void assertRewriteForGenericSQLRewriteResult() {
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(DatabaseTypeFactory.getInstance("H2"), 
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(DatabaseTypeFactory.getInstance("H2"),
                 mockResource(), mockRuleMetaData(), new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, Collections.singletonMap("test", mock(ShardingSphereSchema.class))));
         SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(metaData, new ConfigurationProperties(new Properties()));
         RouteContext routeContext = new RouteContext();
