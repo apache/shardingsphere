@@ -54,10 +54,8 @@ public final class AlterSQLParserRuleHandlerTest {
         assertTrue(actual.isSqlCommentParseEnabled());
         assertThat(actual.getSqlStatementCache().getInitialCapacity(), is(1000));
         assertThat(actual.getSqlStatementCache().getMaximumSize(), is(1000L));
-        assertThat(actual.getSqlStatementCache().getConcurrencyLevel(), is(3));
         assertThat(actual.getParseTreeCache().getInitialCapacity(), is(64));
         assertThat(actual.getParseTreeCache().getMaximumSize(), is(512L));
-        assertThat(actual.getParseTreeCache().getConcurrencyLevel(), is(3));
     }
     
     @Test
@@ -73,21 +71,19 @@ public final class AlterSQLParserRuleHandlerTest {
         assertTrue(actual.isSqlCommentParseEnabled());
         assertThat(actual.getSqlStatementCache().getInitialCapacity(), is(1000));
         assertThat(actual.getSqlStatementCache().getMaximumSize(), is(1000L));
-        assertThat(actual.getSqlStatementCache().getConcurrencyLevel(), is(3));
         assertThat(actual.getParseTreeCache().getInitialCapacity(), is(64));
         assertThat(actual.getParseTreeCache().getMaximumSize(), is(512L));
-        assertThat(actual.getParseTreeCache().getConcurrencyLevel(), is(3));
     }
     
     private AlterSQLParserRuleStatement getSQLStatement() {
         AlterSQLParserRuleStatement result = new AlterSQLParserRuleStatement();
         result.setSqlCommentParseEnable(Boolean.TRUE);
-        result.setSqlStatementCache(getCacheOption(1000, 1000L, 3));
-        result.setParseTreeCache(getCacheOption(64, 512L, 3));
+        result.setSqlStatementCache(getCacheOption(1000, 1000L));
+        result.setParseTreeCache(getCacheOption(64, 512L));
         return result;
     }
     
-    private CacheOptionSegment getCacheOption(final Integer initialCapacity, final Long maximumSize, final Integer concurrencyLevel) {
-        return new CacheOptionSegment(initialCapacity, maximumSize, concurrencyLevel);
+    private CacheOptionSegment getCacheOption(final Integer initialCapacity, final Long maximumSize) {
+        return new CacheOptionSegment(initialCapacity, maximumSize);
     }
 }

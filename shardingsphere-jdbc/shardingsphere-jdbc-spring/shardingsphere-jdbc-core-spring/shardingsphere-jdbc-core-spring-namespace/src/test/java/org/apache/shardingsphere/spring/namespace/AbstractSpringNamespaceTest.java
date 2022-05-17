@@ -117,7 +117,6 @@ public abstract class AbstractSpringNamespaceTest extends AbstractJUnit4SpringCo
     private void assertCacheOption(final CacheOption cacheOption) {
         assertThat(cacheOption.getInitialCapacity(), is(1024));
         assertThat(cacheOption.getMaximumSize(), is(1024L));
-        assertThat(cacheOption.getConcurrencyLevel(), is(4));
     }
     
     @Test

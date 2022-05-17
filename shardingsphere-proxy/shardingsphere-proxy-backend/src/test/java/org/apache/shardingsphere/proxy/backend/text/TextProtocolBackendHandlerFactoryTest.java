@@ -92,7 +92,7 @@ public final class TextProtocolBackendHandlerFactoryTest {
         when(metaDataContexts.getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         TransactionContexts transactionContexts = mockTransactionContexts();
         when(contextManager.getTransactionContexts()).thenReturn(transactionContexts);
-        CacheOption cacheOption = new CacheOption(1024, 1024, 1024);
+        CacheOption cacheOption = new CacheOption(1024, 1024);
         when(metaDataContexts.getGlobalRuleMetaData().findSingleRule(SQLParserRule.class)).thenReturn(Optional.of(new SQLParserRule(new SQLParserRuleConfiguration(true, cacheOption, cacheOption))));
         ProxyContext.getInstance().init(contextManager);
     }

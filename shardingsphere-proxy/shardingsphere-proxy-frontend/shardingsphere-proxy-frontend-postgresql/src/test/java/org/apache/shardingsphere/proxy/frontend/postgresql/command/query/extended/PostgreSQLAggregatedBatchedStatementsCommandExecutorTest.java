@@ -66,7 +66,7 @@ import static org.mockito.Mockito.when;
 public final class PostgreSQLAggregatedBatchedStatementsCommandExecutorTest {
     
     private static final ShardingSphereSQLParserEngine SQL_PARSER_ENGINE = new ShardingSphereSQLParserEngine("PostgreSQL",
-            new ParserConfiguration(new CacheOption(2000, 65535L, 4), new CacheOption(128, 1024L, 4), false));
+            new ParserConfiguration(new CacheOption(2000, 65535L), new CacheOption(128, 1024L), false));
     
     private static final int CONNECTION_ID = 1;
     

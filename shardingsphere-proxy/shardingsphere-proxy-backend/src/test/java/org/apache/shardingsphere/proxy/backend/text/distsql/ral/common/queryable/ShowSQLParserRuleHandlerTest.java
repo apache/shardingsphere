@@ -53,16 +53,14 @@ public final class ShowSQLParserRuleHandlerTest {
         String parseTreeCache = String.valueOf(data.get(1));
         assertThat(parseTreeCache, containsString("\"initialCapacity\":128"));
         assertThat(parseTreeCache, containsString("\"maximumSize\":1024"));
-        assertThat(parseTreeCache, containsString("\"concurrencyLevel\":4"));
         String sqlStatementCache = String.valueOf(data.get(2));
         assertThat(sqlStatementCache, containsString("\"initialCapacity\":2000"));
         assertThat(sqlStatementCache, containsString("\"maximumSize\":65535"));
-        assertThat(sqlStatementCache, containsString("\"concurrencyLevel\":4"));
     }
     
     private ShardingSphereRuleMetaData getGlobalRuleMetaData() {
-        CacheOption parseTreeCache = new CacheOption(128, 1024, 4);
-        CacheOption sqlStatementCache = new CacheOption(2000, 65535, 4);
+        CacheOption parseTreeCache = new CacheOption(128, 1024);
+        CacheOption sqlStatementCache = new CacheOption(2000, 65535);
         return new ShardingSphereRuleMetaData(Collections.singleton(new SQLParserRuleConfiguration(true, parseTreeCache, sqlStatementCache)), Collections.emptyList());
     }
 }
