@@ -1,0 +1,9 @@
+dependencies:
+- name: governance
+  repository: file://./charts/governance
+  version: 1.0.0
+- name: common
+  repository: https://charts.bitnami.com/bitnami
+  version: 1.14.0
+digest: sha256:13f3e12de6b256db535c21863c6d6e24bc2370da8418d8501dc8dc6cb86b21c9
+generated: "2022-05-17T17:41:12.28118+08:00"
