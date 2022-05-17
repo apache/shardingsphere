@@ -100,13 +100,13 @@ public final class MetaDataContextsBuilder {
     private Map<String, ShardingSphereMetaData> getSystemDatabaseMetaDataMap(final DatabaseType frontendDatabaseType) throws SQLException {
         Map<String, ShardingSphereMetaData> result = new HashMap<>(frontendDatabaseType.getSystemDatabaseSchemaMap().size(), 1);
         for (String each : frontendDatabaseType.getSystemDatabaseSchemaMap().keySet()) {
-            result.put(each, createSystemMetaData(frontendDatabaseType, each));
+            result.put(each, createSystemMetaData(each, frontendDatabaseType));
         }
         return result;
     }
     
-    private ShardingSphereMetaData createSystemMetaData(final DatabaseType frontendDatabaseType, final String each) throws SQLException {
-        ShardingSphereDatabase database = DatabaseLoader.load(each, frontendDatabaseType);
+    private ShardingSphereMetaData createSystemMetaData(final String databaseName, final DatabaseType frontendDatabaseType) throws SQLException {
+        ShardingSphereDatabase database = DatabaseLoader.load(databaseName, frontendDatabaseType);
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(new LinkedHashMap<>(), new LinkedList<>());
         return ShardingSphereMetaData.create(frontendDatabaseType, database, databaseConfig, new LinkedList<>());
     }
