@@ -25,10 +25,7 @@ import java.util.Collections;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public final class DefaultSchemaRuleConfigurationBuilderFactoryTest {
     
@@ -37,9 +34,6 @@ public final class DefaultSchemaRuleConfigurationBuilderFactoryTest {
     public void assertGetInstances() {
         FixtureSchemaRuleBuilder builder = new FixtureSchemaRuleBuilder();
         Map<SchemaRuleBuilder, DefaultSchemaRuleConfigurationBuilder> actual = DefaultSchemaRuleConfigurationBuilderFactory.getInstances(Collections.singleton(builder));
-        assertNotNull(actual);
-        assertFalse(actual.isEmpty());
-        assertTrue(actual.containsKey(builder));
         assertThat(actual.get(builder), instanceOf(FixtureSchemaRuleConfigurationBuilder.class));
     }
 }

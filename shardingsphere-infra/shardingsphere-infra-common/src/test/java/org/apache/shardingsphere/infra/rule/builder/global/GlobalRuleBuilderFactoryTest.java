@@ -31,8 +31,6 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -44,9 +42,6 @@ public final class GlobalRuleBuilderFactoryTest {
     public void assertGetInstanceMap() {
         FixtureGlobalRuleConfiguration configuration = new FixtureGlobalRuleConfiguration();
         Map<RuleConfiguration, GlobalRuleBuilder> actual = GlobalRuleBuilderFactory.getInstanceMap(Collections.singletonList(configuration));
-        assertNotNull(actual);
-        assertFalse(actual.isEmpty());
-        assertTrue(actual.containsKey(configuration));
         assertThat(actual.get(configuration), instanceOf(FixtureGlobalRuleBuilder.class));
     }
     
@@ -54,7 +49,6 @@ public final class GlobalRuleBuilderFactoryTest {
     @Test
     public void assertGetInstancesWithoutAssignedGlobalRuleBuilderClasses() {
         Collection<GlobalRuleBuilder> actual = GlobalRuleBuilderFactory.getInstances(Collections.emptyList());
-        assertNotNull(actual);
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), instanceOf(FixtureGlobalRuleBuilder.class));
     }
@@ -67,7 +61,6 @@ public final class GlobalRuleBuilderFactoryTest {
         configuredBuilders.add(builder);
         Collection<Class<GlobalRuleBuilder>> configuredBuilderClasses = configuredBuilders.stream().map(each -> (Class<GlobalRuleBuilder>) each.getClass()).collect(Collectors.toSet());
         Collection<GlobalRuleBuilder> actual = GlobalRuleBuilderFactory.getInstances(configuredBuilderClasses);
-        assertNotNull(actual);
-        assertThat(actual.size(), is(0));
+        assertTrue(actual.isEmpty());
     }
 }

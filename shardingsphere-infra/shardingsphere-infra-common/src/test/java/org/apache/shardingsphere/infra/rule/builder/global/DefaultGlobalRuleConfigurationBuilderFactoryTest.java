@@ -25,10 +25,7 @@ import java.util.Collections;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public final class DefaultGlobalRuleConfigurationBuilderFactoryTest {
     
@@ -38,9 +35,6 @@ public final class DefaultGlobalRuleConfigurationBuilderFactoryTest {
         FixtureGlobalRuleBuilder builder = new FixtureGlobalRuleBuilder();
         Map<GlobalRuleBuilder, DefaultGlobalRuleConfigurationBuilder> actual = DefaultGlobalRuleConfigurationBuilderFactory.getInstance(
                 Collections.singleton(builder));
-        assertNotNull(actual);
-        assertFalse(actual.isEmpty());
-        assertTrue(actual.containsKey(builder));
         assertThat(actual.get(builder), instanceOf(FixtureGlobalRuleConfigurationBuilder.class));
     }
 }

@@ -25,8 +25,7 @@ import java.util.Map;
 public final class FixtureGlobalRuleBuilder implements GlobalRuleBuilder<FixtureGlobalRuleConfiguration> {
     
     @Override
-    public FixtureGlobalRule build(final FixtureGlobalRuleConfiguration ruleConfig,
-                                   final Map<String, ShardingSphereMetaData> metaDataMap) {
+    public FixtureGlobalRule build(final FixtureGlobalRuleConfiguration ruleConfig, final Map<String, ShardingSphereMetaData> metaDataMap) {
         return new FixtureGlobalRule();
     }
     

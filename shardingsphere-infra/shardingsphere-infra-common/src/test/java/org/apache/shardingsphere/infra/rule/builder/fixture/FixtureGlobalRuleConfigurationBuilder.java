@@ -19,9 +19,7 @@ package org.apache.shardingsphere.infra.rule.builder.fixture;
 
 import org.apache.shardingsphere.infra.rule.builder.global.DefaultGlobalRuleConfigurationBuilder;
 
-public final class FixtureGlobalRuleConfigurationBuilder
-        implements
-            DefaultGlobalRuleConfigurationBuilder<FixtureGlobalRuleConfiguration, FixtureGlobalRuleBuilder> {
+public final class FixtureGlobalRuleConfigurationBuilder implements DefaultGlobalRuleConfigurationBuilder<FixtureGlobalRuleConfiguration, FixtureGlobalRuleBuilder> {
     
     @Override
     public FixtureGlobalRuleConfiguration build() {
