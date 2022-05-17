@@ -1,6 +1,6 @@
 # Use Helm
 
-Use the Helm tool to provide guidance for the installation of ShardingSphere-Proxy instance in Kubernetes cluster.
+Use [Helm](https://helm.sh/) to provide guidance for the installation of ShardingSphere-Proxy instance in Kubernetes cluster.
 
 ## Quick Start
 
