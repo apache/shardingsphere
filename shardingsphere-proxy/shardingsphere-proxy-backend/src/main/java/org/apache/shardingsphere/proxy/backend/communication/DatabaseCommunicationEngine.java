@@ -153,7 +153,7 @@ public abstract class DatabaseCommunicationEngine<T> {
     
     protected MergedResult mergeQuery(final SQLStatementContext<?> sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
         MergeEngine mergeEngine = new MergeEngine(DefaultDatabase.LOGIC_NAME,
-                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(metaData.getDatabaseName()).getResource().getDatabaseType(),
+                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(metaData.getDatabase().getName()).getResource().getDatabaseType(),
                 metaData, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps(), metaData.getRuleMetaData().getRules());
         return mergeEngine.merge(queryResults, sqlStatementContext);
     }

@@ -51,6 +51,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -76,7 +77,7 @@ public final class ShardingDropTableStatementValidatorTest {
         MySQLDropTableStatement sqlStatement = new MySQLDropTableStatement();
         sqlStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_item"))));
         SQLStatementContext<DropTableStatement> sqlStatementContext = new CommonSQLStatementContext<>(sqlStatement);
-        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         ShardingDropTableStatementValidator validator = new ShardingDropTableStatementValidator();
         validator.preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), metaData);
         Collection<RouteUnit> routeUnits = new LinkedList<>();
@@ -121,7 +122,7 @@ public final class ShardingDropTableStatementValidatorTest {
         routeUnits.add(new RouteUnit(new RouteMapper("ds_1", "ds_1"), Collections.singletonList(new RouteMapper("t_order", "t_order_0"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
         new ShardingDropTableStatementValidator().postValidate(shardingRule, new DropTableStatementContext(sqlStatement),
-                Collections.emptyList(), mock(ShardingSphereMetaData.class), mock(ConfigurationProperties.class), routeContext);
+                Collections.emptyList(), mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS), mock(ConfigurationProperties.class), routeContext);
     }
     
     @Test(expected = ShardingSphereException.class)
@@ -134,7 +135,7 @@ public final class ShardingDropTableStatementValidatorTest {
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_order", "t_order_0"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
         new ShardingDropTableStatementValidator().postValidate(shardingRule, new DropTableStatementContext(sqlStatement),
-                Collections.emptyList(), mock(ShardingSphereMetaData.class), mock(ConfigurationProperties.class), routeContext);
+                Collections.emptyList(), mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS), mock(ConfigurationProperties.class), routeContext);
     }
     
     @Test
@@ -148,7 +149,7 @@ public final class ShardingDropTableStatementValidatorTest {
         routeUnits.add(new RouteUnit(new RouteMapper("ds_1", "ds_1"), Collections.singletonList(new RouteMapper("t_config", "t_config"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
         new ShardingDropTableStatementValidator().postValidate(shardingRule, new DropTableStatementContext(sqlStatement),
-                Collections.emptyList(), mock(ShardingSphereMetaData.class), mock(ConfigurationProperties.class), routeContext);
+                Collections.emptyList(), mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS), mock(ConfigurationProperties.class), routeContext);
     }
     
     @Test(expected = ShardingSphereException.class)
@@ -161,6 +162,6 @@ public final class ShardingDropTableStatementValidatorTest {
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_config", "t_config"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
         new ShardingDropTableStatementValidator().postValidate(shardingRule, new DropTableStatementContext(sqlStatement),
-                Collections.emptyList(), mock(ShardingSphereMetaData.class), mock(ConfigurationProperties.class), routeContext);
+                Collections.emptyList(), mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS), mock(ConfigurationProperties.class), routeContext);
     }
 }

@@ -61,7 +61,7 @@ public final class CreateTableStatementSchemaRefresher implements MetaDataRefres
             metaData.getSchemaByName(schemaName).put(tableName, optional);
             database.putTableMetadata(schemaName, optional);
             optimizerPlanners.put(database.getName(), OptimizerPlannerContextFactory.create(database));
-            SchemaAlteredEvent event = new SchemaAlteredEvent(metaData.getDatabaseName(), schemaName);
+            SchemaAlteredEvent event = new SchemaAlteredEvent(metaData.getDatabase().getName(), schemaName);
             event.getAlteredTables().add(optional);
             ShardingSphereEventBus.getInstance().post(event);
         });

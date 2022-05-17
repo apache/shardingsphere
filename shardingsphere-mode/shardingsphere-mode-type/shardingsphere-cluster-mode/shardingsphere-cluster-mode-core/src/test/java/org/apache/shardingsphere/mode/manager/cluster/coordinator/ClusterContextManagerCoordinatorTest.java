@@ -37,6 +37,7 @@ import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.resource.CachedDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
@@ -146,7 +147,7 @@ public final class ClusterContextManagerCoordinatorTest {
     }
     
     private Map<String, ShardingSphereMetaData> createMetaDataMap() {
-        when(metaData.getDatabaseName()).thenReturn("db");
+        when(metaData.getDatabase().getName()).thenReturn("db");
         ShardingSphereResource resource = mock(ShardingSphereResource.class);
         when(resource.getDatabaseType()).thenReturn(new MySQLDatabaseType());
         when(metaData.getResource()).thenReturn(resource);
@@ -390,7 +391,8 @@ public final class ClusterContextManagerCoordinatorTest {
     private Map<String, DataSource> initContextManager() {
         Map<String, DataSource> result = getDataSourceMap();
         ShardingSphereResource resource = new ShardingSphereResource(result, mock(DataSourcesMetaData.class), mock(CachedDatabaseMetaData.class), new MySQLDatabaseType());
-        ShardingSphereMetaData mockedMetaData = new ShardingSphereMetaData("db", new MySQLDatabaseType(), resource, mock(ShardingSphereRuleMetaData.class), Collections.emptyMap());
+        ShardingSphereMetaData mockedMetaData = new ShardingSphereMetaData(new MySQLDatabaseType(), resource, 
+                mock(ShardingSphereRuleMetaData.class), new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, Collections.emptyMap()));
         contextManager.getMetaDataContexts().getMetaDataMap().put("db", mockedMetaData);
         return result;
     }
