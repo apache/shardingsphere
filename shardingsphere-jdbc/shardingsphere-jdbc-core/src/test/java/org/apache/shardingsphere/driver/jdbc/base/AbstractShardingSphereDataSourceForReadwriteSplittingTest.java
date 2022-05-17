@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.driver.jdbc.base;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Maps;
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.junit.AfterClass;
@@ -31,12 +29,15 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public abstract class AbstractShardingSphereDataSourceForReadwriteSplittingTest extends AbstractSQLTest {
     
     private static ShardingSphereDataSource dataSource;
     
-    private static final String CONFIG = "config/config-readwrite-splitting.yaml";
+    private static final String CONFIG_FILE = "config/config-readwrite-splitting.yaml";
     
     private static final List<String> ACTUAL_DATA_SOURCE_NAMES = Arrays.asList("test_write_ds", "test_read_ds");
     
@@ -45,16 +46,16 @@ public abstract class AbstractShardingSphereDataSourceForReadwriteSplittingTest 
         if (null != dataSource) {
             return;
         }
-        dataSource = (ShardingSphereDataSource) YamlShardingSphereDataSourceFactory.createDataSource(getDataSources(), getFile(CONFIG));
+        dataSource = (ShardingSphereDataSource) YamlShardingSphereDataSourceFactory.createDataSource(getDataSourceMap(), getFile());
     }
     
-    private static Map<String, DataSource> getDataSources() {
-        return Maps.filterKeys(getActualDataSources(), ACTUAL_DATA_SOURCE_NAMES::contains);
+    private static Map<String, DataSource> getDataSourceMap() {
+        return getActualDataSources().entrySet().stream().filter(entry -> ACTUAL_DATA_SOURCE_NAMES.contains(entry.getKey())).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
     }
     
-    private static File getFile(final String fileName) {
-        return new File(Preconditions.checkNotNull(
-                AbstractShardingSphereDataSourceForReadwriteSplittingTest.class.getClassLoader().getResource(fileName), "file resource `%s` must not be null.", fileName).getFile());
+    private static File getFile() {
+        return new File(Objects.requireNonNull(
+                AbstractShardingSphereDataSourceForReadwriteSplittingTest.class.getClassLoader().getResource(CONFIG_FILE), String.format("File `%s` is not existed.", CONFIG_FILE)).getFile());
     }
     
     protected final ShardingSphereDataSource getReadwriteSplittingDataSource() {

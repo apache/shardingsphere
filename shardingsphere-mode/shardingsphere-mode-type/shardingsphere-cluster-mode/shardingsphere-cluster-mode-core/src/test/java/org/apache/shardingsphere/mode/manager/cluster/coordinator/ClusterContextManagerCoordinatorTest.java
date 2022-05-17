@@ -374,7 +374,7 @@ public final class ClusterContextManagerCoordinatorTest {
         String showProcessListId = "foo_process_id";
         coordinator.triggerShowProcessList(new ShowProcessListTriggerEvent(instanceDefinition, showProcessListId));
         ClusterPersistRepository repository = ReflectionUtil.getFieldValue(coordinator, "registryCenter", RegistryCenter.class).getRepository();
-        verify(repository).persist("/execution_nodes/foo_process_id/proxy_" + instanceDefinition.getInstanceId().getId(), 
+        verify(repository).persist("/execution_nodes/foo_process_id/proxy_" + instanceDefinition.getInstanceId().getId(),
                 "contexts:" + System.lineSeparator() + "- startTimeMillis: 0" + System.lineSeparator());
         verify(repository).delete("/nodes/compute_nodes/process_trigger/proxy/" + instanceDefinition.getInstanceId().getId() + "/foo_process_id");
     }

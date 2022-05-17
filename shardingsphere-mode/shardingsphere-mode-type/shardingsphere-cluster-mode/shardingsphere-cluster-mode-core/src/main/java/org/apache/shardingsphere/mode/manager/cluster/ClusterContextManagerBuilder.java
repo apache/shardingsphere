@@ -71,7 +71,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         RegistryCenter registryCenter = new RegistryCenter(repository);
         MetaDataContextsBuilder builder = createMetaDataContextsBuilder(metaDataPersistService, parameter);
         MetaDataContexts metaDataContexts = builder.build(metaDataPersistService);
-        persistMetaData(metaDataPersistService, metaDataContexts);
+        persistMetaData(metaDataContexts);
         Properties transactionProps = getTransactionProperties(metaDataContexts);
         persistTransactionConfiguration(parameter, metaDataPersistService, transactionProps);
         ContextManager result = createContextManager(repository, metaDataPersistService, parameter.getInstanceDefinition(), metaDataContexts, transactionProps, parameter.getModeConfig());
@@ -143,12 +143,12 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         return new DataSourceProvidedDatabaseConfiguration(dataSources, databaseRuleConfigs);
     }
     
-    private void persistMetaData(final MetaDataPersistService metaDataPersistService, final MetaDataContexts metaDataContexts) {
-        metaDataContexts.getMetaDataMap().forEach((databaseName, schemas) -> schemas.getDatabase().getSchemas().forEach((schemaName, tables) -> {
+    private void persistMetaData(final MetaDataContexts metaDataContexts) {
+        metaDataContexts.getMetaDataMap().forEach((databaseName, schemas) -> schemas.getSchemas().forEach((schemaName, tables) -> {
             if (tables.getTables().isEmpty()) {
-                metaDataPersistService.getSchemaMetaDataService().persistSchema(databaseName, schemaName);
+                metaDataContexts.getMetaDataPersistService().ifPresent(optional -> optional.getSchemaMetaDataService().persistSchema(databaseName, schemaName));
             } else {
-                metaDataPersistService.getSchemaMetaDataService().persistTables(databaseName, schemaName, tables);
+                metaDataContexts.getMetaDataPersistService().ifPresent(optional -> optional.getSchemaMetaDataService().persistTables(databaseName, schemaName, tables));
             }
         }));
     }

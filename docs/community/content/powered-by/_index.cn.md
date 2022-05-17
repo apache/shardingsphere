@@ -13,7 +13,7 @@ chapter = true
 
 ## 谁在使用 ShardingSphere?
 
-共计 194 家公司。
+共计 200 家公司。
 
 ### 基础软件
 <ul>
@@ -117,8 +117,10 @@ chapter = true
     <li><a href="http://www.shangquanquan.com/" rel="nofollow">万江龙智慧商圈</a></li>
     <li><a href="https://www.glodon.com/" rel="nofollow">广联达</a></li>
     <li><a href="https://www.zego.im/" rel="nofollow">即构科技</a></li>
-    <li><a href="http://www.sdjictec.com" rel="nofollow">建投数据科技</a></li>
+    <li><a href="http://www.sdjictec.com/" rel="nofollow">建投数据科技</a></li>
     <li><a href="https://www.baozun.com/" rel="nofollow">宝尊电商</a></li>
+    <li><a href="https://www.maxrocky.com/" rel="nofollow">迈动互联</a></li>
+    <li><a href="https://www.teddymobile.cn/" rel="nofollow">泰迪熊移动</a></li>
 </ul>
 
 ### 出行
@@ -190,6 +192,7 @@ chapter = true
     <li><a href="http://www.swydedu.com/" rel="nofollow">数维原动</a></li>
     <li><a href="https://www.codemao.cn/" rel="nofollow">编程猫</a></li>
     <li><a href="https://www.yxt.com/" rel="nofollow">云学堂</a></li>
+    <li><a href="https://www.weixiaotong.com.cn/" rel="nofollow">光海微校通</a></li>
 </ul>
 
 ### 新闻资讯
@@ -243,7 +246,8 @@ chapter = true
 
 ### 制造业
 <ul>
-    <li><a href="https://www.lixiang.com" rel="nofollow">理想汽车</a></li>
+    <li><a href="https://www.lixiang.com/" rel="nofollow">理想汽车</a></li>
+    <li><a href="https://www.tanksuv.com/" rel="nofollow">长城汽车</a></li>
     <li><a href="https://www.gongniu.cn/" rel="nofollow">公牛智能产业中心</a></li>
 </ul>
 
@@ -291,7 +295,12 @@ chapter = true
     <li><a href="http://www.huxleymedical.tech/" rel="nofollow">山东华链医疗科技有限公司</a></li>
     <li><a href="https://www.xingren.com/" rel="nofollow">未来医生</a></li>
     <li><a href="https://www.medbanks.cn/" rel="nofollow">思派网络</a></li>
+    <li><a href="http://swifthealth.cn/" rel="nofollow">朝前科技</a></li>
 </ul>
 
+### 招聘
+<ul>
+    <li><a href="https://hireez.com/" rel="nofollow">hireEZ</a></li>
+</ul>
 
 <img src="https://shardingsphere.apache.org/community/image/powered-by.png" width = "30%" height = "30%" align="right" alt="Powered By ShardingSphere" />
