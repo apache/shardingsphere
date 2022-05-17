@@ -25,6 +25,7 @@ import java.sql.SQLException;
  */
 public final class DefaultRowsLoader extends AbstractJDBCRowsLoader {
     
+    @Override
     protected Object getDate(final ResultSet resultSet, final int columnIndex) throws SQLException {
         return resultSet.getDate(columnIndex);
     }
