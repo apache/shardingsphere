@@ -64,16 +64,6 @@ public final class ExecuteEngine {
     }
     
     /**
-     * Submit a {@code LifecycleExecutor} without callback to execute.
-     *
-     * @param lifecycleExecutor lifecycle executor
-     * @return execute future
-     */
-    public Future<?> submit(final LifecycleExecutor lifecycleExecutor) {
-        return executorService.submit(lifecycleExecutor);
-    }
-    
-    /**
      * Submit a {@code LifecycleExecutor} with callback {@code ExecuteCallback} to execute.
      *
      * @param lifecycleExecutor lifecycle executor
@@ -85,7 +75,8 @@ public final class ExecuteEngine {
             if (null == throwable) {
                 executeCallback.onSuccess();
             } else {
-                executeCallback.onFailure(throwable);
+                Throwable cause = throwable.getCause();
+                executeCallback.onFailure(null != cause ? cause : throwable);
             }
         }, executorService);
     }
@@ -104,10 +95,11 @@ public final class ExecuteEngine {
             futures[i++] = CompletableFuture.runAsync(each, executorService);
         }
         return CompletableFuture.allOf(futures).whenCompleteAsync((unused, throwable) -> {
-            if (null != throwable) {
-                executeCallback.onFailure(throwable);
-            } else {
+            if (null == throwable) {
                 executeCallback.onSuccess();
+            } else {
+                Throwable cause = throwable.getCause();
+                executeCallback.onFailure(null != cause ? cause : throwable);
             }
         }, executorService);
     }
