@@ -69,8 +69,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         MetaDataPersistService metaDataPersistService = new MetaDataPersistService(repository);
         persistConfigurations(metaDataPersistService, parameter);
         RegistryCenter registryCenter = new RegistryCenter(repository);
-        MetaDataContextsBuilder builder = createMetaDataContextsBuilder(metaDataPersistService, parameter);
-        MetaDataContexts metaDataContexts = builder.build(metaDataPersistService);
+        MetaDataContexts metaDataContexts = createMetaDataContextsBuilder(metaDataPersistService, parameter).build(metaDataPersistService);
         persistMetaData(metaDataContexts);
         Properties transactionProps = getTransactionProperties(metaDataContexts);
         persistTransactionConfiguration(parameter, metaDataPersistService, transactionProps);
@@ -91,9 +90,9 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         Collection<String> databaseNames = InstanceType.JDBC == parameter.getInstanceDefinition().getInstanceType()
                 ? parameter.getDatabaseConfigs().keySet()
                 : metaDataPersistService.getSchemaMetaDataService().loadAllDatabaseNames();
+        Map<String, DatabaseConfiguration> databaseConfigMap = getDatabaseConfigMap(databaseNames, metaDataPersistService, parameter);
         Collection<RuleConfiguration> globalRuleConfigs = metaDataPersistService.getGlobalRuleService().load();
         ConfigurationProperties props = new ConfigurationProperties(metaDataPersistService.getPropsService().load());
-        Map<String, DatabaseConfiguration> databaseConfigMap = getDatabaseConfigMap(databaseNames, metaDataPersistService, parameter);
         return new MetaDataContextsBuilder(databaseConfigMap, globalRuleConfigs, props);
     }
     
