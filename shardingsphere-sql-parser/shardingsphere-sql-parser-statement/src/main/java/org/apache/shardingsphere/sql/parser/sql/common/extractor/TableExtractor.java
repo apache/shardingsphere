@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.sql.common.extractor;
 import lombok.Getter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.RoutineBodySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.ValidStatementSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
@@ -51,6 +52,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectState
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.CreateTableStatementHandler;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -217,9 +219,21 @@ public final class TableExtractor {
                 extractTablesFromExpression(each);
             }
         }
+        if (insertStatement instanceof MySQLInsertStatement) {
+            ((MySQLInsertStatement) insertStatement).getOnDuplicateKeyColumns().ifPresent(each -> extractTablesFromAssignmentItems(each.getColumns()));
+        }
         if (insertStatement.getInsertSelect().isPresent()) {
             extractTablesFromSelect(insertStatement.getInsertSelect().get().getSelect());
         }
+    }
+    
+    private void extractTablesFromAssignmentItems(final Collection<AssignmentSegment> assignmentItems) {
+        assignmentItems.stream().flatMap(each -> each.getColumns().stream()).forEach(each ->{
+            if (each.getOwner().isPresent() && needRewrite(each.getOwner().get())) {
+                OwnerSegment ownerSegment = each.getOwner().get();
+                rewriteTables.add(new SimpleTableSegment(new TableNameSegment(ownerSegment.getStartIndex(), ownerSegment.getStopIndex(), ownerSegment.getIdentifier())));
+            }
+        });
     }
     
     /**
