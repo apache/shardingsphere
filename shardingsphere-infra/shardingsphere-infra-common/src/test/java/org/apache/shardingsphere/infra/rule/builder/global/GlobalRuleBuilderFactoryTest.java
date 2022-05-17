@@ -17,16 +17,12 @@
 
 package org.apache.shardingsphere.infra.rule.builder.global;
 
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.builder.fixture.FixtureGlobalRuleBuilder;
 import org.apache.shardingsphere.infra.rule.builder.fixture.FixtureGlobalRuleConfiguration;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -37,12 +33,10 @@ import static org.mockito.Mockito.mock;
 
 public final class GlobalRuleBuilderFactoryTest {
     
-    @SuppressWarnings("rawtypes")
     @Test
     public void assertGetInstanceMap() {
-        FixtureGlobalRuleConfiguration configuration = new FixtureGlobalRuleConfiguration();
-        Map<RuleConfiguration, GlobalRuleBuilder> actual = GlobalRuleBuilderFactory.getInstanceMap(Collections.singletonList(configuration));
-        assertThat(actual.get(configuration), instanceOf(FixtureGlobalRuleBuilder.class));
+        FixtureGlobalRuleConfiguration ruleConfig = new FixtureGlobalRuleConfiguration();
+        assertThat(GlobalRuleBuilderFactory.getInstanceMap(Collections.singletonList(ruleConfig)).get(ruleConfig), instanceOf(FixtureGlobalRuleBuilder.class));
     }
     
     @SuppressWarnings("rawtypes")
@@ -56,11 +50,7 @@ public final class GlobalRuleBuilderFactoryTest {
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     public void assertGetInstancesWithAssignedGlobalRuleBuilderClasses() {
-        List<GlobalRuleBuilder> configuredBuilders = new ArrayList<>(1);
-        FixtureGlobalRuleBuilder builder = mock(FixtureGlobalRuleBuilder.class);
-        configuredBuilders.add(builder);
-        Collection<Class<GlobalRuleBuilder>> configuredBuilderClasses = configuredBuilders.stream().map(each -> (Class<GlobalRuleBuilder>) each.getClass()).collect(Collectors.toSet());
-        Collection<GlobalRuleBuilder> actual = GlobalRuleBuilderFactory.getInstances(configuredBuilderClasses);
-        assertTrue(actual.isEmpty());
+        Collection<GlobalRuleBuilder> builders = Collections.singleton(mock(FixtureGlobalRuleBuilder.class));
+        assertTrue(GlobalRuleBuilderFactory.getInstances(builders.stream().map(each -> (Class<GlobalRuleBuilder>) each.getClass()).collect(Collectors.toSet())).isEmpty());
     }
 }
