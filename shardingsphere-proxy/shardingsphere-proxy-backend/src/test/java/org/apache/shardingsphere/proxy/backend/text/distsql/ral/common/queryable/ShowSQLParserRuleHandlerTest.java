@@ -61,8 +61,8 @@ public final class ShowSQLParserRuleHandlerTest {
     }
     
     private ShardingSphereRuleMetaData getGlobalRuleMetaData() {
-        CacheOption parseTreeCache = new CacheOption(128, 1024, 4);
-        CacheOption sqlStatementCache = new CacheOption(2000, 65535, 4);
+        CacheOption parseTreeCache = new CacheOption(128, 1024);
+        CacheOption sqlStatementCache = new CacheOption(2000, 65535);
         return new ShardingSphereRuleMetaData(Collections.singleton(new SQLParserRuleConfiguration(true, parseTreeCache, sqlStatementCache)), Collections.emptyList());
     }
 }

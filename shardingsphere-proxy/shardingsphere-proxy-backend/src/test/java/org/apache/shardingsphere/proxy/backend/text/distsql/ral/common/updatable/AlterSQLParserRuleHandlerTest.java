@@ -54,10 +54,8 @@ public final class AlterSQLParserRuleHandlerTest {
         assertTrue(actual.isSqlCommentParseEnabled());
         assertThat(actual.getSqlStatementCache().getInitialCapacity(), is(1000));
         assertThat(actual.getSqlStatementCache().getMaximumSize(), is(1000L));
-        assertThat(actual.getSqlStatementCache().getConcurrencyLevel(), is(3));
         assertThat(actual.getParseTreeCache().getInitialCapacity(), is(64));
         assertThat(actual.getParseTreeCache().getMaximumSize(), is(512L));
-        assertThat(actual.getParseTreeCache().getConcurrencyLevel(), is(3));
     }
     
     @Test
@@ -73,10 +71,8 @@ public final class AlterSQLParserRuleHandlerTest {
         assertTrue(actual.isSqlCommentParseEnabled());
         assertThat(actual.getSqlStatementCache().getInitialCapacity(), is(1000));
         assertThat(actual.getSqlStatementCache().getMaximumSize(), is(1000L));
-        assertThat(actual.getSqlStatementCache().getConcurrencyLevel(), is(3));
         assertThat(actual.getParseTreeCache().getInitialCapacity(), is(64));
         assertThat(actual.getParseTreeCache().getMaximumSize(), is(512L));
-        assertThat(actual.getParseTreeCache().getConcurrencyLevel(), is(3));
     }
     
     private AlterSQLParserRuleStatement getSQLStatement() {
