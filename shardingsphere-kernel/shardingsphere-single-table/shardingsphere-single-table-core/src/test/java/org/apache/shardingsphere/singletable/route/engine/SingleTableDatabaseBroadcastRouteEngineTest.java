@@ -44,7 +44,7 @@ public final class SingleTableDatabaseBroadcastRouteEngineTest {
     
     @Test
     public void assertRoute() {
-        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), 
+        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(),
                 DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class), createDataSourceMap(), Collections.emptyList(), new ConfigurationProperties(new Properties()));
         RouteContext routeContext = new RouteContext();
         SingleTableDatabaseBroadcastRouteEngine engine = new SingleTableDatabaseBroadcastRouteEngine();
