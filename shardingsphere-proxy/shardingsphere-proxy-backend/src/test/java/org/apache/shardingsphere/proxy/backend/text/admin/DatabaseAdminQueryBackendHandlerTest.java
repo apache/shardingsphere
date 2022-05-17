@@ -83,7 +83,7 @@ public final class DatabaseAdminQueryBackendHandlerTest {
     
     private Map<String, ShardingSphereMetaData> getMetaDataMap() {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        when(metaData.getDatabaseName()).thenReturn("db");
+        when(metaData.getDatabase().getName()).thenReturn("db");
         when(metaData.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
         when(metaData.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         return Collections.singletonMap("db", metaData);

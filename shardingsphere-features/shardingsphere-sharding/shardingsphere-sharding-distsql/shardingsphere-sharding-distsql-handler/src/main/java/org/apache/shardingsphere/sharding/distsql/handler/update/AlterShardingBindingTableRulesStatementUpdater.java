@@ -41,7 +41,7 @@ public final class AlterShardingBindingTableRulesStatementUpdater implements Rul
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final AlterShardingBindingTableRulesStatement sqlStatement,
                                   final ShardingRuleConfiguration currentRuleConfig) throws RuleDefinitionViolationException {
-        String databaseName = shardingSphereMetaData.getDatabaseName();
+        String databaseName = shardingSphereMetaData.getDatabase().getName();
         checkCurrentRuleConfiguration(databaseName, currentRuleConfig);
         checkToBeAlertedBindingTables(databaseName, sqlStatement, currentRuleConfig);
         checkToBeAlteredDuplicateBindingTables(databaseName, sqlStatement);

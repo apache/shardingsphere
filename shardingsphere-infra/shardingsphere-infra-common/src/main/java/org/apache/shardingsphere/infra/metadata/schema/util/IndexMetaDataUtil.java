@@ -88,7 +88,7 @@ public class IndexMetaDataUtil {
      */
     public static Collection<QualifiedTable> getTableNamesFromMetaData(final ShardingSphereMetaData metaData, final Collection<IndexSegment> indexes, final DatabaseType databaseType) {
         Collection<QualifiedTable> result = new LinkedList<>();
-        String schemaName = databaseType.getDefaultSchema(metaData.getDatabaseName());
+        String schemaName = databaseType.getDefaultSchema(metaData.getDatabase().getName());
         for (IndexSegment each : indexes) {
             String actualSchemaName = each.getOwner().map(optional -> optional.getIdentifier().getValue()).orElse(schemaName);
             findLogicTableNameFromMetaData(metaData.getSchemaByName(actualSchemaName),

@@ -112,7 +112,7 @@ public final class MetaDataContextsBuilder {
             String databaseName = entry.getKey();
             DatabaseConfiguration databaseConfig = databaseConfigMap.getOrDefault(databaseName, new DataSourceProvidedDatabaseConfiguration(new LinkedHashMap<>(), new LinkedList<>()));
             Collection<ShardingSphereRule> rules = databaseRulesMap.getOrDefault(databaseName, new LinkedList<>());
-            result.put(databaseName, ShardingSphereMetaData.create(databaseName, frontendDatabaseType, entry.getValue().getSchemas(), databaseConfig, rules));
+            result.put(databaseName, ShardingSphereMetaData.create(frontendDatabaseType, entry.getValue(), databaseConfig, rules));
         }
         return result;
     }

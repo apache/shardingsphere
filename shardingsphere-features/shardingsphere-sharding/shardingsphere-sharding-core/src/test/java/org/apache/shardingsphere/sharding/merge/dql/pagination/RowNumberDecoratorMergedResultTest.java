@@ -74,9 +74,9 @@ public final class RowNumberDecoratorMergedResultTest {
         selectStatement.setFrom(subqueryTableSegment);
         selectStatement.setWhere(whereSegment);
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeFactory.getInstance("Oracle"));
-        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, metaData), null, selectStatement, DefaultDatabase.LOGIC_NAME);
-        when(metaData.getDatabaseName()).thenReturn(DefaultDatabase.LOGIC_NAME);
+        when(metaData.getDatabase().getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResult(), mockQueryResult(), mockQueryResult(), mockQueryResult()), selectStatementContext, metaData);
         assertFalse(actual.next());
     }
@@ -84,11 +84,11 @@ public final class RowNumberDecoratorMergedResultTest {
     @Test
     public void assertNextWithoutOffsetWithoutRowCount() throws SQLException {
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeFactory.getInstance("Oracle"));
-        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         OracleSelectStatement selectStatement = new OracleSelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, metaData), null, selectStatement, DefaultDatabase.LOGIC_NAME);
-        when(metaData.getDatabaseName()).thenReturn(DefaultDatabase.LOGIC_NAME);
+        when(metaData.getDatabase().getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResult(), mockQueryResult(), mockQueryResult(), mockQueryResult()), selectStatementContext, metaData);
         for (int i = 0; i < 8; i++) {
             assertTrue(actual.next());
@@ -120,9 +120,9 @@ public final class RowNumberDecoratorMergedResultTest {
         selectStatement.setFrom(subqueryTableSegment);
         selectStatement.setWhere(whereSegment);
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeFactory.getInstance("Oracle"));
-        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, metaData), null, selectStatement, DefaultDatabase.LOGIC_NAME);
-        when(metaData.getDatabaseName()).thenReturn(DefaultDatabase.LOGIC_NAME);
+        when(metaData.getDatabase().getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResult(), mockQueryResult(), mockQueryResult(), mockQueryResult()), selectStatementContext, metaData);
         assertTrue(actual.next());
         assertTrue(actual.next());
@@ -153,9 +153,9 @@ public final class RowNumberDecoratorMergedResultTest {
         selectStatement.setFrom(subqueryTableSegment);
         selectStatement.setWhere(whereSegment);
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeFactory.getInstance("Oracle"));
-        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, metaData), null, selectStatement, DefaultDatabase.LOGIC_NAME);
-        when(metaData.getDatabaseName()).thenReturn(DefaultDatabase.LOGIC_NAME);
+        when(metaData.getDatabase().getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResult(), mockQueryResult(), mockQueryResult(), mockQueryResult()), selectStatementContext, metaData);
         assertTrue(actual.next());
         assertTrue(actual.next());

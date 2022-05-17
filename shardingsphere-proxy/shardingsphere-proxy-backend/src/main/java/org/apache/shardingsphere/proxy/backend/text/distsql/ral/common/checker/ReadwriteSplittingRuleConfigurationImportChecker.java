@@ -47,7 +47,7 @@ public final class ReadwriteSplittingRuleConfigurationImportChecker {
         if (null == shardingSphereMetaData || null == currentRuleConfig) {
             return;
         }
-        String databaseName = shardingSphereMetaData.getDatabaseName();
+        String databaseName = shardingSphereMetaData.getDatabase().getName();
         checkResources(databaseName, shardingSphereMetaData, currentRuleConfig);
         checkLoadBalancers(currentRuleConfig);
     }

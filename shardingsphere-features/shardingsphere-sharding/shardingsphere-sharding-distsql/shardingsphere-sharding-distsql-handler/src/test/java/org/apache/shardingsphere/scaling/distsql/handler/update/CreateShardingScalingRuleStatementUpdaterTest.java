@@ -30,6 +30,7 @@ import org.apache.shardingsphere.scaling.distsql.statement.segment.ShardingScali
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -45,7 +46,7 @@ public final class CreateShardingScalingRuleStatementUpdaterTest {
     
     private static final String LIMIT_TYPE_OUTPUT = "FIXTURE_OUTPUT";
     
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereMetaData shardingSphereMetaData;
     
     private final CreateShardingScalingRuleStatementUpdater updater = new CreateShardingScalingRuleStatementUpdater();

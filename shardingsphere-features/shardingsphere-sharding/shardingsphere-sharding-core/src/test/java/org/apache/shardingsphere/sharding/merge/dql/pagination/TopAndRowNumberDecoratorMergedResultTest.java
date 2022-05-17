@@ -54,7 +54,7 @@ public final class TopAndRowNumberDecoratorMergedResultTest {
     
     @Test
     public void assertNextForSkipAll() throws SQLException {
-        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         when(metaData.getSchemaByName(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
         SQLServerSelectStatement sqlStatement = new SQLServerSelectStatement();
         sqlStatement.setProjections(new ProjectionsSegment(0, 0));
@@ -62,21 +62,23 @@ public final class TopAndRowNumberDecoratorMergedResultTest {
         SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, metaData),
                 Collections.emptyList(), sqlStatement, DefaultDatabase.LOGIC_NAME);
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeFactory.getInstance("SQLServer"));
-        MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResult(), mockQueryResult(), mockQueryResult(), mockQueryResult()), selectStatementContext, mock(ShardingSphereMetaData.class));
+        MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResult(), mockQueryResult(),
+                mockQueryResult(), mockQueryResult()), selectStatementContext, mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS));
         assertFalse(actual.next());
     }
     
     @Test
     public void assertNextWithoutOffsetWithRowCount() throws SQLException {
         final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeFactory.getInstance("SQLServer"));
-        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         when(metaData.getSchemaByName(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
         SQLServerSelectStatement sqlStatement = new SQLServerSelectStatement();
         sqlStatement.setProjections(new ProjectionsSegment(0, 0));
         sqlStatement.setLimit(new LimitSegment(0, 0, null, new NumberLiteralLimitValueSegment(0, 0, 5)));
         SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, metaData), Collections.emptyList(),
                 sqlStatement, DefaultDatabase.LOGIC_NAME);
-        MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResult(), mockQueryResult(), mockQueryResult(), mockQueryResult()), selectStatementContext, mock(ShardingSphereMetaData.class));
+        MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResult(), mockQueryResult(),
+                mockQueryResult(), mockQueryResult()), selectStatementContext, mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS));
         for (int i = 0; i < 5; i++) {
             assertTrue(actual.next());
         }
@@ -85,7 +87,7 @@ public final class TopAndRowNumberDecoratorMergedResultTest {
     
     @Test
     public void assertNextWithOffsetWithoutRowCount() throws SQLException {
-        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         when(metaData.getSchemaByName(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
         SQLServerSelectStatement sqlStatement = new SQLServerSelectStatement();
         sqlStatement.setProjections(new ProjectionsSegment(0, 0));
@@ -93,7 +95,8 @@ public final class TopAndRowNumberDecoratorMergedResultTest {
         SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, metaData),
                 Collections.emptyList(), sqlStatement, DefaultDatabase.LOGIC_NAME);
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeFactory.getInstance("SQLServer"));
-        MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResult(), mockQueryResult(), mockQueryResult(), mockQueryResult()), selectStatementContext, mock(ShardingSphereMetaData.class));
+        MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResult(), mockQueryResult(),
+                mockQueryResult(), mockQueryResult()), selectStatementContext, mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS));
         for (int i = 0; i < 7; i++) {
             assertTrue(actual.next());
         }
@@ -103,14 +106,15 @@ public final class TopAndRowNumberDecoratorMergedResultTest {
     @Test
     public void assertNextWithOffsetBoundOpenedFalse() throws SQLException {
         final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeFactory.getInstance("SQLServer"));
-        final ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
+        final ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         when(metaData.getSchemaByName(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
         SQLServerSelectStatement sqlStatement = new SQLServerSelectStatement();
         sqlStatement.setProjections(new ProjectionsSegment(0, 0));
         sqlStatement.setLimit(new LimitSegment(0, 0, new NumberLiteralRowNumberValueSegment(0, 0, 2, false), new NumberLiteralLimitValueSegment(0, 0, 4)));
         SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, metaData),
                 Collections.emptyList(), sqlStatement, DefaultDatabase.LOGIC_NAME);
-        MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResult(), mockQueryResult(), mockQueryResult(), mockQueryResult()), selectStatementContext, mock(ShardingSphereMetaData.class));
+        MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResult(), mockQueryResult(),
+                mockQueryResult(), mockQueryResult()), selectStatementContext, mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS));
         assertTrue(actual.next());
         assertTrue(actual.next());
         assertFalse(actual.next());
@@ -119,14 +123,15 @@ public final class TopAndRowNumberDecoratorMergedResultTest {
     @Test
     public void assertNextWithOffsetBoundOpenedTrue() throws SQLException {
         final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeFactory.getInstance("SQLServer"));
-        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         when(metaData.getSchemaByName(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
         SQLServerSelectStatement sqlStatement = new SQLServerSelectStatement();
         sqlStatement.setProjections(new ProjectionsSegment(0, 0));
         sqlStatement.setLimit(new LimitSegment(0, 0, new NumberLiteralRowNumberValueSegment(0, 0, 2, true), new NumberLiteralLimitValueSegment(0, 0, 4)));
         SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, metaData),
                 Collections.emptyList(), sqlStatement, DefaultDatabase.LOGIC_NAME);
-        MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResult(), mockQueryResult(), mockQueryResult(), mockQueryResult()), selectStatementContext, mock(ShardingSphereMetaData.class));
+        MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResult(), mockQueryResult(),
+                mockQueryResult(), mockQueryResult()), selectStatementContext, mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS));
         assertTrue(actual.next());
         assertTrue(actual.next());
         assertTrue(actual.next());

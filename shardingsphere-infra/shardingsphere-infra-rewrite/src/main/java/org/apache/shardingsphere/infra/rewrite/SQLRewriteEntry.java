@@ -74,7 +74,7 @@ public final class SQLRewriteEntry {
     }
     
     private SQLRewriteContext createSQLRewriteContext(final String sql, final List<Object> parameters, final SQLStatementContext<?> sqlStatementContext, final RouteContext routeContext) {
-        SQLRewriteContext result = new SQLRewriteContext(metaData.getDatabaseName(), metaData.getSchemas(), sqlStatementContext, sql, parameters);
+        SQLRewriteContext result = new SQLRewriteContext(metaData.getDatabase().getName(), metaData.getDatabase().getSchemas(), sqlStatementContext, sql, parameters);
         decorate(decorators, result, routeContext);
         result.generateSQLTokens();
         return result;

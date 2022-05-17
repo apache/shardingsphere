@@ -44,7 +44,7 @@ public final class AlterDatabaseDiscoveryTypeStatementUpdater implements RuleDef
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final AlterDatabaseDiscoveryTypeStatement sqlStatement,
                                   final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String databaseName = shardingSphereMetaData.getDatabaseName();
+        String databaseName = shardingSphereMetaData.getDatabase().getName();
         checkCurrentRuleConfiguration(databaseName, currentRuleConfig);
         checkDuplicateDiscoveryType(databaseName, sqlStatement);
         checkNotExistDiscoveryType(databaseName, sqlStatement, currentRuleConfig);

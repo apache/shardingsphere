@@ -71,7 +71,7 @@ public final class ShardingRuleConfigurationImportChecker {
         if (null == shardingSphereMetaData || null == currentRuleConfig) {
             return;
         }
-        String databaseName = shardingSphereMetaData.getDatabaseName();
+        String databaseName = shardingSphereMetaData.getDatabase().getName();
         checkLogicTables(databaseName, currentRuleConfig);
         checkResources(databaseName, shardingSphereMetaData, currentRuleConfig);
         checkKeyGenerators(currentRuleConfig);

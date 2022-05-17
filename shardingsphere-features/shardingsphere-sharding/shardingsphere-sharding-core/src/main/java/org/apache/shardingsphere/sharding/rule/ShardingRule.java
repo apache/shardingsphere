@@ -386,7 +386,7 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
         if (!isAllBindingTables(logicTableNames)) {
             return false;
         }
-        String defaultSchema = sqlStatementContext.getDatabaseType().getDefaultSchema(metaData.getDatabaseName());
+        String defaultSchema = sqlStatementContext.getDatabaseType().getDefaultSchema(metaData.getDatabase().getName());
         ShardingSphereSchema schema = sqlStatementContext.getTablesContext().getSchemaName().map(metaData::getSchemaByName).orElseGet(() -> metaData.getSchemaByName(defaultSchema));
         SelectStatementContext select = (SelectStatementContext) sqlStatementContext;
         Collection<WhereSegment> joinSegments = WhereExtractUtil.getJoinWhereSegments(select.getSqlStatement());

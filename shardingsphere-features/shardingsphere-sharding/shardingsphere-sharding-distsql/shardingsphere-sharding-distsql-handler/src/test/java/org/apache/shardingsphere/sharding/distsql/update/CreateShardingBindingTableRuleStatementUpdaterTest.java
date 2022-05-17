@@ -28,6 +28,7 @@ import org.apache.shardingsphere.sharding.distsql.parser.segment.BindingTableRul
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingBindingTableRulesStatement;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -37,7 +38,7 @@ import java.util.List;
 @RunWith(MockitoJUnitRunner.class)
 public final class CreateShardingBindingTableRuleStatementUpdaterTest {
     
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereMetaData shardingSphereMetaData;
     
     private final CreateShardingBindingTableRuleStatementUpdater updater = new CreateShardingBindingTableRuleStatementUpdater();
