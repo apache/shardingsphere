@@ -20,20 +20,26 @@ package org.apache.shardingsphere.infra.metadata;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
+import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.loader.DatabaseLoader;
 import org.apache.shardingsphere.infra.metadata.resource.CachedDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilder;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
 
@@ -55,15 +61,37 @@ public final class ShardingSphereMetaData {
     /**
      * Create ShardingSphere meta data.
      * 
+     * @param databaseName database name
      * @param frontendDatabaseType frontend database type
-     * @param database database
+     * @param backendDatabaseType backend database type
      * @param databaseConfig database configuration
-     * @param rules rules
+     * @param props configuration properties
      * @return ShardingSphere meta data
      * @throws SQLException SQL exception
      */
-    public static ShardingSphereMetaData create(final DatabaseType frontendDatabaseType, final ShardingSphereDatabase database,
-                                                final DatabaseConfiguration databaseConfig, final Collection<ShardingSphereRule> rules) throws SQLException {
+    public static ShardingSphereMetaData create(final String databaseName, final DatabaseType frontendDatabaseType, final DatabaseType backendDatabaseType, 
+                                                final DatabaseConfiguration databaseConfig, final ConfigurationProperties props) throws SQLException {
+        Collection<ShardingSphereRule> databaseRules = SchemaRulesBuilder.buildRules(databaseName, databaseConfig, props);
+        ShardingSphereDatabase database = DatabaseLoader.load(databaseName, frontendDatabaseType, backendDatabaseType, databaseConfig.getDataSources(), databaseRules, props);
+        return create(frontendDatabaseType, databaseConfig, databaseRules, database);
+    }
+    
+    /**
+     * Create ShardingSphere meta data for system database.
+     * 
+     * @param systemDatabaseName system database name
+     * @param frontendDatabaseType frontend database type
+     * @return ShardingSphere meta data
+     * @throws SQLException SQL exception
+     */
+    public static ShardingSphereMetaData create(final String systemDatabaseName, final DatabaseType frontendDatabaseType) throws SQLException {
+        ShardingSphereDatabase systemDatabase = DatabaseLoader.load(systemDatabaseName, frontendDatabaseType);
+        DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(new LinkedHashMap<>(), new LinkedList<>());
+        return create(frontendDatabaseType, databaseConfig, new LinkedList<>(), systemDatabase);
+    }
+    
+    private static ShardingSphereMetaData create(final DatabaseType frontendDatabaseType,
+                                                final DatabaseConfiguration databaseConfig, final Collection<ShardingSphereRule> rules, final ShardingSphereDatabase database) throws SQLException {
         ShardingSphereResource resource = createResource(frontendDatabaseType, databaseConfig.getDataSources());
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(databaseConfig.getRuleConfigurations(), rules);
         return new ShardingSphereMetaData(frontendDatabaseType, resource, ruleMetaData, database);

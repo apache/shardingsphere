@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mode.metadata;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
-import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -28,19 +27,13 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContextFactory;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.loader.DatabaseLoader;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
-import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilder;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -84,30 +77,17 @@ public final class MetaDataContextsBuilder {
         for (Entry<String, DatabaseConfiguration> entry : databaseConfigMap.entrySet()) {
             String databaseName = entry.getKey();
             if (!frontendDatabaseType.getSystemSchemas().contains(databaseName)) {
-                result.put(databaseName, createMetaData(databaseName, frontendDatabaseType, backendDatabaseType, entry.getValue()));
+                result.put(databaseName, ShardingSphereMetaData.create(databaseName, frontendDatabaseType, backendDatabaseType, entry.getValue(), props));
             }
         }
         return result;
     }
     
-    private ShardingSphereMetaData createMetaData(final String databaseName,
-                                                  final DatabaseType frontendDatabaseType, final DatabaseType backendDatabaseType, final DatabaseConfiguration databaseConfig) throws SQLException {
-        Collection<ShardingSphereRule> databaseRules = SchemaRulesBuilder.buildRules(databaseName, databaseConfig, props);
-        ShardingSphereDatabase database = DatabaseLoader.load(databaseName, frontendDatabaseType, backendDatabaseType, databaseConfig.getDataSources(), databaseRules, props);
-        return ShardingSphereMetaData.create(frontendDatabaseType, database, databaseConfig, databaseRules);
-    }
-    
     private Map<String, ShardingSphereMetaData> getSystemDatabaseMetaDataMap(final DatabaseType frontendDatabaseType) throws SQLException {
         Map<String, ShardingSphereMetaData> result = new HashMap<>(frontendDatabaseType.getSystemDatabaseSchemaMap().size(), 1);
         for (String each : frontendDatabaseType.getSystemDatabaseSchemaMap().keySet()) {
-            result.put(each, createSystemMetaData(each, frontendDatabaseType));
+            result.put(each, ShardingSphereMetaData.create(each, frontendDatabaseType));
         }
         return result;
-    }
-    
-    private ShardingSphereMetaData createSystemMetaData(final String databaseName, final DatabaseType frontendDatabaseType) throws SQLException {
-        ShardingSphereDatabase database = DatabaseLoader.load(databaseName, frontendDatabaseType);
-        DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(new LinkedHashMap<>(), new LinkedList<>());
-        return ShardingSphereMetaData.create(frontendDatabaseType, database, databaseConfig, new LinkedList<>());
     }
 }
