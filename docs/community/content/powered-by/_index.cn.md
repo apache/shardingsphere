@@ -13,7 +13,7 @@ chapter = true
 
 ## 谁在使用 ShardingSphere?
 
-共计 201 家公司。
+共计 202 家公司。
 
 ### 基础软件
 <ul>
@@ -79,6 +79,7 @@ chapter = true
 <ul>
     <li><a href="https://www.yuanqisenlin.com/" rel="nofollow">元气森林</a></li>
     <li><a href="http://www.3songshu.com/" rel="nofollow">三只松鼠</a></li>
+    <li><a href="http://www.heilan.com.cn/" rel="nofollow">海澜集团</a></li>
     <li><a href="http://www.pagoda.com.cn/" rel="nofollow">百果园</a></li>
     <li><a href="https://www.dayi35.com/" rel="nofollow">大易有塑</a></li>
     <li><a href="https://www.xiaohongchun.com/" rel="nofollow">小红唇</a></li>
