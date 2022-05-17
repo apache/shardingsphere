@@ -70,7 +70,7 @@ public final class OpenGaussComBatchBindExecutorTest {
     @Before
     public void setup() {
         contextManagerBefore = ProxyContext.getInstance().getContextManager();
-        ProxyContext.getInstance().init(mock(ContextManager.class, RETURNS_DEEP_STUBS));
+        ProxyContext.init(mock(ContextManager.class, RETURNS_DEEP_STUBS));
     }
     
     @Test
@@ -109,6 +109,6 @@ public final class OpenGaussComBatchBindExecutorTest {
     
     @After
     public void tearDown() {
-        ProxyContext.getInstance().init(contextManagerBefore);
+        ProxyContext.init(contextManagerBefore);
     }
 }

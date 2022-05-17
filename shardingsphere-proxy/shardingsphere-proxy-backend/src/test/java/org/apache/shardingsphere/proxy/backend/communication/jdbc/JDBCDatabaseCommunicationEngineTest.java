@@ -100,7 +100,7 @@ public final class JDBCDatabaseCommunicationEngineTest {
                 mock(OptimizerContext.class, RETURNS_DEEP_STUBS), new ConfigurationProperties(new Properties()));
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        ProxyContext.getInstance().init(contextManager);
+        ProxyContext.init(contextManager);
     }
     
     private Map<String, ShardingSphereMetaData> mockMetaDataMap() {

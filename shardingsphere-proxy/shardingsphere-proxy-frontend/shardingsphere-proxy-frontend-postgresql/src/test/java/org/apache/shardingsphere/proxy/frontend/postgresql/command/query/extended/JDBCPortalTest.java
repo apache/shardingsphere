@@ -92,7 +92,7 @@ public final class JDBCPortalTest {
     @Before
     public void setup() throws SQLException {
         contextManagerBefore = ProxyContext.getInstance().getContextManager();
-        ProxyContext.getInstance().init(mockContextManager);
+        ProxyContext.init(mockContextManager);
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
         when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
         prepareJDBCPortal();
@@ -208,6 +208,6 @@ public final class JDBCPortalTest {
     
     @After
     public void tearDown() {
-        ProxyContext.getInstance().init(contextManagerBefore);
+        ProxyContext.init(contextManagerBefore);
     }
 }

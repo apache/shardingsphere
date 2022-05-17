@@ -62,7 +62,7 @@ public final class ConnectionSessionTest {
     
     @Before
     public void setup() {
-        ProxyContext.getInstance().init(contextManager);
+        ProxyContext.init(contextManager);
         connectionSession = new ConnectionSession(mock(MySQLDatabaseType.class), TransactionType.LOCAL, null);
         when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
     }
@@ -102,6 +102,6 @@ public final class ConnectionSessionTest {
     
     @AfterClass
     public static void restoreContextManager() {
-        ProxyContext.getInstance().init(contextManagerBackup);
+        ProxyContext.init(contextManagerBackup);
     }
 }

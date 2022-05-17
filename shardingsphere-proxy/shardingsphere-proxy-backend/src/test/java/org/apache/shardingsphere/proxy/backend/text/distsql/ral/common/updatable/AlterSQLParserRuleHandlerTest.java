@@ -48,7 +48,7 @@ public final class AlterSQLParserRuleHandlerTest {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(SQLParserRuleConfiguration.class)).thenReturn(Collections.emptyList());
         when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().getConfigurations()).thenReturn(new LinkedList<>());
-        ProxyContext.getInstance().init(contextManager);
+        ProxyContext.init(contextManager);
         new AlterSQLParserRuleHandler().initStatement(getSQLStatement()).execute();
         SQLParserRuleConfiguration actual = (SQLParserRuleConfiguration) contextManager.getMetaDataContexts().getGlobalRuleMetaData().getConfigurations().iterator().next();
         assertTrue(actual.isSqlCommentParseEnabled());
@@ -65,7 +65,7 @@ public final class AlterSQLParserRuleHandlerTest {
         Collection<RuleConfiguration> globalRuleConfigs = new LinkedList<>(Collections.singleton(sqlParserRuleConfig));
         when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(SQLParserRuleConfiguration.class)).thenReturn(Collections.singleton(sqlParserRuleConfig));
         when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().getConfigurations()).thenReturn(globalRuleConfigs);
-        ProxyContext.getInstance().init(contextManager);
+        ProxyContext.init(contextManager);
         new AlterSQLParserRuleHandler().initStatement(getSQLStatement()).execute();
         SQLParserRuleConfiguration actual = (SQLParserRuleConfiguration) contextManager.getMetaDataContexts().getGlobalRuleMetaData().getConfigurations().iterator().next();
         assertTrue(actual.isSqlCommentParseEnabled());

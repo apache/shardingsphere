@@ -88,7 +88,7 @@ public final class DropResourceBackendHandlerTest {
         when(metaData.getResource()).thenReturn(resource);
         contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        ProxyContext.getInstance().init(contextManager);
+        ProxyContext.init(contextManager);
         dropResourceBackendHandler = new DropResourceBackendHandler(dropResourceStatement, connectionSession);
     }
     
