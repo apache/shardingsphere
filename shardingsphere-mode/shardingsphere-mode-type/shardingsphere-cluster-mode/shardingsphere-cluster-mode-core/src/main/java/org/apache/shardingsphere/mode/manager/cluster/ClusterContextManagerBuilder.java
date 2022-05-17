@@ -87,13 +87,13 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         metaDataPersistService.persistInstanceLabels(parameter.getInstanceDefinition().getInstanceId().getId(), parameter.getLabels(), isOverwrite);
     }
     
-    private MetaDataContextsBuilder createMetaDataContextsBuilder(final MetaDataPersistService metaDataPersistService, final ContextManagerBuilderParameter parameter) throws SQLException {
+    private MetaDataContextsBuilder createMetaDataContextsBuilder(final MetaDataPersistService metaDataPersistService, final ContextManagerBuilderParameter parameter) {
         Collection<String> databaseNames = InstanceType.JDBC == parameter.getInstanceDefinition().getInstanceType()
                 ? parameter.getDatabaseConfigs().keySet()
                 : metaDataPersistService.getSchemaMetaDataService().loadAllDatabaseNames();
         Collection<RuleConfiguration> globalRuleConfigs = metaDataPersistService.getGlobalRuleService().load();
         ConfigurationProperties props = new ConfigurationProperties(metaDataPersistService.getPropsService().load());
-        Map<String, ? extends DatabaseConfiguration> databaseConfigMap = getDatabaseConfigMap(databaseNames, metaDataPersistService, parameter);
+        Map<String, DatabaseConfiguration> databaseConfigMap = getDatabaseConfigMap(databaseNames, metaDataPersistService, parameter);
         return new MetaDataContextsBuilder(databaseConfigMap, globalRuleConfigs, props);
     }
     
