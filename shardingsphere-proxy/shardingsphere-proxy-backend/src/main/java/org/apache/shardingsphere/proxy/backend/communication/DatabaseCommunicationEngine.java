@@ -225,7 +225,7 @@ public abstract class DatabaseCommunicationEngine<T> {
     }
     
     private boolean isLockedDatabase(final String databaseName) {
-        return ProxyContext.getInstance().getContextManager().getInstanceContext().getLockContext().isLockedDatabase(databaseName);
+        return ProxyContext.getInstance().getContextManager().getInstanceContext().getLockContext().isLocked(databaseName);
     }
     
     private void lockedWrite(final SQLStatement sqlStatement) {
