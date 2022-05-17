@@ -15,17 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.data.pipeline.cases.openguass;
+package org.apache.shardingsphere.integration.data.pipeline.cases.general;
 
 import com.google.common.base.Strings;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.shardingsphere.integration.data.pipeline.cases.base.BaseOpenGaussITCase;
-import org.apache.shardingsphere.integration.data.pipeline.cases.scenario.ScalingScenario;
+import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
+import org.apache.shardingsphere.integration.data.pipeline.cases.base.BasePostgreSQLITCase;
+import org.apache.shardingsphere.integration.data.pipeline.cases.task.PostgreSQLIncrementTask;
 import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
 import org.apache.shardingsphere.integration.data.pipeline.util.TableCrudUtil;
 import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -34,15 +35,18 @@ import org.junit.runners.Parameterized.Parameters;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
+import static org.junit.Assert.assertTrue;
+
+@Slf4j
 @RunWith(Parameterized.class)
-public final class OpenGaussManualScalingIT extends BaseOpenGaussITCase {
+public final class OpenGaussGeneralScalingIT extends BasePostgreSQLITCase {
     
     private static final IntegrationTestEnvironment ENV = IntegrationTestEnvironment.getInstance();
     
-    public OpenGaussManualScalingIT(final ScalingParameterized parameterized) {
+    public OpenGaussGeneralScalingIT(final ScalingParameterized parameterized) {
         super(parameterized);
+        log.info("parameterized:{}", parameterized);
     }
     
     @Parameters(name = "{0}")
@@ -52,39 +56,30 @@ public final class OpenGaussManualScalingIT extends BaseOpenGaussITCase {
             if (Strings.isNullOrEmpty(dockerImageName)) {
                 continue;
             }
-            for (String scenario : ScalingScenario.listScenario()) {
-                result.add(new ScalingParameterized(DATABASE_TYPE, dockerImageName, String.join("/", "env/scenario/manual/postgresql", scenario, ScalingScenario.SCENARIO_SUFFIX)));
-            }
+            result.add(new ScalingParameterized(new OpenGaussDatabaseType(), dockerImageName, "env/scenario/general/postgresql.xml"));
         }
         return result;
     }
     
-    @Before
-    public void setUp() throws InterruptedException {
-        addSourceResource();
-        initShardingAlgorithm();
-        // TODO wait for algorithm init
-        TimeUnit.SECONDS.sleep(2);
-        createScalingRule();
-        createSchema("test");
-    }
-    
     @Test
     public void assertManualScalingSuccess() throws InterruptedException {
+        addSourceResource("gaussdb", "Root@123");
+        initShardingAlgorithm();
+        // TODO wait for algorithm init
+        assertTrue(waitShardingAlgorithmEffect(15));
+        createScalingRule();
+        createSchema("test");
         createAllSharingTableRule();
         bindingShardingRule();
-        getSqlHelper().createOrderTable();
-        getSqlHelper().createOrderItemTable();
-        getSqlHelper().initTableData(true);
+        createOrderTable();
+        createOrderItemTable();
         Pair<List<Object[]>, List<Object[]>> dataPair = TableCrudUtil.generatePostgresSQLInsertDataList(3000);
         getJdbcTemplate().batchUpdate(getExtraSQLCommand().getFullInsertOrder(), dataPair.getLeft());
-        getJdbcTemplate().batchUpdate(getExtraSQLCommand().getInsertOrderItem(), dataPair.getRight());
-        startIncrementTask(new SnowflakeKeyGenerateAlgorithm());
+        getJdbcTemplate().batchUpdate(getExtraSQLCommand().getFullInsertOrderItem(), dataPair.getRight());
+        startIncrementTask(new PostgreSQLIncrementTask(getJdbcTemplate(), new SnowflakeKeyGenerateAlgorithm(), "test", true));
         assertOriginalSourceSuccess();
-        addTargetSourceResource("gaussdb", "Root@123");
-        getJdbcTemplate().execute(getCommonSQLCommand().getAutoAlterTableRule());
-        String jobId = String.valueOf(getJdbcTemplate().queryForMap("SHOW SCALING LIST").get("id"));
-        getIncreaseTaskThread().join(60 * 1000L);
-        assertCheckMatchConsistencySuccess(getJdbcTemplate(), jobId);
+        addTargetResource("gaussdb", "Root@123");
+        getJdbcTemplate().execute(getCommonSQLCommand().getAutoAlterAllShardingTableRule());
+        assertCheckMatchConsistencySuccess();
     }
 }

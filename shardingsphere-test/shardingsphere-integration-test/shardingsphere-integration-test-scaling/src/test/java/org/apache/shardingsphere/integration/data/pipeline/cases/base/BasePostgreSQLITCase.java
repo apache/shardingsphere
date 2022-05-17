@@ -19,11 +19,7 @@ package org.apache.shardingsphere.integration.data.pipeline.cases.base;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.cases.command.ExtraSQLCommand;
-import org.apache.shardingsphere.integration.data.pipeline.cases.common.PostgreSQLIncrementTaskRunnable;
-import org.apache.shardingsphere.integration.data.pipeline.framework.helper.ScalingTableSQLHelper;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
@@ -31,34 +27,43 @@ import javax.xml.bind.JAXB;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.ThreadLocalRandom;
 
+@Getter
 public abstract class BasePostgreSQLITCase extends BaseITCase {
     
-    protected static final DatabaseType DATABASE_TYPE = new PostgreSQLDatabaseType();
-    
     private final ExtraSQLCommand extraSQLCommand;
-    
-    @Getter
-    private final ScalingTableSQLHelper sqlHelper;
     
     public BasePostgreSQLITCase(final ScalingParameterized parameterized) {
         super(parameterized);
         extraSQLCommand = JAXB.unmarshal(BasePostgreSQLITCase.class.getClassLoader().getResource(parameterized.getScenario()), ExtraSQLCommand.class);
-        sqlHelper = new ScalingTableSQLHelper(DATABASE_TYPE, extraSQLCommand, getJdbcTemplate());
     }
     
     @SneakyThrows(SQLException.class)
-    protected void addSourceResource() {
+    protected void addSourceResource(final String username, final String password) {
         Properties queryProps = createQueryProperties();
         try (Connection connection = DriverManager.getConnection(JDBC_URL_APPENDER.appendQueryProperties(getComposedContainer().getProxyJdbcUrl("sharding_db"), queryProps), "root", "root")) {
-            addSourceResource(connection, "root", "root");
+            addSourceResource(connection, username, password);
         }
     }
     
-    protected void startIncrementTask(final KeyGenerateAlgorithm keyGenerateAlgorithm) {
-        setIncreaseTaskThread(new Thread(new PostgreSQLIncrementTaskRunnable(getJdbcTemplate(), extraSQLCommand, keyGenerateAlgorithm)));
-        getIncreaseTaskThread().start();
+    protected void createOrderTable() {
+        getJdbcTemplate().execute(extraSQLCommand.getCreateTableOrder());
+    }
+    
+    protected void createOrderItemTable() {
+        getJdbcTemplate().execute(extraSQLCommand.getCreateTableOrderItem());
+    }
+    
+    protected void batchInsertOrder(final KeyGenerateAlgorithm keyGenerateAlgorithm) {
+        List<Object[]> orderData = new ArrayList<>(3000);
+        for (int i = 1; i <= 3000; i++) {
+            orderData.add(new Object[]{keyGenerateAlgorithm.generateKey(), ThreadLocalRandom.current().nextInt(0, 6), ThreadLocalRandom.current().nextInt(0, 6), "OK"});
+        }
+        getJdbcTemplate().batchUpdate("INSERT INTO t_order (id,order_id,user_id,status) VALUES (?, ?, ?, ?)", orderData);
     }
     
     @Override

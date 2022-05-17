@@ -120,6 +120,19 @@ public abstract class BaseITCase {
         return result;
     }
     
+    protected boolean waitShardingAlgorithmEffect(final int maxWaitTimes) throws InterruptedException {
+        int waitTimes = 0;
+        do {
+            List<Map<String, Object>> result = jdbcTemplate.queryForList("SHOW SHARDING ALGORITHMS");
+            if (result.size() >= 3) {
+                return true;
+            }
+            TimeUnit.SECONDS.sleep(2);
+            waitTimes++;
+        } while (waitTimes <= maxWaitTimes);
+        return false;
+    }
+    
     protected void addSourceResource(final Connection connection, final String username, final String password) throws SQLException {
         Properties queryProps = createQueryProperties();
         String addSourceResource = commonSQLCommand.getSourceAddResourceTemplate().replace("${user}", username).replace("${password}", password)
@@ -128,7 +141,7 @@ public abstract class BaseITCase {
         connection.createStatement().execute(addSourceResource);
     }
     
-    protected void addTargetSourceResource(final String username, final String password) {
+    protected void addTargetResource(final String username, final String password) {
         Properties queryProps = createQueryProperties();
         String addTargetResource = commonSQLCommand.getTargetAddResourceTemplate().replace("${user}", username).replace("${password}", password)
                 .replace("${ds2}", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_2"), queryProps))
@@ -172,6 +185,11 @@ public abstract class BaseITCase {
         jdbcTemplate.execute(String.format("CREATE SCHEMA %s", schemaName));
     }
     
+    protected void startIncrementTask(final BaseIncrementTask baseIncrementTask) {
+        setIncreaseTaskThread(new Thread(baseIncrementTask));
+        getIncreaseTaskThread().start();
+    }
+    
     protected void assertOriginalSourceSuccess() {
         List<Map<String, Object>> previewResults = getJdbcTemplate().queryForList("PREVIEW SELECT COUNT(1) FROM t_order");
         Set<Object> originalSources = previewResults.stream().map(each -> each.get("data_source_name")).collect(Collectors.toSet());
@@ -181,11 +199,13 @@ public abstract class BaseITCase {
     /**
      * Check data match consistency.
      *
-     * @param jdbcTemplate jdbc template
-     * @param jobId job id
      * @throws InterruptedException interrupted exception
      */
-    protected void assertCheckMatchConsistencySuccess(final JdbcTemplate jdbcTemplate, final String jobId) throws InterruptedException {
+    protected void assertCheckMatchConsistencySuccess() throws InterruptedException {
+        if (null != increaseTaskThread) {
+            increaseTaskThread.join(60 * 1000L);
+        }
+        String jobId = String.valueOf(getJdbcTemplate().queryForMap("SHOW SCALING LIST").get("id"));
         Map<String, String> actualStatusMap = new HashMap<>(2, 1);
         for (int i = 0; i < 100; i++) {
             List<Map<String, Object>> showScalingStatusResMap = jdbcTemplate.queryForList(String.format("SHOW SCALING STATUS %s", jobId));

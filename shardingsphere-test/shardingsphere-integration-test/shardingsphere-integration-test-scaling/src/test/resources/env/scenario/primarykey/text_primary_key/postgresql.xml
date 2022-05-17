@@ -16,19 +16,12 @@
   -->
 <command>
     <create-table-order>
-        CREATE TABLE test.t_order (
+        CREATE TABLE t_order (
         id varchar(255) NOT NULL,
         order_id int4 NOT NULL,
         user_id int NOT NULL,
+        status varchar(255) NULL,
         PRIMARY KEY (id)
         )
     </create-table-order>
-    
-    <full-insert-order>
-        INSERT INTO t_order (id,order_id,user_id) VALUES (?, ?, ?)
-    </full-insert-order>
-    
-    <delete-order-by-id>
-        DELETE FROM t_order WHERE id = ?
-    </delete-order-by-id>
 </command>

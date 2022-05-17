@@ -22,10 +22,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.cases.command.ExtraSQLCommand;
-import org.apache.shardingsphere.integration.data.pipeline.cases.common.MySQLIncrementTaskRunnable;
-import org.apache.shardingsphere.integration.data.pipeline.framework.helper.ScalingTableSQLHelper;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
-import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
 import javax.xml.bind.JAXB;
 import java.sql.Connection;
@@ -33,19 +30,16 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
+@Getter
 public abstract class BaseMySQLITCase extends BaseITCase {
     
     protected static final DatabaseType DATABASE_TYPE = new MySQLDatabaseType();
     
     private final ExtraSQLCommand extraSQLCommand;
     
-    @Getter
-    private final ScalingTableSQLHelper sqlHelper;
-    
     public BaseMySQLITCase(final ScalingParameterized parameterized) {
         super(parameterized);
         extraSQLCommand = JAXB.unmarshal(BaseMySQLITCase.class.getClassLoader().getResource(parameterized.getScenario()), ExtraSQLCommand.class);
-        sqlHelper = new ScalingTableSQLHelper(DATABASE_TYPE, extraSQLCommand, getJdbcTemplate());
     }
     
     @SneakyThrows(SQLException.class)
@@ -58,11 +52,6 @@ public abstract class BaseMySQLITCase extends BaseITCase {
         }
     }
     
-    protected void startIncrementTask(final KeyGenerateAlgorithm keyGenerateAlgorithm) {
-        setIncreaseTaskThread(new Thread(new MySQLIncrementTaskRunnable(getJdbcTemplate(), extraSQLCommand, keyGenerateAlgorithm)));
-        getIncreaseTaskThread().start();
-    }
-    
     /**
      * Add no use table, to test part of the table.
      */
@@ -71,6 +60,14 @@ public abstract class BaseMySQLITCase extends BaseITCase {
         getJdbcTemplate().execute("CREATE TABLE no_use(id int(11) NOT NULL,sharding_id int(11) NOT NULL, PRIMARY KEY (id))");
         getJdbcTemplate().execute("INSERT INTO no_use(id,sharding_id) values (1,1)");
         getJdbcTemplate().execute("INSERT INTO no_use(id,sharding_id) values (2,2)");
+    }
+    
+    protected void createOrderTable() {
+        getJdbcTemplate().execute(extraSQLCommand.getCreateTableOrder());
+    }
+    
+    protected void createOrderItemTable() {
+        getJdbcTemplate().execute(extraSQLCommand.getCreateTableOrderItem());
     }
     
     @Override

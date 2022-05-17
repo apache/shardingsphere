@@ -15,15 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.data.pipeline.cases.postgresql;
+package org.apache.shardingsphere.integration.data.pipeline.cases.general;
 
 import com.google.common.base.Strings;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.cases.base.BasePostgreSQLITCase;
-import org.apache.shardingsphere.integration.data.pipeline.cases.scenario.ScalingScenario;
+import org.apache.shardingsphere.integration.data.pipeline.cases.task.PostgreSQLIncrementTask;
 import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
+import org.apache.shardingsphere.integration.data.pipeline.util.TableCrudUtil;
 import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -31,15 +34,19 @@ import org.junit.runners.Parameterized.Parameters;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.concurrent.TimeUnit;
+import java.util.List;
 
+import static org.junit.Assert.assertTrue;
+
+@Slf4j
 @RunWith(Parameterized.class)
-public final class PostgreSQLManualScalingIT extends BasePostgreSQLITCase {
+public final class PostgreSQLGeneralScalingIT extends BasePostgreSQLITCase {
     
     private static final IntegrationTestEnvironment ENV = IntegrationTestEnvironment.getInstance();
     
-    public PostgreSQLManualScalingIT(final ScalingParameterized parameterized) {
+    public PostgreSQLGeneralScalingIT(final ScalingParameterized parameterized) {
         super(parameterized);
+        log.info("parameterized:{}", parameterized);
     }
     
     @Parameters(name = "{0}")
@@ -49,36 +56,29 @@ public final class PostgreSQLManualScalingIT extends BasePostgreSQLITCase {
             if (Strings.isNullOrEmpty(dockerImageName)) {
                 continue;
             }
-            for (String scenario : ScalingScenario.listScenario()) {
-                result.add(new ScalingParameterized(DATABASE_TYPE, dockerImageName, String.join("/", "env/scenario/manual/postgresql", scenario, ScalingScenario.SCENARIO_SUFFIX)));
-            }
+            result.add(new ScalingParameterized(new PostgreSQLDatabaseType(), dockerImageName, "env/scenario/general/postgresql.xml"));
         }
         return result;
     }
     
-    @Before
-    public void setUp() throws InterruptedException {
-        addSourceResource();
-        initShardingAlgorithm();
-        // TODO wait for algorithm init
-        TimeUnit.SECONDS.sleep(3);
-        createScalingRule();
-        createSchema("test");
-    }
-    
     @Test
     public void assertManualScalingSuccess() throws InterruptedException {
+        addSourceResource("root", "root");
+        initShardingAlgorithm();
+        assertTrue(waitShardingAlgorithmEffect(15));
+        createScalingRule();
+        createSchema("test");
         createAllSharingTableRule();
         bindingShardingRule();
-        getSqlHelper().createOrderTable();
-        getSqlHelper().createOrderItemTable();
-        getSqlHelper().initTableData(true);
-        startIncrementTask(new SnowflakeKeyGenerateAlgorithm());
+        createOrderTable();
+        createOrderItemTable();
+        Pair<List<Object[]>, List<Object[]>> dataPair = TableCrudUtil.generatePostgresSQLInsertDataList(3000);
+        getJdbcTemplate().batchUpdate(getExtraSQLCommand().getFullInsertOrder(), dataPair.getLeft());
+        getJdbcTemplate().batchUpdate(getExtraSQLCommand().getFullInsertOrderItem(), dataPair.getRight());
+        startIncrementTask(new PostgreSQLIncrementTask(getJdbcTemplate(), new SnowflakeKeyGenerateAlgorithm(), "test", true));
         assertOriginalSourceSuccess();
-        addTargetSourceResource("root", "root");
-        getJdbcTemplate().execute(getCommonSQLCommand().getAutoAlterTableRule());
-        String jobId = String.valueOf(getJdbcTemplate().queryForMap("SHOW SCALING LIST").get("id"));
-        getIncreaseTaskThread().join(60 * 1000L);
-        assertCheckMatchConsistencySuccess(getJdbcTemplate(), jobId);
+        addTargetResource("root", "root");
+        getJdbcTemplate().execute(getCommonSQLCommand().getAutoAlterAllShardingTableRule());
+        assertCheckMatchConsistencySuccess();
     }
 }

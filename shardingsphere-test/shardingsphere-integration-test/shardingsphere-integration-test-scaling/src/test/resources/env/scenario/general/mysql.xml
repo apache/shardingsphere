@@ -17,10 +17,20 @@
 <command>
     <create-table-order>
         CREATE TABLE `t_order` (
-        `id` varchar(255) NOT NULL COMMENT 'pk id',
+        `id` BIGINT NOT NULL COMMENT 'pk id',
         `order_id` INT NOT NULL,
         `user_id` INT NOT NULL,
-        `update_date` DATETIME NULL,
+        `status` VARCHAR ( 255 ) NULL,
+        `t_tinyint` TINYINT ( 1 ) NULL,
+        `t_timestamp` TIMESTAMP NULL,
+        `t_datetime` datetime NULL ON UPDATE CURRENT_TIMESTAMP,
+        `t_binary` BINARY(255) NULL,
+        `t_blob` BLOB NULL,
+        `t_decimal` DECIMAL ( 10, 2 ) NULL,
+        `t_char` CHAR ( 128 ) NULL,
+        `t_double` DOUBLE NULL,
+        `t_json` json NULL COMMENT 'json test',
+        `t_unsigned_int` int UNSIGNED NULL,
         PRIMARY KEY ( `id` ),
         INDEX ( `order_id` )
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -36,19 +46,11 @@
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     </create-table-order-item>
     
-    <insert-order>
-        INSERT INTO t_order (id,order_id,user_id) VALUES (?, ?, ?)
-    </insert-order>
+    <full-insert-order>
+        INSERT INTO t_order ( id, order_id, user_id, status, t_tinyint, t_timestamp, t_datetime, t_binary, t_blob, t_decimal, t_char, t_double, t_json, t_unsigned_int ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+    </full-insert-order>
     
-    <insert-order-item>
+    <full-insert-order-item>
         INSERT INTO t_order_item(item_id,order_id,user_id,status) VALUES(?,?,?,?)
-    </insert-order-item>
-    
-    <delete-order-by-id>
-        DELETE FROM t_order WHERE id = ?
-    </delete-order-by-id>
-    
-    <delete-order-item-by-id>
-        DELETE FROM t_order_item WHERE item_id = ?
-    </delete-order-item-by-id>
+    </full-insert-order-item>
 </command>
