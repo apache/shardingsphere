@@ -15,22 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.builder.global;
+package org.apache.shardingsphere.infra.rule.builder.schema;
 
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.rule.builder.fixture.FixtureSchemaRuleBuilder;
+import org.apache.shardingsphere.infra.rule.builder.fixture.FixtureSchemaRuleConfigurationBuilder;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.Map;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
 
-public final class GlobalRulesBuilderTest {
+public final class DefaultSchemaRuleConfigurationBuilderFactoryTest {
     
     @Test
-    public void assertBuildRulesWithGlobalRules() {
-        assertThat(GlobalRulesBuilder.buildRules(Collections.singletonList(mock(RuleConfiguration.class)), Collections.singletonMap("logic_db", mock(ShardingSphereMetaData.class))).size(), is(1));
+    @SuppressWarnings("rawtypes")
+    public void assertGetInstances() {
+        FixtureSchemaRuleBuilder builder = new FixtureSchemaRuleBuilder();
+        Map<SchemaRuleBuilder, DefaultSchemaRuleConfigurationBuilder> actual = DefaultSchemaRuleConfigurationBuilderFactory.getInstances(Collections.singleton(builder));
+        assertThat(actual.get(builder), instanceOf(FixtureSchemaRuleConfigurationBuilder.class));
     }
 }

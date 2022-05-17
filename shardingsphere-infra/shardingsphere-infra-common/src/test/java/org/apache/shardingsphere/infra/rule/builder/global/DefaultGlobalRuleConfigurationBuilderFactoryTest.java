@@ -17,20 +17,24 @@
 
 package org.apache.shardingsphere.infra.rule.builder.global;
 
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.rule.builder.fixture.FixtureGlobalRuleBuilder;
+import org.apache.shardingsphere.infra.rule.builder.fixture.FixtureGlobalRuleConfigurationBuilder;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.Map;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
 
-public final class GlobalRulesBuilderTest {
+public final class DefaultGlobalRuleConfigurationBuilderFactoryTest {
     
     @Test
-    public void assertBuildRulesWithGlobalRules() {
-        assertThat(GlobalRulesBuilder.buildRules(Collections.singletonList(mock(RuleConfiguration.class)), Collections.singletonMap("logic_db", mock(ShardingSphereMetaData.class))).size(), is(1));
+    @SuppressWarnings("rawtypes")
+    public void assertGetInstance() {
+        FixtureGlobalRuleBuilder builder = new FixtureGlobalRuleBuilder();
+        Map<GlobalRuleBuilder, DefaultGlobalRuleConfigurationBuilder> actual = DefaultGlobalRuleConfigurationBuilderFactory.getInstance(
+                Collections.singleton(builder));
+        assertThat(actual.get(builder), instanceOf(FixtureGlobalRuleConfigurationBuilder.class));
     }
 }

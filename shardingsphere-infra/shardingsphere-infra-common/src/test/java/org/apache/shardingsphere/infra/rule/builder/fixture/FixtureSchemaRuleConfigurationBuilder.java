@@ -15,22 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.builder.global;
+package org.apache.shardingsphere.infra.rule.builder.fixture;
 
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.junit.Test;
+import org.apache.shardingsphere.infra.rule.builder.schema.DefaultSchemaRuleConfigurationBuilder;
 
-import java.util.Collections;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-
-public final class GlobalRulesBuilderTest {
+public final class FixtureSchemaRuleConfigurationBuilder implements DefaultSchemaRuleConfigurationBuilder<FixtureSchemaRuleConfiguration, FixtureSchemaRuleBuilder> {
     
-    @Test
-    public void assertBuildRulesWithGlobalRules() {
-        assertThat(GlobalRulesBuilder.buildRules(Collections.singletonList(mock(RuleConfiguration.class)), Collections.singletonMap("logic_db", mock(ShardingSphereMetaData.class))).size(), is(1));
+    @Override
+    public FixtureSchemaRuleConfiguration build() {
+        return new FixtureSchemaRuleConfiguration();
+    }
+    
+    @Override
+    public int getOrder() {
+        return 0;
+    }
+    
+    @Override
+    public Class<FixtureSchemaRuleBuilder> getTypeClass() {
+        return FixtureSchemaRuleBuilder.class;
     }
 }
