@@ -20,7 +20,6 @@ package org.apache.shardingsphere.encrypt.rewrite.token;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.EncryptInsertOnUpdateTokenGenerator;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptAssignmentToken;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
@@ -65,26 +64,28 @@ public final class EncryptInsertOnUpdateTokenGeneratorTest {
     private EncryptRule mockEncryptRule() {
         EncryptRule result = mock(EncryptRule.class);
         when(result.getCipherColumn("t_user", "mobile")).thenReturn("cipher_mobile");
-        EncryptTable encryptTable = mock(EncryptTable.class);
-        when(encryptTable.getLogicColumns()).thenReturn(Collections.emptyList());
-        EncryptAlgorithm<?, ?> encryptAlgorithm = mock(EncryptAlgorithm.class);
-        when(result.findEncryptor("t_user", "mobile")).thenReturn(Optional.of(encryptAlgorithm));
-        when(result.findEncryptor("t_user", "cipher_mobile")).thenReturn(Optional.of(encryptAlgorithm));
-        when(result.getEncryptValues(null, "db_test", "t_user", "mobile",
-                Collections.singletonList(0))).thenReturn(Collections.singletonList("encryptValue"));
+        when(result.findEncryptor("t_user", "mobile")).thenReturn(Optional.of(mock(EncryptAlgorithm.class)));
+        when(result.findEncryptor("t_user", "cipher_mobile")).thenReturn(Optional.of(mock(EncryptAlgorithm.class)));
+        when(result.getEncryptValues(null, "db_test", "t_user", "mobile", Collections.singletonList(0))).thenReturn(Collections.singletonList("encryptValue"));
         return result;
     }
     
     @Test
+    public void assertIsNotGenerateSQLTokenWithNotInsertStatement() {
+        assertFalse(generator.isGenerateSQLToken(mock(SelectStatementContext.class)));
+    }
+    
+    @Test
+    public void assertIsNotGenerateSQLTokenWithoutOnDuplicateKeyColumns() {
+        assertFalse(generator.isGenerateSQLToken(mock(InsertStatementContext.class)));
+    }
+    
+    @Test
     public void assertIsGenerateSQLToken() {
-        SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
-        assertFalse(generator.isGenerateSQLToken(selectStatementContext));
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class);
-        assertFalse(generator.isGenerateSQLToken(insertStatementContext));
-        MySQLInsertStatement insertStatement = mock(MySQLInsertStatement.class);
-        when(insertStatementContext.getSqlStatement()).thenReturn(insertStatement);
-        when(InsertStatementHandler.getOnDuplicateKeyColumnsSegment(insertStatementContext.getSqlStatement()))
-                .thenReturn(Optional.of(new OnDuplicateKeyColumnsSegment(0, 0, Collections.emptyList())));
+        when(insertStatementContext.getSqlStatement()).thenReturn(mock(MySQLInsertStatement.class));
+        when(InsertStatementHandler.getOnDuplicateKeyColumnsSegment(
+                insertStatementContext.getSqlStatement())).thenReturn(Optional.of(new OnDuplicateKeyColumnsSegment(0, 0, Collections.emptyList())));
         assertTrue(generator.isGenerateSQLToken(insertStatementContext));
     }
     
@@ -96,37 +97,30 @@ public final class EncryptInsertOnUpdateTokenGeneratorTest {
         when(insertStatement.getTable().getTableName().getIdentifier().getValue()).thenReturn("t_user");
         OnDuplicateKeyColumnsSegment onDuplicateKeyColumnsSegment = mock(OnDuplicateKeyColumnsSegment.class);
         when(onDuplicateKeyColumnsSegment.getColumns()).thenReturn(buildAssignmentSegment());
-        when(insertStatement.getOnDuplicateKeyColumns()).thenReturn(Optional.ofNullable(onDuplicateKeyColumnsSegment));
+        when(insertStatement.getOnDuplicateKeyColumns()).thenReturn(Optional.of(onDuplicateKeyColumnsSegment));
         when(insertStatementContext.getSqlStatement()).thenReturn(insertStatement);
-        when(InsertStatementHandler.getOnDuplicateKeyColumnsSegment(insertStatementContext.getSqlStatement()))
-                .thenReturn(Optional.of(onDuplicateKeyColumnsSegment));
-        Collection<EncryptAssignmentToken> encryptAssignmentTokens = generator.generateSQLTokens(insertStatementContext);
-        assertThat(encryptAssignmentTokens.size(), is(3));
-        Iterator<EncryptAssignmentToken> iterator = encryptAssignmentTokens.iterator();
-        EncryptAssignmentToken assignmentToken1 = iterator.next();
-        assertThat(assignmentToken1.toString(), is("cipher_mobile = ?"));
-        assertThat(assignmentToken1.getStartIndex(), is(0));
-        assertThat(assignmentToken1.getStopIndex(), is(0));
-        EncryptAssignmentToken assignmentToken2 = iterator.next();
-        assertThat(assignmentToken2.toString(), is("cipher_mobile = VALUES(cipher_mobile)"));
-        assertThat(assignmentToken2.getStartIndex(), is(0));
-        assertThat(assignmentToken2.getStopIndex(), is(0));
-        EncryptAssignmentToken assignmentToken3 = iterator.next();
-        assertThat(assignmentToken3.toString(), is("cipher_mobile = 'encryptValue'"));
-        assertThat(assignmentToken3.getStartIndex(), is(0));
-        assertThat(assignmentToken3.getStopIndex(), is(0));
+        when(InsertStatementHandler.getOnDuplicateKeyColumnsSegment(insertStatementContext.getSqlStatement())).thenReturn(Optional.of(onDuplicateKeyColumnsSegment));
+        Iterator<EncryptAssignmentToken> actual = generator.generateSQLTokens(insertStatementContext).iterator();
+        assertEncryptAssignmentToken(actual.next(), "cipher_mobile = ?");
+        assertEncryptAssignmentToken(actual.next(), "cipher_mobile = VALUES(cipher_mobile)");
+        assertEncryptAssignmentToken(actual.next(), "cipher_mobile = 'encryptValue'");
+        assertFalse(actual.hasNext());
     }
     
     private Collection<AssignmentSegment> buildAssignmentSegment() {
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("mobile"));
         List<ColumnSegment> columnSegments = Collections.singletonList(columnSegment);
-        AssignmentSegment assignmentSegment1 = new ColumnAssignmentSegment(0, 0, columnSegments,
-                new ParameterMarkerExpressionSegment(0, 0, 0));
+        AssignmentSegment assignmentSegment1 = new ColumnAssignmentSegment(0, 0, columnSegments, new ParameterMarkerExpressionSegment(0, 0, 0));
         FunctionSegment functionSegment = new FunctionSegment(0, 0, "VALUES", "VALUES (0)");
         functionSegment.getParameters().add(columnSegment);
         AssignmentSegment assignmentSegment2 = new ColumnAssignmentSegment(0, 0, columnSegments, functionSegment);
-        AssignmentSegment assignmentSegment3 = new ColumnAssignmentSegment(0, 0, columnSegments,
-                new LiteralExpressionSegment(0, 0, 0));
+        AssignmentSegment assignmentSegment3 = new ColumnAssignmentSegment(0, 0, columnSegments, new LiteralExpressionSegment(0, 0, 0));
         return Arrays.asList(assignmentSegment1, assignmentSegment2, assignmentSegment3);
+    }
+    
+    private void assertEncryptAssignmentToken(final EncryptAssignmentToken actual, final String expectedValue) {
+        assertThat(actual.toString(), is(expectedValue));
+        assertThat(actual.getStartIndex(), is(0));
+        assertThat(actual.getStopIndex(), is(0));
     }
 }
