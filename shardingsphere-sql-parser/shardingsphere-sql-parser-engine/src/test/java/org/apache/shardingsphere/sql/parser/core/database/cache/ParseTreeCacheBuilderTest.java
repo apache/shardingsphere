@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.core.database.cache;
 
-import com.google.common.cache.LoadingCache;
+import com.github.benmanes.caffeine.cache.LoadingCache;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.junit.Test;
