@@ -41,6 +41,7 @@ import java.util.LinkedList;
 import java.util.Properties;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -62,12 +63,14 @@ public final class CreateReadwriteSplittingRuleStatementUpdaterTest {
     
     @Test(expected = DuplicateRuleException.class)
     public void assertCheckSQLStatementWithDuplicateRuleNames() throws DistSQLException {
-        updater.checkSQLStatement(mock(ShardingSphereMetaData.class), createSQLStatement("TEST"), createCurrentRuleConfiguration());
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
+        when(metaData.getResource().getDataSources().keySet()).thenReturn(Collections.emptySet());
+        updater.checkSQLStatement(metaData, createSQLStatement("TEST"), createCurrentRuleConfiguration());
     }
     
     @Test(expected = InvalidRuleConfigurationException.class)
     public void assertCheckSQLStatementWithDuplicateResource() throws DistSQLException {
-        ShardingSphereMetaData shardingSphereMetaData = mock(ShardingSphereMetaData.class);
+        ShardingSphereMetaData shardingSphereMetaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         when(shardingSphereMetaData.getResource()).thenReturn(resource);
         when(resource.getDataSources()).thenReturn(Collections.singletonMap("write_ds", null));
         updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement("write_ds", "TEST"), createCurrentRuleConfiguration());

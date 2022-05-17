@@ -39,7 +39,7 @@ public final class AlterShardingTableRuleStatementUpdater implements RuleDefinit
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final AlterShardingTableRuleStatement sqlStatement,
                                   final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        DistSQLException.predictionThrow(null != currentRuleConfig, () -> new RequiredRuleMissedException("Sharding", shardingSphereMetaData.getDatabaseName()));
+        DistSQLException.predictionThrow(null != currentRuleConfig, () -> new RequiredRuleMissedException("Sharding", shardingSphereMetaData.getDatabase().getName()));
         ShardingTableRuleStatementChecker.checkAlteration(shardingSphereMetaData, sqlStatement.getRules(), currentRuleConfig);
     }
     
@@ -57,8 +57,8 @@ public final class AlterShardingTableRuleStatementUpdater implements RuleDefinit
     private void removeRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeAlteredRuleConfig) {
         Collection<String> toBeAlteredLogicTableNames = getAlteredLogicalTableNames(toBeAlteredRuleConfig);
         toBeAlteredLogicTableNames.forEach(each -> {
-            currentRuleConfig.getTables().removeIf(table -> table.getLogicTable().equals(each));
-            currentRuleConfig.getAutoTables().removeIf(table -> table.getLogicTable().equals(each));
+            currentRuleConfig.getTables().removeIf(table -> table.getLogicTable().equalsIgnoreCase(each));
+            currentRuleConfig.getAutoTables().removeIf(table -> table.getLogicTable().equalsIgnoreCase(each));
         });
     }
     

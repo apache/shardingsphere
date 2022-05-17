@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.yaml.swapper;
 
-import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
@@ -52,7 +51,7 @@ public final class EncryptRuleConfigurationYamlSwapperTest {
     
     private EncryptRuleConfiguration createEncryptRuleConfiguration() {
         Collection<EncryptTableRuleConfiguration> tables = Collections.singletonList(new EncryptTableRuleConfiguration("tbl", Collections.emptyList(), null));
-        Map<String, ShardingSphereAlgorithmConfiguration> encryptors = ImmutableMap.of("myEncryptor", new ShardingSphereAlgorithmConfiguration("FIXTURE", new Properties()));
+        Map<String, ShardingSphereAlgorithmConfiguration> encryptors = Collections.singletonMap("myEncryptor", new ShardingSphereAlgorithmConfiguration("FIXTURE", new Properties()));
         return new EncryptRuleConfiguration(tables, encryptors);
     }
     
@@ -76,7 +75,7 @@ public final class EncryptRuleConfigurationYamlSwapperTest {
     
     private EncryptRuleConfigurationYamlSwapper getSwapper() {
         EncryptRuleConfiguration ruleConfig = mock(EncryptRuleConfiguration.class);
-        return (EncryptRuleConfigurationYamlSwapper) YamlRuleConfigurationSwapperFactory.newInstanceMapByRuleConfigurations(Collections.singletonList(ruleConfig)).get(ruleConfig);
+        return (EncryptRuleConfigurationYamlSwapper) YamlRuleConfigurationSwapperFactory.getInstanceMapByRuleConfigurations(Collections.singletonList(ruleConfig)).get(ruleConfig);
     }
     
     @Test

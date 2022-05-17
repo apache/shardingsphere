@@ -34,7 +34,7 @@ public final class DatabaseAssertionMetaDataFactory {
      * Create new instance of database assertion meta data.
      *
      * @param databaseType database type
-     * @return new instance of database assertion meta data
+     * @return created instance
      */
     @SuppressWarnings("SwitchStatementWithTooFewBranches")
     public static Optional<DatabaseAssertionMetaData> newInstance(final DatabaseType databaseType) {

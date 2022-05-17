@@ -143,6 +143,10 @@ BATCH_SIZE
     : B A T C H UL_ S I Z E
     ;
 
+SHARDING_SIZE
+    : S H A R D I N G UL_ S I Z E
+    ;
+
 RATE_LIMITER
     : R A T E UL_ L I M I T E R
     ;

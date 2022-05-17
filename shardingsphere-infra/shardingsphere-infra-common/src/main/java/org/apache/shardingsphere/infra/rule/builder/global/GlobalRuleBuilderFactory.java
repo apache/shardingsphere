@@ -38,24 +38,24 @@ public final class GlobalRuleBuilderFactory {
     }
     
     /**
-     * Create new instances of global rule builder map.
+     * Get instance map of global rule builder.
      *
      * @param ruleConfigs rule configurations
-     * @return new instance of global rule builder map
+     * @return got instance map
      */
     @SuppressWarnings("rawtypes")
-    public static Map<RuleConfiguration, GlobalRuleBuilder> newInstanceMap(final Collection<RuleConfiguration> ruleConfigs) {
+    public static Map<RuleConfiguration, GlobalRuleBuilder> getInstanceMap(final Collection<RuleConfiguration> ruleConfigs) {
         return OrderedSPIRegistry.getRegisteredServices(GlobalRuleBuilder.class, ruleConfigs);
     }
     
     /**
-     * Create new instances of global rule builder.
+     * Get instances of global rule builder.
      * 
      * @param builderClasses builder classes
-     * @return new instance of global rule builders
+     * @return got instances
      */
     @SuppressWarnings("rawtypes")
-    public static Collection<GlobalRuleBuilder> newInstances(final Collection<Class<GlobalRuleBuilder>> builderClasses) {
+    public static Collection<GlobalRuleBuilder> getInstances(final Collection<Class<GlobalRuleBuilder>> builderClasses) {
         return OrderedSPIRegistry.getRegisteredServices(GlobalRuleBuilder.class).stream().filter(each -> !builderClasses.contains(each.getClass())).collect(Collectors.toList());
     }
 }

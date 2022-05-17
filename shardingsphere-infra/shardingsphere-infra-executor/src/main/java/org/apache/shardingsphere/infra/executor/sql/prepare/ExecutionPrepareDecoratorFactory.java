@@ -37,13 +37,13 @@ public final class ExecutionPrepareDecoratorFactory {
     }
     
     /**
-     * Create new instance of execution prepare decorator.
+     * Get instance of execution prepare decorator.
      * 
      * @param rules rules
-     * @return new instance of execution prepare decorator.
+     * @return got instance
      */
     @SuppressWarnings("rawtypes")
-    public static Map<ShardingSphereRule, ExecutionPrepareDecorator> newInstance(final Collection<ShardingSphereRule> rules) {
+    public static Map<ShardingSphereRule, ExecutionPrepareDecorator> getInstance(final Collection<ShardingSphereRule> rules) {
         return OrderedSPIRegistry.getRegisteredServices(ExecutionPrepareDecorator.class, rules);
     }
 }

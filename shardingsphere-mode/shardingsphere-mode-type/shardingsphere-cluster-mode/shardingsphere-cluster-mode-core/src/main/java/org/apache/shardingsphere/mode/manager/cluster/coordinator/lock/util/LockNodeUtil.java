@@ -29,13 +29,23 @@ public final class LockNodeUtil {
     private static final String LOCK_DELIMITER = "#@#";
     
     /**
-     * Generate global Lock leases node path.
+     * Generate Lock leases node path.
      *
      * @param lockName lock name
-     * @return global Lock leases name
+     * @return lock leases
      */
-    public static String generateGlobalLockReleasedNodePath(final String lockName) {
+    public static String generateLockLeasesNodePath(final String lockName) {
         return lockName + "/leases";
+    }
+    
+    /**
+     * generate ack path name.
+     *
+     * @param lockName lock name
+     * @return ack path name
+     */
+    public static String generateAckPathName(final String lockName) {
+        return lockName + "/ack";
     }
     
     /**
@@ -55,7 +65,17 @@ public final class LockNodeUtil {
      * @param ackLockedName ack locked name
      * @return string array of locked name and instance id
      */
-    public static String[] parseDatabaseLockName(final String ackLockedName) {
+    public static String[] parseAckLockName(final String ackLockedName) {
         return ackLockedName.trim().split(LOCK_DELIMITER);
+    }
+    
+    /**
+     * Parse locked ack node path key.
+     *
+     * @param pathKey path key
+     * @return locked instance
+     */
+    public static String parseAckLockedNodePathKey(final String pathKey) {
+        return parseAckLockName(pathKey)[1];
     }
 }

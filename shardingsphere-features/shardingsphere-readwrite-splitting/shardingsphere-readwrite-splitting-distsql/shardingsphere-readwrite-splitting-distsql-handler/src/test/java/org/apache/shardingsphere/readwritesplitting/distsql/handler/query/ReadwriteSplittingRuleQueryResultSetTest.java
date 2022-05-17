@@ -105,7 +105,8 @@ public final class ReadwriteSplittingRuleQueryResultSetTest {
         ExportableRule exportableRule = mock(ExportableRule.class);
         when(exportableRule.containExportableKey(anyCollection())).thenReturn(true);
         when(metaData.getRuleMetaData().findRules(any())).thenReturn(Collections.singletonList(exportableRule));
-        when(exportableRule.export(anyCollection())).thenReturn(createAutoAwareDataSources());
+        when(exportableRule.export(anyCollection())).thenReturn(
+                Collections.singletonMap(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE, Collections.singletonMap("readwrite_ds", getAutoAwareDataSources())));
         when(metaData.getRuleMetaData().findRuleConfiguration(any())).thenReturn(Collections.singleton(createRuleConfigurationWithAutoAwareDataSource()));
         ReadwriteSplittingRuleQueryResultSet resultSet = new ReadwriteSplittingRuleQueryResultSet();
         resultSet.init(metaData, mock(ShowReadwriteSplittingRulesStatement.class));
@@ -120,21 +121,8 @@ public final class ReadwriteSplittingRuleQueryResultSetTest {
     private RuleConfiguration createRuleConfigurationWithAutoAwareDataSource() {
         Properties props = new Properties();
         props.setProperty("auto-aware-data-source-name", "rd_rs");
-        ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig =
-                new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_ds", "Dynamic", props, "", 0);
+        ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig = new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_ds", "Dynamic", props, "", 0);
         return new ReadwriteSplittingRuleConfiguration(Collections.singleton(dataSourceRuleConfig), null);
-    }
-    
-    private Map<String, Object> createAutoAwareDataSources() {
-        Map<String, Object> result = new HashMap<>(1, 1);
-        result.put(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE, exportAutoAwareDataSourceMap());
-        return result;
-    }
-    
-    private Map<String, Map<String, String>> exportAutoAwareDataSourceMap() {
-        Map<String, Map<String, String>> result = new HashMap<>(1, 1);
-        result.put("readwrite_ds", getAutoAwareDataSources());
-        return result;
     }
     
     private Map<String, String> getAutoAwareDataSources() {

@@ -40,7 +40,7 @@ public final class ConditionValueInOperatorGenerator implements ConditionValueGe
     @Override
     public Optional<ShardingConditionValue> generate(final InExpression predicate, final Column column, final List<Object> parameters) {
         List<Comparable<?>> shardingConditionValues = new LinkedList<>();
-        DatetimeService datetimeService = DatetimeServiceFactory.newInstance();
+        DatetimeService datetimeService = DatetimeServiceFactory.getInstance();
         for (ExpressionSegment each : predicate.getExpressionList()) {
             Optional<Comparable<?>> shardingConditionValue = new ConditionValue(each, parameters).getValue();
             if (shardingConditionValue.isPresent()) {

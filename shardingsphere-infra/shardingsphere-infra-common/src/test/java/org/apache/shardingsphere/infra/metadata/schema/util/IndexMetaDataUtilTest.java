@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.util;
 
-import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.QualifiedTable;
@@ -36,7 +37,6 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -84,17 +84,17 @@ public final class IndexMetaDataUtilTest {
     @Test
     public void assertGetTableNamesFromMetaData() {
         IndexSegment indexSegment = new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue(INDEX_NAME)));
-        Collection<QualifiedTable> actual = IndexMetaDataUtil.getTableNamesFromMetaData(buildMetaData(), Lists.newArrayList(indexSegment), new MySQLDatabaseType());
+        Collection<QualifiedTable> actual = IndexMetaDataUtil.getTableNamesFromMetaData(buildMetaData(), Collections.singleton(indexSegment), new MySQLDatabaseType());
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next().getSchemaName(), is(DefaultDatabase.LOGIC_NAME));
         assertThat(actual.iterator().next().getTableName(), is(TABLE_NAME));
     }
     
     private ShardingSphereMetaData buildMetaData() {
-        TableMetaData tableMetaData = new TableMetaData(TABLE_NAME, Collections.emptyList(), Collections.singletonList(new IndexMetaData(INDEX_NAME)), Collections.emptyList());
-        Map<String, TableMetaData> tables = new HashMap<>(1, 1);
-        tables.put(TABLE_NAME, tableMetaData);
+        TableMetaData tableMetaData = new TableMetaData(TABLE_NAME, Collections.emptyList(), Collections.singleton(new IndexMetaData(INDEX_NAME)), Collections.emptyList());
+        Map<String, TableMetaData> tables = Collections.singletonMap(TABLE_NAME, tableMetaData);
         Map<String, ShardingSphereSchema> schemas = Collections.singletonMap(DefaultDatabase.LOGIC_NAME, new ShardingSphereSchema(tables));
-        return new ShardingSphereMetaData(DefaultDatabase.LOGIC_NAME, mock(ShardingSphereResource.class), mock(ShardingSphereRuleMetaData.class), schemas);
+        ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, schemas);
+        return new ShardingSphereMetaData(mock(DatabaseType.class), mock(ShardingSphereResource.class), mock(ShardingSphereRuleMetaData.class), database);
     }
 }

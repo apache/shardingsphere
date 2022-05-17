@@ -34,12 +34,10 @@ import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -73,9 +71,7 @@ public final class MixSQLRewriterParameterizedTest extends AbstractSQLRewriterPa
         when(result.getAllTableNames()).thenReturn(Arrays.asList("t_account", "t_account_bak", "t_account_detail"));
         TableMetaData accountTableMetaData = mock(TableMetaData.class);
         when(accountTableMetaData.getColumns()).thenReturn(createColumnMetaDataMap());
-        Map<String, IndexMetaData> indexMetaDataMap = new HashMap<>(1, 1);
-        indexMetaDataMap.put("index_name", new IndexMetaData("index_name"));
-        when(accountTableMetaData.getIndexes()).thenReturn(indexMetaDataMap);
+        when(accountTableMetaData.getIndexes()).thenReturn(Collections.singletonMap("index_name", new IndexMetaData("index_name")));
         when(result.containsTable("t_account")).thenReturn(true);
         when(result.get("t_account")).thenReturn(accountTableMetaData);
         TableMetaData accountBakTableMetaData = mock(TableMetaData.class);
@@ -93,7 +89,7 @@ public final class MixSQLRewriterParameterizedTest extends AbstractSQLRewriterPa
     }
     
     @Override
-    protected void mockDataSource(final Map<String, DataSource> dataSources) throws SQLException {
+    protected void mockDataSource(final Map<String, DataSource> dataSources) {
     }
     
     private Map<String, ColumnMetaData> createColumnMetaDataMap() {

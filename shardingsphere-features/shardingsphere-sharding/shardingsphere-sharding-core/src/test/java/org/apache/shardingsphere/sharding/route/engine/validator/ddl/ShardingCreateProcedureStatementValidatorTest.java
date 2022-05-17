@@ -68,7 +68,7 @@ public final class ShardingCreateProcedureStatementValidatorTest {
         MySQLCreateProcedureStatement sqlStatement = new MySQLCreateProcedureStatement();
         sqlStatement.setRoutineBody(routineBody);
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        when(metaData.getDatabaseName()).thenReturn(DefaultDatabase.LOGIC_NAME);
+        when(metaData.getDatabase().getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         when(metaData.getSchemaByName(DefaultDatabase.LOGIC_NAME).containsTable("t_order_item")).thenReturn(true);
         when(shardingRule.isShardingTable("t_order_item")).thenReturn(false);
         SQLStatementContext<CreateProcedureStatement> sqlStatementContext = new CommonSQLStatementContext<>(sqlStatement);
@@ -115,7 +115,7 @@ public final class ShardingCreateProcedureStatementValidatorTest {
         sqlStatement.setRoutineBody(routineBody);
         SQLStatementContext<CreateProcedureStatement> sqlStatementContext = new CommonSQLStatementContext<>(sqlStatement);
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        when(metaData.getDatabaseName()).thenReturn(DefaultDatabase.LOGIC_NAME);
+        when(metaData.getDatabase().getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         when(metaData.getSchemaByName(DefaultDatabase.LOGIC_NAME).containsTable("t_order")).thenReturn(true);
         new ShardingCreateProcedureStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), metaData);
     }

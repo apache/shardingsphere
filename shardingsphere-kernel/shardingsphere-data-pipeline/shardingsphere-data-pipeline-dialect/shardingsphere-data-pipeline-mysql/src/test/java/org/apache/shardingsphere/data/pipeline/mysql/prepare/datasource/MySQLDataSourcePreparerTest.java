@@ -20,9 +20,9 @@ package org.apache.shardingsphere.data.pipeline.mysql.prepare.datasource;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeLine;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.PrepareTargetTablesParameter;
@@ -56,10 +56,10 @@ public final class MySQLDataSourcePreparerTest {
     private RuleAlteredJobConfiguration jobConfig;
     
     @Mock
-    private YamlPipelineDataSourceConfiguration sourceYamlPipelineDataSourceConfig;
+    private PipelineDataSourceConfiguration sourcePipelineDataSourceConfig;
     
     @Mock
-    private YamlPipelineDataSourceConfiguration targetYamlPipelineDataSourceConfig;
+    private PipelineDataSourceConfiguration targetPipelineDataSourceConfig;
     
     @Mock
     private ShardingSpherePipelineDataSourceConfiguration sourceScalingDataSourceConfig;
@@ -79,10 +79,10 @@ public final class MySQLDataSourcePreparerTest {
         when(mockPipelineDataSourceManager.getDataSource(same(sourceScalingDataSourceConfig))).thenReturn(sourceDataSourceWrapper);
         when(mockPipelineDataSourceManager.getDataSource(same(targetScalingDataSourceConfig))).thenReturn(targetDataSourceWrapper);
         when(prepareTargetTablesParameter.getDataSourceManager()).thenReturn(mockPipelineDataSourceManager);
-        when(jobConfig.getSource()).thenReturn(sourceYamlPipelineDataSourceConfig);
+        when(jobConfig.getSource()).thenReturn(sourcePipelineDataSourceConfig);
         when(jobConfig.getSource().getType()).thenReturn("ShardingSphereJDBC");
         when(jobConfig.getSource().getParameter()).thenReturn("source");
-        when(jobConfig.getTarget()).thenReturn(targetYamlPipelineDataSourceConfig);
+        when(jobConfig.getTarget()).thenReturn(targetPipelineDataSourceConfig);
         when(jobConfig.getTarget().getType()).thenReturn("ShardingSphereJDBC");
         when(jobConfig.getTarget().getParameter()).thenReturn("target");
         when(prepareTargetTablesParameter.getJobConfig()).thenReturn(jobConfig);

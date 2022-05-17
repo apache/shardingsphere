@@ -36,8 +36,6 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.spi.exception.ServiceProviderNotFoundException;
 
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -48,7 +46,7 @@ public final class CreateShardingScalingRuleStatementUpdater implements RuleDefi
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final CreateShardingScalingRuleStatement sqlStatement,
                                   final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String databaseName = shardingSphereMetaData.getDatabaseName();
+        String databaseName = shardingSphereMetaData.getDatabase().getName();
         checkCurrentRuleConfiguration(databaseName, currentRuleConfig);
         checkDuplicate(databaseName, sqlStatement, currentRuleConfig);
         checkAlgorithms(sqlStatement.getScalingRuleConfigSegment());
@@ -116,21 +114,12 @@ public final class CreateShardingScalingRuleStatementUpdater implements RuleDefi
     @Override
     public ShardingRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateShardingScalingRuleStatement sqlStatement) {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        Map<String, OnRuleAlteredActionConfiguration> scalingConfigurationMap = new HashMap<>(1, 1);
-        scalingConfigurationMap.put(sqlStatement.getScalingName(), buildScalingConfiguration(sqlStatement.getScalingRuleConfigSegment()));
-        result.setScaling(scalingConfigurationMap);
+        result.setScaling(Collections.singletonMap(sqlStatement.getScalingName(), buildScalingConfiguration(sqlStatement.getScalingRuleConfigSegment())));
         return result;
     }
     
     private OnRuleAlteredActionConfiguration buildScalingConfiguration(final ShardingScalingRuleConfigurationSegment segment) {
-        if (null == segment) {
-            return buildNullScalingConfiguration();
-        }
-        return ShardingScalingRuleStatementConverter.convert(segment);
-    }
-    
-    private OnRuleAlteredActionConfiguration buildNullScalingConfiguration() {
-        return null;
+        return null == segment ? null : ShardingScalingRuleStatementConverter.convert(segment);
     }
     
     @Override

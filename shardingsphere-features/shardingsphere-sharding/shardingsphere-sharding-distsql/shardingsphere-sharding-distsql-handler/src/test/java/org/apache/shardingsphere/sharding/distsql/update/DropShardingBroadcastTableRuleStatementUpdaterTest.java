@@ -27,6 +27,7 @@ import org.apache.shardingsphere.sharding.distsql.handler.update.DropShardingBro
 import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingBroadcastTableRulesStatement;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -38,7 +39,7 @@ import static org.junit.Assert.assertTrue;
 @RunWith(MockitoJUnitRunner.class)
 public final class DropShardingBroadcastTableRuleStatementUpdaterTest {
     
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereMetaData shardingSphereMetaData;
     
     private final DropShardingBroadcastTableRuleStatementUpdater updater = new DropShardingBroadcastTableRuleStatementUpdater();
@@ -75,6 +76,13 @@ public final class DropShardingBroadcastTableRuleStatementUpdaterTest {
     public void assertDropSpecifiedCurrentRuleConfiguration() {
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         updater.updateCurrentRuleConfiguration(createSQLStatement("t_order"), currentRuleConfig);
+        assertTrue(currentRuleConfig.getBroadcastTables().isEmpty());
+    }
+    
+    @Test
+    public void assertDropSpecifiedCurrentRuleConfigurationWithDifferentCase() {
+        ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
+        updater.updateCurrentRuleConfiguration(createSQLStatement("T_ORDER"), currentRuleConfig);
         assertTrue(currentRuleConfig.getBroadcastTables().isEmpty());
     }
     

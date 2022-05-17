@@ -13,7 +13,7 @@ chapter = true
 
 ## 谁在使用 ShardingSphere?
 
-共计 193 家公司。
+共计 201 家公司。
 
 ### 基础软件
 <ul>
@@ -117,8 +117,11 @@ chapter = true
     <li><a href="http://www.shangquanquan.com/" rel="nofollow">万江龙智慧商圈</a></li>
     <li><a href="https://www.glodon.com/" rel="nofollow">广联达</a></li>
     <li><a href="https://www.zego.im/" rel="nofollow">即构科技</a></li>
-    <li><a href="http://www.sdjictec.com" rel="nofollow">建投数据科技</a></li>
+    <li><a href="http://www.sdjictec.com/" rel="nofollow">建投数据科技</a></li>
     <li><a href="https://www.baozun.com/" rel="nofollow">宝尊电商</a></li>
+    <li><a href="https://www.maxrocky.com/" rel="nofollow">迈动互联</a></li>
+    <li><a href="https://www.teddymobile.cn/" rel="nofollow">泰迪熊移动</a></li>
+    <li><a href="https://www.ecopiatech.com/" rel="nofollow">Ecopia</a></li>
 </ul>
 
 ### 出行
@@ -161,6 +164,20 @@ chapter = true
     <li><a href="http://www.yaduo.com/" rel="nofollow">亚朵</a></li>
 </ul>
 
+### 互联网文娱
+<ul>
+    <li><a href="https://www.ximalaya.com/" rel="nofollow">喜马拉雅</a>：<a href="https://mp.weixin.qq.com/s/hQpNb-SkDLtfo2sAo5Z_TA" rel="nofollow">用户案例</a></li>
+    <li><a href="https://y.tencentmusic.com" rel="nofollow">腾讯音乐</a></li>
+    <li><a href="https://www.bilibili.com/" rel="nofollow">哔哩哔哩</a></li>
+    <li><a href="https://www.iqiyi.com/" rel="nofollow">爱奇艺</a></li>
+    <li><a href="https://www.yy.com/" rel="nofollow">欢聚时代(YY)</a></li>
+    <li><a href="https://www.douyu.com/" rel="nofollow">斗鱼</a></li>
+    <li><a href="https://www.soulapp.cn/" rel="nofollow">Soul App</a></li>
+    <li><a href="https://www.bbgameonline.com/" rel="nofollow">BBGame</a></li>
+    <li><a href="https://www.elelive.net/" rel="nofollow">小象直播</a></li>
+    <li><a href="http://read.zhulang.com/" rel="nofollow">连尚文学</a></li>
+</ul>
+
 ### 互联网教育
 <ul>
     <li><a href="http://www.100tal.com/" rel="nofollow">好未来</a></li>
@@ -176,19 +193,7 @@ chapter = true
     <li><a href="http://www.swydedu.com/" rel="nofollow">数维原动</a></li>
     <li><a href="https://www.codemao.cn/" rel="nofollow">编程猫</a></li>
     <li><a href="https://www.yxt.com/" rel="nofollow">云学堂</a></li>
-</ul>
-
-### 互联网文娱
-<ul>
-    <li><a href="https://y.tencentmusic.com" rel="nofollow">腾讯音乐</a></li>
-    <li><a href="https://www.bilibili.com/" rel="nofollow">哔哩哔哩</a></li>
-    <li><a href="https://www.iqiyi.com/" rel="nofollow">爱奇艺</a></li>
-    <li><a href="https://www.yy.com/" rel="nofollow">欢聚时代(YY)</a></li>
-    <li><a href="https://www.douyu.com/" rel="nofollow">斗鱼</a></li>
-    <li><a href="https://www.soulapp.cn/" rel="nofollow">Soul App</a></li>
-    <li><a href="https://www.bbgameonline.com/" rel="nofollow">BBGame</a></li>
-    <li><a href="https://www.elelive.net/" rel="nofollow">小象直播</a></li>
-    <li><a href="http://read.zhulang.com/" rel="nofollow">连尚文学</a></li>
+    <li><a href="https://www.weixiaotong.com.cn/" rel="nofollow">光海微校通</a></li>
 </ul>
 
 ### 新闻资讯
@@ -242,7 +247,8 @@ chapter = true
 
 ### 制造业
 <ul>
-    <li><a href="https://www.lixiang.com" rel="nofollow">理想汽车</a></li>
+    <li><a href="https://www.lixiang.com/" rel="nofollow">理想汽车</a></li>
+    <li><a href="https://www.tanksuv.com/" rel="nofollow">长城汽车</a></li>
     <li><a href="https://www.gongniu.cn/" rel="nofollow">公牛智能产业中心</a></li>
 </ul>
 
@@ -290,7 +296,12 @@ chapter = true
     <li><a href="http://www.huxleymedical.tech/" rel="nofollow">山东华链医疗科技有限公司</a></li>
     <li><a href="https://www.xingren.com/" rel="nofollow">未来医生</a></li>
     <li><a href="https://www.medbanks.cn/" rel="nofollow">思派网络</a></li>
+    <li><a href="http://swifthealth.cn/" rel="nofollow">朝前科技</a></li>
 </ul>
 
+### 招聘
+<ul>
+    <li><a href="https://hireez.com/" rel="nofollow">hireEZ</a></li>
+</ul>
 
 <img src="https://shardingsphere.apache.org/community/image/powered-by.png" width = "30%" height = "30%" align="right" alt="Powered By ShardingSphere" />

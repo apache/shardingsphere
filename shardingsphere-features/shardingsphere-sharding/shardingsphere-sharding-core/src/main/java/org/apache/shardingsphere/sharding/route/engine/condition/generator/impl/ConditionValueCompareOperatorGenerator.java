@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sharding.route.engine.condition.generator.impl
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
-import com.google.common.collect.Sets;
 import org.apache.shardingsphere.infra.datetime.DatetimeServiceFactory;
 import org.apache.shardingsphere.sharding.route.engine.condition.Column;
 import org.apache.shardingsphere.sharding.route.engine.condition.ExpressionConditionUtils;
@@ -32,7 +31,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.Column
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,7 +52,7 @@ public final class ConditionValueCompareOperatorGenerator implements ConditionVa
     
     private static final String AT_LEAST = ">=";
     
-    private static final Collection<String> OPERATORS = Sets.newHashSet(EQUAL, GREATER_THAN, LESS_THAN, AT_LEAST, AT_MOST);
+    private static final Collection<String> OPERATORS = new HashSet<>(Arrays.asList(EQUAL, GREATER_THAN, LESS_THAN, AT_LEAST, AT_MOST));
     
     @Override
     public Optional<ShardingConditionValue> generate(final BinaryOperationExpression predicate, final Column column, final List<Object> parameters) {
@@ -65,7 +66,7 @@ public final class ConditionValueCompareOperatorGenerator implements ConditionVa
             return generate(conditionValue.get(), column, operator);
         }
         if (ExpressionConditionUtils.isNowExpression(valueExpression)) {
-            return generate(DatetimeServiceFactory.newInstance().getDatetime(), column, operator);
+            return generate(DatetimeServiceFactory.getInstance().getDatetime(), column, operator);
         }
         return Optional.empty();
     }

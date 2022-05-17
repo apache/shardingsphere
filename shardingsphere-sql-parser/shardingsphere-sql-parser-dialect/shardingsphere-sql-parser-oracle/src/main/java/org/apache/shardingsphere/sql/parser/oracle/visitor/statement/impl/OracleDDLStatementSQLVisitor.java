@@ -46,6 +46,11 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Create
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropEditionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropOutlineContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterOutlineContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterAnalyticViewContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterAttributeDimensionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateSequenceContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateContextContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateEditionContext;
@@ -59,6 +64,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropDa
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterDatabaseDictionaryContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterDatabaseLinkContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterViewContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterPackageContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropPackageContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateSynonymContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropSynonymContext;
@@ -124,6 +130,11 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.Ora
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateFunctionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropEditionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropOutlineStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterOutlineStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterAnalyticViewStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterAttributeDimensionStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateSequenceStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateContextStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateEditionStatement;
@@ -136,6 +147,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.Ora
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterDatabaseDictionaryStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterDatabaseLinkStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterViewStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterPackageStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropPackageStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateSynonymStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropSynonymStatement;
@@ -423,6 +435,11 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
     }
     
     @Override
+    public ASTNode visitAlterPackage(final AlterPackageContext ctx) {
+        return new OracleAlterPackageStatement();
+    }
+    
+    @Override
     public ASTNode visitCreateSynonym(final CreateSynonymContext ctx) {
         return new OracleCreateSynonymStatement();
     }
@@ -691,5 +708,30 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
     @Override
     public ASTNode visitDropOutline(final DropOutlineContext ctx) {
         return new OracleDropOutlineStatement();
+    }
+    
+    @Override
+    public ASTNode visitAlterOutline(final AlterOutlineContext ctx) {
+        return new OracleAlterOutlineStatement();
+    }
+    
+    @Override
+    public ASTNode visitAlterAnalyticView(final AlterAnalyticViewContext ctx) {
+        return new OracleAlterAnalyticViewStatement();
+    }
+    
+    @Override
+    public ASTNode visitAlterAttributeDimension(final AlterAttributeDimensionContext ctx) {
+        return new OracleAlterAttributeDimensionStatement();
+    }
+    
+    @Override
+    public ASTNode visitCreateSequence(final CreateSequenceContext ctx) {
+        return new OracleCreateSequenceStatement();
+    }
+    
+    @Override
+    public ASTNode visitCreateContext(final CreateContextContext ctx) {
+        return new OracleCreateContextStatement();
     }
 }

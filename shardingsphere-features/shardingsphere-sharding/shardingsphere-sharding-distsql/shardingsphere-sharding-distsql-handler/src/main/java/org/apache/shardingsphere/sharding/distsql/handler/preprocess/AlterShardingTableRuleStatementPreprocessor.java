@@ -29,7 +29,7 @@ import java.util.LinkedHashMap;
 /**
  * Alter sharding table rule statement preprocessor.
  */
-public final class AlterShardingTableRuleStatementPreprocessor implements RuleDefinitionAlterPreprocessor<AlterShardingTableRuleStatement, ShardingRuleConfiguration> {
+public final class AlterShardingTableRuleStatementPreprocessor implements RuleDefinitionAlterPreprocessor<ShardingRuleConfiguration> {
     
     @Override
     public ShardingRuleConfiguration preprocess(final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeAlteredRuleConfig) {

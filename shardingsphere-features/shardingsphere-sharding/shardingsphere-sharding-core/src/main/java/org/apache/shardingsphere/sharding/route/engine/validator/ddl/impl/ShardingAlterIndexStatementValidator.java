@@ -41,7 +41,7 @@ public final class ShardingAlterIndexStatementValidator extends ShardingDDLState
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<AlterIndexStatement> sqlStatementContext,
                             final List<Object> parameters, final ShardingSphereMetaData metaData) {
         Optional<IndexSegment> index = sqlStatementContext.getSqlStatement().getIndex();
-        String defaultSchema = sqlStatementContext.getDatabaseType().getDefaultSchema(metaData.getDatabaseName());
+        String defaultSchema = sqlStatementContext.getDatabaseType().getDefaultSchema(metaData.getDatabase().getName());
         ShardingSphereSchema schema = index.isPresent() ? index.get().getOwner().map(optional -> optional.getIdentifier().getValue())
                 .map(metaData::getSchemaByName).orElseGet(() -> metaData.getSchemaByName(defaultSchema)) : metaData.getSchemaByName(defaultSchema);
         if (index.isPresent() && !isSchemaContainsIndex(schema, index.get())) {

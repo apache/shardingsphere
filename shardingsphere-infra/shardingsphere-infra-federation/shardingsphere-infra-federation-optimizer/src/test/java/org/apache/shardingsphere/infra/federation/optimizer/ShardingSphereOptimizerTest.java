@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.infra.federation.optimizer;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContextFactory;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -108,7 +109,8 @@ public final class ShardingSphereOptimizerTest {
         Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(2, 1);
         tableMetaDataMap.put("t_order_federate", createOrderTableMetaData());
         tableMetaDataMap.put("t_user_info", createUserInfoTableMetaData());
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(databaseName, mockResource(), null, Collections.singletonMap(schemaName, new ShardingSphereSchema(tableMetaDataMap)));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(
+                new H2DatabaseType(), mockResource(), null, new ShardingSphereDatabase(databaseName, Collections.singletonMap(schemaName, new ShardingSphereSchema(tableMetaDataMap))));
         optimizer = new ShardingSphereOptimizer(OptimizerContextFactory.create(Collections.singletonMap(databaseName, metaData), createGlobalRuleMetaData()));
     }
     
@@ -140,7 +142,7 @@ public final class ShardingSphereOptimizerTest {
     
     @Test
     public void assertSelectCrossJoinCondition() {
-        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeRegistry.getTrunkDatabaseTypeName(new H2DatabaseType()), parserConfig);
+        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType()), parserConfig);
         SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_CROSS_JOIN_CONDITION, false);
         String actual = optimizer.optimize(databaseName, schemaName, sqlStatement).explain();
         String expected =
@@ -155,7 +157,7 @@ public final class ShardingSphereOptimizerTest {
     
     @Test
     public void assertSelectWhereAllFields() {
-        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeRegistry.getTrunkDatabaseTypeName(new H2DatabaseType()), parserConfig);
+        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType()), parserConfig);
         SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_WHERE_ALL_FIELDS, false);
         String actual = optimizer.optimize(databaseName, schemaName, sqlStatement).explain();
         String expected =
@@ -166,7 +168,7 @@ public final class ShardingSphereOptimizerTest {
     
     @Test
     public void assertSelectWhereSingleField() {
-        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeRegistry.getTrunkDatabaseTypeName(new H2DatabaseType()), parserConfig);
+        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType()), parserConfig);
         SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_WHERE_SINGLE_FIELD, false);
         String actual = optimizer.optimize(databaseName, schemaName, sqlStatement).explain();
         String expected =
@@ -177,7 +179,7 @@ public final class ShardingSphereOptimizerTest {
     
     @Test
     public void assertSelectCrossWhere() {
-        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeRegistry.getTrunkDatabaseTypeName(new H2DatabaseType()), parserConfig);
+        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType()), parserConfig);
         SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_CROSS_WHERE, false);
         String actual = optimizer.optimize(databaseName, schemaName, sqlStatement).explain();
         String expected =
@@ -194,7 +196,7 @@ public final class ShardingSphereOptimizerTest {
     
     @Test
     public void assertSelectCrossJoin() {
-        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeRegistry.getTrunkDatabaseTypeName(new H2DatabaseType()), parserConfig);
+        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType()), parserConfig);
         SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_CROSS_JOIN, false);
         String actual = optimizer.optimize(databaseName, schemaName, sqlStatement).explain();
         String expected =
@@ -211,7 +213,7 @@ public final class ShardingSphereOptimizerTest {
     
     @Test
     public void assertSelectJoinWhere() {
-        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeRegistry.getTrunkDatabaseTypeName(new H2DatabaseType()), parserConfig);
+        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType()), parserConfig);
         SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_CROSS_WHERE_CONDITION, false);
         String actual = optimizer.optimize(databaseName, schemaName, sqlStatement).explain();
         String expected =
@@ -224,7 +226,7 @@ public final class ShardingSphereOptimizerTest {
     
     @Test
     public void assertSelectSubQueryFrom() {
-        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeRegistry.getTrunkDatabaseTypeName(new H2DatabaseType()), parserConfig);
+        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType()), parserConfig);
         SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_SUBQUERY_FROM, false);
         String actual = optimizer.optimize(databaseName, schemaName, sqlStatement).explain();
         String expected =
@@ -235,7 +237,7 @@ public final class ShardingSphereOptimizerTest {
     
     @Test
     public void assertSelectSubQueryWhereExist() {
-        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeRegistry.getTrunkDatabaseTypeName(new H2DatabaseType()), parserConfig);
+        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType()), parserConfig);
         SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_SUBQUERY_WHERE_EXIST, false);
         String actual = optimizer.optimize(databaseName, schemaName, sqlStatement).explain();
         String expected =
@@ -250,7 +252,7 @@ public final class ShardingSphereOptimizerTest {
     
     @Test
     public void assertSelectSubQueryWhereIn() {
-        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeRegistry.getTrunkDatabaseTypeName(new H2DatabaseType()), parserConfig);
+        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType()), parserConfig);
         SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_SUBQUERY_WHERE_IN, false);
         String actual = optimizer.optimize(databaseName, schemaName, sqlStatement).explain();
         String expected =
@@ -264,7 +266,7 @@ public final class ShardingSphereOptimizerTest {
     
     @Test
     public void assertSelectSubQueryWhereBetween() {
-        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeRegistry.getTrunkDatabaseTypeName(new H2DatabaseType()), parserConfig);
+        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType()), parserConfig);
         SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_SUBQUERY_WHERE_BETWEEN, false);
         String actual = optimizer.optimize(databaseName, schemaName, sqlStatement).explain();
         String expected =

@@ -35,11 +35,11 @@ public final class DynamicDataSourceStrategyFactory {
     }
     
     /**
-     * Create new instance of dynamic data source strategy.
+     * Find instance of dynamic data source strategy.
      * 
-     * @return new instance of dynamic data source strategy
+     * @return found instance
      */
-    public static Optional<DynamicDataSourceStrategy> newInstance() {
+    public static Optional<DynamicDataSourceStrategy> findInstance() {
         return OptionalSPIRegistry.findRegisteredService(DynamicDataSourceStrategy.class);
     }
 }

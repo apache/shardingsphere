@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable;
 
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.ImportDatabaseConfigurationStatement;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesValidator;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -28,7 +28,6 @@ import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandler;
@@ -51,8 +50,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -86,7 +86,7 @@ public final class ImportDatabaseConfigurationHandlerTest {
     
     private ImportDatabaseConfigurationHandler importDatabaseConfigurationHandler;
     
-    private final Map<String, String> featureMap = new HashMap<>();
+    private final Map<String, String> featureMap = new HashMap<>(3, 1);
     
     @Before
     public void setup() {
@@ -95,8 +95,41 @@ public final class ImportDatabaseConfigurationHandlerTest {
         featureMap.put(databaseDiscovery, dbDiscoveryFilePath);
     }
     
+    @Test
+    public void assertImportDatabaseExecutorForSharding() throws Exception {
+        init(sharding);
+        Field shardingRuleConfigurationImportCheckerField = importDatabaseConfigurationHandler.getClass().getDeclaredField("shardingRuleConfigurationImportChecker");
+        shardingRuleConfigurationImportCheckerField.setAccessible(true);
+        shardingRuleConfigurationImportCheckerField.set(importDatabaseConfigurationHandler, shardingRuleConfigurationImportChecker);
+        assertNotNull(ProxyContext.getInstance().getContextManager().getDataSourceMap(sharding));
+        assertNotNull(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(sharding).getRuleMetaData().getConfigurations());
+        assertThat(importDatabaseConfigurationHandler.execute(), instanceOf(UpdateResponseHeader.class));
+    }
+    
+    @Test
+    public void assertImportDatabaseExecutorForReadwriteSplitting() throws Exception {
+        init(readwriteSplitting);
+        Field readwriteSplittingRuleConfigurationImportCheckerField = importDatabaseConfigurationHandler.getClass().getDeclaredField("readwriteSplittingRuleConfigurationImportChecker");
+        readwriteSplittingRuleConfigurationImportCheckerField.setAccessible(true);
+        readwriteSplittingRuleConfigurationImportCheckerField.set(importDatabaseConfigurationHandler, readwriteSplittingRuleConfigurationImportChecker);
+        assertNotNull(ProxyContext.getInstance().getContextManager().getDataSourceMap(readwriteSplitting));
+        assertNotNull(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(readwriteSplitting).getRuleMetaData().getConfigurations());
+        assertThat(importDatabaseConfigurationHandler.execute(), instanceOf(UpdateResponseHeader.class));
+    }
+    
+    @Test
+    public void assertImportDatabaseExecutorForDatabaseDiscovery() throws Exception {
+        init(databaseDiscovery);
+        Field databaseDiscoveryRuleConfigurationImportCheckerField = importDatabaseConfigurationHandler.getClass().getDeclaredField("databaseDiscoveryRuleConfigurationImportChecker");
+        databaseDiscoveryRuleConfigurationImportCheckerField.setAccessible(true);
+        databaseDiscoveryRuleConfigurationImportCheckerField.set(importDatabaseConfigurationHandler, databaseDiscoveryRuleConfigurationImportChecker);
+        assertNotNull(ProxyContext.getInstance().getContextManager().getDataSourceMap(databaseDiscovery));
+        assertNotNull(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(databaseDiscovery).getRuleMetaData().getConfigurations());
+        assertThat(importDatabaseConfigurationHandler.execute(), instanceOf(UpdateResponseHeader.class));
+    }
+    
     private void init(final String feature) throws Exception {
-        importDatabaseConfigurationHandler = new ImportDatabaseConfigurationHandler().init(getParameter(createSqlStatement(featureMap.get(feature)), mockConnectionSession()));
+        importDatabaseConfigurationHandler = new ImportDatabaseConfigurationHandler().init(getParameter(featureMap.get(feature), mock(ConnectionSession.class)));
         Field validatorField = importDatabaseConfigurationHandler.getClass().getDeclaredField("validator");
         validatorField.setAccessible(true);
         validatorField.set(importDatabaseConfigurationHandler, validator);
@@ -109,76 +142,22 @@ public final class ImportDatabaseConfigurationHandlerTest {
         ProxyContext.getInstance().init(contextManager);
     }
     
-    @Test
-    public void assertImportDatabaseExecutorForSharding() throws Exception {
-        init(sharding);
-        Field shardingRuleConfigurationImportCheckerField = importDatabaseConfigurationHandler.getClass().getDeclaredField("shardingRuleConfigurationImportChecker");
-        shardingRuleConfigurationImportCheckerField.setAccessible(true);
-        shardingRuleConfigurationImportCheckerField.set(importDatabaseConfigurationHandler, shardingRuleConfigurationImportChecker);
-        Map<String, DataSource> dataSourceMap = ProxyContext.getInstance().getContextManager().getDataSourceMap(sharding);
-        assertNotNull(dataSourceMap);
-        Collection<RuleConfiguration> ruleConfigurations = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(sharding).getRuleMetaData().getConfigurations();
-        assertNotNull(ruleConfigurations);
-        ResponseHeader responseHeader = importDatabaseConfigurationHandler.execute();
-        assertTrue(responseHeader instanceof UpdateResponseHeader);
-    }
-    
-    @Test
-    public void assertImportDatabaseExecutorForReadwriteSplitting() throws Exception {
-        init(readwriteSplitting);
-        Field readwriteSplittingRuleConfigurationImportCheckerField = importDatabaseConfigurationHandler.getClass().getDeclaredField("readwriteSplittingRuleConfigurationImportChecker");
-        readwriteSplittingRuleConfigurationImportCheckerField.setAccessible(true);
-        readwriteSplittingRuleConfigurationImportCheckerField.set(importDatabaseConfigurationHandler, readwriteSplittingRuleConfigurationImportChecker);
-        Map<String, DataSource> dataSourceMap = ProxyContext.getInstance().getContextManager().getDataSourceMap(readwriteSplitting);
-        assertNotNull(dataSourceMap);
-        Collection<RuleConfiguration> ruleConfigurations = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(readwriteSplitting).getRuleMetaData().getConfigurations();
-        assertNotNull(ruleConfigurations);
-        ResponseHeader responseHeader = importDatabaseConfigurationHandler.execute();
-        assertTrue(responseHeader instanceof UpdateResponseHeader);
-    }
-    
-    @Test
-    public void assertImportDatabaseExecutorForDatabaseDiscovery() throws Exception {
-        init(databaseDiscovery);
-        Field databaseDiscoveryRuleConfigurationImportCheckerField = importDatabaseConfigurationHandler.getClass().getDeclaredField("databaseDiscoveryRuleConfigurationImportChecker");
-        databaseDiscoveryRuleConfigurationImportCheckerField.setAccessible(true);
-        databaseDiscoveryRuleConfigurationImportCheckerField.set(importDatabaseConfigurationHandler, databaseDiscoveryRuleConfigurationImportChecker);
-        Map<String, DataSource> dataSourceMap = ProxyContext.getInstance().getContextManager().getDataSourceMap(databaseDiscovery);
-        assertNotNull(dataSourceMap);
-        Collection<RuleConfiguration> ruleConfigurations = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(databaseDiscovery).getRuleMetaData().getConfigurations();
-        assertNotNull(ruleConfigurations);
-        ResponseHeader responseHeader = importDatabaseConfigurationHandler.execute();
-        assertTrue(responseHeader instanceof UpdateResponseHeader);
-    }
-    
     private Map<String, DataSource> createDataSourceMap() {
         Map<String, DataSource> result = new LinkedHashMap<>(2, 1);
-        result.put("ds_0", createDataSource());
-        result.put("ds_1", createDataSource());
+        result.put("ds_0", new MockedDataSource());
+        result.put("ds_1", new MockedDataSource());
         return result;
-    }
-    
-    private DataSource createDataSource() {
-        return new MockedDataSource();
     }
     
     private Map<String, TableMetaData> createTableMap() {
-        Collection<ColumnMetaData> columns = Collections.singletonList(new ColumnMetaData("order_id", 0, false, false, false));
-        Collection<IndexMetaData> indexes = Collections.singletonList(new IndexMetaData("primary"));
-        Map<String, TableMetaData> result = new HashMap<>(1, 1);
-        result.put("t_order", new TableMetaData("t_order", columns, indexes, Collections.emptyList()));
-        return result;
+        Collection<ColumnMetaData> columns = Collections.singleton(new ColumnMetaData("order_id", 0, false, false, false));
+        Collection<IndexMetaData> indexes = Collections.singleton(new IndexMetaData("primary"));
+        return Collections.singletonMap("t_order", new TableMetaData("t_order", columns, indexes, Collections.emptyList()));
     }
     
-    private ImportDatabaseConfigurationStatement createSqlStatement(final String importFilePath) {
-        return new ImportDatabaseConfigurationStatement(Objects.requireNonNull(ImportDatabaseConfigurationHandlerTest.class.getResource(importFilePath)).getPath());
-    }
-    
-    private ConnectionSession mockConnectionSession() {
-        return mock(ConnectionSession.class);
-    }
-    
-    private RALBackendHandler.HandlerParameter<ImportDatabaseConfigurationStatement> getParameter(final ImportDatabaseConfigurationStatement statement, final ConnectionSession connectionSession) {
-        return new RALBackendHandler.HandlerParameter<ImportDatabaseConfigurationStatement>().setStatement(statement).setConnectionSession(connectionSession);
+    private RALBackendHandler.HandlerParameter<ImportDatabaseConfigurationStatement> getParameter(final String importFilePath, final ConnectionSession connectionSession) {
+        ImportDatabaseConfigurationStatement statement = new ImportDatabaseConfigurationStatement(
+                Objects.requireNonNull(ImportDatabaseConfigurationHandlerTest.class.getResource(importFilePath)).getPath());
+        return new RALBackendHandler.HandlerParameter<>(statement, new MySQLDatabaseType(), connectionSession);
     }
 }

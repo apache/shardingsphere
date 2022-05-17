@@ -38,7 +38,7 @@ public final class ShardingConditionEngineFactory {
      * @param logicSQL logic SQL
      * @param metaData ShardingSphere meta data
      * @param rule sharding rule 
-     * @return sharding condition engine
+     * @return created instance
      */
     public static ShardingConditionEngine<?> createShardingConditionEngine(final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final ShardingRule rule) {
         return logicSQL.getSqlStatementContext() instanceof InsertStatementContext

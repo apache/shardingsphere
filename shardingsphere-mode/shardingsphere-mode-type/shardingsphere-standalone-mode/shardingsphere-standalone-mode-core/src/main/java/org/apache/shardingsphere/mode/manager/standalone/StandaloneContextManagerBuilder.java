@@ -21,8 +21,6 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRecognizer;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.infra.rule.identifier.type.InstanceAwareRule;
@@ -46,9 +44,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.Properties;
 
 /**
  * Standalone context manager builder.
@@ -57,9 +53,9 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
     
     @Override
     public ContextManager build(final ContextManagerBuilderParameter parameter) throws SQLException {
-        MetaDataPersistService metaDataPersistService = new MetaDataPersistService(StandalonePersistRepositoryFactory.newInstance(parameter.getModeConfig().getRepository()));
+        MetaDataPersistService metaDataPersistService = new MetaDataPersistService(StandalonePersistRepositoryFactory.getInstance(parameter.getModeConfig().getRepository()));
         persistConfigurations(metaDataPersistService, parameter);
-        MetaDataContexts metaDataContexts = createMetaDataContexts(metaDataPersistService, parameter);
+        MetaDataContexts metaDataContexts = createMetaDataContextsBuilder(metaDataPersistService, parameter).build(metaDataPersistService);
         return createContextManager(metaDataPersistService, parameter, metaDataContexts);
     }
     
@@ -69,23 +65,14 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
         }
     }
     
-    private MetaDataContexts createMetaDataContexts(final MetaDataPersistService metaDataPersistService, final ContextManagerBuilderParameter parameter) throws SQLException {
+    private MetaDataContextsBuilder createMetaDataContextsBuilder(final MetaDataPersistService metaDataPersistService, final ContextManagerBuilderParameter parameter) throws SQLException {
         Collection<String> databaseNames = InstanceType.JDBC == parameter.getInstanceDefinition().getInstanceType()
                 ? parameter.getDatabaseConfigs().keySet()
                 : metaDataPersistService.getSchemaMetaDataService().loadAllDatabaseNames();
         Collection<RuleConfiguration> globalRuleConfigs = metaDataPersistService.getGlobalRuleService().load();
-        Properties props = metaDataPersistService.getPropsService().load();
-        MetaDataContextsBuilder builder = new MetaDataContextsBuilder(globalRuleConfigs, props);
+        ConfigurationProperties props = new ConfigurationProperties(metaDataPersistService.getPropsService().load());
         Map<String, ? extends DatabaseConfiguration> databaseConfigMap = getDatabaseConfigMap(databaseNames, metaDataPersistService, parameter);
-        DatabaseType databaseType = DatabaseTypeRecognizer.getDatabaseType(databaseConfigMap, new ConfigurationProperties(props));
-        for (Entry<String, ? extends DatabaseConfiguration> entry : databaseConfigMap.entrySet()) {
-            if (databaseType.getSystemSchemas().contains(entry.getKey())) {
-                continue;
-            }
-            builder.addDatabase(entry.getKey(), databaseType, entry.getValue(), props);
-        }
-        builder.addSystemDatabases(databaseType);
-        return builder.build(metaDataPersistService);
+        return new MetaDataContextsBuilder(databaseConfigMap, globalRuleConfigs, props);
     }
     
     private Map<String, DatabaseConfiguration> getDatabaseConfigMap(final Collection<String> databaseNames, final MetaDataPersistService metaDataPersistService,
@@ -117,7 +104,7 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
         Optional<TransactionRule> transactionRule =
                 metaDataContexts.getGlobalRuleMetaData().getRules().stream().filter(each -> each instanceof TransactionRule).map(each -> (TransactionRule) each).findFirst();
         if (transactionRule.isPresent()) {
-            Optional<TransactionConfigurationFileGenerator> fileGenerator = TransactionConfigurationFileGeneratorFactory.newInstance(transactionRule.get().getProviderType());
+            Optional<TransactionConfigurationFileGenerator> fileGenerator = TransactionConfigurationFileGeneratorFactory.findInstance(transactionRule.get().getProviderType());
             fileGenerator.ifPresent(optional -> optional.generateFile(transactionRule.get().getProps(), instanceContext));
         }
     }

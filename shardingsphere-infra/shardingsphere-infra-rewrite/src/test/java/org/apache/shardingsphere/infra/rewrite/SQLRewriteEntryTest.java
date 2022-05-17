@@ -20,39 +20,38 @@ package org.apache.shardingsphere.infra.rewrite;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.engine.result.GenericSQLRewriteResult;
 import org.apache.shardingsphere.infra.rewrite.engine.result.RouteSQLRewriteResult;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfiguration;
+import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Optional;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class SQLRewriteEntryTest {
-    
-    @Mock
-    private ShardingSphereSchema schema;
-    
-    @Mock
-    private ConfigurationProperties props;
     
     @Test
     public void assertRewriteForGenericSQLRewriteResult() {
-        SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(DefaultDatabase.LOGIC_NAME, mockSchemaMap(), props, Collections.emptyList());
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(DatabaseTypeFactory.getInstance("H2"),
+                mockResource(), mockRuleMetaData(), new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, Collections.singletonMap("test", mock(ShardingSphereSchema.class))));
+        SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(metaData, new ConfigurationProperties(new Properties()));
         RouteContext routeContext = new RouteContext();
         GenericSQLRewriteResult sqlRewriteResult = (GenericSQLRewriteResult) sqlRewriteEntry.rewrite("SELECT ?", Collections.singletonList(1), mock(SQLStatementContext.class), routeContext);
         assertThat(sqlRewriteResult.getSqlRewriteUnit().getSql(), is("SELECT ?"));
@@ -61,7 +60,9 @@ public final class SQLRewriteEntryTest {
     
     @Test
     public void assertRewriteForRouteSQLRewriteResult() {
-        SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(DefaultDatabase.LOGIC_NAME, mockSchemaMap(), props, Collections.emptyList());
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(DatabaseTypeFactory.getInstance("H2"),
+                mockResource(), mockRuleMetaData(), new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, Collections.singletonMap("test", mock(ShardingSphereSchema.class))));
+        SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(metaData, new ConfigurationProperties(new Properties()));
         RouteContext routeContext = new RouteContext();
         RouteUnit firstRouteUnit = mock(RouteUnit.class);
         when(firstRouteUnit.getDataSourceMapper()).thenReturn(new RouteMapper("ds", "ds_0"));
@@ -72,9 +73,15 @@ public final class SQLRewriteEntryTest {
         assertThat(sqlRewriteResult.getSqlRewriteUnits().size(), is(2));
     }
     
-    private Map<String, ShardingSphereSchema> mockSchemaMap() {
-        Map<String, ShardingSphereSchema> result = new HashMap<>(1, 1);
-        result.put("test", mock(ShardingSphereSchema.class));
+    private ShardingSphereResource mockResource() {
+        ShardingSphereResource result = mock(ShardingSphereResource.class);
+        when(result.getDatabaseType()).thenReturn(DatabaseTypeFactory.getInstance("H2"));
+        return result;
+    }
+    
+    private ShardingSphereRuleMetaData mockRuleMetaData() {
+        ShardingSphereRuleMetaData result = mock(ShardingSphereRuleMetaData.class);
+        when(result.findSingleRule(SQLTranslatorRule.class)).thenReturn(Optional.of(new SQLTranslatorRule(new SQLTranslatorRuleConfiguration())));
         return result;
     }
 }

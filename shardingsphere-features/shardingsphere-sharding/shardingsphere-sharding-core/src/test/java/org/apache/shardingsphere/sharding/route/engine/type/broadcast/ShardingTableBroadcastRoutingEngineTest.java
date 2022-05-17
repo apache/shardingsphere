@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.binder.type.IndexAvailable;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -107,7 +108,8 @@ public final class ShardingTableBroadcastRoutingEngineTest extends AbstractRouti
         when(sqlStatementContext.getDatabaseType()).thenReturn(new MySQLDatabaseType());
         when(((IndexAvailable) sqlStatementContext).getIndexes()).thenReturn(Collections.singletonList(segment));
         Map<String, ShardingSphereSchema> schemas = Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema);
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(DefaultDatabase.LOGIC_NAME, mock(ShardingSphereResource.class), mock(ShardingSphereRuleMetaData.class), schemas);
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(
+                new MySQLDatabaseType(), mock(ShardingSphereResource.class), mock(ShardingSphereRuleMetaData.class), new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, schemas));
         ShardingTableBroadcastRoutingEngine shardingTableBroadcastRoutingEngine = new ShardingTableBroadcastRoutingEngine(metaData, sqlStatementContext, tableNames);
         RouteContext routeContext = shardingTableBroadcastRoutingEngine.route(createShardingRule(false));
         assertThat(routeContext.getActualDataSourceNames().size(), is(2));
@@ -128,7 +130,8 @@ public final class ShardingTableBroadcastRoutingEngineTest extends AbstractRouti
         Collection<String> tableNames = Collections.emptyList();
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(tableNames);
         Map<String, ShardingSphereSchema> schemas = Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema);
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(DefaultDatabase.LOGIC_NAME, mock(ShardingSphereResource.class), mock(ShardingSphereRuleMetaData.class), schemas);
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(
+                new MySQLDatabaseType(), mock(ShardingSphereResource.class), mock(ShardingSphereRuleMetaData.class), new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, schemas));
         ShardingTableBroadcastRoutingEngine shardingTableBroadcastRoutingEngine = new ShardingTableBroadcastRoutingEngine(metaData, sqlStatementContext, tableNames);
         RouteContext routeContext = shardingTableBroadcastRoutingEngine.route(createShardingRule(false));
         assertRouteUnitWithoutTables(routeContext);

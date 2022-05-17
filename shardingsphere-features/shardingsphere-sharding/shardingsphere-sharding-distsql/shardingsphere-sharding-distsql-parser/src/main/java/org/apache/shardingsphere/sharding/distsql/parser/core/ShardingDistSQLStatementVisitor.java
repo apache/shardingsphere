@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.distsql.parser.core;
 
-import com.google.common.base.Joiner;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementBaseVisitor;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.AddShardingHintDatabaseValueContext;
@@ -155,8 +154,7 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     }
     
     private Collection<BindingTableRuleSegment> createBindingTableRuleSegment(final List<BindTableRulesDefinitionContext> contexts) {
-        return contexts.stream().map(each -> Joiner.on(",").join(each.tableName().stream().map(this::getIdentifierValue).collect(Collectors.toList())))
-                .map(BindingTableRuleSegment::new).collect(Collectors.toList());
+        return contexts.stream().map(each -> each.tableName().stream().map(this::getIdentifierValue).collect(Collectors.joining(","))).map(BindingTableRuleSegment::new).collect(Collectors.toList());
     }
     
     @Override
@@ -180,7 +178,7 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     public ASTNode visitAlterShardingBindingTableRules(final AlterShardingBindingTableRulesContext ctx) {
         Collection<BindingTableRuleSegment> rules = new LinkedList<>();
         for (BindTableRulesDefinitionContext each : ctx.bindTableRulesDefinition()) {
-            rules.add(new BindingTableRuleSegment(Joiner.on(",").join(each.tableName().stream().map(tableName -> new IdentifierValue(tableName.getText()).getValue()).collect(Collectors.toList()))));
+            rules.add(new BindingTableRuleSegment(each.tableName().stream().map(tableName -> new IdentifierValue(tableName.getText()).getValue()).collect(Collectors.joining(","))));
         }
         return new AlterShardingBindingTableRulesStatement(rules);
     }

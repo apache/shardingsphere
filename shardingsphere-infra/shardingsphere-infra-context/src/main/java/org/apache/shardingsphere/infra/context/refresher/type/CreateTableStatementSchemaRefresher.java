@@ -53,7 +53,7 @@ public final class CreateTableStatementSchemaRefresher implements MetaDataRefres
         if (!containsInImmutableDataNodeContainedRule(tableName, metaData)) {
             metaData.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.put(logicDataSourceNames.iterator().next(), schemaName, tableName));
         }
-        SchemaBuilderMaterials materials = new SchemaBuilderMaterials(
+        SchemaBuilderMaterials materials = new SchemaBuilderMaterials(metaData.getFrontendDatabaseType(),
                 metaData.getResource().getDatabaseType(), metaData.getResource().getDataSources(), metaData.getRuleMetaData().getRules(), props, schemaName);
         Map<String, SchemaMetaData> metaDataMap = TableMetaDataBuilder.load(Collections.singletonList(tableName), materials);
         Optional<TableMetaData> actualTableMetaData = Optional.ofNullable(metaDataMap.get(schemaName)).map(optional -> optional.getTables().get(tableName));
@@ -61,7 +61,7 @@ public final class CreateTableStatementSchemaRefresher implements MetaDataRefres
             metaData.getSchemaByName(schemaName).put(tableName, optional);
             database.putTableMetadata(schemaName, optional);
             optimizerPlanners.put(database.getName(), OptimizerPlannerContextFactory.create(database));
-            SchemaAlteredEvent event = new SchemaAlteredEvent(metaData.getDatabaseName(), schemaName);
+            SchemaAlteredEvent event = new SchemaAlteredEvent(metaData.getDatabase().getName(), schemaName);
             event.getAlteredTables().add(optional);
             ShardingSphereEventBus.getInstance().post(event);
         });

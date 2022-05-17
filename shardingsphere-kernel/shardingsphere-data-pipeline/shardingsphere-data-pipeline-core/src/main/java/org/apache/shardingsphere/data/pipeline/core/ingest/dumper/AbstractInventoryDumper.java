@@ -31,6 +31,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosit
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PrimaryKeyPosition;
+import org.apache.shardingsphere.data.pipeline.api.ingest.position.PrimaryKeyPositionFactory;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.FinishedRecord;
@@ -42,6 +43,7 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestExcep
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineTableMetaData;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
+import org.apache.shardingsphere.data.pipeline.core.util.PipelineJdbcUtils;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.InventoryDumper;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
@@ -61,7 +63,7 @@ import java.util.Optional;
 public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor implements InventoryDumper {
     
     @Getter(AccessLevel.PROTECTED)
-    private final InventoryDumperConfiguration inventoryDumperConfig;
+    private final InventoryDumperConfiguration dumperConfig;
     
     private final PipelineChannel channel;
     
@@ -80,9 +82,9 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
         if (!StandardPipelineDataSourceConfiguration.class.equals(inventoryDumperConfig.getDataSourceConfig().getClass())) {
             throw new UnsupportedOperationException("AbstractInventoryDumper only support StandardPipelineDataSourceConfiguration");
         }
-        this.inventoryDumperConfig = inventoryDumperConfig;
+        this.dumperConfig = inventoryDumperConfig;
         this.channel = channel;
-        pipelineSQLBuilder = PipelineSQLBuilderFactory.newInstance(inventoryDumperConfig.getDataSourceConfig().getDatabaseType().getType());
+        pipelineSQLBuilder = PipelineSQLBuilderFactory.getInstance(inventoryDumperConfig.getDataSourceConfig().getDatabaseType().getType());
         this.dataSource = dataSource;
         batchSize = inventoryDumperConfig.getBatchSize();
         rateLimitAlgorithm = inventoryDumperConfig.getRateLimitAlgorithm();
@@ -102,15 +104,21 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
     }
     
     private void dump() {
-        String schemaName = inventoryDumperConfig.getSchemaName(new LogicTableName(inventoryDumperConfig.getLogicTableName()));
-        String sql = pipelineSQLBuilder.buildInventoryDumpSQL(schemaName, inventoryDumperConfig.getActualTableName(), inventoryDumperConfig.getPrimaryKey());
-        IngestPosition<?> position = inventoryDumperConfig.getPosition();
-        log.info("inventory dump, sql={}, position={}", sql, position);
+        String schemaName = dumperConfig.getSchemaName(new LogicTableName(dumperConfig.getLogicTableName()));
+        int uniqueKeyDataType = dumperConfig.getUniqueKeyDataType();
+        String firstSQL = pipelineSQLBuilder.buildInventoryDumpSQL(schemaName, dumperConfig.getActualTableName(), dumperConfig.getPrimaryKey(), uniqueKeyDataType, true);
+        String laterSQL = pipelineSQLBuilder.buildInventoryDumpSQL(schemaName, dumperConfig.getActualTableName(), dumperConfig.getPrimaryKey(), uniqueKeyDataType, false);
+        IngestPosition<?> position = dumperConfig.getPosition();
+        log.info("inventory dump, uniqueKeyDataType={}, firstSQL={}, laterSQL={}, position={}", uniqueKeyDataType, firstSQL, laterSQL, position);
+        if (position instanceof FinishedPosition) {
+            log.info("It is already finished, ignore");
+            return;
+        }
+        Object startUniqueKeyValue = getPositionBeginValue(position);
         try (Connection conn = dataSource.getConnection()) {
             int round = 1;
-            Number startUniqueKeyValue = getPositionBeginValue(position) - 1;
-            Optional<Number> maxUniqueKeyValue;
-            while ((maxUniqueKeyValue = dump0(conn, sql, startUniqueKeyValue, round++)).isPresent()) {
+            Optional<Object> maxUniqueKeyValue;
+            while ((maxUniqueKeyValue = dump0(conn, 1 == round ? firstSQL : laterSQL, uniqueKeyDataType, startUniqueKeyValue, round++)).isPresent()) {
                 startUniqueKeyValue = maxUniqueKeyValue.get();
                 if (!isRunning()) {
                     log.info("inventory dump, running is false, break");
@@ -132,20 +140,28 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
         return tableMetaDataLazyInitializer.get();
     }
     
-    private Optional<Number> dump0(final Connection conn, final String sql, final Number startUniqueKeyValue, final int round) throws SQLException {
+    private Optional<Object> dump0(final Connection conn, final String sql, final int uniqueKeyDataType, final Object startUniqueKeyValue, final int round) throws SQLException {
         if (null != rateLimitAlgorithm) {
             rateLimitAlgorithm.intercept(JobOperationType.SELECT, 1);
         }
         PipelineTableMetaData tableMetaData = getTableMetaData();
         try (PreparedStatement preparedStatement = createPreparedStatement(conn, sql)) {
-            preparedStatement.setObject(1, startUniqueKeyValue);
-            preparedStatement.setObject(2, getPositionEndValue(inventoryDumperConfig.getPosition()));
-            preparedStatement.setInt(3, batchSize);
+            preparedStatement.setFetchSize(batchSize);
+            if (PipelineJdbcUtils.isIntegerColumn(uniqueKeyDataType)) {
+                preparedStatement.setObject(1, startUniqueKeyValue);
+                preparedStatement.setObject(2, getPositionEndValue(dumperConfig.getPosition()));
+                preparedStatement.setInt(3, batchSize);
+            } else if (PipelineJdbcUtils.isStringColumn(uniqueKeyDataType)) {
+                preparedStatement.setObject(1, startUniqueKeyValue);
+                preparedStatement.setInt(2, batchSize);
+            } else {
+                throw new IllegalArgumentException("Unsupported uniqueKeyDataType: " + uniqueKeyDataType);
+            }
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 ResultSetMetaData metaData = resultSet.getMetaData();
                 int rowCount = 0;
-                Number maxUniqueKeyValue = null;
-                String logicTableName = inventoryDumperConfig.getLogicTableName();
+                Object maxUniqueKeyValue = null;
+                String logicTableName = dumperConfig.getLogicTableName();
                 while (resultSet.next()) {
                     DataRecord record = new DataRecord(newPosition(resultSet), metaData.getColumnCount());
                     record.setType(IngestDataChangeType.INSERT);
@@ -154,7 +170,7 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
                         boolean isPrimaryKey = tableMetaData.isPrimaryKey(i - 1);
                         Object value = readValue(resultSet, i);
                         if (isPrimaryKey) {
-                            maxUniqueKeyValue = (Number) value;
+                            maxUniqueKeyValue = value;
                         }
                         record.addColumn(new Column(metaData.getColumnName(i), value, true, isPrimaryKey));
                     }
@@ -173,17 +189,17 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
         }
     }
     
-    private long getPositionBeginValue(final IngestPosition<?> position) {
-        return position instanceof PrimaryKeyPosition ? ((PrimaryKeyPosition) position).getBeginValue() : 0;
+    private Object getPositionBeginValue(final IngestPosition<?> position) {
+        return ((PrimaryKeyPosition<?>) position).getBeginValue();
     }
     
-    private long getPositionEndValue(final IngestPosition<?> position) {
-        return position instanceof PrimaryKeyPosition ? ((PrimaryKeyPosition) position).getEndValue() : Integer.MAX_VALUE;
+    private Object getPositionEndValue(final IngestPosition<?> position) {
+        return ((PrimaryKeyPosition<?>) position).getEndValue();
     }
     
     private IngestPosition<?> newPosition(final ResultSet rs) throws SQLException {
-        return null == inventoryDumperConfig.getPrimaryKey() ? new PlaceholderPosition()
-                : new PrimaryKeyPosition(rs.getLong(inventoryDumperConfig.getPrimaryKey()), ((PrimaryKeyPosition) inventoryDumperConfig.getPosition()).getEndValue());
+        return null == dumperConfig.getPrimaryKey() ? new PlaceholderPosition()
+                : PrimaryKeyPositionFactory.newInstance(rs.getObject(dumperConfig.getPrimaryKey()), ((PrimaryKeyPosition<?>) dumperConfig.getPosition()).getEndValue());
     }
     
     protected abstract PreparedStatement createPreparedStatement(Connection connection, String sql) throws SQLException;

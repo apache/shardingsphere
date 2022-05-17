@@ -48,7 +48,7 @@ import java.util.Properties;
 
 public final class PipelineContextUtil {
     
-    private static final ExecuteEngine EXECUTE_ENGINE = ExecuteEngine.newCachedThreadInstance();
+    private static final ExecuteEngine EXECUTE_ENGINE = ExecuteEngine.newCachedThreadInstance(PipelineContextUtil.class.getSimpleName());
     
     private static final PipelineChannelCreator PIPELINE_CHANNEL_CREATOR = new MemoryPipelineChannelCreator();
     
@@ -62,7 +62,7 @@ public final class PipelineContextUtil {
             
             @Override
             protected ClusterPersistRepository initialize() {
-                return ClusterPersistRepositoryFactory.newInstance(PERSIST_REPOSITORY_CONFIG);
+                return ClusterPersistRepositoryFactory.getInstance(PERSIST_REPOSITORY_CONFIG);
             }
         };
     }

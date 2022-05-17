@@ -82,5 +82,11 @@ execute
     | dropPackage
     | dropEdition
     | dropOutline
+    | alterOutline
+    | alterAnalyticView
+    | alterAttributeDimension
+    | createSequence
+    | alterPackage
+    | createContext
     ) SEMI_?
     ;

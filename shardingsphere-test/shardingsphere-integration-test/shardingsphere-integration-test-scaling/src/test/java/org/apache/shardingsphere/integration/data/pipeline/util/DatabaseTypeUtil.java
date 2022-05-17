@@ -18,6 +18,9 @@
 package org.apache.shardingsphere.integration.data.pipeline.util;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 
 public final class DatabaseTypeUtil {
     
@@ -28,7 +31,7 @@ public final class DatabaseTypeUtil {
      * @return true if database type is MySQL, false otherwise
      */
     public static boolean isMySQL(final DatabaseType databaseType) {
-        return databaseType.getType().equals("MySQL");
+        return databaseType instanceof MySQLDatabaseType;
     }
     
     /**
@@ -38,6 +41,16 @@ public final class DatabaseTypeUtil {
      * @return true if database type is PostgreSQL, false otherwise
      */
     public static boolean isPostgreSQL(final DatabaseType databaseType) {
-        return databaseType.getType().equals("PostgreSQL");
+        return databaseType instanceof PostgreSQLDatabaseType;
+    }
+    
+    /**
+     * Check openGauss database type.
+     *
+     * @param databaseType database type
+     * @return true if database type is openGauss, false otherwise
+     */
+    public static boolean isOpenGauss(final DatabaseType databaseType) {
+        return databaseType instanceof OpenGaussDatabaseType;
     }
 }

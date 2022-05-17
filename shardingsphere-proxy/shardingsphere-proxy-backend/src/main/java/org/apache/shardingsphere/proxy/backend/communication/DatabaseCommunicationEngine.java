@@ -117,7 +117,7 @@ public abstract class DatabaseCommunicationEngine<T> {
         int columnCount = getColumnCount(executionContext, queryResultSample);
         List<QueryHeader> result = new ArrayList<>(columnCount);
         LazyInitializer<DataNodeContainedRule> dataNodeContainedRule = getDataNodeContainedRuleLazyInitializer(metaData);
-        QueryHeaderBuilderEngine queryHeaderBuilderEngine = new QueryHeaderBuilderEngine(metaData.getResource().getDatabaseType());
+        QueryHeaderBuilderEngine queryHeaderBuilderEngine = new QueryHeaderBuilderEngine(metaData.getFrontendDatabaseType());
         for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
             result.add(createQueryHeader(queryHeaderBuilderEngine, executionContext, queryResultSample, metaData, columnIndex, dataNodeContainedRule));
         }
@@ -153,7 +153,7 @@ public abstract class DatabaseCommunicationEngine<T> {
     
     protected MergedResult mergeQuery(final SQLStatementContext<?> sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
         MergeEngine mergeEngine = new MergeEngine(DefaultDatabase.LOGIC_NAME,
-                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(metaData.getDatabaseName()).getResource().getDatabaseType(),
+                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(metaData.getDatabase().getName()).getResource().getDatabaseType(),
                 metaData, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps(), metaData.getRuleMetaData().getRules());
         return mergeEngine.merge(queryResults, sqlStatementContext);
     }
@@ -225,7 +225,7 @@ public abstract class DatabaseCommunicationEngine<T> {
     }
     
     private boolean isLockedDatabase(final String databaseName) {
-        return ProxyContext.getInstance().getContextManager().getInstanceContext().getLockContext().isLockedDatabase(databaseName);
+        return ProxyContext.getInstance().getContextManager().getInstanceContext().getLockContext().isLocked(databaseName);
     }
     
     private void lockedWrite(final SQLStatement sqlStatement) {

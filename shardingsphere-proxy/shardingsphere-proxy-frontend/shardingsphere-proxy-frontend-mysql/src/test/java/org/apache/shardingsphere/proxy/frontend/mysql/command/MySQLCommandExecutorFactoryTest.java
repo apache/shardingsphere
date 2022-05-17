@@ -70,7 +70,6 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -109,6 +108,7 @@ public final class MySQLCommandExecutorFactoryTest {
         ShardingSphereMetaData result = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         when(result.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         when(result.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        when(result.getFrontendDatabaseType()).thenReturn(new MySQLDatabaseType());
         return result;
     }
     
@@ -168,12 +168,11 @@ public final class MySQLCommandExecutorFactoryTest {
     
     @Test
     public void assertNewInstanceWithComSetOption() throws SQLException {
-        assertTrue(MySQLCommandExecutorFactory.newInstance(MySQLCommandPacketType.COM_SET_OPTION, mock(MySQLComSetOptionPacket.class), connectionSession) instanceof MySQLComSetOptionExecutor);
+        assertThat(MySQLCommandExecutorFactory.newInstance(MySQLCommandPacketType.COM_SET_OPTION, mock(MySQLComSetOptionPacket.class), connectionSession), instanceOf(MySQLComSetOptionExecutor.class));
     }
     
     @Test
     public void assertNewInstanceWithUnsupportedCommand() throws SQLException {
-        assertThat(MySQLCommandExecutorFactory.newInstance(MySQLCommandPacketType.COM_REFRESH,
-                mock(CommandPacket.class), connectionSession), instanceOf(MySQLUnsupportedCommandExecutor.class));
+        assertThat(MySQLCommandExecutorFactory.newInstance(MySQLCommandPacketType.COM_REFRESH, mock(CommandPacket.class), connectionSession), instanceOf(MySQLUnsupportedCommandExecutor.class));
     }
 }

@@ -38,7 +38,7 @@ public final class DatabaseOperateBackendHandlerFactory {
      * 
      * @param sqlStatement SQL statement
      * @param connectionSession connection session
-     * @return database operate backend handler
+     * @return created instance
      * @throws SQLException SQL exception
      */
     public static TextProtocolBackendHandler newInstance(final SQLStatement sqlStatement, final ConnectionSession connectionSession) throws SQLException {

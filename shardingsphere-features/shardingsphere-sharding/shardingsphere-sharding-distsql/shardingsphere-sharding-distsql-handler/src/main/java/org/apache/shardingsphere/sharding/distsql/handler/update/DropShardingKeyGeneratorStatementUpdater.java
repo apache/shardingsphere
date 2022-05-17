@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sharding.distsql.handler.update;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateKeyGeneratorException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.KeyGeneratorInUsedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredKeyGeneratorMissedException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
@@ -31,7 +30,6 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingK
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -48,17 +46,10 @@ public final class DropShardingKeyGeneratorStatementUpdater implements RuleDefin
         if (null == currentRuleConfig && sqlStatement.isContainsExistClause()) {
             return;
         }
-        String databaseName = shardingSphereMetaData.getDatabaseName();
+        String databaseName = shardingSphereMetaData.getDatabase().getName();
         Collection<String> keyGeneratorNames = new LinkedList<>(sqlStatement.getKeyGeneratorNames());
-        checkDuplicate(databaseName, keyGeneratorNames);
         checkExist(databaseName, keyGeneratorNames, currentRuleConfig, sqlStatement);
         checkInUsed(databaseName, keyGeneratorNames, currentRuleConfig);
-    }
-    
-    private void checkDuplicate(final String databaseName, final Collection<String> keyGeneratorNames) throws DistSQLException {
-        Collection<String> duplicateNames = keyGeneratorNames.stream().collect(Collectors.groupingBy(each -> each, Collectors.counting())).entrySet().stream()
-                .filter(each -> each.getValue() > 1).map(Map.Entry::getKey).collect(Collectors.toSet());
-        DistSQLException.predictionThrow(duplicateNames.isEmpty(), () -> new DuplicateKeyGeneratorException("sharding", databaseName, duplicateNames));
     }
     
     private void checkExist(final String databaseName, final Collection<String> keyGeneratorNames, final ShardingRuleConfiguration currentRuleConfig,

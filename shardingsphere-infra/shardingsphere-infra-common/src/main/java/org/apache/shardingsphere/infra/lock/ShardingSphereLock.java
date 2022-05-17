@@ -32,7 +32,7 @@ public interface ShardingSphereLock {
     
     /**
      * Try to lock with time out.
-     * 
+     *
      * @param lockName lock name
      * @param timeoutMillis the maximum time in milliseconds to acquire lock
      * @return true if get the lock, false if not
@@ -41,7 +41,7 @@ public interface ShardingSphereLock {
     
     /**
      * Release lock.
-     * 
+     *
      * @param lockName lock name
      */
     void releaseLock(String lockName);
@@ -49,7 +49,8 @@ public interface ShardingSphereLock {
     /**
      * Check whether resource is locked in current instance.
      *
+     * @param lockName lock name
      * @return true if locked, false if not
      */
-    boolean isLocked();
+    boolean isLocked(String lockName);
 }

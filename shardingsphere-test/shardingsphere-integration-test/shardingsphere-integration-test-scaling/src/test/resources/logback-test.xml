@@ -29,7 +29,7 @@
         <appender-ref ref="console" />
     </logger>
     <logger name="com.zaxxer.hikari.pool.ProxyConnection" level="ERROR" />
-    <root level="WARN">
+    <root level="INFO">
         <appender-ref ref="console" />
     </root>
 </configuration> 

@@ -41,7 +41,7 @@ public final class AlterShardingBindingTableRulesStatementUpdater implements Rul
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final AlterShardingBindingTableRulesStatement sqlStatement,
                                   final ShardingRuleConfiguration currentRuleConfig) throws RuleDefinitionViolationException {
-        String databaseName = shardingSphereMetaData.getDatabaseName();
+        String databaseName = shardingSphereMetaData.getDatabase().getName();
         checkCurrentRuleConfiguration(databaseName, currentRuleConfig);
         checkToBeAlertedBindingTables(databaseName, sqlStatement, currentRuleConfig);
         checkToBeAlteredDuplicateBindingTables(databaseName, sqlStatement);
@@ -56,7 +56,7 @@ public final class AlterShardingBindingTableRulesStatementUpdater implements Rul
     private void checkToBeAlertedBindingTables(final String databaseName, final AlterShardingBindingTableRulesStatement sqlStatement,
                                                final ShardingRuleConfiguration currentRuleConfig) throws DuplicateRuleException {
         Collection<String> currentLogicTables = getCurrentLogicTables(currentRuleConfig);
-        Collection<String> notExistedBindingTables = sqlStatement.getBindingTables().stream().filter(each -> !currentLogicTables.contains(each)).collect(Collectors.toSet());
+        Collection<String> notExistedBindingTables = sqlStatement.getBindingTables().stream().filter(each -> !containsIgnoreCase(currentLogicTables, each)).collect(Collectors.toSet());
         if (!notExistedBindingTables.isEmpty()) {
             throw new DuplicateRuleException("binding", databaseName, notExistedBindingTables);
         }
@@ -71,10 +71,15 @@ public final class AlterShardingBindingTableRulesStatementUpdater implements Rul
     
     private void checkToBeAlteredDuplicateBindingTables(final String databaseName, final AlterShardingBindingTableRulesStatement sqlStatement) throws DuplicateRuleException {
         Collection<String> toBeAlteredBindingTables = new HashSet<>();
-        Collection<String> duplicateBindingTables = sqlStatement.getBindingTables().stream().filter(each -> !toBeAlteredBindingTables.add(each)).collect(Collectors.toSet());
-        if (!duplicateBindingTables.isEmpty()) {
-            throw new DuplicateRuleException("binding", databaseName, duplicateBindingTables);
+        Collection<String> duplicateBindingTables = sqlStatement.getBindingTables().stream().filter(each -> !toBeAlteredBindingTables.add(each.toLowerCase())).collect(Collectors.toSet());
+        Collection<String> duplicateBindingTablesForDisplay = sqlStatement.getBindingTables().stream().filter(each -> containsIgnoreCase(duplicateBindingTables, each)).collect(Collectors.toSet());
+        if (!duplicateBindingTablesForDisplay.isEmpty()) {
+            throw new DuplicateRuleException("binding", databaseName, duplicateBindingTablesForDisplay);
         }
+    }
+    
+    private static boolean containsIgnoreCase(final Collection<String> collection, final String str) {
+        return collection.stream().anyMatch(each -> each.equalsIgnoreCase(str));
     }
     
     @Override

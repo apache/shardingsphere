@@ -50,7 +50,7 @@ public final class RenameTableStatementSchemaRefresher implements MetaDataRefres
     @Override
     public void refresh(final ShardingSphereMetaData metaData, final FederationDatabaseMetaData database, final Map<String, OptimizerPlannerContext> optimizerPlanners,
                         final Collection<String> logicDataSourceNames, final String schemaName, final RenameTableStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
-        SchemaAlteredEvent event = new SchemaAlteredEvent(metaData.getDatabaseName(), schemaName);
+        SchemaAlteredEvent event = new SchemaAlteredEvent(metaData.getDatabase().getName(), schemaName);
         for (RenameTableDefinitionSegment each : sqlStatement.getRenameTables()) {
             String tableName = each.getTable().getTableName().getIdentifier().getValue();
             String renameTable = each.getRenameTable().getTableName().getIdentifier().getValue();
@@ -75,7 +75,7 @@ public final class RenameTableStatementSchemaRefresher implements MetaDataRefres
         if (!containsInImmutableDataNodeContainedRule(tableName, metaData)) {
             metaData.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.put(logicDataSourceNames.iterator().next(), schemaName, tableName));
         }
-        SchemaBuilderMaterials materials = new SchemaBuilderMaterials(
+        SchemaBuilderMaterials materials = new SchemaBuilderMaterials(metaData.getFrontendDatabaseType(),
                 metaData.getResource().getDatabaseType(), metaData.getResource().getDataSources(), metaData.getRuleMetaData().getRules(), props, schemaName);
         Map<String, SchemaMetaData> metaDataMap = TableMetaDataBuilder.load(Collections.singletonList(tableName), materials);
         Optional<TableMetaData> actualTableMetaData = Optional.ofNullable(metaDataMap.get(schemaName)).map(optional -> optional.getTables().get(tableName));

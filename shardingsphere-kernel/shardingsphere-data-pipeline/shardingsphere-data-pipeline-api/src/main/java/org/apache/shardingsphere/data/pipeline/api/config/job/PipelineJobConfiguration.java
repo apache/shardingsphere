@@ -35,11 +35,4 @@ public interface PipelineJobConfiguration {
      * @return database name
      */
     String getDatabaseName();
-    
-    /**
-     * Get job sharding item.
-     *
-     * @return job sharding item
-     */
-    Integer getJobShardingItem();
 }

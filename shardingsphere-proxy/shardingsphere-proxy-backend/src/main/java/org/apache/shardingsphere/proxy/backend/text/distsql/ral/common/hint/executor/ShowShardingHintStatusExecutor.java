@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.executor;
 
-import com.google.common.base.Joiner;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
@@ -98,12 +97,11 @@ public final class ShowShardingHintStatusExecutor extends AbstractHintQueryExecu
     }
     
     private List<Object> createRow(final ShowShardingHintStatusResult showShardingHintStatusResult) {
-        String shardingType = String.valueOf(HintManager.isDatabaseShardingOnly() ? HintShardingType.DATABASES_ONLY : HintShardingType.DATABASES_TABLES).toLowerCase();
         List<Object> result = new ArrayList<>(3);
         result.add(showShardingHintStatusResult.getLogicTable());
-        result.add(Joiner.on(",").join(showShardingHintStatusResult.getDatabaseShardingValues()));
-        result.add(Joiner.on(",").join(showShardingHintStatusResult.getTableShardingValues()));
-        result.add(shardingType);
+        result.add(String.join(",", showShardingHintStatusResult.getDatabaseShardingValues()));
+        result.add(String.join(",", showShardingHintStatusResult.getTableShardingValues()));
+        result.add(String.valueOf(HintManager.isDatabaseShardingOnly() ? HintShardingType.DATABASES_ONLY : HintShardingType.DATABASES_TABLES).toLowerCase());
         return result;
     }
 }

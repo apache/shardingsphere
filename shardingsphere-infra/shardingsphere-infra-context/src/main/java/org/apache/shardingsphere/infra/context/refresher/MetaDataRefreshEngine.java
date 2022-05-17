@@ -63,9 +63,9 @@ public final class MetaDataRefreshEngine {
         if (IGNORABLE_SQL_STATEMENT_CLASSES.contains(sqlStatementClass)) {
             return;
         }
-        Optional<MetaDataRefresher> schemaRefresher = MetaDataRefresherFactory.newInstance(sqlStatementClass);
+        Optional<MetaDataRefresher> schemaRefresher = MetaDataRefresherFactory.findInstance(sqlStatementClass);
         if (schemaRefresher.isPresent()) {
-            String schemaName = sqlStatementContext.getTablesContext().getSchemaName().orElseGet(() -> sqlStatementContext.getDatabaseType().getDefaultSchema(metaData.getDatabaseName()));
+            String schemaName = sqlStatementContext.getTablesContext().getSchemaName().orElseGet(() -> sqlStatementContext.getDatabaseType().getDefaultSchema(metaData.getDatabase().getName()));
             schemaRefresher.get().refresh(metaData, federationMetaData, optimizerPlanners, logicDataSourceNamesSupplier.get(), schemaName, sqlStatementContext.getSqlStatement(), props);
         } else {
             IGNORABLE_SQL_STATEMENT_CLASSES.add(sqlStatementClass);

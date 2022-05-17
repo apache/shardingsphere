@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissed
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -46,7 +47,7 @@ import static org.mockito.Mockito.mock;
 @RunWith(MockitoJUnitRunner.class)
 public final class DropEncryptRuleStatementUpdaterTest {
     
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereMetaData shardingSphereMetaData;
     
     private final DropEncryptRuleStatementUpdater updater = new DropEncryptRuleStatementUpdater();
@@ -92,16 +93,15 @@ public final class DropEncryptRuleStatementUpdaterTest {
     private EncryptRuleConfiguration createCurrentRuleConfiguration() {
         EncryptColumnRuleConfiguration columnRuleConfig = new EncryptColumnRuleConfiguration("user_id", "user_cipher", "", "user_plain", "t_encrypt_user_id_MD5");
         EncryptTableRuleConfiguration tableRuleConfig = new EncryptTableRuleConfiguration("t_encrypt", Collections.singleton(columnRuleConfig), null);
-        Map<String, ShardingSphereAlgorithmConfiguration> encryptors = new HashMap<>(1, 1);
-        encryptors.put("t_encrypt_user_id_MD5", new ShardingSphereAlgorithmConfiguration("TEST", new Properties()));
+        Map<String, ShardingSphereAlgorithmConfiguration> encryptors = new HashMap<>(
+                Collections.singletonMap("t_encrypt_user_id_MD5", new ShardingSphereAlgorithmConfiguration("TEST", new Properties())));
         return new EncryptRuleConfiguration(new LinkedList<>(Collections.singleton(tableRuleConfig)), encryptors, true);
     }
     
     private EncryptRuleConfiguration createCurrentRuleConfigurationWithMultipleTableRules() {
         EncryptColumnRuleConfiguration columnRuleConfig = new EncryptColumnRuleConfiguration("user_id", "user_cipher", "", "user_plain", "t_encrypt_user_id_MD5");
         EncryptTableRuleConfiguration tableRuleConfig = new EncryptTableRuleConfiguration("t_encrypt", Collections.singleton(columnRuleConfig), null);
-        Map<String, ShardingSphereAlgorithmConfiguration> encryptors = new HashMap<>(1, 1);
-        encryptors.put("t_encrypt_user_id_MD5", new ShardingSphereAlgorithmConfiguration("TEST", new Properties()));
+        Map<String, ShardingSphereAlgorithmConfiguration> encryptors = Collections.singletonMap("t_encrypt_user_id_MD5", new ShardingSphereAlgorithmConfiguration("TEST", new Properties()));
         return new EncryptRuleConfiguration(new LinkedList<>(Arrays.asList(tableRuleConfig,
                 new EncryptTableRuleConfiguration("t_encrypt_another", Collections.singleton(columnRuleConfig), null))), encryptors, true);
     }

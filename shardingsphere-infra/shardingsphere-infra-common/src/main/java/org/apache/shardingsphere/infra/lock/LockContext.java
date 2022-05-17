@@ -32,19 +32,35 @@ public interface LockContext {
     void initLockState(InstanceContext instanceContext);
     
     /**
-     * Try lock write database.
+     * Get or create mutex lock.
+     *
+     * @return mutex lock
+     */
+    ShardingSphereLock getMutexLock();
+    
+    /**
+     * Lock write for database.
      *
      * @param databaseName database name
-     * @return is write locked or not
+     * @return is locked or not
      */
-    boolean tryLockWriteDatabase(String databaseName);
+    boolean lockWrite(String databaseName);
+    
+    /**
+     * Lock write for database.
+     *
+     * @param databaseName database name
+     * @param timeoutMilliseconds timeout milliseconds
+     * @return is locked or not
+     */
+    boolean tryLockWrite(String databaseName, long timeoutMilliseconds);
     
     /**
      * Release lock write of database.
      *
      * @param databaseName database name
      */
-    void releaseLockWriteDatabase(String databaseName);
+    void releaseLockWrite(String databaseName);
     
     /**
      *  Is locked database.
@@ -52,21 +68,5 @@ public interface LockContext {
      * @param databaseName database name
      * @return is locked database or not
      */
-    boolean isLockedDatabase(String databaseName);
-    
-    /**
-     * Get or create global lock.
-     *
-     * @param lockName lock name
-     * @return global lock
-     */
-    ShardingSphereLock getGlobalLock(String lockName);
-    
-    /**
-     * Get or create standard lock.
-     *
-     * @param lockName lock name
-     * @return standard lock
-     */
-    ShardingSphereLock getStandardLock(String lockName);
+    boolean isLocked(String databaseName);
 }

@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -54,6 +54,6 @@ public final class TestStatementContext implements SQLStatementContext<SQLStatem
     
     @Override
     public DatabaseType getDatabaseType() {
-        return DatabaseTypeRegistry.getDefaultDatabaseType();
+        return DatabaseTypeEngine.getDatabaseType("MySQL");
     }
 }

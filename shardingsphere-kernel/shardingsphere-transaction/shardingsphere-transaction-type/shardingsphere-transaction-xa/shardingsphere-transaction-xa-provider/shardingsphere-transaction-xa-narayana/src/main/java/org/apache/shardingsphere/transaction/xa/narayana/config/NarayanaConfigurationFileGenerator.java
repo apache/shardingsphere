@@ -27,7 +27,7 @@ import com.arjuna.ats.internal.jta.recovery.arjunacore.JTATransactionLogXAResour
 import com.arjuna.ats.internal.jta.recovery.arjunacore.XARecoveryModule;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRecognizer;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
@@ -165,7 +165,7 @@ public final class NarayanaConfigurationFileGenerator implements TransactionConf
             return;
         }
         DataSourcePoolMetaDataReflection dataSourcePoolMetaDataReflection = new DataSourcePoolMetaDataReflection(dataSource.get(),
-                DataSourcePoolMetaDataFactory.newInstance(dataSource.get().getClass().getName()).map(DataSourcePoolMetaData::getFieldMetaData).orElseGet(DefaultDataSourcePoolFieldMetaData::new));
+                DataSourcePoolMetaDataFactory.findInstance(dataSource.get().getClass().getName()).map(DataSourcePoolMetaData::getFieldMetaData).orElseGet(DefaultDataSourcePoolFieldMetaData::new));
         String jdbcUrl = dataSourcePoolMetaDataReflection.getJdbcUrl();
         int endIndex = jdbcUrl.indexOf("?");
         jdbcUrl = -1 == endIndex ? jdbcUrl : jdbcUrl.substring(0, endIndex);
@@ -176,7 +176,7 @@ public final class NarayanaConfigurationFileGenerator implements TransactionConf
     }
     
     private String getDataSourceClassNameByJdbcUrl(final String jdbcUrl) {
-        DatabaseType type = DatabaseTypeRecognizer.getDatabaseType(jdbcUrl);
+        DatabaseType type = DatabaseTypeEngine.getDatabaseType(jdbcUrl);
         if (type instanceof MySQLDatabaseType || type instanceof OpenGaussDatabaseType || type instanceof PostgreSQLDatabaseType) {
             if (type.getDataSourceClassName().isPresent()) {
                 return type.getDataSourceClassName().get();

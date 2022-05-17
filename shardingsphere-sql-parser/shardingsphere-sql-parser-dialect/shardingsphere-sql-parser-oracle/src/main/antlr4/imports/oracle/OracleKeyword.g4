@@ -2714,3 +2714,51 @@ SINGLE_C
 SYSTIMESTAMP
     : S Y S T I M E S T A M P
     ;
+
+CATEGORY
+    : C A T E G O R Y
+    ;
+
+ORDER
+    : O R D E R
+    ;
+
+NOKEEP
+    : N O K E E P
+    ;
+
+SCALE
+    : S C A L E
+    ;
+
+NOSCALE
+    : N O S C A L E
+    ;
+
+EXTEND
+    : E X T E N D
+    ;
+
+NOEXTEND
+    : N O E X T E N D
+    ;
+
+NOSHARD
+    : N O S H A R D
+    ;
+
+INITIALIZED
+    : I N I T I A L I Z E D
+    ;
+
+EXTERNALLY
+    : E X T E R N A L L Y
+    ;
+
+GLOBALLY
+    : G L O B A L L Y
+    ;
+
+ACCESSED
+    : A C C E S S E D
+    ;

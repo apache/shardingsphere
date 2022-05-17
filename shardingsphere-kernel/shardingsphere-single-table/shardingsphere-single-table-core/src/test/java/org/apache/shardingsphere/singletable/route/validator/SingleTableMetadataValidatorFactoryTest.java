@@ -18,38 +18,22 @@
 package org.apache.shardingsphere.singletable.route.validator;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropSchemaStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLDropSchemaStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerDropSchemaStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropSchemaStatement;
 import org.junit.Test;
 
-import java.util.Optional;
-
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 public final class SingleTableMetadataValidatorFactoryTest {
     
     @Test
-    @SuppressWarnings("rawtypes")
-    public void assertNewInstanceForPostgreSQL() {
-        SQLStatement statement = new PostgreSQLDropSchemaStatement();
-        Optional<SingleTableMetadataValidator> actual = SingleTableMetadataValidatorFactory.newInstance(statement);
-        assertTrue(actual.isPresent());
+    public void assertNewInstanceForDropSchemaStatement() {
+        assertTrue(SingleTableMetadataValidatorFactory.newInstance(mock(DropSchemaStatement.class)).isPresent());
     }
     
     @Test
-    @SuppressWarnings("rawtypes")
-    public void assertNewInstanceForSQLServer() {
-        SQLStatement statement = new SQLServerDropSchemaStatement();
-        Optional<SingleTableMetadataValidator> actual = SingleTableMetadataValidatorFactory.newInstance(statement);
-        assertTrue(actual.isPresent());
-    }
-    
-    @Test
-    @SuppressWarnings("rawtypes")
-    public void assertNewInstanceForOpenGauss() {
-        SQLStatement statement = new OpenGaussDropSchemaStatement();
-        Optional<SingleTableMetadataValidator> actual = SingleTableMetadataValidatorFactory.newInstance(statement);
-        assertTrue(actual.isPresent());
+    public void assertNewInstanceForNotDropSchemaStatement() {
+        assertFalse(SingleTableMetadataValidatorFactory.newInstance(mock(SQLStatement.class)).isPresent());
     }
 }

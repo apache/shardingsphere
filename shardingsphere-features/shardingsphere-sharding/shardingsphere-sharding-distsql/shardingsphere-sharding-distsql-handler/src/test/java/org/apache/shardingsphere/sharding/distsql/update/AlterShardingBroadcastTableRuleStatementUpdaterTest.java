@@ -26,6 +26,7 @@ import org.junit.Test;
 
 import java.util.Collections;
 
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
 public final class AlterShardingBroadcastTableRuleStatementUpdaterTest {
@@ -34,7 +35,7 @@ public final class AlterShardingBroadcastTableRuleStatementUpdaterTest {
     
     @Test(expected = RequiredRuleMissedException.class)
     public void assertCheckSQLStatementWithoutCurrentRule() throws RuleDefinitionViolationException {
-        updater.checkSQLStatement(mock(ShardingSphereMetaData.class), createSQLStatement(), null);
+        updater.checkSQLStatement(mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS), createSQLStatement(), null);
     }
     
     private AlterShardingBroadcastTableRulesStatement createSQLStatement() {

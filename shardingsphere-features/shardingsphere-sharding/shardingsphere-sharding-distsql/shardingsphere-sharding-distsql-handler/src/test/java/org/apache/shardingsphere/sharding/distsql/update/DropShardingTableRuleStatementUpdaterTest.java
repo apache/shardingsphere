@@ -32,6 +32,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Tab
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -48,7 +49,7 @@ import static org.junit.Assert.assertTrue;
 @RunWith(MockitoJUnitRunner.class)
 public final class DropShardingTableRuleStatementUpdaterTest {
     
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereMetaData shardingSphereMetaData;
     
     private final DropShardingTableRuleStatementUpdater updater = new DropShardingTableRuleStatementUpdater();
@@ -76,9 +77,17 @@ public final class DropShardingTableRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertDropRule() {
+    public void assertUpdate() {
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         updater.updateCurrentRuleConfiguration(createSQLStatement("t_order"), currentRuleConfig);
+        assertFalse(getShardingTables(currentRuleConfig).contains("t_order"));
+        assertTrue(getBindingTables(currentRuleConfig).contains("t_order_item"));
+    }
+    
+    @Test
+    public void assertUpdateWithDifferentCase() {
+        ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
+        updater.updateCurrentRuleConfiguration(createSQLStatement("T_ORDER"), currentRuleConfig);
         assertFalse(getShardingTables(currentRuleConfig).contains("t_order"));
         assertTrue(getBindingTables(currentRuleConfig).contains("t_order_item"));
     }

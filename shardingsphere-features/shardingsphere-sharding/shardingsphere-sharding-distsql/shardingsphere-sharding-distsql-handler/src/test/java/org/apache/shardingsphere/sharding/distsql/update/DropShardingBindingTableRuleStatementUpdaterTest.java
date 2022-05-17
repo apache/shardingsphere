@@ -28,6 +28,7 @@ import org.apache.shardingsphere.sharding.distsql.parser.segment.BindingTableRul
 import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingBindingTableRulesStatement;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -44,7 +45,7 @@ import static org.junit.Assert.assertTrue;
 @RunWith(MockitoJUnitRunner.class)
 public final class DropShardingBindingTableRuleStatementUpdaterTest {
     
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereMetaData shardingSphereMetaData;
     
     private final DropShardingBindingTableRuleStatementUpdater updater = new DropShardingBindingTableRuleStatementUpdater();
@@ -65,12 +66,6 @@ public final class DropShardingBindingTableRuleStatementUpdaterTest {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.setBindingTableGroups(Collections.singletonList("t_3,t_4"));
         updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(true, "t_1,t_2"), shardingRuleConfig);
-    }
-    
-    @Test(expected = RequiredRuleMissedException.class)
-    public void assertCheckSQLStatementIsNotTheSame() throws DistSQLException {
-        ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement("t"), currentRuleConfig);
     }
     
     @Test
@@ -106,10 +101,22 @@ public final class DropShardingBindingTableRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertDropWrongOrderRulesCurrentRuleConfiguration() throws DistSQLException {
+    public void assertDropRulesCurrentRuleConfigurationWithNoOrder() throws DistSQLException {
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         currentRuleConfig.getBindingTableGroups().add("t_1,t_2,t_3");
         DropShardingBindingTableRulesStatement sqlStatement = createSQLStatement("t_3,t_2,t_1");
+        updater.checkSQLStatement(shardingSphereMetaData, sqlStatement, currentRuleConfig);
+        updater.updateCurrentRuleConfiguration(sqlStatement, currentRuleConfig);
+        assertThat(currentRuleConfig.getBindingTableGroups().size(), is(1));
+        assertTrue(currentRuleConfig.getBindingTableGroups().contains("t_order,t_order_item"));
+        assertFalse(currentRuleConfig.getBindingTableGroups().contains("t_1,t_2,t_3"));
+    }
+    
+    @Test
+    public void assertDropRulesCurrentRuleConfigurationWithDifferentCase() throws DistSQLException {
+        ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
+        currentRuleConfig.getBindingTableGroups().add("t_1,t_2,t_3");
+        DropShardingBindingTableRulesStatement sqlStatement = createSQLStatement("T_3,T_2,T_1");
         updater.checkSQLStatement(shardingSphereMetaData, sqlStatement, currentRuleConfig);
         updater.updateCurrentRuleConfiguration(sqlStatement, currentRuleConfig);
         assertThat(currentRuleConfig.getBindingTableGroups().size(), is(1));
