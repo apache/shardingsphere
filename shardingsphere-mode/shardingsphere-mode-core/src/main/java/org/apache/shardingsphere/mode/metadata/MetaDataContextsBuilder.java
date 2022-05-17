@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.metadata;
 
-import lombok.Getter;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
@@ -49,24 +48,24 @@ import java.util.Map.Entry;
  */
 public final class MetaDataContextsBuilder {
     
-    private final Map<String, DatabaseConfiguration> databaseConfigMap = new LinkedHashMap<>();
+    private final Map<String, DatabaseConfiguration> databaseConfigMap;
     
     private final Map<String, Collection<ShardingSphereRule>> databaseRulesMap = new LinkedHashMap<>();
     
-    @Getter
     private final Map<String, ShardingSphereDatabase> databaseMap = new LinkedHashMap<>();
     
     private final Collection<RuleConfiguration> globalRuleConfigs;
     
     private final ConfigurationProperties props;
     
-    public MetaDataContextsBuilder(final Map<String, ? extends DatabaseConfiguration> databaseConfigMap,
+    public MetaDataContextsBuilder(final Map<String, DatabaseConfiguration> databaseConfigMap,
                                    final Collection<RuleConfiguration> globalRuleConfigs, final ConfigurationProperties props) throws SQLException {
+        this.databaseConfigMap = databaseConfigMap;
         this.globalRuleConfigs = globalRuleConfigs;
         this.props = props;
         DatabaseType frontendDatabaseType = DatabaseTypeEngine.getFrontendDatabaseType(databaseConfigMap, props);
         DatabaseType backendDatabaseType = DatabaseTypeEngine.getBackendDatabaseType(databaseConfigMap);
-        for (Entry<String, ? extends DatabaseConfiguration> entry : databaseConfigMap.entrySet()) {
+        for (Entry<String, DatabaseConfiguration> entry : databaseConfigMap.entrySet()) {
             if (!frontendDatabaseType.getSystemSchemas().contains(entry.getKey())) {
                 addDatabase(entry.getKey(), frontendDatabaseType, backendDatabaseType, entry.getValue());
             }
@@ -78,7 +77,6 @@ public final class MetaDataContextsBuilder {
                              final DatabaseConfiguration databaseConfig) throws SQLException {
         Collection<ShardingSphereRule> databaseRules = SchemaRulesBuilder.buildRules(databaseName, databaseConfig, props);
         ShardingSphereDatabase database = DatabaseLoader.load(databaseName, frontendDatabaseType, backendDatabaseType, databaseConfig.getDataSources(), databaseRules, props);
-        databaseConfigMap.put(databaseName, databaseConfig);
         databaseRulesMap.put(databaseName, databaseRules);
         databaseMap.put(databaseName, database);
     }
