@@ -13,7 +13,7 @@ Please register [here](https://github.com/apache/shardingsphere/discussions/1225
 
 ## Who is Using ShardingSphere?
 
-Total: 194 companies.
+Total: 201 companies.
 
 ### Infra Software
 <ul>
@@ -119,6 +119,9 @@ Total: 194 companies.
     <li><a href="https://www.zego.im/" rel="nofollow">ZEGO</a></li>
     <li><a href="http://www.sdjictec.com" rel="nofollow">Sdjic Tec</a></li>
     <li><a href="https://www.baozun.com/" rel="nofollow">BAO ZUN</a></li>
+    <li><a href="https://www.maxrocky.com/" rel="nofollow">Max Rocky</a></li>
+    <li><a href="https://www.teddymobile.cn/" rel="nofollow">Teddy Mobile</a></li>
+    <li><a href="https://www.ecopiatech.com/" rel="nofollow">Ecopia</a></li>
 </ul>
 
 ### Transportation
@@ -190,6 +193,7 @@ Total: 194 companies.
     <li><a href="http://www.swydedu.com/" rel="nofollow">swydEdu</a></li>
     <li><a href="https://www.codemao.cn/" rel="nofollow">Dianmao</a></li>
     <li><a href="https://www.yxt.com/" rel="nofollow">YunXueTang</a></li>
+    <li><a href="https://www.weixiaotong.com.cn/" rel="nofollow">Wei Xiao Tong</a></li>
 </ul>
 
 ### News
@@ -243,7 +247,8 @@ Total: 194 companies.
 
 ### Manufacturing
 <ul>
-    <li><a href="https://www.lixiang.com" rel="nofollow">LiXiang</a></li>
+    <li><a href="https://www.lixiang.com/" rel="nofollow">LiXiang</a></li>
+    <li><a href="https://en.tanksuv.com/" rel="nofollow">Tank SUV</a></li>
     <li><a href="https://www.gongniu.cn/" rel="nofollow">Bull</a></li>
 </ul>
 
@@ -291,6 +296,12 @@ Total: 194 companies.
     <li><a href="http://www.huxleymedical.tech/" rel="nofollow">Hualian Medical</a></li>
     <li><a href="https://www.xingren.com/" rel="nofollow">xingren</a></li>
     <li><a href="https://www.medbanks.cn/" rel="nofollow">Medbanks</a></li>
+    <li><a href="http://swifthealth.cn/" rel="nofollow">CHAOQIANKEJI</a></li>
+</ul>
+
+### Recruitment
+<ul>
+    <li><a href="https://hireez.com/" rel="nofollow">hireEZ</a></li>
 </ul>
 
 <img src="https://shardingsphere.apache.org/community/image/powered-by.png" width = "30%" height = "30%" align="right" alt="Powered By ShardingSphere" />

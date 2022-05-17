@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseT
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.resource.CachedDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
@@ -95,17 +96,17 @@ public final class SelectDatabaseExecutorTest {
     }
     
     private ShardingSphereMetaData getMetaData() throws SQLException {
-        return new ShardingSphereMetaData("sharding_db", new PostgreSQLDatabaseType(),
+        return new ShardingSphereMetaData(new PostgreSQLDatabaseType(),
                 new ShardingSphereResource(mockDatasourceMap(), mockDataSourcesMetaData(), mock(CachedDatabaseMetaData.class), new PostgreSQLDatabaseType()),
-                mock(ShardingSphereRuleMetaData.class), Collections.emptyMap());
+                mock(ShardingSphereRuleMetaData.class), new ShardingSphereDatabase("sharding_db", Collections.emptyMap()));
     }
     
     private ShardingSphereMetaData getEmptyMetaData(final String schemaName) {
         ShardingSphereRuleMetaData metaData = mock(ShardingSphereRuleMetaData.class);
         when(metaData.getRules()).thenReturn(Collections.emptyList());
-        return new ShardingSphereMetaData(schemaName, new PostgreSQLDatabaseType(),
+        return new ShardingSphereMetaData(new PostgreSQLDatabaseType(),
                 new ShardingSphereResource(Collections.emptyMap(), mockDataSourcesMetaData(), mock(CachedDatabaseMetaData.class), new PostgreSQLDatabaseType()),
-                metaData, Collections.emptyMap());
+                metaData, new ShardingSphereDatabase(schemaName, Collections.emptyMap()));
     }
     
     private Map<String, DataSource> mockDatasourceMap() throws SQLException {

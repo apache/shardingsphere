@@ -17,15 +17,6 @@ The migration scene we support:
 | PostgreSQL(9.4 ~ )         | PostgreSQL(9.4 ~ )      |
 | openGauss(2.1.0)           | openGauss(2.1.0)        |
 
-**Attention**: 
-
-If the backend database is in following table, please download JDBC driver jar and put it into `${shardingsphere-proxy}/lib` directory.
-
-| RDBMS                 | JDBC driver                          | Reference            |
-| --------------------- | ------------------------------------ | -------------------- |
-| MySQL                 | [mysql-connector-java-5.1.47.jar]( https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.47/mysql-connector-java-5.1.47.jar ) | [Connector/J Versions]( https://dev.mysql.com/doc/connector-j/5.1/en/connector-j-versions.html ) |
-| openGauss             | [opengauss-jdbc-2.0.1-compatibility.jar]( https://repo1.maven.org/maven2/org/opengauss/opengauss-jdbc/2.0.1-compatibility/opengauss-jdbc-2.0.1-compatibility.jar ) | |
-
 Supported features:
 
 | Feature                                  | MySQL         | PostgreSQL    | openGauss     |
@@ -100,6 +91,7 @@ Configuration Example of `postgresql.conf`:
 ```
 wal_level = logical
 max_replication_slots = 10
+max_connections = 600
 ```
 
 Please refer to [Write Ahead Log](https://www.postgresql.org/docs/9.6/runtime-config-wal.html) and [Replication](https://www.postgresql.org/docs/9.6/runtime-config-replication.html ) for more details.

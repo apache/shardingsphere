@@ -30,6 +30,7 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidRuleConfigu
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -39,7 +40,7 @@ import java.util.Properties;
 @RunWith(MockitoJUnitRunner.class)
 public final class CreateEncryptRuleStatementUpdaterTest {
     
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereMetaData shardingSphereMetaData;
     
     private final CreateEncryptRuleStatementUpdater updater = new CreateEncryptRuleStatementUpdater();

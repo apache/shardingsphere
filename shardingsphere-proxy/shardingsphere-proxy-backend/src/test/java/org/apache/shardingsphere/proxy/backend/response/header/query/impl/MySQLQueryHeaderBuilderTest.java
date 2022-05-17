@@ -108,7 +108,7 @@ public final class MySQLQueryHeaderBuilderTest {
         ShardingRule shardingRule = mock(ShardingRule.class);
         when(shardingRule.findLogicTableByActualTable("t_order")).thenReturn(Optional.of("t_logic_order"));
         when(result.getRuleMetaData().getRules()).thenReturn(Collections.singletonList(shardingRule));
-        when(result.getDatabaseName()).thenReturn(DefaultDatabase.LOGIC_NAME);
+        when(result.getDatabase().getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         return result;
     }
     

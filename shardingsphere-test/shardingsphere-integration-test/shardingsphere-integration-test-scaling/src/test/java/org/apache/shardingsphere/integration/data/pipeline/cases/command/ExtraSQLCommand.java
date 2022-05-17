@@ -38,21 +38,6 @@ public final class ExtraSQLCommand {
     @XmlElement(name = "full-insert-order")
     private String fullInsertOrder;
     
-    @XmlElement(name = "insert-order")
-    private String insertOrder;
-    
-    @XmlElement(name = "insert-order-item")
-    private String insertOrderItem;
-    
-    @XmlElement(name = "update-order-by-id")
-    private String updateOrderById;
-    
-    @XmlElement(name = "update-order-item-by-id")
-    private String updateOrderItemById;
-    
-    @XmlElement(name = "delete-order-by-id")
-    private String deleteOrderById;
-    
-    @XmlElement(name = "delete-order-item-by-id")
-    private String deleteOrderItemById;
+    @XmlElement(name = "full-insert-order-item")
+    private String fullInsertOrderItem;
 }

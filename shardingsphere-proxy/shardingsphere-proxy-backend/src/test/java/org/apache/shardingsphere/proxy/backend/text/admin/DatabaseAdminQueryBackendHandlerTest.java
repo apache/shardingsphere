@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.text.admin;
 
-import com.google.common.collect.Lists;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
@@ -43,6 +42,7 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
@@ -75,7 +75,7 @@ public final class DatabaseAdminQueryBackendHandlerTest {
         ProxyContext.getInstance().init(contextManager);
         when(connectionSession.getDatabaseName()).thenReturn("db");
         SelectTableExecutor executor = mock(SelectTableExecutor.class, RETURNS_DEEP_STUBS);
-        MergedResult mergedResult = new SingleLocalDataMergedResult(Lists.newArrayList("demo_ds_0", "demo_ds_1"));
+        MergedResult mergedResult = new SingleLocalDataMergedResult(Arrays.asList("demo_ds_0", "demo_ds_1"));
         when(executor.getMergedResult()).thenReturn(mergedResult);
         when(executor.getQueryResultMetaData().getColumnCount()).thenReturn(1);
         handler = new DatabaseAdminQueryBackendHandler(connectionSession, executor);
@@ -83,7 +83,7 @@ public final class DatabaseAdminQueryBackendHandlerTest {
     
     private Map<String, ShardingSphereMetaData> getMetaDataMap() {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        when(metaData.getDatabaseName()).thenReturn("db");
+        when(metaData.getDatabase().getName()).thenReturn("db");
         when(metaData.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
         when(metaData.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         return Collections.singletonMap("db", metaData);

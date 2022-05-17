@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.executor.kernel;
 
-import com.google.common.util.concurrent.ListenableFuture;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
@@ -34,6 +33,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 /**
  * Executor engine.
@@ -127,7 +127,7 @@ public final class ExecutorEngine implements AutoCloseable {
     
     private <I, O> List<O> parallelExecute(final Iterator<ExecutionGroup<I>> executionGroups, final ExecutorCallback<I, O> firstCallback, final ExecutorCallback<I, O> callback) throws SQLException {
         ExecutionGroup<I> firstInputs = executionGroups.next();
-        Collection<ListenableFuture<Collection<O>>> restResultFutures = asyncExecute(executionGroups, callback);
+        Collection<Future<Collection<O>>> restResultFutures = asyncExecute(executionGroups, callback);
         return getGroupResults(syncExecute(firstInputs, null == firstCallback ? callback : firstCallback), restResultFutures);
     }
     
@@ -135,22 +135,22 @@ public final class ExecutorEngine implements AutoCloseable {
         return callback.execute(executionGroup.getInputs(), true, ExecutorDataMap.getValue());
     }
     
-    private <I, O> Collection<ListenableFuture<Collection<O>>> asyncExecute(final Iterator<ExecutionGroup<I>> executionGroups, final ExecutorCallback<I, O> callback) {
-        Collection<ListenableFuture<Collection<O>>> result = new LinkedList<>();
+    private <I, O> Collection<Future<Collection<O>>> asyncExecute(final Iterator<ExecutionGroup<I>> executionGroups, final ExecutorCallback<I, O> callback) {
+        Collection<Future<Collection<O>>> result = new LinkedList<>();
         while (executionGroups.hasNext()) {
             result.add(asyncExecute(executionGroups.next(), callback));
         }
         return result;
     }
     
-    private <I, O> ListenableFuture<Collection<O>> asyncExecute(final ExecutionGroup<I> executionGroup, final ExecutorCallback<I, O> callback) {
+    private <I, O> Future<Collection<O>> asyncExecute(final ExecutionGroup<I> executionGroup, final ExecutorCallback<I, O> callback) {
         Map<String, Object> dataMap = ExecutorDataMap.getValue();
         return executorServiceManager.getExecutorService().submit(() -> callback.execute(executionGroup.getInputs(), false, dataMap));
     }
     
-    private <O> List<O> getGroupResults(final Collection<O> firstResults, final Collection<ListenableFuture<Collection<O>>> restFutures) throws SQLException {
+    private <O> List<O> getGroupResults(final Collection<O> firstResults, final Collection<Future<Collection<O>>> restFutures) throws SQLException {
         List<O> result = new LinkedList<>(firstResults);
-        for (ListenableFuture<Collection<O>> each : restFutures) {
+        for (Future<Collection<O>> each : restFutures) {
             try {
                 result.addAll(each.get());
             } catch (final InterruptedException | ExecutionException ex) {

@@ -17,14 +17,15 @@
 
 package org.apache.shardingsphere.proxy.backend.text.admin.mysql;
 
-import com.google.common.collect.Sets;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.AbstractDatabaseMetadataExecutor.DefaultDatabaseMetadataExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.information.SelectInformationSchemataExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Optional;
 
 /**
@@ -34,7 +35,7 @@ public final class MySQLInformationSchemaExecutorFactory {
     
     public static final String SCHEMATA_TABLE = "SCHEMATA";
     
-    public static final Collection<String> DEFAULT_EXECUTOR_TABLES = Sets.newHashSet("ENGINES", "FILES", "VIEWS", "TRIGGERS", "PARTITIONS");
+    public static final Collection<String> DEFAULT_EXECUTOR_TABLES = new HashSet<>(Arrays.asList("ENGINES", "FILES", "VIEWS", "TRIGGERS", "PARTITIONS"));
     
     /**
      * Create executor.

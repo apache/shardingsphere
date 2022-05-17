@@ -29,14 +29,12 @@ import java.util.concurrent.ConcurrentHashMap;
 @Getter
 public final class ShardingSphereDatabase {
     
+    private final String name;
+    
     private final Map<String, ShardingSphereSchema> schemas;
     
-    @SuppressWarnings("CollectionWithoutInitialCapacity")
-    public ShardingSphereDatabase() {
-        schemas = new ConcurrentHashMap<>();
-    }
-    
-    public ShardingSphereDatabase(final Map<String, ShardingSphereSchema> schemas) {
+    public ShardingSphereDatabase(final String name, final Map<String, ShardingSphereSchema> schemas) {
+        this.name = name;
         this.schemas = new ConcurrentHashMap<>(schemas.size(), 1);
         schemas.forEach((key, value) -> this.schemas.put(key.toLowerCase(), value));
     }

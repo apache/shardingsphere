@@ -40,7 +40,7 @@ public final class ShardingCreateTableStatementValidator extends ShardingDDLStat
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<CreateTableStatement> sqlStatementContext,
                             final List<Object> parameters, final ShardingSphereMetaData metaData) {
         if (!CreateTableStatementHandler.containsNotExistClause(sqlStatementContext.getSqlStatement())) {
-            String defaultSchema = sqlStatementContext.getDatabaseType().getDefaultSchema(metaData.getDatabaseName());
+            String defaultSchema = sqlStatementContext.getDatabaseType().getDefaultSchema(metaData.getDatabase().getName());
             ShardingSphereSchema schema = sqlStatementContext.getTablesContext().getSchemaName().map(metaData::getSchemaByName).orElseGet(() -> metaData.getSchemaByName(defaultSchema));
             validateTableNotExist(schema, Collections.singletonList(sqlStatementContext.getSqlStatement().getTable()));
         }

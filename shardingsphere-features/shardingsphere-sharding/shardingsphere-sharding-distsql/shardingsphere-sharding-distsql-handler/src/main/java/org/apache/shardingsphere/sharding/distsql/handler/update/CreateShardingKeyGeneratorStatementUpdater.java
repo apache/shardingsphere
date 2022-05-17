@@ -43,7 +43,7 @@ public final class CreateShardingKeyGeneratorStatementUpdater implements RuleDef
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final CreateShardingKeyGeneratorStatement sqlStatement,
                                   final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        checkDuplicate(shardingSphereMetaData.getDatabaseName(), sqlStatement, currentRuleConfig);
+        checkDuplicate(shardingSphereMetaData.getDatabase().getName(), sqlStatement, currentRuleConfig);
         checkKeyGeneratorAlgorithm(sqlStatement);
     }
     

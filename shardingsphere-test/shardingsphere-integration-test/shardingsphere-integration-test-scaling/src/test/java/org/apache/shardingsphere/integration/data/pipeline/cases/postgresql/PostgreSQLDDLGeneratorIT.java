@@ -52,9 +52,9 @@ import static org.junit.Assert.assertThat;
 @RunWith(Parameterized.class)
 public final class PostgreSQLDDLGeneratorIT {
     
-    private static final String CASE_FILE_PATH = "/ddlgenerator.xml";
+    private static final String CASE_FILE_PATH = "ddlgenerator.xml";
     
-    private static final String PARENT_PATH = "env/scenario/manual/postgresql/ddlgenerator";
+    private static final String PARENT_PATH = "env/scenario/ddlgenerator/postgresql";
     
     private static final String DEFAULT_SCHEMA = "public";
     
@@ -70,7 +70,7 @@ public final class PostgreSQLDDLGeneratorIT {
     
     public PostgreSQLDDLGeneratorIT(final ScalingParameterized parameterized) {
         this.parameterized = parameterized;
-        this.rootEntity = JAXB.unmarshal(Objects.requireNonNull(PostgreSQLDDLGeneratorIT.class.getClassLoader().getResource(parameterized.getParentPath() + CASE_FILE_PATH)),
+        this.rootEntity = JAXB.unmarshal(Objects.requireNonNull(PostgreSQLDDLGeneratorIT.class.getClassLoader().getResource(parameterized.getScenario())),
                 DDLGeneratorAssertionsRootEntity.class);
         this.dockerDatabaseContainer = DatabaseContainerFactory.newInstance(parameterized.getDatabaseType(), parameterized.getDockerImageName());
         dockerDatabaseContainer.start();
@@ -80,10 +80,9 @@ public final class PostgreSQLDDLGeneratorIT {
     public static Collection<ScalingParameterized> getParameters() {
         Collection<ScalingParameterized> result = new LinkedList<>();
         for (String each : ENV.getPostgresVersions()) {
-            if (Strings.isNullOrEmpty(each)) {
-                continue;
+            if (!Strings.isNullOrEmpty(each)) {
+                result.add(new ScalingParameterized(new PostgreSQLDatabaseType(), each, String.join("/", PARENT_PATH, CASE_FILE_PATH)));
             }
-            result.add(new ScalingParameterized(new PostgreSQLDatabaseType(), each, PARENT_PATH));
         }
         return result;
     }

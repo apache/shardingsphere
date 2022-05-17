@@ -33,5 +33,14 @@ public final class InputOrOutputSegment implements ASTNode {
     
     private final Integer batchSize;
     
+    private final Integer shardingSize;
+    
     private final AlgorithmSegment rateLimiter;
+    
+    public InputOrOutputSegment(final Integer workerThread, final Integer batchSize, final AlgorithmSegment rateLimiter) {
+        this.workerThread = workerThread;
+        this.batchSize = batchSize;
+        this.shardingSize = 1000_0000;
+        this.rateLimiter = rateLimiter;
+    }
 }

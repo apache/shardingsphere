@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.connection;
 
-import com.google.common.collect.Sets;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
@@ -147,7 +146,7 @@ public final class ConnectionManagerTest {
     @Test
     public void assertGetRandomPhysicalDataSourceNameFromContextManager() {
         String actual = connectionManager.getRandomPhysicalDataSourceName();
-        assertTrue(Sets.newHashSet("ds", "invalid_ds").contains(actual));
+        assertTrue(Arrays.asList("ds", "invalid_ds").contains(actual));
     }
     
     @Test

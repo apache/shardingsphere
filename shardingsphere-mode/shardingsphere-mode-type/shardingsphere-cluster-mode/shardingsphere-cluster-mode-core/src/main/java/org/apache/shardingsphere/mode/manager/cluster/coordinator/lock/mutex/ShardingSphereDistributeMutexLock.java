@@ -29,15 +29,18 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.eve
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeType;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.TimeoutMilliseconds;
 
+/**
+ * Distribute mutex lock of ShardingSphere.
+ */
 public final class ShardingSphereDistributeMutexLock implements ShardingSphereLock {
     
     private final LockNodeService lockNodeService = LockNodeServiceFactory.getInstance().getLockNodeService(LockNodeType.MUTEX);
     
     private final MutexLock sequencedLock;
     
-    private final ShardingSphereMutexLockHolder lockHolder;
+    private final ShardingSphereInterMutexLockHolder lockHolder;
     
-    public ShardingSphereDistributeMutexLock(final ShardingSphereMutexLockHolder lockHolder) {
+    public ShardingSphereDistributeMutexLock(final ShardingSphereInterMutexLockHolder lockHolder) {
         this.lockHolder = lockHolder;
         this.sequencedLock = lockHolder.getInterReentrantMutexLock(lockNodeService.getSequenceNodePath());
         ShardingSphereEventBus.getInstance().register(this);
@@ -66,7 +69,7 @@ public final class ShardingSphereDistributeMutexLock implements ShardingSphereLo
     }
     
     private InterMutexLock getInterMutexLock(final String lockName) {
-        return (InterMutexLock) lockHolder.getInterMutexLock(lockNodeService.generateLocksName(lockName));
+        return lockHolder.getInterMutexLock(lockNodeService.generateLocksName(lockName));
     }
     
     @Override

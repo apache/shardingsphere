@@ -22,14 +22,14 @@ on:
     branches: [ master, dev ]
     paths:
       - '.github/workflows/it-scaling.yml'
-      - 'shardingsphere-infra/shardingsphere-infra-common/src/main/**/datasource/**'
-      - 'shardingsphere-kernel/shardingsphere-data-pipeline/**'
-      - 'shardingsphere-kernel/shardingsphere-data-pipeline/**/src/test/**'
+      - 'shardingsphere-infra/shardingsphere-infra-common/src/main/**'
+      - 'shardingsphere-mode/**/src/main/**'
+      - 'shardingsphere-jdbc/shardingsphere-jdbc-core/src/main/**'
+      - '**/*-distsql*/**/src/main/**'
+      - 'shardingsphere-kernel/shardingsphere-data-pipeline/**/src/main/**'
       - 'shardingsphere-features/**/src/main/**/scaling/**'
-      - 'shardingsphere-features/**/src/main/**/sharding/schedule/**'
-      - 'shardingsphere-features/**/src/main/resources/META-INF/services/*.data.pipeline.*'
-      - 'shardingsphere-jdbc/shardingsphere-jdbc-core/src/main/java/**/*Pipeline*.java'
-      - 'shardingsphere-jdbc/shardingsphere-jdbc-core/src/main/resources/META-INF/services/*.data.pipeline.*'
+      - '**/src/main/**/data/pipeline/**'
+      - '**/src/main/resources/META-INF/services/*.data.pipeline.*'
       - '!shardingsphere-test/**'
       - 'shardingsphere-test/shardingsphere-integration-test/**'
       - '!shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/**'
@@ -38,14 +38,14 @@ on:
     branches: [ master ]
     paths:
       - '.github/workflows/it-scaling.yml'
-      - 'shardingsphere-infra/shardingsphere-infra-common/src/main/**/datasource/**'
-      - 'shardingsphere-kernel/shardingsphere-data-pipeline/**'
-      - 'shardingsphere-kernel/shardingsphere-data-pipeline/**/src/test/**'
+      - 'shardingsphere-infra/shardingsphere-infra-common/src/main/**'
+      - 'shardingsphere-mode/**/src/main/**'
+      - 'shardingsphere-jdbc/shardingsphere-jdbc-core/src/main/**'
+      - '**/*-distsql*/**/src/main/**'
+      - 'shardingsphere-kernel/shardingsphere-data-pipeline/**/src/main/**'
       - 'shardingsphere-features/**/src/main/**/scaling/**'
-      - 'shardingsphere-features/**/src/main/**/sharding/schedule/**'
-      - 'shardingsphere-features/**/src/main/resources/META-INF/services/*.data.pipeline.*'
-      - 'shardingsphere-jdbc/shardingsphere-jdbc-core/src/main/java/**/*Pipeline*.java'
-      - 'shardingsphere-jdbc/shardingsphere-jdbc-core/src/main/resources/META-INF/services/*.data.pipeline.*'
+      - '**/src/main/**/data/pipeline/**'
+      - '**/src/main/resources/META-INF/services/*.data.pipeline.*'
       - '!shardingsphere-test/**'
       - 'shardingsphere-test/shardingsphere-integration-test/**'
       - '!shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/**'
@@ -62,7 +62,7 @@ env:
 
 jobs:
   scaling-it-test:
-    if: (github.event_name != 'schedule' && github.repository == 'apache/shardingsphere')
+    if: (github.event_name != 'schedule')
     name: scaling-it-test
     runs-on: ubuntu-latest
     env:
