@@ -228,7 +228,7 @@ public final class TableExtractor {
     }
     
     private void extractTablesFromAssignmentItems(final Collection<AssignmentSegment> assignmentItems) {
-        assignmentItems.stream().flatMap(each -> each.getColumns().stream()).forEach(each ->{
+        assignmentItems.stream().flatMap(each -> each.getColumns().stream()).forEach(each -> {
             if (each.getOwner().isPresent() && needRewrite(each.getOwner().get())) {
                 OwnerSegment ownerSegment = each.getOwner().get();
                 rewriteTables.add(new SimpleTableSegment(new TableNameSegment(ownerSegment.getStartIndex(), ownerSegment.getStopIndex(), ownerSegment.getIdentifier())));
