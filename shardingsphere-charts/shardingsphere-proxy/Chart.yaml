@@ -20,7 +20,7 @@ appVersion: 5.1.2
 name: shardingsphere-proxy
 version: 1.1.0
 maintainers:
-  - name: windghoul
+  - name: dev@shardingsphere.apache.org
 dependencies:
   - condition: governance.enabled
     name: governance

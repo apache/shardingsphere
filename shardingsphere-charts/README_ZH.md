@@ -23,6 +23,8 @@ helm 3.2.0+
 
 ### 安装
 
+#### 在线安装
+
 将 ShardingSphere-Proxy 添加到 Helm 本地仓库：
 
 ```shell
@@ -33,6 +35,14 @@ helm repo add shardingsphere https://shardingsphere.apache.org/charts
 
 ```shell
 helm install shardingsphere-proxy shardingsphere/shardingsphere-proxy
+```
+
+#### 源码安装
+```shell
+cd shardingsphere-proxy                                 
+helm dependency build                                   
+cd ..                                                   
+helm install shardingsphere-proxy shardingsphere-proxy  
 ```
 
 执行上述命令以执行默认配置进行安装。
@@ -71,7 +81,7 @@ helm uninstall shardingsphere-proxy
 | `governance.zookeeper.resources.requests.cpu`    | ZooKeeper 容器申请的 cpu 核数                                                    | `250m`              |
 
 
-### 计算节点--ShardingSphere-Proxy  配置项
+### 计算节点--ShardingSphere-Proxy 配置项
 
 | 配置项                                 | 描述                                | 值                         |
 | ------------------------------------ |-----------------------------------| ----------------------------- |

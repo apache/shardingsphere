@@ -40,7 +40,7 @@ version: 1.0.0
 # It is recommended to use it with quotes.
 appVersion: "5.1.2"
 maintainers:
-  - name: windghoul
+  - name: dev@shardingsphere.apache.org
 dependencies:
   - condition: zookeeper.enabled
     name: zookeeper

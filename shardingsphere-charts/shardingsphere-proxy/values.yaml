@@ -83,7 +83,7 @@ compute:
   resources:
     limits: {}
     requests:
-      memory: 1.6Gi
+      memory: 2Gi
       cpu: 200m
   ## ShardingSphere-Proxy Deployment Configuration
   ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/
@@ -138,4 +138,4 @@ compute:
   ##
   serverConfig: ""
 
-    
+

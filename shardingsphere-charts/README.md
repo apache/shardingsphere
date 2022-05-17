@@ -23,6 +23,7 @@ Use StorageClass to allow dynamic provisioning of Persistent Volumes (PV) for da
 
 ### Install
 
+#### Online installation     
 Add ShardingSphere-Proxy to the local helm repo:
 
 ```shell
@@ -33,6 +34,14 @@ Install ShardingSphere-Proxy charts:
 
 ```shell
 helm install shardingsphere-proxy shardingsphere/shardingsphere-proxy
+```
+
+#### Source installation
+```shell
+cd shardingsphere-proxy
+helm dependency build 
+cd ..
+helm install shardingsphere-proxy shardingsphere-proxy
 ```
 
 Charts will be installed with default configuration if above commands executed.
@@ -71,7 +80,7 @@ Delete all release records by default, add `--keep-history` to keep them.
 | `governance.zookeeper.resources.requests.cpu`    | The requested cpu for the ZooKeeper containers       | `250m`              |
 
 
-### Compute-Node ShardingSphere-Proxy  parameters
+### Compute-Node ShardingSphere-Proxy parameters
 
 | Name                                | Description                                                  | Value                         |
 | ----------------------------------- | ------------------------------------------------------------ | ----------------------------- |
