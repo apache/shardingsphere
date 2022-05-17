@@ -391,8 +391,8 @@ public final class ClusterContextManagerCoordinatorTest {
     private Map<String, DataSource> initContextManager() {
         Map<String, DataSource> result = getDataSourceMap();
         ShardingSphereResource resource = new ShardingSphereResource(result, mock(DataSourcesMetaData.class), mock(CachedDatabaseMetaData.class), new MySQLDatabaseType());
-        ShardingSphereMetaData mockedMetaData = new ShardingSphereMetaData(new MySQLDatabaseType(), resource, 
-                mock(ShardingSphereRuleMetaData.class), new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, Collections.emptyMap()));
+        ShardingSphereMetaData mockedMetaData = new ShardingSphereMetaData(new MySQLDatabaseType(), resource,
+                mock(ShardingSphereRuleMetaData.class), new ShardingSphereDatabase("db", Collections.emptyMap()));
         contextManager.getMetaDataContexts().getMetaDataMap().put("db", mockedMetaData);
         return result;
     }
