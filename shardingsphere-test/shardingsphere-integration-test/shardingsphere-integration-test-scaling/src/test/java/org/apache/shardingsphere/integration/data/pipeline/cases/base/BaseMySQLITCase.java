@@ -69,8 +69,6 @@ public abstract class BaseMySQLITCase extends BaseITCase {
     protected void createNoUseTable() {
         getJdbcTemplate().execute("CREATE SHARDING TABLE RULE no_use (RESOURCES(ds_0, ds_1), SHARDING_COLUMN=sharding_id, TYPE(NAME=MOD,PROPERTIES('sharding-count'=4)))");
         getJdbcTemplate().execute("CREATE TABLE no_use(id int(11) NOT NULL,sharding_id int(11) NOT NULL, PRIMARY KEY (id))");
-        getJdbcTemplate().execute("INSERT INTO no_use(id,sharding_id) values (1,1)");
-        getJdbcTemplate().execute("INSERT INTO no_use(id,sharding_id) values (2,2)");
     }
     
     @Override
