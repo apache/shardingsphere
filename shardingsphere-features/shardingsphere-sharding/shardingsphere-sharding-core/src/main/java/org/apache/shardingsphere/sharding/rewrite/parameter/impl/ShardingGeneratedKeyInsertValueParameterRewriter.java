@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sharding.rewrite.parameter.impl;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
@@ -26,6 +25,7 @@ import org.apache.shardingsphere.infra.rewrite.parameter.builder.ParameterBuilde
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.GroupedParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewriter;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -54,7 +54,7 @@ public final class ShardingGeneratedKeyInsertValueParameterRewriter implements P
             parameterCount += insertStatementContext.getInsertValueContexts().get(count).getParameterCount();
             Comparable<?> generatedValue = generatedValues.next();
             if (!each.isEmpty()) {
-                ((GroupedParameterBuilder) parameterBuilder).getParameterBuilders().get(count).addAddedParameters(parameterCount, Lists.newArrayList(generatedValue));
+                ((GroupedParameterBuilder) parameterBuilder).getParameterBuilders().get(count).addAddedParameters(parameterCount, Collections.singletonList(generatedValue));
             }
             count++;
         }
