@@ -25,12 +25,13 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
-import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrlAppender;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.cases.command.CommonSQLCommand;
 import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.integration.data.pipeline.env.enums.ITEnvTypeEnum;
+import org.apache.shardingsphere.integration.data.pipeline.framework.helper.ScalingCaseHelper;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.BaseComposedContainer;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.DockerComposedContainer;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.NativeComposedContainer;
@@ -74,12 +75,15 @@ public abstract class BaseITCase {
     
     private final CommonSQLCommand commonSQLCommand;
     
+    private final DatabaseType databaseType;
+    
     private JdbcTemplate jdbcTemplate;
     
     @Setter
     private Thread increaseTaskThread;
     
     public BaseITCase(final ScalingParameterized parameterized) {
+        databaseType = parameterized.getDatabaseType();
         if (ENV.getItEnvType() == ITEnvTypeEnum.DOCKER) {
             composedContainer = new DockerComposedContainer(parameterized.getDatabaseType(), parameterized.getDockerImageName());
         } else {
@@ -93,15 +97,13 @@ public abstract class BaseITCase {
     @SneakyThrows
     protected void createProxyDatabase(final DatabaseType databaseType) {
         JdbcUrlAppender jdbcUrlAppender = new JdbcUrlAppender();
-        Properties queryProps = createQueryProperties();
+        Properties queryProps = ScalingCaseHelper.getQueryPropertiesByDatabaseType(databaseType);
         String defaultDatabaseName = DatabaseTypeUtil.isPostgreSQL(databaseType) ? "postgres" : "";
         try (Connection connection = DriverManager.getConnection(jdbcUrlAppender.appendQueryProperties(composedContainer.getProxyJdbcUrl(defaultDatabaseName), queryProps), "root", "root")) {
             connection.createStatement().execute("CREATE DATABASE sharding_db");
         }
         jdbcTemplate = new JdbcTemplate(getProxyDataSource("sharding_db"));
     }
-    
-    protected abstract Properties createQueryProperties();
     
     private DataSource getProxyDataSource(final String databaseName) {
         HikariDataSource result = new HikariDataSource();
@@ -129,21 +131,56 @@ public abstract class BaseITCase {
         return false;
     }
     
-    protected void addSourceResource(final Connection connection, final String username, final String password) throws SQLException {
-        Properties queryProps = createQueryProperties();
-        String addSourceResource = commonSQLCommand.getSourceAddResourceTemplate().replace("${user}", username).replace("${password}", password)
-                .replace("${ds0}", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_0"), queryProps))
-                .replace("${ds1}", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_1"), queryProps));
-        connection.createStatement().execute(addSourceResource);
+    @SneakyThrows
+    protected void addSourceResource() {
+        Properties queryProps = ScalingCaseHelper.getQueryPropertiesByDatabaseType(databaseType);
+        Connection connection = null;
+        try {
+            if (databaseType instanceof MySQLDatabaseType) {
+                connection = DriverManager.getConnection(JDBC_URL_APPENDER.appendQueryProperties(getComposedContainer().getProxyJdbcUrl(""), queryProps), "root", "root");
+                connection.createStatement().execute("USE sharding_db");
+            } else {
+                connection = DriverManager.getConnection(JDBC_URL_APPENDER.appendQueryProperties(getComposedContainer().getProxyJdbcUrl("sharding_db"), queryProps), "root", "root");
+            }
+            String addSourceResource = commonSQLCommand.getSourceAddResourceTemplate().replace("${user}", ScalingCaseHelper.getUsername(databaseType))
+                    .replace("${password}", ScalingCaseHelper.getPassword(databaseType))
+                    .replace("${ds0}", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_0"), queryProps))
+                    .replace("${ds1}", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_1"), queryProps));
+            connection.createStatement().execute(addSourceResource);
+        } catch (SQLException ex) {
+            log.error("add source resource error", ex);
+        } finally {
+            if (connection != null) {
+                connection.close();
+            }
+        }
     }
     
-    protected void addTargetResource(final String username, final String password) {
-        Properties queryProps = createQueryProperties();
-        String addTargetResource = commonSQLCommand.getTargetAddResourceTemplate().replace("${user}", username).replace("${password}", password)
-                .replace("${ds2}", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_2"), queryProps))
-                .replace("${ds3}", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_3"), queryProps))
-                .replace("${ds4}", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_4"), queryProps));
-        getJdbcTemplate().execute(addTargetResource);
+    @SneakyThrows
+    protected void addTargetResource() {
+        Properties queryProps = ScalingCaseHelper.getQueryPropertiesByDatabaseType(databaseType);
+        
+        Connection connection = null;
+        try {
+            if (databaseType instanceof MySQLDatabaseType) {
+                connection = DriverManager.getConnection(JDBC_URL_APPENDER.appendQueryProperties(getComposedContainer().getProxyJdbcUrl(""), queryProps), "root", "root");
+                connection.createStatement().execute("USE sharding_db");
+            } else {
+                connection = DriverManager.getConnection(JDBC_URL_APPENDER.appendQueryProperties(getComposedContainer().getProxyJdbcUrl("sharding_db"), queryProps), "root", "root");
+            }
+            String addTargetResource = commonSQLCommand.getTargetAddResourceTemplate().replace("${user}", ScalingCaseHelper.getUsername(databaseType))
+                    .replace("${password}", ScalingCaseHelper.getPassword(databaseType))
+                    .replace("${ds2}", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_2"), queryProps))
+                    .replace("${ds3}", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_3"), queryProps))
+                    .replace("${ds4}", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_4"), queryProps));
+            getJdbcTemplate().execute(addTargetResource);
+        } catch (SQLException ex) {
+            log.error("add source resource error", ex);
+        } finally {
+            if (connection != null) {
+                connection.close();
+            }
+        }
     }
     
     private String getActualJdbcUrlTemplate(final String databaseName) {
@@ -234,7 +271,7 @@ public abstract class BaseITCase {
         }
         jdbcTemplate.execute(String.format("APPLY SCALING %s", jobId));
         // TODO make sure the scaling job was applied
-        ThreadUtil.sleep(2000);
+        TimeUnit.SECONDS.sleep(2);
         List<Map<String, Object>> previewResults = jdbcTemplate.queryForList("PREVIEW SELECT COUNT(1) FROM t_order");
         Set<Object> originalSources = previewResults.stream().map(each -> each.get("data_source_name")).collect(Collectors.toSet());
         assertThat(originalSources, is(new HashSet<>(Arrays.asList("ds_2", "ds_3", "ds_4"))));

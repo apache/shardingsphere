@@ -18,43 +18,21 @@
 package org.apache.shardingsphere.integration.data.pipeline.cases.base;
 
 import lombok.Getter;
-import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.cases.command.ExtraSQLCommand;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
 
 import javax.xml.bind.JAXB;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.util.Properties;
 
-@Getter
-public abstract class BaseMySQLITCase extends BaseITCase {
+public abstract class BaseExtraSQLITCase extends BaseITCase {
     
-    protected static final DatabaseType DATABASE_TYPE = new MySQLDatabaseType();
-    
+    @Getter
     private final ExtraSQLCommand extraSQLCommand;
     
-    public BaseMySQLITCase(final ScalingParameterized parameterized) {
+    public BaseExtraSQLITCase(final ScalingParameterized parameterized) {
         super(parameterized);
-        extraSQLCommand = JAXB.unmarshal(BaseMySQLITCase.class.getClassLoader().getResource(parameterized.getScenario()), ExtraSQLCommand.class);
+        extraSQLCommand = JAXB.unmarshal(BaseExtraSQLITCase.class.getClassLoader().getResource(parameterized.getScenario()), ExtraSQLCommand.class);
     }
     
-    @SneakyThrows(SQLException.class)
-    protected void addSourceResource() {
-        Properties queryProps = createQueryProperties();
-        // TODO if use jdbcurl like "jdbc:mysql:localhost:3307/sharding_db", will throw exception show "Datasource or ShardingSphere rule does not exist"
-        try (Connection connection = DriverManager.getConnection(JDBC_URL_APPENDER.appendQueryProperties(getComposedContainer().getProxyJdbcUrl(""), queryProps), "root", "root")) {
-            connection.createStatement().execute("USE sharding_db");
-            addSourceResource(connection, "root", "root");
-        }
-    }
-    
-    /**
-     * Add no use table, to test part of the table.
-     */
     protected void createNoUseTable() {
         getJdbcTemplate().execute("CREATE SHARDING TABLE RULE no_use (RESOURCES(ds_0, ds_1), SHARDING_COLUMN=sharding_id, TYPE(NAME=MOD,PROPERTIES('sharding-count'=4)))");
         getJdbcTemplate().execute("CREATE TABLE no_use(id int(11) NOT NULL,sharding_id int(11) NOT NULL, PRIMARY KEY (id))");
@@ -66,14 +44,5 @@ public abstract class BaseMySQLITCase extends BaseITCase {
     
     protected void createOrderItemTable() {
         getJdbcTemplate().execute(extraSQLCommand.getCreateTableOrderItem());
-    }
-    
-    @Override
-    protected Properties createQueryProperties() {
-        Properties result = new Properties();
-        result.put("useSSL", Boolean.FALSE.toString());
-        result.put("rewriteBatchedStatements", Boolean.TRUE.toString());
-        result.put("serverTimezone", "UTC");
-        return result;
     }
 }

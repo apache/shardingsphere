@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.integration.data.pipeline.cases.general;
 
-import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.shardingsphere.integration.data.pipeline.cases.base.BaseMySQLITCase;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.integration.data.pipeline.cases.base.BaseExtraSQLITCase;
 import org.apache.shardingsphere.integration.data.pipeline.cases.task.MySQLIncrementTask;
 import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
+import org.apache.shardingsphere.integration.data.pipeline.framework.helper.ScalingCaseHelper;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
-import org.apache.shardingsphere.integration.data.pipeline.util.TableCrudUtil;
 import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,16 +38,19 @@ import java.util.List;
 import static org.junit.Assert.assertTrue;
 
 /**
- * MySQL manual scaling test case.
+ * General scaling test case, includes multiple cases.
  */
 @Slf4j
 @RunWith(Parameterized.class)
-public final class MySQLGeneralScalingIT extends BaseMySQLITCase {
+public final class MySQLGeneralScalingIT extends BaseExtraSQLITCase {
     
     private static final IntegrationTestEnvironment ENV = IntegrationTestEnvironment.getInstance();
     
+    private final ScalingParameterized parameterized;
+    
     public MySQLGeneralScalingIT(final ScalingParameterized parameterized) {
         super(parameterized);
+        this.parameterized = parameterized;
         log.info("parameterized:{}", parameterized);
     }
     
@@ -55,10 +58,7 @@ public final class MySQLGeneralScalingIT extends BaseMySQLITCase {
     public static Collection<ScalingParameterized> getParameters() {
         Collection<ScalingParameterized> result = new LinkedList<>();
         for (String version : ENV.getMysqlVersions()) {
-            if (Strings.isNullOrEmpty(version)) {
-                continue;
-            }
-            result.add(new ScalingParameterized(DATABASE_TYPE, version, "env/scenario/general/mysql.xml"));
+            result.add(new ScalingParameterized(new MySQLDatabaseType(), version, "env/scenario/general/mysql.xml"));
         }
         return result;
     }
@@ -74,12 +74,13 @@ public final class MySQLGeneralScalingIT extends BaseMySQLITCase {
         createNoUseTable();
         createOrderTable();
         createOrderItemTable();
-        Pair<List<Object[]>, List<Object[]>> dataPair = TableCrudUtil.generateMySQLInsertDataList(3000);
+        SnowflakeKeyGenerateAlgorithm keyGenerateAlgorithm = new SnowflakeKeyGenerateAlgorithm();
+        Pair<List<Object[]>, List<Object[]>> dataPair = ScalingCaseHelper.generateFullInsertData(keyGenerateAlgorithm, parameterized.getDatabaseType(), 3000);
         getJdbcTemplate().batchUpdate(getExtraSQLCommand().getFullInsertOrder(), dataPair.getLeft());
         getJdbcTemplate().batchUpdate(getExtraSQLCommand().getFullInsertOrderItem(), dataPair.getRight());
-        startIncrementTask(new MySQLIncrementTask(getJdbcTemplate(), new SnowflakeKeyGenerateAlgorithm(), true));
+        startIncrementTask(new MySQLIncrementTask(getJdbcTemplate(), keyGenerateAlgorithm, true));
         assertOriginalSourceSuccess();
-        addTargetResource("root", "root");
+        addTargetResource();
         getJdbcTemplate().execute(getCommonSQLCommand().getAutoAlterAllShardingTableRule());
         assertCheckMatchConsistencySuccess();
     }

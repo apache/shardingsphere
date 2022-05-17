@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.integration.data.pipeline.cases.primarykey;
 
-import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
-import org.apache.shardingsphere.integration.data.pipeline.cases.base.BasePostgreSQLITCase;
-import org.apache.shardingsphere.integration.data.pipeline.cases.task.PostgreSQLIncrementTask;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.integration.data.pipeline.cases.base.BaseExtraSQLITCase;
 import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
 import org.apache.shardingsphere.sharding.algorithm.keygen.UUIDKeyGenerateAlgorithm;
@@ -30,47 +30,61 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static org.junit.Assert.assertTrue;
 
 @Slf4j
 @RunWith(Parameterized.class)
-public class OpenGaussTextPrimaryKeyIT extends BasePostgreSQLITCase {
+public class TextPrimaryKeyScalingIT extends BaseExtraSQLITCase {
     
     private static final IntegrationTestEnvironment ENV = IntegrationTestEnvironment.getInstance();
     
-    public OpenGaussTextPrimaryKeyIT(final ScalingParameterized parameterized) {
+    public TextPrimaryKeyScalingIT(final ScalingParameterized parameterized) {
         super(parameterized);
+        log.info("parameterized:{}", parameterized);
     }
     
     @Parameters(name = "{0}")
     public static Collection<ScalingParameterized> getParameters() {
         Collection<ScalingParameterized> result = new LinkedList<>();
-        for (String dockerImageName : ENV.getOpenGaussVersions()) {
-            if (Strings.isNullOrEmpty(dockerImageName)) {
-                continue;
-            }
-            result.add(new ScalingParameterized(new OpenGaussDatabaseType(), dockerImageName, "env/scenario/primarykey/text_primary_key/postgresql.xml"));
+        for (String version : ENV.getMysqlVersions()) {
+            result.add(new ScalingParameterized(new MySQLDatabaseType(), version, "env/scenario/primarykey/text_primary_key/mysql.xml"));
+        }
+        for (String version : ENV.getPostgresVersions()) {
+            result.add(new ScalingParameterized(new PostgreSQLDatabaseType(), version, "env/scenario/primarykey/text_primary_key/postgresql.xml"));
+        }
+        for (String version : ENV.getOpenGaussVersions()) {
+            result.add(new ScalingParameterized(new OpenGaussDatabaseType(), version, "env/scenario/primarykey/text_primary_key/postgresql.xml"));
         }
         return result;
     }
     
     @Test
-    public void assertManualScalingSuccess() throws InterruptedException {
-        addSourceResource("gaussdb", "Root@123");
+    public void assertTextPrimaryKeyScalingSuccess() throws InterruptedException {
+        addSourceResource();
         initShardingAlgorithm();
         assertTrue(waitShardingAlgorithmEffect(15));
         createScalingRule();
         createOrderSharingTableRule();
         createOrderTable();
-        UUIDKeyGenerateAlgorithm keyGenerateAlgorithm = new UUIDKeyGenerateAlgorithm();
-        batchInsertOrder(keyGenerateAlgorithm);
+        batchInsertOrder();
         assertOriginalSourceSuccess();
-        startIncrementTask(new PostgreSQLIncrementTask(getJdbcTemplate(), new UUIDKeyGenerateAlgorithm(), "", false));
-        addTargetResource("gaussdb", "Root@123");
+        addTargetResource();
         getJdbcTemplate().execute(getCommonSQLCommand().getAutoAlterOrderShardingTableRule());
         assertCheckMatchConsistencySuccess();
+    }
+    
+    private void batchInsertOrder() {
+        UUIDKeyGenerateAlgorithm keyGenerateAlgorithm = new UUIDKeyGenerateAlgorithm();
+        List<Object[]> orderData = new ArrayList<>(3000);
+        for (int i = 1; i <= 3000; i++) {
+            orderData.add(new Object[]{keyGenerateAlgorithm.generateKey(), ThreadLocalRandom.current().nextInt(0, 6), ThreadLocalRandom.current().nextInt(0, 6), "OK"});
+        }
+        getJdbcTemplate().batchUpdate("INSERT INTO t_order (id,order_id,user_id,status) VALUES (?,?,?,?)", orderData);
     }
 }

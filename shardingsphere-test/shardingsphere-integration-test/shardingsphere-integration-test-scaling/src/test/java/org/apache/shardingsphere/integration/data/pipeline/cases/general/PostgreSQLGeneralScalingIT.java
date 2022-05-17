@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.integration.data.pipeline.cases.general;
 
-import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
-import org.apache.shardingsphere.integration.data.pipeline.cases.base.BasePostgreSQLITCase;
+import org.apache.shardingsphere.integration.data.pipeline.cases.base.BaseExtraSQLITCase;
 import org.apache.shardingsphere.integration.data.pipeline.cases.task.PostgreSQLIncrementTask;
 import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
@@ -38,14 +38,20 @@ import java.util.List;
 
 import static org.junit.Assert.assertTrue;
 
+/**
+ * PostgreSQL general scaling test case. include openGauss type, same process.
+ */
 @Slf4j
 @RunWith(Parameterized.class)
-public final class PostgreSQLGeneralScalingIT extends BasePostgreSQLITCase {
+public final class PostgreSQLGeneralScalingIT extends BaseExtraSQLITCase {
     
     private static final IntegrationTestEnvironment ENV = IntegrationTestEnvironment.getInstance();
     
+    private final ScalingParameterized parameterized;
+    
     public PostgreSQLGeneralScalingIT(final ScalingParameterized parameterized) {
         super(parameterized);
+        this.parameterized = parameterized;
         log.info("parameterized:{}", parameterized);
     }
     
@@ -53,17 +59,17 @@ public final class PostgreSQLGeneralScalingIT extends BasePostgreSQLITCase {
     public static Collection<ScalingParameterized> getParameters() {
         Collection<ScalingParameterized> result = new LinkedList<>();
         for (String dockerImageName : ENV.getPostgresVersions()) {
-            if (Strings.isNullOrEmpty(dockerImageName)) {
-                continue;
-            }
             result.add(new ScalingParameterized(new PostgreSQLDatabaseType(), dockerImageName, "env/scenario/general/postgresql.xml"));
+        }
+        for (String dockerImageName : ENV.getOpenGaussVersions()) {
+            result.add(new ScalingParameterized(new OpenGaussDatabaseType(), dockerImageName, "env/scenario/general/postgresql.xml"));
         }
         return result;
     }
     
     @Test
     public void assertManualScalingSuccess() throws InterruptedException {
-        addSourceResource("root", "root");
+        addSourceResource();
         initShardingAlgorithm();
         assertTrue(waitShardingAlgorithmEffect(15));
         createScalingRule();
@@ -77,7 +83,7 @@ public final class PostgreSQLGeneralScalingIT extends BasePostgreSQLITCase {
         getJdbcTemplate().batchUpdate(getExtraSQLCommand().getFullInsertOrderItem(), dataPair.getRight());
         startIncrementTask(new PostgreSQLIncrementTask(getJdbcTemplate(), new SnowflakeKeyGenerateAlgorithm(), "test", true));
         assertOriginalSourceSuccess();
-        addTargetResource("root", "root");
+        addTargetResource();
         getJdbcTemplate().execute(getCommonSQLCommand().getAutoAlterAllShardingTableRule());
         assertCheckMatchConsistencySuccess();
     }
