@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util;
+package org.apache.shardingsphere.infra.lock;
 
 /**
  * Lock state.

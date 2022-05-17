@@ -15,31 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.lock;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager;
 
-import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.ShardingSphereInterMutexLockHolder;
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.spi.type.required.RequiredSPI;
 
 /**
- * Lock context.
+ * Lock manager of ShardingSphere.
  */
-public interface LockContext {
+@SingletonSPI
+public interface ShardingSphereLockManager extends RequiredSPI {
     
     /**
-     * Init lock state.
+     * Init lock manager.
      *
-     * @param instanceContext instance context
+     * @param lockHolder lock holder
      */
-    void initLockState(InstanceContext instanceContext);
+    void init(ShardingSphereInterMutexLockHolder lockHolder);
     
     /**
-     * Get or create mutex lock.
+     * Get mutex lock.
      *
      * @return mutex lock
      */
     ShardingSphereLock getMutexLock();
     
     /**
-     * Lock write for database.
+     * Lock write.
      *
      * @param databaseName database name
      * @return is locked or not
@@ -47,7 +51,7 @@ public interface LockContext {
     boolean lockWrite(String databaseName);
     
     /**
-     * Lock write for database.
+     * Try lock write for database.
      *
      * @param databaseName database name
      * @param timeoutMilliseconds timeout milliseconds
@@ -56,17 +60,17 @@ public interface LockContext {
     boolean tryLockWrite(String databaseName, long timeoutMilliseconds);
     
     /**
-     * Release lock write of database.
+     * Release lock write for database.
      *
      * @param databaseName database name
      */
     void releaseLockWrite(String databaseName);
     
     /**
-     *  Is locked database.
+     * Is locked database.
      *
      * @param databaseName database name
-     * @return is locked database or not
+     * @return is locked or not
      */
     boolean isLocked(String databaseName);
 }
