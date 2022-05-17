@@ -43,24 +43,24 @@ public final class ProxyContext {
     
     private final JDBCBackendDataSource backendDataSource = new JDBCBackendDataSource();
     
-    private volatile ContextManager contextManager = new ContextManager();
-    
-    /**
-     * Get instance of proxy schema schemas.
-     *
-     * @return instance of ShardingSphere schemas.
-     */
-    public static ProxyContext getInstance() {
-        return INSTANCE;
-    }
+    private ContextManager contextManager;
     
     /**
      * Initialize proxy context.
      *
      * @param contextManager context manager
      */
-    public void init(final ContextManager contextManager) {
-        this.contextManager = contextManager;
+    public static void init(final ContextManager contextManager) {
+        INSTANCE.contextManager = contextManager;
+    }
+    
+    /**
+     * Get instance of proxy context.
+     *
+     * @return got instance
+     */
+    public static ProxyContext getInstance() {
+        return INSTANCE;
     }
     
     /**

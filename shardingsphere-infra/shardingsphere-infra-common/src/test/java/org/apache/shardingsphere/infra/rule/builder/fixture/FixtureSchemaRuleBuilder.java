@@ -28,7 +28,7 @@ import java.util.Map;
 public final class FixtureSchemaRuleBuilder implements SchemaRuleBuilder<FixtureSchemaRuleConfiguration> {
     
     @Override
-    public FixtureSchemaRule build(final FixtureSchemaRuleConfiguration config, final String databaseName, final Map<String, DataSource> dataSources, 
+    public FixtureSchemaRule build(final FixtureSchemaRuleConfiguration config, final String databaseName, final Map<String, DataSource> dataSources,
                                    final Collection<ShardingSphereRule> builtRules, final ConfigurationProperties props) {
         return new FixtureSchemaRule();
     }

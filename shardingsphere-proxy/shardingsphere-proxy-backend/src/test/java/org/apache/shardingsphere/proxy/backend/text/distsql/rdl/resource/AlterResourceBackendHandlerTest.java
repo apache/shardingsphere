@@ -93,7 +93,7 @@ public final class AlterResourceBackendHandlerTest {
     public void assertExecute() throws Exception {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        ProxyContext.getInstance().init(contextManager);
+        ProxyContext.init(contextManager);
         when(metaDataContexts.getAllDatabaseNames()).thenReturn(Collections.singleton("test_db"));
         when(metaDataContexts.getMetaData("test_db")).thenReturn(metaData);
         when(metaData.getResource()).thenReturn(resource);
@@ -110,7 +110,7 @@ public final class AlterResourceBackendHandlerTest {
     public void assertExecuteWithNotExistedResourceNames() throws DistSQLException {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        ProxyContext.getInstance().init(contextManager);
+        ProxyContext.init(contextManager);
         when(metaDataContexts.getAllDatabaseNames()).thenReturn(Collections.singleton("test_db"));
         when(metaDataContexts.getMetaData("test_db")).thenReturn(metaData);
         when(metaData.getResource()).thenReturn(resource);
@@ -122,7 +122,7 @@ public final class AlterResourceBackendHandlerTest {
     public void assertExecuteWithAlterDatabase() throws Exception {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        ProxyContext.getInstance().init(contextManager);
+        ProxyContext.init(contextManager);
         when(metaDataContexts.getAllDatabaseNames()).thenReturn(Collections.singleton("test_db"));
         when(metaDataContexts.getMetaData("test_db")).thenReturn(metaData);
         when(metaData.getResource()).thenReturn(resource);

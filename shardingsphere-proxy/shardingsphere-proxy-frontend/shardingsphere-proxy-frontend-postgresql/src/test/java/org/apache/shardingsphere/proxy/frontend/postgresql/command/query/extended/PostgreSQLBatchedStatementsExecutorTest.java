@@ -85,7 +85,7 @@ public final class PostgreSQLBatchedStatementsExecutorTest {
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
         when(connectionSession.getStatementManager()).thenReturn(backendStatement);
         previousContextManager = ProxyContext.getInstance().getContextManager();
-        ProxyContext.getInstance().init(contextManager);
+        ProxyContext.init(contextManager);
         when(contextManager.getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE)).thenReturn(1);
         when(contextManager.getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY)).thenReturn(1);
         when(contextManager.getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
@@ -131,6 +131,6 @@ public final class PostgreSQLBatchedStatementsExecutorTest {
     
     @After
     public void tearDown() {
-        ProxyContext.getInstance().init(previousContextManager);
+        ProxyContext.init(previousContextManager);
     }
 }

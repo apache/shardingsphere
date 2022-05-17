@@ -30,6 +30,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.Column
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -76,7 +77,7 @@ public final class ConditionValueCompareOperatorGenerator implements ConditionVa
         String tableName = column.getTableName();
         switch (operator) {
             case EQUAL:
-                return Optional.of(new ListShardingConditionValue<>(columnName, tableName, Collections.singletonList(comparable)));
+                return Optional.of(new ListShardingConditionValue<>(columnName, tableName, new ArrayList<>(Collections.singleton(comparable))));
             case GREATER_THAN:
                 return Optional.of(new RangeShardingConditionValue<>(columnName, tableName, Range.greaterThan(comparable)));
             case LESS_THAN:

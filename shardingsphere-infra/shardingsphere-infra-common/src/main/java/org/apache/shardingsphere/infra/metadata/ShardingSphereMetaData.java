@@ -69,7 +69,7 @@ public final class ShardingSphereMetaData {
      * @return ShardingSphere meta data
      * @throws SQLException SQL exception
      */
-    public static ShardingSphereMetaData create(final String databaseName, final DatabaseType frontendDatabaseType, final DatabaseType backendDatabaseType, 
+    public static ShardingSphereMetaData create(final String databaseName, final DatabaseType frontendDatabaseType, final DatabaseType backendDatabaseType,
                                                 final DatabaseConfiguration databaseConfig, final ConfigurationProperties props) throws SQLException {
         Collection<ShardingSphereRule> databaseRules = SchemaRulesBuilder.buildRules(databaseName, databaseConfig, props);
         ShardingSphereDatabase database = DatabaseLoader.load(databaseName, frontendDatabaseType, backendDatabaseType, databaseConfig.getDataSources(), databaseRules, props);
@@ -91,7 +91,7 @@ public final class ShardingSphereMetaData {
     }
     
     private static ShardingSphereMetaData create(final DatabaseType frontendDatabaseType,
-                                                final DatabaseConfiguration databaseConfig, final Collection<ShardingSphereRule> rules, final ShardingSphereDatabase database) throws SQLException {
+                                                 final DatabaseConfiguration databaseConfig, final Collection<ShardingSphereRule> rules, final ShardingSphereDatabase database) throws SQLException {
         ShardingSphereResource resource = createResource(frontendDatabaseType, databaseConfig.getDataSources());
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(databaseConfig.getRuleConfigurations(), rules);
         return new ShardingSphereMetaData(frontendDatabaseType, resource, ruleMetaData, database);

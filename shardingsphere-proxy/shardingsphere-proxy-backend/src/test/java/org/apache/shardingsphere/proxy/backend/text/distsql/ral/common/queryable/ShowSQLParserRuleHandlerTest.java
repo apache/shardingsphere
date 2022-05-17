@@ -43,7 +43,7 @@ public final class ShowSQLParserRuleHandlerTest {
     public void assertSQLParserRule() throws SQLException {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getGlobalRuleMetaData()).thenReturn(getGlobalRuleMetaData());
-        ProxyContext.getInstance().init(contextManager);
+        ProxyContext.init(contextManager);
         ShowSQLParserRuleHandler handler = new ShowSQLParserRuleHandler().initStatement(new ShowSQLParserRuleStatement());
         handler.execute();
         handler.next();

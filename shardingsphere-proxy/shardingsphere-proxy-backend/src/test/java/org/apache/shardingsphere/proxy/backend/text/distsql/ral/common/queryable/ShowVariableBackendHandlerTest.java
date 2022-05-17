@@ -58,7 +58,7 @@ public final class ShowVariableBackendHandlerTest {
     @Before
     public void setup() {
         contextManagerBefore = ProxyContext.getInstance().getContextManager();
-        ProxyContext.getInstance().init(mock(ContextManager.class, RETURNS_DEEP_STUBS));
+        ProxyContext.init(mock(ContextManager.class, RETURNS_DEEP_STUBS));
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.PROXY_BACKEND_DRIVER_TYPE)).thenReturn("JDBC");
         connectionSession = new ConnectionSession(mock(MySQLDatabaseType.class), TransactionType.LOCAL, new DefaultAttributeMap());
     }
@@ -118,7 +118,7 @@ public final class ShowVariableBackendHandlerTest {
     public void assertShowPropsVariable() throws SQLException {
         connectionSession.setCurrentDatabase("db");
         ContextManager contextManager = mock(ContextManager.class);
-        ProxyContext.getInstance().init(contextManager);
+        ProxyContext.init(contextManager);
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         Properties props = new Properties();
@@ -139,7 +139,7 @@ public final class ShowVariableBackendHandlerTest {
     public void assertShowAllVariables() throws SQLException {
         connectionSession.setCurrentDatabase("db");
         ContextManager contextManager = mock(ContextManager.class);
-        ProxyContext.getInstance().init(contextManager);
+        ProxyContext.init(contextManager);
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         when(metaDataContexts.getProps()).thenReturn(new ConfigurationProperties(new Properties()));
@@ -156,6 +156,6 @@ public final class ShowVariableBackendHandlerTest {
     
     @After
     public void tearDown() {
-        ProxyContext.getInstance().init(contextManagerBefore);
+        ProxyContext.init(contextManagerBefore);
     }
 }

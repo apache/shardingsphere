@@ -72,7 +72,7 @@ public final class DatabaseAdminQueryBackendHandlerTest {
                 mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
         contextManager.init(metaDataContexts, mock(TransactionContexts.class), mock(InstanceContext.class));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        ProxyContext.getInstance().init(contextManager);
+        ProxyContext.init(contextManager);
         when(connectionSession.getDatabaseName()).thenReturn("db");
         SelectTableExecutor executor = mock(SelectTableExecutor.class, RETURNS_DEEP_STUBS);
         MergedResult mergedResult = new SingleLocalDataMergedResult(Arrays.asList("demo_ds_0", "demo_ds_1"));

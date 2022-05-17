@@ -46,7 +46,7 @@ public final class ShowAuthorityRuleHandlerTest {
     public void assertAuthorityRule() throws SQLException {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getGlobalRuleMetaData()).thenReturn(getGlobalRuleMetaData());
-        ProxyContext.getInstance().init(contextManager);
+        ProxyContext.init(contextManager);
         handler.execute();
         handler.next();
         List<Object> data = new ArrayList<>(handler.getRowData());

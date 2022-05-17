@@ -45,7 +45,7 @@ public final class ShowTransactionRuleHandlerTest {
     public void assertExecutorWithXA() throws SQLException {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getGlobalRuleMetaData()).thenReturn(getGlobalRuleMetaData("XA", "Atomikos", getProperties()));
-        ProxyContext.getInstance().init(contextManager);
+        ProxyContext.init(contextManager);
         handler.execute();
         handler.next();
         List<Object> data = new ArrayList<>(handler.getRowData());
@@ -61,7 +61,7 @@ public final class ShowTransactionRuleHandlerTest {
     public void assertExecutorWithLocal() throws SQLException {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getGlobalRuleMetaData()).thenReturn(getGlobalRuleMetaData("LOCAL", null, null));
-        ProxyContext.getInstance().init(contextManager);
+        ProxyContext.init(contextManager);
         handler.execute();
         handler.next();
         List<Object> data = new ArrayList<>(handler.getRowData());

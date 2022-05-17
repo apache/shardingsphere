@@ -37,7 +37,7 @@ public final class SchemaRulesBuilderTest {
     
     @Test
     public void assertBuild() {
-        Iterator<ShardingSphereRule> actual = SchemaRulesBuilder.buildRules("schema_name", 
+        Iterator<ShardingSphereRule> actual = SchemaRulesBuilder.buildRules("schema_name",
                 new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.singleton(new TestRuleConfiguration())), new ConfigurationProperties(new Properties())).iterator();
         assertThat(actual.next(), instanceOf(TestShardingSphereRule.class));
         assertThat(actual.next(), instanceOf(FixtureSchemaRule.class));
