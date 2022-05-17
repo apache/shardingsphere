@@ -56,7 +56,7 @@ public final class JDBCBackendTransactionManager implements TransactionManager<V
     public Void begin() throws SQLException {
         if (!connection.getConnectionSession().getTransactionStatus().isInTransaction()) {
             connection.getConnectionSession().getTransactionStatus().setInTransaction(true);
-            TransactionHolder.setInTransaction();
+            TransactionHolder.setInTransaction(connection.getConnectionSession().isReadOnly());
             connection.closeDatabaseCommunicationEngines(true);
             connection.closeConnections(false);
         }

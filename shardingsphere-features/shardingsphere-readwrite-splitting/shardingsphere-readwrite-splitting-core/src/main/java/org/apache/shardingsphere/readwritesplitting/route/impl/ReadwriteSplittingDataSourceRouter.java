@@ -33,6 +33,8 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatem
 @RequiredArgsConstructor
 public final class ReadwriteSplittingDataSourceRouter {
     
+    private static final ThreadLocal<String> SLAVE_ROUTE_HOLDER = new ThreadLocal<>();
+    
     private final ReadwriteSplittingDataSourceRule rule;
     
     /**
@@ -42,24 +44,47 @@ public final class ReadwriteSplittingDataSourceRouter {
      * @return data source name
      */
     public String route(final SQLStatementContext<?> sqlStatementContext) {
+        if (TransactionHolder.isTransaction()) {
+            return routeInTransaction(sqlStatementContext);
+        }
+        return routeNotInTransaction(sqlStatementContext);
+    }
+    
+    private String routeInTransaction(final SQLStatementContext<?> sqlStatementContext) {
+        if (rule.getRouteMode() == 0) {
+            return rule.getReadwriteSplittingStrategy().getWriteDataSource();
+        }
+        if (rule.getRouteMode() == 1) {
+            if (!TransactionHolder.isTransactionReadOnly() && isPrimaryRoute(sqlStatementContext)) {
+                return rule.getReadwriteSplittingStrategy().getWriteDataSource();
+            }
+            if (null == SLAVE_ROUTE_HOLDER.get()) {
+                SLAVE_ROUTE_HOLDER.set(rule.getLoadBalancer().getDataSource(rule.getName(), rule.getWriteDataSource(), rule.getReadDataSourceNames()));
+            }
+            return SLAVE_ROUTE_HOLDER.get();
+        }
+        if (rule.getRouteMode() == 2) {
+            if (!TransactionHolder.isTransactionReadOnly() && isPrimaryRoute(sqlStatementContext)) {
+                return rule.getReadwriteSplittingStrategy().getWriteDataSource();
+            }
+            return rule.getLoadBalancer().getDataSource(rule.getName(), rule.getWriteDataSource(), rule.getReadDataSourceNames());
+        }
+        throw new UnsupportedOperationException(String.format("RouteMode: %d not support yet", rule.getRouteMode()));
+    }
+    
+    private String routeNotInTransaction(final SQLStatementContext<?> sqlStatementContext) {
         if (isPrimaryRoute(sqlStatementContext)) {
             return rule.getReadwriteSplittingStrategy().getWriteDataSource();
         }
         if (1 == rule.getReadDataSourceNames().size()) {
             return rule.getReadDataSourceNames().get(0);
         }
-        if(TransactionHolder.isTransaction() && rule.getRouteMode() == 1) {
-        
-        }
-        if(TransactionHolder.isTransaction() && rule.getRouteMode() == 2) {
-            return rule.getLoadBalancer().getDataSource(rule.getName(), rule.getWriteDataSource(), rule.getReadDataSourceNames());
-        }
         return rule.getLoadBalancer().getDataSource(rule.getName(), rule.getWriteDataSource(), rule.getReadDataSourceNames());
     }
     
     private boolean isPrimaryRoute(final SQLStatementContext<?> sqlStatementContext) {
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
-        return containsLockSegment(sqlStatement) || !(sqlStatement instanceof SelectStatement) || isHintWriteRouteOnly(sqlStatementContext) || (TransactionHolder.isTransaction() && rule.getRouteMode() == 0);
+        return containsLockSegment(sqlStatement) || !(sqlStatement instanceof SelectStatement) || isHintWriteRouteOnly(sqlStatementContext);
     }
     
     private boolean isHintWriteRouteOnly(final SQLStatementContext<?> sqlStatementContext) {

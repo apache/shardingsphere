@@ -75,7 +75,7 @@ public final class ReadwriteSplittingRuleConfigurationYamlSwapper
     }
     
     private ReadwriteSplittingDataSourceRuleConfiguration swapToObject(final String name, final YamlReadwriteSplittingDataSourceRuleConfiguration yamlDataSourceRuleConfig) {
-        return new ReadwriteSplittingDataSourceRuleConfiguration(name, yamlDataSourceRuleConfig.getType(), yamlDataSourceRuleConfig.getProps(), yamlDataSourceRuleConfig.getLoadBalancerName());
+        return new ReadwriteSplittingDataSourceRuleConfiguration(name, yamlDataSourceRuleConfig.getType(), yamlDataSourceRuleConfig.getProps(), yamlDataSourceRuleConfig.getLoadBalancerName(), yamlDataSourceRuleConfig.getRouteMode());
     }
     
     @Override

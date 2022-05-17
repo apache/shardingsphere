@@ -28,7 +28,7 @@ public final class TransactionHolderTest {
     @Before
     public void assertSetInTransaction() {
         assertFalse(TransactionHolder.isTransaction());
-        TransactionHolder.setInTransaction();
+        TransactionHolder.setInTransaction(false);
         assertTrue(TransactionHolder.isTransaction());
     }
     

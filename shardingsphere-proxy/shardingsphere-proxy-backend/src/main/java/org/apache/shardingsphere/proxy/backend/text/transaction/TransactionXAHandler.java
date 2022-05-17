@@ -73,7 +73,7 @@ public final class TransactionXAHandler implements TextProtocolBackendHandler {
                     throw new SQLException("can not start in a Active transaction");
                 }
                 ResponseHeader header = backendHandler.execute();
-                TransactionHolder.setInTransaction();
+                TransactionHolder.setInTransaction(connectionSession.isReadOnly());
                 connectionSession.getTransactionStatus().setManualXA(true);
                 return header;
             case "END":

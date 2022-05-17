@@ -58,8 +58,8 @@ public final class ReadwriteSplittingRuleStatementConverter {
     }
     
     private static ReadwriteSplittingDataSourceRuleConfiguration createDataSourceRuleConfiguration(final String name, final Properties prop, final String loadBalancerName, final boolean isAutoAware) {
-        return isAutoAware ? new ReadwriteSplittingDataSourceRuleConfiguration(name, "Dynamic", prop, loadBalancerName)
-                : new ReadwriteSplittingDataSourceRuleConfiguration(name, "Static", prop, loadBalancerName);
+        return isAutoAware ? new ReadwriteSplittingDataSourceRuleConfiguration(name, "Dynamic", prop, loadBalancerName, 0)
+                : new ReadwriteSplittingDataSourceRuleConfiguration(name, "Static", prop, loadBalancerName, 0);
     }
     
     private static ShardingSphereAlgorithmConfiguration createLoadBalancer(final ReadwriteSplittingRuleSegment ruleSegment) {

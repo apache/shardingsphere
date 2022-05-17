@@ -41,7 +41,7 @@ public final class ReadwriteSplittingRuleConfigurationYamlSwapperTest {
     @Test
     public void assertSwapToYamlWithLoadBalanceAlgorithm() {
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfig =
-                new ReadwriteSplittingDataSourceRuleConfiguration("ds", "Static", getProperties(), "roundRobin");
+                new ReadwriteSplittingDataSourceRuleConfiguration("ds", "Static", getProperties(), "roundRobin", 0);
         YamlReadwriteSplittingRuleConfiguration actual = getReadwriteSplittingRuleConfigurationYamlSwapper().swapToYamlConfiguration(new ReadwriteSplittingRuleConfiguration(
                 Collections.singleton(dataSourceConfig), ImmutableMap.of("roundRobin", new ShardingSphereAlgorithmConfiguration("ROUND_ROBIN", new Properties()))));
         assertThat(actual.getDataSources().get("ds").getProps().getProperty("write-data-source-name"), is("write"));
@@ -51,7 +51,7 @@ public final class ReadwriteSplittingRuleConfigurationYamlSwapperTest {
     
     @Test
     public void assertSwapToYamlWithoutLoadBalanceAlgorithm() {
-        ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfig = new ReadwriteSplittingDataSourceRuleConfiguration("ds", "Static", getProperties(), null);
+        ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfig = new ReadwriteSplittingDataSourceRuleConfiguration("ds", "Static", getProperties(), null, 0);
         YamlReadwriteSplittingRuleConfiguration actual = getReadwriteSplittingRuleConfigurationYamlSwapper().swapToYamlConfiguration(
                 new ReadwriteSplittingRuleConfiguration(Collections.singleton(dataSourceConfig), Collections.emptyMap()));
         assertThat(actual.getDataSources().get("ds").getProps().getProperty("write-data-source-name"), is("write"));

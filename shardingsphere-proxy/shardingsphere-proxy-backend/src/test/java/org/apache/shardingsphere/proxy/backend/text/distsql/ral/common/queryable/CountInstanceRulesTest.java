@@ -102,7 +102,7 @@ public final class CountInstanceRulesTest {
     
     private RuleConfiguration mockReadwriteSplittingRule() {
         ReadwriteSplittingRuleConfiguration result = mock(ReadwriteSplittingRuleConfiguration.class);
-        when(result.getDataSources()).thenReturn(Collections.singletonList(new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_splitting", "", new Properties(), "")));
+        when(result.getDataSources()).thenReturn(Collections.singletonList(new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_splitting", "", new Properties(), "", 0)));
         return result;
     }
     

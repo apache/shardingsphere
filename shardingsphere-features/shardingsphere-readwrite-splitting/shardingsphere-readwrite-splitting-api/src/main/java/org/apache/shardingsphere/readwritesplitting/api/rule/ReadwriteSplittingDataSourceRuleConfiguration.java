@@ -38,6 +38,8 @@ public final class ReadwriteSplittingDataSourceRuleConfiguration {
     
     private final String loadBalancerName;
     
+    private final int routeMode;
+    
     /**
      * Get auto aware data source name.
      *

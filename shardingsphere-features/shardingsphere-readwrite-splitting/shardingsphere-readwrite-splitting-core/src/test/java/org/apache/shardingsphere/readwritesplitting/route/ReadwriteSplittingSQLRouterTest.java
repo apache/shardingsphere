@@ -76,7 +76,7 @@ public final class ReadwriteSplittingSQLRouterTest {
     @Before
     public void setUp() {
         rule = new ReadwriteSplittingRule(new ReadwriteSplittingRuleConfiguration(Collections.singleton(
-                new ReadwriteSplittingDataSourceRuleConfiguration(DATASOURCE_NAME, "Static", createProperties(), "")), Collections.emptyMap()));
+                new ReadwriteSplittingDataSourceRuleConfiguration(DATASOURCE_NAME, "Static", createProperties(), "", 0)), Collections.emptyMap()));
         sqlRouter = (ReadwriteSplittingSQLRouter) SQLRouterFactory.newInstance(Collections.singleton(rule)).get(rule);
     }
     
