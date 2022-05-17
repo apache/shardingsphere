@@ -71,20 +71,22 @@ Delete all release records by default, add `--keep-history` to keep them.
 | `governance.zookeeper.resources.requests.cpu`    | The requested cpu for the ZooKeeper containers       | `250m`              |
 
 
-### Computer-Node ShardingSphere-Proxy  parameters
+### Compute-Node ShardingSphere-Proxy  parameters
 
-| Name                                 | Description                                                  | Value                         |
-| ------------------------------------ | ------------------------------------------------------------ | ----------------------------- |
-| `computer.image.repository`          | Image name of ShardingSphere-Proxy.                          | `apache/shardingsphere-proxy` |
-| `computer.image.pullPolicy`          | The policy for pulling ShardingSphere-Proxy image            | `IfNotPresent`                |
-| `computer.image.tag`                 | ShardingSphere-Proxy image tag                               | `5.1.2`                       |
-| `computer.imagePullSecrets`          | Specify docker-registry secret names as an array             | `[]`                          |
-| `computer.resources.limits`          | The resources limits for the ShardingSphere-Proxy containers | `{}`                          |
-| `computer.resources.requests.memory` | The requested memory for the ShardingSphere-Proxy containers | `1.6Gi`                       |
-| `computer.resources.requests.cpu`    | The requested cpu for the ShardingSphere-Proxy containers    | `200m`                        |
-| `computer.replicas`                  | Number of cluster replicas                                   | `3`                           |
-| `computer.service.type`              | ShardingSphere-Proxy network mode                            | `ClusterIP`                   |
-| `computer.service.port`              | ShardingSphere-Proxy expose port                             | `3307`                        |
-| `computer.mysqlConnector.version`    | MySQL connector version                                      | `5.1.49`                      |
-| `computer.startPort`                 | ShardingSphere-Proxy start port                              | `3307`                        |
-| `computer.serverConfig`              | ServerConfiguration file for ShardingSphere-Proxy            | `""`                          |
+| Name                                | Description                                                  | Value                         |
+| ----------------------------------- | ------------------------------------------------------------ | ----------------------------- |
+| `compute.image.repository`          | Image name of ShardingSphere-Proxy.                          | `apache/shardingsphere-proxy` |
+| `compute.image.pullPolicy`          | The policy for pulling ShardingSphere-Proxy image            | `IfNotPresent`                |
+| `compute.image.tag`                 | ShardingSphere-Proxy image tag                               | `5.1.2`                       |
+| `compute.imagePullSecrets`          | Specify docker-registry secret names as an array             | `[]`                          |
+| `compute.resources.limits`          | The resources limits for the ShardingSphere-Proxy containers | `{}`                          |
+| `compute.resources.requests.memory` | The requested memory for the ShardingSphere-Proxy containers | `1.6Gi`                       |
+| `compute.resources.requests.cpu`    | The requested cpu for the ShardingSphere-Proxy containers    | `200m`                        |
+| `compute.replicas`                  | Number of cluster replicas                                   | `3`                           |
+| `compute.service.type`              | ShardingSphere-Proxy network mode                            | `ClusterIP`                   |
+| `compute.service.port`              | ShardingSphere-Proxy expose port                             | `3307`                        |
+| `compute.mysqlConnector.version`    | MySQL connector version                                      | `5.1.49`                      |
+| `compute.startPort`                 | ShardingSphere-Proxy start port                              | `3307`                        |
+| `compute.serverConfig`              | ServerConfiguration file for ShardingSphere-Proxy            | `""`                          |
+
+

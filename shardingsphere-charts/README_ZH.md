@@ -75,16 +75,16 @@ helm uninstall shardingsphere-proxy
 
 | 配置项                                 | 描述                                | 值                         |
 | ------------------------------------ |-----------------------------------| ----------------------------- |
-| `computer.image.repository`          | ShardingSphere-Proxy 的镜像名         | `apache/shardingsphere-proxy` |
-| `computer.image.pullPolicy`          | ShardingSphere-Proxy 镜像拉取策略       | `IfNotPresent`                |
-| `computer.image.tag`                 | ShardingSphere-Proxy 镜像标签         | `5.1.2`                       |
-| `computer.imagePullSecrets`          | 拉取私有仓库的凭证                         | `[]`                          |
-| `computer.resources.limits`          | ShardingSphere-Proxy 容器的资源限制      | `{}`                          |
-| `computer.resources.requests.memory` | ShardingSphere-Proxy 容器申请的内存      | `1.6Gi`                       |
-| `computer.resources.requests.cpu`    | ShardingSphere-Proxy 容器申请的 cpu 核数 | `200m`                        |
-| `computer.replicas`                  | ShardingSphere-Proxy 节点个数         | `3`                           |
-| `computer.service.type`              | ShardingSphere-Proxy 网络模式         | `ClusterIP`                   |
-| `computer.service.port`              | ShardingSphere-Proxy 暴露端口         | `3307`                        |
-| `computer.mysqlConnector.version`    | MySQL 驱动版本                        | `5.1.49`                      |
-| `computer.startPort`                 | ShardingSphere-Proxy 启动端口         | `3307`                        |
-| `computer.serverConfig`              | ShardingSphere-Proxy 模式配置文件       | `""`                          |
+| `compute.image.repository`         | ShardingSphere-Proxy 的镜像名         | `apache/shardingsphere-proxy` |
+| `compute.image.pullPolicy`         | ShardingSphere-Proxy 镜像拉取策略       | `IfNotPresent`                |
+| `compute.image.tag`                | ShardingSphere-Proxy 镜像标签         | `5.1.2`                       |
+| `compute.imagePullSecrets`         | 拉取私有仓库的凭证                         | `[]`                          |
+| `compute.resources.limits`         | ShardingSphere-Proxy 容器的资源限制      | `{}`                          |
+| `compute.resources.requests.memory | ShardingSphere-Proxy 容器申请的内存      | `1.6Gi`                       |
+| `compute.resources.requests.cpu`   | ShardingSphere-Proxy 容器申请的 cpu 核数 | `200m`                        |
+| `compute.replicas`                 | ShardingSphere-Proxy 节点个数         | `3`                           |
+| `compute.service.type`             | ShardingSphere-Proxy 网络模式         | `ClusterIP`                   |
+| `compute.service.port`             | ShardingSphere-Proxy 暴露端口         | `3307`                        |
+| `compute.mysqlConnector.version`   | MySQL 驱动版本                        | `5.1.49`                      |
+| `compute.startPort`                | ShardingSphere-Proxy 启动端口         | `3307`                        |
+| `compute.serverConfig`             | ShardingSphere-Proxy 模式配置文件       | `""`                          |
