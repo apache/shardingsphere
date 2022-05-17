@@ -15,25 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.data.pipeline.cases.scenario;
+package org.apache.shardingsphere.integration.data.pipeline.cases.base;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-
-/**
- * Manual scaling scenario.
- */
-public final class ScalingScenario {
+public abstract class BaseIncrementTask implements Runnable {
     
-    public static final String SCENARIO_SUFFIX = "sql.xml";
-    
-    /**
-     * Manual scenario list.
-     *
-     * @return scenario list
-     */
-    public static Collection<String> listScenario() {
-        return new HashSet<>(Collections.singleton("integer_primary_key"));
-    }
 }

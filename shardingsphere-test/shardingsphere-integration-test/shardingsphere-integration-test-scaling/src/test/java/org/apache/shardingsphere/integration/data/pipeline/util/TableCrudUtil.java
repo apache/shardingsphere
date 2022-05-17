@@ -31,10 +31,8 @@ public final class TableCrudUtil {
     
     private static final SnowflakeKeyGenerateAlgorithm SNOWFLAKE_GENERATE = new SnowflakeKeyGenerateAlgorithm();
     
-    private static final ThreadLocalRandom RANDOM = ThreadLocalRandom.current();
-    
     /**
-     * Generate MySQL insert data.
+     * Generate MySQL insert data, contains full fields.
      *
      * @param insertRows insert rows
      * @return insert data list
@@ -45,18 +43,19 @@ public final class TableCrudUtil {
         }
         List<Object[]> orderData = new ArrayList<>(insertRows);
         List<Object[]> orderItemData = new ArrayList<>(insertRows);
-        for (int i = 1; i <= insertRows; i++) {
-            int orderId = RANDOM.nextInt(0, 5);
-            int userId = RANDOM.nextInt(0, 5);
+        ThreadLocalRandom current = ThreadLocalRandom.current();
+        for (int i = 0; i <= insertRows; i++) {
+            int orderId = current.nextInt(0, 6);
+            int userId = current.nextInt(0, 6);
             orderData.add(new Object[]{SNOWFLAKE_GENERATE.generateKey(), orderId, userId, "varchar" + i, (byte) 1, new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis()),
-                    "hello".getBytes(StandardCharsets.UTF_8), null, new BigDecimal("100.00"), "test", Math.random(), "{}", RANDOM.nextInt(0, 10000000)});
+                    "hello".getBytes(StandardCharsets.UTF_8), null, new BigDecimal("100.00"), "test", Math.random(), "{}", current.nextInt(0, 10000000)});
             orderItemData.add(new Object[]{SNOWFLAKE_GENERATE.generateKey(), orderId, userId, "SUCCESS"});
         }
         return Pair.of(orderData, orderItemData);
     }
     
     /**
-     * Generate PostgreSQL simple insert data.
+     * Generate PostgreSQL insert data, contains full fields.
      *
      * @param insertRows insert rows
      * @return insert data
@@ -65,8 +64,8 @@ public final class TableCrudUtil {
         List<Object[]> orderData = new ArrayList<>(insertRows);
         List<Object[]> orderItemData = new ArrayList<>(insertRows);
         for (int i = 1; i <= insertRows; i++) {
-            int orderId = RANDOM.nextInt(0, 5);
-            int userId = RANDOM.nextInt(0, 5);
+            int orderId = ThreadLocalRandom.current().nextInt(0, 6);
+            int userId = ThreadLocalRandom.current().nextInt(0, 6);
             orderData.add(new Object[]{SNOWFLAKE_GENERATE.generateKey(), orderId, userId, "OK"});
             orderItemData.add(new Object[]{SNOWFLAKE_GENERATE.generateKey(), orderId, userId, "SUCCESS"});
         }

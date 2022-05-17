@@ -50,8 +50,11 @@ public final class CommonSQLCommand {
     @XmlElement(name = "alter-sharding-table-rule")
     private String alterShardingTableRule;
     
-    @XmlElement(name = "auto-alter-table-rule")
-    private String autoAlterTableRule;
+    @XmlElement(name = "auto-alter-all-sharding-table-rule")
+    private String autoAlterAllShardingTableRule;
+    
+    @XmlElement(name = "auto-alter-order-sharding-table-rule")
+    private String autoAlterOrderShardingTableRule;
     
     @XmlElement(name = "source-add-resource-template")
     private String sourceAddResourceTemplate;
