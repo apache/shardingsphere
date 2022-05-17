@@ -90,7 +90,7 @@ public final class MetaDataContextsBuilder {
         return result;
     }
     
-    private ShardingSphereMetaData createMetaData(final String databaseName, 
+    private ShardingSphereMetaData createMetaData(final String databaseName,
                                                   final DatabaseType frontendDatabaseType, final DatabaseType backendDatabaseType, final DatabaseConfiguration databaseConfig) throws SQLException {
         Collection<ShardingSphereRule> databaseRules = SchemaRulesBuilder.buildRules(databaseName, databaseConfig, props);
         ShardingSphereDatabase database = DatabaseLoader.load(databaseName, frontendDatabaseType, backendDatabaseType, databaseConfig.getDataSources(), databaseRules, props);
