@@ -100,7 +100,7 @@ public abstract class AbstractSpringNamespaceTest extends AbstractJUnit4SpringCo
     }
     
     private void assertGlobalRules(final Collection<ShardingSphereRule> actual) {
-        assertThat(actual.size(), is(4));
+        assertThat(actual.size(), is(5));
         for (ShardingSphereRule each : actual) {
             if (each instanceof SQLParserRule) {
                 assertSQLParserRule((SQLParserRule) each);

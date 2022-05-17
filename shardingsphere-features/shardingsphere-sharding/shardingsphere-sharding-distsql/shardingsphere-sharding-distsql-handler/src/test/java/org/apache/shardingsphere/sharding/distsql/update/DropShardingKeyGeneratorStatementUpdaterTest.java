@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sharding.distsql.update;
 
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateKeyGeneratorException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.KeyGeneratorInUsedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredKeyGeneratorMissedException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -52,11 +51,6 @@ public final class DropShardingKeyGeneratorStatementUpdaterTest {
     @Before
     public void before() {
         when(shardingSphereMetaData.getDatabaseName()).thenReturn("test");
-    }
-    
-    @Test(expected = DuplicateKeyGeneratorException.class)
-    public void assertExecuteWithDuplicate() throws DistSQLException {
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement("uuid_key_generator", "uuid_key_generator"), null);
     }
     
     @Test(expected = RequiredKeyGeneratorMissedException.class)

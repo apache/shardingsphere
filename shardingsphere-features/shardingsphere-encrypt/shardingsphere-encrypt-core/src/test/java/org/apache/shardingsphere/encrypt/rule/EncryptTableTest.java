@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.rule;
 
-import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
@@ -119,13 +118,15 @@ public final class EncryptTableTest {
     
     @Test
     public void assertGetLogicAndCipherColumns() {
-        assertThat(encryptTable.getLogicAndCipherColumns(), is(ImmutableMap.of("logicColumn", "cipherColumn")));
+        assertThat(encryptTable.getLogicAndCipherColumns(), is(Collections.singletonMap("logicColumn", "cipherColumn")));
     }
     
     @Test
     public void assertGetQueryWithCipherColumn() {
         encryptTable = new EncryptTable(new EncryptTableRuleConfiguration("t_encrypt",
                 Collections.singleton(new EncryptColumnRuleConfiguration("logicColumn", "cipherColumn", "assistedQueryColumn", "plainColumn", "myEncryptor")), true), Collections.emptyMap());
-        assertTrue(encryptTable.getQueryWithCipherColumn().get());
+        Optional<Boolean> actual = encryptTable.getQueryWithCipherColumn();
+        assertTrue(actual.isPresent());
+        assertTrue(actual.get());
     }
 }

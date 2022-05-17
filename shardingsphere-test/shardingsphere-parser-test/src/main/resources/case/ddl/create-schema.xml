@@ -17,6 +17,7 @@
   -->
 
 <sql-parser-test-cases>
-    <create-schema sql-case-id="create_schema_grant_permissions" />
     <create-schema sql-case-id="create_schema" />
+    <create-schema sql-case-id="create_schema_with_grant_permissions" />
+    <create-schema sql-case-id="create_schema_with_if_not_exists" />
 </sql-parser-test-cases>

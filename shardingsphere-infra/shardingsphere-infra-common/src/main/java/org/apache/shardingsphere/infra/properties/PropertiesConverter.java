@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.properties;
 
-import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -37,6 +36,6 @@ public final class PropertiesConverter {
      * @return converted string content
      */
     public static String convert(final Properties props) {
-        return Joiner.on(",").join(props.entrySet().stream().map(each -> Joiner.on("=").join(each.getKey(), each.getValue())).collect(Collectors.toList()));
+        return props.entrySet().stream().map(entry -> String.join("=", entry.getKey().toString(), entry.getValue().toString())).collect(Collectors.joining(","));
     }
 }

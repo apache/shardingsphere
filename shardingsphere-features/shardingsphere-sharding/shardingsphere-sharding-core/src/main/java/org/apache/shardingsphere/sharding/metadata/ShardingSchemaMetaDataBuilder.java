@@ -63,7 +63,7 @@ public final class ShardingSchemaMetaDataBuilder implements RuleBasedSchemaMetaD
         if (tableMetaDataLoaderMaterials.isEmpty()) {
             return Collections.emptyMap();
         }
-        Map<String, SchemaMetaData> result = SchemaMetaDataLoaderEngine.load(tableMetaDataLoaderMaterials, materials.getDatabaseType());
+        Map<String, SchemaMetaData> result = SchemaMetaDataLoaderEngine.load(tableMetaDataLoaderMaterials, materials.getBackendDatabaseType());
         if (isCheckingMetaData) {
             checkMetaData(result, rule);
         }

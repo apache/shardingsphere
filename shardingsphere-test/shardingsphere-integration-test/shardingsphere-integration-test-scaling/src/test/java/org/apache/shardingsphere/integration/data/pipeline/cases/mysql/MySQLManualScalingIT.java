@@ -18,10 +18,13 @@
 package org.apache.shardingsphere.integration.data.pipeline.cases.mysql;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.integration.data.pipeline.cases.base.BaseMySQLITCase;
+import org.apache.shardingsphere.integration.data.pipeline.cases.scenario.ScalingScenario;
 import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
+import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -29,13 +32,7 @@ import org.junit.runners.Parameterized.Parameters;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import java.util.concurrent.TimeUnit;
 
 /**
  * MySQL manual scaling test case.
@@ -57,20 +54,36 @@ public final class MySQLManualScalingIT extends BaseMySQLITCase {
             if (Strings.isNullOrEmpty(version)) {
                 continue;
             }
-            result.add(new ScalingParameterized(DATABASE, version, "env/scenario/manual/mysql"));
+            for (String scenario : ScalingScenario.listScenario()) {
+                result.add(new ScalingParameterized(DATABASE_TYPE, version, String.join("/", "env/scenario/manual/mysql", scenario, ScalingScenario.SCENARIO_SUFFIX)));
+            }
         }
         return result;
     }
     
+    @Before
+    public void setUp() throws InterruptedException {
+        addSourceResource();
+        initShardingAlgorithm();
+        // TODO wait for algorithm init
+        TimeUnit.SECONDS.sleep(3);
+        createScalingRule();
+    }
+    
     @Test
     public void assertManualScalingSuccess() throws InterruptedException {
-        List<Map<String, Object>> previewResults = getJdbcTemplate().queryForList("PREVIEW SELECT COUNT(1) FROM t_order");
-        Set<Object> originalSources = previewResults.stream().map(each -> each.get("data_source_name")).collect(Collectors.toSet());
-        assertThat(originalSources, is(Sets.newHashSet("ds_0", "ds_1")));
+        createAllSharingTableRule();
+        bindingShardingRule();
+        createNoUseTable();
+        getSqlHelper().createOrderTable();
+        getSqlHelper().createOrderItemTable();
+        getSqlHelper().initTableData(true);
+        startIncrementTask(new SnowflakeKeyGenerateAlgorithm());
+        assertOriginalSourceSuccess();
+        addTargetSourceResource("root", "root");
         getJdbcTemplate().execute(getCommonSQLCommand().getAutoAlterTableRule());
-        Map<String, Object> showScalingResMap = getJdbcTemplate().queryForMap("SHOW SCALING LIST");
-        String jobId = showScalingResMap.get("id").toString();
-        getIncreaseTaskThread().join(60 * 1000);
-        checkMatchConsistency(getJdbcTemplate(), jobId);
+        String jobId = String.valueOf(getJdbcTemplate().queryForMap("SHOW SCALING LIST").get("id"));
+        getIncreaseTaskThread().join(60 * 1000L);
+        assertCheckMatchConsistencySuccess(getJdbcTemplate(), jobId);
     }
 }

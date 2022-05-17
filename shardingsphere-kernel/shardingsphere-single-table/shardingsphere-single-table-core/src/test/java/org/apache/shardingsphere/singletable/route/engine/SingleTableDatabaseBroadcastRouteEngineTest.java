@@ -36,6 +36,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
@@ -43,17 +44,17 @@ public final class SingleTableDatabaseBroadcastRouteEngineTest {
     
     @Test
     public void assertRoute() {
-        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class),
-                createDataSourceMap(), Collections.emptyList(), new ConfigurationProperties(new Properties()));
+        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(),
+                DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class), createDataSourceMap(), Collections.emptyList(), new ConfigurationProperties(new Properties()));
         RouteContext routeContext = new RouteContext();
         SingleTableDatabaseBroadcastRouteEngine engine = new SingleTableDatabaseBroadcastRouteEngine();
         engine.route(routeContext, singleTableRule);
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
         assertThat(routeContext.getRouteUnits().size(), is(2));
         assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_0"));
-        assertThat(routeUnits.get(0).getTableMappers().size(), is(0));
+        assertTrue(routeUnits.get(0).getTableMappers().isEmpty());
         assertThat(routeUnits.get(1).getDataSourceMapper().getActualName(), is("ds_1"));
-        assertThat(routeUnits.get(1).getTableMappers().size(), is(0));
+        assertTrue(routeUnits.get(1).getTableMappers().isEmpty());
     }
     
     private Map<String, DataSource> createDataSourceMap() {

@@ -18,9 +18,14 @@
 package org.apache.shardingsphere.integration.data.pipeline.cases.openguass;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Sets;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.shardingsphere.integration.data.pipeline.cases.base.BaseOpenGaussITCase;
+import org.apache.shardingsphere.integration.data.pipeline.cases.scenario.ScalingScenario;
 import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
+import org.apache.shardingsphere.integration.data.pipeline.util.TableCrudUtil;
+import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -29,12 +34,7 @@ import org.junit.runners.Parameterized.Parameters;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import java.util.concurrent.TimeUnit;
 
 @RunWith(Parameterized.class)
 public final class OpenGaussManualScalingIT extends BaseOpenGaussITCase {
@@ -52,22 +52,39 @@ public final class OpenGaussManualScalingIT extends BaseOpenGaussITCase {
             if (Strings.isNullOrEmpty(dockerImageName)) {
                 continue;
             }
-            result.add(new ScalingParameterized(DATABASE, dockerImageName, "env/scenario/manual/postgresql"));
+            for (String scenario : ScalingScenario.listScenario()) {
+                result.add(new ScalingParameterized(DATABASE_TYPE, dockerImageName, String.join("/", "env/scenario/manual/postgresql", scenario, ScalingScenario.SCENARIO_SUFFIX)));
+            }
         }
         return result;
     }
     
+    @Before
+    public void setUp() throws InterruptedException {
+        addSourceResource();
+        initShardingAlgorithm();
+        // TODO wait for algorithm init
+        TimeUnit.SECONDS.sleep(2);
+        createScalingRule();
+        createSchema("test");
+    }
+    
     @Test
     public void assertManualScalingSuccess() throws InterruptedException {
-        List<Map<String, Object>> previewResults = getJdbcTemplate().queryForList("PREVIEW SELECT COUNT(1) FROM t_order");
-        Set<Object> originalSources = previewResults.stream().map(each -> each.get("data_source_name")).collect(Collectors.toSet());
-        assertThat(originalSources, is(Sets.newHashSet("ds_0", "ds_1")));
+        createAllSharingTableRule();
+        bindingShardingRule();
+        getSqlHelper().createOrderTable();
+        getSqlHelper().createOrderItemTable();
+        getSqlHelper().initTableData(true);
+        Pair<List<Object[]>, List<Object[]>> dataPair = TableCrudUtil.generatePostgresSQLInsertDataList(3000);
+        getJdbcTemplate().batchUpdate(getExtraSQLCommand().getFullInsertOrder(), dataPair.getLeft());
+        getJdbcTemplate().batchUpdate(getExtraSQLCommand().getInsertOrderItem(), dataPair.getRight());
+        startIncrementTask(new SnowflakeKeyGenerateAlgorithm());
+        assertOriginalSourceSuccess();
+        addTargetSourceResource("gaussdb", "Root@123");
         getJdbcTemplate().execute(getCommonSQLCommand().getAutoAlterTableRule());
-        Map<String, Object> showScalingResMap = getJdbcTemplate().queryForMap("SHOW SCALING LIST");
-        String jobId = String.valueOf(showScalingResMap.get("id"));
-        if (null == getIncreaseTaskThread()) {
-            getIncreaseTaskThread().join(60 * 1000L);
-        }
-        checkMatchConsistency(getJdbcTemplate(), jobId);
+        String jobId = String.valueOf(getJdbcTemplate().queryForMap("SHOW SCALING LIST").get("id"));
+        getIncreaseTaskThread().join(60 * 1000L);
+        assertCheckMatchConsistencySuccess(getJdbcTemplate(), jobId);
     }
 }
