@@ -201,6 +201,16 @@ public final class ContextManager implements AutoCloseable {
         }));
     }
     
+    private void persistMetaData(final MetaDataPersistService metaDataPersistService, final MetaDataContextsBuilder builder) {
+        builder.getDatabaseMap().forEach((databaseName, schemas) -> schemas.getSchemas().forEach((schemaName, tables) -> {
+            if (tables.getTables().isEmpty()) {
+                metaDataPersistService.getSchemaMetaDataService().persistSchema(databaseName, schemaName);
+            } else {
+                metaDataPersistService.getSchemaMetaDataService().persistTables(databaseName, schemaName, tables);
+            }
+        }));
+    }
+    
     private void alterTableSchema(final String databaseName, final String schemaName, final TableMetaData changedTableMetaData) {
         ShardingSphereMetaData metaData = metaDataContexts.getMetaData(databaseName);
         alterSingleTableDataNodes(databaseName, metaData, changedTableMetaData);
@@ -531,8 +541,7 @@ public final class ContextManager implements AutoCloseable {
         metaDataPersistService.ifPresent(optional -> persistTransactionConfiguration(databaseConfig, optional));
         MetaDataContextsBuilder builder = new MetaDataContextsBuilder(
                 Collections.singletonMap(originalMetaData.getDatabaseName(), databaseConfig), metaDataContexts.getGlobalRuleMetaData().getConfigurations(), metaDataContexts.getProps());
-        metaDataContexts.getMetaDataPersistService().ifPresent(optional -> optional.getSchemaMetaDataService()
-                .persistTables(originalMetaData.getDatabaseName(), originalMetaData.getDatabaseName(), builder.getSchemaMap(originalMetaData.getDatabaseName())));
+        metaDataContexts.getMetaDataPersistService().ifPresent(optional -> persistMetaData(optional, builder));
         return builder.build(metaDataContexts.getMetaDataPersistService().orElse(null));
     }
     
@@ -546,8 +555,7 @@ public final class ContextManager implements AutoCloseable {
         MetaDataContextsBuilder builder = new MetaDataContextsBuilder(
                 Collections.singletonMap(originalMetaData.getDatabaseName(), new DataSourceProvidedDatabaseConfiguration(originalMetaData.getResource().getDataSources(), ruleConfigs)),
                 metaDataContexts.getGlobalRuleMetaData().getConfigurations(), metaDataContexts.getProps());
-        metaDataContexts.getMetaDataPersistService().ifPresent(optional -> optional.getSchemaMetaDataService()
-                .persistTables(originalMetaData.getDatabaseName(), originalMetaData.getDatabaseName(), builder.getSchemaMap(originalMetaData.getDatabaseName())));
+        metaDataContexts.getMetaDataPersistService().ifPresent(optional -> persistMetaData(optional, builder));
         return builder.build(metaDataContexts.getMetaDataPersistService().orElse(null));
     }
     
@@ -560,8 +568,7 @@ public final class ContextManager implements AutoCloseable {
                 originalMetaData.getRuleMetaData().getConfigurations());
         MetaDataContextsBuilder builder = new MetaDataContextsBuilder(Collections.singletonMap(originalMetaData.getDatabaseName(), databaseConfig),
                 metaDataContexts.getGlobalRuleMetaData().getConfigurations(), metaDataContexts.getProps());
-        metaDataContexts.getMetaDataPersistService().ifPresent(optional -> optional.getSchemaMetaDataService()
-                .persistTables(originalMetaData.getDatabaseName(), originalMetaData.getDatabaseName(), builder.getSchemaMap(originalMetaData.getDatabaseName())));
+        metaDataContexts.getMetaDataPersistService().ifPresent(optional -> persistMetaData(optional, builder));
         return builder.build(metaDataContexts.getMetaDataPersistService().orElse(null));
     }
     
@@ -573,8 +580,7 @@ public final class ContextManager implements AutoCloseable {
                 getAddedDataSources(originalMetaData, newDataSourceProps), changedDataSources, deletedDataSources), ruleConfigs);
         MetaDataContextsBuilder builder = new MetaDataContextsBuilder(
                 Collections.singletonMap(originalMetaData.getDatabaseName(), databaseConfig), metaDataContexts.getGlobalRuleMetaData().getConfigurations(), metaDataContexts.getProps());
-        metaDataContexts.getMetaDataPersistService().ifPresent(optional -> optional.getSchemaMetaDataService()
-                .persistTables(originalMetaData.getDatabaseName(), originalMetaData.getDatabaseName(), builder.getSchemaMap(originalMetaData.getDatabaseName())));
+        metaDataContexts.getMetaDataPersistService().ifPresent(optional -> persistMetaData(optional, builder));
         return builder.build(metaDataContexts.getMetaDataPersistService().orElse(null));
     }
     

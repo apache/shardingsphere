@@ -28,7 +28,6 @@ import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
@@ -53,7 +52,6 @@ import org.apache.shardingsphere.transaction.spi.TransactionConfigurationFileGen
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -72,9 +70,8 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         persistConfigurations(metaDataPersistService, parameter);
         RegistryCenter registryCenter = new RegistryCenter(repository);
         MetaDataContextsBuilder builder = createMetaDataContextsBuilder(metaDataPersistService, parameter);
-        Map<String, ShardingSphereDatabase> databaseMap = builder.getDatabaseMap().isEmpty() ? Collections.emptyMap() : builder.getDatabaseMap();
-        persistMetaData(metaDataPersistService, databaseMap);
         MetaDataContexts metaDataContexts = builder.build(metaDataPersistService);
+        persistMetaData(metaDataPersistService, metaDataContexts);
         Properties transactionProps = getTransactionProperties(metaDataContexts);
         persistTransactionConfiguration(parameter, metaDataPersistService, transactionProps);
         ContextManager result = createContextManager(repository, metaDataPersistService, parameter.getInstanceDefinition(), metaDataContexts, transactionProps, parameter.getModeConfig());
@@ -146,8 +143,8 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         return new DataSourceProvidedDatabaseConfiguration(dataSources, databaseRuleConfigs);
     }
     
-    private void persistMetaData(final MetaDataPersistService metaDataPersistService, final Map<String, ShardingSphereDatabase> databaseMap) {
-        databaseMap.forEach((databaseName, schemas) -> schemas.getSchemas().forEach((schemaName, tables) -> {
+    private void persistMetaData(final MetaDataPersistService metaDataPersistService, final MetaDataContexts metaDataContexts) {
+        metaDataContexts.getMetaDataMap().forEach((databaseName, schemas) -> schemas.getSchemas().forEach((schemaName, tables) -> {
             if (tables.getTables().isEmpty()) {
                 metaDataPersistService.getSchemaMetaDataService().persistSchema(databaseName, schemaName);
             } else {

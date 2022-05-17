@@ -31,7 +31,6 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.loader.DatabaseLoader;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilder;
@@ -111,22 +110,10 @@ public final class MetaDataContextsBuilder {
         DatabaseType frontendDatabaseType = DatabaseTypeEngine.getFrontendDatabaseType(databaseConfigMap, props);
         for (Entry<String, ShardingSphereDatabase> entry : databaseMap.entrySet()) {
             String databaseName = entry.getKey();
-            // TODO support database and schema configuration separately
             DatabaseConfiguration databaseConfig = databaseConfigMap.getOrDefault(databaseName, new DataSourceProvidedDatabaseConfiguration(new LinkedHashMap<>(), new LinkedList<>()));
             Collection<ShardingSphereRule> rules = databaseRulesMap.getOrDefault(databaseName, new LinkedList<>());
             result.put(databaseName, ShardingSphereMetaData.create(databaseName, frontendDatabaseType, entry.getValue().getSchemas(), databaseConfig, rules));
         }
         return result;
-    }
-    
-    /**
-     * Get schema map.
-     * 
-     * @param databaseName database name
-     * @return ShardingSphere schema
-     */
-    public ShardingSphereSchema getSchemaMap(final String databaseName) {
-        // TODO remove these logic when mode support persist ShardingSphereDatabase
-        return databaseMap.get(databaseName).getSchemas().get(databaseName);
     }
 }
