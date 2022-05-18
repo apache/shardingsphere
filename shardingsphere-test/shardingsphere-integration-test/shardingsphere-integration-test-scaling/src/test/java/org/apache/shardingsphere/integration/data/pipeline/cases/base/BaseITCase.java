@@ -265,9 +265,6 @@ public abstract class BaseITCase {
     
     @After
     public void stopContainer() {
-        if (composedContainer instanceof DockerComposedContainer) {
-            log.info(((DockerComposedContainer) composedContainer).getProxyContainer().getLogs());
-        }
         composedContainer.stop();
     }
 }
