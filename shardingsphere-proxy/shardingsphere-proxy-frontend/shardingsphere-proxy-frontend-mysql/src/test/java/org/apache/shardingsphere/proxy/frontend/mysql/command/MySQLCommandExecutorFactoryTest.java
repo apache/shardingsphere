@@ -96,7 +96,7 @@ public final class MySQLCommandExecutorFactoryTest {
         ShardingSphereMetaData metaData = mockShardingSphereMetaData();
         Map<String, ShardingSphereMetaData> metaDataMap = Collections.singletonMap("logic_db", metaData);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), 
+        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
                 metaDataMap, mock(ShardingSphereRuleMetaData.class), mock(OptimizerContext.class, RETURNS_DEEP_STUBS), new ConfigurationProperties(new Properties()));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         contextManagerField.set(ProxyContext.getInstance(), contextManager);

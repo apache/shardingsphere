@@ -83,7 +83,7 @@ public final class MySQLComStmtExecuteExecutorTest {
         contextManagerField.setAccessible(true);
         ShardingSphereMetaData metaData = mockMetaData();
         Map<String, ShardingSphereMetaData> metaDataMap = Collections.singletonMap("logic_db", metaData);
-        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), 
+        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
                 metaDataMap, mock(ShardingSphereRuleMetaData.class), mock(OptimizerContext.class, RETURNS_DEEP_STUBS), new ConfigurationProperties(new Properties()));
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
