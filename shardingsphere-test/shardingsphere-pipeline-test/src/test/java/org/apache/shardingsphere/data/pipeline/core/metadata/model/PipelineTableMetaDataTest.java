@@ -35,7 +35,8 @@ public final class PipelineTableMetaDataTest {
     
     @Before
     public void setUp() {
-        pipelineTableMetaData = new PipelineTableMetaData("test_data", Collections.singletonMap("test", new PipelineColumnMetaData(1, "test", Types.INTEGER, "INTEGER", true)), Collections.emptySet());
+        PipelineColumnMetaData column = new PipelineColumnMetaData(1, "test", Types.INTEGER, "INTEGER", true, true);
+        pipelineTableMetaData = new PipelineTableMetaData("test_data", Collections.singletonMap("test", column), Collections.emptySet());
     }
     
     @Test

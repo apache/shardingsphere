@@ -72,6 +72,9 @@ public final class PipelineTableMetaDataLoaderTest {
     @Mock
     private ResultSet columnMetaDataResultSet;
     
+    @Mock
+    private ResultSet indexInfoResultSet;
+    
     @Before
     public void setUp() throws SQLException {
         DataSource rawDataSource = mock(DataSource.class);
@@ -88,6 +91,8 @@ public final class PipelineTableMetaDataLoaderTest {
         when(columnMetaDataResultSet.getInt(ORDINAL_POSITION)).thenReturn(1, 2, 3);
         when(columnMetaDataResultSet.getString(COLUMN_NAME)).thenReturn("id", "name", "age");
         when(columnMetaDataResultSet.getInt(DATA_TYPE)).thenReturn(Types.BIGINT, Types.VARCHAR, Types.INTEGER);
+        when(databaseMetaData.getIndexInfo(TEST_CATALOG, null, TEST_TABLE, true, false)).thenReturn(indexInfoResultSet);
+        when(indexInfoResultSet.next()).thenReturn(false);
     }
     
     @Test
