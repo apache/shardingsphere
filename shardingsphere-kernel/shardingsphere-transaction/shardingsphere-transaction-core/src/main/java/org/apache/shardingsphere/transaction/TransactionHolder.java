@@ -60,6 +60,8 @@ public final class TransactionHolder {
     
     /**
      * Set transaction in current thread.
+     *
+     * @param readOnly read only.
      */
     public static void setInTransaction(final boolean readOnly) {
         TRANSACTION.get().put("status", true);
