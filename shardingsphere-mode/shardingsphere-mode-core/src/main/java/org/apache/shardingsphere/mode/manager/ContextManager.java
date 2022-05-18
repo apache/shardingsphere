@@ -86,16 +86,6 @@ public final class ContextManager implements AutoCloseable {
     private final InstanceContext instanceContext;
     
     /**
-     * Get data source map.
-     *
-     * @param databaseName database name
-     * @return data source map
-     */
-    public Map<String, DataSource> getDataSourceMap(final String databaseName) {
-        return metaDataContexts.getMetaData(databaseName).getResource().getDataSources();
-    }
-    
-    /**
      * Renew meta data contexts.
      *
      * @param metaDataContexts meta data contexts
@@ -111,6 +101,16 @@ public final class ContextManager implements AutoCloseable {
      */
     public synchronized void renewTransactionContexts(final TransactionContexts transactionContexts) {
         this.transactionContexts = transactionContexts;
+    }
+    
+    /**
+     * Get data source map.
+     *
+     * @param databaseName database name
+     * @return data source map
+     */
+    public Map<String, DataSource> getDataSourceMap(final String databaseName) {
+        return metaDataContexts.getMetaData(databaseName).getResource().getDataSources();
     }
     
     /**
