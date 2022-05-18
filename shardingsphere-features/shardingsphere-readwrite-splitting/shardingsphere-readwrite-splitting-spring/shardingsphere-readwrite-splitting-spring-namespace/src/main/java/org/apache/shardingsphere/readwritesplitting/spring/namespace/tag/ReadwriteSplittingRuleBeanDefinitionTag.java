@@ -36,5 +36,7 @@ public final class ReadwriteSplittingRuleBeanDefinitionTag {
     
     public static final String READWRITE_SPLITTING_PROPS = "props";
     
+    public static final String READWRITE_SPLITTING_ROUTE_MODE = "route-mode";
+    
     public static final String LOAD_BALANCE_ALGORITHM_REF_ATTRIBUTE = "load-balance-algorithm-ref";
 }
