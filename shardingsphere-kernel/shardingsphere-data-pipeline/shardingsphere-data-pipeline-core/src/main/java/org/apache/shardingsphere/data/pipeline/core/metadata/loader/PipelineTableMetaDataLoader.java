@@ -113,7 +113,8 @@ public final class PipelineTableMetaDataLoader {
                     throw ex;
                 }
                 boolean primaryKey = primaryKeys.contains(columnName);
-                PipelineColumnMetaData columnMetaData = new PipelineColumnMetaData(ordinalPosition, columnName, dataType, dataTypeName, primaryKey);
+                boolean isNullable = "YES".equals(resultSet.getString("IS_NULLABLE"));
+                PipelineColumnMetaData columnMetaData = new PipelineColumnMetaData(ordinalPosition, columnName, dataType, dataTypeName, isNullable, primaryKey);
                 columnMetaDataMap.put(columnName, columnMetaData);
             }
         }
