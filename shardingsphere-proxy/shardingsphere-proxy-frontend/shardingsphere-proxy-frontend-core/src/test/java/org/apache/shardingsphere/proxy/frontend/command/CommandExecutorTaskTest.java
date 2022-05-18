@@ -24,13 +24,19 @@ import org.apache.shardingsphere.db.protocol.packet.CommandPacket;
 import org.apache.shardingsphere.db.protocol.packet.CommandPacketType;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.BackendConnectionException;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.context.FrontendContext;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
+import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,11 +50,11 @@ import java.util.Collections;
 import java.util.Optional;
 
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@SuppressWarnings("unchecked")
 @RunWith(MockitoJUnitRunner.class)
 public final class CommandExecutorTaskTest {
     
@@ -82,6 +88,7 @@ public final class CommandExecutorTaskTest {
     @Mock
     private CommandExecutor commandExecutor;
     
+    @SuppressWarnings("rawtypes")
     @Mock
     private DatabasePacket databasePacket;
     
@@ -90,6 +97,9 @@ public final class CommandExecutorTaskTest {
     
     @Before
     public void setup() {
+        ContextManager contextManager = new ContextManager();
+        contextManager.init(new MetaDataContexts(mock(MetaDataPersistService.class)), mock(TransactionContexts.class), mock(InstanceContext.class));
+        ProxyContext.init(contextManager);
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
         when(handlerContext.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get()).thenReturn(StandardCharsets.UTF_8);
     }
@@ -107,9 +117,10 @@ public final class CommandExecutorTaskTest {
         verify(backendConnection).closeExecutionResources();
     }
     
+    @SuppressWarnings("unchecked")
     @Test
     public void assertRunNeedFlushByTrue() throws SQLException, BackendConnectionException {
-        when(queryCommandExecutor.execute()).thenReturn(Collections.singletonList(databasePacket));
+        when(queryCommandExecutor.execute()).thenReturn(Collections.singleton(databasePacket));
         when(engine.getCommandExecuteEngine().getCommandPacket(payload, commandPacketType, connectionSession)).thenReturn(commandPacket);
         when(engine.getCommandExecuteEngine().getCommandExecutor(commandPacketType, commandPacket, connectionSession)).thenReturn(queryCommandExecutor);
         when(engine.getCommandExecuteEngine().getCommandPacketType(payload)).thenReturn(commandPacketType);
@@ -123,10 +134,11 @@ public final class CommandExecutorTaskTest {
         verify(backendConnection).closeExecutionResources();
     }
     
+    @SuppressWarnings("unchecked")
     @Test
     public void assertRunByCommandExecutor() throws SQLException, BackendConnectionException {
         when(engine.getFrontendContext()).thenReturn(frontendContext);
-        when(commandExecutor.execute()).thenReturn(Collections.singletonList(databasePacket));
+        when(commandExecutor.execute()).thenReturn(Collections.singleton(databasePacket));
         when(engine.getCommandExecuteEngine().getCommandPacket(payload, commandPacketType, connectionSession)).thenReturn(commandPacket);
         when(engine.getCommandExecuteEngine().getCommandExecutor(commandPacketType, commandPacket, connectionSession)).thenReturn(commandExecutor);
         when(engine.getCommandExecuteEngine().getCommandPacketType(payload)).thenReturn(commandPacketType);
@@ -139,6 +151,7 @@ public final class CommandExecutorTaskTest {
         verify(backendConnection).closeExecutionResources();
     }
     
+    @SuppressWarnings("unchecked")
     @Test
     public void assertRunWithError() throws BackendConnectionException {
         RuntimeException mockException = new RuntimeException("mock");
