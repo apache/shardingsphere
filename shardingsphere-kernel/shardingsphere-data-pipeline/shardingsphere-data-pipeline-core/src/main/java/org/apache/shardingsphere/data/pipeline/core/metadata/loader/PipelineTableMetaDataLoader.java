@@ -126,7 +126,8 @@ public final class PipelineTableMetaDataLoader {
         return result;
     }
     
-    private Collection<PipelineIndexMetaData> loadIndexesOfTable(final Connection connection, final String schemaName, final Map<String, PipelineColumnMetaData> columns, final String tableName) throws SQLException {
+    private Collection<PipelineIndexMetaData> loadIndexesOfTable(final Connection connection, final String schemaName, final Map<String, PipelineColumnMetaData> columns,
+                                                                 final String tableName) throws SQLException {
         Map<String, PipelineIndexMetaData> result = new LinkedHashMap<>();
         Map<String, SortedMap<Short, String>> orderedColumnsOfIndexes = new LinkedHashMap<>();
         try (ResultSet resultSet = connection.getMetaData().getIndexInfo(connection.getCatalog(), schemaName, tableName, true, false)) {
