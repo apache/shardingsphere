@@ -67,9 +67,7 @@ public final class PostgreSQLCommandExecuteEngineTest {
     
     @Before
     public void setUp() {
-        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class));
-        ContextManager contextManager = new ContextManager();
-        contextManager.init(metaDataContexts, mock(TransactionContexts.class), mock(InstanceContext.class));
+        ContextManager contextManager = new ContextManager(new MetaDataContexts(mock(MetaDataPersistService.class)), mock(TransactionContexts.class), mock(InstanceContext.class));
         ProxyContext.init(contextManager);
         when(channelHandlerContext.channel()).thenReturn(channel);
         when(connectionSession.getTransactionStatus()).thenReturn(new TransactionStatus(TransactionType.LOCAL));

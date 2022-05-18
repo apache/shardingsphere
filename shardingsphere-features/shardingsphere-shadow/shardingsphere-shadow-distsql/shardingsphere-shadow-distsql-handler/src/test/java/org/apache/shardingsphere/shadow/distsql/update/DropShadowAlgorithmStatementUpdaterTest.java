@@ -62,7 +62,7 @@ public final class DropShadowAlgorithmStatementUpdaterTest {
         DropShadowAlgorithmStatement sqlStatement = createSQLStatement("ds_0");
         sqlStatement.setContainsExistClause(true);
         ShadowRuleConfiguration ruleConfig = new ShadowRuleConfiguration();
-        ruleConfig.getTables().put("t_order", new ShadowTableConfiguration(new ArrayList<>(Collections.singletonList("ds_0")), Collections.emptyList()));
+        ruleConfig.getTables().put("t_order", new ShadowTableConfiguration(new ArrayList<>(Collections.singleton("ds_0")), Collections.emptyList()));
         updater.checkSQLStatement(shardingSphereMetaData, sqlStatement, ruleConfig);
         updater.updateCurrentRuleConfiguration(sqlStatement, ruleConfig);
         assertFalse(ruleConfig.getTables().containsKey("ds_0"));

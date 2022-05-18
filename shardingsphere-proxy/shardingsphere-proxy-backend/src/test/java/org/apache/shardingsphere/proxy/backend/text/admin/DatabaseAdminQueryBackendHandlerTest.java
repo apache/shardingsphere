@@ -38,7 +38,6 @@ import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -57,9 +56,6 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class DatabaseAdminQueryBackendHandlerTest {
     
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private ContextManager contextManager;
-    
     @Mock
     private ConnectionSession connectionSession;
     
@@ -70,8 +66,7 @@ public final class DatabaseAdminQueryBackendHandlerTest {
     public void before() {
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), getMetaDataMap(),
                 mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
-        contextManager.init(metaDataContexts, mock(TransactionContexts.class), mock(InstanceContext.class));
-        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
+        ContextManager contextManager = new ContextManager(metaDataContexts, mock(TransactionContexts.class), mock(InstanceContext.class));
         ProxyContext.init(contextManager);
         when(connectionSession.getDatabaseName()).thenReturn("db");
         SelectTableExecutor executor = mock(SelectTableExecutor.class, RETURNS_DEEP_STUBS);

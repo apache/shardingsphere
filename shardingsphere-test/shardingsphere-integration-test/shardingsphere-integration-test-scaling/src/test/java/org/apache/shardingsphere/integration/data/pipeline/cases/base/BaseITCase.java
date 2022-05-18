@@ -250,6 +250,7 @@ public abstract class BaseITCase {
         assertThat(actualStatusMap.values().stream().filter(StringUtils::isNotBlank).collect(Collectors.toSet()).size(), is(1));
         jdbcTemplate.execute(String.format("STOP SCALING SOURCE WRITING %s", jobId));
         List<Map<String, Object>> checkScalingResults = jdbcTemplate.queryForList(String.format("CHECK SCALING %s BY TYPE (NAME=DATA_MATCH)", jobId));
+        log.info("checkScalingResults: {}", checkScalingResults);
         for (Map<String, Object> entry : checkScalingResults) {
             assertTrue(Boolean.parseBoolean(entry.get("records_content_matched").toString()));
         }
@@ -258,6 +259,7 @@ public abstract class BaseITCase {
         TimeUnit.SECONDS.sleep(2);
         List<Map<String, Object>> previewResults = jdbcTemplate.queryForList("PREVIEW SELECT COUNT(1) FROM t_order");
         Set<Object> originalSources = previewResults.stream().map(each -> each.get("data_source_name")).collect(Collectors.toSet());
+        log.info("originalSources: {}", originalSources);
         assertThat(originalSources, is(new HashSet<>(Arrays.asList("ds_2", "ds_3", "ds_4"))));
     }
     

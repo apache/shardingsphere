@@ -163,9 +163,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         repository.watchSessionConnection(instanceContext);
         generateTransactionConfigurationFile(instanceContext, metaDataContexts, transactionProps);
         TransactionContexts transactionContexts = new TransactionContextsBuilder(metaDataContexts.getMetaDataMap(), metaDataContexts.getGlobalRuleMetaData().getRules()).build();
-        ContextManager result = new ContextManager();
-        result.init(metaDataContexts, transactionContexts, instanceContext);
-        return result;
+        return new ContextManager(metaDataContexts, transactionContexts, instanceContext);
     }
     
     private void generateTransactionConfigurationFile(final InstanceContext instanceContext, final MetaDataContexts metaDataContexts, final Properties transactionProps) {

@@ -97,9 +97,7 @@ public final class CommandExecutorTaskTest {
     
     @Before
     public void setup() {
-        ContextManager contextManager = new ContextManager();
-        contextManager.init(new MetaDataContexts(mock(MetaDataPersistService.class)), mock(TransactionContexts.class), mock(InstanceContext.class));
-        ProxyContext.init(contextManager);
+        ProxyContext.init(new ContextManager(new MetaDataContexts(mock(MetaDataPersistService.class)), mock(TransactionContexts.class), mock(InstanceContext.class)));
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
         when(handlerContext.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get()).thenReturn(StandardCharsets.UTF_8);
     }

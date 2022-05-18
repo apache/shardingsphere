@@ -58,7 +58,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.javadoc.skip=true -Drat.skip=true -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Djacoco.skip=true
+  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.javadoc.skip=true -Drat.skip=true -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Djacoco.skip=true -Dfailsafe.skipAfterFailureCount=1
 
 jobs:
   scaling-it-test:

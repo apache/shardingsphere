@@ -76,9 +76,9 @@ public final class CreateShardingAlgorithmStatementUpdater implements RuleDefini
     @Override
     public ShardingRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateShardingAlgorithmStatement sqlStatement) {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        Map<String, ShardingSphereAlgorithmConfiguration> algorithmConfigurationMap = sqlStatement.getAlgorithmSegments().stream()
+        Map<String, ShardingSphereAlgorithmConfiguration> algorithmConfigMap = sqlStatement.getAlgorithmSegments().stream()
                 .collect(Collectors.toMap(ShardingAlgorithmSegment::getShardingAlgorithmName, each -> ShardingTableRuleStatementConverter.createAlgorithmConfiguration(each.getAlgorithmSegment())));
-        result.setShardingAlgorithms(algorithmConfigurationMap);
+        result.setShardingAlgorithms(algorithmConfigMap);
         return result;
     }
     

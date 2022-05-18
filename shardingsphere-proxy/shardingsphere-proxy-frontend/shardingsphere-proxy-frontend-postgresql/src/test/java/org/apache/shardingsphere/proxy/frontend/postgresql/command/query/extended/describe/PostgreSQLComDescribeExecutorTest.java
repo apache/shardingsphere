@@ -259,7 +259,7 @@ public final class PostgreSQLComDescribeExecutorTest {
         SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);
         prepareJDBCBackendConnection(sql);
         PostgreSQLPreparedStatementRegistry.getInstance().register(1);
-        List<PostgreSQLColumnType> parameterTypes = new ArrayList<>(Collections.singletonList(PostgreSQLColumnType.POSTGRESQL_TYPE_UNSPECIFIED));
+        List<PostgreSQLColumnType> parameterTypes = new ArrayList<>(Collections.singleton(PostgreSQLColumnType.POSTGRESQL_TYPE_UNSPECIFIED));
         PostgreSQLPreparedStatementRegistry.getInstance().register(1, statementId, sql, sqlStatement, parameterTypes);
         Collection<DatabasePacket<?>> actual = executor.execute();
         assertThat(actual.size(), is(2));

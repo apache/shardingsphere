@@ -71,9 +71,9 @@ public final class AlterShardingKeyGeneratorStatementUpdater implements RuleDefi
     @Override
     public ShardingRuleConfiguration buildToBeAlteredRuleConfiguration(final AlterShardingKeyGeneratorStatement sqlStatement) {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        Map<String, ShardingSphereAlgorithmConfiguration> algorithmConfigurationMap = sqlStatement.getKeyGeneratorSegments().stream()
+        Map<String, ShardingSphereAlgorithmConfiguration> algorithmConfigMap = sqlStatement.getKeyGeneratorSegments().stream()
                 .collect(Collectors.toMap(ShardingKeyGeneratorSegment::getKeyGeneratorName, each -> ShardingTableRuleStatementConverter.createAlgorithmConfiguration(each.getAlgorithmSegment())));
-        result.setKeyGenerators(algorithmConfigurationMap);
+        result.setKeyGenerators(algorithmConfigMap);
         return result;
     }
     

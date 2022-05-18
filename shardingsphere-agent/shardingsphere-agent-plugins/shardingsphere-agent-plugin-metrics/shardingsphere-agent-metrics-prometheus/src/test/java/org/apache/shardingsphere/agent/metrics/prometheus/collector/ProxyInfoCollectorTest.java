@@ -36,8 +36,7 @@ public final class ProxyInfoCollectorTest {
     
     @Test
     public void assertCollect() {
-        ContextManager contextManager = new ContextManager();
-        contextManager.init(mock(MetaDataContexts.class), mock(TransactionContexts.class), new InstanceContext(new ComputeNodeInstance(mock(InstanceDefinition.class)),
+        ContextManager contextManager = new ContextManager(mock(MetaDataContexts.class), mock(TransactionContexts.class), new InstanceContext(new ComputeNodeInstance(mock(InstanceDefinition.class)),
                 new MemoryWorkerIdGenerator(), new ModeConfiguration("Memory", null, false), mock(LockContext.class)));
         ProxyContext.init(contextManager);
         assertFalse(new ProxyInfoCollector().collect().isEmpty());
