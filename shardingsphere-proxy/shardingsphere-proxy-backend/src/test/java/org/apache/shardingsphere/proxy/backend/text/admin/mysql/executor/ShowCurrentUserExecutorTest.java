@@ -50,7 +50,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class ShowCurrentUserExecutorTest {
     
-    private static final Grantee grantee = new Grantee("root", "");
+    private static final Grantee GRANTEE = new Grantee("root", "");
     
     @Before
     public void setUp() throws IllegalAccessException, NoSuchFieldException {
@@ -67,7 +67,7 @@ public final class ShowCurrentUserExecutorTest {
         AuthorityRule authorityRule = mock(AuthorityRule.class);
         ShardingSphereUser shardingSphereUser = mock(ShardingSphereUser.class);
         when(shardingSphereUser.getGrantee()).thenReturn(new Grantee("root", "%"));
-        when(authorityRule.findUser(grantee)).thenReturn(Optional.of(shardingSphereUser));
+        when(authorityRule.findUser(GRANTEE)).thenReturn(Optional.of(shardingSphereUser));
         return new ShardingSphereRuleMetaData(new ArrayList<>(), Collections.singletonList(authorityRule));
     }
     
@@ -83,7 +83,7 @@ public final class ShowCurrentUserExecutorTest {
     
     private ConnectionSession mockConnectionSession() {
         ConnectionSession result = mock(ConnectionSession.class);
-        when(result.getGrantee()).thenReturn(grantee);
+        when(result.getGrantee()).thenReturn(GRANTEE);
         return result;
     }
 }
