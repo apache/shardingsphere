@@ -51,8 +51,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertState
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.CreateTableStatementHandler;
+import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.InsertStatementHandler;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -219,16 +219,18 @@ public final class TableExtractor {
                 extractTablesFromExpression(each);
             }
         }
-        if (insertStatement instanceof MySQLInsertStatement) {
-            ((MySQLInsertStatement) insertStatement).getOnDuplicateKeyColumns().ifPresent(each -> extractTablesFromAssignmentItems(each.getColumns()));
-        }
+        InsertStatementHandler.getOnDuplicateKeyColumnsSegment(insertStatement).ifPresent(each -> extractTablesFromAssignmentItems(each.getColumns()));
         if (insertStatement.getInsertSelect().isPresent()) {
             extractTablesFromSelect(insertStatement.getInsertSelect().get().getSelect());
         }
     }
     
     private void extractTablesFromAssignmentItems(final Collection<AssignmentSegment> assignmentItems) {
-        assignmentItems.stream().flatMap(each -> each.getColumns().stream()).forEach(each -> {
+        assignmentItems.stream().forEach(each -> extractTablesFromColumnSegments(each.getColumns()));
+    }
+    
+    private void extractTablesFromColumnSegments(final Collection<ColumnSegment> columnSegments) {
+        columnSegments.forEach(each -> {
             if (each.getOwner().isPresent() && needRewrite(each.getOwner().get())) {
                 OwnerSegment ownerSegment = each.getOwner().get();
                 rewriteTables.add(new SimpleTableSegment(new TableNameSegment(ownerSegment.getStartIndex(), ownerSegment.getStopIndex(), ownerSegment.getIdentifier())));
