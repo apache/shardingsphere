@@ -81,8 +81,7 @@ public final class ContextManagerTest {
     
     @Before
     public void setUp() throws SQLException {
-        contextManager = new ContextManager();
-        contextManager.init(metaDataContexts, mock(TransactionContexts.class), mock(InstanceContext.class));
+        contextManager = new ContextManager(metaDataContexts, mock(TransactionContexts.class), mock(InstanceContext.class));
         when(metaDataContexts.getGlobalRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         when(metaDataContexts.getOptimizerContext().getFederationMetaData().getDatabases()).thenReturn(new LinkedHashMap<>());
         when(metaDataContexts.getProps()).thenReturn(new ConfigurationProperties(new Properties()));

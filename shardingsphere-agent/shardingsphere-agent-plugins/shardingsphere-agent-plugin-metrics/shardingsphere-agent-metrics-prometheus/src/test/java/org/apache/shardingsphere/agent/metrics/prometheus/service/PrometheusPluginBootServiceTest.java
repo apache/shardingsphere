@@ -49,8 +49,7 @@ public final class PrometheusPluginBootServiceTest {
     
     @Test
     public void assertStart() throws IOException {
-        ContextManager contextManager = new ContextManager();
-        contextManager.init(mock(MetaDataContexts.class), mock(TransactionContexts.class), new InstanceContext(new ComputeNodeInstance(mock(InstanceDefinition.class)),
+        ContextManager contextManager = new ContextManager(mock(MetaDataContexts.class), mock(TransactionContexts.class), new InstanceContext(new ComputeNodeInstance(mock(InstanceDefinition.class)),
                 new MemoryWorkerIdGenerator(), new ModeConfiguration("Memory", null, false), mock(LockContext.class)));
         ProxyContext.init(contextManager);
         PROMETHEUS_PLUGIN_BOOT_SERVICE.start(new PluginConfiguration("localhost", 8090, "", createProperties()));

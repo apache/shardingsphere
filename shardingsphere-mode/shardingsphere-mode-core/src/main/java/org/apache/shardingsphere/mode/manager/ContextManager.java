@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
@@ -73,28 +74,16 @@ import java.util.stream.Collectors;
 /**
  * Context manager.
  */
+@AllArgsConstructor
 @Getter
 @Slf4j
 public final class ContextManager implements AutoCloseable {
     
-    private volatile MetaDataContexts metaDataContexts = new MetaDataContexts(null);
+    private volatile MetaDataContexts metaDataContexts;
     
-    private volatile TransactionContexts transactionContexts = new TransactionContexts();
+    private volatile TransactionContexts transactionContexts;
     
-    private volatile InstanceContext instanceContext;
-    
-    /**
-     * Initialize context manager.
-     *
-     * @param metaDataContexts meta data contexts
-     * @param transactionContexts transaction contexts
-     * @param instanceContext instance context
-     */
-    public void init(final MetaDataContexts metaDataContexts, final TransactionContexts transactionContexts, final InstanceContext instanceContext) {
-        this.metaDataContexts = metaDataContexts;
-        this.transactionContexts = transactionContexts;
-        this.instanceContext = instanceContext;
-    }
+    private final InstanceContext instanceContext;
     
     /**
      * Get data source map.
