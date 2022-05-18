@@ -269,6 +269,6 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
     
     @Override
     public Map<String, Supplier<Object>> getExportedMethods() {
-        return Collections.singletonMap(ExportableConstants.EXPORTABLE_KEY_SINGLE_TABLES, tableNames::keySet);
+        return Collections.singletonMap(ExportableConstants.EXPORT_SINGLE_TABLES, tableNames::keySet);
     }
 }

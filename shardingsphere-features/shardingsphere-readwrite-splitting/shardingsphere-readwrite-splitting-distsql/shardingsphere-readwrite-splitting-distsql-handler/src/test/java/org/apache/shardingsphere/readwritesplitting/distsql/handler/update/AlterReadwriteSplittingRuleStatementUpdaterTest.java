@@ -23,8 +23,10 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmCo
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.rule.identifier.type.ExportableRule;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.distsql.handler.fixture.DatabaseDiscoveryRuleExportableFixture;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.segment.ReadwriteSplittingRuleSegment;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.AlterReadwriteSplittingRuleStatement;
 import org.junit.Before;
@@ -72,6 +74,13 @@ public final class AlterReadwriteSplittingRuleStatementUpdaterTest {
     public void assertCheckSQLStatementWithoutExistedResources() throws DistSQLException {
         when(resource.getNotExistedResources(any())).thenReturn(Collections.singleton("read_ds_0"));
         updater.checkSQLStatement(databaseMetaData, createSQLStatement("TEST"), createCurrentRuleConfiguration());
+    }
+    
+    @Test(expected = RequiredResourceMissedException.class)
+    public void assertCheckSQLStatementWithoutExistedAutoAwareResources() throws DistSQLException {
+        when(databaseMetaData.getRuleMetaData().findRules(ExportableRule.class)).thenReturn(Collections.singleton(new DatabaseDiscoveryRuleExportableFixture()));
+        ReadwriteSplittingRuleSegment ruleSegment = new ReadwriteSplittingRuleSegment("dynamic_rule", "ha_group", "TEST", new Properties());
+        updater.checkSQLStatement(databaseMetaData, new AlterReadwriteSplittingRuleStatement(Collections.singleton(ruleSegment)), null);
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)

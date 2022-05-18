@@ -21,16 +21,14 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Exportable constants.
+ * Exportable item constants.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ExportableConstants {
+public class ExportableItemConstants {
     
-    public static final String EXPORT_DB_DISCOVERY_PRIMARY_DATA_SOURCES = "primary_data_source";
+    public static final String AUTO_AWARE_DATA_SOURCE_NAME = "auto_aware_data_source_name";
     
-    public static final String EXPORT_DYNAMIC_READ_WRITE_SPLITTING_RULE = "dynamic_read_write_rules";
+    public static final String PRIMARY_DATA_SOURCE_NAME = "primary_data_source_name";
     
-    public static final String EXPORT_STATIC_READ_WRITE_SPLITTING_RULE = "static_read_write_rules";
-    
-    public static final String EXPORT_SINGLE_TABLES = "single_tables";
+    public static final String REPLICA_DATA_SOURCE_NAMES = "replica_data_source_names";
 }
