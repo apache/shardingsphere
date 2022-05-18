@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.route.engine.validator.ddl;
 
 import org.apache.shardingsphere.infra.binder.statement.ddl.AlterIndexStatementContext;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingAlterIndexStatementValidator;
@@ -48,7 +48,7 @@ public final class ShardingAlterIndexStatementValidatorTest {
     private ShardingRule shardingRule;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private ShardingSphereMetaData metaData;
+    private ShardingSphereDatabaseMetaData databaseMetaData;
     
     @Test
     public void assertPreValidateAlterIndexWhenIndexExistRenameIndexNotExistForPostgreSQL() {
@@ -58,11 +58,11 @@ public final class ShardingAlterIndexStatementValidatorTest {
         TableMetaData tableMetaData = mock(TableMetaData.class);
         Map<String, IndexMetaData> indexes = mock(HashMap.class);
         when(tableMetaData.getIndexes()).thenReturn(indexes);
-        when(metaData.getSchemaByName("public").getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
-        when(metaData.getSchemaByName("public").get("t_order")).thenReturn(tableMetaData);
+        when(databaseMetaData.getSchema("public").getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
+        when(databaseMetaData.getSchema("public").get("t_order")).thenReturn(tableMetaData);
         when(indexes.containsKey("t_order_index")).thenReturn(true);
         when(indexes.containsKey("t_order_index_new")).thenReturn(false);
-        new ShardingAlterIndexStatementValidator().preValidate(shardingRule, new AlterIndexStatementContext(sqlStatement), Collections.emptyList(), metaData);
+        new ShardingAlterIndexStatementValidator().preValidate(shardingRule, new AlterIndexStatementContext(sqlStatement), Collections.emptyList(), databaseMetaData);
     }
     
     @Test(expected = ShardingSphereException.class)
@@ -73,10 +73,10 @@ public final class ShardingAlterIndexStatementValidatorTest {
         TableMetaData tableMetaData = mock(TableMetaData.class);
         Map<String, IndexMetaData> indexes = mock(HashMap.class);
         when(tableMetaData.getIndexes()).thenReturn(indexes);
-        when(metaData.getSchemaByName("public").getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
-        when(metaData.getSchemaByName("public").get("t_order")).thenReturn(tableMetaData);
+        when(databaseMetaData.getSchema("public").getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
+        when(databaseMetaData.getSchema("public").get("t_order")).thenReturn(tableMetaData);
         when(indexes.containsKey("t_order_index")).thenReturn(false);
-        new ShardingAlterIndexStatementValidator().preValidate(shardingRule, new AlterIndexStatementContext(sqlStatement), Collections.emptyList(), metaData);
+        new ShardingAlterIndexStatementValidator().preValidate(shardingRule, new AlterIndexStatementContext(sqlStatement), Collections.emptyList(), databaseMetaData);
     }
     
     @Test(expected = ShardingSphereException.class)
@@ -87,10 +87,10 @@ public final class ShardingAlterIndexStatementValidatorTest {
         TableMetaData tableMetaData = mock(TableMetaData.class);
         Map<String, IndexMetaData> indexes = mock(HashMap.class);
         when(tableMetaData.getIndexes()).thenReturn(indexes);
-        when(metaData.getSchemaByName("public").getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
-        when(metaData.getSchemaByName("public").get("t_order")).thenReturn(tableMetaData);
+        when(databaseMetaData.getSchema("public").getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
+        when(databaseMetaData.getSchema("public").get("t_order")).thenReturn(tableMetaData);
         when(indexes.containsKey("t_order_index")).thenReturn(true);
         when(indexes.containsKey("t_order_index_new")).thenReturn(true);
-        new ShardingAlterIndexStatementValidator().preValidate(shardingRule, new AlterIndexStatementContext(sqlStatement), Collections.emptyList(), metaData);
+        new ShardingAlterIndexStatementValidator().preValidate(shardingRule, new AlterIndexStatementContext(sqlStatement), Collections.emptyList(), databaseMetaData);
     }
 }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.fixtur
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.infra.executor.check.SQLCheckResult;
 import org.apache.shardingsphere.infra.executor.check.SQLChecker;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -40,7 +40,7 @@ public final class AuthorityCheckerFixture implements SQLChecker<AuthorityRule> 
     
     @Override
     public SQLCheckResult check(final SQLStatement sqlStatement, final List<Object> parameters, final Grantee grantee,
-                                final String currentDatabase, final Map<String, ShardingSphereMetaData> metaDataMap, final AuthorityRule authorityRule) {
+                                final String currentDatabase, final Map<String, ShardingSphereDatabaseMetaData> databaseMetaDataMap, final AuthorityRule authorityRule) {
         return new SQLCheckResult(true, "");
     }
     

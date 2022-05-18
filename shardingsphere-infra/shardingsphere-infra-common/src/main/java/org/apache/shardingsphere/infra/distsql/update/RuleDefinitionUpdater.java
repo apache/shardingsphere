@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.distsql.update;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -36,12 +36,12 @@ public interface RuleDefinitionUpdater<T extends SQLStatement, R extends RuleCon
     /**
      * Check SQL statement.
      *
-     * @param shardingSphereMetaData ShardingSphere meta data
+     * @param databaseMetaData database meta data
      * @param sqlStatement SQL statement
      * @param currentRuleConfig current rule configuration
      * @throws DistSQLException definition violation exception
      */
-    void checkSQLStatement(ShardingSphereMetaData shardingSphereMetaData, T sqlStatement, R currentRuleConfig) throws DistSQLException;
+    void checkSQLStatement(ShardingSphereDatabaseMetaData databaseMetaData, T sqlStatement, R currentRuleConfig) throws DistSQLException;
     
     /**
      * Get rule configuration class.

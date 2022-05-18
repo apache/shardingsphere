@@ -33,7 +33,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.data.pipeline.spi.ddlgenerator.DialectDDLSQLGeneratorFactory;
 import org.apache.shardingsphere.infra.metadata.schema.util.IndexMetaDataUtil;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
@@ -73,12 +73,12 @@ public final class PipelineDDLGenerator {
      */
     @SneakyThrows
     public String generateLogicDDLSQL(final DatabaseType databaseType, final String databaseName, final String schemaName, final String tableName) {
-        ShardingSphereMetaData metaData = contextManager.getMetaDataContexts().getMetaData(databaseName);
-        String sql = generateActualDDLSQL(databaseType, schemaName, tableName, metaData);
+        ShardingSphereDatabaseMetaData databaseMetaData = contextManager.getMetaDataContexts().getDatabaseMetaData(databaseName);
+        String sql = generateActualDDLSQL(databaseType, schemaName, tableName, databaseMetaData);
         StringBuilder result = new StringBuilder();
         for (String each : sql.split(DELIMITER)) {
             if (!each.trim().isEmpty()) {
-                result.append(decorateActualSQL(each.trim(), metaData, databaseType, databaseName)).append(DELIMITER).append(System.lineSeparator());
+                result.append(decorateActualSQL(each.trim(), databaseMetaData, databaseType, databaseName)).append(DELIMITER).append(System.lineSeparator());
             }
         }
         return result.toString();
@@ -105,40 +105,42 @@ public final class PipelineDDLGenerator {
         return sql;
     }
     
-    private String generateActualDDLSQL(final DatabaseType databaseType, final String schemaName, final String tableName, final ShardingSphereMetaData metaData) throws SQLException {
-        DataNodes dataNodes = new DataNodes(metaData.getRuleMetaData().getRules());
-        Optional<DataNode> optional = dataNodes.getDataNodes(tableName).stream().filter(dataNode -> metaData.getResource().getDataSources().containsKey(dataNode.getDataSourceName().contains(".")
-                ? dataNode.getDataSourceName().split("\\.")[0]
-                : dataNode.getDataSourceName())).findFirst();
-        String dataSourceName = optional.map(DataNode::getDataSourceName).orElseGet(() -> metaData.getResource().getDataSources().keySet().iterator().next());
+    private String generateActualDDLSQL(final DatabaseType databaseType, final String schemaName, final String tableName, final ShardingSphereDatabaseMetaData databaseMetaData) throws SQLException {
+        DataNodes dataNodes = new DataNodes(databaseMetaData.getRuleMetaData().getRules());
+        Optional<DataNode> optional = dataNodes.getDataNodes(tableName).stream()
+                .filter(dataNode -> databaseMetaData.getResource().getDataSources().containsKey(dataNode.getDataSourceName().contains(".")
+                        ? dataNode.getDataSourceName().split("\\.")[0]
+                        : dataNode.getDataSourceName()))
+                .findFirst();
+        String dataSourceName = optional.map(DataNode::getDataSourceName).orElseGet(() -> databaseMetaData.getResource().getDataSources().keySet().iterator().next());
         String actualTable = optional.map(DataNode::getTableName).orElse(tableName);
         return DialectDDLSQLGeneratorFactory.findInstance(databaseType).orElseThrow(() -> new ShardingSphereException("Failed to get dialect ddl sql generator"))
-                .generateDDLSQL(actualTable, schemaName, metaData.getResource().getDataSources().get(dataSourceName));
+                .generateDDLSQL(actualTable, schemaName, databaseMetaData.getResource().getDataSources().get(dataSourceName));
     }
     
-    private String decorateActualSQL(final String sql, final ShardingSphereMetaData metaData, final DatabaseType databaseType, final String databaseName) {
+    private String decorateActualSQL(final String sql, final ShardingSphereDatabaseMetaData databaseMetaData, final DatabaseType databaseType, final String databaseName) {
         LogicSQL logicSQL = getLogicSQL(sql, databaseType, databaseName);
         String result = logicSQL.getSql();
         SQLStatementContext<?> sqlStatementContext = logicSQL.getSqlStatementContext();
         if (sqlStatementContext instanceof CreateTableStatementContext) {
-            result = decorateIndexAndConstraint(metaData, result, sqlStatementContext);
-            result = decorateTable(metaData, result, (TableAvailable) sqlStatementContext);
+            result = decorateIndexAndConstraint(databaseMetaData, result, sqlStatementContext);
+            result = decorateTable(databaseMetaData, result, (TableAvailable) sqlStatementContext);
         }
         if (sqlStatementContext instanceof CommentStatementContext) {
-            result = decorateTable(metaData, result, (TableAvailable) sqlStatementContext);
+            result = decorateTable(databaseMetaData, result, (TableAvailable) sqlStatementContext);
         }
         if (sqlStatementContext instanceof CreateIndexStatementContext) {
-            result = decorateTable(metaData, result, (TableAvailable) sqlStatementContext);
-            result = decorateIndexAndConstraint(metaData, result, sqlStatementContext);
+            result = decorateTable(databaseMetaData, result, (TableAvailable) sqlStatementContext);
+            result = decorateIndexAndConstraint(databaseMetaData, result, sqlStatementContext);
         }
         
         return result;
     }
     
-    private String decorateTable(final ShardingSphereMetaData metaData, final String sql, final TableAvailable sqlStatementContext) {
+    private String decorateTable(final ShardingSphereDatabaseMetaData databaseMetaData, final String sql, final TableAvailable sqlStatementContext) {
         String result = sql;
         for (SimpleTableSegment each : sqlStatementContext.getAllTables()) {
-            String logicTable = findLogicTable(each.getTableName(), metaData);
+            String logicTable = findLogicTable(each.getTableName(), databaseMetaData);
             if (!logicTable.equals(each.getTableName().getIdentifier().getValue())) {
                 result = replace(result, each.getTableName(), logicTable);
             }
@@ -146,13 +148,13 @@ public final class PipelineDDLGenerator {
         return result;
     }
     
-    private String decorateIndexAndConstraint(final ShardingSphereMetaData metaData, final String sql, final SQLStatementContext<?> sqlStatementContext) {
+    private String decorateIndexAndConstraint(final ShardingSphereDatabaseMetaData databaseMetaData, final String sql, final SQLStatementContext<?> sqlStatementContext) {
         if (!(sqlStatementContext instanceof TableAvailable) || ((TableAvailable) sqlStatementContext).getTablesContext().getTables().isEmpty()) {
             return sql;
         }
         String result = sql;
         TableNameSegment tableNameSegment = ((TableAvailable) sqlStatementContext).getTablesContext().getTables().iterator().next().getTableName();
-        String logicTable = findLogicTable(tableNameSegment, metaData);
+        String logicTable = findLogicTable(tableNameSegment, databaseMetaData);
         if (!tableNameSegment.getIdentifier().getValue().equals(logicTable)) {
             if (sqlStatementContext instanceof IndexAvailable) {
                 result = decorateIndex((IndexAvailable) sqlStatementContext, result, tableNameSegment);
@@ -193,9 +195,9 @@ public final class PipelineDDLGenerator {
         return result;
     }
     
-    private String findLogicTable(final TableNameSegment tableNameSegment, final ShardingSphereMetaData metaData) {
+    private String findLogicTable(final TableNameSegment tableNameSegment, final ShardingSphereDatabaseMetaData databaseMetaData) {
         String actualTable = tableNameSegment.getIdentifier().getValue();
-        return metaData.getRuleMetaData().getRules().stream().filter(each -> each instanceof DataNodeContainedRule)
+        return databaseMetaData.getRuleMetaData().getRules().stream().filter(each -> each instanceof DataNodeContainedRule)
                 .map(each -> ((DataNodeContainedRule) each).findLogicTableByActualTable(actualTable).orElse(null)).filter(Objects::nonNull).findFirst().orElse(actualTable);
     }
     
@@ -203,7 +205,7 @@ public final class PipelineDDLGenerator {
         Optional<SQLParserRule> sqlParserRule = contextManager.getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(SQLParserRule.class);
         Preconditions.checkState(sqlParserRule.isPresent());
         SQLStatement sqlStatement = new ShardingSphereSQLParserEngine(databaseType.getType(), sqlParserRule.get().toParserConfiguration()).parse(sql, false);
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(contextManager.getMetaDataContexts().getMetaDataMap(),
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(contextManager.getMetaDataContexts().getDatabaseMetaDataMap(),
                 sqlStatement, databaseName);
         return new LogicSQL(sqlStatementContext, sql, Collections.emptyList());
     }

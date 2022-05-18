@@ -59,15 +59,15 @@ public final class JDBCExecutorCallbackTest {
     private Connection connection;
     
     @Mock
-    private DatabaseMetaData metaData;
+    private DatabaseMetaData databaseMetaData;
     
     private Collection<JDBCExecutionUnit> units;
     
     @Before
     public void setUp() throws SQLException {
         when(preparedStatement.getConnection()).thenReturn(connection);
-        when(connection.getMetaData()).thenReturn(metaData);
-        when(metaData.getURL()).thenReturn("jdbc:mysql://localhost:3306/test");
+        when(connection.getMetaData()).thenReturn(databaseMetaData);
+        when(databaseMetaData.getURL()).thenReturn("jdbc:mysql://localhost:3306/test");
         units = Collections.singletonList(
                 new JDBCExecutionUnit(new ExecutionUnit("ds", new SQLUnit("SELECT now()", Collections.emptyList())), ConnectionMode.CONNECTION_STRICTLY, preparedStatement));
     }
