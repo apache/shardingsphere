@@ -72,7 +72,7 @@ public final class TableExtractorTest {
         mySQLInsertStatement.setTable(new SimpleTableSegment(new TableNameSegment(122, 128, new IdentifierValue("t_order"))));
         Collection<AssignmentSegment> assignmentSegments = new ArrayList<>();
         ColumnSegment columnSegment = new ColumnSegment(133, 136, new IdentifierValue("id"));
-        columnSegment.setOwner(new OwnerSegment(130,132,new IdentifierValue("t_order")));
+        columnSegment.setOwner(new OwnerSegment(130,132, new IdentifierValue("t_order")));
         assignmentSegments.add(new ColumnAssignmentSegment(130, 140, Arrays.asList(columnSegment), new LiteralExpressionSegment(141, 142, 1)));
         mySQLInsertStatement.setOnDuplicateKeyColumns(new OnDuplicateKeyColumnsSegment(130, 140, assignmentSegments));
         tableExtractor.extractTablesFromInsert(mySQLInsertStatement);
