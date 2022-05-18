@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.metadata.loader;
 
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
+import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineIndexMetaData;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineTableMetaData;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.junit.Before;
@@ -33,6 +34,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Collection;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -52,11 +54,13 @@ public final class PipelineTableMetaDataLoaderTest {
     
     private static final String DATA_TYPE = "DATA_TYPE";
     
-    private static final String TYPE_NAME = "TYPE_NAME";
-    
     private static final String TABLE_NAME = "TABLE_NAME";
     
+    private static final String INDEX_NAME = "INDEX_NAME";
+    
     private static final String TEST_TABLE = "test";
+    
+    private static final String TEST_INDEX = "idx_test";
     
     private PipelineDataSourceWrapper dataSource;
     
@@ -92,14 +96,19 @@ public final class PipelineTableMetaDataLoaderTest {
         when(columnMetaDataResultSet.getString(COLUMN_NAME)).thenReturn("id", "name", "age");
         when(columnMetaDataResultSet.getInt(DATA_TYPE)).thenReturn(Types.BIGINT, Types.VARCHAR, Types.INTEGER);
         when(databaseMetaData.getIndexInfo(TEST_CATALOG, null, TEST_TABLE, true, false)).thenReturn(indexInfoResultSet);
-        when(indexInfoResultSet.next()).thenReturn(false);
+        when(indexInfoResultSet.next()).thenReturn(true, true, false);
+        when(indexInfoResultSet.getString(INDEX_NAME)).thenReturn(TEST_INDEX);
+        when(indexInfoResultSet.getString(COLUMN_NAME)).thenReturn("name", "id");
+        when(indexInfoResultSet.getShort(ORDINAL_POSITION)).thenReturn((short) 2, (short) 1);
     }
     
     @Test
     public void assertGetTableMetaData() {
         PipelineTableMetaDataLoader metaDataLoader = new PipelineTableMetaDataLoader(dataSource);
-        assertColumnMetaData(metaDataLoader.getTableMetaData(null, TEST_TABLE));
-        assertPrimaryKeys(metaDataLoader.getTableMetaData(null, TEST_TABLE).getPrimaryKeyColumns());
+        PipelineTableMetaData tableMetaData = metaDataLoader.getTableMetaData(null, TEST_TABLE);
+        assertColumnMetaData(tableMetaData);
+        assertPrimaryKeys(tableMetaData.getPrimaryKeyColumns());
+        assertIndexMetaData(tableMetaData.getUniqueIndexes());
     }
     
     private void assertPrimaryKeys(final List<String> actual) {
@@ -117,6 +126,15 @@ public final class PipelineTableMetaDataLoaderTest {
     private void assertColumnMetaData(final PipelineColumnMetaData actual, final String expectedName, final int expectedType) {
         assertThat(actual.getName(), is(expectedName));
         assertThat(actual.getDataType(), is(expectedType));
+    }
+    
+    private void assertIndexMetaData(final Collection<PipelineIndexMetaData> actualUniqueIndexes) {
+        assertThat(actualUniqueIndexes.size(), is(1));
+        PipelineIndexMetaData actualIndexMetaData = actualUniqueIndexes.iterator().next();
+        assertThat(actualIndexMetaData.getName(), is(TEST_INDEX));
+        assertThat(actualIndexMetaData.getColumns().size(), is(2));
+        assertThat(actualIndexMetaData.getColumns().get(0).getName(), is("id"));
+        assertThat(actualIndexMetaData.getColumns().get(1).getName(), is("name"));
     }
     
     @Test(expected = RuntimeException.class)
