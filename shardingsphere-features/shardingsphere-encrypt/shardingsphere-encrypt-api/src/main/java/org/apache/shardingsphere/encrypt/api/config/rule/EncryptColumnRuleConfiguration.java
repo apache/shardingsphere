@@ -47,17 +47,8 @@ public final class EncryptColumnRuleConfiguration {
     
     private final Boolean queryWithCipherColumn;
     
-    public EncryptColumnRuleConfiguration(final String logicColumn, final String cipherColumn, final String assistedQueryColumn, final String plainColumn, final String encryptorName) {
-        this(logicColumn, null, cipherColumn, null, assistedQueryColumn, null, plainColumn, null, encryptorName, null);
-    }
-    
     public EncryptColumnRuleConfiguration(final String logicColumn, final String cipherColumn, final String assistedQueryColumn, final String plainColumn, final String encryptorName,
                                           final Boolean queryWithCipherColumn) {
         this(logicColumn, null, cipherColumn, null, assistedQueryColumn, null, plainColumn, null, encryptorName, queryWithCipherColumn);
-    }
-    
-    public EncryptColumnRuleConfiguration(final String logicColumn, final String logicDataType, final String cipherColumn, final String cipherDataType, final String assistedQueryColumn,
-                                          final String assistedQueryDataType, final String plainColumn, final String plainDataType, final String encryptorName) {
-        this(logicColumn, logicDataType, cipherColumn, cipherDataType, assistedQueryColumn, assistedQueryDataType, plainColumn, plainDataType, encryptorName, null);
     }
 }

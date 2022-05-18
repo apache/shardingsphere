@@ -194,7 +194,7 @@ public final class EncryptTable {
      * @return query with cipher column
      */
     public Optional<Boolean> getQueryWithCipherColumn(final String logicColumn) {
-        return findEncryptColumn(logicColumn).map(EncryptColumn::getQueryWithCipherColumn);
+        return Optional.ofNullable(findEncryptColumn(logicColumn).map(EncryptColumn::getQueryWithCipherColumn).orElse(queryWithCipherColumn));
     }
     
     /**

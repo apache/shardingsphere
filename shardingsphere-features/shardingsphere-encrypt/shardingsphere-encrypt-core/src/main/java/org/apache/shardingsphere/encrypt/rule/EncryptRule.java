@@ -285,16 +285,6 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
     }
     
     /**
-     * Judge whether table is support QueryWithCipherColumn or not.
-     *
-     * @param tableName table name
-     * @return whether table is support QueryWithCipherColumn or not
-     */
-    public boolean isQueryWithCipherColumn(final String tableName) {
-        return findEncryptTable(tableName).flatMap(EncryptTable::getQueryWithCipherColumn).orElse(queryWithCipherColumn);
-    }
-    
-    /**
      * Judge whether column is support QueryWithCipherColumn or not.
      *
      * @param logicTable logic table name
@@ -302,7 +292,7 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
      * @return whether column is support QueryWithCipherColumn or not
      */
     public boolean isQueryWithCipherColumn(final String logicTable, final String logicColumn) {
-        return findEncryptTable(logicTable).flatMap(encryptTable -> encryptTable.getQueryWithCipherColumn(logicColumn)).orElse(isQueryWithCipherColumn(logicTable));
+        return findEncryptTable(logicTable).flatMap(encryptTable -> encryptTable.getQueryWithCipherColumn(logicColumn)).orElse(queryWithCipherColumn);
     }
     
     private Optional<String> findOriginColumnName(final String logicTable, final String logicColumn) {
