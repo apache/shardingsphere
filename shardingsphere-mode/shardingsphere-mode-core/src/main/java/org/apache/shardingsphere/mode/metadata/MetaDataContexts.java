@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mode.metadata;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContextFactory;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -48,14 +47,12 @@ public final class MetaDataContexts implements AutoCloseable {
     
     private final ShardingSphereRuleMetaData globalRuleMetaData;
     
-    private final ExecutorEngine executorEngine;
-    
     private final OptimizerContext optimizerContext;
     
     private final ConfigurationProperties props;
     
     public MetaDataContexts(final MetaDataPersistService metaDataPersistService) {
-        this(metaDataPersistService, new LinkedHashMap<>(), new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()), null,
+        this(metaDataPersistService, new LinkedHashMap<>(), new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()),
                 OptimizerContextFactory.create(new HashMap<>(), new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList())), new ConfigurationProperties(new Properties()));
     }
     
@@ -89,7 +86,6 @@ public final class MetaDataContexts implements AutoCloseable {
     
     @Override
     public void close() throws Exception {
-        executorEngine.close();
         if (null != metaDataPersistService) {
             metaDataPersistService.getRepository().close();
         }

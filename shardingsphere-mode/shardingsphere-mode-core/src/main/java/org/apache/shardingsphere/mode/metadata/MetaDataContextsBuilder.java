@@ -21,10 +21,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
-import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContextFactory;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
@@ -61,8 +59,7 @@ public final class MetaDataContextsBuilder {
         DatabaseType backendDatabaseType = DatabaseTypeEngine.getBackendDatabaseType(databaseConfigMap);
         Map<String, ShardingSphereMetaData> databaseMetaDataMap = getDatabaseMetaDataMap(frontendDatabaseType, backendDatabaseType);
         ShardingSphereRuleMetaData globalMetaData = new ShardingSphereRuleMetaData(globalRuleConfigs, GlobalRulesBuilder.buildRules(globalRuleConfigs, databaseMetaDataMap));
-        ExecutorEngine executorEngine = ExecutorEngine.createExecutorEngineWithSize(props.<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE));
-        return new MetaDataContexts(metaDataPersistService, databaseMetaDataMap, globalMetaData, executorEngine, OptimizerContextFactory.create(databaseMetaDataMap, globalMetaData), props);
+        return new MetaDataContexts(metaDataPersistService, databaseMetaDataMap, globalMetaData, OptimizerContextFactory.create(databaseMetaDataMap, globalMetaData), props);
     }
     
     private Map<String, ShardingSphereMetaData> getDatabaseMetaDataMap(final DatabaseType frontendDatabaseType, final DatabaseType backendDatabaseType) throws SQLException {

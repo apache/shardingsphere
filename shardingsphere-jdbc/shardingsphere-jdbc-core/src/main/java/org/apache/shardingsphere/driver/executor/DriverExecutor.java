@@ -20,6 +20,7 @@ package org.apache.shardingsphere.driver.executor;
 import lombok.Getter;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.RawExecutor;
 import org.apache.shardingsphere.infra.federation.executor.FederationExecutor;
@@ -45,9 +46,10 @@ public final class DriverExecutor implements AutoCloseable {
     
     public DriverExecutor(final ShardingSphereConnection connection) {
         MetaDataContexts metaDataContexts = connection.getContextManager().getMetaDataContexts();
-        JDBCExecutor jdbcExecutor = new JDBCExecutor(metaDataContexts.getExecutorEngine(), connection.isHoldTransaction());
+        ExecutorEngine executorEngine = connection.getContextManager().getExecutorEngine();
+        JDBCExecutor jdbcExecutor = new JDBCExecutor(executorEngine, connection.isHoldTransaction());
         regularExecutor = new DriverJDBCExecutor(connection.getDatabaseName(), metaDataContexts, jdbcExecutor);
-        rawExecutor = new RawExecutor(metaDataContexts.getExecutorEngine(), connection.isHoldTransaction(), metaDataContexts.getProps());
+        rawExecutor = new RawExecutor(executorEngine, connection.isHoldTransaction(), metaDataContexts.getProps());
         DatabaseType databaseType = metaDataContexts.getMetaData(connection.getDatabaseName()).getResource().getDatabaseType();
         String schemaName = databaseType.getDefaultSchema(connection.getDatabaseName());
         federationExecutor = FederationExecutorFactory.newInstance(connection.getDatabaseName(), schemaName, metaDataContexts.getOptimizerContext(), metaDataContexts.getProps(), jdbcExecutor);
