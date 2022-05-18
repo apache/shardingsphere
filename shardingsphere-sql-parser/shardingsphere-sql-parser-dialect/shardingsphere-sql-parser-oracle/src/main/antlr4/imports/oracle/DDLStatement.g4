@@ -2313,6 +2313,33 @@ createSequenceClause
     | GLOBAL
     ;
 
+alterSequence
+    : ALTER SEQUENCE (schemaName DOT_)? sequenceName alterSequenceClause+
+    ;
+
+alterSequenceClause
+   : (INCREMENT BY | START WITH) INTEGER_
+   | MAXVALUE INTEGER_
+   | NOMAXVALUE
+   | MINVALUE INTEGER_
+   | NOMINVALUE
+   | RESTART
+   | CYCLE
+   | NOCYCLE
+   | CACHE INTEGER_
+   | NOCACHE
+   | ORDER
+   | NOORDER
+   | KEEP
+   | NOKEEP
+   | SCALE (EXTEND | NOEXTEND)
+   | NOSCALE
+   | SHARD (EXTEND | NOEXTEND)
+   | NOSHARD
+   | SESSION
+   | GLOBAL
+   ;
+
 createContext
     : CREATE (OR REPLACE)? CONTEXT namespace USING (schemaName DOT_)? packageName sharingClause? (initializedClause | accessedClause)?
     ;
