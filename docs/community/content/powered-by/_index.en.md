@@ -13,7 +13,7 @@ Please register [here](https://github.com/apache/shardingsphere/discussions/1225
 
 ## Who is Using ShardingSphere?
 
-Total: 202 companies.
+Total: 203 companies.
 
 ### Infra Software
 <ul>
@@ -228,6 +228,7 @@ Total: 202 companies.
     <li><a href="http://www.chiscdc.com/" rel="nofollow">CHISCDC</a></li>
     <li><a href="http://www.taxchina.com/" rel="nofollow">Tax China</a></li>
     <li><a href="http://www.gddxit.com/" rel="nofollow">GUANG DONG DA XIN</a></li>
+    <li><a href="http://www.tshaisen.com/" rel="nofollow">TIANYING</a></li>
 </ul>
 
 ### ICT (Information and Communications Technology)
