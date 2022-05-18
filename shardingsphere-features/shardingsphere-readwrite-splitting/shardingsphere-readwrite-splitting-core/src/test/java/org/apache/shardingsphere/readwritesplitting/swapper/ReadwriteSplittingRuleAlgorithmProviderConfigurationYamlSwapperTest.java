@@ -60,7 +60,7 @@ public final class ReadwriteSplittingRuleAlgorithmProviderConfigurationYamlSwapp
     }
     
     private YamlReadwriteSplittingRuleConfiguration createYamlReadwriteSplittingRuleConfiguration() {
-        ReadwriteSplittingDataSourceRuleConfiguration ruleConfig = new ReadwriteSplittingDataSourceRuleConfiguration("name", "Static", createProperties(), "loadBalancerName", 0);
+        ReadwriteSplittingDataSourceRuleConfiguration ruleConfig = new ReadwriteSplittingDataSourceRuleConfiguration("name", "Static", createProperties(), "loadBalancerName", null);
         return swapper.swapToYamlConfiguration(
                 new AlgorithmProvidedReadwriteSplittingRuleConfiguration(Collections.singletonList(ruleConfig), Collections.singletonMap("name", new RandomReplicaLoadBalanceAlgorithm())));
     }

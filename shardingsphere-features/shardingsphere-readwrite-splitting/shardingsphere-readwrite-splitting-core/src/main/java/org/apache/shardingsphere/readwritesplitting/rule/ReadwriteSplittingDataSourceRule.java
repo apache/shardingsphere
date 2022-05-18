@@ -47,7 +47,7 @@ public final class ReadwriteSplittingDataSourceRule {
     
     private final ReadwriteSplittingStrategy readwriteSplittingStrategy;
     
-    private final int routeMode;
+    private final String routeMode;
     
     @Getter(AccessLevel.NONE)
     private final Collection<String> disabledDataSourceNames = new HashSet<>();
@@ -57,7 +57,7 @@ public final class ReadwriteSplittingDataSourceRule {
         name = config.getName();
         this.loadBalancer = loadBalancer;
         readwriteSplittingStrategy = ReadwriteSplittingStrategyFactory.newInstance(config.getType(), config.getProps());
-        routeMode = config.getRouteMode();
+        routeMode = null == config.getRouteMode() ? "0" : config.getRouteMode();
     }
     
     /**

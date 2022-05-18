@@ -37,24 +37,24 @@ public final class ReadwriteSplittingDataSourceRuleTest {
     @Before
     public void setUp() {
         readwriteSplittingDataSourceRule = new ReadwriteSplittingDataSourceRule(
-                new ReadwriteSplittingDataSourceRuleConfiguration("test_pr", "Static", getProperties("write_ds", "read_ds_0,read_ds_1"), "", 0), new RandomReplicaLoadBalanceAlgorithm());
+                new ReadwriteSplittingDataSourceRuleConfiguration("test_pr", "Static", getProperties("write_ds", "read_ds_0,read_ds_1"), "", null), new RandomReplicaLoadBalanceAlgorithm());
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertNewReadwriteSplittingDataSourceRuleWithoutName() {
-        new ReadwriteSplittingDataSourceRule(new ReadwriteSplittingDataSourceRuleConfiguration("", "Static", getProperties("write_ds", "read_ds"), null, 0),
+        new ReadwriteSplittingDataSourceRule(new ReadwriteSplittingDataSourceRuleConfiguration("", "Static", getProperties("write_ds", "read_ds"), null, null),
                 new RoundRobinReplicaLoadBalanceAlgorithm());
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertNewReadwriteSplittingDataSourceRuleWithoutWriteDataSourceName() {
-        new ReadwriteSplittingDataSourceRule(new ReadwriteSplittingDataSourceRuleConfiguration("ds", "Static", getProperties("", "read_ds"), null, 0),
+        new ReadwriteSplittingDataSourceRule(new ReadwriteSplittingDataSourceRuleConfiguration("ds", "Static", getProperties("", "read_ds"), null, null),
                 new RoundRobinReplicaLoadBalanceAlgorithm());
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertNewReadwriteSplittingDataSourceRuleWithEmptyReadDataSourceName() {
-        new ReadwriteSplittingDataSourceRule(new ReadwriteSplittingDataSourceRuleConfiguration("ds", "Static", getProperties("write_ds", ""), "", 0), new RoundRobinReplicaLoadBalanceAlgorithm());
+        new ReadwriteSplittingDataSourceRule(new ReadwriteSplittingDataSourceRuleConfiguration("ds", "Static", getProperties("write_ds", ""), "", null), new RoundRobinReplicaLoadBalanceAlgorithm());
     }
     
     @Test

@@ -51,10 +51,10 @@ public final class ReadwriteSplittingDataSourceRouter {
     }
     
     private String routeInTransaction(final SQLStatementContext<?> sqlStatementContext) {
-        if (rule.getRouteMode() == 0) {
+        if ("0".equals(rule.getRouteMode())) {
             return rule.getReadwriteSplittingStrategy().getWriteDataSource();
         }
-        if (rule.getRouteMode() == 1) {
+        if ("1".equals(rule.getRouteMode())) {
             if (!TransactionHolder.isTransactionReadOnly() && isPrimaryRoute(sqlStatementContext)) {
                 return rule.getReadwriteSplittingStrategy().getWriteDataSource();
             }
@@ -63,7 +63,7 @@ public final class ReadwriteSplittingDataSourceRouter {
             }
             return SLAVE_ROUTE_HOLDER.get();
         }
-        if (rule.getRouteMode() == 2) {
+        if ("2".equals(rule.getRouteMode())) {
             if (!TransactionHolder.isTransactionReadOnly() && isPrimaryRoute(sqlStatementContext)) {
                 return rule.getReadwriteSplittingStrategy().getWriteDataSource();
             }

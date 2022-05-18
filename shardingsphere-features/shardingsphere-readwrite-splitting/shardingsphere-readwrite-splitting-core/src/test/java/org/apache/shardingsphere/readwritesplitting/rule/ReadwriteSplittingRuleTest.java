@@ -56,7 +56,7 @@ public final class ReadwriteSplittingRuleTest {
     
     private ReadwriteSplittingRule createReadwriteSplittingRule() {
         ReadwriteSplittingDataSourceRuleConfiguration config =
-                new ReadwriteSplittingDataSourceRuleConfiguration("test_pr", "Static", createProperties(), "random", 0);
+                new ReadwriteSplittingDataSourceRuleConfiguration("test_pr", "Static", createProperties(), "random", null);
         return new ReadwriteSplittingRule(new ReadwriteSplittingRuleConfiguration(
                 Collections.singleton(config), Collections.singletonMap("random", new ShardingSphereAlgorithmConfiguration("RANDOM", new Properties()))));
     }
