@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.distsql.handler.query;
 
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.enums.ShardingStrategyType;
@@ -44,8 +44,8 @@ public final class DefaultShardingStrategyQueryResultSet implements DistSQLResul
     private Iterator<Entry<String, LinkedList<Object>>> data = Collections.emptyIterator();
     
     @Override
-    public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
-        Optional<ShardingRuleConfiguration> shardingRuleConfig = metaData.getRuleMetaData().findRuleConfiguration(ShardingRuleConfiguration.class).stream().findAny();
+    public void init(final ShardingSphereDatabaseMetaData databaseMetaData, final SQLStatement sqlStatement) {
+        Optional<ShardingRuleConfiguration> shardingRuleConfig = databaseMetaData.getRuleMetaData().findRuleConfiguration(ShardingRuleConfiguration.class).stream().findAny();
         shardingRuleConfig.ifPresent(optional -> data = buildData(optional).entrySet().iterator());
     }
     

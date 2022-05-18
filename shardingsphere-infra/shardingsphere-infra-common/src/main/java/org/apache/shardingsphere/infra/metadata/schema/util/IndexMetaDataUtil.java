@@ -21,7 +21,7 @@ import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
@@ -79,19 +79,20 @@ public class IndexMetaDataUtil {
     }
     
     /**
-     * Get table names from metadata.
+     * Get table names from meta data.
      *
-     * @param metaData meta data
+     * @param databaseMetaData database meta data
      * @param indexes indexes
      * @param databaseType database type
      * @return table names
      */
-    public static Collection<QualifiedTable> getTableNamesFromMetaData(final ShardingSphereMetaData metaData, final Collection<IndexSegment> indexes, final DatabaseType databaseType) {
+    public static Collection<QualifiedTable> getTableNamesFromMetaData(final ShardingSphereDatabaseMetaData databaseMetaData,
+                                                                       final Collection<IndexSegment> indexes, final DatabaseType databaseType) {
         Collection<QualifiedTable> result = new LinkedList<>();
-        String schemaName = databaseType.getDefaultSchema(metaData.getDatabase().getName());
+        String schemaName = databaseType.getDefaultSchema(databaseMetaData.getDatabase().getName());
         for (IndexSegment each : indexes) {
             String actualSchemaName = each.getOwner().map(optional -> optional.getIdentifier().getValue()).orElse(schemaName);
-            findLogicTableNameFromMetaData(metaData.getSchemaByName(actualSchemaName),
+            findLogicTableNameFromMetaData(databaseMetaData.getSchema(actualSchemaName),
                     each.getIndexName().getIdentifier().getValue()).ifPresent(optional -> result.add(new QualifiedTable(actualSchemaName, optional)));
         }
         return result;
