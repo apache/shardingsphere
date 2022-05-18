@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mode.metadata;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContextFactory;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -42,20 +41,18 @@ import java.util.Properties;
 @Getter
 public final class MetaDataContexts implements AutoCloseable {
     
-    private final MetaDataPersistService metaDataPersistService;
+    private final MetaDataPersistService persistService;
     
     private final Map<String, ShardingSphereMetaData> metaDataMap;
     
     private final ShardingSphereRuleMetaData globalRuleMetaData;
     
-    private final ExecutorEngine executorEngine;
-    
     private final OptimizerContext optimizerContext;
     
     private final ConfigurationProperties props;
     
-    public MetaDataContexts(final MetaDataPersistService metaDataPersistService) {
-        this(metaDataPersistService, new LinkedHashMap<>(), new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()), null,
+    public MetaDataContexts(final MetaDataPersistService persistService) {
+        this(persistService, new LinkedHashMap<>(), new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()),
                 OptimizerContextFactory.create(new HashMap<>(), new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList())), new ConfigurationProperties(new Properties()));
     }
     
@@ -64,8 +61,8 @@ public final class MetaDataContexts implements AutoCloseable {
      *
      * @return persist service
      */
-    public Optional<MetaDataPersistService> getMetaDataPersistService() {
-        return Optional.ofNullable(metaDataPersistService);
+    public Optional<MetaDataPersistService> getPersistService() {
+        return Optional.ofNullable(persistService);
     }
     
     /**
@@ -89,9 +86,8 @@ public final class MetaDataContexts implements AutoCloseable {
     
     @Override
     public void close() throws Exception {
-        executorEngine.close();
-        if (null != metaDataPersistService) {
-            metaDataPersistService.getRepository().close();
+        if (null != persistService) {
+            persistService.getRepository().close();
         }
     }
 }

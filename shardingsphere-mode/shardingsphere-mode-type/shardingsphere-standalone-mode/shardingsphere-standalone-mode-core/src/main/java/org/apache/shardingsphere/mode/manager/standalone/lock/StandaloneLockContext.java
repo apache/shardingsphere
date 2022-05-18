@@ -21,6 +21,8 @@ import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 
+import java.util.Set;
+
 /**
  * Standalone lock context.
  */
@@ -44,8 +46,20 @@ public final class StandaloneLockContext implements LockContext {
     }
     
     @Override
+    public boolean lockWrite(final String databaseName, final Set<String> schemaNames) {
+        // TODO when the lock structure adjustment is completed
+        throw new UnsupportedOperationException();
+    }
+    
+    @Override
     public boolean tryLockWrite(final String databaseName, final long timeoutMilliseconds) {
         return mutexLock.tryLock(databaseName, timeoutMilliseconds);
+    }
+    
+    @Override
+    public boolean tryLockWrite(final String databaseName, final Set<String> schemaNames, final long timeoutMilliseconds) {
+        // TODO when the lock structure adjustment is completed
+        throw new UnsupportedOperationException();
     }
     
     @Override
@@ -54,7 +68,19 @@ public final class StandaloneLockContext implements LockContext {
     }
     
     @Override
+    public void releaseLockWrite(final String databaseName, final String schemaName) {
+        // TODO when the lock structure adjustment is completed
+        throw new UnsupportedOperationException();
+    }
+    
+    @Override
     public boolean isLocked(final String databaseName) {
         return mutexLock.isLocked(databaseName);
+    }
+    
+    @Override
+    public boolean isLocked(final String databaseName, final String schemaName) {
+        // TODO when the lock structure adjustment is completed
+        throw new UnsupportedOperationException();
     }
 }

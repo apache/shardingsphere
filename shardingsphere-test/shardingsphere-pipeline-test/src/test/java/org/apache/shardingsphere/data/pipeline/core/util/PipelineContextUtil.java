@@ -110,7 +110,7 @@ public final class PipelineContextUtil {
         tableMetaDataMap.put("t_order", new TableMetaData("t_order", Arrays.asList(new ColumnMetaData("order_id", Types.INTEGER, true, false, false),
                 new ColumnMetaData("user_id", Types.VARCHAR, false, false, false)), Collections.emptyList(), Collections.emptyList()));
         old.getMetaDataMap().get(DefaultDatabase.LOGIC_NAME).getSchemaByName(DefaultDatabase.LOGIC_NAME).putAll(tableMetaDataMap);
-        return new MetaDataContexts(metaDataPersistService, old.getMetaDataMap(), old.getGlobalRuleMetaData(), old.getExecutorEngine(), old.getOptimizerContext(), old.getProps());
+        return new MetaDataContexts(metaDataPersistService, old.getMetaDataMap(), old.getGlobalRuleMetaData(), old.getOptimizerContext(), old.getProps());
     }
     
     /**

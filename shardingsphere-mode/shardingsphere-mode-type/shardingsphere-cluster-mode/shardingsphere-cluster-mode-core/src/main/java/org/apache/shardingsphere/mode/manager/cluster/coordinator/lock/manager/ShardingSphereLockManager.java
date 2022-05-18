@@ -22,6 +22,8 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.Sha
 import org.apache.shardingsphere.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.spi.type.required.RequiredSPI;
 
+import java.util.Set;
+
 /**
  * Lock manager of ShardingSphere.
  */
@@ -43,12 +45,23 @@ public interface ShardingSphereLockManager extends RequiredSPI {
     ShardingSphereLock getMutexLock();
     
     /**
-     * Lock write.
+     * Lock write for database.
      *
      * @param databaseName database name
      * @return is locked or not
      */
     boolean lockWrite(String databaseName);
+    
+    /**
+     * Lock write for schemas.
+     *
+     * @param databaseName database name
+     * @param schemaNames schema names
+     * @return is locked or not
+     */
+    default boolean lockWrite(String databaseName, Set<String> schemaNames) {
+        throw new UnsupportedOperationException();
+    }
     
     /**
      * Try lock write for database.
@@ -60,11 +73,33 @@ public interface ShardingSphereLockManager extends RequiredSPI {
     boolean tryLockWrite(String databaseName, long timeoutMilliseconds);
     
     /**
+     * Try lock write for schemas.
+     *
+     * @param databaseName database name
+     * @param schemaNames schema names
+     * @param timeoutMilliseconds timeout milliseconds
+     * @return is locked or not
+     */
+    default boolean tryLockWrite(String databaseName, Set<String> schemaNames, long timeoutMilliseconds) {
+        throw new UnsupportedOperationException();
+    }
+    
+    /**
      * Release lock write for database.
      *
      * @param databaseName database name
      */
     void releaseLockWrite(String databaseName);
+    
+    /**
+     * Try lock write for schemas.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     */
+    default void releaseLockWrite(String databaseName, String schemaName) {
+        throw new UnsupportedOperationException();
+    }
     
     /**
      * Is locked database.
@@ -73,4 +108,15 @@ public interface ShardingSphereLockManager extends RequiredSPI {
      * @return is locked or not
      */
     boolean isLocked(String databaseName);
+    
+    /**
+     * Is locked schema.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @return is locked or not
+     */
+    default boolean isLocked(String databaseName, String schemaName) {
+        throw new UnsupportedOperationException();
+    }
 }

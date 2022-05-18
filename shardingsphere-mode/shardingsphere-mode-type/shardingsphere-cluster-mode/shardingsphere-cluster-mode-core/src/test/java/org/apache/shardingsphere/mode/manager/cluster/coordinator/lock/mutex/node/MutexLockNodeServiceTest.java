@@ -33,6 +33,6 @@ public final class MutexLockNodeServiceTest {
     
     @Test
     public void assertGetLockLevel() {
-        assertThat(SERVICE.getLockLevel(), is("mutex"));
+        assertThat(SERVICE.getLockTypeName(), is("mutex"));
     }
 }

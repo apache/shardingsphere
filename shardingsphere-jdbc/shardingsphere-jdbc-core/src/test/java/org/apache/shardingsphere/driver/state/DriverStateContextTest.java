@@ -21,7 +21,6 @@ import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConne
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
@@ -54,8 +53,8 @@ public final class DriverStateContextTest {
     @Before
     public void setUp() {
         Map<String, ShardingSphereMetaData> metaDataMap = mockMetaDataMap();
-        when(contextManager.getMetaDataContexts()).thenReturn(new MetaDataContexts(mock(MetaDataPersistService.class), metaDataMap,
-                mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), mock(OptimizerContext.class), mock(ConfigurationProperties.class)));
+        when(contextManager.getMetaDataContexts()).thenReturn(new MetaDataContexts(
+                mock(MetaDataPersistService.class), metaDataMap, mock(ShardingSphereRuleMetaData.class), mock(OptimizerContext.class), mock(ConfigurationProperties.class)));
         when(contextManager.getInstanceContext().getInstance().getState()).thenReturn(new StateContext());
     }
     
