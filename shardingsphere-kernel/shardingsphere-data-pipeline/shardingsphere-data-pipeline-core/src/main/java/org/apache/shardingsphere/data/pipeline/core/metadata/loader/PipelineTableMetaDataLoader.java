@@ -22,17 +22,22 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.metadata.TableName;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
+import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineIndexMetaData;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineTableMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -114,9 +119,28 @@ public final class PipelineTableMetaDataLoader {
         }
         Map<TableName, PipelineTableMetaData> result = new LinkedHashMap<>();
         for (Entry<String, Map<String, PipelineColumnMetaData>> entry : tablePipelineColumnMetaDataMap.entrySet()) {
-            result.put(new TableName(entry.getKey()), new PipelineTableMetaData(entry.getKey(), entry.getValue()));
+            String tableName = entry.getKey();
+            result.put(new TableName(tableName), new PipelineTableMetaData(tableName, entry.getValue(), loadIndexesOfTable(connection, schemaName, entry.getValue(), tableName)));
         }
         return result;
+    }
+    
+    private Collection<PipelineIndexMetaData> loadIndexesOfTable(final Connection connection, final String schemaName, final Map<String, PipelineColumnMetaData> columns, final String tableName) throws SQLException {
+        Map<String, PipelineIndexMetaData> result = new LinkedHashMap<>();
+        Map<String, SortedMap<Short, String>> orderedColumnsOfIndexes = new LinkedHashMap<>();
+        try (ResultSet resultSet = connection.getMetaData().getIndexInfo(connection.getCatalog(), schemaName, tableName, false, false)) {
+            while (resultSet.next()) {
+                String indexName = resultSet.getString("INDEX_NAME");
+                if (!result.containsKey(indexName)) {
+                    result.put(indexName, new PipelineIndexMetaData(indexName, new LinkedList<>(), !resultSet.getBoolean("NON_UNIQUE")));
+                }
+                orderedColumnsOfIndexes.computeIfAbsent(indexName, unused -> new TreeMap<>()).put(resultSet.getShort("ORDINAL_POSITION"), resultSet.getString("COLUMN_NAME"));
+            }
+        }
+        for (PipelineIndexMetaData each : result.values()) {
+            orderedColumnsOfIndexes.get(each.getName()).values().stream().map(columns::get).forEach(each.getColumns()::add);
+        }
+        return result.values();
     }
     
     private Set<String> loadPrimaryKeys(final Connection connection, final String schemaName, final String tableName) throws SQLException {

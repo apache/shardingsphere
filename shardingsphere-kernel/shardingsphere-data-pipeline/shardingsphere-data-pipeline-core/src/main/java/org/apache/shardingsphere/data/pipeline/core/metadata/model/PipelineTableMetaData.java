@@ -23,6 +23,7 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -47,7 +48,9 @@ public final class PipelineTableMetaData {
     @Getter
     private final List<String> primaryKeyColumns;
     
-    public PipelineTableMetaData(final String name, final Map<String, PipelineColumnMetaData> columnMetaDataMap) {
+    private final Collection<PipelineIndexMetaData> indexes;
+    
+    public PipelineTableMetaData(final String name, final Map<String, PipelineColumnMetaData> columnMetaDataMap, final Collection<PipelineIndexMetaData> indexes) {
         this.name = name;
         this.columnMetaDataMap = columnMetaDataMap;
         List<PipelineColumnMetaData> columnMetaDataList = new ArrayList<>(columnMetaDataMap.values());
@@ -55,6 +58,7 @@ public final class PipelineTableMetaData {
         columnNames = Collections.unmodifiableList(columnMetaDataList.stream().map(PipelineColumnMetaData::getName).collect(Collectors.toList()));
         primaryKeyColumns = Collections.unmodifiableList(columnMetaDataList.stream().filter(PipelineColumnMetaData::isPrimaryKey)
                 .map(PipelineColumnMetaData::getName).collect(Collectors.toList()));
+        this.indexes = indexes;
     }
     
     /**
