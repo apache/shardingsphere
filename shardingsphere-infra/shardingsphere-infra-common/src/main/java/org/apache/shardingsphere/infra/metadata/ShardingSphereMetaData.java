@@ -32,7 +32,7 @@ import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilder;
+import org.apache.shardingsphere.infra.rule.builder.schema.DatabaseRulesBuilder;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -71,7 +71,7 @@ public final class ShardingSphereMetaData {
      */
     public static ShardingSphereMetaData create(final String databaseName, final DatabaseType frontendDatabaseType, final DatabaseType backendDatabaseType,
                                                 final DatabaseConfiguration databaseConfig, final ConfigurationProperties props) throws SQLException {
-        Collection<ShardingSphereRule> databaseRules = SchemaRulesBuilder.buildRules(databaseName, databaseConfig, props);
+        Collection<ShardingSphereRule> databaseRules = DatabaseRulesBuilder.build(databaseName, databaseConfig, props);
         ShardingSphereDatabase database = DatabaseLoader.load(databaseName, frontendDatabaseType, backendDatabaseType, databaseConfig.getDataSources(), databaseRules, props);
         return create(frontendDatabaseType, databaseConfig, databaseRules, database);
     }
