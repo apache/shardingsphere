@@ -86,16 +86,6 @@ public final class ContextManager implements AutoCloseable {
     private final InstanceContext instanceContext;
     
     /**
-     * Get data source map.
-     *
-     * @param databaseName database name
-     * @return data source map
-     */
-    public Map<String, DataSource> getDataSourceMap(final String databaseName) {
-        return metaDataContexts.getMetaData(databaseName).getResource().getDataSources();
-    }
-    
-    /**
      * Renew meta data contexts.
      *
      * @param metaDataContexts meta data contexts
@@ -114,6 +104,16 @@ public final class ContextManager implements AutoCloseable {
     }
     
     /**
+     * Get data source map.
+     *
+     * @param databaseName database name
+     * @return data source map
+     */
+    public Map<String, DataSource> getDataSourceMap(final String databaseName) {
+        return metaDataContexts.getMetaData(databaseName).getResource().getDataSources();
+    }
+    
+    /**
      * Add database.
      *
      * @param databaseName database name
@@ -123,13 +123,20 @@ public final class ContextManager implements AutoCloseable {
         if (metaDataContexts.getMetaDataMap().containsKey(databaseName)) {
             return;
         }
-        MetaDataContexts newMetaDataContexts = buildNewMetaDataContext(databaseName);
+        MetaDataContexts newMetaDataContexts = createMetaDataContext(databaseName);
         FederationDatabaseMetaData databaseMetaData = newMetaDataContexts.getOptimizerContext().getFederationMetaData().getDatabases().get(databaseName);
         metaDataContexts.getOptimizerContext().getFederationMetaData().getDatabases().put(databaseName, databaseMetaData);
         metaDataContexts.getOptimizerContext().getPlannerContexts().put(databaseName, OptimizerPlannerContextFactory.create(databaseMetaData));
         metaDataContexts.getMetaDataMap().put(databaseName, newMetaDataContexts.getMetaData(databaseName));
         persistMetaData(metaDataContexts);
         renewAllTransactionContext();
+    }
+    
+    private MetaDataContexts createMetaDataContext(final String databaseName) throws SQLException {
+        MetaDataContextsBuilder builder = new MetaDataContextsBuilder(
+                Collections.singletonMap(databaseName, new DataSourceProvidedDatabaseConfiguration(new HashMap<>(), new LinkedList<>())),
+                metaDataContexts.getGlobalRuleMetaData().getConfigurations(), metaDataContexts.getProps());
+        return builder.build(metaDataContexts.getMetaDataPersistService().orElse(null));
     }
     
     /**
@@ -614,13 +621,6 @@ public final class ContextManager implements AutoCloseable {
         Optional<TransactionRule> transactionRule = metaDataContexts.getGlobalRuleMetaData().getRules().stream()
                 .filter(each -> each instanceof TransactionRule).map(each -> (TransactionRule) each).findFirst();
         return transactionRule.orElseGet(() -> new TransactionRule(new DefaultTransactionRuleConfigurationBuilder().build()));
-    }
-    
-    private MetaDataContexts buildNewMetaDataContext(final String databaseName) throws SQLException {
-        MetaDataContextsBuilder builder = new MetaDataContextsBuilder(
-                Collections.singletonMap(databaseName, new DataSourceProvidedDatabaseConfiguration(new HashMap<>(), new LinkedList<>())),
-                metaDataContexts.getGlobalRuleMetaData().getConfigurations(), metaDataContexts.getProps());
-        return builder.build(metaDataContexts.getMetaDataPersistService().orElse(null));
     }
     
     private void closeDataSources(final ShardingSphereMetaData removeMetaData) {
