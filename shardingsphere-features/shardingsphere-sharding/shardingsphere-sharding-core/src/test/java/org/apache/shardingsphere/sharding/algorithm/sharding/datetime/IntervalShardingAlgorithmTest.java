@@ -241,60 +241,40 @@ public final class IntervalShardingAlgorithmTest {
     }
     
     @Test
-    public void assertLocalDateTimeWithZeroMillisecond() {
-        Collection<String> actual = shardingAlgorithmByDayWithMillisecond.doSharding(availableTablesForDayWithMillisecondDataSources,
+    @SneakyThrows(ParseException.class)
+    public void assertTimestampInJDBCTypeWithZeroMillisecond() {
+        Collection<String> actualAsLocalDateTime = shardingAlgorithmByDayWithMillisecond.doSharding(availableTablesForDayWithMillisecondDataSources,
                 new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO,
                         Range.closed(LocalDateTime.of(2021, 6, 15, 2, 25, 27), LocalDateTime.of(2021, 7, 31, 2, 25, 27))));
-        assertThat(actual.size(), is(24));
-    }
-    
-    @Test
-    @SneakyThrows(ParseException.class)
-    public void assertDateWithZeroMillisecond() {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-        Collection<String> actual = shardingAlgorithmByDayWithMillisecond.doSharding(availableTablesForDayWithMillisecondDataSources,
-                new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO,
-                        Range.closed(simpleDateFormat.parse("2021-06-15 02:25:27.000"), simpleDateFormat.parse("2021-07-31 02:25:27.000"))));
-        assertThat(actual.size(), is(24));
-    }
-
-    @Test
-    public void assertInstantWithZeroMillisecond() {
-        Collection<String> actual = shardingAlgorithmByDayWithMillisecond.doSharding(availableTablesForDayWithMillisecondDataSources,
+        Collection<String> actualAsInstant = shardingAlgorithmByDayWithMillisecond.doSharding(availableTablesForDayWithMillisecondDataSources,
                 new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO,
                         Range.closed(
                                 LocalDateTime.of(2021, 6, 15, 2, 25, 27).atZone(ZoneId.systemDefault()).toInstant(),
                                 LocalDateTime.of(2021, 7, 31, 2, 25, 27).atZone(ZoneId.systemDefault()).toInstant())));
-        assertThat(actual.size(), is(24));
-    }
-
-    @Test
-    public void assertTimestampWithZeroMillisecond() {
-        Collection<String> actual = shardingAlgorithmByDayWithMillisecond.doSharding(availableTablesForDayWithMillisecondDataSources,
+        Collection<String> actualAsTimestamp = shardingAlgorithmByDayWithMillisecond.doSharding(availableTablesForDayWithMillisecondDataSources,
                 new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO,
                         Range.closed(
                                 Timestamp.valueOf(LocalDateTime.of(2021, 6, 15, 2, 25, 27)),
                                 Timestamp.valueOf(LocalDateTime.of(2021, 7, 31, 2, 25, 27)))));
-        assertThat(actual.size(), is(24));
-    }
-
-    @Test
-    public void assertOffsetDateTimeWithZeroMillisecond() {
-        Collection<String> actual = shardingAlgorithmByDayWithMillisecond.doSharding(availableTablesForDayWithMillisecondDataSources,
+        Collection<String> actualAsOffsetDateTime = shardingAlgorithmByDayWithMillisecond.doSharding(availableTablesForDayWithMillisecondDataSources,
                 new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO,
                         Range.closed(
-                                OffsetDateTime.of(LocalDateTime.of(2021, 6, 15, 2, 25, 27), OffsetDateTime.now().getOffset()),
-                                OffsetDateTime.of(LocalDateTime.of(2021, 7, 31, 2, 25, 27), OffsetDateTime.now().getOffset()))));
-        assertThat(actual.size(), is(24));
-    }
-
-    @Test
-    public void assertZonedDateTimeWithZeroMillisecond() {
-        Collection<String> actual = shardingAlgorithmByDayWithMillisecond.doSharding(availableTablesForDayWithMillisecondDataSources,
+                                OffsetDateTime.of(2021, 6, 15, 2, 25, 27, 0, OffsetDateTime.now().getOffset()),
+                                OffsetDateTime.of(2021, 7, 31, 2, 25, 27, 0, OffsetDateTime.now().getOffset()))));
+        Collection<String> actualAsZonedDateTime = shardingAlgorithmByDayWithMillisecond.doSharding(availableTablesForDayWithMillisecondDataSources,
                 new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO,
                         Range.closed(
-                                ZonedDateTime.of(LocalDateTime.of(2021, 6, 15, 2, 25, 27), ZoneId.systemDefault()),
-                                ZonedDateTime.of(LocalDateTime.of(2021, 7, 31, 2, 25, 27), ZoneId.systemDefault()))));
-        assertThat(actual.size(), is(24));
+                                ZonedDateTime.of(2021, 6, 15, 2, 25, 27, 0, ZoneId.systemDefault()),
+                                ZonedDateTime.of(2021, 7, 31, 2, 25, 27, 0, ZoneId.systemDefault()))));
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        Collection<String> actualAsDate = shardingAlgorithmByDayWithMillisecond.doSharding(availableTablesForDayWithMillisecondDataSources,
+                new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO,
+                        Range.closed(simpleDateFormat.parse("2021-06-15 02:25:27.000"), simpleDateFormat.parse("2021-07-31 02:25:27.000"))));
+        assertThat(actualAsLocalDateTime.size(), is(24));
+        assertThat(actualAsInstant.size(), is(24));
+        assertThat(actualAsTimestamp.size(), is(24));
+        assertThat(actualAsOffsetDateTime.size(), is(24));
+        assertThat(actualAsZonedDateTime.size(), is(24));
+        assertThat(actualAsDate.size(), is(24));
     }
 }
