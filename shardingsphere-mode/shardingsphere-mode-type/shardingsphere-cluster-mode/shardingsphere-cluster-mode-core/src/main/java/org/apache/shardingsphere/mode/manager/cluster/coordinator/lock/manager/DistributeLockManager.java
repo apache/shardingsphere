@@ -55,11 +55,11 @@ public final class DistributeLockManager implements ShardingSphereLockManager {
     
     @Override
     public boolean tryLockWrite(final String databaseName, final long timeoutMilliseconds) {
-        return innerTryLock(databaseName, timeoutMilliseconds);
+        return innerDatabaseTryLock(databaseName, timeoutMilliseconds);
     }
     
-    private synchronized boolean innerTryLock(final String databaseName, final long timeoutMilliseconds) {
-        Preconditions.checkNotNull(databaseName, "Try Lock write for databaseName args database name can not be null.");
+    private synchronized boolean innerDatabaseTryLock(final String databaseName, final long timeoutMilliseconds) {
+        Preconditions.checkNotNull(databaseName, "Try Lock write for database args database name can not be null.");
         if (!sequencedLock.tryLock(TimeoutMilliseconds.DEFAULT_REGISTRY)) {
             return false;
         }

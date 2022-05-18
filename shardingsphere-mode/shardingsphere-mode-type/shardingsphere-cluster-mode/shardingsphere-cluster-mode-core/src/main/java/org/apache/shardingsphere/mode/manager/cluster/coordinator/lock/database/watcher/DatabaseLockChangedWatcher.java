@@ -44,8 +44,8 @@ public final class DatabaseLockChangedWatcher implements GovernanceWatcher<Gover
     }
     
     @Override
-    public Collection<DataChangedEvent.Type> getWatchingTypes() {
-        return Arrays.asList(DataChangedEvent.Type.ADDED, DataChangedEvent.Type.DELETED);
+    public Collection<Type> getWatchingTypes() {
+        return Arrays.asList(Type.ADDED, Type.DELETED);
     }
     
     @Override
@@ -71,9 +71,9 @@ public final class DatabaseLockChangedWatcher implements GovernanceWatcher<Gover
     }
     
     private Optional<GovernanceEvent> handleDatabaseLocksAckEvent(final Type eventType, final String ackLockedName) {
-        if (DataChangedEvent.Type.ADDED == eventType) {
+        if (Type.ADDED == eventType) {
             return Optional.of(new DatabaseAckLockedEvent(ackLockedName));
-        } else if (DataChangedEvent.Type.DELETED == eventType) {
+        } else if (Type.DELETED == eventType) {
             return Optional.of(new DatabaseAckLockReleasedEvent(ackLockedName));
         }
         return Optional.empty();

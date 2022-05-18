@@ -33,6 +33,6 @@ public final class DatabaseLockNodeServiceTest {
     
     @Test
     public void assertGetLockLevel() {
-        assertThat(SERVICE.getLockLevel(), is("database"));
+        assertThat(SERVICE.getLockTypeName(), is("database"));
     }
 }

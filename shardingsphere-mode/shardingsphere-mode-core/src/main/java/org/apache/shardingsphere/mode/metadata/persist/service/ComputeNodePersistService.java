@@ -95,6 +95,7 @@ public final class ComputeNodePersistService {
      * @param instanceId instance id
      * @return labels
      */
+    @SuppressWarnings("unchecked")
     public Collection<String> loadInstanceLabels(final String instanceId) {
         String yamlContent = repository.get(ComputeNode.getInstanceLabelsNodePath(instanceId));
         return Strings.isNullOrEmpty(yamlContent) ? new ArrayList<>() : YamlEngine.unmarshal(yamlContent, Collection.class);
@@ -106,6 +107,7 @@ public final class ComputeNodePersistService {
      * @param instanceId instance id
      * @return status
      */
+    @SuppressWarnings("unchecked")
     public Collection<String> loadInstanceStatus(final String instanceId) {
         String yamlContent = repository.get(ComputeNode.getInstanceStatusNodePath(instanceId));
         return Strings.isNullOrEmpty(yamlContent) ? new ArrayList<>() : YamlEngine.unmarshal(yamlContent, Collection.class);
