@@ -41,7 +41,7 @@ import java.util.Properties;
 @Getter
 public final class MetaDataContexts implements AutoCloseable {
     
-    private final MetaDataPersistService metaDataPersistService;
+    private final MetaDataPersistService persistService;
     
     private final Map<String, ShardingSphereMetaData> metaDataMap;
     
@@ -51,8 +51,8 @@ public final class MetaDataContexts implements AutoCloseable {
     
     private final ConfigurationProperties props;
     
-    public MetaDataContexts(final MetaDataPersistService metaDataPersistService) {
-        this(metaDataPersistService, new LinkedHashMap<>(), new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()),
+    public MetaDataContexts(final MetaDataPersistService persistService) {
+        this(persistService, new LinkedHashMap<>(), new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()),
                 OptimizerContextFactory.create(new HashMap<>(), new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList())), new ConfigurationProperties(new Properties()));
     }
     
@@ -61,8 +61,8 @@ public final class MetaDataContexts implements AutoCloseable {
      *
      * @return persist service
      */
-    public Optional<MetaDataPersistService> getMetaDataPersistService() {
-        return Optional.ofNullable(metaDataPersistService);
+    public Optional<MetaDataPersistService> getPersistService() {
+        return Optional.ofNullable(persistService);
     }
     
     /**
@@ -86,8 +86,8 @@ public final class MetaDataContexts implements AutoCloseable {
     
     @Override
     public void close() throws Exception {
-        if (null != metaDataPersistService) {
-            metaDataPersistService.getRepository().close();
+        if (null != persistService) {
+            persistService.getRepository().close();
         }
     }
 }

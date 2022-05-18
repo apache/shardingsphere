@@ -98,7 +98,7 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
         if (!"Cluster".equals(contextManager.getInstanceContext().getModeConfiguration().getType())) {
             throw new UnsupportedOperationException("Mode must be `Cluster`.");
         }
-        if (!contextManager.getMetaDataContexts().getMetaDataPersistService().isPresent()) {
+        if (!contextManager.getMetaDataContexts().getPersistService().isPresent()) {
             throw new UnsupportedOperationException("Persistence must be configured");
         }
     }
@@ -120,7 +120,7 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
     }
     
     private Map<String, String> getDisabledResources(final ContextManager contextManager, final String databaseName) {
-        Optional<MetaDataPersistService> persistService = contextManager.getMetaDataContexts().getMetaDataPersistService();
+        Optional<MetaDataPersistService> persistService = contextManager.getMetaDataContexts().getPersistService();
         Map<String, String> result = new HashMap<>();
         persistService.ifPresent(optional -> {
             Map<String, String> disableNodes = getDisabledStorageNodes(databaseName, optional).stream()
