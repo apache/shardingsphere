@@ -17,18 +17,19 @@
 
 package org.apache.shardingsphere.mode.manager;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
+import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContextFactory;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
@@ -74,7 +75,6 @@ import java.util.stream.Collectors;
 /**
  * Context manager.
  */
-@AllArgsConstructor
 @Getter
 @Slf4j
 public final class ContextManager implements AutoCloseable {
@@ -84,6 +84,15 @@ public final class ContextManager implements AutoCloseable {
     private volatile TransactionContexts transactionContexts;
     
     private final InstanceContext instanceContext;
+    
+    private final ExecutorEngine executorEngine;
+    
+    public ContextManager(final MetaDataContexts metaDataContexts, final TransactionContexts transactionContexts, final InstanceContext instanceContext) {
+        this.metaDataContexts = metaDataContexts;
+        this.transactionContexts = transactionContexts;
+        this.instanceContext = instanceContext;
+        executorEngine = ExecutorEngine.createExecutorEngineWithSize(metaDataContexts.getProps().<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE));
+    }
     
     /**
      * Renew meta data contexts.
@@ -485,18 +494,18 @@ public final class ContextManager implements AutoCloseable {
     
     private MetaDataContexts rebuildMetaDataContexts(final Map<String, ShardingSphereMetaData> schemaMetaData) {
         return new MetaDataContexts(metaDataContexts.getMetaDataPersistService().orElse(null),
-                schemaMetaData, metaDataContexts.getGlobalRuleMetaData(), metaDataContexts.getExecutorEngine(),
+                schemaMetaData, metaDataContexts.getGlobalRuleMetaData(),
                 metaDataContexts.getOptimizerContext(), metaDataContexts.getProps());
     }
     
     private MetaDataContexts rebuildMetaDataContexts(final ShardingSphereRuleMetaData globalRuleMetaData) {
         return new MetaDataContexts(metaDataContexts.getMetaDataPersistService().orElse(null),
-                metaDataContexts.getMetaDataMap(), globalRuleMetaData, metaDataContexts.getExecutorEngine(), metaDataContexts.getOptimizerContext(), metaDataContexts.getProps());
+                metaDataContexts.getMetaDataMap(), globalRuleMetaData, metaDataContexts.getOptimizerContext(), metaDataContexts.getProps());
     }
     
     private MetaDataContexts rebuildMetaDataContexts(final ConfigurationProperties props) {
         return new MetaDataContexts(metaDataContexts.getMetaDataPersistService().orElse(null),
-                metaDataContexts.getMetaDataMap(), metaDataContexts.getGlobalRuleMetaData(), metaDataContexts.getExecutorEngine(), metaDataContexts.getOptimizerContext(), props);
+                metaDataContexts.getMetaDataMap(), metaDataContexts.getGlobalRuleMetaData(), metaDataContexts.getOptimizerContext(), props);
     }
     
     private void refreshMetaDataContext(final String databaseName, final Map<String, DataSourceProperties> dataSourceProps) throws SQLException {
@@ -653,6 +662,7 @@ public final class ContextManager implements AutoCloseable {
     
     @Override
     public void close() throws Exception {
+        executorEngine.close();
         metaDataContexts.close();
     }
 }

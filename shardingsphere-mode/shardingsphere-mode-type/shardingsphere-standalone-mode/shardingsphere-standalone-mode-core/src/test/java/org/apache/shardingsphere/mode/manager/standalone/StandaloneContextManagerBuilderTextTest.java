@@ -48,7 +48,6 @@ public final class StandaloneContextManagerBuilderTextTest {
                 .globalRuleConfigs(Collections.singleton(mock(RuleConfiguration.class))).props(new Properties())
                 .instanceDefinition(new InstanceDefinition(InstanceType.PROXY, 3307)).build());
         assertNotNull(actual.getMetaDataContexts().getMetaDataMap().get("foo_schema"));
-        assertNotNull(actual.getMetaDataContexts().getExecutorEngine());
         assertTrue(actual.getMetaDataContexts().getMetaDataPersistService().isPresent());
         PersistRepository repository = actual.getMetaDataContexts().getMetaDataPersistService().get().getRepository();
         assertNotNull(repository.get(GlobalNode.getGlobalRuleNode()));
