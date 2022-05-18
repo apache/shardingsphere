@@ -142,7 +142,7 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
     
     private void prepareScaling(final ShardingSphereMetaData shardingSphereMetaData, final T sqlStatement, final RuleDefinitionAlterUpdater updater, final RuleConfiguration currentRuleConfig,
                                 final RuleDefinitionAlterPreprocessor preprocessor) {
-        Optional<MetaDataPersistService> metaDataPersistService = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataPersistService();
+        Optional<MetaDataPersistService> metaDataPersistService = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getPersistService();
         if (metaDataPersistService.isPresent()) {
             Optional<String> newVersion = metaDataPersistService.get().getDatabaseVersionPersistService().createNewVersion(shardingSphereMetaData.getDatabase().getName());
             if (!newVersion.isPresent()) {
@@ -163,7 +163,7 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
     }
     
     private void persistRuleConfigurationChange(final ShardingSphereMetaData shardingSphereMetaData) {
-        ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataPersistService().ifPresent(optional -> optional.getDatabaseRulePersistService().persist(
+        ProxyContext.getInstance().getContextManager().getMetaDataContexts().getPersistService().ifPresent(optional -> optional.getDatabaseRulePersistService().persist(
                 shardingSphereMetaData.getDatabase().getName(), shardingSphereMetaData.getRuleMetaData().getConfigurations()));
     }
     
