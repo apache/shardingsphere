@@ -103,13 +103,6 @@ public final class ComputeNodePersistServiceTest {
     }
     
     @Test
-    public void assertLoadComputeNodeInstances() {
-        InstanceDefinition instanceDefinition = new InstanceDefinition(InstanceType.PROXY, 3307);
-        new ComputeNodePersistService(repository).loadComputeNodeInstances(instanceDefinition.getInstanceType(), Collections.singletonList("test"));
-        verify(repository).getChildrenKeys(ComputeNode.getOnlineNodePath(instanceDefinition.getInstanceType()));
-    }
-    
-    @Test
     public void assertLoadAllComputeNodeInstances() {
         when(repository.getChildrenKeys("/nodes/compute_nodes/online/proxy")).thenReturn(Collections.singletonList("127.0.0.1@3307"));
         when(repository.getChildrenKeys("/nodes/compute_nodes/online/jdbc")).thenReturn(Collections.singletonList("127.0.0.1@3308"));

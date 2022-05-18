@@ -30,7 +30,6 @@ import org.apache.shardingsphere.mode.persist.PersistRepository;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -136,29 +135,6 @@ public final class ComputeNodePersistService {
      */
     public Optional<String> loadXaRecoveryId(final String instanceId) {
         return Optional.ofNullable(repository.get(ComputeNode.getInstanceXaRecoveryIdNodePath(instanceId)));
-    }
-    
-    /**
-     * Load compute node instances by instance type and labels.
-     *
-     * @param instanceType instance type
-     * @param labels collection of contained label
-     * @return compute node instances
-     */
-    public Collection<ComputeNodeInstance> loadComputeNodeInstances(final InstanceType instanceType, final Collection<String> labels) {
-        Collection<String> onlineComputeNodes = repository.getChildrenKeys(ComputeNode.getOnlineNodePath(instanceType));
-        List<ComputeNodeInstance> result = new ArrayList<>(onlineComputeNodes.size());
-        onlineComputeNodes.forEach(each -> {
-            Collection<String> actualLabels = loadInstanceLabels(each);
-            if (actualLabels.stream().anyMatch(labels::contains)) {
-                ComputeNodeInstance instance = new ComputeNodeInstance(new InstanceDefinition(instanceType, each));
-                instance.setLabels(actualLabels);
-                instance.switchState(loadInstanceStatus(each));
-                loadInstanceWorkerId(each).ifPresent(instance::setWorkerId);
-                result.add(instance);
-            }
-        });
-        return result;
     }
     
     /**
