@@ -48,7 +48,7 @@ public final class DatabaseCommunicationEngineFactoryTest {
     public void setUp() throws IllegalAccessException, NoSuchFieldException {
         Field contextManagerField = ProxyContext.getInstance().getClass().getDeclaredField("contextManager");
         contextManagerField.setAccessible(true);
-        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), 
+        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
                 getMetaDataMap(), mock(ShardingSphereRuleMetaData.class), mock(OptimizerContext.class, RETURNS_DEEP_STUBS), new ConfigurationProperties(new Properties()));
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);

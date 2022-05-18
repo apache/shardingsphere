@@ -52,7 +52,7 @@ public final class ProxyContextTest {
     
     @Test
     public void assertInit() {
-        ProxyContext.init(new ContextManager(new MetaDataContexts(mock(MetaDataPersistService.class)), mock(TransactionContexts.class), mock(InstanceContext.class)));
+        ProxyContext.init(new ContextManager(new MetaDataContexts(mock(MetaDataPersistService.class)), mock(TransactionContexts.class), mock(InstanceContext.class, RETURNS_DEEP_STUBS)));
         assertThat(ProxyContext.getInstance().getContextManager().getMetaDataContexts(), is(ProxyContext.getInstance().getContextManager().getMetaDataContexts()));
         assertThat(ProxyContext.getInstance().getContextManager().getTransactionContexts(), is(ProxyContext.getInstance().getContextManager().getTransactionContexts()));
         assertTrue(ProxyContext.getInstance().getStateContext().isPresent());
