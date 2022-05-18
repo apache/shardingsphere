@@ -44,7 +44,7 @@ import org.apache.shardingsphere.infra.metadata.schema.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
-import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilder;
+import org.apache.shardingsphere.infra.rule.builder.schema.DatabaseRulesBuilder;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -206,10 +206,10 @@ public final class ContextManager implements AutoCloseable {
     }
     
     private void refreshRules(final String databaseName, final ShardingSphereMetaData metaData) {
-        Collection<ShardingSphereRule> rules = SchemaRulesBuilder.buildRules(databaseName, new DataSourceProvidedDatabaseConfiguration(metaData.getResource().getDataSources(),
+        Collection<ShardingSphereRule> databaseRules = DatabaseRulesBuilder.build(databaseName, new DataSourceProvidedDatabaseConfiguration(metaData.getResource().getDataSources(),
                 metaData.getRuleMetaData().getConfigurations()), new ConfigurationProperties(metaDataContexts.getProps().getProps()));
         metaData.getRuleMetaData().getRules().clear();
-        metaData.getRuleMetaData().getRules().addAll(rules);
+        metaData.getRuleMetaData().getRules().addAll(databaseRules);
     }
     
     private void deleteTable(final String databaseName, final String schemaName, final String deletedTable) {
