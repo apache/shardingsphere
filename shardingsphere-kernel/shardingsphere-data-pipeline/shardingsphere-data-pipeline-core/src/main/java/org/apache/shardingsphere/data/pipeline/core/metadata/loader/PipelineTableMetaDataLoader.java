@@ -128,12 +128,10 @@ public final class PipelineTableMetaDataLoader {
     private Collection<PipelineIndexMetaData> loadIndexesOfTable(final Connection connection, final String schemaName, final Map<String, PipelineColumnMetaData> columns, final String tableName) throws SQLException {
         Map<String, PipelineIndexMetaData> result = new LinkedHashMap<>();
         Map<String, SortedMap<Short, String>> orderedColumnsOfIndexes = new LinkedHashMap<>();
-        try (ResultSet resultSet = connection.getMetaData().getIndexInfo(connection.getCatalog(), schemaName, tableName, false, false)) {
+        try (ResultSet resultSet = connection.getMetaData().getIndexInfo(connection.getCatalog(), schemaName, tableName, true, false)) {
             while (resultSet.next()) {
                 String indexName = resultSet.getString("INDEX_NAME");
-                if (!result.containsKey(indexName)) {
-                    result.put(indexName, new PipelineIndexMetaData(indexName, new LinkedList<>(), !resultSet.getBoolean("NON_UNIQUE")));
-                }
+                result.computeIfAbsent(indexName, unused -> new PipelineIndexMetaData(indexName, new LinkedList<>()));
                 orderedColumnsOfIndexes.computeIfAbsent(indexName, unused -> new TreeMap<>()).put(resultSet.getShort("ORDINAL_POSITION"), resultSet.getString("COLUMN_NAME"));
             }
         }

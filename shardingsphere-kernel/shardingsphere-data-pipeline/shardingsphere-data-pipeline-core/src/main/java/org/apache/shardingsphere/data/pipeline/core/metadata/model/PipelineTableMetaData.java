@@ -48,9 +48,10 @@ public final class PipelineTableMetaData {
     @Getter
     private final List<String> primaryKeyColumns;
     
-    private final Collection<PipelineIndexMetaData> indexes;
+    @Getter
+    private final Collection<PipelineIndexMetaData> uniqueIndexes;
     
-    public PipelineTableMetaData(final String name, final Map<String, PipelineColumnMetaData> columnMetaDataMap, final Collection<PipelineIndexMetaData> indexes) {
+    public PipelineTableMetaData(final String name, final Map<String, PipelineColumnMetaData> columnMetaDataMap, final Collection<PipelineIndexMetaData> uniqueIndexes) {
         this.name = name;
         this.columnMetaDataMap = columnMetaDataMap;
         List<PipelineColumnMetaData> columnMetaDataList = new ArrayList<>(columnMetaDataMap.values());
@@ -58,7 +59,7 @@ public final class PipelineTableMetaData {
         columnNames = Collections.unmodifiableList(columnMetaDataList.stream().map(PipelineColumnMetaData::getName).collect(Collectors.toList()));
         primaryKeyColumns = Collections.unmodifiableList(columnMetaDataList.stream().filter(PipelineColumnMetaData::isPrimaryKey)
                 .map(PipelineColumnMetaData::getName).collect(Collectors.toList()));
-        this.indexes = indexes;
+        this.uniqueIndexes = Collections.unmodifiableCollection(uniqueIndexes);
     }
     
     /**
@@ -86,13 +87,17 @@ public final class PipelineTableMetaData {
     }
     
     /**
-     * Judge whether column is primary key or not.
+     * Judge whether column is unique key or not.
      *
      * @param columnIndex column index
-     * @return true if the column is primary key, otherwise false
+     * @return true if the column is unique key, otherwise false
      */
-    public boolean isPrimaryKey(final int columnIndex) {
-        return columnIndex < columnNames.size() && columnMetaDataMap.get(columnNames.get(columnIndex)).isPrimaryKey();
+    public boolean isUniqueKey(final int columnIndex) {
+        if (columnIndex >= columnNames.size()) {
+            return false;
+        }
+        String columnName = columnNames.get(columnIndex);
+        return columnMetaDataMap.get(columnName).isPrimaryKey() || (columnName.equals(uniqueIndexes.iterator().next().getColumns().get(0).getName()));
     }
     
     @Override

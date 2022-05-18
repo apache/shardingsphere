@@ -32,6 +32,4 @@ public final class PipelineIndexMetaData {
     private final String name;
     
     private final List<PipelineColumnMetaData> columns;
-    
-    private final boolean unique;
 }
