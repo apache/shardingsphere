@@ -33,6 +33,6 @@ chapter = true
         <property name="password" value="" />
     </bean>
     
-    <shardingsphere:data-source id="ds" schema-name="foo_schema" data-source-names="ds1,ds2" rule-refs="..." />
+    <shardingsphere:data-source id="ds" database-name="foo_schema" data-source-names="ds1,ds2" rule-refs="..." />
 </beans>
 ```
