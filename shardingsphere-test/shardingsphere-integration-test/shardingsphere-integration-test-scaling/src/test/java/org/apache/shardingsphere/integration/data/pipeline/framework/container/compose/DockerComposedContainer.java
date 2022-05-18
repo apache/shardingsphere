@@ -51,6 +51,5 @@ public final class DockerComposedContainer extends BaseComposedContainer {
     @Override
     public String getProxyJdbcUrl(final String databaseName) {
         return getDatabaseContainer().getJdbcUrl(getProxyContainer().getHost(), getProxyContainer().getFirstMappedPort(), databaseName);
-        
     }
 }
