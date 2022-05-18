@@ -84,12 +84,12 @@ public final class UseDatabaseExecutorTest {
         MySQLUseStatement useStatement = mock(MySQLUseStatement.class);
         when(useStatement.getSchema()).thenReturn(String.format(DATABASE_PATTERN, 0));
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts().getAllDatabaseNames().contains(any())).thenReturn(true);
+        when(contextManager.getMetaDataContexts().getAllDatabaseNames().contains(anyString())).thenReturn(true);
         when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         when(metaData.getRuleMetaData().getRules()).thenReturn(new LinkedList<>());
         when(contextManager.getMetaDataContexts().getMetaData(any())).thenReturn(metaData);
-        ProxyContext.getInstance().init(contextManager);
+        ProxyContext.init(contextManager);
         UseDatabaseExecutor useSchemaBackendHandler = new UseDatabaseExecutor(useStatement);
         useSchemaBackendHandler.execute(connectionSession);
         verify(connectionSession).setCurrentDatabase(anyString());

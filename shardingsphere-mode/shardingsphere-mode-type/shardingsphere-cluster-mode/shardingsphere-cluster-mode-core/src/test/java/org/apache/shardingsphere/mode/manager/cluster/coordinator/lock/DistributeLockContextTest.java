@@ -39,7 +39,7 @@ public final class DistributeLockContextTest {
         ComputeNodeInstance currentInstance = new ComputeNodeInstance(new InstanceDefinition(InstanceType.PROXY, "127.0.0.1@3307"));
         DistributeLockContext distributeLockContext = new DistributeLockContext(mock(ClusterPersistRepository.class));
         new InstanceContext(currentInstance, mock(WorkerIdGenerator.class), mock(ModeConfiguration.class), distributeLockContext).initLockContext();
-        assertNotNull(distributeLockContext.getMutexLock("database"));
+        assertNotNull(distributeLockContext.getMutexLock());
     }
     
     @Test
@@ -47,7 +47,7 @@ public final class DistributeLockContextTest {
         ComputeNodeInstance currentInstance = new ComputeNodeInstance(new InstanceDefinition(InstanceType.PROXY, "127.0.0.1@3307"));
         DistributeLockContext distributeLockContext = new DistributeLockContext(mock(ClusterPersistRepository.class));
         new InstanceContext(currentInstance, mock(WorkerIdGenerator.class), mock(ModeConfiguration.class), distributeLockContext).initLockContext();
-        distributeLockContext.releaseLockWriteDatabase("database");
+        distributeLockContext.releaseLockWrite("database");
     }
     
     @Test
@@ -55,7 +55,7 @@ public final class DistributeLockContextTest {
         ComputeNodeInstance currentInstance = new ComputeNodeInstance(new InstanceDefinition(InstanceType.PROXY, "127.0.0.1@3307"));
         DistributeLockContext distributeLockContext = new DistributeLockContext(mock(ClusterPersistRepository.class));
         new InstanceContext(currentInstance, mock(WorkerIdGenerator.class), mock(ModeConfiguration.class), distributeLockContext).initLockContext();
-        distributeLockContext.isLockedDatabase("database");
+        distributeLockContext.isLocked("database");
     }
     
     @Test
@@ -63,7 +63,7 @@ public final class DistributeLockContextTest {
         DistributeLockContext distributeLockContext = new DistributeLockContext(mock(ClusterPersistRepository.class));
         ComputeNodeInstance currentInstance = new ComputeNodeInstance(new InstanceDefinition(InstanceType.PROXY, "127.0.0.1@3307"));
         new InstanceContext(currentInstance, mock(WorkerIdGenerator.class), mock(ModeConfiguration.class), distributeLockContext).initLockContext();
-        distributeLockContext.getMutexLock("database");
-        assertThat(distributeLockContext.getMutexLock("database"), instanceOf(ShardingSphereLock.class));
+        distributeLockContext.getMutexLock();
+        assertThat(distributeLockContext.getMutexLock(), instanceOf(ShardingSphereLock.class));
     }
 }

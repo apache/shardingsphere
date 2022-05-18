@@ -139,7 +139,7 @@ public final class ImportDatabaseConfigurationHandlerTest {
         when(shardingSphereMetaData.getSchemaByName(DefaultDatabase.LOGIC_NAME)).thenReturn(new ShardingSphereSchema(createTableMap()));
         when(shardingSphereMetaData.getResource().getDataSources()).thenReturn(createDataSourceMap());
         when(contextManager.getMetaDataContexts().getMetaData(feature)).thenReturn(shardingSphereMetaData);
-        ProxyContext.getInstance().init(contextManager);
+        ProxyContext.init(contextManager);
     }
     
     private Map<String, DataSource> createDataSourceMap() {

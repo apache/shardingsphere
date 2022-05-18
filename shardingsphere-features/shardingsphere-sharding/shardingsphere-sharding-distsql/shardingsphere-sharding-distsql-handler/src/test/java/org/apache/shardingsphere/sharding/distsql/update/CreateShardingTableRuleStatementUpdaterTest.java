@@ -38,6 +38,7 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardin
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -59,7 +60,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class CreateShardingTableRuleStatementUpdaterTest {
     
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereMetaData shardingSphereMetaData;
     
     @Mock
@@ -73,7 +74,7 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
     
     @Before
     public void before() {
-        when(shardingSphereMetaData.getDatabaseName()).thenReturn("schema");
+        when(shardingSphereMetaData.getDatabase().getName()).thenReturn("schema");
         when(shardingSphereMetaData.getResource()).thenReturn(shardingSphereResource);
         when(shardingSphereMetaData.getRuleMetaData()).thenReturn(shardingSphereRuleMetaData);
         when(shardingSphereRuleMetaData.getRules()).thenReturn(Collections.singleton(new MockDataSourceContainedRule()));

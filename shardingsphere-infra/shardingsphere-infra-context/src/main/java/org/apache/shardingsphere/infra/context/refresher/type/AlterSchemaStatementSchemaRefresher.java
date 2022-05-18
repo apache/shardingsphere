@@ -54,13 +54,14 @@ public final class AlterSchemaStatementSchemaRefresher implements MetaDataRefres
         String actualSchemaName = sqlStatement.getSchemaName().getValue();
         putSchemaMetaData(metaData, database, optimizerPlanners, actualSchemaName, renameSchemaName.get().getValue(), logicDataSourceNames);
         removeSchemaMetaData(metaData, database, optimizerPlanners, actualSchemaName);
-        AlterSchemaEvent event = new AlterSchemaEvent(metaData.getDatabaseName(), actualSchemaName, renameSchemaName.get().getValue(), metaData.getSchemaByName(renameSchemaName.get().getValue()));
+        AlterSchemaEvent event = new AlterSchemaEvent(metaData.getDatabase().getName(),
+                actualSchemaName, renameSchemaName.get().getValue(), metaData.getSchemaByName(renameSchemaName.get().getValue()));
         ShardingSphereEventBus.getInstance().post(event);
     }
     
     private void removeSchemaMetaData(final ShardingSphereMetaData metaData, final FederationDatabaseMetaData database,
                                       final Map<String, OptimizerPlannerContext> optimizerPlanners, final String schemaName) {
-        ShardingSphereSchema schema = metaData.getSchemas().remove(schemaName);
+        ShardingSphereSchema schema = metaData.getDatabase().getSchemas().remove(schemaName);
         database.removeSchemaMetadata(schemaName);
         optimizerPlanners.put(database.getName(), OptimizerPlannerContextFactory.create(database));
         Collection<MutableDataNodeRule> rules = metaData.getRuleMetaData().findRules(MutableDataNodeRule.class);
@@ -78,7 +79,7 @@ public final class AlterSchemaStatementSchemaRefresher implements MetaDataRefres
     private void putSchemaMetaData(final ShardingSphereMetaData metaData, final FederationDatabaseMetaData database, final Map<String, OptimizerPlannerContext> optimizerPlanners,
                                    final String schemaName, final String renameSchemaName, final Collection<String> logicDataSourceNames) {
         ShardingSphereSchema schema = metaData.getSchemaByName(schemaName);
-        metaData.getSchemas().put(renameSchemaName, schema);
+        metaData.getDatabase().getSchemas().put(renameSchemaName, schema);
         database.getSchemaMetadata(schemaName).ifPresent(optional -> database.putSchemaMetadata(renameSchemaName, optional));
         optimizerPlanners.put(database.getName(), OptimizerPlannerContextFactory.create(database));
         Collection<MutableDataNodeRule> rules = metaData.getRuleMetaData().findRules(MutableDataNodeRule.class);

@@ -66,7 +66,7 @@ import static org.mockito.Mockito.when;
 public final class PostgreSQLAggregatedBatchedStatementsCommandExecutorTest {
     
     private static final ShardingSphereSQLParserEngine SQL_PARSER_ENGINE = new ShardingSphereSQLParserEngine("PostgreSQL",
-            new ParserConfiguration(new CacheOption(2000, 65535L, 4), new CacheOption(128, 1024L, 4), false));
+            new ParserConfiguration(new CacheOption(2000, 65535L), new CacheOption(128, 1024L), false));
     
     private static final int CONNECTION_ID = 1;
     
@@ -81,7 +81,7 @@ public final class PostgreSQLAggregatedBatchedStatementsCommandExecutorTest {
     @Before
     public void setup() {
         contextManagerBefore = ProxyContext.getInstance().getContextManager();
-        ProxyContext.getInstance().init(mock(ContextManager.class, RETURNS_DEEP_STUBS));
+        ProxyContext.init(mock(ContextManager.class, RETURNS_DEEP_STUBS));
     }
     
     @Test
@@ -133,6 +133,6 @@ public final class PostgreSQLAggregatedBatchedStatementsCommandExecutorTest {
     
     @After
     public void tearDown() {
-        ProxyContext.getInstance().init(contextManagerBefore);
+        ProxyContext.init(contextManagerBefore);
     }
 }

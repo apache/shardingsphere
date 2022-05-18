@@ -50,7 +50,7 @@ public final class RenameTableStatementSchemaRefresher implements MetaDataRefres
     @Override
     public void refresh(final ShardingSphereMetaData metaData, final FederationDatabaseMetaData database, final Map<String, OptimizerPlannerContext> optimizerPlanners,
                         final Collection<String> logicDataSourceNames, final String schemaName, final RenameTableStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
-        SchemaAlteredEvent event = new SchemaAlteredEvent(metaData.getDatabaseName(), schemaName);
+        SchemaAlteredEvent event = new SchemaAlteredEvent(metaData.getDatabase().getName(), schemaName);
         for (RenameTableDefinitionSegment each : sqlStatement.getRenameTables()) {
             String tableName = each.getTable().getTableName().getIdentifier().getValue();
             String renameTable = each.getRenameTable().getTableName().getIdentifier().getValue();

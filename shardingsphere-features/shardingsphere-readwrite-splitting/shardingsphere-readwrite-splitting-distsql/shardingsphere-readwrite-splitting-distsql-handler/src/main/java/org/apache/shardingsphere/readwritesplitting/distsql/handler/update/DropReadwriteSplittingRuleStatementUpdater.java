@@ -40,7 +40,7 @@ public final class DropReadwriteSplittingRuleStatementUpdater implements RuleDef
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final DropReadwriteSplittingRuleStatement sqlStatement,
                                   final ReadwriteSplittingRuleConfiguration currentRuleConfig) throws RuleDefinitionViolationException {
-        String databaseName = shardingSphereMetaData.getDatabaseName();
+        String databaseName = shardingSphereMetaData.getDatabase().getName();
         if (!isExistRuleConfig(currentRuleConfig) && sqlStatement.isContainsExistClause()) {
             return;
         }

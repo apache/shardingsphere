@@ -34,6 +34,7 @@ import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -54,7 +55,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class EncryptAlgorithmMetaDataTest {
     
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereMetaData metaData;
     
     @Mock
@@ -85,7 +86,7 @@ public final class EncryptAlgorithmMetaDataTest {
         when(columnProjection.getExpression()).thenReturn("id");
         when(selectStatementContext.getTablesContext()).thenReturn(tablesContext);
         when(selectStatementContext.getDatabaseType()).thenReturn(new MySQLDatabaseType());
-        when(metaData.getDatabaseName()).thenReturn(DefaultDatabase.LOGIC_NAME);
+        when(metaData.getDatabase().getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         when(metaData.getSchemaByName(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
         encryptAlgorithm = EncryptAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("MD5", new Properties()));
     }

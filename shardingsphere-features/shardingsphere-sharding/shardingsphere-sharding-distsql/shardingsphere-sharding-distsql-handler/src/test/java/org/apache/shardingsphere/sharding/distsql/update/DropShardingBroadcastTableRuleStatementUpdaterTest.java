@@ -27,6 +27,7 @@ import org.apache.shardingsphere.sharding.distsql.handler.update.DropShardingBro
 import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingBroadcastTableRulesStatement;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -38,7 +39,7 @@ import static org.junit.Assert.assertTrue;
 @RunWith(MockitoJUnitRunner.class)
 public final class DropShardingBroadcastTableRuleStatementUpdaterTest {
     
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereMetaData shardingSphereMetaData;
     
     private final DropShardingBroadcastTableRuleStatementUpdater updater = new DropShardingBroadcastTableRuleStatementUpdater();

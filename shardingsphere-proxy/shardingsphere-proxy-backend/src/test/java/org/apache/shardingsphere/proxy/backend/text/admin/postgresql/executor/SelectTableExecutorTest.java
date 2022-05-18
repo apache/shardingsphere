@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseT
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.resource.CachedDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
@@ -73,7 +74,7 @@ public final class SelectTableExecutorTest {
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), new HashMap<>(), mock(ShardingSphereRuleMetaData.class),
                 mock(ExecutorEngine.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        ProxyContext.getInstance().init(contextManager);
+        ProxyContext.init(contextManager);
     }
     
     private void mockResultSet(final Map<String, String> mockMap, final Boolean... values) throws SQLException {
@@ -90,9 +91,9 @@ public final class SelectTableExecutorTest {
     }
     
     private ShardingSphereMetaData getMetaData() throws SQLException {
-        return new ShardingSphereMetaData("sharding_db", new PostgreSQLDatabaseType(),
-                new ShardingSphereResource(mockDatasourceMap(), mockDataSourcesMetaData(), mock(CachedDatabaseMetaData.class), new PostgreSQLDatabaseType()),
-                mock(ShardingSphereRuleMetaData.class), Collections.singletonMap("public", new ShardingSphereSchema(Collections.singletonMap("t_order", mock(TableMetaData.class)))));
+        return new ShardingSphereMetaData(new PostgreSQLDatabaseType(), new ShardingSphereResource(mockDatasourceMap(), mockDataSourcesMetaData(),
+                mock(CachedDatabaseMetaData.class), new PostgreSQLDatabaseType()), mock(ShardingSphereRuleMetaData.class),
+                new ShardingSphereDatabase("sharding_db", Collections.singletonMap("public", new ShardingSphereSchema(Collections.singletonMap("t_order", mock(TableMetaData.class))))));
     }
     
     private Map<String, DataSource> mockDatasourceMap() throws SQLException {

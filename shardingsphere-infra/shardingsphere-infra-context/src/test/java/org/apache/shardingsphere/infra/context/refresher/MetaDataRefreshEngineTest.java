@@ -36,6 +36,7 @@ import java.util.Collections;
 import java.util.Set;
 
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -54,8 +55,8 @@ public final class MetaDataRefreshEngineTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(DropDatabaseStatement.class));
         when(sqlStatementContext.getTablesContext()).thenReturn(mock(TablesContext.class));
         when(sqlStatementContext.getDatabaseType()).thenReturn(new MySQLDatabaseType());
-        ShardingSphereMetaData shardingSphereMetaData = mock(ShardingSphereMetaData.class);
-        when(shardingSphereMetaData.getDatabaseName()).thenReturn("database");
+        ShardingSphereMetaData shardingSphereMetaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
+        when(shardingSphereMetaData.getDatabase().getName()).thenReturn("database");
         Field field = metaDataRefreshEngine.getClass().getDeclaredField("metaData");
         field.setAccessible(true);
         field.set(metaDataRefreshEngine, shardingSphereMetaData);

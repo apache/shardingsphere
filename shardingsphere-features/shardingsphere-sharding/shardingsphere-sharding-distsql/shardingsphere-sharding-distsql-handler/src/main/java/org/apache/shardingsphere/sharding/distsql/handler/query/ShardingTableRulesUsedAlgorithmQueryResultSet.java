@@ -41,7 +41,7 @@ public final class ShardingTableRulesUsedAlgorithmQueryResultSet implements Dist
         ShowShardingTableRulesUsedAlgorithmStatement statement = (ShowShardingTableRulesUsedAlgorithmStatement) sqlStatement;
         Collection<Collection<Object>> data = new LinkedList<>();
         Collection<ShardingRuleConfiguration> shardingTableRules = metaData.getRuleMetaData().findRuleConfiguration(ShardingRuleConfiguration.class);
-        shardingTableRules.forEach(each -> requireResult(statement, metaData.getDatabaseName(), data, each));
+        shardingTableRules.forEach(each -> requireResult(statement, metaData.getDatabase().getName(), data, each));
         this.data = data.iterator();
     }
     

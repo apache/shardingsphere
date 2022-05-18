@@ -17,21 +17,16 @@
 
 package org.apache.shardingsphere.mode.manager.memory.lock;
 
-import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Memory lock context.
  */
 public final class MemoryLockContext implements LockContext {
     
-    private final Map<String, ShardingSphereLock> locks = new ConcurrentHashMap<>();
+    private final ShardingSphereLock mutexLock = new ShardingSphereMemoryMutexLock();
     
     @Override
     public void initLockState(final InstanceContext instanceContext) {
@@ -39,39 +34,27 @@ public final class MemoryLockContext implements LockContext {
     }
     
     @Override
-    public boolean tryLockWriteDatabase(final String databaseName) {
-        Preconditions.checkNotNull(databaseName, "Try lock write database args database name can not be null.");
-        return getMutexLock(databaseName).tryLock(databaseName);
+    public ShardingSphereLock getMutexLock() {
+        return mutexLock;
     }
     
     @Override
-    public void releaseLockWriteDatabase(final String databaseName) {
-        Preconditions.checkNotNull(databaseName, "Release lock write database args database name can not be null.");
-        getMutexLock(databaseName).releaseLock(databaseName);
+    public boolean lockWrite(final String databaseName) {
+        return mutexLock.tryLock(databaseName);
     }
     
     @Override
-    public boolean isLockedDatabase(final String databaseName) {
-        Preconditions.checkNotNull(databaseName, "Is locked database args database name can not be null.");
-        ShardingSphereLock shardingSphereLock = locks.get(databaseName);
-        return null != shardingSphereLock && shardingSphereLock.isLocked(databaseName);
+    public boolean tryLockWrite(final String databaseName, final long timeoutMilliseconds) {
+        return mutexLock.tryLock(databaseName, timeoutMilliseconds);
     }
     
     @Override
-    public ShardingSphereLock getMutexLock(final String lockName) {
-        Preconditions.checkNotNull(lockName, "Get global lock args lock name can not be null.");
-        ShardingSphereLock result = locks.get(lockName);
-        if (null != result) {
-            return result;
-        }
-        synchronized (locks) {
-            result = locks.get(lockName);
-            if (null != result) {
-                return result;
-            }
-            result = new ShardingSphereNonReentrantLock(new ReentrantLock());
-            locks.put(lockName, result);
-            return result;
-        }
+    public void releaseLockWrite(final String databaseName) {
+        mutexLock.releaseLock(databaseName);
+    }
+    
+    @Override
+    public boolean isLocked(final String databaseName) {
+        return mutexLock.isLocked(databaseName);
     }
 }

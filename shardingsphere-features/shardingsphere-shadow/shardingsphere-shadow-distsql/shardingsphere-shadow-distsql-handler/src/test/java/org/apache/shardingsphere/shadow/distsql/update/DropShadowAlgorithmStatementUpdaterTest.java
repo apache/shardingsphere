@@ -26,6 +26,7 @@ import org.apache.shardingsphere.shadow.distsql.handler.update.DropShadowAlgorit
 import org.apache.shardingsphere.shadow.distsql.parser.statement.DropShadowAlgorithmStatement;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -39,7 +40,7 @@ import static org.mockito.Mockito.mock;
 @RunWith(MockitoJUnitRunner.class)
 public final class DropShadowAlgorithmStatementUpdaterTest {
     
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereMetaData shardingSphereMetaData;
     
     private final DropShadowAlgorithmStatementUpdater updater = new DropShadowAlgorithmStatementUpdater();
@@ -61,7 +62,7 @@ public final class DropShadowAlgorithmStatementUpdaterTest {
         DropShadowAlgorithmStatement sqlStatement = createSQLStatement("ds_0");
         sqlStatement.setContainsExistClause(true);
         ShadowRuleConfiguration ruleConfig = new ShadowRuleConfiguration();
-        ruleConfig.getTables().put("t_order", new ShadowTableConfiguration(new ArrayList<>(Collections.singletonList("ds_0")), Collections.emptyList()));
+        ruleConfig.getTables().put("t_order", new ShadowTableConfiguration(new ArrayList<>(Collections.singleton("ds_0")), Collections.emptyList()));
         updater.checkSQLStatement(shardingSphereMetaData, sqlStatement, ruleConfig);
         updater.updateCurrentRuleConfiguration(sqlStatement, ruleConfig);
         assertFalse(ruleConfig.getTables().containsKey("ds_0"));

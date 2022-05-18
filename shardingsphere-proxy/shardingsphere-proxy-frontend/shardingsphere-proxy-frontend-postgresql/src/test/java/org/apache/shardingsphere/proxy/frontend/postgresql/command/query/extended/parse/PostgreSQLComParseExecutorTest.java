@@ -74,7 +74,7 @@ public final class PostgreSQLComParseExecutorTest {
     @Before
     public void setup() {
         contextManagerBefore = ProxyContext.getInstance().getContextManager();
-        ProxyContext.getInstance().init(mockedContextManager);
+        ProxyContext.init(mockedContextManager);
         PostgreSQLPreparedStatementRegistry.getInstance().register(CONNECTION_ID);
         when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
     }
@@ -117,6 +117,6 @@ public final class PostgreSQLComParseExecutorTest {
     
     @After
     public void tearDown() {
-        ProxyContext.getInstance().init(contextManagerBefore);
+        ProxyContext.init(contextManagerBefore);
     }
 }

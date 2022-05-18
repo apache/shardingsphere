@@ -73,7 +73,7 @@ public final class SetVariableBackendHandlerTest {
         contextManagerBefore = ProxyContext.getInstance().getContextManager();
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        ProxyContext.getInstance().init(contextManager);
+        ProxyContext.init(contextManager);
         connectionSession = new ConnectionSession(mock(MySQLDatabaseType.class), TransactionType.LOCAL, new DefaultAttributeMap());
     }
     
@@ -160,6 +160,6 @@ public final class SetVariableBackendHandlerTest {
     
     @After
     public void tearDown() {
-        ProxyContext.getInstance().init(contextManagerBefore);
+        ProxyContext.init(contextManagerBefore);
     }
 }

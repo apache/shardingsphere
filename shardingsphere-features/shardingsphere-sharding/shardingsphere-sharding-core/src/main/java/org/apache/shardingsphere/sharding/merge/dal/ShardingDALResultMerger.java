@@ -55,7 +55,7 @@ public final class ShardingDALResultMerger implements ResultMerger {
     @Override
     public MergedResult merge(final List<QueryResult> queryResults, final SQLStatementContext<?> sqlStatementContext, final ShardingSphereMetaData metaData) throws SQLException {
         SQLStatement dalStatement = sqlStatementContext.getSqlStatement();
-        String schemaName = sqlStatementContext.getTablesContext().getSchemaName().orElse(sqlStatementContext.getDatabaseType().getDefaultSchema(metaData.getDatabaseName()));
+        String schemaName = sqlStatementContext.getTablesContext().getSchemaName().orElse(sqlStatementContext.getDatabaseType().getDefaultSchema(metaData.getDatabase().getName()));
         if (dalStatement instanceof MySQLShowDatabasesStatement) {
             return new SingleLocalDataMergedResult(Collections.singletonList(databaseName));
         }

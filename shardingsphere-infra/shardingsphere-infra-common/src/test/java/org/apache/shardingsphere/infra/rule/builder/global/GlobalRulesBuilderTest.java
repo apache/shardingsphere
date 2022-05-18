@@ -23,15 +23,14 @@ import org.junit.Test;
 
 import java.util.Collections;
 
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
 public final class GlobalRulesBuilderTest {
     
     @Test
-    public void assertBuildRulesWithoutGlobalRules() {
-        assertTrue(GlobalRulesBuilder.buildRules(Collections.singletonList(mock(RuleConfiguration.class)), Collections.singletonMap("logic_db", mock(ShardingSphereMetaData.class))).isEmpty());
+    public void assertBuildRules() {
+        assertThat(GlobalRulesBuilder.buildRules(Collections.singletonList(mock(RuleConfiguration.class)), Collections.singletonMap("logic_db", mock(ShardingSphereMetaData.class))).size(), is(1));
     }
-    
-    // TODO add more test cases for BuildRulesWithGlobalRules
 }

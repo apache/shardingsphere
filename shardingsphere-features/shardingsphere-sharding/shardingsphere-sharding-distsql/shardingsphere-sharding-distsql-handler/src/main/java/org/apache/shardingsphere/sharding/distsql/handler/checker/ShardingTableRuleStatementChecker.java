@@ -88,7 +88,7 @@ public final class ShardingTableRuleStatementChecker {
     
     private static void check(final ShardingSphereMetaData shardingSphereMetaData, final Collection<AbstractTableRuleSegment> rules,
                               final ShardingRuleConfiguration currentRuleConfig, final boolean isCreate) throws DistSQLException {
-        String databaseName = shardingSphereMetaData.getDatabaseName();
+        String databaseName = shardingSphereMetaData.getDatabase().getName();
         checkShardingTables(databaseName, rules, currentRuleConfig, isCreate);
         checkResources(databaseName, rules, shardingSphereMetaData);
         checkKeyGenerators(rules, currentRuleConfig);

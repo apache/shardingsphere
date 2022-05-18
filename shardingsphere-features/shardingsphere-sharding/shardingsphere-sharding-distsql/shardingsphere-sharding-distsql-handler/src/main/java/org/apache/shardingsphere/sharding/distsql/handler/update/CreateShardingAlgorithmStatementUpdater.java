@@ -43,7 +43,7 @@ public final class CreateShardingAlgorithmStatementUpdater implements RuleDefini
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final CreateShardingAlgorithmStatement sqlStatement,
                                   final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String databaseName = shardingSphereMetaData.getDatabaseName();
+        String databaseName = shardingSphereMetaData.getDatabase().getName();
         checkDuplicate(databaseName, sqlStatement, currentRuleConfig);
         checkAlgorithm(sqlStatement);
     }
@@ -76,9 +76,9 @@ public final class CreateShardingAlgorithmStatementUpdater implements RuleDefini
     @Override
     public ShardingRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateShardingAlgorithmStatement sqlStatement) {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        Map<String, ShardingSphereAlgorithmConfiguration> algorithmConfigurationMap = sqlStatement.getAlgorithmSegments().stream()
+        Map<String, ShardingSphereAlgorithmConfiguration> algorithmConfigMap = sqlStatement.getAlgorithmSegments().stream()
                 .collect(Collectors.toMap(ShardingAlgorithmSegment::getShardingAlgorithmName, each -> ShardingTableRuleStatementConverter.createAlgorithmConfiguration(each.getAlgorithmSegment())));
-        result.setShardingAlgorithms(algorithmConfigurationMap);
+        result.setShardingAlgorithms(algorithmConfigMap);
         return result;
     }
     

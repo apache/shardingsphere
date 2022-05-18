@@ -45,7 +45,7 @@ public final class ShardingDropIndexStatementValidator extends ShardingDDLStatem
         if (DropIndexStatementHandler.containsExistClause(sqlStatementContext.getSqlStatement())) {
             return;
         }
-        String defaultSchema = sqlStatementContext.getDatabaseType().getDefaultSchema(metaData.getDatabaseName());
+        String defaultSchema = sqlStatementContext.getDatabaseType().getDefaultSchema(metaData.getDatabase().getName());
         for (IndexSegment each : sqlStatementContext.getSqlStatement().getIndexes()) {
             ShardingSphereSchema schema = each.getOwner().map(optional -> optional.getIdentifier().getValue()).map(metaData::getSchemaByName).orElseGet(() -> metaData.getSchemaByName(defaultSchema));
             if (!isSchemaContainsIndex(schema, each)) {
@@ -62,7 +62,7 @@ public final class ShardingDropIndexStatementValidator extends ShardingDDLStatem
         if (logicTableName.isPresent()) {
             validateDropIndexRouteUnit(shardingRule, routeContext, indexSegments, logicTableName.get());
         } else {
-            String defaultSchema = sqlStatementContext.getDatabaseType().getDefaultSchema(metaData.getDatabaseName());
+            String defaultSchema = sqlStatementContext.getDatabaseType().getDefaultSchema(metaData.getDatabase().getName());
             for (IndexSegment each : indexSegments) {
                 ShardingSphereSchema schema = each.getOwner().map(optional -> optional.getIdentifier().getValue())
                         .map(metaData::getSchemaByName).orElseGet(() -> metaData.getSchemaByName(defaultSchema));

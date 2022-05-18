@@ -43,7 +43,7 @@ public final class AlterShardingKeyGeneratorStatementUpdater implements RuleDefi
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final AlterShardingKeyGeneratorStatement sqlStatement,
                                   final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String databaseName = shardingSphereMetaData.getDatabaseName();
+        String databaseName = shardingSphereMetaData.getDatabase().getName();
         Collection<String> requireNames = sqlStatement.getKeyGeneratorSegments().stream().map(ShardingKeyGeneratorSegment::getKeyGeneratorName).collect(Collectors.toList());
         checkDuplicate(databaseName, requireNames);
         checkExist(requireNames, currentRuleConfig);
@@ -71,9 +71,9 @@ public final class AlterShardingKeyGeneratorStatementUpdater implements RuleDefi
     @Override
     public ShardingRuleConfiguration buildToBeAlteredRuleConfiguration(final AlterShardingKeyGeneratorStatement sqlStatement) {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        Map<String, ShardingSphereAlgorithmConfiguration> algorithmConfigurationMap = sqlStatement.getKeyGeneratorSegments().stream()
+        Map<String, ShardingSphereAlgorithmConfiguration> algorithmConfigMap = sqlStatement.getKeyGeneratorSegments().stream()
                 .collect(Collectors.toMap(ShardingKeyGeneratorSegment::getKeyGeneratorName, each -> ShardingTableRuleStatementConverter.createAlgorithmConfiguration(each.getAlgorithmSegment())));
-        result.setKeyGenerators(algorithmConfigurationMap);
+        result.setKeyGenerators(algorithmConfigMap);
         return result;
     }
     

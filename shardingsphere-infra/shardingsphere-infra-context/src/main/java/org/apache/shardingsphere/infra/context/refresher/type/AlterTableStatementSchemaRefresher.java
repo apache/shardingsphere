@@ -50,7 +50,7 @@ public final class AlterTableStatementSchemaRefresher implements MetaDataRefresh
     public void refresh(final ShardingSphereMetaData metaData, final FederationDatabaseMetaData database, final Map<String, OptimizerPlannerContext> optimizerPlanners,
                         final Collection<String> logicDataSourceNames, final String schemaName, final AlterTableStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
-        SchemaAlteredEvent event = new SchemaAlteredEvent(metaData.getDatabaseName(), schemaName);
+        SchemaAlteredEvent event = new SchemaAlteredEvent(metaData.getDatabase().getName(), schemaName);
         if (sqlStatement.getRenameTable().isPresent()) {
             String renameTable = sqlStatement.getRenameTable().get().getTableName().getIdentifier().getValue();
             putTableMetaData(metaData, database, optimizerPlanners, logicDataSourceNames, schemaName, renameTable, props);

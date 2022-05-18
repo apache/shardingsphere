@@ -50,7 +50,7 @@ public class ShowTrafficRulesHandlerTest {
         ShowTrafficRulesHandler handler = new ShowTrafficRulesHandler().initStatement(showTrafficRuleStatement);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(any())).thenReturn(createTrafficRule());
-        ProxyContext.getInstance().init(contextManager);
+        ProxyContext.init(contextManager);
         handler.execute();
         handler.next();
         List<Object> data = new ArrayList<>(handler.getRowData());

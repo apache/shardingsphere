@@ -19,10 +19,12 @@ package org.apache.shardingsphere.integration.data.pipeline.framework.param;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
 @Getter
 @RequiredArgsConstructor
+@ToString
 public final class ScalingParameterized {
     
     private final DatabaseType databaseType;
