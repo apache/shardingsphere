@@ -50,7 +50,7 @@ public final class DropSchemaStatementSchemaRefresher implements MetaDataRefresh
         Collection<String> tobeRemovedSchemas = new LinkedHashSet<>();
         Collection<String> schemaNames = getSchemaNames(sqlStatement);
         for (String each : schemaNames) {
-            Optional.ofNullable(metaData.getSchemas().remove(each)).ifPresent(optional -> tobeRemovedTables.addAll(optional.getAllTableNames()));
+            Optional.ofNullable(metaData.getDatabase().getSchemas().remove(each)).ifPresent(optional -> tobeRemovedTables.addAll(optional.getAllTableNames()));
             tobeRemovedSchemas.add(each.toLowerCase());
             database.removeSchemaMetadata(each);
             optimizerPlanners.put(database.getName(), OptimizerPlannerContextFactory.create(database));
@@ -59,7 +59,7 @@ public final class DropSchemaStatementSchemaRefresher implements MetaDataRefresh
         for (String each : tobeRemovedTables) {
             removeDataNode(rules, each, tobeRemovedSchemas);
         }
-        ShardingSphereEventBus.getInstance().post(new DropSchemaEvent(metaData.getDatabaseName(), schemaNames));
+        ShardingSphereEventBus.getInstance().post(new DropSchemaEvent(metaData.getDatabase().getName(), schemaNames));
     }
     
     private Collection<String> getSchemaNames(final DropSchemaStatement sqlStatement) {

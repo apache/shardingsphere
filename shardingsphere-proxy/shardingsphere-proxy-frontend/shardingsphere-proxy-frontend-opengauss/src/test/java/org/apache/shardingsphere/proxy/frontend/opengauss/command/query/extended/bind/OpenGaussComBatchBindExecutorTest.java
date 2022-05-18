@@ -63,14 +63,14 @@ import static org.mockito.Mockito.when;
 public final class OpenGaussComBatchBindExecutorTest {
     
     private static final ShardingSphereSQLParserEngine SQL_PARSER_ENGINE = new ShardingSphereSQLParserEngine("openGauss",
-            new ParserConfiguration(new CacheOption(2000, 65535L, 4), new CacheOption(128, 1024L, 4), false));
+            new ParserConfiguration(new CacheOption(2000, 65535L), new CacheOption(128, 1024L), false));
     
     private ContextManager contextManagerBefore;
     
     @Before
     public void setup() {
         contextManagerBefore = ProxyContext.getInstance().getContextManager();
-        ProxyContext.getInstance().init(mock(ContextManager.class, RETURNS_DEEP_STUBS));
+        ProxyContext.init(mock(ContextManager.class, RETURNS_DEEP_STUBS));
     }
     
     @Test
@@ -109,6 +109,6 @@ public final class OpenGaussComBatchBindExecutorTest {
     
     @After
     public void tearDown() {
-        ProxyContext.getInstance().init(contextManagerBefore);
+        ProxyContext.init(contextManagerBefore);
     }
 }

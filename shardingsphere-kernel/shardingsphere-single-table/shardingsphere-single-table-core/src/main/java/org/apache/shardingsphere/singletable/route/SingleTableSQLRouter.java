@@ -100,7 +100,7 @@ public final class SingleTableSQLRouter implements SQLRouter<SingleTableRule> {
     
     private static Collection<QualifiedTable> getQualifiedTables(final ShardingSphereMetaData metaData, final Collection<SimpleTableSegment> tableSegments, final DatabaseType databaseType) {
         Collection<QualifiedTable> result = new LinkedList<>();
-        String schemaName = databaseType.getDefaultSchema(metaData.getDatabaseName());
+        String schemaName = databaseType.getDefaultSchema(metaData.getDatabase().getName());
         for (SimpleTableSegment each : tableSegments) {
             String actualSchemaName = each.getOwner().map(optional -> optional.getIdentifier().getValue()).orElse(schemaName);
             result.add(new QualifiedTable(actualSchemaName, each.getTableName().getIdentifier().getValue()));

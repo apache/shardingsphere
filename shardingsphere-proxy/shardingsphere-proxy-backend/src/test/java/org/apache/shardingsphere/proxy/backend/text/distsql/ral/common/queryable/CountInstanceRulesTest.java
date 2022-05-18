@@ -82,7 +82,7 @@ public final class CountInstanceRulesTest {
         when(contextManager.getMetaDataContexts().getAllDatabaseNames()).thenReturn(Arrays.asList("db_1", "db_2"));
         when(contextManager.getMetaDataContexts().getMetaData("db_1")).thenReturn(shardingSphereMetaData1);
         when(contextManager.getMetaDataContexts().getMetaData("db_2")).thenReturn(shardingSphereMetaData2);
-        ProxyContext.getInstance().init(contextManager);
+        ProxyContext.init(contextManager);
     }
     
     private SingleTableRule mockSingleTableRule() {

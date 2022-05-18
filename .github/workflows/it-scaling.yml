@@ -62,7 +62,7 @@ env:
 
 jobs:
   scaling-it-test:
-    if: (github.event_name != 'schedule' && github.repository == 'apache/shardingsphere')
+    if: (github.event_name != 'schedule')
     name: scaling-it-test
     runs-on: ubuntu-latest
     env:

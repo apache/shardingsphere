@@ -32,7 +32,7 @@ public final class CreateShardingBroadcastTableRuleStatementUpdater implements R
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final CreateShardingBroadcastTableRulesStatement sqlStatement,
                                   final ShardingRuleConfiguration currentRuleConfig) throws RuleDefinitionViolationException {
-        checkCurrentRuleConfiguration(shardingSphereMetaData.getDatabaseName(), currentRuleConfig);
+        checkCurrentRuleConfiguration(shardingSphereMetaData.getDatabase().getName(), currentRuleConfig);
     }
     
     private void checkCurrentRuleConfiguration(final String databaseName, final ShardingRuleConfiguration currentRuleConfig) throws RuleInUsedException {

@@ -88,7 +88,7 @@ public final class PostgreSQLComDescribeExecutorTest {
     private static final String TABLE_NAME = "t_order";
     
     private static final ShardingSphereSQLParserEngine SQL_PARSER_ENGINE = new ShardingSphereSQLParserEngine("PostgreSQL",
-            new ParserConfiguration(new CacheOption(2000, 65535L, 4), new CacheOption(128, 1024L, 4), false));
+            new ParserConfiguration(new CacheOption(2000, 65535L), new CacheOption(128, 1024L), false));
     
     private ContextManager contextManagerBefore;
     
@@ -110,7 +110,7 @@ public final class PostgreSQLComDescribeExecutorTest {
     @Before
     public void setup() {
         contextManagerBefore = ProxyContext.getInstance().getContextManager();
-        ProxyContext.getInstance().init(mockContextManager);
+        ProxyContext.init(mockContextManager);
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
         when(connectionSession.getDatabaseName()).thenReturn(DATABASE_NAME);
         when(mockContextManager.getMetaDataContexts().getAllDatabaseNames().contains(DATABASE_NAME)).thenReturn(true);
@@ -324,6 +324,6 @@ public final class PostgreSQLComDescribeExecutorTest {
     
     @After
     public void tearDown() {
-        ProxyContext.getInstance().init(contextManagerBefore);
+        ProxyContext.init(contextManagerBefore);
     }
 }

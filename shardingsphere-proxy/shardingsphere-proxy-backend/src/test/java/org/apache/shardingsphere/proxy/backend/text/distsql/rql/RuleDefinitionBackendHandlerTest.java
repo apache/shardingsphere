@@ -45,7 +45,7 @@ public final class RuleDefinitionBackendHandlerTest {
     
     @Before
     public void setUp() {
-        ProxyContext.getInstance().init(mockContextManager());
+        ProxyContext.init(mockContextManager());
     }
     
     private ContextManager mockContextManager() {

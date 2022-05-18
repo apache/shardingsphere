@@ -48,7 +48,7 @@ public final class DatabaseDiscoveryRuleConfigurationImportChecker {
         if (null == shardingSphereMetaData || null == currentRuleConfig) {
             return;
         }
-        String databaseName = shardingSphereMetaData.getDatabaseName();
+        String databaseName = shardingSphereMetaData.getDatabase().getName();
         checkResources(databaseName, shardingSphereMetaData, currentRuleConfig);
         checkDiscoverTypeAndHeartbeat(databaseName, currentRuleConfig);
     }

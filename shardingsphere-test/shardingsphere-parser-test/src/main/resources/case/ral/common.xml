@@ -44,8 +44,8 @@
     <show-sql-parser-rule sql-case-id="show-sql-parser-rule" />
     <alter-sql-parser-rule sql-case-id="alter-sql-parser-rule">
         <sql-parser sqlCommentParseEnabled="false">
-            <parse-tree-cache initial-capacity="10" maximum-size="11" concurrency-level="1" />
-            <sql-statement-cache initial-capacity="11" maximum-size="11" concurrency-level="100" />
+            <parse-tree-cache initial-capacity="10" maximum-size="11" />
+            <sql-statement-cache initial-capacity="11" maximum-size="11" />
         </sql-parser>
     </alter-sql-parser-rule>
     <show-traffic-rules sql-case-id="show-traffic-rules" rule-name="rule_name"/>

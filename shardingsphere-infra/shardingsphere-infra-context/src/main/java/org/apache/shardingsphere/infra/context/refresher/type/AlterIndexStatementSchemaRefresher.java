@@ -60,7 +60,7 @@ public final class AlterIndexStatementSchemaRefresher implements MetaDataRefresh
             tableMetaData.getIndexes().remove(indexName);
             String renameIndexName = renameIndex.get().getIndexName().getIdentifier().getValue();
             tableMetaData.getIndexes().put(renameIndexName, new IndexMetaData(renameIndexName));
-            SchemaAlteredEvent event = new SchemaAlteredEvent(metaData.getDatabaseName(), actualSchemaName);
+            SchemaAlteredEvent event = new SchemaAlteredEvent(metaData.getDatabase().getName(), actualSchemaName);
             event.getAlteredTables().add(tableMetaData);
             ShardingSphereEventBus.getInstance().post(event);
         }

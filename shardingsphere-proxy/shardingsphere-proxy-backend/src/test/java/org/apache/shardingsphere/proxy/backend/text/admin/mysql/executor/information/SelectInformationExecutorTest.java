@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.resource.CachedDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
@@ -85,7 +86,7 @@ public final class SelectInformationExecutorTest {
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), new HashMap<>(), mock(ShardingSphereRuleMetaData.class),
                 mock(ExecutorEngine.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        ProxyContext.getInstance().init(contextManager);
+        ProxyContext.init(contextManager);
         when(connectionSession.getGrantee()).thenReturn(new Grantee("root", "127.0.0.1"));
     }
     
@@ -105,17 +106,15 @@ public final class SelectInformationExecutorTest {
     private ShardingSphereMetaData getMetaData() throws SQLException {
         ShardingSphereRuleMetaData metaData = mock(ShardingSphereRuleMetaData.class);
         when(metaData.getRules()).thenReturn(Collections.singletonList(mock(AuthorityRule.class, RETURNS_DEEP_STUBS)));
-        return new ShardingSphereMetaData("sharding_db", new MySQLDatabaseType(),
-                new ShardingSphereResource(mockDatasourceMap(), mockDataSourcesMetaData(), mock(CachedDatabaseMetaData.class), new MySQLDatabaseType()),
-                metaData, Collections.emptyMap());
+        return new ShardingSphereMetaData(new MySQLDatabaseType(), new ShardingSphereResource(mockDatasourceMap(), mockDataSourcesMetaData(),
+                mock(CachedDatabaseMetaData.class), new MySQLDatabaseType()), metaData, new ShardingSphereDatabase("sharding_db", Collections.emptyMap()));
     }
     
     private ShardingSphereMetaData getEmptyMetaData(final String schemaName) {
         ShardingSphereRuleMetaData metaData = mock(ShardingSphereRuleMetaData.class);
         when(metaData.getRules()).thenReturn(Collections.singletonList(mock(AuthorityRule.class, RETURNS_DEEP_STUBS)));
-        return new ShardingSphereMetaData(schemaName, new MySQLDatabaseType(),
-                new ShardingSphereResource(Collections.emptyMap(), mockDataSourcesMetaData(), mock(CachedDatabaseMetaData.class), new MySQLDatabaseType()),
-                metaData, Collections.emptyMap());
+        return new ShardingSphereMetaData(new MySQLDatabaseType(), new ShardingSphereResource(Collections.emptyMap(), mockDataSourcesMetaData(),
+                mock(CachedDatabaseMetaData.class), new MySQLDatabaseType()), metaData, new ShardingSphereDatabase(schemaName, Collections.emptyMap()));
     }
     
     private Map<String, DataSource> mockDatasourceMap() throws SQLException {

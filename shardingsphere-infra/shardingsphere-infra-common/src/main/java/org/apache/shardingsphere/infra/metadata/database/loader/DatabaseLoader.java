@@ -54,7 +54,7 @@ public final class DatabaseLoader {
         Map<String, ShardingSphereSchema> schemas = new LinkedHashMap<>();
         schemas.putAll(SchemaLoader.load(databaseName, frontendDatabaseType, backendDatabaseType, dataSourceMap, rules, props));
         schemas.putAll(SystemSchemaBuilder.build(databaseName, frontendDatabaseType));
-        return new ShardingSphereDatabase(schemas);
+        return new ShardingSphereDatabase(databaseName, schemas);
     }
     
     /**
@@ -65,6 +65,6 @@ public final class DatabaseLoader {
      * @return loaded database
      */
     public static ShardingSphereDatabase load(final String databaseName, final DatabaseType frontendDatabaseType) {
-        return new ShardingSphereDatabase(SystemSchemaBuilder.build(databaseName, frontendDatabaseType));
+        return new ShardingSphereDatabase(databaseName, SystemSchemaBuilder.build(databaseName, frontendDatabaseType));
     }
 }

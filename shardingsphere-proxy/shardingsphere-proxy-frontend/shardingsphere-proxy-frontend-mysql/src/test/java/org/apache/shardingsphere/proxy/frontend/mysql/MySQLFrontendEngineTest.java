@@ -89,8 +89,10 @@ public final class MySQLFrontendEngineTest {
     @Mock
     private Channel channel;
     
+    @SuppressWarnings("unchecked")
     @Before
     public void setUp() {
+        ProxyContext.init(mock(ContextManager.class, RETURNS_DEEP_STUBS));
         resetConnectionIdGenerator();
         when(context.channel()).thenReturn(channel);
         when(channel.attr(CommonConstants.CHARSET_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
@@ -163,14 +165,11 @@ public final class MySQLFrontendEngineTest {
         field.set(mysqlFrontendEngine.getAuthenticationEngine(), connectionPhase);
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
     private void initProxyContext(final ShardingSphereUser user) {
-        Field contextManagerField = ProxyContext.getInstance().getClass().getDeclaredField("contextManager");
-        contextManagerField.setAccessible(true);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = getMetaDataContexts(user);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        contextManagerField.set(ProxyContext.getInstance(), contextManager);
+        ProxyContext.init(contextManager);
     }
     
     private MetaDataContexts getMetaDataContexts(final ShardingSphereUser user) {

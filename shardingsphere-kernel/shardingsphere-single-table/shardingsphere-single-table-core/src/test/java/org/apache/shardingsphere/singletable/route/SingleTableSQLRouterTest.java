@@ -132,7 +132,7 @@ public final class SingleTableSQLRouterTest {
         dataSourceMap.put("ds_0", mock(DataSource.class, RETURNS_DEEP_STUBS));
         dataSourceMap.put("ds_1", mock(DataSource.class, RETURNS_DEEP_STUBS));
         when(result.getResource().getDataSources()).thenReturn(dataSourceMap);
-        when(result.getDatabaseName()).thenReturn(DefaultDatabase.LOGIC_NAME);
+        when(result.getDatabase().getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         return result;
     }
     

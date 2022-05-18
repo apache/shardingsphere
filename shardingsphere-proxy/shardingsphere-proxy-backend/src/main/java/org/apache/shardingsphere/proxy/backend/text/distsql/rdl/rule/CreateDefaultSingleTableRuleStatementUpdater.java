@@ -36,7 +36,7 @@ public final class CreateDefaultSingleTableRuleStatementUpdater implements RuleD
     @Override
     public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final CreateDefaultSingleTableRuleStatement sqlStatement,
                                   final SingleTableRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String databaseName = shardingSphereMetaData.getDatabaseName();
+        String databaseName = shardingSphereMetaData.getDatabase().getName();
         checkResourceExist(databaseName, shardingSphereMetaData, sqlStatement);
         checkDefaultResourceDuplicate(databaseName, currentRuleConfig);
     }
