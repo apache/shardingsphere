@@ -180,7 +180,6 @@ public final class InventoryTaskSplitter {
             if (!column.isNullable()) {
                 return column;
             }
-            
         }
         throw new PipelineJobCreationException(
                 String.format("Can not split range for table %s, reason: table contains multiple unique index or unique index contains nullable/multiple column(s)", tableName));

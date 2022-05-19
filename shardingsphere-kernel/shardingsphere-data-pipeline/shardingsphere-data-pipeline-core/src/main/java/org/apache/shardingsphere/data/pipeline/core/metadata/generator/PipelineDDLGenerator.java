@@ -162,7 +162,6 @@ public final class PipelineDDLGenerator {
             if (sqlStatementContext instanceof ConstraintAvailable) {
                 result = decorateConstraint((ConstraintAvailable) sqlStatementContext, result, tableNameSegment);
             }
-            
         }
         return result;
     }
