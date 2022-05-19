@@ -123,10 +123,19 @@ public final class EncryptTableTest {
     
     @Test
     public void assertGetQueryWithCipherColumn() {
+        Optional<Boolean> actual = encryptTable.getQueryWithCipherColumn("logicColumn");
+        assertFalse(actual.isPresent());
+        
         encryptTable = new EncryptTable(new EncryptTableRuleConfiguration("t_encrypt",
                 Collections.singleton(new EncryptColumnRuleConfiguration("logicColumn", "cipherColumn", "assistedQueryColumn", "plainColumn", "myEncryptor", null)), true), Collections.emptyMap());
-        Optional<Boolean> actual = encryptTable.getQueryWithCipherColumn();
+        actual = encryptTable.getQueryWithCipherColumn("logicColumn");
         assertTrue(actual.isPresent());
         assertTrue(actual.get());
+        
+        encryptTable = new EncryptTable(new EncryptTableRuleConfiguration("t_encrypt",
+                Collections.singleton(new EncryptColumnRuleConfiguration("logicColumn", "cipherColumn", "assistedQueryColumn", "plainColumn", "myEncryptor", false)), true), Collections.emptyMap());
+        actual = encryptTable.getQueryWithCipherColumn("logicColumn");
+        assertTrue(actual.isPresent());
+        assertFalse(actual.get());
     }
 }

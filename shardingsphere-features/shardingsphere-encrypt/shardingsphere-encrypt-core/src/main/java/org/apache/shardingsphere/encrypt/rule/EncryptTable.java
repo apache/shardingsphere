@@ -180,15 +180,6 @@ public final class EncryptTable {
     
     /**
      * Get query with cipher column.
-     * 
-     * @return query with cipher column
-     */
-    public Optional<Boolean> getQueryWithCipherColumn() {
-        return Optional.ofNullable(queryWithCipherColumn);
-    }
-    
-    /**
-     * Get query with cipher column.
      *
      * @param logicColumn logic column
      * @return query with cipher column
