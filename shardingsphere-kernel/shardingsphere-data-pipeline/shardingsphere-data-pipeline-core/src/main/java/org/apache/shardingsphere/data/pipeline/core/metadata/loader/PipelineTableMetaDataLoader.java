@@ -49,13 +49,30 @@ public final class PipelineTableMetaDataLoader {
     private final Map<TableName, PipelineTableMetaData> tableMetaDataMap = new ConcurrentHashMap<>();
     
     /**
-     * Load table metadata.
+     * Get table metadata, load if it does not exist.
      *
-     * @param schemaName schema name
-     * @param tableNamePattern table name pattern
-     * @throws SQLException if loading failure
+     * @param schemaName schema name. nullable
+     * @param tableName dedicated table name, not table name pattern
+     * @return table metadata
      */
-    public void loadTableMetaData(final String schemaName, final String tableNamePattern) throws SQLException {
+    public PipelineTableMetaData getTableMetaData(final String schemaName, final String tableName) {
+        PipelineTableMetaData result = tableMetaDataMap.get(new TableName(tableName));
+        if (null != result) {
+            return result;
+        }
+        try {
+            loadTableMetaData(schemaName, tableName);
+        } catch (final SQLException ex) {
+            throw new RuntimeException(String.format("Load metadata for table '%s' failed", tableName), ex);
+        }
+        result = tableMetaDataMap.get(new TableName(tableName));
+        if (null == result) {
+            log.warn("getTableMetaData, can not load metadata for table '{}'", tableName);
+        }
+        return result;
+    }
+    
+    private void loadTableMetaData(final String schemaName, final String tableNamePattern) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             long startMillis = System.currentTimeMillis();
             String schemaNameFinal = isSchemaAvailable() ? schemaName : null;
@@ -109,30 +126,6 @@ public final class PipelineTableMetaDataLoader {
             while (resultSet.next()) {
                 result.add(resultSet.getString("COLUMN_NAME"));
             }
-        }
-        return result;
-    }
-    
-    /**
-     * Get table metadata, load if it does not exist.
-     *
-     * @param schemaName schema name. nullable
-     * @param tableName dedicated table name, not table name pattern
-     * @return table metadata
-     */
-    public PipelineTableMetaData getTableMetaData(final String schemaName, final String tableName) {
-        PipelineTableMetaData result = tableMetaDataMap.get(new TableName(tableName));
-        if (null != result) {
-            return result;
-        }
-        try {
-            loadTableMetaData(schemaName, tableName);
-        } catch (final SQLException ex) {
-            throw new RuntimeException(String.format("Load metadata for table '%s' failed", tableName), ex);
-        }
-        result = tableMetaDataMap.get(new TableName(tableName));
-        if (null == result) {
-            log.warn("getTableMetaData, can not load metadata for table '{}'", tableName);
         }
         return result;
     }

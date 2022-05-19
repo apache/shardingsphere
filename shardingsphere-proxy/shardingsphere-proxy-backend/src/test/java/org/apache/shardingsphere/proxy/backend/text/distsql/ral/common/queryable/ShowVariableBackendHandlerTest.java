@@ -58,7 +58,7 @@ public final class ShowVariableBackendHandlerTest {
     @Before
     public void setup() {
         contextManagerBefore = ProxyContext.getInstance().getContextManager();
-        ProxyContext.getInstance().init(mock(ContextManager.class, RETURNS_DEEP_STUBS));
+        ProxyContext.init(mock(ContextManager.class, RETURNS_DEEP_STUBS));
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.PROXY_BACKEND_DRIVER_TYPE)).thenReturn("JDBC");
         connectionSession = new ConnectionSession(mock(MySQLDatabaseType.class), TransactionType.LOCAL, new DefaultAttributeMap());
     }
@@ -67,7 +67,7 @@ public final class ShowVariableBackendHandlerTest {
     public void assertShowTransactionType() throws SQLException {
         connectionSession.setCurrentDatabase("db");
         ShowVariableHandler backendHandler = new ShowVariableHandler()
-                .init(new HandlerParameter<ShowVariableStatement>().setStatement(new ShowVariableStatement("transaction_type")).setConnectionSession(connectionSession));
+                .init(new HandlerParameter<>(new ShowVariableStatement("transaction_type"), new MySQLDatabaseType(), connectionSession));
         ResponseHeader actual = backendHandler.execute();
         assertThat(actual, instanceOf(QueryResponseHeader.class));
         assertThat(((QueryResponseHeader) actual).getQueryHeaders().size(), is(2));
@@ -81,7 +81,7 @@ public final class ShowVariableBackendHandlerTest {
     public void assertShowCachedConnections() throws SQLException {
         connectionSession.setCurrentDatabase("db");
         ShowVariableHandler backendHandler = new ShowVariableHandler()
-                .init(new HandlerParameter<ShowVariableStatement>().setStatement(new ShowVariableStatement("cached_connections")).setConnectionSession(connectionSession));
+                .init(new HandlerParameter<>(new ShowVariableStatement("cached_connections"), new MySQLDatabaseType(), connectionSession));
         ResponseHeader actual = backendHandler.execute();
         assertThat(actual, instanceOf(QueryResponseHeader.class));
         assertThat(((QueryResponseHeader) actual).getQueryHeaders().size(), is(2));
@@ -95,7 +95,7 @@ public final class ShowVariableBackendHandlerTest {
     public void assertShowCachedConnectionFailed() throws SQLException {
         connectionSession.setCurrentDatabase("db");
         ShowVariableHandler backendHandler = new ShowVariableHandler()
-                .init(new HandlerParameter<ShowVariableStatement>().setStatement(new ShowVariableStatement("cached_connectionss")).setConnectionSession(connectionSession));
+                .init(new HandlerParameter<>(new ShowVariableStatement("cached_connectionss"), new MySQLDatabaseType(), connectionSession));
         backendHandler.execute();
     }
     
@@ -104,7 +104,7 @@ public final class ShowVariableBackendHandlerTest {
         SystemPropertyUtil.setSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.TRUE.toString());
         connectionSession.setCurrentDatabase("db");
         ShowVariableHandler backendHandler = new ShowVariableHandler()
-                .init(new HandlerParameter<ShowVariableStatement>().setStatement(new ShowVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name())).setConnectionSession(connectionSession));
+                .init(new HandlerParameter<>(new ShowVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name()), new MySQLDatabaseType(), connectionSession));
         ResponseHeader actual = backendHandler.execute();
         assertThat(actual, instanceOf(QueryResponseHeader.class));
         assertThat(((QueryResponseHeader) actual).getQueryHeaders().size(), is(2));
@@ -118,14 +118,14 @@ public final class ShowVariableBackendHandlerTest {
     public void assertShowPropsVariable() throws SQLException {
         connectionSession.setCurrentDatabase("db");
         ContextManager contextManager = mock(ContextManager.class);
-        ProxyContext.getInstance().init(contextManager);
+        ProxyContext.init(contextManager);
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         Properties props = new Properties();
         props.put("sql-show", Boolean.TRUE.toString());
         when(metaDataContexts.getProps()).thenReturn(new ConfigurationProperties(props));
         ShowVariableHandler backendHandler = new ShowVariableHandler()
-                .init(new HandlerParameter<ShowVariableStatement>().setStatement(new ShowVariableStatement("SQL_SHOW")).setConnectionSession(connectionSession));
+                .init(new HandlerParameter<>(new ShowVariableStatement("SQL_SHOW"), new MySQLDatabaseType(), connectionSession));
         ResponseHeader actual = backendHandler.execute();
         assertThat(actual, instanceOf(QueryResponseHeader.class));
         assertThat(((QueryResponseHeader) actual).getQueryHeaders().size(), is(2));
@@ -139,12 +139,12 @@ public final class ShowVariableBackendHandlerTest {
     public void assertShowAllVariables() throws SQLException {
         connectionSession.setCurrentDatabase("db");
         ContextManager contextManager = mock(ContextManager.class);
-        ProxyContext.getInstance().init(contextManager);
+        ProxyContext.init(contextManager);
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         when(metaDataContexts.getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         ShowVariableHandler backendHandler = new ShowVariableHandler()
-                .init(new HandlerParameter<ShowVariableStatement>().setStatement(new ShowVariableStatement()).setConnectionSession(connectionSession));
+                .init(new HandlerParameter<>(new ShowVariableStatement(), new MySQLDatabaseType(), connectionSession));
         ResponseHeader actual = backendHandler.execute();
         assertThat(actual, instanceOf(QueryResponseHeader.class));
         assertThat(((QueryResponseHeader) actual).getQueryHeaders().size(), is(2));
@@ -156,6 +156,6 @@ public final class ShowVariableBackendHandlerTest {
     
     @After
     public void tearDown() {
-        ProxyContext.getInstance().init(contextManagerBefore);
+        ProxyContext.init(contextManagerBefore);
     }
 }

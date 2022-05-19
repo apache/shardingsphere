@@ -24,9 +24,10 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmC
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RuleInUsedException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -43,25 +44,25 @@ import static org.junit.Assert.assertTrue;
 @RunWith(MockitoJUnitRunner.class)
 public final class DropDatabaseDiscoveryProviderAlgorithmStatementUpdaterTest {
     
-    @Mock
-    private ShardingSphereMetaData shardingSphereMetaData;
-    
     private final DropDatabaseDiscoveryTypeStatementUpdater updater = new DropDatabaseDiscoveryTypeStatementUpdater();
+    
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private ShardingSphereDatabaseMetaData databaseMetaData;
     
     @Test(expected = RequiredRuleMissedException.class)
     public void assertCheckSQLStatementWithoutCurrentType() throws DistSQLException {
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(), null);
+        updater.checkSQLStatement(databaseMetaData, createSQLStatement(), null);
     }
     
     @Test(expected = RequiredRuleMissedException.class)
     public void assertCheckSQLStatementWithoutToBeDroppedTypes() throws DistSQLException {
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(), new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap()));
+        updater.checkSQLStatement(databaseMetaData, createSQLStatement(), new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap()));
     }
     
     @Test(expected = RuleInUsedException.class)
     public void assertCheckSQLStatementWithInUsed() throws DistSQLException {
         DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("name", Collections.emptyList(), "", "type_name");
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(), new DatabaseDiscoveryRuleConfiguration(Collections.singletonList(dataSourceRuleConfig),
+        updater.checkSQLStatement(databaseMetaData, createSQLStatement(), new DatabaseDiscoveryRuleConfiguration(Collections.singletonList(dataSourceRuleConfig),
                 Collections.emptyMap(), Collections.singletonMap("type_name", null)));
     }
     
@@ -76,7 +77,7 @@ public final class DropDatabaseDiscoveryProviderAlgorithmStatementUpdaterTest {
     public void assertUpdateCurrentRuleConfigurationWithIfExists() throws DistSQLException {
         DatabaseDiscoveryRuleConfiguration ruleConfig = createCurrentRuleConfiguration();
         DropDatabaseDiscoveryTypeStatement dropDatabaseDiscoveryRuleStatement = createSQLStatementWithIfExists();
-        updater.checkSQLStatement(shardingSphereMetaData, dropDatabaseDiscoveryRuleStatement, ruleConfig);
+        updater.checkSQLStatement(databaseMetaData, dropDatabaseDiscoveryRuleStatement, ruleConfig);
         assertFalse(updater.updateCurrentRuleConfiguration(dropDatabaseDiscoveryRuleStatement, ruleConfig));
         assertTrue(ruleConfig.getDiscoveryTypes().containsKey("type_name"));
         assertThat(ruleConfig.getDiscoveryTypes().size(), is(2));

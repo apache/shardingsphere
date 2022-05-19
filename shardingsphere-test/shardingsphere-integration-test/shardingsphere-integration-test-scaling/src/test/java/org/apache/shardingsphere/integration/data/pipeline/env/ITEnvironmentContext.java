@@ -20,7 +20,7 @@ package org.apache.shardingsphere.integration.data.pipeline.env;
 import com.google.gson.Gson;
 import lombok.Getter;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.yaml.YamlRuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
@@ -81,7 +81,7 @@ public final class ITEnvironmentContext {
     }
     
     private static String createScalingConfiguration(final Map<String, YamlTableRuleConfiguration> tableRules) {
-        RuleAlteredJobConfiguration jobConfig = new RuleAlteredJobConfiguration();
+        YamlRuleAlteredJobConfiguration jobConfig = new YamlRuleAlteredJobConfiguration();
         jobConfig.setSource(createYamlPipelineDataSourceConfiguration(SourceConfiguration.getDockerConfiguration(tableRules)));
         jobConfig.setTarget(createYamlPipelineDataSourceConfiguration(TargetConfiguration.getDockerConfiguration()));
         return new Gson().toJson(jobConfig);

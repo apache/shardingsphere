@@ -36,7 +36,7 @@ import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourc
 import org.apache.shardingsphere.infra.exception.ImportDatabaseNotExistedException;
 import org.apache.shardingsphere.infra.exception.DatabaseNotExistedException;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -111,20 +111,20 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
         }
         Collection<RuleConfiguration> toBeUpdatedRuleConfigs = new LinkedList<>();
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        ShardingSphereMetaData shardingSphereMetaData = metaDataContexts.getMetaData(databaseName);
+        ShardingSphereDatabaseMetaData databaseMetaData = metaDataContexts.getDatabaseMetaData(databaseName);
         for (YamlRuleConfiguration each : yamlRuleConfigs) {
             if (each instanceof YamlShardingRuleConfiguration) {
                 ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfigurationYamlSwapper().swapToObject((YamlShardingRuleConfiguration) each);
-                shardingRuleConfigurationImportChecker.check(shardingSphereMetaData, shardingRuleConfig);
+                shardingRuleConfigurationImportChecker.check(databaseMetaData, shardingRuleConfig);
                 toBeUpdatedRuleConfigs.add(shardingRuleConfig);
             } else if (each instanceof YamlReadwriteSplittingRuleConfiguration) {
                 ReadwriteSplittingRuleConfiguration readwriteSplittingRuleConfig = new ReadwriteSplittingRuleConfigurationYamlSwapper()
                         .swapToObject((YamlReadwriteSplittingRuleConfiguration) each);
-                readwriteSplittingRuleConfigurationImportChecker.check(shardingSphereMetaData, readwriteSplittingRuleConfig);
+                readwriteSplittingRuleConfigurationImportChecker.check(databaseMetaData, readwriteSplittingRuleConfig);
                 toBeUpdatedRuleConfigs.add(readwriteSplittingRuleConfig);
             } else if (each instanceof YamlDatabaseDiscoveryRuleConfiguration) {
                 DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfig = new DatabaseDiscoveryRuleConfigurationYamlSwapper().swapToObject((YamlDatabaseDiscoveryRuleConfiguration) each);
-                databaseDiscoveryRuleConfigurationImportChecker.check(shardingSphereMetaData, databaseDiscoveryRuleConfig);
+                databaseDiscoveryRuleConfigurationImportChecker.check(databaseMetaData, databaseDiscoveryRuleConfig);
                 toBeUpdatedRuleConfigs.add(databaseDiscoveryRuleConfig);
             } else if (each instanceof YamlEncryptRuleConfiguration) {
                 EncryptRuleConfiguration encryptRuleConfig = new EncryptRuleConfigurationYamlSwapper().swapToObject((YamlEncryptRuleConfiguration) each);
@@ -136,10 +136,10 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
                 toBeUpdatedRuleConfigs.add(shadowRuleConfig);
             }
         }
-        shardingSphereMetaData.getRuleMetaData().getConfigurations().clear();
-        shardingSphereMetaData.getRuleMetaData().getConfigurations().addAll(toBeUpdatedRuleConfigs);
+        databaseMetaData.getRuleMetaData().getConfigurations().clear();
+        databaseMetaData.getRuleMetaData().getConfigurations().addAll(toBeUpdatedRuleConfigs);
         ProxyContext.getInstance().getContextManager().renewMetaDataContexts(metaDataContexts);
-        Optional<MetaDataPersistService> metaDataPersistService = metaDataContexts.getMetaDataPersistService();
+        Optional<MetaDataPersistService> metaDataPersistService = metaDataContexts.getPersistService();
         metaDataPersistService.ifPresent(optional -> optional.getDatabaseRulePersistService().persist(databaseName, toBeUpdatedRuleConfigs));
     }
     

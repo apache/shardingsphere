@@ -22,7 +22,7 @@ import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
 
 import javax.sql.DataSource;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -34,17 +34,14 @@ public final class DataSourcePoolCreatorTest {
     
     @Test
     public void assertCreateMap() {
-        Map<String, DataSourceProperties> dataSourcePropsMap = new HashMap<>(1, 1);
-        dataSourcePropsMap.put("foo_ds", new DataSourceProperties(MockedDataSource.class.getName(), createProperties()));
-        Map<String, DataSource> actual = DataSourcePoolCreator.create(dataSourcePropsMap);
+        Map<String, DataSource> actual = DataSourcePoolCreator.create(Collections.singletonMap("foo_ds", new DataSourceProperties(MockedDataSource.class.getName(), createProperties())));
         assertThat(actual.size(), is(1));
         assertDataSource((MockedDataSource) actual.get("foo_ds"));
     }
     
     @Test
     public void assertCreate() {
-        MockedDataSource actual = (MockedDataSource) DataSourcePoolCreator.create(new DataSourceProperties(MockedDataSource.class.getName(), createProperties()));
-        assertDataSource(actual);
+        assertDataSource((MockedDataSource) DataSourcePoolCreator.create(new DataSourceProperties(MockedDataSource.class.getName(), createProperties())));
     }
     
     private Map<String, Object> createProperties() {

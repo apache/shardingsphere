@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.distsql.handler.update;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionAlterUpdater;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -37,10 +37,10 @@ import java.util.stream.Collectors;
 public final class AlterShardingTableRuleStatementUpdater implements RuleDefinitionAlterUpdater<AlterShardingTableRuleStatement, ShardingRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final AlterShardingTableRuleStatement sqlStatement,
+    public void checkSQLStatement(final ShardingSphereDatabaseMetaData databaseMetaData, final AlterShardingTableRuleStatement sqlStatement,
                                   final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        DistSQLException.predictionThrow(null != currentRuleConfig, () -> new RequiredRuleMissedException("Sharding", shardingSphereMetaData.getDatabaseName()));
-        ShardingTableRuleStatementChecker.checkAlteration(shardingSphereMetaData, sqlStatement.getRules(), currentRuleConfig);
+        DistSQLException.predictionThrow(null != currentRuleConfig, () -> new RequiredRuleMissedException("Sharding", databaseMetaData.getDatabase().getName()));
+        ShardingTableRuleStatementChecker.checkAlteration(databaseMetaData, sqlStatement.getRules(), currentRuleConfig);
     }
     
     @Override
@@ -57,8 +57,8 @@ public final class AlterShardingTableRuleStatementUpdater implements RuleDefinit
     private void removeRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeAlteredRuleConfig) {
         Collection<String> toBeAlteredLogicTableNames = getAlteredLogicalTableNames(toBeAlteredRuleConfig);
         toBeAlteredLogicTableNames.forEach(each -> {
-            currentRuleConfig.getTables().removeIf(table -> table.getLogicTable().equals(each));
-            currentRuleConfig.getAutoTables().removeIf(table -> table.getLogicTable().equals(each));
+            currentRuleConfig.getTables().removeIf(table -> table.getLogicTable().equalsIgnoreCase(each));
+            currentRuleConfig.getAutoTables().removeIf(table -> table.getLogicTable().equalsIgnoreCase(each));
         });
     }
     

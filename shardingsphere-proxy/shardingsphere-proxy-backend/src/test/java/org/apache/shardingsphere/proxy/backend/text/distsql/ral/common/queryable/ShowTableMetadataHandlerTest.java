@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable;
 
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ShowTableMetadataStatement;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
@@ -50,10 +51,10 @@ public final class ShowTableMetadataHandlerTest {
     public void assertExecutor() throws SQLException {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getAllDatabaseNames()).thenReturn(Collections.singletonList("db_name"));
-        ShardingSphereMetaData shardingSphereMetaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        when(shardingSphereMetaData.getSchemaByName("db_name")).thenReturn(new ShardingSphereSchema(createTableMap()));
-        when(contextManager.getMetaDataContexts().getMetaData("db_name")).thenReturn(shardingSphereMetaData);
-        ProxyContext.getInstance().init(contextManager);
+        ShardingSphereDatabaseMetaData databaseMetaData = mock(ShardingSphereDatabaseMetaData.class, RETURNS_DEEP_STUBS);
+        when(databaseMetaData.getSchema("db_name")).thenReturn(new ShardingSphereSchema(createTableMap()));
+        when(contextManager.getMetaDataContexts().getDatabaseMetaData("db_name")).thenReturn(databaseMetaData);
+        ProxyContext.init(contextManager);
         ConnectionSession connectionSession = mock(ConnectionSession.class, RETURNS_DEEP_STUBS);
         when(connectionSession.getDatabaseName()).thenReturn("db_name");
         when(connectionSession.getDatabaseType().getDefaultSchema("db_name")).thenReturn("db_name");
@@ -88,6 +89,6 @@ public final class ShowTableMetadataHandlerTest {
     }
     
     private HandlerParameter<ShowTableMetadataStatement> getParameter(final ShowTableMetadataStatement statement, final ConnectionSession connectionSession) {
-        return new HandlerParameter<ShowTableMetadataStatement>().setStatement(statement).setConnectionSession(connectionSession);
+        return new HandlerParameter<>(statement, new MySQLDatabaseType(), connectionSession);
     }
 }

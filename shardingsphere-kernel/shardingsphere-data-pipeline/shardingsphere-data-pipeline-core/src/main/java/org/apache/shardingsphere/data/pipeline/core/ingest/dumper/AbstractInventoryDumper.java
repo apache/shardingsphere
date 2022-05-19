@@ -181,7 +181,7 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
                         break;
                     }
                 }
-                if (PipelineJdbcUtils.isStringColumn(uniqueKeyDataType) && 0 == round % 50) {
+                if (0 == round % 50) {
                     log.info("dump, round={}, rowCount={}, maxUniqueKeyValue={}", round, rowCount, maxUniqueKeyValue);
                 }
                 return Optional.ofNullable(maxUniqueKeyValue);

@@ -46,7 +46,7 @@ public final class IncrementalTaskTest {
     
     @Before
     public void setUp() {
-        TaskConfiguration taskConfig = new RuleAlteredJobContext(JobConfigurationBuilder.createJobConfiguration()).getTaskConfig();
+        TaskConfiguration taskConfig = new RuleAlteredJobContext(JobConfigurationBuilder.createJobConfiguration(), 0).getTaskConfig();
         taskConfig.getDumperConfig().setPosition(new PlaceholderPosition());
         PipelineTableMetaDataLoader metaDataLoader = new PipelineTableMetaDataLoader(mock(PipelineDataSourceWrapper.class));
         incrementalTask = new IncrementalTask(3, taskConfig.getDumperConfig(), taskConfig.getImporterConfig(),

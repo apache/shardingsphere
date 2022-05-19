@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.resource;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceStatement;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -58,7 +58,7 @@ public final class DropResourceBackendHandlerTest {
     private ConnectionSession connectionSession;
     
     @Mock
-    private ShardingSphereMetaData metaData;
+    private ShardingSphereDatabaseMetaData databaseMetaData;
     
     @Mock
     private ShardingSphereResource resource;
@@ -83,12 +83,12 @@ public final class DropResourceBackendHandlerTest {
     public void setUp() throws Exception {
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
         when(metaDataContexts.getAllDatabaseNames()).thenReturn(Collections.singleton("test"));
-        when(metaDataContexts.getMetaData("test")).thenReturn(metaData);
-        when(metaData.getRuleMetaData()).thenReturn(ruleMetaData);
-        when(metaData.getResource()).thenReturn(resource);
+        when(metaDataContexts.getDatabaseMetaData("test")).thenReturn(databaseMetaData);
+        when(databaseMetaData.getRuleMetaData()).thenReturn(ruleMetaData);
+        when(databaseMetaData.getResource()).thenReturn(resource);
         contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        ProxyContext.getInstance().init(contextManager);
+        ProxyContext.init(contextManager);
         dropResourceBackendHandler = new DropResourceBackendHandler(dropResourceStatement, connectionSession);
     }
     

@@ -56,7 +56,7 @@ public final class ParseDistSQLBackendHandlerTest {
     
     @Before
     public void setUp() throws SQLException {
-        ProxyContext.getInstance().init(contextManager);
+        ProxyContext.init(contextManager);
         when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(SQLParserRule.class)).thenReturn(Optional.of(sqlParserRule));
     }
     
@@ -64,8 +64,7 @@ public final class ParseDistSQLBackendHandlerTest {
     public void assertGetRowData() throws SQLException {
         String sql = "select * from t_order";
         ParseStatement parseStatement = new ParseStatement(sql);
-        ParseDistSQLBackendHandler parseDistSQLBackendHandler = new ParseDistSQLBackendHandler()
-                .init(new HandlerParameter<ParseStatement>().setStatement(parseStatement).setConnectionSession(mock(ConnectionSession.class)).setDatabaseType(new MySQLDatabaseType()));
+        ParseDistSQLBackendHandler parseDistSQLBackendHandler = new ParseDistSQLBackendHandler().init(new HandlerParameter<>(parseStatement, new MySQLDatabaseType(), mock(ConnectionSession.class)));
         parseDistSQLBackendHandler.execute();
         parseDistSQLBackendHandler.next();
         SQLStatement statement = new ShardingSphereSQLParserEngine("MySQL", sqlParserRule.toParserConfiguration()).parse(sql, false);
@@ -77,8 +76,7 @@ public final class ParseDistSQLBackendHandlerTest {
     public void assertExecute() throws SQLException {
         String sql = "wrong sql";
         ParseStatement parseStatement = new ParseStatement(sql);
-        ParseDistSQLBackendHandler parseDistSQLBackendHandler = new ParseDistSQLBackendHandler()
-                .init(new HandlerParameter<ParseStatement>().setStatement(parseStatement).setConnectionSession(mock(ConnectionSession.class)).setDatabaseType(new MySQLDatabaseType()));
+        ParseDistSQLBackendHandler parseDistSQLBackendHandler = new ParseDistSQLBackendHandler().init(new HandlerParameter<>(parseStatement, new MySQLDatabaseType(), mock(ConnectionSession.class)));
         parseDistSQLBackendHandler.execute();
     }
 }

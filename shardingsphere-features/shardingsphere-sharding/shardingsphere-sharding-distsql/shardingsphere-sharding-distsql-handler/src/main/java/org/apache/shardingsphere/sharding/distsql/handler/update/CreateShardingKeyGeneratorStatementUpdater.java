@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateKeyGeneratorException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.converter.ShardingTableRuleStatementConverter;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.ShardingKeyGeneratorSegment;
@@ -41,9 +41,9 @@ import java.util.stream.Collectors;
 public final class CreateShardingKeyGeneratorStatementUpdater implements RuleDefinitionCreateUpdater<CreateShardingKeyGeneratorStatement, ShardingRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final CreateShardingKeyGeneratorStatement sqlStatement,
+    public void checkSQLStatement(final ShardingSphereDatabaseMetaData databaseMetaData, final CreateShardingKeyGeneratorStatement sqlStatement,
                                   final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        checkDuplicate(shardingSphereMetaData.getDatabaseName(), sqlStatement, currentRuleConfig);
+        checkDuplicate(databaseMetaData.getDatabase().getName(), sqlStatement, currentRuleConfig);
         checkKeyGeneratorAlgorithm(sqlStatement);
     }
     

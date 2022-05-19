@@ -104,7 +104,7 @@ public final class JDBCPortal implements Portal<Void> {
         }
         String databaseName = backendConnection.getConnectionSession().getDefaultDatabaseName();
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(
-                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap(), parameters, sqlStatement, databaseName);
+                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getDatabaseMetaDataMap(), parameters, sqlStatement, databaseName);
         if (containsSystemTable(sqlStatementContext.getTablesContext().getTableNames())) {
             databaseCommunicationEngine = null;
             DatabaseType databaseType = ProxyContext.getInstance().getMetaData(databaseName).getResource().getDatabaseType();

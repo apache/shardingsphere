@@ -43,6 +43,8 @@ import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLCon
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfiguration;
+import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -64,6 +66,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -85,7 +88,7 @@ public final class PostgreSQLComDescribeExecutorTest {
     private static final String TABLE_NAME = "t_order";
     
     private static final ShardingSphereSQLParserEngine SQL_PARSER_ENGINE = new ShardingSphereSQLParserEngine("PostgreSQL",
-            new ParserConfiguration(new CacheOption(2000, 65535L, 4), new CacheOption(128, 1024L, 4), false));
+            new ParserConfiguration(new CacheOption(2000, 65535L), new CacheOption(128, 1024L), false));
     
     private ContextManager contextManagerBefore;
     
@@ -107,10 +110,12 @@ public final class PostgreSQLComDescribeExecutorTest {
     @Before
     public void setup() {
         contextManagerBefore = ProxyContext.getInstance().getContextManager();
-        ProxyContext.getInstance().init(mockContextManager);
+        ProxyContext.init(mockContextManager);
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
         when(connectionSession.getDatabaseName()).thenReturn(DATABASE_NAME);
         when(mockContextManager.getMetaDataContexts().getAllDatabaseNames().contains(DATABASE_NAME)).thenReturn(true);
+        when(mockContextManager.getMetaDataContexts().getDatabaseMetaData(any(String.class)).getRuleMetaData().findSingleRule(SQLTranslatorRule.class))
+                .thenReturn(Optional.of(new SQLTranslatorRule(new SQLTranslatorRuleConfiguration())));
         prepareTableMetaData();
     }
     
@@ -121,8 +126,8 @@ public final class PostgreSQLComDescribeExecutorTest {
                 new ColumnMetaData("c", Types.CHAR, true, false, false),
                 new ColumnMetaData("pad", Types.CHAR, true, false, false));
         TableMetaData tableMetaData = new TableMetaData(TABLE_NAME, columnMetaData, Collections.emptyList(), Collections.emptyList());
-        when(mockContextManager.getMetaDataContexts().getMetaData(DATABASE_NAME).getSchemaByName("public").get(TABLE_NAME)).thenReturn(tableMetaData);
-        when(mockContextManager.getMetaDataContexts().getMetaData(DATABASE_NAME).getResource().getDatabaseType()).thenReturn(new PostgreSQLDatabaseType());
+        when(mockContextManager.getMetaDataContexts().getDatabaseMetaData(DATABASE_NAME).getSchema("public").get(TABLE_NAME)).thenReturn(tableMetaData);
+        when(mockContextManager.getMetaDataContexts().getDatabaseMetaData(DATABASE_NAME).getResource().getDatabaseType()).thenReturn(new PostgreSQLDatabaseType());
     }
     
     @Test
@@ -254,7 +259,7 @@ public final class PostgreSQLComDescribeExecutorTest {
         SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);
         prepareJDBCBackendConnection(sql);
         PostgreSQLPreparedStatementRegistry.getInstance().register(1);
-        List<PostgreSQLColumnType> parameterTypes = new ArrayList<>(Collections.singletonList(PostgreSQLColumnType.POSTGRESQL_TYPE_UNSPECIFIED));
+        List<PostgreSQLColumnType> parameterTypes = new ArrayList<>(Collections.singleton(PostgreSQLColumnType.POSTGRESQL_TYPE_UNSPECIFIED));
         PostgreSQLPreparedStatementRegistry.getInstance().register(1, statementId, sql, sqlStatement, parameterTypes);
         Collection<DatabasePacket<?>> actual = executor.execute();
         assertThat(actual.size(), is(2));
@@ -319,6 +324,6 @@ public final class PostgreSQLComDescribeExecutorTest {
     
     @After
     public void tearDown() {
-        ProxyContext.getInstance().init(contextManagerBefore);
+        ProxyContext.init(contextManagerBefore);
     }
 }

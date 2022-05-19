@@ -49,8 +49,8 @@ public abstract class AbstractSpringNamespaceTest extends AbstractJUnit4SpringCo
     
     @Test
     public void assertShardingSphereDataSource() {
-        assertDataSources(dataSource.getContextManager().getMetaDataContexts().getMetaData(DefaultDatabase.LOGIC_NAME).getResource().getDataSources());
-        assertSchemaRules(dataSource.getContextManager().getMetaDataContexts().getMetaData(DefaultDatabase.LOGIC_NAME).getRuleMetaData().getRules());
+        assertDataSources(dataSource.getContextManager().getMetaDataContexts().getDatabaseMetaData(DefaultDatabase.LOGIC_NAME).getResource().getDataSources());
+        assertSchemaRules(dataSource.getContextManager().getMetaDataContexts().getDatabaseMetaData(DefaultDatabase.LOGIC_NAME).getRuleMetaData().getRules());
         assertGlobalRules(dataSource.getContextManager().getMetaDataContexts().getGlobalRuleMetaData().getRules());
     }
     
@@ -100,7 +100,7 @@ public abstract class AbstractSpringNamespaceTest extends AbstractJUnit4SpringCo
     }
     
     private void assertGlobalRules(final Collection<ShardingSphereRule> actual) {
-        assertThat(actual.size(), is(4));
+        assertThat(actual.size(), is(5));
         for (ShardingSphereRule each : actual) {
             if (each instanceof SQLParserRule) {
                 assertSQLParserRule((SQLParserRule) each);
@@ -117,7 +117,6 @@ public abstract class AbstractSpringNamespaceTest extends AbstractJUnit4SpringCo
     private void assertCacheOption(final CacheOption cacheOption) {
         assertThat(cacheOption.getInitialCapacity(), is(1024));
         assertThat(cacheOption.getMaximumSize(), is(1024L));
-        assertThat(cacheOption.getConcurrencyLevel(), is(4));
     }
     
     @Test

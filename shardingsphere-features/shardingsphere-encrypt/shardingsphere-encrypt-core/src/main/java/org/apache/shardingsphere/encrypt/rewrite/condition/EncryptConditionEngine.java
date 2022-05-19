@@ -72,6 +72,7 @@ public final class EncryptConditionEngine {
         SUPPORTED_COMPARE_OPERATOR.add("<");
         SUPPORTED_COMPARE_OPERATOR.add(">=");
         SUPPORTED_COMPARE_OPERATOR.add("<=");
+        SUPPORTED_COMPARE_OPERATOR.add("IS");
     }
     
     /**
@@ -108,6 +109,9 @@ public final class EncryptConditionEngine {
     }
     
     private void addEncryptConditions(final Collection<EncryptCondition> encryptConditions, final ExpressionSegment expression, final Map<String, String> expressionTableNames) {
+        if (!ExpressionExtractUtil.findNotContainsNullLiteralsExpression(expression).isPresent()) {
+            return;
+        }
         for (ColumnSegment each : ColumnExtractor.extract(expression)) {
             String tableName = expressionTableNames.getOrDefault(each.getExpression(), "");
             Optional<EncryptColumn> encryptColumn = encryptRule.findEncryptColumn(tableName, each.getIdentifier().getValue());

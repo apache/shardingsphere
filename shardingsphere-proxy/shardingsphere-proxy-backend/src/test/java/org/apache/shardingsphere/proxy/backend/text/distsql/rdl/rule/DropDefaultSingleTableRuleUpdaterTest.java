@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.rule;
 
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropDefaultSingleTableRuleStatement;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,35 +39,35 @@ import static org.mockito.Mockito.when;
 public final class DropDefaultSingleTableRuleUpdaterTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private ShardingSphereMetaData shardingSphereMetaData;
+    private ShardingSphereDatabaseMetaData databaseMetaData;
     
     private final DropDefaultSingleTableRuleStatementUpdater updater = new DropDefaultSingleTableRuleStatementUpdater();
     
     @Before
     public void setUp() throws Exception {
-        when(shardingSphereMetaData.getDatabaseName()).thenReturn("sharding_db");
-        when(shardingSphereMetaData.getResource().getDataSources()).thenReturn(Collections.singletonMap("ds_0", mock(DataSource.class)));
+        when(databaseMetaData.getDatabase().getName()).thenReturn("sharding_db");
+        when(databaseMetaData.getResource().getDataSources()).thenReturn(Collections.singletonMap("ds_0", mock(DataSource.class)));
     }
     
     @Test(expected = RequiredRuleMissedException.class)
     public void assertCheckWithoutConfig() throws Exception {
         DropDefaultSingleTableRuleStatement statement = new DropDefaultSingleTableRuleStatement();
-        updater.checkSQLStatement(shardingSphereMetaData, statement, null);
+        updater.checkSQLStatement(databaseMetaData, statement, null);
     }
     
     @Test(expected = RequiredRuleMissedException.class)
     public void assertCheckWithoutResource() throws Exception {
         DropDefaultSingleTableRuleStatement statement = new DropDefaultSingleTableRuleStatement();
         SingleTableRuleConfiguration currentConfig = new SingleTableRuleConfiguration();
-        updater.checkSQLStatement(shardingSphereMetaData, statement, currentConfig);
+        updater.checkSQLStatement(databaseMetaData, statement, currentConfig);
     }
     
     @Test
     public void assertCheckWithIfExists() throws Exception {
         DropDefaultSingleTableRuleStatement statement = new DropDefaultSingleTableRuleStatement(true);
         SingleTableRuleConfiguration currentConfig = new SingleTableRuleConfiguration();
-        updater.checkSQLStatement(shardingSphereMetaData, statement, currentConfig);
-        updater.checkSQLStatement(shardingSphereMetaData, statement, null);
+        updater.checkSQLStatement(databaseMetaData, statement, currentConfig);
+        updater.checkSQLStatement(databaseMetaData, statement, null);
     }
     
     @Test

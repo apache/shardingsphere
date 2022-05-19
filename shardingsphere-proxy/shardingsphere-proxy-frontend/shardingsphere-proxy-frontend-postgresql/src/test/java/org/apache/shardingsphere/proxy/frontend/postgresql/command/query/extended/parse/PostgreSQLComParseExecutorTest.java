@@ -74,7 +74,7 @@ public final class PostgreSQLComParseExecutorTest {
     @Before
     public void setup() {
         contextManagerBefore = ProxyContext.getInstance().getContextManager();
-        ProxyContext.getInstance().init(mockedContextManager);
+        ProxyContext.init(mockedContextManager);
         PostgreSQLPreparedStatementRegistry.getInstance().register(CONNECTION_ID);
         when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
     }
@@ -103,7 +103,8 @@ public final class PostgreSQLComParseExecutorTest {
         when(parsePacket.getStatementId()).thenReturn(statementId);
         when(parsePacket.readParameterTypes()).thenReturn(Collections.singletonList(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4));
         when(connectionSession.getDatabaseName()).thenReturn("db");
-        when(mockedContextManager.getMetaDataContexts().getMetaData("db").getResource().getDatabaseType()).thenReturn(new PostgreSQLDatabaseType());
+        when(mockedContextManager.getMetaDataContexts().getDatabaseMetaData("db").getResource().getDatabaseType()).thenReturn(new PostgreSQLDatabaseType());
+        when(mockedContextManager.getMetaDataContexts().getDatabaseMetaData("db").getProtocolType()).thenReturn(new PostgreSQLDatabaseType());
         when(mockedContextManager.getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(SQLParserRule.class)).thenReturn(Optional.of(sqlParserRule));
         Collection<DatabasePacket<?>> actualPackets = executor.execute();
         assertThat(actualPackets.size(), is(1));
@@ -116,6 +117,6 @@ public final class PostgreSQLComParseExecutorTest {
     
     @After
     public void tearDown() {
-        ProxyContext.getInstance().init(contextManagerBefore);
+        ProxyContext.init(contextManagerBefore);
     }
 }

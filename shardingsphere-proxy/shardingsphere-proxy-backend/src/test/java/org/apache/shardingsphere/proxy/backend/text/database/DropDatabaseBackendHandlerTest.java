@@ -62,11 +62,11 @@ public final class DropDatabaseBackendHandlerTest {
     public void setUp() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        ProxyContext.getInstance().init(contextManager);
+        ProxyContext.init(contextManager);
         handler = new DropDatabaseBackendHandler(sqlStatement, connectionSession);
         when(metaDataContexts.getAllDatabaseNames()).thenReturn(Arrays.asList("test_db", "other_db"));
         when(metaDataContexts.getGlobalRuleMetaData().getRules()).thenReturn(Collections.emptyList());
-        when(metaDataContexts.getMetaData(any()).getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
+        when(metaDataContexts.getDatabaseMetaData(any()).getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
     }
     
     @Test(expected = DBDropNotExistsException.class)

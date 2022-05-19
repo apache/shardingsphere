@@ -23,14 +23,13 @@ import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.ShowDataba
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -46,10 +45,10 @@ public final class DatabaseDiscoveryProviderAlgorithmQueryResultSetTest {
     
     @Test
     public void assertGetRowData() {
-        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        when(metaData.getRuleMetaData().findRuleConfiguration(any())).thenReturn(Collections.singleton(createRuleConfiguration()));
+        ShardingSphereDatabaseMetaData databaseMetaData = mock(ShardingSphereDatabaseMetaData.class, RETURNS_DEEP_STUBS);
+        when(databaseMetaData.getRuleMetaData().findRuleConfiguration(any())).thenReturn(Collections.singleton(createRuleConfiguration()));
         DistSQLResultSet resultSet = new DatabaseDiscoveryTypeQueryResultSet();
-        resultSet.init(metaData, mock(ShowDatabaseDiscoveryRulesStatement.class));
+        resultSet.init(databaseMetaData, mock(ShowDatabaseDiscoveryRulesStatement.class));
         Collection<String> columnNames = resultSet.getColumnNames();
         List<Object> actual = new ArrayList<>(resultSet.getRowData());
         assertThat(columnNames.size(), is(3));
@@ -65,8 +64,7 @@ public final class DatabaseDiscoveryProviderAlgorithmQueryResultSetTest {
         Properties discoveryTypeProps = new Properties();
         discoveryTypeProps.put("type_key", "type_value");
         ShardingSphereAlgorithmConfiguration shardingSphereAlgorithmConfig = new ShardingSphereAlgorithmConfiguration("MySQL.MGR", discoveryTypeProps);
-        Map<String, ShardingSphereAlgorithmConfiguration> discoverTypes = new HashMap<>(1, 1);
-        discoverTypes.put("test_name", shardingSphereAlgorithmConfig);
+        Map<String, ShardingSphereAlgorithmConfiguration> discoverTypes = Collections.singletonMap("test_name", shardingSphereAlgorithmConfig);
         return new DatabaseDiscoveryRuleConfiguration(Collections.singleton(databaseDiscoveryDataSourceRuleConfig), Collections.emptyMap(), discoverTypes);
     }
 }

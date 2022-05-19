@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.executor;
 
-import com.google.common.base.Joiner;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
@@ -60,12 +59,12 @@ public final class ShowShardingHintStatusExecutor extends AbstractHintQueryExecu
     @Override
     protected MergedResult createMergedResult() {
         Map<String, ShowShardingHintStatusResult> results = new HashMap<>();
-        ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(connectionSession.getDatabaseName());
-        if (!metaData.isComplete()) {
+        ShardingSphereDatabaseMetaData databaseMetaData = ProxyContext.getInstance().getMetaData(connectionSession.getDatabaseName());
+        if (!databaseMetaData.isComplete()) {
             throw new RuleNotExistedException();
         }
         String schemaName = connectionSession.getDatabaseType().getDefaultSchema(connectionSession.getDatabaseName());
-        Collection<String> tableNames = metaData.getSchemaByName(schemaName).getAllTableNames();
+        Collection<String> tableNames = databaseMetaData.getSchema(schemaName).getAllTableNames();
         for (String each : tableNames) {
             if (HintManager.isDatabaseShardingOnly()) {
                 fillShardingValues(results, each, HintManager.getDatabaseShardingValues(), Collections.emptyList());
@@ -98,12 +97,11 @@ public final class ShowShardingHintStatusExecutor extends AbstractHintQueryExecu
     }
     
     private List<Object> createRow(final ShowShardingHintStatusResult showShardingHintStatusResult) {
-        String shardingType = String.valueOf(HintManager.isDatabaseShardingOnly() ? HintShardingType.DATABASES_ONLY : HintShardingType.DATABASES_TABLES).toLowerCase();
         List<Object> result = new ArrayList<>(3);
         result.add(showShardingHintStatusResult.getLogicTable());
-        result.add(Joiner.on(",").join(showShardingHintStatusResult.getDatabaseShardingValues()));
-        result.add(Joiner.on(",").join(showShardingHintStatusResult.getTableShardingValues()));
-        result.add(shardingType);
+        result.add(String.join(",", showShardingHintStatusResult.getDatabaseShardingValues()));
+        result.add(String.join(",", showShardingHintStatusResult.getTableShardingValues()));
+        result.add(String.valueOf(HintManager.isDatabaseShardingOnly() ? HintShardingType.DATABASES_ONLY : HintShardingType.DATABASES_TABLES).toLowerCase());
         return result;
     }
 }

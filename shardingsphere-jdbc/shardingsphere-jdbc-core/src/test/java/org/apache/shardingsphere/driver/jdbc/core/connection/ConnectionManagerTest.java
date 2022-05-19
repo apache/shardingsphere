@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.connection;
 
-import com.google.common.collect.Sets;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
@@ -90,7 +89,7 @@ public final class ConnectionManagerTest {
         TrafficRule trafficRule = mockTrafficRule();
         MetaDataPersistService metaDataPersistService = mockMetaDataPersistService();
         when(result.getDataSourceMap(DefaultDatabase.LOGIC_NAME)).thenReturn(dataSourceMap);
-        when(result.getMetaDataContexts().getMetaDataPersistService()).thenReturn(Optional.of(metaDataPersistService));
+        when(result.getMetaDataContexts().getPersistService()).thenReturn(Optional.of(metaDataPersistService));
         when(result.getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(TransactionRule.class)).thenReturn(Optional.empty());
         when(result.getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(TrafficRule.class)).thenReturn(Optional.of(trafficRule));
         when(result.getInstanceContext().getComputeNodeInstanceIds(InstanceType.PROXY, Arrays.asList("OLTP", "OLAP"))).thenReturn(Collections.singletonList(new InstanceId("127.0.0.1@3307")));
@@ -147,7 +146,7 @@ public final class ConnectionManagerTest {
     @Test
     public void assertGetRandomPhysicalDataSourceNameFromContextManager() {
         String actual = connectionManager.getRandomPhysicalDataSourceName();
-        assertTrue(Sets.newHashSet("ds", "invalid_ds").contains(actual));
+        assertTrue(Arrays.asList("ds", "invalid_ds").contains(actual));
     }
     
     @Test

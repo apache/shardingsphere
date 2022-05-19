@@ -50,14 +50,14 @@ public final class ModeScheduleContextFactory {
     /**
      * Get mode schedule context of current instance.
      * 
+     * @param instanceId instance id
      * @return mode schedule context
      */
-    public Optional<ModeScheduleContext> get() {
-        // TODO get by instance id
+    public Optional<ModeScheduleContext> get(final String instanceId) {
         if (modeScheduleContexts.values().isEmpty()) {
             return Optional.empty();
         }
-        return Optional.ofNullable(modeScheduleContexts.values().iterator().next());
+        return Optional.ofNullable(modeScheduleContexts.get(instanceId));
     }
     
     /**

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContextBuilder;
 import org.apache.shardingsphere.infra.executor.sql.log.SQLLogger;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.infra.rewrite.SQLRewriteEntry;
 import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteResult;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -38,29 +38,30 @@ public final class KernelProcessor {
      * Generate execution context.
      *
      * @param logicSQL logic SQL
-     * @param metaData ShardingSphere meta data
+     * @param databaseMetaData database meta data
      * @param props configuration properties
      * @return execution context
      */
-    public ExecutionContext generateExecutionContext(final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final ConfigurationProperties props) {
-        RouteContext routeContext = route(logicSQL, metaData, props);
-        SQLRewriteResult rewriteResult = rewrite(logicSQL, metaData, props, routeContext);
-        ExecutionContext result = createExecutionContext(logicSQL, metaData, routeContext, rewriteResult);
+    public ExecutionContext generateExecutionContext(final LogicSQL logicSQL, final ShardingSphereDatabaseMetaData databaseMetaData, final ConfigurationProperties props) {
+        RouteContext routeContext = route(logicSQL, databaseMetaData, props);
+        SQLRewriteResult rewriteResult = rewrite(logicSQL, databaseMetaData, props, routeContext);
+        ExecutionContext result = createExecutionContext(logicSQL, databaseMetaData, routeContext, rewriteResult);
         logSQL(logicSQL, props, result);
         return result;
     }
     
-    private RouteContext route(final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final ConfigurationProperties props) {
-        return new SQLRouteEngine(metaData.getRuleMetaData().getRules(), props).route(logicSQL, metaData);
+    private RouteContext route(final LogicSQL logicSQL, final ShardingSphereDatabaseMetaData databaseMetaData, final ConfigurationProperties props) {
+        return new SQLRouteEngine(databaseMetaData.getRuleMetaData().getRules(), props).route(logicSQL, databaseMetaData);
     }
     
-    private SQLRewriteResult rewrite(final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final ConfigurationProperties props, final RouteContext routeContext) {
-        SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(metaData.getDatabaseName(), metaData.getSchemas(), props, metaData.getRuleMetaData().getRules());
+    private SQLRewriteResult rewrite(final LogicSQL logicSQL, final ShardingSphereDatabaseMetaData databaseMetaData, final ConfigurationProperties props, final RouteContext routeContext) {
+        SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(databaseMetaData, props);
         return sqlRewriteEntry.rewrite(logicSQL.getSql(), logicSQL.getParameters(), logicSQL.getSqlStatementContext(), routeContext);
     }
     
-    private ExecutionContext createExecutionContext(final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final RouteContext routeContext, final SQLRewriteResult rewriteResult) {
-        return new ExecutionContext(logicSQL, ExecutionContextBuilder.build(metaData, rewriteResult, logicSQL.getSqlStatementContext()), routeContext);
+    private ExecutionContext createExecutionContext(final LogicSQL logicSQL,
+                                                    final ShardingSphereDatabaseMetaData databaseMetaData, final RouteContext routeContext, final SQLRewriteResult rewriteResult) {
+        return new ExecutionContext(logicSQL, ExecutionContextBuilder.build(databaseMetaData, rewriteResult, logicSQL.getSqlStatementContext()), routeContext);
     }
     
     private void logSQL(final LogicSQL logicSQL, final ConfigurationProperties props, final ExecutionContext executionContext) {

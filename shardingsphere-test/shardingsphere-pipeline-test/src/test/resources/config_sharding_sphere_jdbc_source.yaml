@@ -55,6 +55,7 @@ rules:
       input:
         workerThread: 40
         batchSize: 1000
+        shardingSize: 10
       output:
         workerThread: 40
         batchSize: 1000

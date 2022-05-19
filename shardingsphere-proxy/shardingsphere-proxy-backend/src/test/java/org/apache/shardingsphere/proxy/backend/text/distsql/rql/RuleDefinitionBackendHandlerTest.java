@@ -45,13 +45,13 @@ public final class RuleDefinitionBackendHandlerTest {
     
     @Before
     public void setUp() {
-        ProxyContext.getInstance().init(mockContextManager());
+        ProxyContext.init(mockContextManager());
     }
     
     private ContextManager mockContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(result.getMetaDataContexts().getAllDatabaseNames()).thenReturn(Collections.singleton("test"));
-        when(result.getMetaDataContexts().getMetaData("test").getRuleMetaData()).thenReturn(mock(ShardingSphereRuleMetaData.class));
+        when(result.getMetaDataContexts().getDatabaseMetaData("test").getRuleMetaData()).thenReturn(mock(ShardingSphereRuleMetaData.class));
         return result;
     }
     

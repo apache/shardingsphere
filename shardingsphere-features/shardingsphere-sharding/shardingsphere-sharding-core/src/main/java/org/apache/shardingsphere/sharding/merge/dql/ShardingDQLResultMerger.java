@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.engine.merger.ResultMerger;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sharding.merge.dql.groupby.GroupByMemoryMergedResult;
 import org.apache.shardingsphere.sharding.merge.dql.groupby.GroupByStreamMergedResult;
@@ -54,14 +54,14 @@ public final class ShardingDQLResultMerger implements ResultMerger {
     private final DatabaseType databaseType;
     
     @Override
-    public MergedResult merge(final List<QueryResult> queryResults, final SQLStatementContext<?> sqlStatementContext, final ShardingSphereMetaData metaData) throws SQLException {
+    public MergedResult merge(final List<QueryResult> queryResults, final SQLStatementContext<?> sqlStatementContext, final ShardingSphereDatabaseMetaData databaseMetaData) throws SQLException {
         if (1 == queryResults.size() && !isNeedAggregateRewrite(sqlStatementContext)) {
             return new IteratorStreamMergedResult(queryResults);
         }
         Map<String, Integer> columnLabelIndexMap = getColumnLabelIndexMap(queryResults.get(0));
         SelectStatementContext selectStatementContext = (SelectStatementContext) sqlStatementContext;
         selectStatementContext.setIndexes(columnLabelIndexMap);
-        MergedResult mergedResult = build(queryResults, selectStatementContext, columnLabelIndexMap, metaData);
+        MergedResult mergedResult = build(queryResults, selectStatementContext, columnLabelIndexMap, databaseMetaData);
         return decorate(queryResults, selectStatementContext, mergedResult);
     }
     
@@ -78,9 +78,9 @@ public final class ShardingDQLResultMerger implements ResultMerger {
     }
     
     private MergedResult build(final List<QueryResult> queryResults, final SelectStatementContext selectStatementContext,
-                               final Map<String, Integer> columnLabelIndexMap, final ShardingSphereMetaData metaData) throws SQLException {
-        String defaultSchema = selectStatementContext.getDatabaseType().getDefaultSchema(metaData.getDatabaseName());
-        ShardingSphereSchema schema = selectStatementContext.getTablesContext().getSchemaName().map(metaData::getSchemaByName).orElseGet(() -> metaData.getSchemaByName(defaultSchema));
+                               final Map<String, Integer> columnLabelIndexMap, final ShardingSphereDatabaseMetaData databaseMetaData) throws SQLException {
+        String defaultSchema = selectStatementContext.getDatabaseType().getDefaultSchema(databaseMetaData.getDatabase().getName());
+        ShardingSphereSchema schema = selectStatementContext.getTablesContext().getSchemaName().map(databaseMetaData::getSchema).orElseGet(() -> databaseMetaData.getSchema(defaultSchema));
         if (isNeedProcessGroupBy(selectStatementContext)) {
             return getGroupByMergedResult(queryResults, selectStatementContext, columnLabelIndexMap, schema);
         }

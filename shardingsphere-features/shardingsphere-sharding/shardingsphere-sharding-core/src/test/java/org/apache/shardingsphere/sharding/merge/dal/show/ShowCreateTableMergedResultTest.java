@@ -29,10 +29,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -56,25 +54,18 @@ public final class ShowCreateTableMergedResultTest {
     }
     
     private ShardingRule buildShardingRule() {
-        ShardingTableRuleConfiguration orderTableRuleConfig = new ShardingTableRuleConfiguration("t_order", "ds.t_order_${0..2}");
-        ShardingTableRuleConfiguration userTableRuleConfig = new ShardingTableRuleConfiguration("t_user", "ds.t_user_${0..2}");
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        shardingRuleConfig.getTables().add(orderTableRuleConfig);
-        shardingRuleConfig.getTables().add(userTableRuleConfig);
+        shardingRuleConfig.getTables().add(new ShardingTableRuleConfiguration("t_order", "ds.t_order_${0..2}"));
+        shardingRuleConfig.getTables().add(new ShardingTableRuleConfiguration("t_user", "ds.t_user_${0..2}"));
         return new ShardingRule(shardingRuleConfig, Collections.singletonList("ds"));
     }
     
     private ShardingSphereSchema buildSchema() {
-        Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(1, 1);
-        tableMetaDataMap.put("t_order", new TableMetaData("t_order", Collections.emptyList(), Collections.emptyList(), buildConstraintMetaData()));
+        Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(2, 1);
+        tableMetaDataMap.put("t_order",
+                new TableMetaData("t_order", Collections.emptyList(), Collections.emptyList(), Collections.singleton(new ConstraintMetaData("t_order_foreign_key", "t_user"))));
         tableMetaDataMap.put("t_user", new TableMetaData("t_user", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
         return new ShardingSphereSchema(tableMetaDataMap);
-    }
-    
-    private Collection<ConstraintMetaData> buildConstraintMetaData() {
-        Collection<ConstraintMetaData> result = new LinkedList<>();
-        result.add(new ConstraintMetaData("t_order_foreign_key", "t_user"));
-        return result;
     }
     
     @Test

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.distsql.update;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
@@ -38,6 +38,7 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardin
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -59,8 +60,8 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class CreateShardingTableRuleStatementUpdaterTest {
     
-    @Mock
-    private ShardingSphereMetaData shardingSphereMetaData;
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private ShardingSphereDatabaseMetaData databaseMetaData;
     
     @Mock
     private ShardingSphereRuleMetaData shardingSphereRuleMetaData;
@@ -73,16 +74,16 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
     
     @Before
     public void before() {
-        when(shardingSphereMetaData.getDatabaseName()).thenReturn("schema");
-        when(shardingSphereMetaData.getResource()).thenReturn(shardingSphereResource);
-        when(shardingSphereMetaData.getRuleMetaData()).thenReturn(shardingSphereRuleMetaData);
+        when(databaseMetaData.getDatabase().getName()).thenReturn("schema");
+        when(databaseMetaData.getResource()).thenReturn(shardingSphereResource);
+        when(databaseMetaData.getRuleMetaData()).thenReturn(shardingSphereRuleMetaData);
         when(shardingSphereRuleMetaData.getRules()).thenReturn(Collections.singleton(new MockDataSourceContainedRule()));
     }
     
     @Test
     public void assertUpdate() throws DistSQLException {
         CreateShardingTableRuleStatement statement = new CreateShardingTableRuleStatement(Arrays.asList(createCompleteAutoTableRule(), createCompleteTableRule()));
-        updater.checkSQLStatement(shardingSphereMetaData, statement, currentRuleConfig);
+        updater.checkSQLStatement(databaseMetaData, statement, currentRuleConfig);
         ShardingRuleConfiguration toBeAlteredRuleConfig = updater.buildToBeCreatedRuleConfiguration(statement);
         updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
         assertThat(currentRuleConfig.getTables().size(), is(2));

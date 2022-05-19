@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.AlgorithmInUsedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredAlgorithmMissedException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.distsql.handler.checker.ShadowRuleStatementChecker;
@@ -44,8 +44,9 @@ public final class DropShadowAlgorithmStatementUpdater implements RuleDefinition
     private static final String SHADOW = "shadow";
     
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData metaData, final DropShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String databaseName = metaData.getDatabaseName();
+    public void checkSQLStatement(final ShardingSphereDatabaseMetaData databaseMetaData,
+                                  final DropShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) throws DistSQLException {
+        String databaseName = databaseMetaData.getDatabase().getName();
         if (sqlStatement.isContainsExistClause() && !isExistRuleConfig(currentRuleConfig)) {
             return;
         }

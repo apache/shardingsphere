@@ -36,7 +36,6 @@
             <xsd:attribute name="id" type="xsd:string" use="required" />
             <xsd:attribute name="initial-capacity" type="xsd:int" use="required" />
             <xsd:attribute name="maximum-size" type="xsd:long" use="required" />
-            <xsd:attribute name="concurrency-level" type="xsd:int" use="required" />
         </xsd:complexType>
     </xsd:element>
 </xsd:schema>

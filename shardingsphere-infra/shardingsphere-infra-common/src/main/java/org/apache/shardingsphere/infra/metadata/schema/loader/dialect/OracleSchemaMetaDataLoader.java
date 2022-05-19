@@ -115,13 +115,13 @@ public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLo
     }
     
     private ColumnMetaData loadColumnMetaData(final Map<String, Integer> dataTypeMap, final ResultSet resultSet, final Collection<String> primaryKeys,
-                                              final DatabaseMetaData metaData) throws SQLException {
+                                              final DatabaseMetaData databaseMetaData) throws SQLException {
         String columnName = resultSet.getString("COLUMN_NAME");
         String dataType = getOriginalDataType(resultSet.getString("DATA_TYPE"));
         boolean primaryKey = primaryKeys.contains(columnName);
-        boolean generated = versionContainsIdentityColumn(metaData) && "YES".equals(resultSet.getString("IDENTITY_COLUMN"));
+        boolean generated = versionContainsIdentityColumn(databaseMetaData) && "YES".equals(resultSet.getString("IDENTITY_COLUMN"));
         // TODO need to support caseSensitive when version < 12.2.
-        boolean caseSensitive = versionContainsCollation(metaData) && resultSet.getString("COLLATION").endsWith("_CS");
+        boolean caseSensitive = versionContainsCollation(databaseMetaData) && resultSet.getString("COLLATION").endsWith("_CS");
         return new ColumnMetaData(columnName, dataTypeMap.get(dataType), primaryKey, generated, caseSensitive);
     }
     
@@ -133,12 +133,12 @@ public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLo
         return dataType;
     }
     
-    private String getTableMetaDataSQL(final Collection<String> tables, final DatabaseMetaData metaData) throws SQLException {
+    private String getTableMetaDataSQL(final Collection<String> tables, final DatabaseMetaData databaseMetaData) throws SQLException {
         StringBuilder stringBuilder = new StringBuilder(28);
-        if (versionContainsIdentityColumn(metaData)) {
+        if (versionContainsIdentityColumn(databaseMetaData)) {
             stringBuilder.append(", IDENTITY_COLUMN");
         }
-        if (versionContainsCollation(metaData)) {
+        if (versionContainsCollation(databaseMetaData)) {
             stringBuilder.append(", COLLATION");
         }
         String collation = stringBuilder.toString();
@@ -146,12 +146,12 @@ public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLo
                 : String.format(TABLE_META_DATA_SQL_IN_TABLES, collation, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
     
-    private boolean versionContainsCollation(final DatabaseMetaData metaData) throws SQLException {
-        return metaData.getDatabaseMajorVersion() >= COLLATION_START_MAJOR_VERSION && metaData.getDatabaseMinorVersion() >= COLLATION_START_MINOR_VERSION;
+    private boolean versionContainsCollation(final DatabaseMetaData databaseMetaData) throws SQLException {
+        return databaseMetaData.getDatabaseMajorVersion() >= COLLATION_START_MAJOR_VERSION && databaseMetaData.getDatabaseMinorVersion() >= COLLATION_START_MINOR_VERSION;
     }
     
-    private boolean versionContainsIdentityColumn(final DatabaseMetaData metaData) throws SQLException {
-        return metaData.getDatabaseMajorVersion() >= COLLATION_START_MAJOR_VERSION && metaData.getDatabaseMinorVersion() >= IDENTITY_COLUMN_START_MINOR_VERSION;
+    private boolean versionContainsIdentityColumn(final DatabaseMetaData databaseMetaData) throws SQLException {
+        return databaseMetaData.getDatabaseMajorVersion() >= COLLATION_START_MAJOR_VERSION && databaseMetaData.getDatabaseMinorVersion() >= IDENTITY_COLUMN_START_MINOR_VERSION;
     }
     
     private Map<String, Collection<IndexMetaData>> loadIndexMetaData(final Connection connection, final Collection<String> tableNames) throws SQLException {

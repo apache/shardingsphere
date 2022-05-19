@@ -21,7 +21,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowUnusedRes
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
@@ -41,6 +41,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -54,16 +55,16 @@ import static org.mockito.Mockito.when;
 public final class UnusedDataSourceQueryResultSetTest {
     
     @Mock
-    private ShardingSphereMetaData shardingSphereMetaData;
+    private ShardingSphereDatabaseMetaData databaseMetaData;
     
     @Before
     public void before() {
         DatabaseType databaseType = new MySQLDatabaseType();
         DataSourcesMetaData dataSourcesMetaData = new DataSourcesMetaData(databaseType, createDataSources());
         ShardingSphereResource resource = new ShardingSphereResource(createDataSources(), dataSourcesMetaData, null, databaseType);
-        ShardingSphereRuleMetaData metaData = new ShardingSphereRuleMetaData(null, Arrays.asList(createShardingRule()));
-        when(shardingSphereMetaData.getResource()).thenReturn(resource);
-        when(shardingSphereMetaData.getRuleMetaData()).thenReturn(metaData);
+        ShardingSphereRuleMetaData metaData = new ShardingSphereRuleMetaData(null, Collections.singleton(createShardingRule()));
+        when(databaseMetaData.getResource()).thenReturn(resource);
+        when(databaseMetaData.getRuleMetaData()).thenReturn(metaData);
     }
     
     private ShardingRule createShardingRule() {
@@ -106,7 +107,7 @@ public final class UnusedDataSourceQueryResultSetTest {
     @Test
     public void assertGetRowData() {
         DistSQLResultSet resultSet = new UnusedDataSourceQueryResultSet();
-        resultSet.init(shardingSphereMetaData, mock(ShowUnusedResourcesStatement.class));
+        resultSet.init(databaseMetaData, mock(ShowUnusedResourcesStatement.class));
         Collection<Object> actual = resultSet.getRowData();
         assertThat(actual.size(), is(12));
         Iterator<Object> rowData = actual.iterator();

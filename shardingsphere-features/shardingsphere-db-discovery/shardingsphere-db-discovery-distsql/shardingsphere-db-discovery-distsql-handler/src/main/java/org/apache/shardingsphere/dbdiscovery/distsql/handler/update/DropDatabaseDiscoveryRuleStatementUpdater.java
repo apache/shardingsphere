@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RuleInUsedException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.ExportableRule;
 
 import java.util.Collection;
@@ -41,11 +41,11 @@ public final class DropDatabaseDiscoveryRuleStatementUpdater implements RuleDefi
     private static final String RULE_TYPE = "Database discovery";
     
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final DropDatabaseDiscoveryRuleStatement sqlStatement,
+    public void checkSQLStatement(final ShardingSphereDatabaseMetaData databaseMetaData, final DropDatabaseDiscoveryRuleStatement sqlStatement,
                                   final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String databaseName = shardingSphereMetaData.getDatabaseName();
+        String databaseName = databaseMetaData.getDatabase().getName();
         checkCurrentRuleConfiguration(databaseName, sqlStatement, currentRuleConfig);
-        checkIsInUse(databaseName, sqlStatement, shardingSphereMetaData);
+        checkIsInUse(databaseName, sqlStatement, databaseMetaData);
     }
     
     private void checkCurrentRuleConfiguration(final String databaseName, final DropDatabaseDiscoveryRuleStatement sqlStatement,
@@ -64,8 +64,8 @@ public final class DropDatabaseDiscoveryRuleStatementUpdater implements RuleDefi
         DistSQLException.predictionThrow(notExistedRuleNames.isEmpty(), () -> new RequiredRuleMissedException(RULE_TYPE, databaseName));
     }
     
-    private void checkIsInUse(final String databaseName, final DropDatabaseDiscoveryRuleStatement sqlStatement, final ShardingSphereMetaData shardingSphereMetaData) throws DistSQLException {
-        Collection<String> rulesInUse = shardingSphereMetaData.getRuleMetaData().findRules(ExportableRule.class).stream()
+    private void checkIsInUse(final String databaseName, final DropDatabaseDiscoveryRuleStatement sqlStatement, final ShardingSphereDatabaseMetaData databaseMetaData) throws DistSQLException {
+        Collection<String> rulesInUse = databaseMetaData.getRuleMetaData().findRules(ExportableRule.class).stream()
                 .filter(each -> each.containExportableKey(Collections.singletonList(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE_NAME)))
                 .map(each -> each.export(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE_NAME)).filter(Optional::isPresent)
                 .map(each -> (Collection<String>) each.get()).flatMap(Collection::stream).collect(Collectors.toSet());

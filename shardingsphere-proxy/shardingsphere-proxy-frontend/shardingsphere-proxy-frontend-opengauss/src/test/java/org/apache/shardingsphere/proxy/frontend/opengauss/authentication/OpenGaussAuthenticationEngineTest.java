@@ -32,7 +32,6 @@ import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
@@ -156,7 +155,7 @@ public final class OpenGaussAuthenticationEngineTest {
         MetaDataContexts metaDataContexts = getMetaDataContexts(new ShardingSphereUser(username, password, ""));
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        ProxyContext.getInstance().init(contextManager);
+        ProxyContext.init(contextManager);
         actual = engine.authenticate(channelHandlerContext, payload);
         assertThat(actual.isFinished(), is(password.equals(inputPassword)));
     }
@@ -166,8 +165,8 @@ public final class OpenGaussAuthenticationEngineTest {
     }
     
     private MetaDataContexts getMetaDataContexts(final ShardingSphereUser user) {
-        return new MetaDataContexts(mock(MetaDataPersistService.class), new LinkedHashMap<>(),
-                buildGlobalRuleMetaData(user), mock(ExecutorEngine.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
+        return new MetaDataContexts(
+                mock(MetaDataPersistService.class), new LinkedHashMap<>(), buildGlobalRuleMetaData(user), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
     }
     
     private ShardingSphereRuleMetaData buildGlobalRuleMetaData(final ShardingSphereUser user) {
