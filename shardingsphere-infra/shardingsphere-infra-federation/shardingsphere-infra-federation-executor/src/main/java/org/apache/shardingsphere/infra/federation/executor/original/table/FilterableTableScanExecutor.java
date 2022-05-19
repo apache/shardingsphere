@@ -153,7 +153,7 @@ public final class FilterableTableScanExecutor {
             ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = prepareEngine.prepare(context.getRouteContext(), context.getExecutionUnits());
             setParameters(executionGroupContext.getInputGroups());
             ExecuteProcessEngine.initialize(context.getLogicSQL(), executionGroupContext, executorContext.getProps());
-            List<QueryResult> queryResults = execute(executionGroupContext);
+            List<QueryResult> queryResults = execute(executionGroupContext, databaseType);
             ExecuteProcessEngine.finish(executionGroupContext.getExecutionID());
             MergeEngine mergeEngine = new MergeEngine(schemaName, databaseType, database, executorContext.getProps(), database.getRuleMetaData().getRules());
             MergedResult mergedResult = mergeEngine.merge(queryResults, logicSQL.getSqlStatementContext());
@@ -166,12 +166,12 @@ public final class FilterableTableScanExecutor {
         }
     }
     
-    private List<QueryResult> execute(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext) throws SQLException {
+    private List<QueryResult> execute(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext, final DatabaseType databaseType) throws SQLException {
         Collection<QueryResult> queryResults = jdbcExecutor.execute(executionGroupContext, callback).stream().map(each -> (QueryResult) each).collect(Collectors.toList());
         List<QueryResult> result = new LinkedList<>();
         for (QueryResult each : queryResults) {
             QueryResult queryResult = each instanceof JDBCStreamQueryResult
-                    ? new JDBCMemoryQueryResult(((JDBCStreamQueryResult) each).getResultSet())
+                    ? new JDBCMemoryQueryResult(((JDBCStreamQueryResult) each).getResultSet(), databaseType)
                     : each;
             result.add(queryResult);
         }
