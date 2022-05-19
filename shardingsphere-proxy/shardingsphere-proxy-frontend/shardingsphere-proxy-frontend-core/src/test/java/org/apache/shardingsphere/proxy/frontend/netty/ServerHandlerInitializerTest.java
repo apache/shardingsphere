@@ -23,9 +23,11 @@ import org.apache.shardingsphere.db.protocol.codec.PacketCodec;
 import org.apache.shardingsphere.db.protocol.netty.ChannelAttrInitializer;
 import org.apache.shardingsphere.proxy.frontend.fixture.FixtureDatabaseType;
 import org.junit.Test;
+import org.mockito.MockedConstruction;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -37,7 +39,9 @@ public final class ServerHandlerInitializerTest {
         ChannelPipeline pipeline = mock(ChannelPipeline.class);
         when(channel.pipeline()).thenReturn(pipeline);
         ServerHandlerInitializer initializer = new ServerHandlerInitializer(new FixtureDatabaseType());
-        initializer.initChannel(channel);
+        try (MockedConstruction<FrontendChannelInboundHandler> ignored = mockConstruction(FrontendChannelInboundHandler.class)) {
+            initializer.initChannel(channel);
+        }
         verify(pipeline).addLast(any(ChannelAttrInitializer.class));
         verify(pipeline).addLast(any(PacketCodec.class));
         verify(pipeline).addLast(any(FrontendChannelLimitationInboundHandler.class));
