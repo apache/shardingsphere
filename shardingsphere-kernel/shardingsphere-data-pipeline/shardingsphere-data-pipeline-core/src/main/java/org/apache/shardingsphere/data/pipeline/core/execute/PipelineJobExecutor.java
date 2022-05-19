@@ -25,6 +25,7 @@ import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.yaml.RuleA
 import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
+import org.apache.shardingsphere.data.pipeline.core.lock.PipelineSimpleLock;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJob;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobPreparer;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobProgressDetector;
@@ -108,11 +109,17 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
     }
     
     private void execute(final JobConfigurationPOJO jobConfigPOJO) {
-        if (!RuleAlteredJobSchedulerCenter.existJob(jobConfigPOJO.getJobName())) {
-            log.info("{} added to executing jobs success", jobConfigPOJO.getJobName());
-            new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(), new RuleAlteredJob(), jobConfigPOJO.toJobConfiguration()).execute();
+        RuleAlteredJobConfiguration jobConfig = RuleAlteredJobConfigurationSwapper.swapToObject(jobConfigPOJO.getJobParameter());
+        String databaseName = jobConfig.getDatabaseName();
+        if (PipelineSimpleLock.getInstance().tryLock(databaseName, 1000)) {
+            if (!RuleAlteredJobSchedulerCenter.existJob(jobConfigPOJO.getJobName())) {
+                log.info("{} added to executing jobs success", jobConfigPOJO.getJobName());
+                new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(), new RuleAlteredJob(), jobConfigPOJO.toJobConfiguration()).execute();
+            } else {
+                log.info("{} added to executing jobs failed since it already exists", jobConfigPOJO.getJobName());
+            }
         } else {
-            log.info("{} added to executing jobs failed since it already exists", jobConfigPOJO.getJobName());
+            log.info("tryLock failed, databaseName={}", databaseName);
         }
     }
     
