@@ -226,7 +226,7 @@ public final class TableExtractor {
     }
     
     private void extractTablesFromAssignmentItems(final Collection<AssignmentSegment> assignmentItems) {
-        assignmentItems.stream().forEach(each -> extractTablesFromColumnSegments(each.getColumns()));
+        assignmentItems.forEach(each -> extractTablesFromColumnSegments(each.getColumns()));
     }
     
     private void extractTablesFromColumnSegments(final Collection<ColumnSegment> columnSegments) {
