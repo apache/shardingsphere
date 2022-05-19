@@ -19,6 +19,7 @@ package org.apache.shardingsphere.readwritesplitting.yaml.swapper;
 
 import org.apache.shardingsphere.readwritesplitting.algorithm.config.AlgorithmProvidedReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingOrder;
+import org.apache.shardingsphere.readwritesplitting.constant.RouteMode;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.YamlReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration;
@@ -69,8 +70,19 @@ public final class ReadwriteSplittingRuleAlgorithmProviderConfigurationYamlSwapp
     }
     
     private ReadwriteSplittingDataSourceRuleConfiguration swapToObject(final String name, final YamlReadwriteSplittingDataSourceRuleConfiguration yamlDataSourceRuleConfig) {
+        RouteMode routeMode = null;
+        if (null == yamlDataSourceRuleConfig.getRouteMode()) {
+            routeMode = RouteMode.SELECT_TO_MASTER;
+        }
+        if (null == routeMode) {
+            try {
+                routeMode = RouteMode.valueOf(yamlDataSourceRuleConfig.getRouteMode());
+            } catch (IllegalArgumentException ex) {
+                throw new UnsupportedOperationException(String.format("RouteMode: %s not support yet", yamlDataSourceRuleConfig.getRouteMode()));
+            }
+        }
         return new ReadwriteSplittingDataSourceRuleConfiguration(name, yamlDataSourceRuleConfig.getType(), yamlDataSourceRuleConfig.getProps(), yamlDataSourceRuleConfig.getLoadBalancerName(),
-                yamlDataSourceRuleConfig.getRouteMode());
+                routeMode);
     }
     
     @Override

@@ -51,25 +51,25 @@ public final class ReadwriteSplittingDataSourceRouter {
     }
     
     private String routeInTransaction(final SQLStatementContext<?> sqlStatementContext) {
-        if ("0".equals(rule.getRouteMode())) {
-            return rule.getReadwriteSplittingStrategy().getWriteDataSource();
-        }
-        if ("1".equals(rule.getRouteMode())) {
-            if (!TransactionHolder.isTransactionReadOnly() && isPrimaryRoute(sqlStatementContext)) {
+        switch (rule.getRouteMode()) {
+            case SELECT_TO_MASTER:
                 return rule.getReadwriteSplittingStrategy().getWriteDataSource();
-            }
-            if (null == SLAVE_ROUTE_HOLDER.get()) {
-                SLAVE_ROUTE_HOLDER.set(rule.getLoadBalancer().getDataSource(rule.getName(), rule.getWriteDataSource(), rule.getReadDataSourceNames()));
-            }
-            return SLAVE_ROUTE_HOLDER.get();
+            case SELECT_TO_ONE_SLAVE:
+                if (!TransactionHolder.isTransactionReadOnly() && isPrimaryRoute(sqlStatementContext)) {
+                    return rule.getReadwriteSplittingStrategy().getWriteDataSource();
+                }
+                if (null == SLAVE_ROUTE_HOLDER.get()) {
+                    SLAVE_ROUTE_HOLDER.set(rule.getLoadBalancer().getDataSource(rule.getName(), rule.getWriteDataSource(), rule.getReadDataSourceNames()));
+                }
+                return SLAVE_ROUTE_HOLDER.get();
+            case SELECT_TO_MULTI_SLAVE:
+                if (!TransactionHolder.isTransactionReadOnly() && isPrimaryRoute(sqlStatementContext)) {
+                    return rule.getReadwriteSplittingStrategy().getWriteDataSource();
+                }
+                return rule.getLoadBalancer().getDataSource(rule.getName(), rule.getWriteDataSource(), rule.getReadDataSourceNames());
+            default:
+                throw new UnsupportedOperationException(String.format("RouteMode: %s not support yet", rule.getRouteMode()));
         }
-        if ("2".equals(rule.getRouteMode())) {
-            if (!TransactionHolder.isTransactionReadOnly() && isPrimaryRoute(sqlStatementContext)) {
-                return rule.getReadwriteSplittingStrategy().getWriteDataSource();
-            }
-            return rule.getLoadBalancer().getDataSource(rule.getName(), rule.getWriteDataSource(), rule.getReadDataSourceNames());
-        }
-        throw new UnsupportedOperationException(String.format("RouteMode: %d not support yet", rule.getRouteMode()));
     }
     
     private String routeNotInTransaction(final SQLStatementContext<?> sqlStatementContext) {

@@ -62,10 +62,10 @@
 #        write-data-source-name: primary_ds
 #        read-data-source-names: replica_ds_0,replica_ds_1
 #      loadBalancerName: random
-#       # 0: Writes and reads are routed to master
-#       # 1: Writes are routed to master, Reads are routed to a fixed slave nodes(by load balancer)
-#       # 2: Writes are routed to master, Reads are routed to different slave nodes(by load balancer)
-#      routeMode: 0
+#       # SELECT_TO_MASTER: Writes and reads are routed to master
+#       # SELECT_TO_ONE_SLAVE: Writes are routed to master, Reads are routed to a fixed slave nodes(by load balancer)
+#       # SELECT_TO_MULTI_SLAVE: Writes are routed to master, Reads are routed to different slave nodes(by load balancer)
+#      routeMode: SELECT_TO_MASTER
 #  loadBalancers:
 #    random:
 #      type: RANDOM
@@ -116,10 +116,10 @@
 #        write-data-source-name: write_ds
 #        read-data-source-names: read_ds_0,read_ds_1
 #      loadBalancerName: random
-#       # 0: Writes and reads are routed to master.
-#       # 1: Writes are routed to master, Reads are routed to a fixed slave nodes(by load balancer).
-#       # 2: Writes are routed to master, Reads are routed to different slave nodes(by load balancer).
-#      routeMode: 0
+#       # SELECT_TO_MASTER: Writes and reads are routed to master
+#       # SELECT_TO_ONE_SLAVE: Writes are routed to master, Reads are routed to a fixed slave nodes(by load balancer)
+#       # SELECT_TO_MULTI_SLAVE: Writes are routed to master, Reads are routed to different slave nodes(by load balancer)
+#      routeMode: SELECT_TO_MASTER
 #  loadBalancers:
 #    random:
 #      type: RANDOM

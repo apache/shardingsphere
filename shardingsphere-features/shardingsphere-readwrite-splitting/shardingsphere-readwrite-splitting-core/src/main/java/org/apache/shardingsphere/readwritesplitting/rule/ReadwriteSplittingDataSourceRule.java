@@ -23,6 +23,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.constant.RouteMode;
 import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.strategy.ReadwriteSplittingStrategy;
 import org.apache.shardingsphere.readwritesplitting.strategy.ReadwriteSplittingStrategyFactory;
@@ -47,7 +48,7 @@ public final class ReadwriteSplittingDataSourceRule {
     
     private final ReadwriteSplittingStrategy readwriteSplittingStrategy;
     
-    private final String routeMode;
+    private final RouteMode routeMode;
     
     @Getter(AccessLevel.NONE)
     private final Collection<String> disabledDataSourceNames = new HashSet<>();
@@ -57,7 +58,7 @@ public final class ReadwriteSplittingDataSourceRule {
         name = config.getName();
         this.loadBalancer = loadBalancer;
         readwriteSplittingStrategy = ReadwriteSplittingStrategyFactory.newInstance(config.getType(), config.getProps());
-        routeMode = null == config.getRouteMode() ? "0" : config.getRouteMode();
+        routeMode = null == config.getRouteMode() ? RouteMode.SELECT_TO_MASTER : config.getRouteMode();
     }
     
     /**
