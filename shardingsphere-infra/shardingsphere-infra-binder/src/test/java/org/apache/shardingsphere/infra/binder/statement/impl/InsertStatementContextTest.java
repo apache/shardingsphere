@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.binder.statement.impl;
 
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.ColumnAssignmentSegment;
@@ -102,12 +102,12 @@ public final class InsertStatementContextTest {
     }
     
     private InsertStatementContext createInsertStatementContext(final List<Object> parameters, final InsertStatement insertStatement) {
-        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
+        ShardingSphereDatabaseMetaData databaseMetaData = mock(ShardingSphereDatabaseMetaData.class);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         String defaultSchemaName = insertStatement instanceof PostgreSQLStatement || insertStatement instanceof OpenGaussStatement ? "public" : DefaultDatabase.LOGIC_NAME;
-        when(metaData.getSchemaByName(defaultSchemaName)).thenReturn(schema);
+        when(databaseMetaData.getSchema(defaultSchemaName)).thenReturn(schema);
         when(schema.getAllColumnNames("tbl")).thenReturn(Arrays.asList("id", "name", "status"));
-        return new InsertStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, metaData), parameters, insertStatement, DefaultDatabase.LOGIC_NAME);
+        return new InsertStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, databaseMetaData), parameters, insertStatement, DefaultDatabase.LOGIC_NAME);
     }
     
     @Test

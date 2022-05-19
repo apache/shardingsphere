@@ -20,9 +20,8 @@ package org.apache.shardingsphere.proxy.backend.text.admin.postgresql.executor;
 import com.zaxxer.hikari.pool.HikariProxyResultSet;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
-import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.resource.CachedDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
@@ -72,7 +71,7 @@ public final class SelectTableExecutorTest {
         contextManagerField.setAccessible(true);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), new HashMap<>(), mock(ShardingSphereRuleMetaData.class),
-                mock(ExecutorEngine.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
+                mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
     }
@@ -90,8 +89,8 @@ public final class SelectTableExecutorTest {
         when(RESULT_SET.getMetaData()).thenReturn(metaData);
     }
     
-    private ShardingSphereMetaData getMetaData() throws SQLException {
-        return new ShardingSphereMetaData(new PostgreSQLDatabaseType(), new ShardingSphereResource(mockDatasourceMap(), mockDataSourcesMetaData(),
+    private ShardingSphereDatabaseMetaData getDatabaseMetaData() throws SQLException {
+        return new ShardingSphereDatabaseMetaData(new PostgreSQLDatabaseType(), new ShardingSphereResource(mockDatasourceMap(), mockDataSourcesMetaData(),
                 mock(CachedDatabaseMetaData.class), new PostgreSQLDatabaseType()), mock(ShardingSphereRuleMetaData.class),
                 new ShardingSphereDatabase("sharding_db", Collections.singletonMap("public", new ShardingSphereSchema(Collections.singletonMap("t_order", mock(TableMetaData.class))))));
     }
@@ -118,8 +117,8 @@ public final class SelectTableExecutorTest {
         mockResultSetMap.put("c.oid", "0000");
         mockResultSetMap.put("schemaname", "public");
         mockResultSet(mockResultSetMap, true, false);
-        Map<String, ShardingSphereMetaData> metaDataMap = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap();
-        metaDataMap.put("sharding_db", getMetaData());
+        Map<String, ShardingSphereDatabaseMetaData> databaseMetaDataMap = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getDatabaseMetaDataMap();
+        databaseMetaDataMap.put("sharding_db", getDatabaseMetaData());
         SelectTableExecutor selectSchemataExecutor = new SelectTableExecutor(sql);
         selectSchemataExecutor.execute(mock(ConnectionSession.class));
         assertThat(selectSchemataExecutor.getQueryResultMetaData().getColumnCount(), is(mockResultSetMap.size()));

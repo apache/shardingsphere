@@ -23,7 +23,7 @@ import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.AlterDatab
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
@@ -42,16 +42,16 @@ import static org.junit.Assert.assertThat;
 @RunWith(MockitoJUnitRunner.class)
 public final class AlterDatabaseDiscoveryHeartbeatStatementUpdaterTest {
     
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private ShardingSphereMetaData shardingSphereMetaData;
-    
     private final AlterDatabaseDiscoveryHeartbeatStatementUpdater updater = new AlterDatabaseDiscoveryHeartbeatStatementUpdater();
+    
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private ShardingSphereDatabaseMetaData databaseMetaData;
     
     @Test(expected = DuplicateRuleException.class)
     public void assertCheckSQLStatementWithDuplicateHeartbeatNames() throws DistSQLException {
         DatabaseDiscoveryHeartbeatSegment segment1 = new DatabaseDiscoveryHeartbeatSegment("heartbeat", createProperties("key", "value"));
         DatabaseDiscoveryHeartbeatSegment segment2 = new DatabaseDiscoveryHeartbeatSegment("heartbeat", createProperties("key", "value"));
-        updater.checkSQLStatement(shardingSphereMetaData, new AlterDatabaseDiscoveryHeartbeatStatement(Arrays.asList(segment1, segment2)),
+        updater.checkSQLStatement(databaseMetaData, new AlterDatabaseDiscoveryHeartbeatStatement(Arrays.asList(segment1, segment2)),
                 new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap()));
     }
     
@@ -59,7 +59,7 @@ public final class AlterDatabaseDiscoveryHeartbeatStatementUpdaterTest {
     public void assertCheckSQLStatementWithNotExistDiscoveryHeartbeatName() throws DistSQLException {
         DatabaseDiscoveryHeartbeatSegment segment = new DatabaseDiscoveryHeartbeatSegment("heartbeat", createProperties("key", "value"));
         DatabaseDiscoveryRuleConfiguration config = new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.singletonMap("heartbeat1", null), Collections.emptyMap());
-        updater.checkSQLStatement(shardingSphereMetaData, new AlterDatabaseDiscoveryHeartbeatStatement(Collections.singleton(segment)), config);
+        updater.checkSQLStatement(databaseMetaData, new AlterDatabaseDiscoveryHeartbeatStatement(Collections.singleton(segment)), config);
     }
     
     @Test

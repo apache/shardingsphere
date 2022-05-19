@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-schemaName: dbtbl_with_readwrite_splitting_and_encrypt
+databaseName: dbtbl_with_readwrite_splitting_and_encrypt
 
 dataSources:
   encrypt_write_ds_0:

@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-schemaName: databases_only
+databaseName: databases_only
 
 dataSources:
   ds_0:

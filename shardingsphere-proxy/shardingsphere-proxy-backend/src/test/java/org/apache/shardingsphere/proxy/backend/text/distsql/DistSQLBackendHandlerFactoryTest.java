@@ -27,9 +27,8 @@ import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
-import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -90,19 +89,19 @@ public final class DistSQLBackendHandlerFactoryTest {
     public void setUp() throws IllegalAccessException, NoSuchFieldException {
         Field contextManagerField = ProxyContext.getInstance().getClass().getDeclaredField("contextManager");
         contextManagerField.setAccessible(true);
-        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), getMetaDataMap(),
-                mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
+        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), getDatabaseMetaDataMap(),
+                mock(ShardingSphereRuleMetaData.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         contextManagerField.set(ProxyContext.getInstance(), contextManager);
         when(connectionSession.getDatabaseName()).thenReturn("db");
     }
     
-    private Map<String, ShardingSphereMetaData> getMetaDataMap() {
-        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        when(metaData.getDatabase().getName()).thenReturn("db");
-        when(metaData.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
-        return Collections.singletonMap("db", metaData);
+    private Map<String, ShardingSphereDatabaseMetaData> getDatabaseMetaDataMap() {
+        ShardingSphereDatabaseMetaData result = mock(ShardingSphereDatabaseMetaData.class, RETURNS_DEEP_STUBS);
+        when(result.getDatabase().getName()).thenReturn("db");
+        when(result.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        return Collections.singletonMap("db", result);
     }
     
     @Test
@@ -115,8 +114,8 @@ public final class DistSQLBackendHandlerFactoryTest {
     @Test
     public void assertExecuteShardingTableRuleContext() throws SQLException {
         setContextManager(true);
-        ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData("db");
-        when(metaData.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
+        ShardingSphereDatabaseMetaData databaseMetaData = ProxyContext.getInstance().getMetaData("db");
+        when(databaseMetaData.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         ResponseHeader response = RDLBackendHandlerFactory.newInstance(mock(CreateShardingTableRuleStatement.class), connectionSession).execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
     }
@@ -275,20 +274,20 @@ public final class DistSQLBackendHandlerFactoryTest {
     private MetaDataContexts mockMetaDataContexts() {
         MetaDataContexts result = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
         when(result.getAllDatabaseNames()).thenReturn(Collections.singletonList("db"));
-        when(result.getMetaData("db").getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
-        when(result.getMetaData("db").getResource().getDataSources()).thenReturn(Collections.emptyMap());
-        when(result.getMetaData("db").getResource().getNotExistedResources(any())).thenReturn(Collections.emptyList());
+        when(result.getDatabaseMetaData("db").getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        when(result.getDatabaseMetaData("db").getResource().getDataSources()).thenReturn(Collections.emptyMap());
+        when(result.getDatabaseMetaData("db").getResource().getNotExistedResources(any())).thenReturn(Collections.emptyList());
         return result;
     }
     
     private void mockShardingSphereRuleMetaData() {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        ShardingSphereMetaData shardingSphereMetaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        when(shardingSphereMetaData.getDatabase().getName()).thenReturn("db");
+        ShardingSphereDatabaseMetaData databaseMetaData = mock(ShardingSphereDatabaseMetaData.class, RETURNS_DEEP_STUBS);
+        when(databaseMetaData.getDatabase().getName()).thenReturn("db");
         ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class);
-        when(metaDataContexts.getMetaData("db")).thenReturn(shardingSphereMetaData);
-        when(shardingSphereMetaData.getRuleMetaData()).thenReturn(ruleMetaData);
-        when(shardingSphereMetaData.getResource()).thenReturn(mock(ShardingSphereResource.class));
+        when(metaDataContexts.getDatabaseMetaData("db")).thenReturn(databaseMetaData);
+        when(databaseMetaData.getRuleMetaData()).thenReturn(ruleMetaData);
+        when(databaseMetaData.getResource()).thenReturn(mock(ShardingSphereResource.class));
         when(ruleMetaData.getConfigurations()).thenReturn(Collections.singletonList(mock(ShadowRuleConfiguration.class)));
     }
     

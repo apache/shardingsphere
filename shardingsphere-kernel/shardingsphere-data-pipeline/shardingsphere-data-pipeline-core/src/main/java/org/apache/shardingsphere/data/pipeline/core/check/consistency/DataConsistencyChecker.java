@@ -38,7 +38,7 @@ import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorit
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -79,8 +79,8 @@ public final class DataConsistencyChecker {
     public DataConsistencyChecker(final RuleAlteredJobConfiguration jobConfig) {
         this.jobConfig = jobConfig;
         logicTableNames = jobConfig.splitLogicTableNames();
-        ShardingSphereMetaData metaData = PipelineContext.getContextManager().getMetaDataContexts().getMetaData(jobConfig.getDatabaseName());
-        tableNameSchemaNameMapping = new TableNameSchemaNameMapping(TableNameSchemaNameMapping.convert(metaData.getDatabase().getSchemas()));
+        ShardingSphereDatabaseMetaData databaseMetaData = PipelineContext.getContextManager().getMetaDataContexts().getDatabaseMetaData(jobConfig.getDatabaseName());
+        tableNameSchemaNameMapping = new TableNameSchemaNameMapping(TableNameSchemaNameMapping.convert(databaseMetaData.getDatabase().getSchemas()));
     }
     
     /**
@@ -225,12 +225,12 @@ public final class DataConsistencyChecker {
     private TableMetaData getTableMetaData(final String databaseName, final String logicTableName) {
         ContextManager contextManager = PipelineContext.getContextManager();
         Preconditions.checkNotNull(contextManager, "ContextManager null");
-        ShardingSphereMetaData metaData = contextManager.getMetaDataContexts().getMetaData(databaseName);
-        if (null == metaData) {
+        ShardingSphereDatabaseMetaData databaseMetaData = contextManager.getMetaDataContexts().getDatabaseMetaData(databaseName);
+        if (null == databaseMetaData) {
             throw new RuntimeException("Can not get meta data by database name " + databaseName);
         }
         String schemaName = tableNameSchemaNameMapping.getSchemaName(logicTableName);
-        ShardingSphereSchema schema = metaData.getSchemaByName(schemaName);
+        ShardingSphereSchema schema = databaseMetaData.getSchema(schemaName);
         if (null == schema) {
             throw new RuntimeException("Can not get schema by schema name " + schemaName + ", logicTableName=" + logicTableName);
         }

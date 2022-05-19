@@ -101,12 +101,12 @@ public abstract class JDBCExecutorCallback<T> implements ExecutorCallback<JDBCEx
         }
     }
     
-    private DataSourceMetaData getDataSourceMetaData(final DatabaseMetaData metaData) throws SQLException {
-        String url = metaData.getURL();
+    private DataSourceMetaData getDataSourceMetaData(final DatabaseMetaData databaseMetaData) throws SQLException {
+        String url = databaseMetaData.getURL();
         if (CACHED_DATASOURCE_METADATA.containsKey(url)) {
             return CACHED_DATASOURCE_METADATA.get(url);
         }
-        DataSourceMetaData result = databaseType.getDataSourceMetaData(url, metaData.getUserName());
+        DataSourceMetaData result = databaseType.getDataSourceMetaData(url, databaseMetaData.getUserName());
         CACHED_DATASOURCE_METADATA.put(url, result);
         return result;
     }

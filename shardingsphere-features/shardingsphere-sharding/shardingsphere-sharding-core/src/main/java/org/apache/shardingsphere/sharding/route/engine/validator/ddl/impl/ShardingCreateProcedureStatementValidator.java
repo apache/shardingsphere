@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDLStatementValidator;
@@ -41,15 +41,15 @@ public final class ShardingCreateProcedureStatementValidator extends ShardingDDL
     
     @Override
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<CreateProcedureStatement> sqlStatementContext,
-                            final List<Object> parameters, final ShardingSphereMetaData metaData) {
+                            final List<Object> parameters, final ShardingSphereDatabaseMetaData databaseMetaData) {
         Optional<RoutineBodySegment> routineBodySegment = CreateProcedureStatementHandler.getRoutineBodySegment(sqlStatementContext.getSqlStatement());
         if (!routineBodySegment.isPresent()) {
             return;
         }
         TableExtractor extractor = new TableExtractor();
-        String defaultSchema = sqlStatementContext.getDatabaseType().getDefaultSchema(metaData.getDatabase().getName());
+        String defaultSchema = sqlStatementContext.getDatabaseType().getDefaultSchema(databaseMetaData.getDatabase().getName());
         ShardingSphereSchema schema = sqlStatementContext.getSqlStatement().getProcedureName().flatMap(optional -> optional.getOwner()
-                .map(owner -> metaData.getSchemaByName(owner.getIdentifier().getValue()))).orElseGet(() -> metaData.getSchemaByName(defaultSchema));
+                .map(owner -> databaseMetaData.getSchema(owner.getIdentifier().getValue()))).orElseGet(() -> databaseMetaData.getSchema(defaultSchema));
         Collection<SimpleTableSegment> existTables = extractor.extractExistTableFromRoutineBody(routineBodySegment.get());
         validateShardingTable(shardingRule, existTables);
         validateTableExist(schema, existTables);
@@ -59,6 +59,6 @@ public final class ShardingCreateProcedureStatementValidator extends ShardingDDL
     
     @Override
     public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<CreateProcedureStatement> sqlStatementContext, final List<Object> parameters,
-                             final ShardingSphereMetaData metaData, final ConfigurationProperties props, final RouteContext routeContext) {
+                             final ShardingSphereDatabaseMetaData databaseMetaData, final ConfigurationProperties props, final RouteContext routeContext) {
     }
 }

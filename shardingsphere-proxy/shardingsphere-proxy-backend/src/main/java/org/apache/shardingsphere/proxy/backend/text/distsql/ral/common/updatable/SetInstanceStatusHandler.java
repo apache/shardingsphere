@@ -69,7 +69,7 @@ public final class SetInstanceStatusHandler extends UpdatableRALBackendHandler<S
     }
     
     private void checkExistDisabled(final InstanceId operationInstanceId) {
-        Optional<MetaDataPersistService> metaDataPersistService = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataPersistService();
+        Optional<MetaDataPersistService> metaDataPersistService = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getPersistService();
         if (metaDataPersistService.isPresent()) {
             metaDataPersistService.get().getComputeNodePersistService().loadAllComputeNodeInstances().forEach(each -> {
                 if (StateType.CIRCUIT_BREAK == each.getState().getCurrentState() && isIdenticalInstance(each.getInstanceDefinition(), operationInstanceId)) {
@@ -80,7 +80,7 @@ public final class SetInstanceStatusHandler extends UpdatableRALBackendHandler<S
     }
     
     private void checkExist(final InstanceId operationInstanceId) {
-        Optional<MetaDataPersistService> metaDataPersistService = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataPersistService();
+        Optional<MetaDataPersistService> metaDataPersistService = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getPersistService();
         metaDataPersistService.ifPresent(optional -> {
             Collection<ComputeNodeInstance> computeNodeInstances = optional.getComputeNodePersistService().loadAllComputeNodeInstances();
             if (computeNodeInstances.stream().noneMatch(each -> isIdenticalInstance(each.getInstanceDefinition(), operationInstanceId))) {

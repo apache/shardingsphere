@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.memory.workerid.generator.MemoryWorkerIdGenerator;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.AfterClass;
@@ -49,10 +50,9 @@ public final class PrometheusPluginBootServiceTest {
     
     @Test
     public void assertStart() throws IOException {
-        ContextManager contextManager = new ContextManager();
-        contextManager.init(mock(MetaDataContexts.class), mock(TransactionContexts.class), new InstanceContext(new ComputeNodeInstance(mock(InstanceDefinition.class)),
-                new MemoryWorkerIdGenerator(), new ModeConfiguration("Memory", null, false), mock(LockContext.class)));
-        ProxyContext.init(contextManager);
+        InstanceContext instanceContext = new InstanceContext(
+                new ComputeNodeInstance(mock(InstanceDefinition.class)), new MemoryWorkerIdGenerator(), new ModeConfiguration("Memory", null, false), mock(LockContext.class));
+        ProxyContext.init(new ContextManager(new MetaDataContexts(mock(MetaDataPersistService.class)), mock(TransactionContexts.class), instanceContext));
         PROMETHEUS_PLUGIN_BOOT_SERVICE.start(new PluginConfiguration("localhost", 8090, "", createProperties()));
         new Socket().connect(new InetSocketAddress("localhost", 8090));
     }

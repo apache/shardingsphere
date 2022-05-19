@@ -38,11 +38,11 @@ public final class ReadwriteSplittingConfiguration implements ExampleConfigurati
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfig = new ReadwriteSplittingDataSourceRuleConfiguration(
                 "demo_read_query_ds", "Static", getProperties(), "demo_weight_lb");
         Properties algorithmProps = new Properties();
-        algorithmProps.put("demo_read_ds_0", "2");
-        algorithmProps.put("demo_read_ds_1", "1");
-        Map<String, ShardingSphereAlgorithmConfiguration> sphereAlgorithmConfigurationMap = new HashMap<>(1);
-        sphereAlgorithmConfigurationMap.put("demo_weight_lb", new ShardingSphereAlgorithmConfiguration("WEIGHT", algorithmProps));
-        ReadwriteSplittingRuleConfiguration ruleConfig = new ReadwriteSplittingRuleConfiguration(Collections.singleton(dataSourceConfig), sphereAlgorithmConfigurationMap);
+        algorithmProps.setProperty("demo_read_ds_0", "2");
+        algorithmProps.setProperty("demo_read_ds_1", "1");
+        Map<String, ShardingSphereAlgorithmConfiguration> algorithmConfigMap = new HashMap<>(1);
+        algorithmConfigMap.put("demo_weight_lb", new ShardingSphereAlgorithmConfiguration("WEIGHT", algorithmProps));
+        ReadwriteSplittingRuleConfiguration ruleConfig = new ReadwriteSplittingRuleConfiguration(Collections.singleton(dataSourceConfig), algorithmConfigMap);
         Properties props = new Properties();
         props.setProperty("sql-show", Boolean.TRUE.toString());
         return ShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), Collections.singleton(ruleConfig), props);

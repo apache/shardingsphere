@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.context.refresher;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -40,7 +40,7 @@ public interface MetaDataRefresher<T extends SQLStatement> extends TypedSPI {
     /**
      * Refresh schema.
      *
-     * @param metaData meta data
+     * @param databaseMetaData database meta data
      * @param database federation database meta data                      
      * @param optimizerPlanners optimizer planners
      * @param logicDataSourceNames route data source names
@@ -49,6 +49,6 @@ public interface MetaDataRefresher<T extends SQLStatement> extends TypedSPI {
      * @param props configuration properties
      * @throws SQLException SQL exception
      */
-    void refresh(ShardingSphereMetaData metaData, FederationDatabaseMetaData database, Map<String, OptimizerPlannerContext> optimizerPlanners,
+    void refresh(ShardingSphereDatabaseMetaData databaseMetaData, FederationDatabaseMetaData database, Map<String, OptimizerPlannerContext> optimizerPlanners,
                  Collection<String> logicDataSourceNames, String schemaName, T sqlStatement, ConfigurationProperties props) throws SQLException;
 }

@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-schemaName: sharding-databases-range
+databaseName: sharding-databases-range
 
 mode:
   type: Memory

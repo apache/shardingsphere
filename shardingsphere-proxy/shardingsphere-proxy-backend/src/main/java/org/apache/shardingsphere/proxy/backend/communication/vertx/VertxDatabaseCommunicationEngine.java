@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.ReactiveProxySQLExecutor;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -39,8 +39,8 @@ public final class VertxDatabaseCommunicationEngine extends DatabaseCommunicatio
     
     private final ReactiveProxySQLExecutor reactiveProxySQLExecutor;
     
-    public VertxDatabaseCommunicationEngine(final ShardingSphereMetaData metaData, final LogicSQL logicSQL, final VertxBackendConnection vertxBackendConnection) {
-        super("Vert.x", metaData, logicSQL, vertxBackendConnection);
+    public VertxDatabaseCommunicationEngine(final ShardingSphereDatabaseMetaData databaseMetaData, final LogicSQL logicSQL, final VertxBackendConnection vertxBackendConnection) {
+        super("Vert.x", databaseMetaData, logicSQL, vertxBackendConnection);
         reactiveProxySQLExecutor = new ReactiveProxySQLExecutor(vertxBackendConnection);
     }
     
@@ -54,7 +54,7 @@ public final class VertxDatabaseCommunicationEngine extends DatabaseCommunicatio
     public Future<ResponseHeader> execute() {
         try {
             ExecutionContext executionContext = getKernelProcessor()
-                    .generateExecutionContext(getLogicSQL(), getMetaData(), ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps());
+                    .generateExecutionContext(getLogicSQL(), getDatabaseMetaData(), ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps());
             if (executionContext.getRouteContext().isFederated()) {
                 return Future.failedFuture(new UnsupportedOperationException("Executing federated query by Vert.x is not supported yet."));
             }

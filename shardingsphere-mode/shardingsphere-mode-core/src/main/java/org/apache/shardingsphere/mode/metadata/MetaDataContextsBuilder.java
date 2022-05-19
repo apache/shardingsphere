@@ -21,12 +21,10 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
-import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContextFactory;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
@@ -59,34 +57,33 @@ public final class MetaDataContextsBuilder {
     public MetaDataContexts build(final MetaDataPersistService metaDataPersistService) throws SQLException {
         DatabaseType frontendDatabaseType = DatabaseTypeEngine.getFrontendDatabaseType(databaseConfigMap, props);
         DatabaseType backendDatabaseType = DatabaseTypeEngine.getBackendDatabaseType(databaseConfigMap);
-        Map<String, ShardingSphereMetaData> databaseMetaDataMap = getDatabaseMetaDataMap(frontendDatabaseType, backendDatabaseType);
+        Map<String, ShardingSphereDatabaseMetaData> databaseMetaDataMap = getDatabaseMetaDataMap(frontendDatabaseType, backendDatabaseType);
         ShardingSphereRuleMetaData globalMetaData = new ShardingSphereRuleMetaData(globalRuleConfigs, GlobalRulesBuilder.buildRules(globalRuleConfigs, databaseMetaDataMap));
-        ExecutorEngine executorEngine = ExecutorEngine.createExecutorEngineWithSize(props.<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE));
-        return new MetaDataContexts(metaDataPersistService, databaseMetaDataMap, globalMetaData, executorEngine, OptimizerContextFactory.create(databaseMetaDataMap, globalMetaData), props);
+        return new MetaDataContexts(metaDataPersistService, databaseMetaDataMap, globalMetaData, OptimizerContextFactory.create(databaseMetaDataMap, globalMetaData), props);
     }
     
-    private Map<String, ShardingSphereMetaData> getDatabaseMetaDataMap(final DatabaseType frontendDatabaseType, final DatabaseType backendDatabaseType) throws SQLException {
-        Map<String, ShardingSphereMetaData> result = new HashMap<>(databaseConfigMap.size() + frontendDatabaseType.getSystemDatabaseSchemaMap().size(), 1);
+    private Map<String, ShardingSphereDatabaseMetaData> getDatabaseMetaDataMap(final DatabaseType frontendDatabaseType, final DatabaseType backendDatabaseType) throws SQLException {
+        Map<String, ShardingSphereDatabaseMetaData> result = new HashMap<>(databaseConfigMap.size() + frontendDatabaseType.getSystemDatabaseSchemaMap().size(), 1);
         result.putAll(getGenericDatabaseMetaDataMap(frontendDatabaseType, backendDatabaseType));
         result.putAll(getSystemDatabaseMetaDataMap(frontendDatabaseType));
         return result;
     }
     
-    private Map<String, ShardingSphereMetaData> getGenericDatabaseMetaDataMap(final DatabaseType frontendDatabaseType, final DatabaseType backendDatabaseType) throws SQLException {
-        Map<String, ShardingSphereMetaData> result = new HashMap<>(databaseConfigMap.size(), 1);
+    private Map<String, ShardingSphereDatabaseMetaData> getGenericDatabaseMetaDataMap(final DatabaseType frontendDatabaseType, final DatabaseType backendDatabaseType) throws SQLException {
+        Map<String, ShardingSphereDatabaseMetaData> result = new HashMap<>(databaseConfigMap.size(), 1);
         for (Entry<String, DatabaseConfiguration> entry : databaseConfigMap.entrySet()) {
             String databaseName = entry.getKey();
             if (!frontendDatabaseType.getSystemSchemas().contains(databaseName)) {
-                result.put(databaseName, ShardingSphereMetaData.create(databaseName, frontendDatabaseType, backendDatabaseType, entry.getValue(), props));
+                result.put(databaseName, ShardingSphereDatabaseMetaData.create(databaseName, frontendDatabaseType, backendDatabaseType, entry.getValue(), props));
             }
         }
         return result;
     }
     
-    private Map<String, ShardingSphereMetaData> getSystemDatabaseMetaDataMap(final DatabaseType frontendDatabaseType) throws SQLException {
-        Map<String, ShardingSphereMetaData> result = new HashMap<>(frontendDatabaseType.getSystemDatabaseSchemaMap().size(), 1);
+    private Map<String, ShardingSphereDatabaseMetaData> getSystemDatabaseMetaDataMap(final DatabaseType frontendDatabaseType) throws SQLException {
+        Map<String, ShardingSphereDatabaseMetaData> result = new HashMap<>(frontendDatabaseType.getSystemDatabaseSchemaMap().size(), 1);
         for (String each : frontendDatabaseType.getSystemDatabaseSchemaMap().keySet()) {
-            result.put(each, ShardingSphereMetaData.create(each, frontendDatabaseType));
+            result.put(each, ShardingSphereDatabaseMetaData.create(each, frontendDatabaseType));
         }
         return result;
     }

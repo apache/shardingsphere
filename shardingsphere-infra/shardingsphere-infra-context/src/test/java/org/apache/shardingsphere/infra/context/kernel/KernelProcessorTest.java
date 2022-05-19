@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
@@ -50,10 +50,10 @@ public final class KernelProcessorTest {
         SQLStatementContext<SQLStatement> sqlStatementContext = mock(CommonSQLStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(SelectStatement.class));
         LogicSQL logicSQL = new LogicSQL(sqlStatementContext, "SELECT * FROM tbl", Collections.emptyList());
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(mock(DatabaseType.class), mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS),
+        ShardingSphereDatabaseMetaData databaseMetaData = new ShardingSphereDatabaseMetaData(mock(DatabaseType.class), mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS),
                 new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()), new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, Collections.emptyMap()));
         ConfigurationProperties props = new ConfigurationProperties(createProperties());
-        ExecutionContext actual = new KernelProcessor().generateExecutionContext(logicSQL, metaData, props);
+        ExecutionContext actual = new KernelProcessor().generateExecutionContext(logicSQL, databaseMetaData, props);
         assertThat(actual.getExecutionUnits().size(), is(1));
     }
     

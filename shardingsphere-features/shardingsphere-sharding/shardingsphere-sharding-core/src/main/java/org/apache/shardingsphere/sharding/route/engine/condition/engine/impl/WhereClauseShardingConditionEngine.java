@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sharding.route.engine.condition.AlwaysFalseShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.Column;
@@ -60,7 +60,7 @@ public final class WhereClauseShardingConditionEngine implements ShardingConditi
     
     private final ShardingRule shardingRule;
     
-    private final ShardingSphereMetaData metaData;
+    private final ShardingSphereDatabaseMetaData databaseMetaData;
     
     @Override
     public List<ShardingCondition> createShardingConditions(final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters) {
@@ -68,8 +68,8 @@ public final class WhereClauseShardingConditionEngine implements ShardingConditi
             return Collections.emptyList();
         }
         Collection<ColumnSegment> columnSegments = ((WhereAvailable) sqlStatementContext).getColumnSegments();
-        String defaultSchema = sqlStatementContext.getDatabaseType().getDefaultSchema(metaData.getDatabase().getName());
-        ShardingSphereSchema schema = sqlStatementContext.getTablesContext().getSchemaName().map(metaData::getSchemaByName).orElseGet(() -> metaData.getSchemaByName(defaultSchema));
+        String defaultSchema = sqlStatementContext.getDatabaseType().getDefaultSchema(databaseMetaData.getDatabase().getName());
+        ShardingSphereSchema schema = sqlStatementContext.getTablesContext().getSchemaName().map(databaseMetaData::getSchema).orElseGet(() -> databaseMetaData.getSchema(defaultSchema));
         Map<String, String> columnExpressionTableNames = sqlStatementContext.getTablesContext().findTableNamesByColumnSegment(columnSegments, schema);
         List<ShardingCondition> result = new ArrayList<>();
         for (WhereSegment each : ((WhereAvailable) sqlStatementContext).getWhereSegments()) {

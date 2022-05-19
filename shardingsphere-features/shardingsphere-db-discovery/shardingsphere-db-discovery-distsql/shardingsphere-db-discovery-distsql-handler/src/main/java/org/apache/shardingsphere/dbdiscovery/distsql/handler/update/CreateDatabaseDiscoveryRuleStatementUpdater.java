@@ -31,7 +31,7 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleExcep
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredAlgorithmMissedException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 
 import java.util.Collection;
@@ -50,11 +50,11 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdater implements RuleDe
     private static final String RULE_TYPE = "Database discovery";
     
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final CreateDatabaseDiscoveryRuleStatement sqlStatement,
+    public void checkSQLStatement(final ShardingSphereDatabaseMetaData databaseMetaData, final CreateDatabaseDiscoveryRuleStatement sqlStatement,
                                   final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String databaseName = shardingSphereMetaData.getDatabase().getName();
+        String databaseName = databaseMetaData.getDatabase().getName();
         checkDuplicateRuleNames(databaseName, sqlStatement, currentRuleConfig);
-        checkResources(databaseName, sqlStatement, shardingSphereMetaData.getResource());
+        checkResources(databaseName, sqlStatement, databaseMetaData.getResource());
         checkDiscoverTypeAndHeartbeat(databaseName, sqlStatement, currentRuleConfig);
     }
     

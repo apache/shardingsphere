@@ -20,11 +20,10 @@ package org.apache.shardingsphere.proxy.backend.text.admin;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -38,7 +37,6 @@ import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -57,9 +55,6 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class DatabaseAdminQueryBackendHandlerTest {
     
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private ContextManager contextManager;
-    
     @Mock
     private ConnectionSession connectionSession;
     
@@ -68,10 +63,9 @@ public final class DatabaseAdminQueryBackendHandlerTest {
     @SneakyThrows
     @Before
     public void before() {
-        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), getMetaDataMap(),
-                mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
-        contextManager.init(metaDataContexts, mock(TransactionContexts.class), mock(InstanceContext.class));
-        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
+        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), getDatabaseMetaDataMap(),
+                mock(ShardingSphereRuleMetaData.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
+        ContextManager contextManager = new ContextManager(metaDataContexts, mock(TransactionContexts.class), mock(InstanceContext.class));
         ProxyContext.init(contextManager);
         when(connectionSession.getDatabaseName()).thenReturn("db");
         SelectTableExecutor executor = mock(SelectTableExecutor.class, RETURNS_DEEP_STUBS);
@@ -81,12 +75,12 @@ public final class DatabaseAdminQueryBackendHandlerTest {
         handler = new DatabaseAdminQueryBackendHandler(connectionSession, executor);
     }
     
-    private Map<String, ShardingSphereMetaData> getMetaDataMap() {
-        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        when(metaData.getDatabase().getName()).thenReturn("db");
-        when(metaData.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
-        when(metaData.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
-        return Collections.singletonMap("db", metaData);
+    private Map<String, ShardingSphereDatabaseMetaData> getDatabaseMetaDataMap() {
+        ShardingSphereDatabaseMetaData result = mock(ShardingSphereDatabaseMetaData.class, RETURNS_DEEP_STUBS);
+        when(result.getDatabase().getName()).thenReturn("db");
+        when(result.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        when(result.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
+        return Collections.singletonMap("db", result);
     }
     
     @SneakyThrows

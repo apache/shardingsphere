@@ -30,7 +30,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
- * Pipelien table meta data.
+ * Pipeline table meta data.
  */
 @Slf4j
 @ToString

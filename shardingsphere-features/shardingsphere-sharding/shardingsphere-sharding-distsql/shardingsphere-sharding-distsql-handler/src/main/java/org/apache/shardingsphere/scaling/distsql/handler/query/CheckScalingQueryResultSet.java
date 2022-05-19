@@ -21,7 +21,7 @@ import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPI;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.scaling.distsql.statement.CheckScalingStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -42,7 +42,7 @@ public final class CheckScalingQueryResultSet implements DistSQLResultSet {
     private Iterator<Collection<Object>> data;
     
     @Override
-    public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
+    public void init(final ShardingSphereDatabaseMetaData databaseMetaData, final SQLStatement sqlStatement) {
         CheckScalingStatement checkScalingStatement = (CheckScalingStatement) sqlStatement;
         Map<String, DataConsistencyCheckResult> checkResultMap;
         if (null == checkScalingStatement.getTypeStrategy()) {

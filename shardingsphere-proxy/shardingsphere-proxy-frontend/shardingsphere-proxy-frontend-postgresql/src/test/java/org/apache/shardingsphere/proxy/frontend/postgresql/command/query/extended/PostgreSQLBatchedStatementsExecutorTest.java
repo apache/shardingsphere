@@ -89,7 +89,7 @@ public final class PostgreSQLBatchedStatementsExecutorTest {
         when(contextManager.getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE)).thenReturn(1);
         when(contextManager.getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY)).thenReturn(1);
         when(contextManager.getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
-        when(contextManager.getMetaDataContexts().getMetaData(any(String.class)).getRuleMetaData().findSingleRule(SQLTranslatorRule.class))
+        when(contextManager.getMetaDataContexts().getDatabaseMetaData(any(String.class)).getRuleMetaData().findSingleRule(SQLTranslatorRule.class))
                 .thenReturn(Optional.of(new SQLTranslatorRule(new SQLTranslatorRuleConfiguration())));
     }
     

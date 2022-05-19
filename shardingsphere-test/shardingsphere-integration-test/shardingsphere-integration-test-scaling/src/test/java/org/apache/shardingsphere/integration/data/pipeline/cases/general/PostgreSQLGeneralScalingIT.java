@@ -24,8 +24,8 @@ import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseT
 import org.apache.shardingsphere.integration.data.pipeline.cases.base.BaseExtraSQLITCase;
 import org.apache.shardingsphere.integration.data.pipeline.cases.task.PostgreSQLIncrementTask;
 import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
+import org.apache.shardingsphere.integration.data.pipeline.framework.helper.ScalingCaseHelper;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
-import org.apache.shardingsphere.integration.data.pipeline.util.TableCrudUtil;
 import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -78,7 +78,8 @@ public final class PostgreSQLGeneralScalingIT extends BaseExtraSQLITCase {
         bindingShardingRule();
         createOrderTable();
         createOrderItemTable();
-        Pair<List<Object[]>, List<Object[]>> dataPair = TableCrudUtil.generatePostgresSQLInsertDataList(3000);
+        SnowflakeKeyGenerateAlgorithm keyGenerateAlgorithm = new SnowflakeKeyGenerateAlgorithm();
+        Pair<List<Object[]>, List<Object[]>> dataPair = ScalingCaseHelper.generateFullInsertData(keyGenerateAlgorithm, parameterized.getDatabaseType(), 3000);
         getJdbcTemplate().batchUpdate(getExtraSQLCommand().getFullInsertOrder(), dataPair.getLeft());
         getJdbcTemplate().batchUpdate(getExtraSQLCommand().getFullInsertOrderItem(), dataPair.getRight());
         startIncrementTask(new PostgreSQLIncrementTask(getJdbcTemplate(), new SnowflakeKeyGenerateAlgorithm(), "test", true));
