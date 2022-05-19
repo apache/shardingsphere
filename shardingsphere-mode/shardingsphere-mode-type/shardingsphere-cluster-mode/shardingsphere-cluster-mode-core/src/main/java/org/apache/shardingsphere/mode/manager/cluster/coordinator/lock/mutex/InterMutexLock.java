@@ -130,12 +130,12 @@ public final class InterMutexLock implements MutexLock, LockAckAble {
             lockedInstances.addAll(lockService.acquireAckLockedInstances(LockNodeUtil.generateAckPathName(lockName)));
         }
         if (computeNodeInstances.size() > lockedInstances.size()) {
-            log.debug("computeNodeInstances {}, lockedInstances {}", computeNodeInstances, lockedInstances);
+            log.debug("computeNodeInstanceId {}, lockedInstances {}", computeNodeInstances.stream().map(ComputeNodeInstance::getCurrentInstanceId), lockedInstances);
             return false;
         }
         for (ComputeNodeInstance each : computeNodeInstances) {
             if (!lockedInstances.contains(each.getInstanceDefinition().getInstanceId().getId())) {
-                log.debug("each: {}, lockedInstances: {}", each, lockedInstances);
+                log.debug("each: {}, lockedInstances: {}", each.getCurrentInstanceId(), lockedInstances);
                 return false;
             }
         }
