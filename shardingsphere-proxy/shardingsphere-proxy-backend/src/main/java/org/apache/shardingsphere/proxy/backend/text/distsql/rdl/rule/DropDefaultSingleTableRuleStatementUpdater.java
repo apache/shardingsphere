@@ -21,7 +21,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropDefaultSi
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
 
 /**
@@ -30,9 +30,9 @@ import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration
 public final class DropDefaultSingleTableRuleStatementUpdater implements RuleDefinitionDropUpdater<DropDefaultSingleTableRuleStatement, SingleTableRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final DropDefaultSingleTableRuleStatement sqlStatement,
+    public void checkSQLStatement(final ShardingSphereDatabaseMetaData databaseMetaData, final DropDefaultSingleTableRuleStatement sqlStatement,
                                   final SingleTableRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String databaseName = shardingSphereMetaData.getDatabase().getName();
+        String databaseName = databaseMetaData.getDatabase().getName();
         checkCurrentRuleConfiguration(databaseName, sqlStatement, currentRuleConfig);
     }
     

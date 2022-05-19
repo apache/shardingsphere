@@ -24,6 +24,7 @@ import org.apache.shardingsphere.proxy.backend.exception.DBDropNotExistsExceptio
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabaseStatement;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,7 +46,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class DropDatabaseBackendHandlerTest {
+public final class DropDatabaseBackendHandlerTest extends ProxyContextRestorer {
     
     @Mock
     private ConnectionSession connectionSession;
@@ -66,7 +67,7 @@ public final class DropDatabaseBackendHandlerTest {
         handler = new DropDatabaseBackendHandler(sqlStatement, connectionSession);
         when(metaDataContexts.getAllDatabaseNames()).thenReturn(Arrays.asList("test_db", "other_db"));
         when(metaDataContexts.getGlobalRuleMetaData().getRules()).thenReturn(Collections.emptyList());
-        when(metaDataContexts.getMetaData(any()).getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
+        when(metaDataContexts.getDatabaseMetaData(any()).getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
     }
     
     @Test(expected = DBDropNotExistsException.class)

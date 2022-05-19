@@ -22,7 +22,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.C
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.QueryableRALBackendHandler;
@@ -79,14 +79,14 @@ public final class CountInstanceRulesHandler extends QueryableRALBackendHandler<
         return dataMap.values();
     }
     
-    private void addSchemaData(final Map<String, List<Object>> dataMap, final ShardingSphereMetaData metaData) {
+    private void addSchemaData(final Map<String, List<Object>> dataMap, final ShardingSphereDatabaseMetaData databaseMetaData) {
         initData(dataMap);
-        Collection<SingleTableRule> singleTableRules = metaData.getRuleMetaData().findRules(SingleTableRule.class);
+        Collection<SingleTableRule> singleTableRules = databaseMetaData.getRuleMetaData().findRules(SingleTableRule.class);
         if (!singleTableRules.isEmpty()) {
             addSingleTableData(dataMap, singleTableRules);
         }
-        if (hasRuleConfiguration(metaData)) {
-            addConfigurationData(dataMap, metaData.getRuleMetaData().getConfigurations());
+        if (hasRuleConfiguration(databaseMetaData)) {
+            addConfigurationData(dataMap, databaseMetaData.getRuleMetaData().getConfigurations());
         }
     }
     
@@ -96,8 +96,8 @@ public final class CountInstanceRulesHandler extends QueryableRALBackendHandler<
         dataMap.compute(SINGLE_TABLE, (key, value) -> buildRow(value, SINGLE_TABLE, count.orElse(DEFAULT_COUNT)));
     }
     
-    private boolean hasRuleConfiguration(final ShardingSphereMetaData metaData) {
-        Collection<RuleConfiguration> configs = metaData.getRuleMetaData().getConfigurations();
+    private boolean hasRuleConfiguration(final ShardingSphereDatabaseMetaData databaseMetaData) {
+        Collection<RuleConfiguration> configs = databaseMetaData.getRuleMetaData().getConfigurations();
         return null != configs && !configs.isEmpty();
     }
     

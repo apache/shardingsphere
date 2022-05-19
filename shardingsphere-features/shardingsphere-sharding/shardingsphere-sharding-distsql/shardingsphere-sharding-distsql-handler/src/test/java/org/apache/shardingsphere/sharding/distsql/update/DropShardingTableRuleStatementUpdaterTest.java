@@ -21,7 +21,7 @@ import com.google.common.base.Splitter;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RuleInUsedException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -51,30 +51,30 @@ import static org.junit.Assert.assertTrue;
 public final class DropShardingTableRuleStatementUpdaterTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private ShardingSphereMetaData shardingSphereMetaData;
+    private ShardingSphereDatabaseMetaData databaseMetaData;
     
     private final DropShardingTableRuleStatementUpdater updater = new DropShardingTableRuleStatementUpdater();
     
     @Test(expected = RequiredRuleMissedException.class)
     public void assertCheckSQLStatementWithoutCurrentRule() throws RuleDefinitionViolationException {
-        updater.checkSQLStatement(shardingSphereMetaData, new DropShardingTableRuleStatement(Collections.emptyList()), null);
+        updater.checkSQLStatement(databaseMetaData, new DropShardingTableRuleStatement(Collections.emptyList()), null);
     }
     
     @Test(expected = RequiredRuleMissedException.class)
     public void assertCheckSQLStatementWithoutExistedTableRule() throws RuleDefinitionViolationException {
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement("t_order"), new ShardingRuleConfiguration());
+        updater.checkSQLStatement(databaseMetaData, createSQLStatement("t_order"), new ShardingRuleConfiguration());
     }
     
     @Test
     public void assertCheckSQLStatementWithIfExists() throws RuleDefinitionViolationException {
         DropShardingTableRuleStatement statement = new DropShardingTableRuleStatement(true, Collections.singleton(new TableNameSegment(0, 3, new IdentifierValue("t_order_if_exists"))));
-        updater.checkSQLStatement(shardingSphereMetaData, statement, null);
-        updater.checkSQLStatement(shardingSphereMetaData, statement, new ShardingRuleConfiguration());
+        updater.checkSQLStatement(databaseMetaData, statement, null);
+        updater.checkSQLStatement(databaseMetaData, statement, new ShardingRuleConfiguration());
     }
     
     @Test(expected = RuleInUsedException.class)
     public void assertCheckSQLStatementWithBindingTableRule() throws RuleDefinitionViolationException {
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement("t_order_item"), createCurrentRuleConfiguration());
+        updater.checkSQLStatement(databaseMetaData, createSQLStatement("t_order_item"), createCurrentRuleConfiguration());
     }
     
     @Test

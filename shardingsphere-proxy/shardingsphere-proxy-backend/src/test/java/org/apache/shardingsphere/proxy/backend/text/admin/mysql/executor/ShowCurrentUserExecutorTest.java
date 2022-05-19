@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor;
 
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
@@ -51,15 +50,15 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class ShowCurrentUserExecutorTest {
     
-    private static Grantee grantee = new Grantee("root", "");
+    private static final Grantee GRANTEE = new Grantee("root", "");
     
     @Before
     public void setUp() throws IllegalAccessException, NoSuchFieldException {
         Field contextManagerField = ProxyContext.getInstance().getClass().getDeclaredField("contextManager");
         contextManagerField.setAccessible(true);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), new HashMap<>(), mockShardingSphereRuleMetaData(),
-                mock(ExecutorEngine.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
+        MetaDataContexts metaDataContexts = new MetaDataContexts(
+                mock(MetaDataPersistService.class), new HashMap<>(), mockShardingSphereRuleMetaData(), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         contextManagerField.set(ProxyContext.getInstance(), contextManager);
     }
@@ -68,7 +67,7 @@ public final class ShowCurrentUserExecutorTest {
         AuthorityRule authorityRule = mock(AuthorityRule.class);
         ShardingSphereUser shardingSphereUser = mock(ShardingSphereUser.class);
         when(shardingSphereUser.getGrantee()).thenReturn(new Grantee("root", "%"));
-        when(authorityRule.findUser(grantee)).thenReturn(Optional.of(shardingSphereUser));
+        when(authorityRule.findUser(GRANTEE)).thenReturn(Optional.of(shardingSphereUser));
         return new ShardingSphereRuleMetaData(new ArrayList<>(), Collections.singletonList(authorityRule));
     }
     
@@ -84,7 +83,7 @@ public final class ShowCurrentUserExecutorTest {
     
     private ConnectionSession mockConnectionSession() {
         ConnectionSession result = mock(ConnectionSession.class);
-        when(result.getGrantee()).thenReturn(grantee);
+        when(result.getGrantee()).thenReturn(GRANTEE);
         return result;
     }
 }

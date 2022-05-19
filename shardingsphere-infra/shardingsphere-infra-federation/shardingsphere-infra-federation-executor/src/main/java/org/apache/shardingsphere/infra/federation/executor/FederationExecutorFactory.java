@@ -35,7 +35,7 @@ public final class FederationExecutorFactory {
      * 
      * @param databaseName database name
      * @param schemaName schema name
-     * @param optimizerContext filterable optimizer context 
+     * @param optimizerContext filterable optimizer context
      * @param props configuration properties
      * @param jdbcExecutor jdbc executor
      * @return created instance

@@ -22,6 +22,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.junit.Test;
 
 import java.sql.SQLException;
@@ -31,7 +32,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class AlterInstanceHandlerTest {
+public final class AlterInstanceHandlerTest extends ProxyContextRestorer {
     
     @Test(expected = UnsupportedOperationException.class)
     public void assertUpdateWithNotSupportedKey() throws SQLException {
@@ -44,7 +45,7 @@ public final class AlterInstanceHandlerTest {
     @Test(expected = UnsupportedOperationException.class)
     public void assertCheckWithNoPersistenceConfigurationFound() throws SQLException {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts().getMetaDataPersistService()).thenReturn(Optional.empty());
+        when(contextManager.getMetaDataContexts().getPersistService()).thenReturn(Optional.empty());
         ProxyContext.init(contextManager);
         String instanceId = "instance_id";
         String key = "xa_recovery_nodes";
@@ -56,7 +57,7 @@ public final class AlterInstanceHandlerTest {
     public void assertCheckWithNotExistInstanceId() throws SQLException {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataPersistService metaDataPersistService = new MetaDataPersistService(mock(PersistRepository.class));
-        when(contextManager.getMetaDataContexts().getMetaDataPersistService()).thenReturn(Optional.of(metaDataPersistService));
+        when(contextManager.getMetaDataContexts().getPersistService()).thenReturn(Optional.of(metaDataPersistService));
         ProxyContext.init(contextManager);
         String instanceId = "instance_id";
         String key = "xa_recovery_nodes";
