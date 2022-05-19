@@ -21,13 +21,17 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
 import org.apache.shardingsphere.db.protocol.codec.PacketCodec;
 import org.apache.shardingsphere.db.protocol.netty.ChannelAttrInitializer;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.fixture.FixtureDatabaseType;
+import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Test;
-import org.mockito.MockedConstruction;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -35,13 +39,11 @@ public final class ServerHandlerInitializerTest {
     
     @Test
     public void assertInitChannel() {
+        ProxyContext.init(new ContextManager(new MetaDataContexts(mock(MetaDataPersistService.class)), mock(TransactionContexts.class), mock(InstanceContext.class)));
         SocketChannel channel = mock(SocketChannel.class);
         ChannelPipeline pipeline = mock(ChannelPipeline.class);
         when(channel.pipeline()).thenReturn(pipeline);
-        ServerHandlerInitializer initializer = new ServerHandlerInitializer(new FixtureDatabaseType());
-        try (MockedConstruction<FrontendChannelInboundHandler> ignored = mockConstruction(FrontendChannelInboundHandler.class)) {
-            initializer.initChannel(channel);
-        }
+        new ServerHandlerInitializer(new FixtureDatabaseType()).initChannel(channel);
         verify(pipeline).addLast(any(ChannelAttrInitializer.class));
         verify(pipeline).addLast(any(PacketCodec.class));
         verify(pipeline).addLast(any(FrontendChannelLimitationInboundHandler.class));
