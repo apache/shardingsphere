@@ -29,7 +29,8 @@ public final class EncryptColumnRuleConfigurationYamlSwapperTest {
     @Test
     public void assertSwapToYamlConfiguration() {
         EncryptColumnRuleConfigurationYamlSwapper swapper = new EncryptColumnRuleConfigurationYamlSwapper();
-        EncryptColumnRuleConfiguration encryptColumnRuleConfig = new EncryptColumnRuleConfiguration("logicColumn", "cipherColumn", "assistedQueryColumn", "plainColumn", "encryptorName");
+        EncryptColumnRuleConfiguration encryptColumnRuleConfig = new EncryptColumnRuleConfiguration("logicColumn", "cipherColumn", "assistedQueryColumn", "plainColumn",
+                "encryptorName", "assistedEncryptorName");
         YamlEncryptColumnRuleConfiguration actual = swapper.swapToYamlConfiguration(encryptColumnRuleConfig);
         assertThat(actual.getCipherColumn(), is("cipherColumn"));
         assertThat(actual.getAssistedQueryColumn(), is("assistedQueryColumn"));

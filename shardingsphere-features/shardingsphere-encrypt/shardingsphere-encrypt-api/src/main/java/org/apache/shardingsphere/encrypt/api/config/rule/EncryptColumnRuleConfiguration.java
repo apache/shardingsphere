@@ -45,7 +45,11 @@ public final class EncryptColumnRuleConfiguration {
     
     private final String encryptorName;
     
-    public EncryptColumnRuleConfiguration(final String logicColumn, final String cipherColumn, final String assistedQueryColumn, final String plainColumn, final String encryptorName) {
-        this(logicColumn, null, cipherColumn, null, assistedQueryColumn, null, plainColumn, null, encryptorName);
+    private final String assistedEncryptorName;
+    
+    public EncryptColumnRuleConfiguration(final String logicColumn, final String cipherColumn, final String assistedQueryColumn, final String plainColumn,
+                                          final String encryptorName, final String assistedEncryptorName) {
+        this(logicColumn, null, cipherColumn, null, assistedQueryColumn, null, plainColumn, null,
+                encryptorName, assistedEncryptorName);
     }
 }
