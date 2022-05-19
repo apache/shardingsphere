@@ -258,9 +258,8 @@ public abstract class BaseITCase {
         // TODO make sure the scaling job was applied
         TimeUnit.SECONDS.sleep(2);
         List<Map<String, Object>> previewResults = jdbcTemplate.queryForList("PREVIEW SELECT COUNT(1) FROM t_order");
-        Set<Object> originalSources = previewResults.stream().map(each -> each.get("data_source_name")).collect(Collectors.toSet());
-        log.info("originalSources: {}", originalSources);
-        assertThat(originalSources, is(new HashSet<>(Arrays.asList("ds_2", "ds_3", "ds_4"))));
+        Set<Object> targetSources = previewResults.stream().map(each -> each.get("data_source_name")).collect(Collectors.toSet());
+        assertThat(targetSources, is(new HashSet<>(Arrays.asList("ds_2", "ds_3", "ds_4"))));
     }
     
     @After
