@@ -15,37 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.ingest.record;
+package org.apache.shardingsphere.data.pipeline.core.metadata.model;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
+
 /**
- * Column.
+ * Pipeline meta data of index.
  */
 @RequiredArgsConstructor
 @Getter
-public final class Column {
+public final class PipelineIndexMetaData {
     
     private final String name;
     
-    /**
-     * Value are available only when the primary key column is updated.
-     */
-    private final Object oldValue;
-    
-    private final Object value;
-    
-    private final boolean updated;
-    
-    private final boolean uniqueKey;
-    
-    public Column(final String name, final Object value, final boolean updated, final boolean uniqueKey) {
-        this(name, null, value, updated, uniqueKey);
-    }
-    
-    @Override
-    public String toString() {
-        return String.format("%s=%s", name, value);
-    }
+    private final List<PipelineColumnMetaData> columns;
 }
