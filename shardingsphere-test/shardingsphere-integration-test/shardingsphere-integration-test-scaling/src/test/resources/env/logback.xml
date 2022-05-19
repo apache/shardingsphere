@@ -36,7 +36,7 @@
     </logger>
     <logger name="org.testcontainers.containers.ContainerState" level="OFF" />
     <logger name="com.zaxxer.hikari.pool.ProxyConnection" level="OFF" />
-    <logger name="com.atomikos.icatch.provider.imp" level="OFF" />
+    <logger name="com.atomikos.icatch.provider" level="OFF" />
     <root>
         <level value="WARN" />
         <appender-ref ref="console" />
