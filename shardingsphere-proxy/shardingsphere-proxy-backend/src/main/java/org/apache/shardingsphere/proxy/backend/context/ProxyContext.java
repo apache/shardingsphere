@@ -21,7 +21,7 @@ import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -74,16 +74,16 @@ public final class ProxyContext {
     }
     
     /**
-     * Get ShardingSphere meta data.
+     * Get database.
      *
-     * @param databaseName database name
-     * @return ShardingSphere meta data
+     * @param name database name
+     * @return got database
      */
-    public ShardingSphereDatabaseMetaData getMetaData(final String databaseName) {
-        if (Strings.isNullOrEmpty(databaseName) || !contextManager.getMetaDataContexts().getAllDatabaseNames().contains(databaseName)) {
+    public ShardingSphereDatabase getDatabase(final String name) {
+        if (Strings.isNullOrEmpty(name) || !contextManager.getMetaDataContexts().getAllDatabaseNames().contains(name)) {
             throw new NoDatabaseSelectedException();
         }
-        return contextManager.getMetaDataContexts().getDatabaseMetaData(databaseName);
+        return contextManager.getMetaDataContexts().getDatabaseMetaData(name);
     }
     
     /**

@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryRe
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryMergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
@@ -96,14 +96,14 @@ public final class JDBCDatabaseCommunicationEngineTest extends ProxyContextResto
     public void setUp() {
         when(backendConnection.getConnectionSession().getDatabaseName()).thenReturn("db");
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
-                mockDatabaseMetaDataMap(), mock(ShardingSphereRuleMetaData.class), mock(OptimizerContext.class, RETURNS_DEEP_STUBS), new ConfigurationProperties(new Properties()));
+                mockDatabaseMap(), mock(ShardingSphereRuleMetaData.class), mock(OptimizerContext.class, RETURNS_DEEP_STUBS), new ConfigurationProperties(new Properties()));
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
     }
     
-    private Map<String, ShardingSphereDatabaseMetaData> mockDatabaseMetaDataMap() {
-        ShardingSphereDatabaseMetaData result = mock(ShardingSphereDatabaseMetaData.class, RETURNS_DEEP_STUBS);
+    private Map<String, ShardingSphereDatabase> mockDatabaseMap() {
+        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(result.getResource().getDatabaseType()).thenReturn(new H2DatabaseType());
         when(result.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         return Collections.singletonMap("db", result);
@@ -118,10 +118,10 @@ public final class JDBCDatabaseCommunicationEngineTest extends ProxyContextResto
         assertNotNull(engine);
         assertThat(engine, instanceOf(DatabaseCommunicationEngine.class));
         Field queryHeadersField = DatabaseCommunicationEngine.class.getDeclaredField("queryHeaders");
-        ShardingSphereDatabaseMetaData databaseMetaData = createDatabaseMetaData();
+        ShardingSphereDatabase database = createDatabaseMetaData();
         MemberAccessor accessor = Plugins.getMemberAccessor();
         accessor.set(queryHeadersField, engine, Collections.singletonList(
-                new QueryHeaderBuilderEngine(new MySQLDatabaseType()).build(createQueryResultMetaData(), databaseMetaData, 1, getDataNodeContainedRule(databaseMetaData))));
+                new QueryHeaderBuilderEngine(new MySQLDatabaseType()).build(createQueryResultMetaData(), database, 1, getDataNodeContainedRule(database))));
         Field mergedResultField = DatabaseCommunicationEngine.class.getDeclaredField("mergedResult");
         accessor.set(mergedResultField, engine, new MemoryMergedResult<ShardingSphereRule>(null, null, null, Collections.emptyList()) {
             
@@ -141,15 +141,15 @@ public final class JDBCDatabaseCommunicationEngineTest extends ProxyContextResto
         }
     }
     
-    private ShardingSphereDatabaseMetaData createDatabaseMetaData() {
-        ShardingSphereDatabaseMetaData result = mock(ShardingSphereDatabaseMetaData.class, RETURNS_DEEP_STUBS);
+    private ShardingSphereDatabase createDatabaseMetaData() {
+        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         ColumnMetaData columnMetaData = new ColumnMetaData("order_id", Types.INTEGER, true, false, false);
-        when(result.getDatabase().getSchema(DefaultDatabase.LOGIC_NAME).get("t_logic_order")).thenReturn(
+        when(result.getDatabaseMetaData().getSchema(DefaultDatabase.LOGIC_NAME).get("t_logic_order")).thenReturn(
                 new TableMetaData("t_logic_order", Collections.singletonList(columnMetaData), Collections.singletonList(new IndexMetaData("order_id")), Collections.emptyList()));
         ShardingRule shardingRule = mock(ShardingRule.class);
         when(shardingRule.findLogicTableByActualTable("t_order")).thenReturn(Optional.of("t_logic_order"));
         when(result.getRuleMetaData().getRules()).thenReturn(Collections.singletonList(shardingRule));
-        when(result.getDatabase().getName()).thenReturn("sharding_schema");
+        when(result.getName()).thenReturn("sharding_schema");
         return result;
     }
     
@@ -167,12 +167,12 @@ public final class JDBCDatabaseCommunicationEngineTest extends ProxyContextResto
         return result;
     }
     
-    private LazyInitializer<DataNodeContainedRule> getDataNodeContainedRule(final ShardingSphereDatabaseMetaData databaseMetaData) {
+    private LazyInitializer<DataNodeContainedRule> getDataNodeContainedRule(final ShardingSphereDatabase database) {
         return new LazyInitializer<DataNodeContainedRule>() {
             
             @Override
             protected DataNodeContainedRule initialize() {
-                return (DataNodeContainedRule) databaseMetaData.getRuleMetaData().getRules().stream().filter(each -> each instanceof DataNodeContainedRule).findFirst().orElse(null);
+                return (DataNodeContainedRule) database.getRuleMetaData().getRules().stream().filter(each -> each instanceof DataNodeContainedRule).findFirst().orElse(null);
             }
         };
     }

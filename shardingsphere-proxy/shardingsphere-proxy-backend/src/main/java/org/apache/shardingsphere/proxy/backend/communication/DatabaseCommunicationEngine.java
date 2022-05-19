@@ -28,13 +28,14 @@ import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementConte
 import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.context.refresher.MetaDataRefreshEngine;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
 import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -69,7 +70,7 @@ public abstract class DatabaseCommunicationEngine<T> {
     
     private final String driverType;
     
-    private final ShardingSphereDatabaseMetaData databaseMetaData;
+    private final ShardingSphereDatabase database;
     
     private final LogicSQL logicSQL;
     
@@ -83,13 +84,13 @@ public abstract class DatabaseCommunicationEngine<T> {
     
     private final BackendConnection<?> backendConnection;
     
-    public DatabaseCommunicationEngine(final String driverType, final ShardingSphereDatabaseMetaData databaseMetaData, final LogicSQL logicSQL, final BackendConnection<?> backendConnection) {
+    public DatabaseCommunicationEngine(final String driverType, final ShardingSphereDatabase database, final LogicSQL logicSQL, final BackendConnection<?> backendConnection) {
         this.driverType = driverType;
-        this.databaseMetaData = databaseMetaData;
+        this.database = database;
         this.logicSQL = logicSQL;
         this.backendConnection = backendConnection;
         String databaseName = backendConnection.getConnectionSession().getDatabaseName();
-        metadataRefreshEngine = new MetaDataRefreshEngine(databaseMetaData,
+        metadataRefreshEngine = new MetaDataRefreshEngine(database,
                 ProxyContext.getInstance().getContextManager().getMetaDataContexts().getOptimizerContext().getFederationMetaData().getDatabases().get(databaseName),
                 ProxyContext.getInstance().getContextManager().getMetaDataContexts().getOptimizerContext().getPlannerContexts(),
                 ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps());
@@ -116,30 +117,30 @@ public abstract class DatabaseCommunicationEngine<T> {
     protected List<QueryHeader> createQueryHeaders(final ExecutionContext executionContext, final QueryResult queryResultSample) throws SQLException {
         int columnCount = getColumnCount(executionContext, queryResultSample);
         List<QueryHeader> result = new ArrayList<>(columnCount);
-        LazyInitializer<DataNodeContainedRule> dataNodeContainedRule = getDataNodeContainedRuleLazyInitializer(databaseMetaData);
-        QueryHeaderBuilderEngine queryHeaderBuilderEngine = new QueryHeaderBuilderEngine(databaseMetaData.getProtocolType());
+        LazyInitializer<DataNodeContainedRule> dataNodeContainedRule = getDataNodeContainedRuleLazyInitializer(database);
+        QueryHeaderBuilderEngine queryHeaderBuilderEngine = new QueryHeaderBuilderEngine(database.getProtocolType());
         for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
-            result.add(createQueryHeader(queryHeaderBuilderEngine, executionContext, queryResultSample, databaseMetaData, columnIndex, dataNodeContainedRule));
+            result.add(createQueryHeader(queryHeaderBuilderEngine, executionContext, queryResultSample, database, columnIndex, dataNodeContainedRule));
         }
         return result;
     }
     
-    protected LazyInitializer<DataNodeContainedRule> getDataNodeContainedRuleLazyInitializer(final ShardingSphereDatabaseMetaData databaseMetaData) {
+    protected LazyInitializer<DataNodeContainedRule> getDataNodeContainedRuleLazyInitializer(final ShardingSphereDatabase database) {
         return new LazyInitializer<DataNodeContainedRule>() {
             
             @Override
             protected DataNodeContainedRule initialize() {
-                return null != databaseMetaData ? databaseMetaData.getRuleMetaData().findSingleRule(DataNodeContainedRule.class).orElse(null) : null;
+                return null != database ? database.getRuleMetaData().findSingleRule(DataNodeContainedRule.class).orElse(null) : null;
             }
         };
     }
     
     protected QueryHeader createQueryHeader(final QueryHeaderBuilderEngine queryHeaderBuilderEngine, final ExecutionContext executionContext, final QueryResult queryResultSample,
-                                            final ShardingSphereDatabaseMetaData databaseMetaData, final int columnIndex,
+                                            final ShardingSphereDatabase database, final int columnIndex,
                                             final LazyInitializer<DataNodeContainedRule> dataNodeContainedRule) throws SQLException {
         return hasSelectExpandProjections(executionContext.getSqlStatementContext()) ? queryHeaderBuilderEngine.build(
-                ((SelectStatementContext) executionContext.getSqlStatementContext()).getProjectionsContext(), queryResultSample.getMetaData(), databaseMetaData, columnIndex, dataNodeContainedRule)
-                : queryHeaderBuilderEngine.build(queryResultSample.getMetaData(), databaseMetaData, columnIndex, dataNodeContainedRule);
+                ((SelectStatementContext) executionContext.getSqlStatementContext()).getProjectionsContext(), queryResultSample.getMetaData(), database, columnIndex, dataNodeContainedRule)
+                : queryHeaderBuilderEngine.build(queryResultSample.getMetaData(), database, columnIndex, dataNodeContainedRule);
     }
     
     protected int getColumnCount(final ExecutionContext executionContext, final QueryResult queryResultSample) throws SQLException {
@@ -153,9 +154,9 @@ public abstract class DatabaseCommunicationEngine<T> {
     }
     
     protected MergedResult mergeQuery(final SQLStatementContext<?> sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
-        MergeEngine mergeEngine = new MergeEngine(DefaultDatabase.LOGIC_NAME,
-                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getDatabaseMetaData(databaseMetaData.getDatabase().getName()).getResource().getDatabaseType(),
-                databaseMetaData, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps(), databaseMetaData.getRuleMetaData().getRules());
+        DatabaseType databaseType = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getDatabaseMetaData(database.getName()).getResource().getDatabaseType();
+        MergeEngine mergeEngine = new MergeEngine(DefaultDatabase.LOGIC_NAME, 
+                databaseType, database, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps(), database.getRuleMetaData().getRules());
         return mergeEngine.merge(queryResults, sqlStatementContext);
     }
     
@@ -177,7 +178,7 @@ public abstract class DatabaseCommunicationEngine<T> {
     }
     
     private Optional<DataNodeContainedRule> findDataNodeContainedRule() {
-        for (ShardingSphereRule each : databaseMetaData.getRuleMetaData().getRules()) {
+        for (ShardingSphereRule each : database.getRuleMetaData().getRules()) {
             if (each instanceof DataNodeContainedRule) {
                 return Optional.of((DataNodeContainedRule) each);
             }

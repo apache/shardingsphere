@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.distsql.handler.update;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionAlterUpdater;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingBroadcastTableRulesStatement;
 
@@ -30,9 +30,9 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterSharding
 public final class AlterShardingBroadcastTableRuleStatementUpdater implements RuleDefinitionAlterUpdater<AlterShardingBroadcastTableRulesStatement, ShardingRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereDatabaseMetaData databaseMetaData, final AlterShardingBroadcastTableRulesStatement sqlStatement,
-                                  final ShardingRuleConfiguration currentRuleConfig) throws RuleDefinitionViolationException {
-        checkCurrentRuleConfiguration(databaseMetaData.getDatabase().getName(), currentRuleConfig);
+    public void checkSQLStatement(final ShardingSphereDatabase database,
+                                  final AlterShardingBroadcastTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws RuleDefinitionViolationException {
+        checkCurrentRuleConfiguration(database.getName(), currentRuleConfig);
     }
     
     private void checkCurrentRuleConfiguration(final String databaseName, final ShardingRuleConfiguration currentRuleConfig) throws RequiredRuleMissedException {

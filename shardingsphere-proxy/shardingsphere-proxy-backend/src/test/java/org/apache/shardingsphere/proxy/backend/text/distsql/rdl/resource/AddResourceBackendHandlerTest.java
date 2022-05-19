@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesValidator;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.DuplicateResourceException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -67,7 +67,7 @@ public final class AddResourceBackendHandlerTest extends ProxyContextRestorer {
     private MetaDataContexts metaDataContexts;
     
     @Mock
-    private ShardingSphereDatabaseMetaData databaseMetaData;
+    private ShardingSphereDatabase database;
     
     @Mock
     private ShardingSphereResource resource;
@@ -89,8 +89,8 @@ public final class AddResourceBackendHandlerTest extends ProxyContextRestorer {
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
         when(metaDataContexts.getAllDatabaseNames()).thenReturn(Collections.singleton("test_db"));
-        when(metaDataContexts.getDatabaseMetaData("test_db")).thenReturn(databaseMetaData);
-        when(databaseMetaData.getResource()).thenReturn(resource);
+        when(metaDataContexts.getDatabaseMetaData("test_db")).thenReturn(database);
+        when(database.getResource()).thenReturn(resource);
         when(resource.getDataSources()).thenReturn(Collections.emptyMap());
         ResponseHeader responseHeader = addResourceBackendHandler.execute("test_db", createAddResourceStatement());
         assertThat(responseHeader, instanceOf(UpdateResponseHeader.class));
@@ -102,8 +102,8 @@ public final class AddResourceBackendHandlerTest extends ProxyContextRestorer {
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
         when(metaDataContexts.getAllDatabaseNames()).thenReturn(Collections.singleton("test_db"));
-        when(metaDataContexts.getDatabaseMetaData("test_db")).thenReturn(databaseMetaData);
-        when(databaseMetaData.getResource()).thenReturn(resource);
+        when(metaDataContexts.getDatabaseMetaData("test_db")).thenReturn(database);
+        when(database.getResource()).thenReturn(resource);
         when(resource.getDataSources()).thenReturn(Collections.emptyMap());
         addResourceBackendHandler.execute("test_db", createAlterResourceStatementWithDuplicateResourceNames());
     }

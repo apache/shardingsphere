@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.distsql.update;
 
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.update.DropDefaultStrategyStatementUpdater;
@@ -35,25 +35,25 @@ import static org.junit.Assert.assertNull;
 @RunWith(MockitoJUnitRunner.class)
 public final class DropDefaultShardingStrategyStatementUpdaterTest {
     
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private ShardingSphereDatabaseMetaData databaseMetaData;
-    
     private final DropDefaultStrategyStatementUpdater updater = new DropDefaultStrategyStatementUpdater();
+    
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private ShardingSphereDatabase database;
     
     @Test(expected = RequiredRuleMissedException.class)
     public void assertCheckSQLStatementWithoutCurrentRule() throws DistSQLException {
-        updater.checkSQLStatement(databaseMetaData, new DropDefaultShardingStrategyStatement("TABLE"), null);
+        updater.checkSQLStatement(database, new DropDefaultShardingStrategyStatement("TABLE"), null);
     }
     
     @Test(expected = RequiredRuleMissedException.class)
     public void assertCheckSQLStatementWithoutExistedAlgorithm() throws DistSQLException {
-        updater.checkSQLStatement(databaseMetaData, createSQLStatement("table"), new ShardingRuleConfiguration());
+        updater.checkSQLStatement(database, createSQLStatement("table"), new ShardingRuleConfiguration());
     }
     
     @Test
     public void assertCheckSQLStatementWithIfExists() throws DistSQLException {
-        updater.checkSQLStatement(databaseMetaData, new DropDefaultShardingStrategyStatement(true, "table"), new ShardingRuleConfiguration());
-        updater.checkSQLStatement(databaseMetaData, new DropDefaultShardingStrategyStatement(true, "table"), null);
+        updater.checkSQLStatement(database, new DropDefaultShardingStrategyStatement(true, "table"), new ShardingRuleConfiguration());
+        updater.checkSQLStatement(database, new DropDefaultShardingStrategyStatement(true, "table"), null);
     }
     
     @Test

@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
@@ -58,28 +58,28 @@ public final class ShowTablesExecutorTest {
     
     @Before
     public void setUp() throws NoSuchFieldException, IllegalAccessException {
-        Map<String, ShardingSphereDatabaseMetaData> databaseMetaDataMap = getDatabaseMetaDataMap();
+        Map<String, ShardingSphereDatabase> databaseMap = getDatabaseMap();
         Field contextManagerField = ProxyContext.getInstance().getClass().getDeclaredField("contextManager");
         contextManagerField.setAccessible(true);
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
-                databaseMetaDataMap, mock(ShardingSphereRuleMetaData.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
+                databaseMap, mock(ShardingSphereRuleMetaData.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         contextManagerField.set(ProxyContext.getInstance(), contextManager);
     }
     
-    private Map<String, ShardingSphereDatabaseMetaData> getDatabaseMetaDataMap() {
+    private Map<String, ShardingSphereDatabase> getDatabaseMap() {
         Map<String, TableMetaData> tables = new HashMap<>(4, 1);
         tables.put("t_account", new TableMetaData("t_account", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
         tables.put("t_account_bak", new TableMetaData("t_account_bak", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
         tables.put("t_account_detail", new TableMetaData("t_account_detail", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
         tables.put("t_test", new TableMetaData("T_TEST", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
         ShardingSphereSchema schema = new ShardingSphereSchema(tables);
-        ShardingSphereDatabaseMetaData databaseMetaData = mock(ShardingSphereDatabaseMetaData.class, RETURNS_DEEP_STUBS);
-        when(databaseMetaData.getDatabase().getSchema(String.format(DATABASE_PATTERN, 0))).thenReturn(schema);
-        when(databaseMetaData.isComplete()).thenReturn(true);
-        when(databaseMetaData.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
-        return Collections.singletonMap(String.format(DATABASE_PATTERN, 0), databaseMetaData);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getDatabaseMetaData().getSchema(String.format(DATABASE_PATTERN, 0))).thenReturn(schema);
+        when(database.isComplete()).thenReturn(true);
+        when(database.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        return Collections.singletonMap(String.format(DATABASE_PATTERN, 0), database);
     }
     
     @Test

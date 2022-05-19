@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.IndexAvailable;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.metadata.schema.util.IndexMetaDataUtil;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -45,7 +45,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class ShardingTableBroadcastRoutingEngine implements ShardingRouteEngine {
     
-    private final ShardingSphereDatabaseMetaData databaseMetaData;
+    private final ShardingSphereDatabase database;
     
     private final SQLStatementContext<?> sqlStatementContext;
     
@@ -108,13 +108,14 @@ public final class ShardingTableBroadcastRoutingEngine implements ShardingRouteE
         if (!shardingRuleTableNames.isEmpty()) {
             return shardingRuleTableNames;
         }
-        return sqlStatementContext instanceof IndexAvailable ? getTableNames(databaseMetaData,
-                ((IndexAvailable) sqlStatementContext).getIndexes(), sqlStatementContext.getDatabaseType()) : Collections.emptyList();
+        return sqlStatementContext instanceof IndexAvailable
+                ? getTableNames(database, sqlStatementContext.getDatabaseType(), ((IndexAvailable) sqlStatementContext).getIndexes())
+                : Collections.emptyList();
     }
     
-    private Collection<String> getTableNames(final ShardingSphereDatabaseMetaData databaseMetaData, final Collection<IndexSegment> indexes, final DatabaseType databaseType) {
+    private Collection<String> getTableNames(final ShardingSphereDatabase database, final DatabaseType databaseType, final Collection<IndexSegment> indexes) {
         Collection<String> result = new LinkedList<>();
-        for (QualifiedTable each : IndexMetaDataUtil.getTableNamesFromMetaData(databaseMetaData, indexes, databaseType)) {
+        for (QualifiedTable each : IndexMetaDataUtil.getTableNames(database, databaseType, indexes)) {
             result.add(each.getTableName());
         }
         return result;

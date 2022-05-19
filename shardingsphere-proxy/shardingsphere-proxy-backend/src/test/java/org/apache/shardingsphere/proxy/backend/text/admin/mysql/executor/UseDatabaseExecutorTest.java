@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -64,17 +64,17 @@ public final class UseDatabaseExecutorTest extends ProxyContextRestorer {
         contextManagerField.setAccessible(true);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = new MetaDataContexts(
-                mock(MetaDataPersistService.class), getDatabaseMetaDataMap(), mock(ShardingSphereRuleMetaData.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
+                mock(MetaDataPersistService.class), getDatabaseMap(), mock(ShardingSphereRuleMetaData.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         contextManagerField.set(ProxyContext.getInstance(), contextManager);
     }
     
-    private Map<String, ShardingSphereDatabaseMetaData> getDatabaseMetaDataMap() {
-        Map<String, ShardingSphereDatabaseMetaData> result = new HashMap<>(10, 1);
+    private Map<String, ShardingSphereDatabase> getDatabaseMap() {
+        Map<String, ShardingSphereDatabase> result = new HashMap<>(10, 1);
         for (int i = 0; i < 10; i++) {
-            ShardingSphereDatabaseMetaData databaseMetaData = mock(ShardingSphereDatabaseMetaData.class, RETURNS_DEEP_STUBS);
-            when(databaseMetaData.getResource().getDatabaseType()).thenReturn(new H2DatabaseType());
-            result.put(String.format(DATABASE_PATTERN, i), databaseMetaData);
+            ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+            when(database.getResource().getDatabaseType()).thenReturn(new H2DatabaseType());
+            result.put(String.format(DATABASE_PATTERN, i), database);
         }
         return result;
     }
@@ -86,9 +86,9 @@ public final class UseDatabaseExecutorTest extends ProxyContextRestorer {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getAllDatabaseNames().contains(anyString())).thenReturn(true);
         when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().getRules()).thenReturn(Collections.emptyList());
-        ShardingSphereDatabaseMetaData databaseMetaData = mock(ShardingSphereDatabaseMetaData.class, RETURNS_DEEP_STUBS);
-        when(databaseMetaData.getRuleMetaData().getRules()).thenReturn(new LinkedList<>());
-        when(contextManager.getMetaDataContexts().getDatabaseMetaData(any())).thenReturn(databaseMetaData);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getRuleMetaData().getRules()).thenReturn(new LinkedList<>());
+        when(contextManager.getMetaDataContexts().getDatabaseMetaData(any())).thenReturn(database);
         ProxyContext.init(contextManager);
         UseDatabaseExecutor useSchemaBackendHandler = new UseDatabaseExecutor(useStatement);
         useSchemaBackendHandler.execute(connectionSession);

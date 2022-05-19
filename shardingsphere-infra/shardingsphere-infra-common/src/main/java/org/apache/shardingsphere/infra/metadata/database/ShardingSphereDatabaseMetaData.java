@@ -24,17 +24,14 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * ShardingSphere database.
+ * ShardingSphere database meta data.
  */
 @Getter
-public final class ShardingSphereDatabase {
-    
-    private final String name;
+public final class ShardingSphereDatabaseMetaData {
     
     private final Map<String, ShardingSphereSchema> schemas;
     
-    public ShardingSphereDatabase(final String name, final Map<String, ShardingSphereSchema> schemas) {
-        this.name = name;
+    public ShardingSphereDatabaseMetaData(final Map<String, ShardingSphereSchema> schemas) {
         this.schemas = new ConcurrentHashMap<>(schemas.size(), 1);
         schemas.forEach((key, value) -> this.schemas.put(key.toLowerCase(), value));
     }

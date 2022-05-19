@@ -38,7 +38,7 @@ import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredJobCon
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -147,13 +147,13 @@ public final class ShardingRuleAlteredJobConfigurationPreparer implements RuleAl
                 tableNameMap.put(new ActualTableName(dataNode.getTableName()), new LogicTableName(each.getLogicTableName()));
             }
         }
-        ShardingSphereDatabaseMetaData databaseMetaData = PipelineContext.getContextManager().getMetaDataContexts().getDatabaseMetaData(jobConfig.getDatabaseName());
+        ShardingSphereDatabase database = PipelineContext.getContextManager().getMetaDataContexts().getDatabaseMetaData(jobConfig.getDatabaseName());
         DumperConfiguration dumperConfig = createDumperConfiguration(jobConfig.getDatabaseName(), dataSourceName,
-                dataSourcePropsMap.get(dataSourceName).getAllLocalProperties(), tableNameMap, databaseMetaData);
+                dataSourcePropsMap.get(dataSourceName).getAllLocalProperties(), tableNameMap, database);
         Optional<ShardingRuleConfiguration> targetRuleConfigOptional = getTargetRuleConfiguration(jobConfig);
         Set<LogicTableName> reShardNeededTables = jobConfig.splitLogicTableNames().stream().map(LogicTableName::new).collect(Collectors.toSet());
         Map<LogicTableName, Set<String>> shardingColumnsMap = getShardingColumnsMap(targetRuleConfigOptional.orElse(sourceRuleConfig), reShardNeededTables);
-        ImporterConfiguration importerConfig = createImporterConfiguration(jobConfig, onRuleAlteredActionConfig, shardingColumnsMap, databaseMetaData);
+        ImporterConfiguration importerConfig = createImporterConfiguration(jobConfig, onRuleAlteredActionConfig, shardingColumnsMap, database);
         TaskConfiguration result = new TaskConfiguration(jobConfig, dumperConfig, importerConfig);
         log.info("createTaskConfiguration, dataSourceName={}, result={}", dataSourceName, result);
         return result;
@@ -209,20 +209,20 @@ public final class ShardingRuleAlteredJobConfigurationPreparer implements RuleAl
     }
     
     private static DumperConfiguration createDumperConfiguration(final String databaseName, final String dataSourceName, final Map<String, Object> props,
-                                                                 final Map<ActualTableName, LogicTableName> tableNameMap, final ShardingSphereDatabaseMetaData databaseMetaData) {
+                                                                 final Map<ActualTableName, LogicTableName> tableNameMap, final ShardingSphereDatabase database) {
         DumperConfiguration result = new DumperConfiguration();
         result.setDatabaseName(databaseName);
         result.setDataSourceName(dataSourceName);
         result.setDataSourceConfig(new StandardPipelineDataSourceConfiguration(YamlEngine.marshal(props)));
         result.setTableNameMap(tableNameMap);
-        result.setTableNameSchemaNameMapping(new TableNameSchemaNameMapping(TableNameSchemaNameMapping.convert(databaseMetaData.getDatabase().getSchemas())));
+        result.setTableNameSchemaNameMapping(new TableNameSchemaNameMapping(TableNameSchemaNameMapping.convert(database.getDatabaseMetaData().getSchemas())));
         return result;
     }
     
     private static ImporterConfiguration createImporterConfiguration(final RuleAlteredJobConfiguration jobConfig, final OnRuleAlteredActionConfiguration onRuleAlteredActionConfig,
-                                                                     final Map<LogicTableName, Set<String>> shardingColumnsMap, final ShardingSphereDatabaseMetaData databaseMetaData) {
+                                                                     final Map<LogicTableName, Set<String>> shardingColumnsMap, final ShardingSphereDatabase database) {
         PipelineDataSourceConfiguration dataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(jobConfig.getTarget().getType(), jobConfig.getTarget().getParameter());
-        TableNameSchemaNameMapping tableNameSchemaNameMapping = new TableNameSchemaNameMapping(TableNameSchemaNameMapping.convert(databaseMetaData.getDatabase().getSchemas()));
+        TableNameSchemaNameMapping tableNameSchemaNameMapping = new TableNameSchemaNameMapping(TableNameSchemaNameMapping.convert(database.getDatabaseMetaData().getSchemas()));
         int batchSize = onRuleAlteredActionConfig.getOutput().getBatchSize();
         int retryTimes = jobConfig.getRetryTimes();
         return new ImporterConfiguration(dataSourceConfig, unmodifiable(shardingColumnsMap), tableNameSchemaNameMapping, batchSize, retryTimes);
