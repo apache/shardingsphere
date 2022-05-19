@@ -27,6 +27,7 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandler.HandlerParameter;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.enums.VariableEnum;
+import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtil;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Test;
@@ -41,7 +42,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class SetVariableExecutorTest {
+public final class SetVariableExecutorTest extends ProxyContextRestorer {
     
     @Mock
     private ConnectionSession connectionSession;

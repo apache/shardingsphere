@@ -31,9 +31,9 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandler.HandlerParameter;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.enums.VariableEnum;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.exception.UnsupportedVariableException;
+import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtil;
 import org.apache.shardingsphere.transaction.core.TransactionType;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -49,15 +49,12 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowVariableBackendHandlerTest {
-    
-    private ContextManager contextManagerBefore;
+public final class ShowVariableBackendHandlerTest extends ProxyContextRestorer {
     
     private ConnectionSession connectionSession;
     
     @Before
     public void setup() {
-        contextManagerBefore = ProxyContext.getInstance().getContextManager();
         ProxyContext.init(mock(ContextManager.class, RETURNS_DEEP_STUBS));
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.PROXY_BACKEND_DRIVER_TYPE)).thenReturn("JDBC");
         connectionSession = new ConnectionSession(mock(MySQLDatabaseType.class), TransactionType.LOCAL, new DefaultAttributeMap());
@@ -152,10 +149,5 @@ public final class ShowVariableBackendHandlerTest {
         List<Object> rowData = new ArrayList<>(backendHandler.getRowData());
         assertThat(rowData.get(0), is("sql_show"));
         assertThat(rowData.get(1), is(Boolean.FALSE.toString()));
-    }
-    
-    @After
-    public void tearDown() {
-        ProxyContext.init(contextManagerBefore);
     }
 }

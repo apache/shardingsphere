@@ -80,7 +80,7 @@ public final class ShadowDistSQLStatementVisitor extends ShadowDistSQLStatementB
     @Override
     public ASTNode visitShadowRuleDefinition(final ShadowRuleDefinitionContext ctx) {
         Map<String, Collection<ShadowAlgorithmSegment>> shadowAlgorithms = ctx.shadowTableRule().stream()
-                .collect(Collectors.toMap(each -> getIdentifierValue(each.tableName()), each -> visitShadowAlgorithms(each.shadowAlgorithmDefinition()), (oldValue, newValue) -> newValue));
+                .collect(Collectors.toMap(each -> getIdentifierValue(each.tableName()), each -> visitShadowAlgorithms(each.shadowAlgorithmDefinition())));
         return new ShadowRuleSegment(getIdentifierValue(ctx.ruleName()), getIdentifierValue(ctx.source()), getIdentifierValue(ctx.shadow()), shadowAlgorithms);
     }
     

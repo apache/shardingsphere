@@ -20,11 +20,10 @@ package org.apache.shardingsphere.proxy.backend.text.admin;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -33,6 +32,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.admin.postgresql.executor.SelectTableExecutor;
+import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.sharding.merge.dal.common.SingleLocalDataMergedResult;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Before;
@@ -54,7 +54,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class DatabaseAdminQueryBackendHandlerTest {
+public final class DatabaseAdminQueryBackendHandlerTest extends ProxyContextRestorer {
     
     @Mock
     private ConnectionSession connectionSession;
@@ -64,8 +64,8 @@ public final class DatabaseAdminQueryBackendHandlerTest {
     @SneakyThrows
     @Before
     public void before() {
-        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), getMetaDataMap(),
-                mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
+        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), getDatabaseMetaDataMap(),
+                mock(ShardingSphereRuleMetaData.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
         ContextManager contextManager = new ContextManager(metaDataContexts, mock(TransactionContexts.class), mock(InstanceContext.class));
         ProxyContext.init(contextManager);
         when(connectionSession.getDatabaseName()).thenReturn("db");
@@ -76,12 +76,12 @@ public final class DatabaseAdminQueryBackendHandlerTest {
         handler = new DatabaseAdminQueryBackendHandler(connectionSession, executor);
     }
     
-    private Map<String, ShardingSphereMetaData> getMetaDataMap() {
-        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        when(metaData.getDatabase().getName()).thenReturn("db");
-        when(metaData.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
-        when(metaData.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
-        return Collections.singletonMap("db", metaData);
+    private Map<String, ShardingSphereDatabaseMetaData> getDatabaseMetaDataMap() {
+        ShardingSphereDatabaseMetaData result = mock(ShardingSphereDatabaseMetaData.class, RETURNS_DEEP_STUBS);
+        when(result.getDatabase().getName()).thenReturn("db");
+        when(result.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        when(result.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
+        return Collections.singletonMap("db", result);
     }
     
     @SneakyThrows

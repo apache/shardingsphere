@@ -21,7 +21,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResources
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.resource.DataSourceQueryResultSet;
@@ -45,14 +45,14 @@ import static org.mockito.Mockito.when;
 public final class DataSourceQueryResultSetTest {
     
     @Mock
-    private ShardingSphereMetaData shardingSphereMetaData;
+    private ShardingSphereDatabaseMetaData databaseMetaData;
     
     @Before
     public void before() {
         DatabaseType databaseType = new MySQLDatabaseType();
         DataSourcesMetaData dataSourcesMetaData = new DataSourcesMetaData(databaseType, Collections.singletonMap("foo_ds", createDataSource()));
         ShardingSphereResource resource = new ShardingSphereResource(Collections.singletonMap("foo_ds", createDataSource()), dataSourcesMetaData, null, databaseType);
-        when(shardingSphereMetaData.getResource()).thenReturn(resource);
+        when(databaseMetaData.getResource()).thenReturn(resource);
     }
     
     private MockedDataSource createDataSource() {
@@ -68,7 +68,7 @@ public final class DataSourceQueryResultSetTest {
     @Test
     public void assertGetRowData() {
         DistSQLResultSet resultSet = new DataSourceQueryResultSet();
-        resultSet.init(shardingSphereMetaData, mock(ShowResourcesStatement.class));
+        resultSet.init(databaseMetaData, mock(ShowResourcesStatement.class));
         Collection<Object> actual = resultSet.getRowData();
         assertThat(actual.size(), is(12));
         Iterator<Object> rowData = actual.iterator();

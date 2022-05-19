@@ -36,21 +36,21 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
- * Schema rules builder.
+ * Database rules builder.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SchemaRulesBuilder {
+public final class DatabaseRulesBuilder {
     
     /**
-     * Build rules.
+     * Build database rules.
      *
      * @param databaseName database name
-     * @param databaseConfig schema configuration
+     * @param databaseConfig database configuration
      * @param props configuration properties
      * @return built rules
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public static Collection<ShardingSphereRule> buildRules(final String databaseName, final DatabaseConfiguration databaseConfig, final ConfigurationProperties props) {
+    public static Collection<ShardingSphereRule> build(final String databaseName, final DatabaseConfiguration databaseConfig, final ConfigurationProperties props) {
         Collection<ShardingSphereRule> result = new LinkedList<>();
         for (Entry<RuleConfiguration, SchemaRuleBuilder> entry : getRuleBuilderMap(databaseConfig).entrySet()) {
             result.add(entry.getValue().build(entry.getKey(), databaseName, databaseConfig.getDataSources(), result, props));

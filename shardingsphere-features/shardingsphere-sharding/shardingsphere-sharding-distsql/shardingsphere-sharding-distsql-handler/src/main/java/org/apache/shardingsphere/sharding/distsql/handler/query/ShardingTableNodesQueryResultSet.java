@@ -21,7 +21,7 @@ import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.expr.InlineExpressionParser;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -55,8 +55,8 @@ public final class ShardingTableNodesQueryResultSet implements DistSQLResultSet 
     private Iterator<Entry<String, String>> data = Collections.emptyIterator();
     
     @Override
-    public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
-        metaData.getRuleMetaData().getConfigurations().stream()
+    public void init(final ShardingSphereDatabaseMetaData databaseMetaData, final SQLStatement sqlStatement) {
+        databaseMetaData.getRuleMetaData().getConfigurations().stream()
                 .filter(each -> each instanceof ShardingRuleConfiguration)
                 .map(each -> (ShardingRuleConfiguration) each)
                 .forEach(each -> data = getData(each, (ShowShardingTableNodesStatement) sqlStatement).entrySet().iterator());

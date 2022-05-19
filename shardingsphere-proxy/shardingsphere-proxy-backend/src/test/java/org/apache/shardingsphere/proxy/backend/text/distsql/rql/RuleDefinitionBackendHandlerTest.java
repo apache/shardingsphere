@@ -27,6 +27,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResp
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.distsql.fixture.CreateFixtureRuleStatement;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.rule.RuleDefinitionBackendHandler;
+import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,7 +42,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class RuleDefinitionBackendHandlerTest {
+public final class RuleDefinitionBackendHandlerTest extends ProxyContextRestorer {
     
     @Before
     public void setUp() {
@@ -51,7 +52,7 @@ public final class RuleDefinitionBackendHandlerTest {
     private ContextManager mockContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(result.getMetaDataContexts().getAllDatabaseNames()).thenReturn(Collections.singleton("test"));
-        when(result.getMetaDataContexts().getMetaData("test").getRuleMetaData()).thenReturn(mock(ShardingSphereRuleMetaData.class));
+        when(result.getMetaDataContexts().getDatabaseMetaData("test").getRuleMetaData()).thenReturn(mock(ShardingSphereRuleMetaData.class));
         return result;
     }
     

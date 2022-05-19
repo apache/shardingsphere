@@ -22,10 +22,21 @@
             <pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
-    <logger name="org.apache.shardingsphere" level="WARN" additivity="false">
+    <logger name="org.apache.shardingsphere.mode" level="INFO" additivity="false">
         <appender-ref ref="console" />
     </logger>
-    
+    <logger name="org.apache.shardingsphere.data.pipeline" level="INFO" additivity="false">
+        <appender-ref ref="console" />
+    </logger>
+    <logger name="org.apache.shardingsphere.driver" level="INFO" additivity="false">
+        <appender-ref ref="console" />
+    </logger>
+    <logger name="org.apache.shardingsphere.mode.manager.cluster.coordinator.lock" level="DEBUG" additivity="false">
+        <appender-ref ref="console" />
+    </logger>
+    <logger name="org.testcontainers.containers.ContainerState" level="OFF" />
+    <logger name="com.zaxxer.hikari.pool.ProxyConnection" level="OFF" />
+    <logger name="com.atomikos.icatch.provider" level="OFF" />
     <root>
         <level value="WARN" />
         <appender-ref ref="console" />

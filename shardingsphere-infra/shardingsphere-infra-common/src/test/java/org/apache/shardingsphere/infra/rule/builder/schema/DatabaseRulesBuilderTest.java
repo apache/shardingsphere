@@ -33,11 +33,11 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
-public final class SchemaRulesBuilderTest {
+public final class DatabaseRulesBuilderTest {
     
     @Test
     public void assertBuild() {
-        Iterator<ShardingSphereRule> actual = SchemaRulesBuilder.buildRules("schema_name",
+        Iterator<ShardingSphereRule> actual = DatabaseRulesBuilder.build("schema_name",
                 new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.singleton(new TestRuleConfiguration())), new ConfigurationProperties(new Properties())).iterator();
         assertThat(actual.next(), instanceOf(TestShardingSphereRule.class));
         assertThat(actual.next(), instanceOf(FixtureSchemaRule.class));

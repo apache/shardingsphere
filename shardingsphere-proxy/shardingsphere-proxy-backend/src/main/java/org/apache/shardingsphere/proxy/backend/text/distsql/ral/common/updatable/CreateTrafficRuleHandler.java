@@ -83,7 +83,7 @@ public final class CreateTrafficRuleHandler extends UpdatableRALBackendHandler<C
         } else {
             setUpCurrentRuleConfiguration(toBeCreatedRuleConfig, currentRuleConfig);
         }
-        Optional<MetaDataPersistService> metaDataPersistService = metaDataContexts.getMetaDataPersistService();
+        Optional<MetaDataPersistService> metaDataPersistService = metaDataContexts.getPersistService();
         metaDataPersistService.ifPresent(optional -> optional.getGlobalRuleService().persist(globalRuleConfigs, true));
     }
     

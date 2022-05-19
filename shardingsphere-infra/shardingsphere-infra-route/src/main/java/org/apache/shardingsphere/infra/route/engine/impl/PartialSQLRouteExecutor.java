@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.hint.HintManager;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.infra.route.SQLRouter;
 import org.apache.shardingsphere.infra.route.SQLRouterFactory;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -56,22 +56,22 @@ public final class PartialSQLRouteExecutor implements SQLRouteExecutor {
     
     @Override
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public RouteContext route(final LogicSQL logicSQL, final ShardingSphereMetaData metaData) {
+    public RouteContext route(final LogicSQL logicSQL, final ShardingSphereDatabaseMetaData databaseMetaData) {
         RouteContext result = new RouteContext();
-        Optional<String> dataSourceName = findDataSourceByHint(logicSQL.getSqlStatementContext(), metaData.getResource().getDataSources());
+        Optional<String> dataSourceName = findDataSourceByHint(logicSQL.getSqlStatementContext(), databaseMetaData.getResource().getDataSources());
         if (dataSourceName.isPresent()) {
             result.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName.get(), dataSourceName.get()), Collections.emptyList()));
             return result;
         }
         for (Entry<ShardingSphereRule, SQLRouter> entry : routers.entrySet()) {
             if (result.getRouteUnits().isEmpty()) {
-                result = entry.getValue().createRouteContext(logicSQL, metaData, entry.getKey(), props);
+                result = entry.getValue().createRouteContext(logicSQL, databaseMetaData, entry.getKey(), props);
             } else {
-                entry.getValue().decorateRouteContext(result, logicSQL, metaData, entry.getKey(), props);
+                entry.getValue().decorateRouteContext(result, logicSQL, databaseMetaData, entry.getKey(), props);
             }
         }
-        if (result.getRouteUnits().isEmpty() && 1 == metaData.getResource().getDataSources().size()) {
-            String singleDataSourceName = metaData.getResource().getDataSources().keySet().iterator().next();
+        if (result.getRouteUnits().isEmpty() && 1 == databaseMetaData.getResource().getDataSources().size()) {
+            String singleDataSourceName = databaseMetaData.getResource().getDataSources().keySet().iterator().next();
             result.getRouteUnits().add(new RouteUnit(new RouteMapper(singleDataSourceName, singleDataSourceName), Collections.emptyList()));
         }
         return result;

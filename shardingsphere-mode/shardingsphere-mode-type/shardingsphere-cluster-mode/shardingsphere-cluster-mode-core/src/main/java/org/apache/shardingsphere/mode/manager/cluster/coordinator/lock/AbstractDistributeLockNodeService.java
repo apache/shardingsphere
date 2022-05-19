@@ -30,7 +30,7 @@ public abstract class AbstractDistributeLockNodeService implements LockNodeServi
     
     @Override
     public String getLocksNodePath() {
-        return PATH_DELIMITER + LOCK_ROOT + PATH_DELIMITER + getLockLevel() + PATH_DELIMITER + LOCKS_NODE;
+        return PATH_DELIMITER + LOCK_ROOT + PATH_DELIMITER + getLockTypeName() + PATH_DELIMITER + LOCKS_NODE;
     }
     
     @Override
@@ -57,5 +57,5 @@ public abstract class AbstractDistributeLockNodeService implements LockNodeServi
         return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
     }
     
-    protected abstract String getLockLevel();
+    protected abstract String getLockTypeName();
 }

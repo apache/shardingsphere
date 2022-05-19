@@ -76,7 +76,7 @@ public final class SingleTableStandardRouteEngine implements SingleTableRouteEng
     }
     
     private Map<String, RouteUnit> getDataSourceRouteUnits(final RouteContext newRouteContext) {
-        return newRouteContext.getRouteUnits().stream().collect(Collectors.toMap(each -> each.getDataSourceMapper().getLogicName(), Function.identity(), (oldValue, currentValue) -> oldValue));
+        return newRouteContext.getRouteUnits().stream().collect(Collectors.toMap(each -> each.getDataSourceMapper().getLogicName(), Function.identity()));
     }
     
     private void route0(final RouteContext routeContext, final SingleTableRule rule) {

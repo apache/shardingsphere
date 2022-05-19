@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableRulesUsedKeyGeneratorStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -38,11 +38,11 @@ public final class ShardingTableRulesUsedKeyGeneratorQueryResultSet implements D
     private Iterator<Collection<Object>> data = Collections.emptyIterator();
     
     @Override
-    public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
+    public void init(final ShardingSphereDatabaseMetaData databaseMetaData, final SQLStatement sqlStatement) {
         ShowShardingTableRulesUsedKeyGeneratorStatement statement = (ShowShardingTableRulesUsedKeyGeneratorStatement) sqlStatement;
         List<Collection<Object>> result = new ArrayList<>();
-        Collection<ShardingRuleConfiguration> shardingTableRules = metaData.getRuleMetaData().findRuleConfiguration(ShardingRuleConfiguration.class);
-        shardingTableRules.forEach(each -> requireResult(statement, metaData.getDatabase().getName(), result, each));
+        Collection<ShardingRuleConfiguration> shardingTableRules = databaseMetaData.getRuleMetaData().findRuleConfiguration(ShardingRuleConfiguration.class);
+        shardingTableRules.forEach(each -> requireResult(statement, databaseMetaData.getDatabase().getName(), result, each));
         data = result.iterator();
     }
     
