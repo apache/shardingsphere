@@ -111,7 +111,7 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
     private void execute(final JobConfigurationPOJO jobConfigPOJO) {
         RuleAlteredJobConfiguration jobConfig = RuleAlteredJobConfigurationSwapper.swapToObject(jobConfigPOJO.getJobParameter());
         String databaseName = jobConfig.getDatabaseName();
-        if (PipelineSimpleLock.getInstance().tryLock(databaseName, 1000)) {
+        if (PipelineSimpleLock.getInstance().tryLock(databaseName, 3000)) {
             if (!RuleAlteredJobSchedulerCenter.existJob(jobConfigPOJO.getJobName())) {
                 log.info("{} added to executing jobs success", jobConfigPOJO.getJobName());
                 new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(), new RuleAlteredJob(), jobConfigPOJO.toJobConfiguration()).execute();
