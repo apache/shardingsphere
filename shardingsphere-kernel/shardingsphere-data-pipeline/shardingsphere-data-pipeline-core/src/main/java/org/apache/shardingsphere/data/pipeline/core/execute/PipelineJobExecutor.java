@@ -85,7 +85,11 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
             switch (event.getType()) {
                 case ADDED:
                 case UPDATED:
-                    executor.execute(() -> execute(jobConfigPOJO));
+                    if (RuleAlteredJobSchedulerCenter.existJob(jobConfigPOJO.getJobName())) {
+                        log.info("{} added to executing jobs failed since it already exists", jobConfigPOJO.getJobName());
+                    } else {
+                        executor.execute(() -> execute(jobConfigPOJO));
+                    }
                     log.info("job submit jobId={}", jobConfigPOJO.getJobName());
                     break;
                 default:
@@ -112,12 +116,8 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
         RuleAlteredJobConfiguration jobConfig = RuleAlteredJobConfigurationSwapper.swapToObject(jobConfigPOJO.getJobParameter());
         String databaseName = jobConfig.getDatabaseName();
         if (PipelineSimpleLock.getInstance().tryLock(databaseName, 3000)) {
-            if (!RuleAlteredJobSchedulerCenter.existJob(jobConfigPOJO.getJobName())) {
-                log.info("{} added to executing jobs success", jobConfigPOJO.getJobName());
-                new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(), new RuleAlteredJob(), jobConfigPOJO.toJobConfiguration()).execute();
-            } else {
-                log.info("{} added to executing jobs failed since it already exists", jobConfigPOJO.getJobName());
-            }
+            log.info("{} added to executing jobs success", jobConfigPOJO.getJobName());
+            new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(), new RuleAlteredJob(), jobConfigPOJO.toJobConfiguration()).execute();
         } else {
             log.info("tryLock failed, databaseName={}", databaseName);
         }
