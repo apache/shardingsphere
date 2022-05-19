@@ -22,7 +22,7 @@ import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.model.AuthorityRegistry;
 import org.apache.shardingsphere.authority.spi.AuthorityProviderAlgorithm;
 import org.apache.shardingsphere.authority.factory.AuthorityProviderAlgorithmFactory;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
@@ -42,10 +42,10 @@ public final class AuthorityRule implements GlobalRule {
     
     private volatile AuthorityRegistry authorityRegistry;
     
-    public AuthorityRule(final AuthorityRuleConfiguration config, final Map<String, ShardingSphereMetaData> metaDataMap) {
+    public AuthorityRule(final AuthorityRuleConfiguration config, final Map<String, ShardingSphereDatabaseMetaData> databaseMetaDataMap) {
         users = config.getUsers();
         provider = AuthorityProviderAlgorithmFactory.newInstance(config.getProvider());
-        authorityRegistry = provider.buildAuthorityRegistry(metaDataMap, config.getUsers());
+        authorityRegistry = provider.buildAuthorityRegistry(databaseMetaDataMap, config.getUsers());
     }
     
     /**
@@ -70,11 +70,11 @@ public final class AuthorityRule implements GlobalRule {
     /**
      * Refresh authority.
      *
-     * @param metaDataMap meta data map
+     * @param databaseMetaDataMap database meta data map
      * @param users users
      */
-    public synchronized void refresh(final Map<String, ShardingSphereMetaData> metaDataMap, final Collection<ShardingSphereUser> users) {
-        authorityRegistry = provider.buildAuthorityRegistry(metaDataMap, users);
+    public synchronized void refresh(final Map<String, ShardingSphereDatabaseMetaData> databaseMetaDataMap, final Collection<ShardingSphereUser> users) {
+        authorityRegistry = provider.buildAuthorityRegistry(databaseMetaDataMap, users);
     }
     
     @Override

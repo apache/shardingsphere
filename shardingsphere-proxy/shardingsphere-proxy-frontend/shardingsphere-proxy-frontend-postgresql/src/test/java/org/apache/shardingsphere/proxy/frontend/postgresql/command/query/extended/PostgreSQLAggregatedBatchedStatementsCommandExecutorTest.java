@@ -89,7 +89,7 @@ public final class PostgreSQLAggregatedBatchedStatementsCommandExecutorTest {
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE)).thenReturn(0);
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY)).thenReturn(1);
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(any(String.class)).getRuleMetaData().findSingleRule(SQLTranslatorRule.class))
+        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getDatabaseMetaData(any(String.class)).getRuleMetaData().findSingleRule(SQLTranslatorRule.class))
                 .thenReturn(Optional.of(new SQLTranslatorRule(new SQLTranslatorRuleConfiguration())));
         PostgreSQLPreparedStatementRegistry.getInstance().register(CONNECTION_ID);
         PostgreSQLPreparedStatementRegistry.getInstance().register(CONNECTION_ID, STATEMENT_ID, SQL, SQL_PARSER_ENGINE.parse(SQL, false),

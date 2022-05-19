@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -63,7 +63,7 @@ public final class DatabaseAdminQueryBackendHandlerTest {
     @SneakyThrows
     @Before
     public void before() {
-        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), getMetaDataMap(),
+        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), getDatabaseMetaDataMap(),
                 mock(ShardingSphereRuleMetaData.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
         ContextManager contextManager = new ContextManager(metaDataContexts, mock(TransactionContexts.class), mock(InstanceContext.class));
         ProxyContext.init(contextManager);
@@ -75,12 +75,12 @@ public final class DatabaseAdminQueryBackendHandlerTest {
         handler = new DatabaseAdminQueryBackendHandler(connectionSession, executor);
     }
     
-    private Map<String, ShardingSphereMetaData> getMetaDataMap() {
-        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        when(metaData.getDatabase().getName()).thenReturn("db");
-        when(metaData.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
-        when(metaData.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
-        return Collections.singletonMap("db", metaData);
+    private Map<String, ShardingSphereDatabaseMetaData> getDatabaseMetaDataMap() {
+        ShardingSphereDatabaseMetaData result = mock(ShardingSphereDatabaseMetaData.class, RETURNS_DEEP_STUBS);
+        when(result.getDatabase().getName()).thenReturn("db");
+        when(result.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        when(result.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
+        return Collections.singletonMap("db", result);
     }
     
     @SneakyThrows

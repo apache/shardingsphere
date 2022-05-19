@@ -22,7 +22,7 @@ import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -63,23 +63,23 @@ public final class DatabaseAdminQueryBackendHandler implements TextProtocolBacke
     
     private List<QueryHeader> createResponseHeader() throws SQLException {
         List<QueryHeader> result = new ArrayList<>(queryResultMetaData.getColumnCount());
-        ShardingSphereMetaData metaData = null == connectionSession.getDatabaseName() ? null : ProxyContext.getInstance().getMetaData(connectionSession.getDatabaseName());
-        DatabaseType databaseType = null == metaData ? connectionSession.getDatabaseType()
-                : ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(metaData.getDatabase().getName()).getResource().getDatabaseType();
+        ShardingSphereDatabaseMetaData databaseMetaData = null == connectionSession.getDatabaseName() ? null : ProxyContext.getInstance().getMetaData(connectionSession.getDatabaseName());
+        DatabaseType databaseType = null == databaseMetaData ? connectionSession.getDatabaseType()
+                : ProxyContext.getInstance().getContextManager().getMetaDataContexts().getDatabaseMetaData(databaseMetaData.getDatabase().getName()).getResource().getDatabaseType();
         QueryHeaderBuilderEngine queryHeaderBuilderEngine = new QueryHeaderBuilderEngine(databaseType);
-        LazyInitializer<DataNodeContainedRule> dataNodeContainedRule = getDataNodeContainedRuleLazyInitializer(metaData);
+        LazyInitializer<DataNodeContainedRule> dataNodeContainedRule = getDataNodeContainedRuleLazyInitializer(databaseMetaData);
         for (int columnIndex = 1; columnIndex <= queryResultMetaData.getColumnCount(); columnIndex++) {
-            result.add(queryHeaderBuilderEngine.build(queryResultMetaData, metaData, columnIndex, dataNodeContainedRule));
+            result.add(queryHeaderBuilderEngine.build(queryResultMetaData, databaseMetaData, columnIndex, dataNodeContainedRule));
         }
         return result;
     }
     
-    private LazyInitializer<DataNodeContainedRule> getDataNodeContainedRuleLazyInitializer(final ShardingSphereMetaData metaData) {
+    private LazyInitializer<DataNodeContainedRule> getDataNodeContainedRuleLazyInitializer(final ShardingSphereDatabaseMetaData databaseMetaData) {
         return new LazyInitializer<DataNodeContainedRule>() {
             
             @Override
             protected DataNodeContainedRule initialize() {
-                return null == metaData ? null : metaData.getRuleMetaData().findSingleRule(DataNodeContainedRule.class).orElse(null);
+                return null == databaseMetaData ? null : databaseMetaData.getRuleMetaData().findSingleRule(DataNodeContainedRule.class).orElse(null);
             }
         };
     }

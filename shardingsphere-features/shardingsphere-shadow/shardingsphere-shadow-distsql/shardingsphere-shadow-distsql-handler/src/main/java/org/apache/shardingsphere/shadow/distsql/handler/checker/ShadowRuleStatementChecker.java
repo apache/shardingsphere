@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.shadow.distsql.parser.segment.ShadowAlgorithmSegment;
 
 import java.util.Collection;
@@ -53,12 +53,12 @@ public class ShadowRuleStatementChecker {
      * Check if resources exist in meta data.
      *
      * @param resources resource being checked
-     * @param metaData meta rules
+     * @param databaseMetaData database meta rules
      * @param databaseName database name
      * @throws DistSQLException DistSQL exception
      */
-    public static void checkResourceExist(final Collection<String> resources, final ShardingSphereMetaData metaData, final String databaseName) throws DistSQLException {
-        Collection<String> notExistedResources = metaData.getResource().getNotExistedResources(resources);
+    public static void checkResourceExist(final Collection<String> resources, final ShardingSphereDatabaseMetaData databaseMetaData, final String databaseName) throws DistSQLException {
+        Collection<String> notExistedResources = databaseMetaData.getResource().getNotExistedResources(resources);
         DistSQLException.predictionThrow(notExistedResources.isEmpty(), () -> new RequiredResourceMissedException(databaseName, notExistedResources));
     }
     

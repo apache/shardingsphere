@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -84,9 +84,9 @@ public final class TextProtocolBackendHandlerFactoryTest {
         when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
         mockGlobalRuleMetaData(metaDataContexts);
-        ShardingSphereMetaData shardingSphereMetaData = mockShardingSphereMetaData();
+        ShardingSphereDatabaseMetaData databaseMetaData = mockDatabaseMetaData();
         when(metaDataContexts.getAllDatabaseNames().contains("db")).thenReturn(true);
-        when(metaDataContexts.getMetaDataMap().get("db")).thenReturn(shardingSphereMetaData);
+        when(metaDataContexts.getDatabaseMetaDataMap().get("db")).thenReturn(databaseMetaData);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         when(metaDataContexts.getProps()).thenReturn(new ConfigurationProperties(new Properties()));
@@ -97,10 +97,10 @@ public final class TextProtocolBackendHandlerFactoryTest {
         ProxyContext.init(contextManager);
     }
     
-    private ShardingSphereMetaData mockShardingSphereMetaData() {
-        ShardingSphereMetaData result = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
+    private ShardingSphereDatabaseMetaData mockDatabaseMetaData() {
+        ShardingSphereDatabaseMetaData result = mock(ShardingSphereDatabaseMetaData.class, RETURNS_DEEP_STUBS);
         when(result.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
-        when(result.getSchemaByName(DefaultDatabase.LOGIC_NAME).getAllColumnNames("t_order")).thenReturn(Collections.singletonList("order_id"));
+        when(result.getSchema(DefaultDatabase.LOGIC_NAME).getAllColumnNames("t_order")).thenReturn(Collections.singletonList("order_id"));
         return result;
     }
     
