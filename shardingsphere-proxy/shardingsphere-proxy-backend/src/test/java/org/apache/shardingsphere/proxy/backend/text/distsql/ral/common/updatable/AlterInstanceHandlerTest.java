@@ -22,6 +22,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.junit.Test;
 
 import java.sql.SQLException;
@@ -31,7 +32,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class AlterInstanceHandlerTest {
+public final class AlterInstanceHandlerTest extends ProxyContextRestorer {
     
     @Test(expected = UnsupportedOperationException.class)
     public void assertUpdateWithNotSupportedKey() throws SQLException {

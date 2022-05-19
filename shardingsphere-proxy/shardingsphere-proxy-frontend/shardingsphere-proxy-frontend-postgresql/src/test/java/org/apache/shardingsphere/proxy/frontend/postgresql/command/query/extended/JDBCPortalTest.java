@@ -40,10 +40,10 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.QueryRespon
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.proxy.frontend.postgresql.ProxyContextRestorer;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -68,9 +68,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class JDBCPortalTest {
-    
-    private ContextManager contextManagerBefore;
+public final class JDBCPortalTest extends ProxyContextRestorer {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ContextManager mockContextManager;
@@ -91,7 +89,6 @@ public final class JDBCPortalTest {
     
     @Before
     public void setup() throws SQLException {
-        contextManagerBefore = ProxyContext.getInstance().getContextManager();
         ProxyContext.init(mockContextManager);
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
         when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
@@ -204,10 +201,5 @@ public final class JDBCPortalTest {
         Field field = JDBCPortal.class.getDeclaredField(fieldName);
         field.setAccessible(true);
         field.set(portal, value);
-    }
-    
-    @After
-    public void tearDown() {
-        ProxyContext.init(contextManagerBefore);
     }
 }

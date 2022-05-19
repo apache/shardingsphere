@@ -73,7 +73,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class MySQLFrontendEngineTest {
+public final class MySQLFrontendEngineTest extends ProxyContextRestorer {
     
     private static final String SCHEMA_PATTERN = "schema_%s";
     

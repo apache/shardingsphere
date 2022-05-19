@@ -38,10 +38,10 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDB
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.JDBCBackendStatement;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.frontend.postgresql.ProxyContextRestorer;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfiguration;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -63,7 +63,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class PostgreSQLAggregatedBatchedStatementsCommandExecutorTest {
+public final class PostgreSQLAggregatedBatchedStatementsCommandExecutorTest extends ProxyContextRestorer {
     
     private static final ShardingSphereSQLParserEngine SQL_PARSER_ENGINE = new ShardingSphereSQLParserEngine("PostgreSQL",
             new ParserConfiguration(new CacheOption(2000, 65535L), new CacheOption(128, 1024L), false));
@@ -76,11 +76,8 @@ public final class PostgreSQLAggregatedBatchedStatementsCommandExecutorTest {
     
     private static final int BATCH_SIZE = 10;
     
-    private ContextManager contextManagerBefore;
-    
     @Before
     public void setup() {
-        contextManagerBefore = ProxyContext.getInstance().getContextManager();
         ProxyContext.init(mock(ContextManager.class, RETURNS_DEEP_STUBS));
     }
     
@@ -129,10 +126,5 @@ public final class PostgreSQLAggregatedBatchedStatementsCommandExecutorTest {
             result.add(executePacket);
         }
         return result;
-    }
-    
-    @After
-    public void tearDown() {
-        ProxyContext.init(contextManagerBefore);
     }
 }

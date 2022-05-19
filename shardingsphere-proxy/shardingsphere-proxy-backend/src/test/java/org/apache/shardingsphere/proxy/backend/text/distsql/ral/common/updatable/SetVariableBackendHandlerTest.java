@@ -38,9 +38,9 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandler.HandlerParameter;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.enums.VariableEnum;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.exception.UnsupportedVariableException;
+import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtil;
 import org.apache.shardingsphere.transaction.core.TransactionType;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -57,11 +57,9 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class SetVariableBackendHandlerTest {
+public final class SetVariableBackendHandlerTest extends ProxyContextRestorer {
     
     private static final String DATABASE_PATTERN = "db_%s";
-    
-    private ContextManager contextManagerBefore;
     
     private ConnectionSession connectionSession;
     
@@ -69,7 +67,6 @@ public final class SetVariableBackendHandlerTest {
     public void setUp() {
         MetaDataContexts metaDataContexts = new MetaDataContexts(
                 mock(MetaDataPersistService.class), createDatabaseMetaDataMap(), mock(ShardingSphereRuleMetaData.class), mock(OptimizerContext.class), new ConfigurationProperties(createProperties()));
-        contextManagerBefore = ProxyContext.getInstance().getContextManager();
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
@@ -155,10 +152,5 @@ public final class SetVariableBackendHandlerTest {
     
     private HandlerParameter<SetVariableStatement> getParameter(final SetVariableStatement statement, final ConnectionSession connectionSession) {
         return new HandlerParameter<>(statement, new MySQLDatabaseType(), connectionSession);
-    }
-    
-    @After
-    public void tearDown() {
-        ProxyContext.init(contextManagerBefore);
     }
 }
