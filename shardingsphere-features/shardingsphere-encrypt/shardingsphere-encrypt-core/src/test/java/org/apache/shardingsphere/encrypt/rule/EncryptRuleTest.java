@@ -168,6 +168,13 @@ public final class EncryptRuleTest {
         assertThat(logicTables, is(theSameLogicTables));
     }
     
+    @Test
+    public void assertEncryptorNameSpecifiedSeparately() {
+        EncryptColumnRuleConfiguration pwdColumnConfig = new EncryptColumnRuleConfiguration("pwd", "pwd_cipher", "pwd_assist", "pwd_plain", "test_encryptor", "test_assisted_encryptor");
+        assertTrue(pwdColumnConfig.getAssistedEncryptorName().equals("test_assisted_encryptor"));
+        assertTrue(pwdColumnConfig.getEncryptorName().equals("test_encryptor"));
+    }
+    
     @SuppressWarnings("rawtypes")
     @Test
     public void assertGetSchemaMetaData() {
