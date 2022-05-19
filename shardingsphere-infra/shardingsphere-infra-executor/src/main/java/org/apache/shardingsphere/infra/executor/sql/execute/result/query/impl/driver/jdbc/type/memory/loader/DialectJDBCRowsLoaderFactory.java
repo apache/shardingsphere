@@ -41,6 +41,6 @@ public final class DialectJDBCRowsLoaderFactory {
      * @return found instance
      */
     public static JDBCRowsLoader getInstance(final DatabaseType databaseType) {
-        return TypedSPIRegistry.findRegisteredService(JDBCRowsLoader.class, databaseType.getType()).orElse(RequiredSPIRegistry.getRegisteredService(JDBCRowsLoader.class));
+        return TypedSPIRegistry.findRegisteredService(JDBCRowsLoader.class, databaseType.getType()).orElseGet(() -> RequiredSPIRegistry.getRegisteredService(JDBCRowsLoader.class));
     }
 }

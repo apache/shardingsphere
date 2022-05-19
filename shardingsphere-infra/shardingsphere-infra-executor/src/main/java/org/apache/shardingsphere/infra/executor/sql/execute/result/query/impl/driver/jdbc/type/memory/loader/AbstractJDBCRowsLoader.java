@@ -108,5 +108,4 @@ public abstract class AbstractJDBCRowsLoader implements JDBCRowsLoader {
      * @throws SQLException sql exception
      */
     protected abstract Object getDate(ResultSet resultSet, int columnIndex) throws SQLException;
-    
 }
