@@ -25,19 +25,20 @@ import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.yaml.RuleA
 import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
-import org.apache.shardingsphere.data.pipeline.core.lock.PipelineSimpleLock;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJob;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobPreparer;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobProgressDetector;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobSchedulerCenter;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
-import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.OneOffJobBootstrap;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingReleaseDatabaseLevelLockEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 
 import java.util.Optional;
+import java.util.concurrent.Executor;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 /**
@@ -48,7 +49,7 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
     
     private static final Pattern CONFIG_PATTERN = Pattern.compile(DataPipelineConstants.DATA_PIPELINE_ROOT + "/(\\d{2}[0-9a-f]+)/config");
     
-    private static final RuleAlteredJobConfigurationSwapper JOB_CONFIG_SWAPPER = new RuleAlteredJobConfigurationSwapper();
+    private final Executor executor = new ThreadPoolExecutor(0, 60, 60L, TimeUnit.SECONDS, new SynchronousQueue<>());
     
     @Override
     protected void doStart() {
@@ -83,13 +84,9 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
             switch (event.getType()) {
                 case ADDED:
                 case UPDATED:
-                    RuleAlteredJobConfiguration jobConfig = RuleAlteredJobConfigurationSwapper.swapToObject(jobConfigPOJO.getJobParameter());
-                    String databaseName = jobConfig.getDatabaseName();
-                    if (PipelineSimpleLock.getInstance().tryLock(databaseName, 1000)) {
-                        execute(jobConfigPOJO);
-                    } else {
-                        log.info("tryLock failed, databaseName={}", databaseName);
-                    }
+                    // TODO avoid blocking zk event, may cause locking problems or metadata refresh problems,temporary solutions
+                    executor.execute(new PipelineJobTask(jobConfigPOJO));
+                    log.info("job submit jobId={}", jobConfigPOJO.getJobName());
                     break;
                 default:
                     break;
@@ -109,15 +106,6 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
             log.error("analyze job config pojo failed.", ex);
         }
         return Optional.empty();
-    }
-    
-    private void execute(final JobConfigurationPOJO jobConfigPOJO) {
-        if (!RuleAlteredJobSchedulerCenter.existJob(jobConfigPOJO.getJobName())) {
-            log.info("{} added to executing jobs success", jobConfigPOJO.getJobName());
-            new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(), new RuleAlteredJob(), jobConfigPOJO.toJobConfiguration()).execute();
-        } else {
-            log.info("{} added to executing jobs failed since it already exists", jobConfigPOJO.getJobName());
-        }
     }
     
     @Override
