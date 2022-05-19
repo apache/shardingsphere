@@ -41,6 +41,7 @@ public final class AlterShardingTableRuleStatementUpdater implements RuleDefinit
                                   final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
         DistSQLException.predictionThrow(null != currentRuleConfig, () -> new RequiredRuleMissedException("Sharding", databaseMetaData.getDatabase().getName()));
         ShardingTableRuleStatementChecker.checkAlteration(databaseMetaData, sqlStatement.getRules(), currentRuleConfig);
+        ShardingTableRuleStatementChecker.checkBindingTablesAlteration(currentRuleConfig, buildToBeAlteredRuleConfiguration(sqlStatement));
     }
     
     @Override
