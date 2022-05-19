@@ -13,7 +13,7 @@ Please register [here](https://github.com/apache/shardingsphere/discussions/1225
 
 ## Who is Using ShardingSphere?
 
-Total: 203 companies.
+Total: 206 companies.
 
 ### Infra Software
 <ul>
@@ -123,6 +123,7 @@ Total: 203 companies.
     <li><a href="https://www.maxrocky.com/" rel="nofollow">Max Rocky</a></li>
     <li><a href="https://www.teddymobile.cn/" rel="nofollow">Teddy Mobile</a></li>
     <li><a href="https://www.ecopiatech.com/" rel="nofollow">Ecopia</a></li>
+    <li><a href="https://xiaoman.cn/" rel="nofollow">OKKI CRM</a></li>
 </ul>
 
 ### Transportation
@@ -222,7 +223,7 @@ Total: 203 companies.
 ### Public Utilities
 <ul>
     <li><a href="http://www.electricpower.com.cn/" rel="nofollow">China Electric Power</a></li>
-    <li><a href="https://hulucc.com/" rel="nofollow">HULU STORY</a></li>:  <a href="https://shardingsphere.medium.com/e-hualu-x-shardingsphere-hulu-storys-data-processing-shortcut-5c18d5efa811?source=friends_link&sk=aa07f51aa502be1fd1a847d8d880ac1f" rel="nofollow">User Case</a></li>   
+    <li><a href="https://hulucc.com/" rel="nofollow">HULU STORY</a>: <a href="https://shardingsphere.medium.com/e-hualu-x-shardingsphere-hulu-storys-data-processing-shortcut-5c18d5efa811?source=friends_link&sk=aa07f51aa502be1fd1a847d8d880ac1f" rel="nofollow">User Case</a></li>   
     <li><a href="http://dnr.gxzf.gov.cn/" rel="nofollow">Guangxi Province Natural Resources Information Center</a></li>
     <li><a href="http://www.ascf.com.cn/" rel="nofollow">AreoSpace</a></li>
     <li><a href="http://www.chiscdc.com/" rel="nofollow">CHISCDC</a></li>
@@ -299,6 +300,8 @@ Total: 203 companies.
     <li><a href="https://www.xingren.com/" rel="nofollow">xingren</a></li>
     <li><a href="https://www.medbanks.cn/" rel="nofollow">Medbanks</a></li>
     <li><a href="http://swifthealth.cn/" rel="nofollow">CHAOQIANKEJI</a></li>
+    <li><a href="http://www.greenbon.cn/" rel="nofollow">Greenbon</a></li>
+    <li><a href="http://yilihui.com/" rel="nofollow">yilihui</a></li>
 </ul>
 
 ### Recruitment
