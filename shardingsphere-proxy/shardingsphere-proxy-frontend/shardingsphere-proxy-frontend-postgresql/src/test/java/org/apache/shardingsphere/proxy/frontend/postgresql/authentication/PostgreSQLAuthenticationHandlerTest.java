@@ -154,11 +154,11 @@ public final class PostgreSQLAuthenticationHandlerTest {
     private Map<String, ShardingSphereDatabaseMetaData> getDatabaseMetaDataMap() {
         Map<String, ShardingSphereDatabaseMetaData> result = new HashMap<>(10, 1);
         for (int i = 0; i < 10; i++) {
-            ShardingSphereDatabaseMetaData databaseMetaData = mock(ShardingSphereDatabaseMetaData.class);
+            ShardingSphereDatabaseMetaData databaseMetaData = mock(ShardingSphereDatabaseMetaData.class, RETURNS_DEEP_STUBS);
             ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
             when(databaseMetaData.getResource()).thenReturn(new ShardingSphereResource(Collections.emptyMap(), null, null, new MySQLDatabaseType()));
             when(databaseMetaData.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()));
-            when(databaseMetaData.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
+            when(databaseMetaData.getDatabase().getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
             when(schema.getTables()).thenReturn(Collections.emptyMap());
             result.put(String.format(SCHEMA_PATTERN, i), databaseMetaData);
         }

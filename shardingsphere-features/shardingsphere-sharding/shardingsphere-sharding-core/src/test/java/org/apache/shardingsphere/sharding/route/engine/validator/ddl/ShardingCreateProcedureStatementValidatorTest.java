@@ -69,7 +69,7 @@ public final class ShardingCreateProcedureStatementValidatorTest {
         sqlStatement.setRoutineBody(routineBody);
         ShardingSphereDatabaseMetaData databaseMetaData = mock(ShardingSphereDatabaseMetaData.class, RETURNS_DEEP_STUBS);
         when(databaseMetaData.getDatabase().getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
-        when(databaseMetaData.getSchema(DefaultDatabase.LOGIC_NAME).containsTable("t_order_item")).thenReturn(true);
+        when(databaseMetaData.getDatabase().getSchema(DefaultDatabase.LOGIC_NAME).containsTable("t_order_item")).thenReturn(true);
         when(shardingRule.isShardingTable("t_order_item")).thenReturn(false);
         SQLStatementContext<CreateProcedureStatement> sqlStatementContext = new CommonSQLStatementContext<>(sqlStatement);
         new ShardingCreateProcedureStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), databaseMetaData);
@@ -116,7 +116,7 @@ public final class ShardingCreateProcedureStatementValidatorTest {
         SQLStatementContext<CreateProcedureStatement> sqlStatementContext = new CommonSQLStatementContext<>(sqlStatement);
         ShardingSphereDatabaseMetaData databaseMetaData = mock(ShardingSphereDatabaseMetaData.class, RETURNS_DEEP_STUBS);
         when(databaseMetaData.getDatabase().getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
-        when(databaseMetaData.getSchema(DefaultDatabase.LOGIC_NAME).containsTable("t_order")).thenReturn(true);
+        when(databaseMetaData.getDatabase().getSchema(DefaultDatabase.LOGIC_NAME).containsTable("t_order")).thenReturn(true);
         new ShardingCreateProcedureStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), databaseMetaData);
     }
 }

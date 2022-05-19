@@ -47,6 +47,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
 
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -139,8 +140,8 @@ public final class ProxySQLExecutorTest {
     private InsertStatementContext createMySQLInsertStatementContext() {
         MySQLInsertStatement sqlStatement = new MySQLInsertStatement();
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
-        ShardingSphereDatabaseMetaData databaseMetaData = mock(ShardingSphereDatabaseMetaData.class);
-        when(databaseMetaData.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
+        ShardingSphereDatabaseMetaData databaseMetaData = mock(ShardingSphereDatabaseMetaData.class, RETURNS_DEEP_STUBS);
+        when(databaseMetaData.getDatabase().getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
         return new InsertStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, databaseMetaData), Collections.emptyList(), sqlStatement, DefaultDatabase.LOGIC_NAME);
     }
     
@@ -153,8 +154,8 @@ public final class ProxySQLExecutorTest {
     private InsertStatementContext createPostgreSQLInsertStatementContext() {
         PostgreSQLInsertStatement sqlStatement = new PostgreSQLInsertStatement();
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
-        ShardingSphereDatabaseMetaData databaseMetaData = mock(ShardingSphereDatabaseMetaData.class);
-        when(databaseMetaData.getSchema("public")).thenReturn(mock(ShardingSphereSchema.class));
+        ShardingSphereDatabaseMetaData databaseMetaData = mock(ShardingSphereDatabaseMetaData.class, RETURNS_DEEP_STUBS);
+        when(databaseMetaData.getDatabase().getSchema("public")).thenReturn(mock(ShardingSphereSchema.class));
         return new InsertStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, databaseMetaData), Collections.emptyList(), sqlStatement, DefaultDatabase.LOGIC_NAME);
     }
 }

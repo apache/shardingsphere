@@ -54,7 +54,7 @@ public final class DropIndexStatementSchemaRefresher implements MetaDataRefreshe
             if (!logicTableName.isPresent()) {
                 continue;
             }
-            TableMetaData tableMetaData = databaseMetaData.getSchema(actualSchemaName).get(logicTableName.get());
+            TableMetaData tableMetaData = databaseMetaData.getDatabase().getSchema(actualSchemaName).get(logicTableName.get());
             tableMetaData.getIndexes().remove(each.getIndexName().getIdentifier().getValue());
             post(databaseMetaData.getDatabase().getName(), actualSchemaName, tableMetaData);
         }

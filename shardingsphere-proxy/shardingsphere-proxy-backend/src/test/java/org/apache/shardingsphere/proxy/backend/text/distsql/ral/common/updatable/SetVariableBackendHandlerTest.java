@@ -79,10 +79,10 @@ public final class SetVariableBackendHandlerTest {
     private Map<String, ShardingSphereDatabaseMetaData> createDatabaseMetaDataMap() {
         Map<String, ShardingSphereDatabaseMetaData> result = new HashMap<>(10, 1);
         for (int i = 0; i < 10; i++) {
-            ShardingSphereDatabaseMetaData databaseMetaData = mock(ShardingSphereDatabaseMetaData.class);
+            ShardingSphereDatabaseMetaData databaseMetaData = mock(ShardingSphereDatabaseMetaData.class, RETURNS_DEEP_STUBS);
             when(databaseMetaData.getResource()).thenReturn(new ShardingSphereResource(Collections.emptyMap(), null, null, new MySQLDatabaseType()));
             when(databaseMetaData.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()));
-            when(databaseMetaData.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
+            when(databaseMetaData.getDatabase().getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
             result.put(String.format(DATABASE_PATTERN, i), databaseMetaData);
         }
         return result;

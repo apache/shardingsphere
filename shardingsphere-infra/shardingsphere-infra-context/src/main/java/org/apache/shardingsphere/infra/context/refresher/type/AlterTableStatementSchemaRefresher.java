@@ -55,18 +55,18 @@ public final class AlterTableStatementSchemaRefresher implements MetaDataRefresh
             String renameTable = sqlStatement.getRenameTable().get().getTableName().getIdentifier().getValue();
             putTableMetaData(databaseMetaData, database, optimizerPlanners, logicDataSourceNames, schemaName, renameTable, props);
             removeTableMetaData(databaseMetaData, database, optimizerPlanners, schemaName, tableName);
-            event.getAlteredTables().add(databaseMetaData.getSchema(schemaName).get(renameTable));
+            event.getAlteredTables().add(databaseMetaData.getDatabase().getSchema(schemaName).get(renameTable));
             event.getDroppedTables().add(tableName);
         } else {
             putTableMetaData(databaseMetaData, database, optimizerPlanners, logicDataSourceNames, schemaName, tableName, props);
-            event.getAlteredTables().add(databaseMetaData.getSchema(schemaName).get(tableName));
+            event.getAlteredTables().add(databaseMetaData.getDatabase().getSchema(schemaName).get(tableName));
         }
         ShardingSphereEventBus.getInstance().post(event);
     }
     
     private void removeTableMetaData(final ShardingSphereDatabaseMetaData databaseMetaData, final FederationDatabaseMetaData database,
                                      final Map<String, OptimizerPlannerContext> optimizerPlanners, final String schemaName, final String tableName) {
-        databaseMetaData.getSchema(schemaName).remove(tableName);
+        databaseMetaData.getDatabase().getSchema(schemaName).remove(tableName);
         databaseMetaData.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.remove(schemaName, tableName));
         database.removeTableMetadata(schemaName, tableName);
         optimizerPlanners.put(database.getName(), OptimizerPlannerContextFactory.create(database));
@@ -82,7 +82,7 @@ public final class AlterTableStatementSchemaRefresher implements MetaDataRefresh
         Map<String, SchemaMetaData> metaDataMap = TableMetaDataBuilder.load(Collections.singletonList(tableName), materials);
         Optional<TableMetaData> actualTableMetaData = Optional.ofNullable(metaDataMap.get(schemaName)).map(optional -> optional.getTables().get(tableName));
         actualTableMetaData.ifPresent(optional -> {
-            databaseMetaData.getSchema(schemaName).put(tableName, optional);
+            databaseMetaData.getDatabase().getSchema(schemaName).put(tableName, optional);
             database.putTableMetadata(schemaName, optional);
             optimizerPlanners.put(database.getName(), OptimizerPlannerContextFactory.create(database));
         });

@@ -76,7 +76,7 @@ public final class ShowTablesExecutorTest {
         tables.put("t_test", new TableMetaData("T_TEST", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
         ShardingSphereSchema schema = new ShardingSphereSchema(tables);
         ShardingSphereDatabaseMetaData databaseMetaData = mock(ShardingSphereDatabaseMetaData.class, RETURNS_DEEP_STUBS);
-        when(databaseMetaData.getSchema(String.format(DATABASE_PATTERN, 0))).thenReturn(schema);
+        when(databaseMetaData.getDatabase().getSchema(String.format(DATABASE_PATTERN, 0))).thenReturn(schema);
         when(databaseMetaData.isComplete()).thenReturn(true);
         when(databaseMetaData.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
         return Collections.singletonMap(String.format(DATABASE_PATTERN, 0), databaseMetaData);

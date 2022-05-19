@@ -40,7 +40,8 @@ public final class ShardingCreateIndexStatementValidator extends ShardingDDLStat
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<CreateIndexStatement> sqlStatementContext,
                             final List<Object> parameters, final ShardingSphereDatabaseMetaData databaseMetaData) {
         String defaultSchema = sqlStatementContext.getDatabaseType().getDefaultSchema(databaseMetaData.getDatabase().getName());
-        ShardingSphereSchema schema = sqlStatementContext.getTablesContext().getSchemaName().map(databaseMetaData::getSchema).orElseGet(() -> databaseMetaData.getSchema(defaultSchema));
+        ShardingSphereSchema schema = sqlStatementContext.getTablesContext().getSchemaName()
+                .map(optional -> databaseMetaData.getDatabase().getSchema(optional)).orElseGet(() -> databaseMetaData.getDatabase().getSchema(defaultSchema));
         validateTableExist(schema, Collections.singletonList(sqlStatementContext.getSqlStatement().getTable()));
         String tableName = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
         String indexName = ((IndexAvailable) sqlStatementContext).getIndexes().stream().map(each -> each.getIndexName().getIdentifier().getValue()).findFirst().orElse(null);

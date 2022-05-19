@@ -62,7 +62,7 @@ public final class ExportDatabaseConfigurationHandlerTest {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getAllDatabaseNames()).thenReturn(Collections.singletonList("sharding_db"));
         ShardingSphereDatabaseMetaData databaseMetaData = mock(ShardingSphereDatabaseMetaData.class, RETURNS_DEEP_STUBS);
-        when(databaseMetaData.getSchema("sharding_db")).thenReturn(new ShardingSphereSchema(createTableMap()));
+        when(databaseMetaData.getDatabase().getSchema("sharding_db")).thenReturn(new ShardingSphereSchema(createTableMap()));
         when(databaseMetaData.getResource().getDataSources()).thenReturn(createDataSourceMap());
         when(databaseMetaData.getRuleMetaData().getConfigurations()).thenReturn(Collections.singletonList(createShardingRuleConfiguration()));
         when(contextManager.getMetaDataContexts().getDatabaseMetaData("sharding_db")).thenReturn(databaseMetaData);
