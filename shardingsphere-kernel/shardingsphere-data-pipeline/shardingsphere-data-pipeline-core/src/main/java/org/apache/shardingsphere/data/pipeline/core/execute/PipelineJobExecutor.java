@@ -90,7 +90,6 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
                     } else {
                         executor.execute(() -> execute(jobConfigPOJO));
                     }
-                    log.info("job submit jobId={}", jobConfigPOJO.getJobName());
                     break;
                 default:
                     break;
