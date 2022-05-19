@@ -144,7 +144,8 @@ public final class InterMutexLock implements MutexLock, LockAckAble {
     }
     
     private void sleepInterval() {
-        log.debug("enter sleepInterval, computeNodeInstanceId {}, lockedInstances {}", computeNodeInstances.stream().map(ComputeNodeInstance::getCurrentInstanceId).collect(Collectors.toList()), lockedInstances);
+        log.debug("enter sleepInterval, computeNodeInstanceId {}, lockedInstances {}", computeNodeInstances.stream().map(ComputeNodeInstance::getCurrentInstanceId).collect(Collectors.toList()), 
+                lockedInstances);
         try {
             TimeUnit.MILLISECONDS.sleep(TimeoutMilliseconds.DEFAULT_REGISTRY);
         } catch (final InterruptedException ignore) {
