@@ -26,7 +26,6 @@ import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepare
 import org.apache.shardingsphere.data.pipeline.core.metadata.generator.PipelineDDLGenerator;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.AbstractDataSourcePreparer;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.PrepareTargetTablesParameter;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 
 import java.sql.Connection;
@@ -41,8 +40,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public final class PostgreSQLDataSourcePreparer extends AbstractDataSourcePreparer {
     
-    private static final DatabaseType DATABASE_TYPE = new PostgreSQLDatabaseType();
-    
     @Override
     public void prepareTargetTables(final PrepareTargetTablesParameter parameter) {
         List<String> createLogicalTableSQLs = listCreateLogicalTableSQL(parameter);
@@ -50,6 +47,7 @@ public final class PostgreSQLDataSourcePreparer extends AbstractDataSourcePrepar
             for (String createLogicalTableSQL : createLogicalTableSQLs) {
                 for (String each : Splitter.on(";").splitToList(createLogicalTableSQL).stream().filter(StringUtils::isNotBlank).collect(Collectors.toList())) {
                     executeTargetTableSQL(targetConnection, each);
+                    log.info("create target table '{}' success", each);
                 }
             }
         } catch (final SQLException ex) {
@@ -62,7 +60,7 @@ public final class PostgreSQLDataSourcePreparer extends AbstractDataSourcePrepar
         List<String> result = new LinkedList<>();
         for (JobDataNodeEntry each : parameter.getTablesFirstDataNodes().getEntries()) {
             String schemaName = parameter.getTableNameSchemaNameMapping().getSchemaName(each.getLogicTableName());
-            result.add(generator.generateLogicDDLSQL(DATABASE_TYPE, parameter.getJobConfig().getDatabaseName(), schemaName, each.getLogicTableName()));
+            result.add(generator.generateLogicDDLSQL(new PostgreSQLDatabaseType(), parameter.getJobConfig().getDatabaseName(), schemaName, each.getLogicTableName()));
         }
         return result;
     }
