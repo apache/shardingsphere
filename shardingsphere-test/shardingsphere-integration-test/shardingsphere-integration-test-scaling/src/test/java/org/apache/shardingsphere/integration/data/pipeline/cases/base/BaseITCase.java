@@ -224,6 +224,7 @@ public abstract class BaseITCase {
         if (null != increaseTaskThread) {
             increaseTaskThread.join(60 * 1000L);
         }
+        TimeUnit.SECONDS.sleep(2);
         String jobId = String.valueOf(getJdbcTemplate().queryForMap("SHOW SCALING LIST").get("id"));
         Map<String, String> actualStatusMap = new HashMap<>(2, 1);
         for (int i = 0; i < 100; i++) {
