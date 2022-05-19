@@ -131,7 +131,7 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
                 // TODO
                 return Optional.empty();
             }
-            return Optional.ofNullable(mockExecutor((SelectStatement) sqlStatement, sql));
+            return Optional.ofNullable(mockExecutor(schemaName, (SelectStatement) sqlStatement, sql));
         }
         return Optional.empty();
     }
@@ -157,14 +157,16 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
         return ((SimpleTableSegment) tableSegment).getOwner().isPresent() && specialSchemaName.equalsIgnoreCase(((SimpleTableSegment) tableSegment).getOwner().get().getIdentifier().getValue());
     }
     
-    private DatabaseAdminExecutor mockExecutor(final SelectStatement sqlStatement, final String sql) {
+    private DatabaseAdminExecutor mockExecutor(final String schemaName, final SelectStatement sqlStatement, final String sql) {
+        boolean isNotUseSchema = !Optional.ofNullable(schemaName).isPresent() && sqlStatement.getFrom() == null;
         if (!hasDatabases() || !hasResources()) {
             return new NoResourceShowExecutor(sqlStatement);
-        } else {
-            // TODO Avoid accessing database here, consider using `org.apache.shardingsphere.proxy.backend.text.data.DatabaseBackendHandler`
-            String driverType = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.PROXY_BACKEND_DRIVER_TYPE);
+        }
+        String driverType = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.PROXY_BACKEND_DRIVER_TYPE);
+        if (isNotUseSchema) {
             return "ExperimentalVertx".equals(driverType) ? null : new UnicastResourceShowExecutor(sqlStatement, sql);
         }
+        return null;
     }
     
     private boolean hasDatabases() {
