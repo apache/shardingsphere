@@ -83,9 +83,9 @@ public final class ShardingReadwriteSplittingConfigurationRange implements Examp
 
     private static ReadwriteSplittingRuleConfiguration createReadwriteSplittingConfiguration() {
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfiguration1 = new ReadwriteSplittingDataSourceRuleConfiguration(
-                "ds_0", "Static", getReadWriteProperties(), null);
+                "ds_0", "Static", getReadWriteProperties(), null, null);
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfiguration2 = new ReadwriteSplittingDataSourceRuleConfiguration(
-                "ds_1", "", getReadWriteProperties(), null);
+                "ds_1", "", getReadWriteProperties(), null, null);
         return new ReadwriteSplittingRuleConfiguration(Arrays.asList(dataSourceConfiguration1, dataSourceConfiguration2), Collections.emptyMap());
     }
     
