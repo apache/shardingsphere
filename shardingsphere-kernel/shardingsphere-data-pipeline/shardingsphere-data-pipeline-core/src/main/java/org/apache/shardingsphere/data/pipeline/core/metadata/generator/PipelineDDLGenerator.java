@@ -23,6 +23,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.ddl.AlterTableStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CommentStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CreateIndexStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CreateTableStatementContext;
@@ -133,7 +134,10 @@ public final class PipelineDDLGenerator {
             result = decorateTable(databaseMetaData, result, (TableAvailable) sqlStatementContext);
             result = decorateIndexAndConstraint(databaseMetaData, result, sqlStatementContext);
         }
-        
+        if (sqlStatementContext instanceof AlterTableStatementContext) {
+            result = decorateTable(databaseMetaData, result, (TableAvailable) sqlStatementContext);
+            result = decorateIndexAndConstraint(databaseMetaData, result, sqlStatementContext);
+        }
         return result;
     }
     
@@ -162,7 +166,6 @@ public final class PipelineDDLGenerator {
             if (sqlStatementContext instanceof ConstraintAvailable) {
                 result = decorateConstraint((ConstraintAvailable) sqlStatementContext, result, tableNameSegment);
             }
-            
         }
         return result;
     }
