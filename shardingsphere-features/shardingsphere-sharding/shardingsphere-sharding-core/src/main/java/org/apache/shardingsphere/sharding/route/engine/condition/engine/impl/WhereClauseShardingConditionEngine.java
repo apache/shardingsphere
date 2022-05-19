@@ -69,7 +69,8 @@ public final class WhereClauseShardingConditionEngine implements ShardingConditi
         }
         Collection<ColumnSegment> columnSegments = ((WhereAvailable) sqlStatementContext).getColumnSegments();
         String defaultSchema = sqlStatementContext.getDatabaseType().getDefaultSchema(databaseMetaData.getDatabase().getName());
-        ShardingSphereSchema schema = sqlStatementContext.getTablesContext().getSchemaName().map(databaseMetaData::getSchema).orElseGet(() -> databaseMetaData.getSchema(defaultSchema));
+        ShardingSphereSchema schema = sqlStatementContext.getTablesContext().getSchemaName()
+                .map(optional -> databaseMetaData.getDatabase().getSchema(optional)).orElseGet(() -> databaseMetaData.getDatabase().getSchema(defaultSchema));
         Map<String, String> columnExpressionTableNames = sqlStatementContext.getTablesContext().findTableNamesByColumnSegment(columnSegments, schema);
         List<ShardingCondition> result = new ArrayList<>();
         for (WhereSegment each : ((WhereAvailable) sqlStatementContext).getWhereSegments()) {

@@ -151,7 +151,7 @@ public final class ClusterContextManagerCoordinatorTest {
         when(resource.getDatabaseType()).thenReturn(new MySQLDatabaseType());
         when(databaseMetaData.getResource()).thenReturn(resource);
         when(databaseMetaData.getProtocolType()).thenReturn(new MySQLDatabaseType());
-        when(databaseMetaData.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
+        when(databaseMetaData.getDatabase().getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
         when(databaseMetaData.getRuleMetaData().getRules()).thenReturn(new LinkedList<>());
         when(databaseMetaData.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
         return new HashMap<>(Collections.singletonMap("db", databaseMetaData));
@@ -200,7 +200,7 @@ public final class ClusterContextManagerCoordinatorTest {
         SchemaChangedEvent event = new SchemaChangedEvent("db", "db", changedTableMetaData, null);
         coordinator.renew(event);
         assertTrue(contextManager.getMetaDataContexts().getAllDatabaseNames().contains("db"));
-        verify(contextManager.getMetaDataContexts().getDatabaseMetaData("db").getSchema("db")).put("t_order", event.getChangedTableMetaData());
+        verify(contextManager.getMetaDataContexts().getDatabaseMetaData("db").getDatabase().getSchema("db")).put("t_order", event.getChangedTableMetaData());
     }
     
     @Test

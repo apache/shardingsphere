@@ -30,7 +30,6 @@ import org.apache.shardingsphere.infra.metadata.resource.CachedDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.schema.DatabaseRulesBuilder;
 
@@ -129,15 +128,5 @@ public final class ShardingSphereDatabaseMetaData {
      */
     public boolean hasDataSource() {
         return !resource.getDataSources().isEmpty();
-    }
-    
-    /**
-     * Get schema.
-     * 
-     * @param schemaName schema name
-     * @return ShardingSphere schema
-     */
-    public ShardingSphereSchema getSchema(final String schemaName) {
-        return database.getSchemas().get(schemaName);
     }
 }

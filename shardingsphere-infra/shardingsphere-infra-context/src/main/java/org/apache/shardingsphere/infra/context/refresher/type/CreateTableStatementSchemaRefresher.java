@@ -58,7 +58,7 @@ public final class CreateTableStatementSchemaRefresher implements MetaDataRefres
         Map<String, SchemaMetaData> metaDataMap = TableMetaDataBuilder.load(Collections.singletonList(tableName), materials);
         Optional<TableMetaData> actualTableMetaData = Optional.ofNullable(metaDataMap.get(schemaName)).map(optional -> optional.getTables().get(tableName));
         actualTableMetaData.ifPresent(optional -> {
-            databaseMetaData.getSchema(schemaName).put(tableName, optional);
+            databaseMetaData.getDatabase().getSchema(schemaName).put(tableName, optional);
             database.putTableMetadata(schemaName, optional);
             optimizerPlanners.put(database.getName(), OptimizerPlannerContextFactory.create(database));
             SchemaAlteredEvent event = new SchemaAlteredEvent(databaseMetaData.getDatabase().getName(), schemaName);

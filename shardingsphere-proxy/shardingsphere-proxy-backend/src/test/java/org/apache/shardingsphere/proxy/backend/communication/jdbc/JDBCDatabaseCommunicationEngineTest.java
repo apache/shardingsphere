@@ -143,7 +143,7 @@ public final class JDBCDatabaseCommunicationEngineTest {
     private ShardingSphereDatabaseMetaData createDatabaseMetaData() {
         ShardingSphereDatabaseMetaData result = mock(ShardingSphereDatabaseMetaData.class, RETURNS_DEEP_STUBS);
         ColumnMetaData columnMetaData = new ColumnMetaData("order_id", Types.INTEGER, true, false, false);
-        when(result.getSchema(DefaultDatabase.LOGIC_NAME).get("t_logic_order")).thenReturn(
+        when(result.getDatabase().getSchema(DefaultDatabase.LOGIC_NAME).get("t_logic_order")).thenReturn(
                 new TableMetaData("t_logic_order", Collections.singletonList(columnMetaData), Collections.singletonList(new IndexMetaData("order_id")), Collections.emptyList()));
         ShardingRule shardingRule = mock(ShardingRule.class);
         when(shardingRule.findLogicTableByActualTable("t_order")).thenReturn(Optional.of("t_logic_order"));
