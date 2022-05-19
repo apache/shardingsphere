@@ -46,9 +46,9 @@ public final class EncryptTable {
         for (EncryptColumnRuleConfiguration each : config.getColumns()) {
             checkColumnConfig(each);
             columns.put(each.getLogicColumn(), new EncryptColumn(getEncryptColumnDataType(each.getLogicDataType(), dataTypes), each.getCipherColumn(),
-                    getEncryptColumnDataType(each.getCipherDataType(), dataTypes), each.getAssistedQueryColumn(), getEncryptColumnDataType(each.getAssistedQueryDataType(),
-                            dataTypes),
-                    each.getPlainColumn(), getEncryptColumnDataType(each.getPlainDataType(), dataTypes), each.getEncryptorName()));
+                    getEncryptColumnDataType(each.getCipherDataType(), dataTypes), each.getAssistedQueryColumn(), 
+                    getEncryptColumnDataType(each.getAssistedQueryDataType(), dataTypes),
+                    each.getPlainColumn(), getEncryptColumnDataType(each.getPlainDataType(), dataTypes), each.getEncryptorName(), each.getAssistedEncryptorName()));
         }
         queryWithCipherColumn = config.getQueryWithCipherColumn();
     }
@@ -69,10 +69,18 @@ public final class EncryptTable {
      * Find encrypt algorithm name.
      *
      * @param logicColumn column name
+     * @param isEncryptOrAssisted true on encrypt, false assisted
      * @return encrypt algorithm name
      */
-    public Optional<String> findEncryptorName(final String logicColumn) {
-        return columns.containsKey(logicColumn) ? Optional.of(columns.get(logicColumn).getEncryptorName()) : Optional.empty();
+    public Optional<String> findEncryptorName(final String logicColumn, final boolean isEncryptOrAssisted) {
+        if (columns.containsKey(logicColumn)) {
+            if (isEncryptOrAssisted) {
+                return Optional.of(columns.get(logicColumn).getEncryptorName());
+            } else {
+                return Optional.of(columns.get(logicColumn).getAssistedEncryptorName());
+            }
+        }
+        return Optional.empty();
     }
     
     /**
