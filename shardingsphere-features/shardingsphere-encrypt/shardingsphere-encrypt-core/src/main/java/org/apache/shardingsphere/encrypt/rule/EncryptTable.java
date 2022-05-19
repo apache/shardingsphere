@@ -69,7 +69,7 @@ public final class EncryptTable {
      * Find encrypt algorithm name.
      *
      * @param logicColumn column name
-     * @return encrypt algorithm name
+     * @return encrypt algorithm nameLocalEncryptConfiguration
      */
     public Optional<String> findEncryptorName(final String logicColumn) {
         return columns.containsKey(logicColumn) ? Optional.of(columns.get(logicColumn).getEncryptorName()) : Optional.empty();
