@@ -37,7 +37,7 @@ public final class SingleTableDropSchemaMetadataValidator implements SingleTable
         boolean containsCascade = DropSchemaStatementHandler.isContainsCascade(sqlStatementContext.getSqlStatement());
         for (IdentifierValue each : sqlStatementContext.getSqlStatement().getSchemaNames()) {
             String schemaName = each.getValue();
-            ShardingSphereSchema schema = databaseMetaData.getSchema(schemaName);
+            ShardingSphereSchema schema = databaseMetaData.getDatabase().getSchema(schemaName);
             if (null == schema) {
                 throw new ShardingSphereException("Schema %s does not exist.", schemaName);
             }

@@ -87,7 +87,7 @@ public final class EncryptAlgorithmMetaDataTest {
         when(selectStatementContext.getTablesContext()).thenReturn(tablesContext);
         when(selectStatementContext.getDatabaseType()).thenReturn(new MySQLDatabaseType());
         when(databaseMetaData.getDatabase().getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
-        when(databaseMetaData.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
+        when(databaseMetaData.getDatabase().getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
         encryptAlgorithm = EncryptAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("MD5", new Properties()));
     }
     

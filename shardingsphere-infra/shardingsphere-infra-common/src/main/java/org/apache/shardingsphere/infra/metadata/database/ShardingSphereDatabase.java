@@ -38,4 +38,14 @@ public final class ShardingSphereDatabase {
         this.schemas = new ConcurrentHashMap<>(schemas.size(), 1);
         schemas.forEach((key, value) -> this.schemas.put(key.toLowerCase(), value));
     }
+    
+    /**
+     * Get schema.
+     *
+     * @param schemaName schema name
+     * @return ShardingSphere schema
+     */
+    public ShardingSphereSchema getSchema(final String schemaName) {
+        return schemas.get(schemaName);
+    }
 }

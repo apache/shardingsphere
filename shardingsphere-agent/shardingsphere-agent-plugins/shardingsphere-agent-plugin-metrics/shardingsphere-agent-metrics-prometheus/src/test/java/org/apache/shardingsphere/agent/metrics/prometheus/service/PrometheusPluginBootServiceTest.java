@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.agent.metrics.prometheus.service;
 
 import org.apache.shardingsphere.agent.config.PluginConfiguration;
+import org.apache.shardingsphere.agent.metrics.prometheus.ProxyContextRestorer;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
@@ -39,7 +40,7 @@ import java.util.Properties;
 
 import static org.mockito.Mockito.mock;
 
-public final class PrometheusPluginBootServiceTest {
+public final class PrometheusPluginBootServiceTest extends ProxyContextRestorer {
     
     private static final PrometheusPluginBootService PROMETHEUS_PLUGIN_BOOT_SERVICE = new PrometheusPluginBootService();
     

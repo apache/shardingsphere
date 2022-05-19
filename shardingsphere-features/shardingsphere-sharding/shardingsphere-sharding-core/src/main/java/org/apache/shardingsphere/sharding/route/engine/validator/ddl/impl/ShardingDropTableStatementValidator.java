@@ -47,7 +47,8 @@ public final class ShardingDropTableStatementValidator extends ShardingDDLStatem
                             final SQLStatementContext<DropTableStatement> sqlStatementContext, final List<Object> parameters, final ShardingSphereDatabaseMetaData databaseMetaData) {
         if (!DropTableStatementHandler.containsExistClause(sqlStatementContext.getSqlStatement())) {
             String defaultSchema = sqlStatementContext.getDatabaseType().getDefaultSchema(databaseMetaData.getDatabase().getName());
-            ShardingSphereSchema schema = sqlStatementContext.getTablesContext().getSchemaName().map(databaseMetaData::getSchema).orElseGet(() -> databaseMetaData.getSchema(defaultSchema));
+            ShardingSphereSchema schema = sqlStatementContext.getTablesContext().getSchemaName()
+                    .map(optional -> databaseMetaData.getDatabase().getSchema(optional)).orElseGet(() -> databaseMetaData.getDatabase().getSchema(defaultSchema));
             validateTableExist(schema, sqlStatementContext.getTablesContext().getTables());
         }
     }
