@@ -17,76 +17,111 @@
 
 package org.apache.shardingsphere.data.pipeline.core.execute;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.api.executor.LifecycleExecutor;
-import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.junit.Test;
 
-import java.util.Collections;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.assertFalse;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public final class ExecuteEngineTest {
     
-    @Test
-    public void assertSubmitMoreThanMaxWorkerNumber() {
-        ExecuteEngine executeEngine = ExecuteEngine.newFixedThreadInstance(2);
+    @Test(timeout = 30000)
+    public void assertSubmitAndTaskSucceeded() throws ExecutionException, InterruptedException {
+        LifecycleExecutor lifecycleExecutor = mock(LifecycleExecutor.class);
+        ExecuteCallback callback = mock(ExecuteCallback.class);
+        ExecuteEngine executeEngine = ExecuteEngine.newCachedThreadInstance(ExecuteEngineTest.class.getSimpleName());
+        Future<?> future = executeEngine.submit(lifecycleExecutor, callback);
+        future.get();
+        shutdownAndAwaitTerminal(executeEngine);
+        verify(lifecycleExecutor).run();
+        verify(callback).onSuccess();
+    }
+    
+    @Test(timeout = 30000)
+    public void assertSubmitAndTaskFailed() {
+        LifecycleExecutor lifecycleExecutor = mock(LifecycleExecutor.class);
+        RuntimeException expectedException = new RuntimeException("Expected");
+        doThrow(expectedException).when(lifecycleExecutor).run();
+        ExecuteCallback callback = mock(ExecuteCallback.class);
+        ExecuteEngine executeEngine = ExecuteEngine.newCachedThreadInstance(ExecuteEngineTest.class.getSimpleName());
+        Future<?> future = executeEngine.submit(lifecycleExecutor, callback);
+        Throwable actualCause = null;
         try {
-            for (int i = 0; i < 5; i++) {
-                Future<?> submit = executeEngine.submit(mockScalingExecutor());
-                assertFalse(submit.isCancelled());
-            }
-        } catch (final RejectedExecutionException ex) {
+            future.get();
+        } catch (InterruptedException e) {
             fail();
+        } catch (ExecutionException e) {
+            actualCause = e.getCause();
         }
+        assertThat(actualCause, is(expectedException));
+        shutdownAndAwaitTerminal(executeEngine);
+        verify(callback).onFailure(expectedException);
     }
     
-    @Test
-    public void assertSubmitAllMoreThanMaxWorkerNumber() {
-        ExecuteEngine executeEngine = ExecuteEngine.newFixedThreadInstance(2);
+    @Test(timeout = 30000)
+    public void assertSubmitAllAndTasksSucceeded() throws ExecutionException, InterruptedException {
+        int taskCount = 8;
+        LifecycleExecutor lifecycleExecutor = mock(LifecycleExecutor.class);
+        List<LifecycleExecutor> lifecycleExecutors = new ArrayList<>(taskCount);
+        for (int i = 0; i < taskCount; i++) {
+            lifecycleExecutors.add(lifecycleExecutor);
+        }
+        ExecuteCallback callback = mock(ExecuteCallback.class);
+        ExecuteEngine executeEngine = ExecuteEngine.newFixedThreadInstance(2, ExecuteEngineTest.class.getSimpleName());
+        Future<?> future = executeEngine.submitAll(lifecycleExecutors, callback);
+        future.get();
+        shutdownAndAwaitTerminal(executeEngine);
+        verify(lifecycleExecutor, times(taskCount)).run();
+        verify(callback).onSuccess();
+    }
+    
+    @Test(timeout = 30000)
+    public void assertSubmitAllAndOneOfTasksFailed() {
+        LifecycleExecutor lifecycleExecutor = mock(LifecycleExecutor.class);
+        List<LifecycleExecutor> lifecycleExecutors = new ArrayList<>(8);
+        for (int i = 0; i < 7; i++) {
+            lifecycleExecutors.add(lifecycleExecutor);
+        }
+        LifecycleExecutor failedExecutor = mock(LifecycleExecutor.class);
+        RuntimeException expectedException = new RuntimeException("Expected");
+        doThrow(expectedException).when(failedExecutor).run();
+        lifecycleExecutors.add(failedExecutor);
+        ExecuteCallback callback = mock(ExecuteCallback.class);
+        ExecuteEngine executeEngine = ExecuteEngine.newFixedThreadInstance(2, ExecuteEngineTest.class.getSimpleName());
+        Future<?> future = executeEngine.submitAll(lifecycleExecutors, callback);
+        Throwable actualCause = null;
         try {
-            for (int i = 0; i < 5; i++) {
-                Future<?> submit = executeEngine.submitAll(Collections.singletonList(mockScalingExecutor()), mockExecuteCallback());
-                assertFalse(submit.isCancelled());
-            }
-        } catch (final RejectedExecutionException ex) {
+            future.get();
+        } catch (InterruptedException e) {
             fail();
+        } catch (ExecutionException e) {
+            actualCause = e.getCause();
         }
+        assertThat(actualCause, is(expectedException));
+        shutdownAndAwaitTerminal(executeEngine);
+        verify(callback).onFailure(expectedException);
     }
     
-    private ExecuteCallback mockExecuteCallback() {
-        return new ExecuteCallback() {
-            
-            @Override
-            public void onSuccess() {
-                
-            }
-            
-            @Override
-            public void onFailure(final Throwable throwable) {
-                
-            }
-        };
-    }
-    
-    private LifecycleExecutor mockScalingExecutor() {
-        
-        return new LifecycleExecutor() {
-            
-            @Override
-            public void run() {
-                ThreadUtil.sleep(100L);
-            }
-            
-            @Override
-            public void start() {
-            }
-            
-            @Override
-            public void stop() {
-            }
-        };
+    @SneakyThrows
+    private void shutdownAndAwaitTerminal(final ExecuteEngine executeEngine) {
+        Field field = ExecuteEngine.class.getDeclaredField("executorService");
+        field.setAccessible(true);
+        ExecutorService executorService = (ExecutorService) field.get(executeEngine);
+        executorService.shutdown();
+        executorService.awaitTermination(30, TimeUnit.SECONDS);
     }
 }

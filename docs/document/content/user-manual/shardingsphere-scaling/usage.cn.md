@@ -9,22 +9,13 @@ weight = 2
 
 纯  JAVA 开发，JDK  建议 1.8 以上版本。
 
-支持迁移场景如下：
+支持的数据库及版本如下：
 
 | 源端                   | 目标端                   |
 | --------------------- | ----------------------- |
 | MySQL(5.1.15 ~ 5.7.x) | MySQL(5.1.15 ~ 5.7.x)   |
 | PostgreSQL(9.4 ~ )    | PostgreSQL(9.4 ~ )      |
 | openGauss(2.1.0)      | openGauss(2.1.0)        |
-
-**注意**：
-
-如果后端连接以下数据库，请下载相应 JDBC 驱动 jar 包，并将其放入 `${shardingsphere-proxy}/lib` 目录。
-
-| 数据库                 | JDBC 驱动                              | 参考                 |
-| --------------------- | ------------------------------------ | -------------------- |
-| MySQL                 | [mysql-connector-java-5.1.47.jar]( https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.47/mysql-connector-java-5.1.47.jar ) | [Connector/J Versions]( https://dev.mysql.com/doc/connector-j/5.1/en/connector-j-versions.html ) |
-| openGauss             | [opengauss-jdbc-2.0.1-compatibility.jar]( https://repo1.maven.org/maven2/org/opengauss/opengauss-jdbc/2.0.1-compatibility/opengauss-jdbc-2.0.1-compatibility.jar ) | |
 
 功能支持情况：
 
@@ -98,6 +89,7 @@ SHOW GRANTS FOR 'user';
 ```
 wal_level = logical
 max_replication_slots = 10
+max_connections = 600
 ```
 
 详情请参见 [Write Ahead Log](https://www.postgresql.org/docs/9.6/runtime-config-wal.html) 和 [Replication](https://www.postgresql.org/docs/9.6/runtime-config-replication.html )。

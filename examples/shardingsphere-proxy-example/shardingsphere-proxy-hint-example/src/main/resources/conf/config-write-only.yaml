@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-schemaName: write_only
+databaseName: write_only
 
 dataSources:
   write_ds:

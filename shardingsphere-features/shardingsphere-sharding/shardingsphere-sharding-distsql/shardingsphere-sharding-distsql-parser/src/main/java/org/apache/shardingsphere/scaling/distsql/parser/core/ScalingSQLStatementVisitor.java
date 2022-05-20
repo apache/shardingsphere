@@ -38,6 +38,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.R
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.RestoreScalingSourceWritingContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.ScalingRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.SchemaNameContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.ShardingSizeContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.ShowScalingCheckAlgorithmsContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.ShowScalingListContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.ShowScalingStatusContext;
@@ -168,11 +169,12 @@ public final class ScalingSQLStatementVisitor extends ScalingStatementBaseVisito
     public ASTNode visitInputDefinition(final InputDefinitionContext ctx) {
         Integer workerThread = getWorkerThread(ctx.workerThread());
         Integer batchSize = getBatchSize(ctx.batchSize());
+        Integer shardingSize = getShardingSize(ctx.shardingSize());
         AlgorithmSegment rateLimiter = null;
         if (null != ctx.rateLimiter()) {
             rateLimiter = (AlgorithmSegment) visit(ctx.rateLimiter());
         }
-        return new InputOrOutputSegment(workerThread, batchSize, rateLimiter);
+        return new InputOrOutputSegment(workerThread, batchSize, shardingSize, rateLimiter);
     }
     
     @Override
@@ -194,6 +196,13 @@ public final class ScalingSQLStatementVisitor extends ScalingStatementBaseVisito
     }
     
     private Integer getBatchSize(final BatchSizeContext ctx) {
+        if (null == ctx) {
+            return null;
+        }
+        return Integer.parseInt(ctx.intValue().getText());
+    }
+    
+    private Integer getShardingSize(final ShardingSizeContext ctx) {
         if (null == ctx) {
             return null;
         }

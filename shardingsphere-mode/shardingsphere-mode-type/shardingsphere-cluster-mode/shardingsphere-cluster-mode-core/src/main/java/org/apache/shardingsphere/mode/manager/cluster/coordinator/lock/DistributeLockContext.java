@@ -17,79 +17,84 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock;
 
-import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.lock.LockContext;
-import org.apache.shardingsphere.infra.lock.LockType;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.ShardingSphereLockManager;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.ShardingSphereInterMutexLockHolder;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.type.required.RequiredSPIRegistry;
 
-import java.util.Collection;
-import java.util.EnumMap;
-import java.util.Map;
+import java.util.Set;
 
 /**
  * Distribute lock context.
  */
+@RequiredArgsConstructor
 public final class DistributeLockContext implements LockContext {
     
-    private final Map<LockType, ShardingSphereLockManager> lockManagers = new EnumMap<>(LockType.class);
+    static {
+        ShardingSphereServiceLoader.register(ShardingSphereLockManager.class);
+    }
     
     private final ClusterPersistRepository repository;
     
-    private final ComputeNodeInstance currentInstance;
-    
-    public DistributeLockContext(final ClusterPersistRepository repository, final ComputeNodeInstance currentInstance) {
-        this.repository = repository;
-        this.currentInstance = currentInstance;
-        loadLockManager();
-    }
-    
-    private void loadLockManager() {
-        for (ShardingSphereLockManager each : ShardingSphereLockManagerFactory.getAllInstances()) {
-            if (lockManagers.containsKey(each.getLockType())) {
-                continue;
-            }
-            lockManagers.put(each.getLockType(), each);
-        }
-    }
+    private ShardingSphereLockManager lockManager;
     
     @Override
     public void initLockState(final InstanceContext instanceContext) {
-        Collection<ComputeNodeInstance> computeNodeInstances = instanceContext.getComputeNodeInstances();
-        for (ShardingSphereLockManager each : lockManagers.values()) {
-            each.initLocksState(repository, currentInstance, computeNodeInstances);
-        }
+        loadLockManager(new ShardingSphereInterMutexLockHolder(repository, instanceContext.getInstance(), instanceContext.getComputeNodeInstances()));
+    }
+    
+    private void loadLockManager(final ShardingSphereInterMutexLockHolder lockHolder) {
+        lockManager = RequiredSPIRegistry.getRegisteredService(ShardingSphereLockManager.class);
+        lockManager.init(lockHolder);
     }
     
     @Override
-    public synchronized boolean tryLockWriteDatabase(final String databaseName) {
-        Preconditions.checkNotNull(databaseName, "Try lock write database args database name can not be null.");
-        return lockManagers.get(LockType.DATABASE).getOrCreateLock(databaseName).tryLock(databaseName);
+    public ShardingSphereLock getMutexLock() {
+        return lockManager.getMutexLock();
     }
     
     @Override
-    public void releaseLockWriteDatabase(final String databaseName) {
-        Preconditions.checkNotNull(databaseName, "Try lock write database args database name can not be null.");
-        lockManagers.get(LockType.DATABASE).getOrCreateLock(databaseName).releaseLock(databaseName);
+    public boolean lockWrite(final String databaseName) {
+        return lockManager.lockWrite(databaseName);
     }
     
     @Override
-    public boolean isLockedDatabase(final String databaseName) {
-        Preconditions.checkNotNull(databaseName, "Is locked database args database name can not be null.");
-        return lockManagers.get(LockType.DATABASE).isLocked(databaseName);
+    public boolean lockWrite(final String databaseName, final Set<String> schemaNames) {
+        return lockManager.lockWrite(databaseName, schemaNames);
     }
     
     @Override
-    public synchronized ShardingSphereLock getGlobalLock(final String lockName) {
-        Preconditions.checkNotNull(lockName, "Get global lock args lock name can not be null.");
-        return lockManagers.get(LockType.GENERAL).getOrCreateLock(lockName);
+    public boolean tryLockWrite(final String databaseName, final long timeoutMilliseconds) {
+        return lockManager.tryLockWrite(databaseName, timeoutMilliseconds);
     }
     
     @Override
-    public synchronized ShardingSphereLock getStandardLock(final String lockName) {
-        Preconditions.checkNotNull(lockName, "Get standard lock args lock name can not be null.");
-        return lockManagers.get(LockType.STANDARD).getOrCreateLock(lockName);
+    public boolean tryLockWrite(final String databaseName, final Set<String> schemaNames, final long timeoutMilliseconds) {
+        return lockManager.tryLockWrite(databaseName, schemaNames, timeoutMilliseconds);
+    }
+    
+    @Override
+    public void releaseLockWrite(final String databaseName) {
+        lockManager.releaseLockWrite(databaseName);
+    }
+    
+    @Override
+    public void releaseLockWrite(final String databaseName, final String schemaName) {
+        lockManager.releaseLockWrite(databaseName, schemaName);
+    }
+    
+    @Override
+    public boolean isLocked(final String databaseName) {
+        return lockManager.isLocked(databaseName);
+    }
+    
+    @Override
+    public boolean isLocked(final String databaseName, final String schema) {
+        return lockManager.isLocked(databaseName, schema);
     }
 }

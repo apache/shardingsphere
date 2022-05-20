@@ -42,6 +42,19 @@ public final class ComputeNodeTest {
     }
     
     @Test
+    public void assertGetProcessTriggerNodePatch() {
+        assertThat(ComputeNode.getProcessTriggerNodePatch(), is("/nodes/compute_nodes/process_trigger"));
+    }
+    
+    @Test
+    public void assertGetProcessTriggerInstanceIdNodePath() {
+        assertThat(ComputeNode.getProcessTriggerInstanceIdNodePath("127.0.0.1@3307", InstanceType.PROXY, "foo_process_id"),
+                is("/nodes/compute_nodes/process_trigger/proxy/127.0.0.1@3307/foo_process_id"));
+        assertThat(ComputeNode.getProcessTriggerInstanceIdNodePath("127.0.0.1@3307", InstanceType.JDBC, "foo_process_id"),
+                is("/nodes/compute_nodes/process_trigger/jdbc/127.0.0.1@3307/foo_process_id"));
+    }
+    
+    @Test
     public void assertGetInstanceLabelsNodePath() {
         assertThat(ComputeNode.getInstanceLabelsNodePath("127.0.0.1@3307"), is("/nodes/compute_nodes/attributes/127.0.0.1@3307/labels"));
     }

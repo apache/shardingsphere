@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.converter;
 
-import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
@@ -111,7 +110,7 @@ public final class ShardingTableRuleStatementConverter {
     }
     
     private static ShardingAutoTableRuleConfiguration createAutoTableRuleConfiguration(final AutoTableRuleSegment rule) {
-        ShardingAutoTableRuleConfiguration result = new ShardingAutoTableRuleConfiguration(rule.getLogicTable(), Joiner.on(",").join(rule.getDataSourceNodes()));
+        ShardingAutoTableRuleConfiguration result = new ShardingAutoTableRuleConfiguration(rule.getLogicTable(), String.join(",", rule.getDataSourceNodes()));
         result.setShardingStrategy(createAutoTableStrategyConfiguration(rule));
         Optional.ofNullable(rule.getKeyGenerateStrategySegment())
                 .ifPresent(optional -> result.setKeyGenerateStrategy(createKeyGenerateStrategyConfiguration(rule.getLogicTable(), rule.getKeyGenerateStrategySegment())));
@@ -165,14 +164,14 @@ public final class ShardingTableRuleStatementConverter {
     }
     
     private static String getAutoTableShardingAlgorithmName(final String tableName, final String algorithmType) {
-        return String.format("%s_%s", tableName, algorithmType.toLowerCase());
+        return String.format("%s_%s", tableName.toLowerCase(), algorithmType.toLowerCase());
     }
     
     private static String getTableShardingAlgorithmName(final String tableName, final ShardingStrategyLevelType strategyLevel, final String algorithmType) {
-        return String.format("%s_%s_%s", tableName, strategyLevel.name().toLowerCase(), algorithmType.toLowerCase());
+        return String.format("%s_%s_%s", tableName.toLowerCase(), strategyLevel.name().toLowerCase(), algorithmType.toLowerCase());
     }
     
     private static String getKeyGeneratorName(final String tableName, final String algorithmType) {
-        return String.format("%s_%s", tableName, algorithmType.toLowerCase());
+        return String.format("%s_%s", tableName.toLowerCase(), algorithmType.toLowerCase());
     }
 }

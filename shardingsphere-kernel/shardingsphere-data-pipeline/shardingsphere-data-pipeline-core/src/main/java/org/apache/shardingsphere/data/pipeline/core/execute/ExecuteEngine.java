@@ -17,20 +17,14 @@
 
 package org.apache.shardingsphere.data.pipeline.core.execute;
 
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.ListeningExecutorService;
-import com.google.common.util.concurrent.MoreExecutors;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.api.executor.LifecycleExecutor;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
@@ -40,37 +34,33 @@ import java.util.concurrent.Future;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ExecuteEngine {
     
-    public static final String THREAD_NAME_FORMAT = "Scaling-execute-%d";
+    private static final String SCALING_THREAD_PREFIX = "Scaling-";
     
-    private final ListeningExecutorService executorService;
+    private static final String SCALING_THREAD_SUFFIX = "-%d";
+    
+    private final ExecutorService executorService;
     
     /**
      * Create task execute engine instance with cached thread pool.
      *
+     * @param threadName thread name
      * @return task execute engine instance
      */
-    public static ExecuteEngine newCachedThreadInstance() {
-        return new ExecuteEngine(MoreExecutors.listeningDecorator(Executors.newCachedThreadPool(ExecutorThreadFactoryBuilder.build(THREAD_NAME_FORMAT))));
+    public static ExecuteEngine newCachedThreadInstance(final String threadName) {
+        String threadNameFormat = SCALING_THREAD_PREFIX + threadName + SCALING_THREAD_SUFFIX;
+        return new ExecuteEngine(Executors.newCachedThreadPool(ExecutorThreadFactoryBuilder.build(threadNameFormat)));
     }
     
     /**
      * Create task execute engine instance with fixed thread pool.
      *
      * @param threadNumber thread number
+     * @param threadName thread name
      * @return task execute engine instance
      */
-    public static ExecuteEngine newFixedThreadInstance(final int threadNumber) {
-        return new ExecuteEngine(MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(threadNumber, ExecutorThreadFactoryBuilder.build(THREAD_NAME_FORMAT))));
-    }
-    
-    /**
-     * Submit a {@code LifecycleExecutor} without callback to execute.
-     *
-     * @param lifecycleExecutor lifecycle executor
-     * @return execute future
-     */
-    public Future<?> submit(final LifecycleExecutor lifecycleExecutor) {
-        return executorService.submit(lifecycleExecutor);
+    public static ExecuteEngine newFixedThreadInstance(final int threadNumber, final String threadName) {
+        String threadNameFormat = SCALING_THREAD_PREFIX + threadName + SCALING_THREAD_SUFFIX;
+        return new ExecuteEngine(Executors.newFixedThreadPool(threadNumber, ExecutorThreadFactoryBuilder.build(threadNameFormat)));
     }
     
     /**
@@ -81,9 +71,14 @@ public final class ExecuteEngine {
      * @return execute future
      */
     public Future<?> submit(final LifecycleExecutor lifecycleExecutor, final ExecuteCallback executeCallback) {
-        ListenableFuture<?> result = executorService.submit(lifecycleExecutor);
-        Futures.addCallback(result, new ExecuteFutureCallback<>(executeCallback), executorService);
-        return result;
+        return CompletableFuture.runAsync(lifecycleExecutor, executorService).whenCompleteAsync((unused, throwable) -> {
+            if (null == throwable) {
+                executeCallback.onSuccess();
+            } else {
+                Throwable cause = throwable.getCause();
+                executeCallback.onFailure(null != cause ? cause : throwable);
+            }
+        }, executorService);
     }
     
     /**
@@ -94,30 +89,18 @@ public final class ExecuteEngine {
      * @return execute future of all
      */
     public Future<?> submitAll(final Collection<? extends LifecycleExecutor> lifecycleExecutors, final ExecuteCallback executeCallback) {
-        Collection<ListenableFuture<?>> listenableFutures = new ArrayList<>(lifecycleExecutors.size());
+        CompletableFuture<?>[] futures = new CompletableFuture[lifecycleExecutors.size()];
+        int i = 0;
         for (LifecycleExecutor each : lifecycleExecutors) {
-            ListenableFuture<?> listenableFuture = executorService.submit(each);
-            listenableFutures.add(listenableFuture);
+            futures[i++] = CompletableFuture.runAsync(each, executorService);
         }
-        ListenableFuture<List<Object>> result = Futures.allAsList(listenableFutures);
-        Futures.addCallback(result, new ExecuteFutureCallback<Collection<?>>(executeCallback), executorService);
-        return result;
-    }
-    
-    @RequiredArgsConstructor
-    private static class ExecuteFutureCallback<V> implements FutureCallback<V> {
-        
-        private final ExecuteCallback executeCallback;
-        
-        @Override
-        public void onSuccess(final V result) {
-            executeCallback.onSuccess();
-        }
-        
-        @Override
-        @ParametersAreNonnullByDefault
-        public void onFailure(final Throwable throwable) {
-            executeCallback.onFailure(throwable);
-        }
+        return CompletableFuture.allOf(futures).whenCompleteAsync((unused, throwable) -> {
+            if (null == throwable) {
+                executeCallback.onSuccess();
+            } else {
+                Throwable cause = throwable.getCause();
+                executeCallback.onFailure(null != cause ? cause : throwable);
+            }
+        }, executorService);
     }
 }

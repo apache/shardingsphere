@@ -20,7 +20,7 @@ package org.apache.shardingsphere.scaling.distsql.handler.query;
 import com.google.gson.Gson;
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.scaling.distsql.statement.ShowShardingScalingRulesStatement;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -41,8 +41,8 @@ public final class ShardingScalingRulesQueryResultSet implements DistSQLResultSe
     private Iterator<Entry<String, OnRuleAlteredActionConfiguration>> data;
     
     @Override
-    public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
-        Optional<ShardingRuleConfiguration> ruleConfig = metaData.getRuleMetaData().getConfigurations()
+    public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
+        Optional<ShardingRuleConfiguration> ruleConfig = database.getRuleMetaData().getConfigurations()
                 .stream().filter(each -> each instanceof ShardingRuleConfiguration).map(each -> (ShardingRuleConfiguration) each).findAny();
         data = ruleConfig.map(ShardingRuleConfiguration::getScaling).orElse(Collections.emptyMap()).entrySet().iterator();
     }

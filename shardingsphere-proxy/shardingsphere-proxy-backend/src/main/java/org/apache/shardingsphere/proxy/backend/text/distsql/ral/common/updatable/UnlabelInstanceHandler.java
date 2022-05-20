@@ -39,11 +39,11 @@ public final class UnlabelInstanceHandler extends UpdatableRALBackendHandler<Unl
     
     @Override
     protected void update(final ContextManager contextManager, final UnlabelInstanceStatement sqlStatement) throws DistSQLException {
-        MetaDataPersistService persistService = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataPersistService().orElse(null);
+        MetaDataPersistService persistService = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getPersistService().orElse(null);
         if (null == persistService || null == persistService.getRepository() || persistService.getRepository() instanceof StandalonePersistRepository) {
             throw new UnsupportedOperationException("Labels can only be removed in cluster mode");
         }
-        String instanceId = new InstanceId(sqlStatement.getIp(), Integer.valueOf(sqlStatement.getPort())).getId();
+        String instanceId = new InstanceId(sqlStatement.getIp(), String.valueOf(sqlStatement.getPort())).getId();
         ComputeNodeInstance instances = persistService.getComputeNodePersistService().loadComputeNodeInstance(new InstanceDefinition(InstanceType.PROXY, instanceId));
         Collection<String> labels = new LinkedHashSet<>(instances.getLabels());
         if (sqlStatement.getLabels().isEmpty()) {

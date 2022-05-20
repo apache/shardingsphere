@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-schemaName: bar_driver_fixture_db
+databaseName: bar_driver_fixture_db

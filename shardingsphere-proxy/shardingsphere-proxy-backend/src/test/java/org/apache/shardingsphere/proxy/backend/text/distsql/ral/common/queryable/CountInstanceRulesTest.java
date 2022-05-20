@@ -22,11 +22,12 @@ import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -55,13 +56,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class CountInstanceRulesTest {
+public final class CountInstanceRulesTest extends ProxyContextRestorer {
     
     @Mock
-    private ShardingSphereMetaData shardingSphereMetaData1;
+    private ShardingSphereDatabase database1;
     
     @Mock
-    private ShardingSphereMetaData shardingSphereMetaData2;
+    private ShardingSphereDatabase database2;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ContextManager contextManager;
@@ -77,12 +78,12 @@ public final class CountInstanceRulesTest {
         ruleConfigs.add(mockReadwriteSplittingRule());
         ruleConfigs.add(mockEncryptRule());
         when(ruleMetaData.getConfigurations()).thenReturn(ruleConfigs);
-        when(shardingSphereMetaData1.getRuleMetaData()).thenReturn(ruleMetaData);
-        when(shardingSphereMetaData2.getRuleMetaData()).thenReturn(ruleMetaData);
+        when(database1.getRuleMetaData()).thenReturn(ruleMetaData);
+        when(database2.getRuleMetaData()).thenReturn(ruleMetaData);
         when(contextManager.getMetaDataContexts().getAllDatabaseNames()).thenReturn(Arrays.asList("db_1", "db_2"));
-        when(contextManager.getMetaDataContexts().getMetaData("db_1")).thenReturn(shardingSphereMetaData1);
-        when(contextManager.getMetaDataContexts().getMetaData("db_2")).thenReturn(shardingSphereMetaData2);
-        ProxyContext.getInstance().init(contextManager);
+        when(contextManager.getMetaDataContexts().getDatabaseMetaData("db_1")).thenReturn(database1);
+        when(contextManager.getMetaDataContexts().getDatabaseMetaData("db_2")).thenReturn(database2);
+        ProxyContext.init(contextManager);
     }
     
     private SingleTableRule mockSingleTableRule() {
@@ -162,8 +163,8 @@ public final class CountInstanceRulesTest {
     @Test
     public void assertGetRowDataWithoutConfiguration() throws SQLException {
         CountInstanceRulesHandler handler = new CountInstanceRulesHandler().initStatement(new CountInstanceRulesStatement());
-        when(shardingSphereMetaData1.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
-        when(shardingSphereMetaData2.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
+        when(database1.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
+        when(database2.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
         handler.execute();
         handler.next();
         Collection<Object> actual = handler.getRowData();

@@ -172,6 +172,8 @@ public enum SQLVisitorRule {
     
     DROP_PACKAGE("DropPackage", SQLStatementType.DDL),
     
+    ALTER_PACKAGE("AlterPackage", SQLStatementType.DDL),
+    
     DROP_VIEW("DropView", SQLStatementType.DDL),
     
     ANALYZE("Analyze", SQLStatementType.DDL),
@@ -504,7 +506,11 @@ public enum SQLVisitorRule {
     
     DROP_EDITION("DropEdition", SQLStatementType.DDL),
     
-    ALTER_ATTRIBUTE_DIMENSION("AlterAttributeDimension", SQLStatementType.DDL);
+    ALTER_ATTRIBUTE_DIMENSION("AlterAttributeDimension", SQLStatementType.DDL),
+    
+    CREATE_CONTEXT("CreateContext", SQLStatementType.DDL),
+    
+    CREATE_SPFILE("CreateSPFile", SQLStatementType.DDL);
     
     private final String name;
     

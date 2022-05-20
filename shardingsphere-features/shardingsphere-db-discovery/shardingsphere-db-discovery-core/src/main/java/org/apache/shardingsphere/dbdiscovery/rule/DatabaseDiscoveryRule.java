@@ -31,10 +31,12 @@ import org.apache.shardingsphere.infra.datasource.strategy.DynamicDataSourceStra
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.rule.event.DataSourceStatusChangedEvent;
 import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.ExportableRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.InstanceAwareRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.StatusContainedRule;
 import org.apache.shardingsphere.mode.metadata.storage.event.DataSourceNameDisabledEvent;
 import org.apache.shardingsphere.mode.metadata.storage.event.PrimaryDataSourceChangedEvent;
@@ -45,6 +47,7 @@ import org.apache.shardingsphere.schedule.core.api.ModeScheduleContextFactory;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -57,12 +60,16 @@ import java.util.stream.Collectors;
 /**
  * Database discovery rule.
  */
-public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContainedRule, StatusContainedRule, ExportableRule {
+public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContainedRule, StatusContainedRule, ExportableRule, InstanceAwareRule {
     
     private final Map<String, DatabaseDiscoveryProviderAlgorithm> discoveryTypes;
     
     @Getter
     private final Map<String, DatabaseDiscoveryDataSourceRule> dataSourceRules;
+    
+    private final String databaseName;
+    
+    private final Map<String, DataSource> dataSourceMap;
     
     public DatabaseDiscoveryRule(final String databaseName, final Map<String, DataSource> dataSourceMap, final DatabaseDiscoveryRuleConfiguration config) {
         this(databaseName, dataSourceMap, config.getDataSources(), config.getDiscoveryHeartbeats(), getDiscoveryProviderAlgorithms(config.getDiscoveryTypes()));
@@ -75,10 +82,11 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
     private DatabaseDiscoveryRule(final String databaseName, final Map<String, DataSource> dataSourceMap, final Collection<DatabaseDiscoveryDataSourceRuleConfiguration> dataSourceRuleConfigs,
                                   final Map<String, DatabaseDiscoveryHeartBeatConfiguration> heartBeatConfig, final Map<String, DatabaseDiscoveryProviderAlgorithm> discoveryTypes) {
         this.discoveryTypes = discoveryTypes;
+        this.databaseName = databaseName;
+        this.dataSourceMap = dataSourceMap;
         dataSourceRules = getDataSourceRules(dataSourceRuleConfigs, heartBeatConfig);
         findMasterSlaveRelation(databaseName, dataSourceMap);
         initAware();
-        initHeartBeatJobs(databaseName, dataSourceMap);
     }
     
     private static Map<String, DatabaseDiscoveryProviderAlgorithm> getDiscoveryProviderAlgorithms(final Map<String, ShardingSphereAlgorithmConfiguration> discoveryTypesConfig) {
@@ -168,9 +176,7 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
     
     @Override
     public Map<String, Supplier<Object>> getExportedMethods() {
-        Map<String, Supplier<Object>> result = new HashMap<>(1, 1);
-        result.put(ExportableConstants.EXPORTABLE_KEY_PRIMARY_DATA_SOURCE, this::exportPrimaryDataSourceMap);
-        return result;
+        return Collections.singletonMap(ExportableConstants.EXPORTABLE_KEY_PRIMARY_DATA_SOURCE, this::exportPrimaryDataSourceMap);
     }
     
     private Map<String, String> exportPrimaryDataSourceMap() {
@@ -179,8 +185,8 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
         return result;
     }
     
-    private void initHeartBeatJobs(final String databaseName, final Map<String, DataSource> dataSourceMap) {
-        Optional<ModeScheduleContext> modeScheduleContext = ModeScheduleContextFactory.getInstance().get();
+    private void initHeartBeatJobs(final InstanceContext instanceContext) {
+        Optional<ModeScheduleContext> modeScheduleContext = ModeScheduleContextFactory.getInstance().get(instanceContext.getInstance().getInstanceDefinition().getInstanceId().getId());
         if (modeScheduleContext.isPresent()) {
             for (Entry<String, DatabaseDiscoveryDataSourceRule> entry : dataSourceRules.entrySet()) {
                 DatabaseDiscoveryDataSourceRule rule = entry.getValue();
@@ -197,5 +203,10 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
     @Override
     public String getType() {
         return DatabaseDiscoveryRule.class.getSimpleName();
+    }
+    
+    @Override
+    public void setInstanceContext(final InstanceContext instanceContext) {
+        initHeartBeatJobs(instanceContext);
     }
 }

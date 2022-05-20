@@ -71,11 +71,10 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
     
     private ContextManager createContextManager(final String databaseName, final ModeConfiguration modeConfig, final Map<String, DataSource> dataSourceMap,
                                                 final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
-        Collection<RuleConfiguration> globalRuleConfigs = ruleConfigs.stream().filter(each -> each instanceof GlobalRuleConfiguration).collect(Collectors.toList());
         ContextManagerBuilderParameter parameter = ContextManagerBuilderParameter.builder()
                 .modeConfig(modeConfig)
                 .databaseConfigs(Collections.singletonMap(databaseName, new DataSourceProvidedDatabaseConfiguration(dataSourceMap, ruleConfigs)))
-                .globalRuleConfigs(globalRuleConfigs)
+                .globalRuleConfigs(ruleConfigs.stream().filter(each -> each instanceof GlobalRuleConfiguration).collect(Collectors.toList()))
                 .props(props)
                 .instanceDefinition(new InstanceDefinition(InstanceType.JDBC)).build();
         return ContextManagerBuilderFactory.getInstance(modeConfig).build(parameter);

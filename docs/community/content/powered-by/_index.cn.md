@@ -13,7 +13,7 @@ chapter = true
 
 ## 谁在使用 ShardingSphere?
 
-共计 194 家公司。
+共计 206 家公司。
 
 ### 基础软件
 <ul>
@@ -79,6 +79,7 @@ chapter = true
 <ul>
     <li><a href="https://www.yuanqisenlin.com/" rel="nofollow">元气森林</a></li>
     <li><a href="http://www.3songshu.com/" rel="nofollow">三只松鼠</a></li>
+    <li><a href="http://www.heilan.com.cn/" rel="nofollow">海澜集团</a></li>
     <li><a href="http://www.pagoda.com.cn/" rel="nofollow">百果园</a></li>
     <li><a href="https://www.dayi35.com/" rel="nofollow">大易有塑</a></li>
     <li><a href="https://www.xiaohongchun.com/" rel="nofollow">小红唇</a></li>
@@ -117,8 +118,12 @@ chapter = true
     <li><a href="http://www.shangquanquan.com/" rel="nofollow">万江龙智慧商圈</a></li>
     <li><a href="https://www.glodon.com/" rel="nofollow">广联达</a></li>
     <li><a href="https://www.zego.im/" rel="nofollow">即构科技</a></li>
-    <li><a href="http://www.sdjictec.com" rel="nofollow">建投数据科技</a></li>
+    <li><a href="http://www.sdjictec.com/" rel="nofollow">建投数据科技</a></li>
     <li><a href="https://www.baozun.com/" rel="nofollow">宝尊电商</a></li>
+    <li><a href="https://www.maxrocky.com/" rel="nofollow">迈动互联</a></li>
+    <li><a href="https://www.teddymobile.cn/" rel="nofollow">泰迪熊移动</a></li>
+    <li><a href="https://www.ecopiatech.com/" rel="nofollow">Ecopia</a></li>
+    <li><a href="https://xiaoman.cn/" rel="nofollow">小满科技</a></li>
 </ul>
 
 ### 出行
@@ -190,6 +195,7 @@ chapter = true
     <li><a href="http://www.swydedu.com/" rel="nofollow">数维原动</a></li>
     <li><a href="https://www.codemao.cn/" rel="nofollow">编程猫</a></li>
     <li><a href="https://www.yxt.com/" rel="nofollow">云学堂</a></li>
+    <li><a href="https://www.weixiaotong.com.cn/" rel="nofollow">光海微校通</a></li>
 </ul>
 
 ### 新闻资讯
@@ -223,6 +229,7 @@ chapter = true
     <li><a href="http://www.chiscdc.com/" rel="nofollow">中卫信</a></li>
     <li><a href="http://www.taxchina.com/" rel="nofollow">中税网</a></li>
     <li><a href="http://www.gddxit.com/" rel="nofollow">广东达信</a></li>
+    <li><a href="http://www.tshaisen.com/" rel="nofollow">海森电子</a></li>
 </ul>
 
 ### 通信科技
@@ -243,7 +250,8 @@ chapter = true
 
 ### 制造业
 <ul>
-    <li><a href="https://www.lixiang.com" rel="nofollow">理想汽车</a></li>
+    <li><a href="https://www.lixiang.com/" rel="nofollow">理想汽车</a></li>
+    <li><a href="https://www.tanksuv.com/" rel="nofollow">长城汽车</a></li>
     <li><a href="https://www.gongniu.cn/" rel="nofollow">公牛智能产业中心</a></li>
 </ul>
 
@@ -291,7 +299,14 @@ chapter = true
     <li><a href="http://www.huxleymedical.tech/" rel="nofollow">山东华链医疗科技有限公司</a></li>
     <li><a href="https://www.xingren.com/" rel="nofollow">未来医生</a></li>
     <li><a href="https://www.medbanks.cn/" rel="nofollow">思派网络</a></li>
+    <li><a href="http://swifthealth.cn/" rel="nofollow">朝前科技</a></li>
+    <li><a href="http://www.greenbon.cn/" rel="nofollow">绿葆</a></li>
+    <li><a href="http://yilihui.com/" rel="nofollow">伊丽汇</a></li>
 </ul>
 
+### 招聘
+<ul>
+    <li><a href="https://hireez.com/" rel="nofollow">hireEZ</a></li>
+</ul>
 
 <img src="https://shardingsphere.apache.org/community/image/powered-by.png" width = "30%" height = "30%" align="right" alt="Powered By ShardingSphere" />

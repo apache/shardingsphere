@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.federation.optimizer.context.planner.Opti
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContextFactory;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationSchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.event.AddSchemaEvent;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateSchemaStatement;
@@ -45,17 +45,17 @@ public final class CreateSchemaStatementSchemaRefresher implements MetaDataRefre
     private static final String TYPE = CreateSchemaStatement.class.getName();
     
     @Override
-    public void refresh(final ShardingSphereMetaData metaData, final FederationDatabaseMetaData database, final Map<String, OptimizerPlannerContext> optimizerPlanners,
+    public void refresh(final ShardingSphereDatabase database, final FederationDatabaseMetaData federationDatabaseMetaData, final Map<String, OptimizerPlannerContext> optimizerPlanners,
                         final Collection<String> logicDataSourceNames, final String schemaName, final CreateSchemaStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         Optional<IdentifierValue> schema = sqlStatement.getSchemaName().isPresent() ? sqlStatement.getSchemaName() : CreateSchemaStatementHandler.getUsername(sqlStatement);
         if (!schema.isPresent()) {
             return;
         }
         String actualSchemaName = schema.get().getValue();
-        metaData.getSchemas().put(actualSchemaName, new ShardingSphereSchema());
-        database.putSchemaMetadata(actualSchemaName, new FederationSchemaMetaData(actualSchemaName, new LinkedHashMap<>()));
-        optimizerPlanners.put(database.getName(), OptimizerPlannerContextFactory.create(database));
-        AddSchemaEvent event = new AddSchemaEvent(metaData.getDatabaseName(), actualSchemaName);
+        database.getSchemas().put(actualSchemaName, new ShardingSphereSchema());
+        federationDatabaseMetaData.putSchemaMetadata(actualSchemaName, new FederationSchemaMetaData(actualSchemaName, new LinkedHashMap<>()));
+        optimizerPlanners.put(federationDatabaseMetaData.getName(), OptimizerPlannerContextFactory.create(federationDatabaseMetaData));
+        AddSchemaEvent event = new AddSchemaEvent(database.getName(), actualSchemaName);
         ShardingSphereEventBus.getInstance().post(event);
     }
     

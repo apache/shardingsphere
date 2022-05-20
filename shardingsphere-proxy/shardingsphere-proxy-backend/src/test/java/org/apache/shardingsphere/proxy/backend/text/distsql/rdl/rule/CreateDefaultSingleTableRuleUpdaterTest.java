@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.rule;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateDefaultSingleTableRuleStatement;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,7 +43,7 @@ import static org.mockito.Mockito.when;
 public final class CreateDefaultSingleTableRuleUpdaterTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private ShardingSphereMetaData shardingSphereMetaData;
+    private ShardingSphereDatabase database;
     
     @Mock
     private SingleTableRuleConfiguration currentConfig;
@@ -52,21 +52,21 @@ public final class CreateDefaultSingleTableRuleUpdaterTest {
     
     @Before
     public void setUp() throws Exception {
-        when(shardingSphereMetaData.getDatabaseName()).thenReturn("sharding_db");
-        when(shardingSphereMetaData.getResource().getDataSources()).thenReturn(Collections.singletonMap("ds_0", mock(DataSource.class)));
+        when(database.getName()).thenReturn("sharding_db");
+        when(database.getResource().getDataSources()).thenReturn(Collections.singletonMap("ds_0", mock(DataSource.class)));
     }
     
     @Test(expected = RequiredResourceMissedException.class)
     public void assertCheckWithInvalidResource() throws Exception {
         CreateDefaultSingleTableRuleStatement statement = new CreateDefaultSingleTableRuleStatement("ds_1");
-        updater.checkSQLStatement(shardingSphereMetaData, statement, currentConfig);
+        updater.checkSQLStatement(database, statement, currentConfig);
     }
     
     @Test(expected = DuplicateRuleException.class)
     public void assertCheckWithDuplicateResource() throws Exception {
         when(currentConfig.getDefaultDataSource()).thenReturn(Optional.of("single_table"));
         CreateDefaultSingleTableRuleStatement statement = new CreateDefaultSingleTableRuleStatement("ds_0");
-        updater.checkSQLStatement(shardingSphereMetaData, statement, currentConfig);
+        updater.checkSQLStatement(database, statement, currentConfig);
     }
     
     @Test

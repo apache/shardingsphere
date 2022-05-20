@@ -27,8 +27,8 @@ public final class InstanceIdTest {
     
     @Test
     public void assertInitInstanceIdWithPort() {
-        InstanceId actual = new InstanceId(3307);
-        assertThat(actual.getUniqueSign(), is(3307));
+        InstanceId actual = new InstanceId("3307");
+        assertThat(actual.getUniqueSign(), is("3307"));
     }
     
     @Test
@@ -39,7 +39,7 @@ public final class InstanceIdTest {
     
     @Test
     public void assertInitInstanceIdWithIpAndUniqueSign() {
-        InstanceId actual = new InstanceId("127.0.0.1", 3307);
+        InstanceId actual = new InstanceId("127.0.0.1", "3307");
         assertThat(actual.getId(), is("127.0.0.1@3307"));
     }
     
@@ -47,7 +47,7 @@ public final class InstanceIdTest {
     public void assertInitInstanceIdWithExistId() {
         InstanceId actual = new InstanceId("127.0.0.1@3307");
         assertThat(actual.getIp(), is("127.0.0.1"));
-        assertThat(actual.getUniqueSign(), is(3307));
+        assertThat(actual.getUniqueSign(), is("3307"));
     }
     
     @Test

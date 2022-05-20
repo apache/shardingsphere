@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-schemaName: dbtbl_with_readwrite_splitting
+databaseName: dbtbl_with_readwrite_splitting
 
 dataSources:
   write_ds_0:

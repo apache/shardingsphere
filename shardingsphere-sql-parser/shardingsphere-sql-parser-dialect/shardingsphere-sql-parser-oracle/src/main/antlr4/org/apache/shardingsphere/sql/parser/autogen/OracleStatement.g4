@@ -85,5 +85,10 @@ execute
     | alterOutline
     | alterAnalyticView
     | alterAttributeDimension
+    | createSequence
+    | alterSequence
+    | alterPackage
+    | createContext
+    | createSPFile
     ) SEMI_?
     ;

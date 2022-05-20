@@ -35,7 +35,8 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -133,8 +134,8 @@ public final class YamlShardingSphereDataSourceFactory {
     }
     
     private static DataSource createDataSource(final DataSource dataSource, final YamlRootConfiguration rootConfig) throws SQLException {
-        Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
-        dataSourceMap.put(Strings.isNullOrEmpty(rootConfig.getDatabaseName()) ? DefaultDatabase.LOGIC_NAME : rootConfig.getDatabaseName(), dataSource);
+        Map<String, DataSource> dataSourceMap = new LinkedHashMap<>(
+                Collections.singletonMap(Strings.isNullOrEmpty(rootConfig.getDatabaseName()) ? DefaultDatabase.LOGIC_NAME : rootConfig.getDatabaseName(), dataSource));
         return createDataSource(dataSourceMap, rootConfig);
     }
 }

@@ -181,9 +181,4 @@ public final class DatabaseTypeEngineTest {
     public void assertGetTrunkDatabaseTypeNameWithBranchDatabaseType() {
         assertThat(DatabaseTypeEngine.getTrunkDatabaseTypeName(new MariaDBDatabaseType()), is("MySQL"));
     }
-    
-    @Test
-    public void assertGetDefaultDatabaseType() {
-        assertThat(DatabaseTypeEngine.getDefaultDatabaseType().getType(), is("MySQL"));
-    }
 }

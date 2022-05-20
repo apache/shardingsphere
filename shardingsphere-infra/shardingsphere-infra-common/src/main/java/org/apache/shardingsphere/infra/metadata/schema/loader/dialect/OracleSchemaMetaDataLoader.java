@@ -69,20 +69,19 @@ public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLo
     
     private static final int IDENTITY_COLUMN_START_MINOR_VERSION = 1;
     
-    private static final int BATCH_SIZE = 1000;
+    private static final int MAX_EXPRESSION_SIZE = 1000;
     
     @Override
     public Collection<SchemaMetaData> load(final DataSource dataSource, final Collection<String> tables, final String defaultSchemaName) throws SQLException {
-        Map<String, TableMetaData> tableMetaDataMap = new LinkedHashMap<>();
-        Map<String, Collection<IndexMetaData>> indexMetaDataMap = new LinkedHashMap<>();
-        Map<String, Collection<ColumnMetaData>> columnMetaDataMap = new HashMap<>(tables.size(), 1.0f);
-        List<List<String>> splitTables = Lists.partition(new ArrayList(tables), BATCH_SIZE);
+        Map<String, Collection<ColumnMetaData>> columnMetaDataMap = new HashMap<>(tables.size(), 1);
+        Map<String, Collection<IndexMetaData>> indexMetaDataMap = new HashMap<>(tables.size(), 1);
         try (Connection connection = dataSource.getConnection()) {
-            for (List<String> each : splitTables) {
+            for (List<String> each : Lists.partition(new ArrayList<>(tables), MAX_EXPRESSION_SIZE)) {
                 columnMetaDataMap.putAll(loadColumnMetaDataMap(connection, each));
+                indexMetaDataMap.putAll(loadIndexMetaData(connection, each));
             }
-            indexMetaDataMap.putAll(columnMetaDataMap.isEmpty() ? Collections.emptyMap() : loadIndexMetaData(connection, columnMetaDataMap.keySet()));
         }
+        Map<String, TableMetaData> tableMetaDataMap = new LinkedHashMap<>();
         for (Entry<String, Collection<ColumnMetaData>> entry : columnMetaDataMap.entrySet()) {
             tableMetaDataMap.put(entry.getKey(), new TableMetaData(entry.getKey(), entry.getValue(), indexMetaDataMap.getOrDefault(entry.getKey(), Collections.emptyList()), Collections.emptyList()));
         }
@@ -90,7 +89,7 @@ public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLo
     }
     
     private Map<String, Collection<ColumnMetaData>> loadColumnMetaDataMap(final Connection connection, final Collection<String> tables) throws SQLException {
-        Map<String, Collection<ColumnMetaData>> result = new HashMap<>();
+        Map<String, Collection<ColumnMetaData>> result = new HashMap<>(tables.size(), 1);
         try (PreparedStatement preparedStatement = connection.prepareStatement(getTableMetaDataSQL(tables, connection.getMetaData()))) {
             Map<String, Integer> dataTypes = DataTypeLoader.load(connection.getMetaData());
             appendNumberDataType(dataTypes);
@@ -115,13 +114,13 @@ public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLo
     }
     
     private ColumnMetaData loadColumnMetaData(final Map<String, Integer> dataTypeMap, final ResultSet resultSet, final Collection<String> primaryKeys,
-                                              final DatabaseMetaData metaData) throws SQLException {
+                                              final DatabaseMetaData databaseMetaData) throws SQLException {
         String columnName = resultSet.getString("COLUMN_NAME");
         String dataType = getOriginalDataType(resultSet.getString("DATA_TYPE"));
         boolean primaryKey = primaryKeys.contains(columnName);
-        boolean generated = versionContainsIdentityColumn(metaData) && "YES".equals(resultSet.getString("IDENTITY_COLUMN"));
+        boolean generated = versionContainsIdentityColumn(databaseMetaData) && "YES".equals(resultSet.getString("IDENTITY_COLUMN"));
         // TODO need to support caseSensitive when version < 12.2.
-        boolean caseSensitive = versionContainsCollation(metaData) && resultSet.getString("COLLATION").endsWith("_CS");
+        boolean caseSensitive = versionContainsCollation(databaseMetaData) && resultSet.getString("COLLATION").endsWith("_CS");
         return new ColumnMetaData(columnName, dataTypeMap.get(dataType), primaryKey, generated, caseSensitive);
     }
     
@@ -133,12 +132,12 @@ public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLo
         return dataType;
     }
     
-    private String getTableMetaDataSQL(final Collection<String> tables, final DatabaseMetaData metaData) throws SQLException {
+    private String getTableMetaDataSQL(final Collection<String> tables, final DatabaseMetaData databaseMetaData) throws SQLException {
         StringBuilder stringBuilder = new StringBuilder(28);
-        if (versionContainsIdentityColumn(metaData)) {
+        if (versionContainsIdentityColumn(databaseMetaData)) {
             stringBuilder.append(", IDENTITY_COLUMN");
         }
-        if (versionContainsCollation(metaData)) {
+        if (versionContainsCollation(databaseMetaData)) {
             stringBuilder.append(", COLLATION");
         }
         String collation = stringBuilder.toString();
@@ -146,16 +145,16 @@ public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLo
                 : String.format(TABLE_META_DATA_SQL_IN_TABLES, collation, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
     
-    private boolean versionContainsCollation(final DatabaseMetaData metaData) throws SQLException {
-        return metaData.getDatabaseMajorVersion() >= COLLATION_START_MAJOR_VERSION && metaData.getDatabaseMinorVersion() >= COLLATION_START_MINOR_VERSION;
+    private boolean versionContainsCollation(final DatabaseMetaData databaseMetaData) throws SQLException {
+        return databaseMetaData.getDatabaseMajorVersion() >= COLLATION_START_MAJOR_VERSION && databaseMetaData.getDatabaseMinorVersion() >= COLLATION_START_MINOR_VERSION;
     }
     
-    private boolean versionContainsIdentityColumn(final DatabaseMetaData metaData) throws SQLException {
-        return metaData.getDatabaseMajorVersion() >= COLLATION_START_MAJOR_VERSION && metaData.getDatabaseMinorVersion() >= IDENTITY_COLUMN_START_MINOR_VERSION;
+    private boolean versionContainsIdentityColumn(final DatabaseMetaData databaseMetaData) throws SQLException {
+        return databaseMetaData.getDatabaseMajorVersion() >= COLLATION_START_MAJOR_VERSION && databaseMetaData.getDatabaseMinorVersion() >= IDENTITY_COLUMN_START_MINOR_VERSION;
     }
     
     private Map<String, Collection<IndexMetaData>> loadIndexMetaData(final Connection connection, final Collection<String> tableNames) throws SQLException {
-        Map<String, Collection<IndexMetaData>> result = new HashMap<>();
+        Map<String, Collection<IndexMetaData>> result = new HashMap<>(tableNames.size(), 1);
         try (PreparedStatement preparedStatement = connection.prepareStatement(getIndexMetaDataSQL(tableNames))) {
             preparedStatement.setString(1, connection.getSchema());
             try (ResultSet resultSet = preparedStatement.executeQuery()) {

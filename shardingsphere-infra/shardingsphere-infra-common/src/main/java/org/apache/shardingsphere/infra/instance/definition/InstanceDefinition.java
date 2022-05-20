@@ -38,7 +38,7 @@ public final class InstanceDefinition {
     
     public InstanceDefinition(final InstanceType instanceType, final Integer port) {
         this.instanceType = instanceType;
-        instanceId = new InstanceId(port);
+        instanceId = new InstanceId(String.valueOf(port));
     }
     
     public InstanceDefinition(final InstanceType instanceType, final String id) {

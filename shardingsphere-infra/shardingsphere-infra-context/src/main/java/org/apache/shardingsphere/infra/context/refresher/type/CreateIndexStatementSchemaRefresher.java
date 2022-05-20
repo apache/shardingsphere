@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.context.refresher.MetaDataRefresher;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.schema.event.SchemaAlteredEvent;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.util.IndexMetaDataUtil;
@@ -41,7 +41,7 @@ public final class CreateIndexStatementSchemaRefresher implements MetaDataRefres
     private static final String TYPE = CreateIndexStatement.class.getName();
     
     @Override
-    public void refresh(final ShardingSphereMetaData metaData, final FederationDatabaseMetaData database, final Map<String, OptimizerPlannerContext> optimizerPlanners,
+    public void refresh(final ShardingSphereDatabase database, final FederationDatabaseMetaData federationDatabaseMetaData, final Map<String, OptimizerPlannerContext> optimizerPlanners,
                         final Collection<String> logicDataSourceNames, final String schemaName, final CreateIndexStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         String indexName = null != sqlStatement.getIndex() ? sqlStatement.getIndex().getIndexName().getIdentifier().getValue()
                 : IndexMetaDataUtil.getGeneratedLogicIndexName(sqlStatement.getColumns());
@@ -49,9 +49,9 @@ public final class CreateIndexStatementSchemaRefresher implements MetaDataRefres
             return;
         }
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
-        metaData.getSchemaByName(schemaName).get(tableName).getIndexes().put(indexName, new IndexMetaData(indexName));
-        SchemaAlteredEvent event = new SchemaAlteredEvent(metaData.getDatabaseName(), schemaName);
-        event.getAlteredTables().add(metaData.getSchemaByName(schemaName).get(tableName));
+        database.getSchemas().get(schemaName).get(tableName).getIndexes().put(indexName, new IndexMetaData(indexName));
+        SchemaAlteredEvent event = new SchemaAlteredEvent(database.getName(), schemaName);
+        event.getAlteredTables().add(database.getSchemas().get(schemaName).get(tableName));
         ShardingSphereEventBus.getInstance().post(event);
     }
     
