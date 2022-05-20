@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseS
  */
 public final class ShowShardingScalingRulesStatement extends ShowRulesStatement implements ScalingSubjectSupplier {
     
-    public ShowShardingScalingRulesStatement(final DatabaseSegment schema) {
-        super(schema);
+    public ShowShardingScalingRulesStatement(final DatabaseSegment database) {
+        super(database);
     }
 }

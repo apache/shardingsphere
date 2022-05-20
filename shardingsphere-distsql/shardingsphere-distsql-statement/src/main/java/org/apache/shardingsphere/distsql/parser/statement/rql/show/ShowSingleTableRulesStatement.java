@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseS
 @Getter
 public final class ShowSingleTableRulesStatement extends ShowRulesStatement implements ResourceSubjectSupplier {
     
-    public ShowSingleTableRulesStatement(final DatabaseSegment schema) {
-        super(schema);
+    public ShowSingleTableRulesStatement(final DatabaseSegment database) {
+        super(database);
     }
 }

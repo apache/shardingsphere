@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseS
  */
 public final class ShowShardingBroadcastTableRulesStatement extends ShowRulesStatement implements ShardingSubjectSupplier {
     
-    public ShowShardingBroadcastTableRulesStatement(final DatabaseSegment schema) {
-        super(schema);
+    public ShowShardingBroadcastTableRulesStatement(final DatabaseSegment database) {
+        super(database);
     }
 }

@@ -31,10 +31,10 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public final class ShowResourcesStatement extends RQLStatement implements FromDatabaseAvailable, ResourceSubjectSupplier {
     
-    private final DatabaseSegment schema;
+    private final DatabaseSegment database;
     
     @Override
     public Optional<DatabaseSegment> getDatabase() {
-        return Optional.ofNullable(schema);
+        return Optional.ofNullable(database);
     }
 }

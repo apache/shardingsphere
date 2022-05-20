@@ -30,10 +30,10 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public abstract class ShowRulesStatement extends RQLStatement implements FromDatabaseAvailable {
     
-    private final DatabaseSegment schema;
+    private final DatabaseSegment database;
     
     @Override
     public final Optional<DatabaseSegment> getDatabase() {
-        return Optional.ofNullable(schema);
+        return Optional.ofNullable(database);
     }
 }

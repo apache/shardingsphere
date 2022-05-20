@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseS
  */
 public final class ShowShardingKeyGeneratorsStatement extends ShowRulesStatement implements ShardingSubjectSupplier {
     
-    public ShowShardingKeyGeneratorsStatement(final DatabaseSegment schema) {
-        super(schema);
+    public ShowShardingKeyGeneratorsStatement(final DatabaseSegment database) {
+        super(database);
     }
 }

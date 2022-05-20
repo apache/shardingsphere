@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseS
  */
 public final class ShowReadwriteSplittingRulesStatement extends ShowRulesStatement implements ReadwriteSplittingSubjectSupplier {
     
-    public ShowReadwriteSplittingRulesStatement(final DatabaseSegment schema) {
-        super(schema);
+    public ShowReadwriteSplittingRulesStatement(final DatabaseSegment database) {
+        super(database);
     }
 }

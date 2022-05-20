@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseS
  */
 public final class ShowDefaultShardingStrategyStatement extends ShowRulesStatement implements ShardingSubjectSupplier {
     
-    public ShowDefaultShardingStrategyStatement(final DatabaseSegment schema) {
-        super(schema);
+    public ShowDefaultShardingStrategyStatement(final DatabaseSegment database) {
+        super(database);
     }
 }

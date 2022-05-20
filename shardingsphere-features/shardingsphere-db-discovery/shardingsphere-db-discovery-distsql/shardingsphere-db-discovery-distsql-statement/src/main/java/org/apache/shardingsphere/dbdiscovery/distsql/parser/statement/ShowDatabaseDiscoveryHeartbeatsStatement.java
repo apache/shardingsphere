@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseS
  */
 public final class ShowDatabaseDiscoveryHeartbeatsStatement extends ShowRulesStatement implements DatabaseDiscoverySubjectSupplier {
     
-    public ShowDatabaseDiscoveryHeartbeatsStatement(final DatabaseSegment schema) {
-        super(schema);
+    public ShowDatabaseDiscoveryHeartbeatsStatement(final DatabaseSegment database) {
+        super(database);
     }
 }

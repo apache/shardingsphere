@@ -29,8 +29,8 @@ public final class ShowRulesUsedResourceStatement extends ShowRulesStatement imp
     
     private final String resourceName;
     
-    public ShowRulesUsedResourceStatement(final String resourceName, final DatabaseSegment schema) {
-        super(schema);
+    public ShowRulesUsedResourceStatement(final String resourceName, final DatabaseSegment database) {
+        super(database);
         this.resourceName = resourceName;
     }
     

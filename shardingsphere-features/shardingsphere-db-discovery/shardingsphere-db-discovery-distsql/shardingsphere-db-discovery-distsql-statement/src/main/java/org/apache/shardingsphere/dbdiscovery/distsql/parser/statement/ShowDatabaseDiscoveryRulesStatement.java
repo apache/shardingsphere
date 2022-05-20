@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseS
  */
 public final class ShowDatabaseDiscoveryRulesStatement extends ShowRulesStatement implements DatabaseDiscoverySubjectSupplier {
     
-    public ShowDatabaseDiscoveryRulesStatement(final DatabaseSegment schema) {
-        super(schema);
+    public ShowDatabaseDiscoveryRulesStatement(final DatabaseSegment database) {
+        super(database);
     }
 }

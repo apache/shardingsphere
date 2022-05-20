@@ -30,8 +30,8 @@ public final class ShowShardingTableRulesUsedKeyGeneratorStatement extends ShowR
     
     private final String keyGeneratorName;
     
-    public ShowShardingTableRulesUsedKeyGeneratorStatement(final String keyGeneratorName, final DatabaseSegment schema) {
-        super(schema);
+    public ShowShardingTableRulesUsedKeyGeneratorStatement(final String keyGeneratorName, final DatabaseSegment database) {
+        super(database);
         this.keyGeneratorName = keyGeneratorName;
     }
     

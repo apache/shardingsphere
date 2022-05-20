@@ -30,8 +30,8 @@ public final class ShowShardingTableRulesUsedAlgorithmStatement extends ShowRule
     
     private final String algorithmName;
     
-    public ShowShardingTableRulesUsedAlgorithmStatement(final String algorithmName, final DatabaseSegment schema) {
-        super(schema);
+    public ShowShardingTableRulesUsedAlgorithmStatement(final String algorithmName, final DatabaseSegment database) {
+        super(database);
         this.algorithmName = algorithmName;
     }
     

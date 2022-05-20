@@ -33,8 +33,8 @@ public final class ShowShardingTableRulesStatement extends ShowRulesStatement im
     
     private final String tableName;
     
-    public ShowShardingTableRulesStatement(final String tableName, final DatabaseSegment schema) {
-        super(schema);
+    public ShowShardingTableRulesStatement(final String tableName, final DatabaseSegment database) {
+        super(database);
         this.tableName = tableName;
     }
     

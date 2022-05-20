@@ -33,8 +33,8 @@ public final class ShowEncryptRulesStatement extends ShowRulesStatement implemen
     
     private final String tableName;
     
-    public ShowEncryptRulesStatement(final String tableName, final DatabaseSegment schema) {
-        super(schema);
+    public ShowEncryptRulesStatement(final String tableName, final DatabaseSegment database) {
+        super(database);
         this.tableName = tableName;
     }
     

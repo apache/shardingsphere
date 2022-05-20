@@ -28,7 +28,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseS
 @Getter
 public final class ShowShadowTableRulesStatement extends ShowRulesStatement implements ShadowSubjectSupplier {
     
-    public ShowShadowTableRulesStatement(final DatabaseSegment schema) {
-        super(schema);
+    public ShowShadowTableRulesStatement(final DatabaseSegment database) {
+        super(database);
     }
 }

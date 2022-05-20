@@ -29,8 +29,8 @@ public final class ShowSingleTableStatement extends ShowRulesStatement implement
     
     private final String tableName;
     
-    public ShowSingleTableStatement(final String tableName, final DatabaseSegment schema) {
-        super(schema);
+    public ShowSingleTableStatement(final String tableName, final DatabaseSegment database) {
+        super(database);
         this.tableName = tableName;
     }
 }

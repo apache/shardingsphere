@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseS
  */
 public final class ShowUnusedShardingAlgorithmsStatement extends ShowRulesStatement implements ShardingSubjectSupplier {
     
-    public ShowUnusedShardingAlgorithmsStatement(final DatabaseSegment schema) {
-        super(schema);
+    public ShowUnusedShardingAlgorithmsStatement(final DatabaseSegment database) {
+        super(database);
     }
 }

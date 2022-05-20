@@ -28,7 +28,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseS
 @Getter
 public final class ShowShadowAlgorithmsStatement extends ShowRulesStatement implements ShadowSubjectSupplier {
     
-    public ShowShadowAlgorithmsStatement(final DatabaseSegment schema) {
-        super(schema);
+    public ShowShadowAlgorithmsStatement(final DatabaseSegment database) {
+        super(database);
     }
 }
