@@ -55,7 +55,7 @@ import org.apache.shardingsphere.infra.binder.statement.dml.DeleteStatementConte
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementContext;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.AnalyzeTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
@@ -109,28 +109,28 @@ public final class SQLStatementContextFactory {
     /**
      * Create SQL statement context.
      *
-     * @param databaseMetaDataMap database meta data map
+     * @param databaseMap database map
      * @param sqlStatement SQL statement
      * @param defaultDatabaseName default database name
      * @return SQL statement context
      */
-    public static SQLStatementContext<?> newInstance(final Map<String, ShardingSphereDatabaseMetaData> databaseMetaDataMap, final SQLStatement sqlStatement, final String defaultDatabaseName) {
-        return newInstance(databaseMetaDataMap, Collections.emptyList(), sqlStatement, defaultDatabaseName);
+    public static SQLStatementContext<?> newInstance(final Map<String, ShardingSphereDatabase> databaseMap, final SQLStatement sqlStatement, final String defaultDatabaseName) {
+        return newInstance(databaseMap, Collections.emptyList(), sqlStatement, defaultDatabaseName);
     }
     
     /**
      * Create SQL statement context.
      *
-     * @param databaseMetaDataMap database meta data map
+     * @param databaseMap database map
      * @param parameters SQL parameters
      * @param sqlStatement SQL statement
      * @param defaultDatabaseName default database name
      * @return SQL statement context
      */
-    public static SQLStatementContext<?> newInstance(final Map<String, ShardingSphereDatabaseMetaData> databaseMetaDataMap, final List<Object> parameters,
-                                                     final SQLStatement sqlStatement, final String defaultDatabaseName) {
+    public static SQLStatementContext<?> newInstance(final Map<String, ShardingSphereDatabase> databaseMap,
+                                                     final List<Object> parameters, final SQLStatement sqlStatement, final String defaultDatabaseName) {
         if (sqlStatement instanceof DMLStatement) {
-            return getDMLStatementContext(databaseMetaDataMap, parameters, (DMLStatement) sqlStatement, defaultDatabaseName);
+            return getDMLStatementContext(databaseMap, parameters, (DMLStatement) sqlStatement, defaultDatabaseName);
         }
         if (sqlStatement instanceof DDLStatement) {
             return getDDLStatementContext((DDLStatement) sqlStatement);
@@ -144,10 +144,10 @@ public final class SQLStatementContextFactory {
         return new CommonSQLStatementContext<>(sqlStatement);
     }
     
-    private static SQLStatementContext<?> getDMLStatementContext(final Map<String, ShardingSphereDatabaseMetaData> databaseMetaDataMap, final List<Object> parameters,
-                                                                 final DMLStatement sqlStatement, final String defaultDatabaseName) {
+    private static SQLStatementContext<?> getDMLStatementContext(final Map<String, ShardingSphereDatabase> databaseMap,
+                                                                 final List<Object> parameters, final DMLStatement sqlStatement, final String defaultDatabaseName) {
         if (sqlStatement instanceof SelectStatement) {
-            return new SelectStatementContext(databaseMetaDataMap, parameters, (SelectStatement) sqlStatement, defaultDatabaseName);
+            return new SelectStatementContext(databaseMap, parameters, (SelectStatement) sqlStatement, defaultDatabaseName);
         }
         if (sqlStatement instanceof UpdateStatement) {
             return new UpdateStatementContext((UpdateStatement) sqlStatement);
@@ -156,7 +156,7 @@ public final class SQLStatementContextFactory {
             return new DeleteStatementContext((DeleteStatement) sqlStatement);
         }
         if (sqlStatement instanceof InsertStatement) {
-            return new InsertStatementContext(databaseMetaDataMap, parameters, (InsertStatement) sqlStatement, defaultDatabaseName);
+            return new InsertStatementContext(databaseMap, parameters, (InsertStatement) sqlStatement, defaultDatabaseName);
         }
         if (sqlStatement instanceof CallStatement) {
             return new CallStatementContext((CallStatement) sqlStatement);

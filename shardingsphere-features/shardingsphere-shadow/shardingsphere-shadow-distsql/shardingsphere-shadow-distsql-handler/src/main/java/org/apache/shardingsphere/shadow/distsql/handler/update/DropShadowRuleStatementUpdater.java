@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shadow.distsql.handler.update;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.distsql.handler.checker.ShadowRuleStatementChecker;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.DropShadowRuleStatement;
@@ -35,14 +35,13 @@ public final class DropShadowRuleStatementUpdater implements RuleDefinitionDropU
     private static final String SHADOW = "shadow";
     
     @Override
-    public void checkSQLStatement(final ShardingSphereDatabaseMetaData databaseMetaData,
+    public void checkSQLStatement(final ShardingSphereDatabase database,
                                   final DropShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String databaseName = databaseMetaData.getDatabase().getName();
         if (sqlStatement.isContainsExistClause() && !isExistRuleConfig(currentRuleConfig)) {
             return;
         }
-        checkConfigurationExist(databaseName, currentRuleConfig);
-        checkRuleNames(databaseName, sqlStatement, currentRuleConfig);
+        checkConfigurationExist(database.getName(), currentRuleConfig);
+        checkRuleNames(database.getName(), sqlStatement, currentRuleConfig);
     }
     
     private void checkConfigurationExist(final String databaseName, final ShadowRuleConfiguration currentRuleConfig) throws DistSQLException {

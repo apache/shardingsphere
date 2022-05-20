@@ -44,7 +44,7 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.Statemen
 import org.apache.shardingsphere.infra.federation.executor.FederationContext;
 import org.apache.shardingsphere.infra.federation.executor.FederationExecutor;
 import org.apache.shardingsphere.infra.federation.executor.FederationExecutorFactory;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -103,17 +103,17 @@ public final class PreviewDistSQLBackendHandler extends QueryableRALBackendHandl
         Optional<SQLParserRule> sqlParserRule = metaDataContexts.getGlobalRuleMetaData().findSingleRule(SQLParserRule.class);
         Preconditions.checkState(sqlParserRule.isPresent());
         SQLStatement previewedStatement = new ShardingSphereSQLParserEngine(databaseType, sqlParserRule.get().toParserConfiguration()).parse(sqlStatement.getSql(), false);
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getDatabaseMetaDataMap(), previewedStatement, databaseName);
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getDatabaseMap(), previewedStatement, databaseName);
         // TODO optimize SQLStatementDatabaseHolder
         if (sqlStatementContext instanceof TableAvailable) {
             ((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName().ifPresent(SQLStatementDatabaseHolder::set);
         }
-        ShardingSphereDatabaseMetaData databaseMetaData = ProxyContext.getInstance().getMetaData(connectionSession.getDatabaseName());
-        if (!databaseMetaData.isComplete()) {
+        ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(connectionSession.getDatabaseName());
+        if (!database.isComplete()) {
             throw new RuleNotExistedException();
         }
         LogicSQL logicSQL = new LogicSQL(sqlStatementContext, sqlStatement.getSql(), Collections.emptyList());
-        ExecutionContext executionContext = kernelProcessor.generateExecutionContext(logicSQL, databaseMetaData, metaDataContexts.getProps());
+        ExecutionContext executionContext = kernelProcessor.generateExecutionContext(logicSQL, database, metaDataContexts.getProps());
         Collection<ExecutionUnit> executionUnits = executionContext.getRouteContext().isFederated()
                 ? getFederationExecutionUnits(logicSQL, databaseName, metaDataContexts)
                 : executionContext.getExecutionUnits();
@@ -128,7 +128,7 @@ public final class PreviewDistSQLBackendHandler extends QueryableRALBackendHandl
         SQLStatement sqlStatement = logicSQL.getSqlStatementContext().getSqlStatement();
         boolean isReturnGeneratedKeys = sqlStatement instanceof MySQLInsertStatement;
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine(isReturnGeneratedKeys, metaDataContexts);
-        FederationContext context = new FederationContext(true, logicSQL, metaDataContexts.getDatabaseMetaDataMap());
+        FederationContext context = new FederationContext(true, logicSQL, metaDataContexts.getDatabaseMap());
         DatabaseType databaseType = metaDataContexts.getDatabaseMetaData(getDatabaseName()).getResource().getDatabaseType();
         String schemaName = logicSQL.getSqlStatementContext().getTablesContext().getSchemaName().orElse(databaseType.getDefaultSchema(databaseName));
         FederationExecutor executor = FederationExecutorFactory.newInstance(databaseName, schemaName, metaDataContexts.getOptimizerContext(),

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.metadata.database.loader;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SystemSchemaBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.loader.SchemaLoader;
@@ -48,13 +48,13 @@ public final class DatabaseLoader {
      * @return loaded database
      * @throws SQLException SQL exception
      */
-    public static ShardingSphereDatabase load(final String databaseName, final DatabaseType frontendDatabaseType,
-                                              final DatabaseType backendDatabaseType, final Map<String, DataSource> dataSourceMap,
-                                              final Collection<ShardingSphereRule> rules, final ConfigurationProperties props) throws SQLException {
+    public static ShardingSphereDatabaseMetaData load(final String databaseName, final DatabaseType frontendDatabaseType,
+                                                      final DatabaseType backendDatabaseType, final Map<String, DataSource> dataSourceMap,
+                                                      final Collection<ShardingSphereRule> rules, final ConfigurationProperties props) throws SQLException {
         Map<String, ShardingSphereSchema> schemas = new LinkedHashMap<>();
         schemas.putAll(SchemaLoader.load(databaseName, frontendDatabaseType, backendDatabaseType, dataSourceMap, rules, props));
         schemas.putAll(SystemSchemaBuilder.build(databaseName, frontendDatabaseType));
-        return new ShardingSphereDatabase(databaseName, schemas);
+        return new ShardingSphereDatabaseMetaData(schemas);
     }
     
     /**
@@ -64,7 +64,7 @@ public final class DatabaseLoader {
      * @param frontendDatabaseType frontend database type
      * @return loaded database
      */
-    public static ShardingSphereDatabase load(final String databaseName, final DatabaseType frontendDatabaseType) {
-        return new ShardingSphereDatabase(databaseName, SystemSchemaBuilder.build(databaseName, frontendDatabaseType));
+    public static ShardingSphereDatabaseMetaData load(final String databaseName, final DatabaseType frontendDatabaseType) {
+        return new ShardingSphereDatabaseMetaData(SystemSchemaBuilder.build(databaseName, frontendDatabaseType));
     }
 }

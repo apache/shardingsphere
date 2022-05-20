@@ -26,7 +26,7 @@ import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePrepar
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationResultSet;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -65,7 +65,7 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
         return new ShardingSphereResultSetMetaData(resultSets.get(0).getMetaData(), getDatabaseMetaData(), executionContext.getSqlStatementContext());
     }
     
-    private ShardingSphereDatabaseMetaData getDatabaseMetaData() {
+    private ShardingSphereDatabase getDatabaseMetaData() {
         ShardingSphereConnection connection = statement instanceof ShardingSpherePreparedStatement
                 ? ((ShardingSpherePreparedStatement) statement).getConnection()
                 : ((ShardingSphereStatement) statement).getConnection();

@@ -24,8 +24,8 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -67,12 +67,12 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.emptyList(), Arrays.asList(shardingRule, singleTableRule));
         ShardingSphereResource resource = mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS);
         when(resource.getDatabaseType()).thenReturn(new MySQLDatabaseType());
-        ShardingSphereDatabaseMetaData databaseMetaData = new ShardingSphereDatabaseMetaData(
-                DatabaseTypeFactory.getInstance("MySQL"), resource, ruleMetaData, new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, schemas));
-        Map<String, ShardingSphereDatabaseMetaData> databaseMetaDataMap = Collections.singletonMap(DefaultDatabase.LOGIC_NAME, databaseMetaData);
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(databaseMetaDataMap, parameters, sqlStatementParserEngine.parse(sql, false), DefaultDatabase.LOGIC_NAME);
+        ShardingSphereDatabase database = new ShardingSphereDatabase(
+                DefaultDatabase.LOGIC_NAME, DatabaseTypeFactory.getInstance("MySQL"), resource, ruleMetaData, new ShardingSphereDatabaseMetaData(schemas));
+        Map<String, ShardingSphereDatabase> databaseMap = Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database);
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(databaseMap, parameters, sqlStatementParserEngine.parse(sql, false), DefaultDatabase.LOGIC_NAME);
         LogicSQL logicSQL = new LogicSQL(sqlStatementContext, sql, parameters);
-        return new SQLRouteEngine(Arrays.asList(shardingRule, singleTableRule), props).route(logicSQL, databaseMetaData);
+        return new SQLRouteEngine(Arrays.asList(shardingRule, singleTableRule), props).route(logicSQL, database);
     }
     
     private Map<String, ShardingSphereSchema> buildSchemas() {

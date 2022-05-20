@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.Col
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.DerivedProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ShorthandProjection;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
@@ -48,7 +48,7 @@ public final class ProjectionsContextEngine {
     
     private final ProjectionEngine projectionEngine;
     
-    public ProjectionsContextEngine(final String databaseName, final ShardingSphereDatabase database, final DatabaseType databaseType) {
+    public ProjectionsContextEngine(final String databaseName, final ShardingSphereDatabaseMetaData database, final DatabaseType databaseType) {
         projectionEngine = new ProjectionEngine(databaseName, database, databaseType);
     }
     

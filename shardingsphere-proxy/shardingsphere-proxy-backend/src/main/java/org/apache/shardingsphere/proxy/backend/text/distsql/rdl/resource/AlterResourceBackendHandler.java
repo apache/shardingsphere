@@ -83,7 +83,7 @@ public final class AlterResourceBackendHandler extends DatabaseRequiredBackendHa
     }
     
     private void checkDatabase(final String databaseName, final AlterResourceStatement sqlStatement) throws DistSQLException {
-        Map<String, DataSource> resources = ProxyContext.getInstance().getMetaData(databaseName).getResource().getDataSources();
+        Map<String, DataSource> resources = ProxyContext.getInstance().getDatabase(databaseName).getResource().getDataSources();
         Collection<String> invalid = sqlStatement.getDataSources().stream().collect(Collectors.toMap(DataSourceSegment::getName, each -> each)).entrySet().stream()
                 .filter(each -> !isIdenticalDatabase(each.getValue(), resources.get(each.getKey()))).map(Entry::getKey).collect(Collectors.toSet());
         DistSQLException.predictionThrow(invalid.isEmpty(), () -> new InvalidResourcesException(Collections.singleton(String.format("Cannot alter the database of %s", invalid))));
@@ -103,7 +103,7 @@ public final class AlterResourceBackendHandler extends DatabaseRequiredBackendHa
     }
     
     private void checkResourceNameExisted(final String databaseName, final Collection<String> resourceNames) throws DistSQLException {
-        Map<String, DataSource> resources = ProxyContext.getInstance().getMetaData(databaseName).getResource().getDataSources();
+        Map<String, DataSource> resources = ProxyContext.getInstance().getDatabase(databaseName).getResource().getDataSources();
         Collection<String> notExistedResourceNames = resourceNames.stream().filter(each -> !resources.containsKey(each)).collect(Collectors.toList());
         DistSQLException.predictionThrow(notExistedResourceNames.isEmpty(), () -> new RequiredResourceMissedException(databaseName, notExistedResourceNames));
     }

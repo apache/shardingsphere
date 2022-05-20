@@ -19,7 +19,7 @@ package org.apache.shardingsphere.scaling.distsql.handler.update;
 
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.scaling.distsql.statement.DropShardingScalingRuleStatement;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.junit.Before;
@@ -36,38 +36,38 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class DropShardingScalingRuleStatementUpdaterTest {
     
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private ShardingSphereDatabaseMetaData databaseMetaData;
-    
     private final DropShardingScalingRuleStatementUpdater updater = new DropShardingScalingRuleStatementUpdater();
+    
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private ShardingSphereDatabase database;
     
     @Before
     public void before() {
-        when(databaseMetaData.getDatabase().getName()).thenReturn("test");
+        when(database.getName()).thenReturn("test");
     }
     
     @Test(expected = RequiredRuleMissedException.class)
     public void assertCheckWithoutShardingRule() throws DistSQLException {
-        updater.checkSQLStatement(databaseMetaData, createSQLStatement("default_scaling"), null);
+        updater.checkSQLStatement(database, createSQLStatement("default_scaling"), null);
     }
     
     @Test(expected = RequiredRuleMissedException.class)
     public void assertCheckWithNotExist() throws DistSQLException {
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
-        updater.checkSQLStatement(databaseMetaData, createSQLStatement("default_scaling"), currentRuleConfig);
+        updater.checkSQLStatement(database, createSQLStatement("default_scaling"), currentRuleConfig);
     }
     
     @Test
     public void assertCheckWithIfExists() throws DistSQLException {
-        updater.checkSQLStatement(databaseMetaData, new DropShardingScalingRuleStatement(true, "default_scaling"), new ShardingRuleConfiguration());
-        updater.checkSQLStatement(databaseMetaData, new DropShardingScalingRuleStatement(true, "default_scaling"), null);
+        updater.checkSQLStatement(database, new DropShardingScalingRuleStatement(true, "default_scaling"), new ShardingRuleConfiguration());
+        updater.checkSQLStatement(database, new DropShardingScalingRuleStatement(true, "default_scaling"), null);
     }
     
     @Test
     public void assertCheckSuccess() throws DistSQLException {
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
         currentRuleConfig.getScaling().put("default_scaling", null);
-        updater.checkSQLStatement(databaseMetaData, createSQLStatement("default_scaling"), currentRuleConfig);
+        updater.checkSQLStatement(database, createSQLStatement("default_scaling"), currentRuleConfig);
     }
     
     @Test

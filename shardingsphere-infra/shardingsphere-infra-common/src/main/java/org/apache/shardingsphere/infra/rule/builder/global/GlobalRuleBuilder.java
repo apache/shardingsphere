@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.rule.builder.global;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.builder.RuleBuilder;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
 import org.apache.shardingsphere.spi.annotation.SingletonSPI;
@@ -37,8 +37,8 @@ public interface GlobalRuleBuilder<T extends RuleConfiguration> extends RuleBuil
      * Build global rule.
      *
      * @param ruleConfig rule configuration
-     * @param databaseMetaDataMap database meta data map
+     * @param databaseMap database map
      * @return global rule
      */
-    GlobalRule build(T ruleConfig, Map<String, ShardingSphereDatabaseMetaData> databaseMetaDataMap);
+    GlobalRule build(T ruleConfig, Map<String, ShardingSphereDatabase> databaseMap);
 }

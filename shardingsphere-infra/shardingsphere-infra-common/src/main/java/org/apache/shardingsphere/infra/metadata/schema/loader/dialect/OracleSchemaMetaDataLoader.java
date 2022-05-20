@@ -69,20 +69,19 @@ public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLo
     
     private static final int IDENTITY_COLUMN_START_MINOR_VERSION = 1;
     
-    private static final int BATCH_SIZE = 1000;
+    private static final int MAX_EXPRESSION_SIZE = 1000;
     
     @Override
     public Collection<SchemaMetaData> load(final DataSource dataSource, final Collection<String> tables, final String defaultSchemaName) throws SQLException {
-        Map<String, TableMetaData> tableMetaDataMap = new LinkedHashMap<>();
-        Map<String, Collection<IndexMetaData>> indexMetaDataMap = new LinkedHashMap<>();
-        Map<String, Collection<ColumnMetaData>> columnMetaDataMap = new HashMap<>(tables.size(), 1.0f);
-        List<List<String>> splitTables = Lists.partition(new ArrayList(tables), BATCH_SIZE);
+        Map<String, Collection<ColumnMetaData>> columnMetaDataMap = new HashMap<>(tables.size(), 1);
+        Map<String, Collection<IndexMetaData>> indexMetaDataMap = new HashMap<>(tables.size(), 1);
         try (Connection connection = dataSource.getConnection()) {
-            for (List<String> each : splitTables) {
+            for (List<String> each : Lists.partition(new ArrayList<>(tables), MAX_EXPRESSION_SIZE)) {
                 columnMetaDataMap.putAll(loadColumnMetaDataMap(connection, each));
+                indexMetaDataMap.putAll(loadIndexMetaData(connection, each));
             }
-            indexMetaDataMap.putAll(columnMetaDataMap.isEmpty() ? Collections.emptyMap() : loadIndexMetaData(connection, columnMetaDataMap.keySet()));
         }
+        Map<String, TableMetaData> tableMetaDataMap = new LinkedHashMap<>();
         for (Entry<String, Collection<ColumnMetaData>> entry : columnMetaDataMap.entrySet()) {
             tableMetaDataMap.put(entry.getKey(), new TableMetaData(entry.getKey(), entry.getValue(), indexMetaDataMap.getOrDefault(entry.getKey(), Collections.emptyList()), Collections.emptyList()));
         }
@@ -90,7 +89,7 @@ public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLo
     }
     
     private Map<String, Collection<ColumnMetaData>> loadColumnMetaDataMap(final Connection connection, final Collection<String> tables) throws SQLException {
-        Map<String, Collection<ColumnMetaData>> result = new HashMap<>();
+        Map<String, Collection<ColumnMetaData>> result = new HashMap<>(tables.size(), 1);
         try (PreparedStatement preparedStatement = connection.prepareStatement(getTableMetaDataSQL(tables, connection.getMetaData()))) {
             Map<String, Integer> dataTypes = DataTypeLoader.load(connection.getMetaData());
             appendNumberDataType(dataTypes);
@@ -155,7 +154,7 @@ public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLo
     }
     
     private Map<String, Collection<IndexMetaData>> loadIndexMetaData(final Connection connection, final Collection<String> tableNames) throws SQLException {
-        Map<String, Collection<IndexMetaData>> result = new HashMap<>();
+        Map<String, Collection<IndexMetaData>> result = new HashMap<>(tableNames.size(), 1);
         try (PreparedStatement preparedStatement = connection.prepareStatement(getIndexMetaDataSQL(tableNames))) {
             preparedStatement.setString(1, connection.getSchema());
             try (ResultSet resultSet = preparedStatement.executeQuery()) {

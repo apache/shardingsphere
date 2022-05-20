@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.distsql.query;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.query.ShardingBindingTableRuleQueryResultSet;
@@ -39,10 +39,10 @@ public final class ShardingBindingTableRuleQueryResultSetTest {
     
     @Test
     public void assertGetRowData() {
-        ShardingSphereDatabaseMetaData databaseMetaData = mock(ShardingSphereDatabaseMetaData.class, RETURNS_DEEP_STUBS);
-        when(databaseMetaData.getRuleMetaData().getConfigurations()).thenReturn(Collections.singleton(createRuleConfiguration()));
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.singleton(createRuleConfiguration()));
         ShardingBindingTableRuleQueryResultSet resultSet = new ShardingBindingTableRuleQueryResultSet();
-        resultSet.init(databaseMetaData, mock(ShowShardingBindingTableRulesStatement.class));
+        resultSet.init(database, mock(ShowShardingBindingTableRulesStatement.class));
         Collection<Object> actual = resultSet.getRowData();
         assertThat(actual.size(), is(1));
         assertTrue(actual.contains("t_order,t_order_item"));

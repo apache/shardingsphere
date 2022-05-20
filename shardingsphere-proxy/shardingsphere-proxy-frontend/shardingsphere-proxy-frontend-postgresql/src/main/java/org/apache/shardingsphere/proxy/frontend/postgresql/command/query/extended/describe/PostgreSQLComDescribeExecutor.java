@@ -35,7 +35,7 @@ import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -128,10 +128,10 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         }
         String databaseName = connectionSession.getDatabaseName();
         String logicTableName = insertStatement.getTable().getTableName().getIdentifier().getValue();
-        ShardingSphereDatabaseMetaData databaseMetaData = ProxyContext.getInstance().getMetaData(databaseName);
+        ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(databaseName);
         String schemaName = insertStatement.getTable().getOwner().map(optional -> optional.getIdentifier()
-                .getValue()).orElseGet(() -> databaseMetaData.getResource().getDatabaseType().getDefaultSchema(databaseName));
-        TableMetaData tableMetaData = databaseMetaData.getDatabase().getSchema(schemaName).get(logicTableName);
+                .getValue()).orElseGet(() -> database.getResource().getDatabaseType().getDefaultSchema(databaseName));
+        TableMetaData tableMetaData = database.getDatabaseMetaData().getSchema(schemaName).get(logicTableName);
         Map<String, ColumnMetaData> columnMetaData = tableMetaData.getColumns();
         Map<String, ColumnMetaData> caseInsensitiveColumnMetaData = null;
         List<String> columnNames;
@@ -196,10 +196,10 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         String databaseName = connectionSession.getDatabaseName();
         SQLStatementContext<?> sqlStatementContext =
-                SQLStatementContextFactory.newInstance(metaDataContexts.getDatabaseMetaDataMap(), preparedStatement.getSqlStatement(), databaseName);
+                SQLStatementContextFactory.newInstance(metaDataContexts.getDatabaseMap(), preparedStatement.getSqlStatement(), databaseName);
         LogicSQL logicSQL = new LogicSQL(sqlStatementContext, preparedStatement.getSql(), Collections.emptyList());
-        ShardingSphereDatabaseMetaData databaseMetaData = ProxyContext.getInstance().getMetaData(databaseName);
-        ExecutionContext executionContext = new KernelProcessor().generateExecutionContext(logicSQL, databaseMetaData, metaDataContexts.getProps());
+        ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(databaseName);
+        ExecutionContext executionContext = new KernelProcessor().generateExecutionContext(logicSQL, database, metaDataContexts.getProps());
         ExecutionUnit executionUnitSample = executionContext.getExecutionUnits().iterator().next();
         JDBCBackendConnection backendConnection = (JDBCBackendConnection) connectionSession.getBackendConnection();
         Connection connection = backendConnection.getConnections(executionUnitSample.getDataSourceName(), 1, ConnectionMode.CONNECTION_STRICTLY).iterator().next();
