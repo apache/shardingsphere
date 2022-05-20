@@ -46,6 +46,10 @@ public final class ShardingSphereDistributeMutexLock implements ShardingSphereLo
         this.lockHolder = lockHolder;
         this.sequenced = lockHolder.getInterReentrantMutexLock(lockNodeService.getSequenceNodePath());
         ShardingSphereEventBus.getInstance().register(this);
+        syncMutexLockStatus();
+    }
+    
+    private void syncMutexLockStatus() {
         lockHolder.synchronizeMutexLock(lockNodeService);
     }
     
