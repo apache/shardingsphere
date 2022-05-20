@@ -45,9 +45,9 @@ import java.util.stream.Collectors;
 public final class AlterEncryptRuleStatementUpdater implements RuleDefinitionAlterUpdater<AlterEncryptRuleStatement, EncryptRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final AlterEncryptRuleStatement sqlStatement,
+    public void checkSQLStatement(final ShardingSphereMetaData metaData, final AlterEncryptRuleStatement sqlStatement,
                                   final EncryptRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String databaseName = shardingSphereMetaData.getDatabase().getName();
+        String databaseName = metaData.getDatabase().getName();
         checkCurrentRuleConfiguration(databaseName, currentRuleConfig);
         checkToBeAlteredRules(databaseName, sqlStatement, currentRuleConfig);
         checkToBeAlteredEncryptors(sqlStatement);

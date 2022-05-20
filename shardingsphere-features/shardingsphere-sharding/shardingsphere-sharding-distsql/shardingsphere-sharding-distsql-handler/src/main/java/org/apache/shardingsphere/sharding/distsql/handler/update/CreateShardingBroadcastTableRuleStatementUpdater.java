@@ -30,9 +30,9 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardin
 public final class CreateShardingBroadcastTableRuleStatementUpdater implements RuleDefinitionCreateUpdater<CreateShardingBroadcastTableRulesStatement, ShardingRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final CreateShardingBroadcastTableRulesStatement sqlStatement,
+    public void checkSQLStatement(final ShardingSphereMetaData metaData, final CreateShardingBroadcastTableRulesStatement sqlStatement,
                                   final ShardingRuleConfiguration currentRuleConfig) throws RuleDefinitionViolationException {
-        checkCurrentRuleConfiguration(shardingSphereMetaData.getDatabase().getName(), currentRuleConfig);
+        checkCurrentRuleConfiguration(metaData.getDatabase().getName(), currentRuleConfig);
     }
     
     private void checkCurrentRuleConfiguration(final String databaseName, final ShardingRuleConfiguration currentRuleConfig) throws RuleInUsedException {

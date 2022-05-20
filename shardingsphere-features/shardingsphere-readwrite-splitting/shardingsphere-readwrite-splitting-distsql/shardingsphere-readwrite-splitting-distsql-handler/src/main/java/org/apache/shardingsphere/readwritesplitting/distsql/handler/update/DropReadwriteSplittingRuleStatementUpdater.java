@@ -38,15 +38,15 @@ import java.util.stream.Collectors;
 public final class DropReadwriteSplittingRuleStatementUpdater implements RuleDefinitionDropUpdater<DropReadwriteSplittingRuleStatement, ReadwriteSplittingRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final DropReadwriteSplittingRuleStatement sqlStatement,
+    public void checkSQLStatement(final ShardingSphereMetaData metaData, final DropReadwriteSplittingRuleStatement sqlStatement,
                                   final ReadwriteSplittingRuleConfiguration currentRuleConfig) throws RuleDefinitionViolationException {
-        String databaseName = shardingSphereMetaData.getDatabase().getName();
+        String databaseName = metaData.getDatabase().getName();
         if (!isExistRuleConfig(currentRuleConfig) && sqlStatement.isContainsExistClause()) {
             return;
         }
         checkCurrentRuleConfiguration(databaseName, currentRuleConfig);
         checkToBeDroppedRuleNames(databaseName, sqlStatement, currentRuleConfig);
-        checkToBeDroppedInUsed(databaseName, sqlStatement, shardingSphereMetaData);
+        checkToBeDroppedInUsed(databaseName, sqlStatement, metaData);
     }
     
     private void checkCurrentRuleConfiguration(final String databaseName, final ReadwriteSplittingRuleConfiguration currentRuleConfig) throws RequiredRuleMissedException {

@@ -31,9 +31,9 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 public final class DisableShardingScalingRuleStatementUpdater implements RuleDefinitionAlterUpdater<DisableShardingScalingRuleStatement, ShardingRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final DisableShardingScalingRuleStatement sqlStatement,
+    public void checkSQLStatement(final ShardingSphereMetaData metaData, final DisableShardingScalingRuleStatement sqlStatement,
                                   final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String databaseName = shardingSphereMetaData.getDatabase().getName();
+        String databaseName = metaData.getDatabase().getName();
         checkCurrentRuleConfiguration(databaseName, currentRuleConfig);
         checkExist(databaseName, sqlStatement, currentRuleConfig);
         checkDisabled(databaseName, sqlStatement, currentRuleConfig);

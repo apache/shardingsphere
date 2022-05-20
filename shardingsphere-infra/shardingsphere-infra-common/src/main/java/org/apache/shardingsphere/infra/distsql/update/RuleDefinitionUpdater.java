@@ -36,12 +36,12 @@ public interface RuleDefinitionUpdater<T extends SQLStatement, R extends RuleCon
     /**
      * Check SQL statement.
      *
-     * @param shardingSphereMetaData ShardingSphere meta data
+     * @param metaData ShardingSphere meta data
      * @param sqlStatement SQL statement
      * @param currentRuleConfig current rule configuration
      * @throws DistSQLException definition violation exception
      */
-    void checkSQLStatement(ShardingSphereMetaData shardingSphereMetaData, T sqlStatement, R currentRuleConfig) throws DistSQLException;
+    void checkSQLStatement(ShardingSphereMetaData metaData, T sqlStatement, R currentRuleConfig) throws DistSQLException;
     
     /**
      * Get rule configuration class.

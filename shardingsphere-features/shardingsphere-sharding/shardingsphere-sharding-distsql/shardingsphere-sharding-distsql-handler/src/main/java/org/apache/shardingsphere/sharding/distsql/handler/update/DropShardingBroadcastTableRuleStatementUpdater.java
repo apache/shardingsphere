@@ -33,9 +33,9 @@ import java.util.stream.Collectors;
 public final class DropShardingBroadcastTableRuleStatementUpdater implements RuleDefinitionDropUpdater<DropShardingBroadcastTableRulesStatement, ShardingRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final DropShardingBroadcastTableRulesStatement sqlStatement,
+    public void checkSQLStatement(final ShardingSphereMetaData metaData, final DropShardingBroadcastTableRulesStatement sqlStatement,
                                   final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String databaseName = shardingSphereMetaData.getDatabase().getName();
+        String databaseName = metaData.getDatabase().getName();
         if (!isExistRuleConfig(currentRuleConfig) && sqlStatement.isContainsExistClause()) {
             return;
         }

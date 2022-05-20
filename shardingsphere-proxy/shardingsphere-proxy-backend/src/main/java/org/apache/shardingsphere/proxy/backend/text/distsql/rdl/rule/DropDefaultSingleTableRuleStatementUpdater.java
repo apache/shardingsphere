@@ -30,9 +30,9 @@ import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration
 public final class DropDefaultSingleTableRuleStatementUpdater implements RuleDefinitionDropUpdater<DropDefaultSingleTableRuleStatement, SingleTableRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final DropDefaultSingleTableRuleStatement sqlStatement,
+    public void checkSQLStatement(final ShardingSphereMetaData metaData, final DropDefaultSingleTableRuleStatement sqlStatement,
                                   final SingleTableRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String databaseName = shardingSphereMetaData.getDatabase().getName();
+        String databaseName = metaData.getDatabase().getName();
         checkCurrentRuleConfiguration(databaseName, sqlStatement, currentRuleConfig);
     }
     

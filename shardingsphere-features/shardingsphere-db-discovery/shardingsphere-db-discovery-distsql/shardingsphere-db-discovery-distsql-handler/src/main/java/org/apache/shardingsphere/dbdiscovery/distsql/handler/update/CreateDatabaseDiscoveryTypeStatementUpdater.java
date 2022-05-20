@@ -41,9 +41,9 @@ public final class CreateDatabaseDiscoveryTypeStatementUpdater implements RuleDe
     private static final String RULE_TYPE = "database discovery";
     
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final CreateDatabaseDiscoveryTypeStatement sqlStatement,
+    public void checkSQLStatement(final ShardingSphereMetaData metaData, final CreateDatabaseDiscoveryTypeStatement sqlStatement,
                                   final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String databaseName = shardingSphereMetaData.getDatabase().getName();
+        String databaseName = metaData.getDatabase().getName();
         checkDuplicateDiscoveryType(databaseName, sqlStatement, currentRuleConfig);
         checkInvalidDiscoverType(sqlStatement);
     }

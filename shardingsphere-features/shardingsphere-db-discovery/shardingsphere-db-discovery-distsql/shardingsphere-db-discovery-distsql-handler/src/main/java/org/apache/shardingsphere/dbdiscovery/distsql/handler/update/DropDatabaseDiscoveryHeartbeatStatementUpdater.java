@@ -37,9 +37,9 @@ public final class DropDatabaseDiscoveryHeartbeatStatementUpdater implements Rul
     private static final String RULE_TYPE = "Database discovery";
     
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final DropDatabaseDiscoveryHeartbeatStatement sqlStatement,
+    public void checkSQLStatement(final ShardingSphereMetaData metaData, final DropDatabaseDiscoveryHeartbeatStatement sqlStatement,
                                   final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String databaseName = shardingSphereMetaData.getDatabase().getName();
+        String databaseName = metaData.getDatabase().getName();
         checkCurrentRuleConfiguration(databaseName, sqlStatement, currentRuleConfig);
         checkIsInUse(databaseName, sqlStatement, currentRuleConfig);
     }

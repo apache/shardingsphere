@@ -46,9 +46,9 @@ public final class DropShardingBindingTableRuleStatementUpdater implements RuleD
     private Map<String, String> bindingTableRules = Collections.emptyMap();
     
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData,
+    public void checkSQLStatement(final ShardingSphereMetaData metaData,
                                   final DropShardingBindingTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String databaseName = shardingSphereMetaData.getDatabase().getName();
+        String databaseName = metaData.getDatabase().getName();
         if (!isExistRuleConfig(currentRuleConfig) && sqlStatement.isContainsExistClause()) {
             return;
         }

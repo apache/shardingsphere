@@ -33,7 +33,7 @@ public final class FixtureRuleDefinitionCreateUpdater implements RuleDefinitionC
     }
     
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final CreateFixtureRuleStatement sqlStatement, final FixtureRuleConfiguration currentRuleConfig) {
+    public void checkSQLStatement(final ShardingSphereMetaData metaData, final CreateFixtureRuleStatement sqlStatement, final FixtureRuleConfiguration currentRuleConfig) {
     }
     
     @Override

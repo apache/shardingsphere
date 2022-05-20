@@ -41,9 +41,9 @@ import java.util.stream.Collectors;
 public final class CreateShardingAlgorithmStatementUpdater implements RuleDefinitionCreateUpdater<CreateShardingAlgorithmStatement, ShardingRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final CreateShardingAlgorithmStatement sqlStatement,
+    public void checkSQLStatement(final ShardingSphereMetaData metaData, final CreateShardingAlgorithmStatement sqlStatement,
                                   final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String databaseName = shardingSphereMetaData.getDatabase().getName();
+        String databaseName = metaData.getDatabase().getName();
         checkDuplicate(databaseName, sqlStatement, currentRuleConfig);
         checkAlgorithm(sqlStatement);
     }

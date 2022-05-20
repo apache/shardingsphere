@@ -37,12 +37,12 @@ import java.util.stream.Collectors;
 public final class DropShardingAlgorithmStatementUpdater implements RuleDefinitionDropUpdater<DropShardingAlgorithmStatement, ShardingRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final DropShardingAlgorithmStatement sqlStatement,
+    public void checkSQLStatement(final ShardingSphereMetaData metaData, final DropShardingAlgorithmStatement sqlStatement,
                                   final ShardingRuleConfiguration currentRuleConfig) throws RuleDefinitionViolationException {
         if (null == currentRuleConfig && sqlStatement.isContainsExistClause()) {
             return;
         }
-        String databaseName = shardingSphereMetaData.getDatabase().getName();
+        String databaseName = metaData.getDatabase().getName();
         checkCurrentRuleConfiguration(databaseName, currentRuleConfig);
         checkToBeDroppedShardingAlgorithms(databaseName, sqlStatement, currentRuleConfig);
         checkShardingAlgorithmsInUsed(databaseName, sqlStatement, currentRuleConfig);

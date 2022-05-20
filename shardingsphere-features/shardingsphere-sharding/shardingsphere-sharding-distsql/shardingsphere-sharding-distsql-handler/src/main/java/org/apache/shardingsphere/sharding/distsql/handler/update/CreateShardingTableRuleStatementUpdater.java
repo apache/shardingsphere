@@ -31,9 +31,9 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardin
 public final class CreateShardingTableRuleStatementUpdater implements RuleDefinitionCreateUpdater<CreateShardingTableRuleStatement, ShardingRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final CreateShardingTableRuleStatement sqlStatement,
+    public void checkSQLStatement(final ShardingSphereMetaData metaData, final CreateShardingTableRuleStatement sqlStatement,
                                   final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        ShardingTableRuleStatementChecker.checkCreation(shardingSphereMetaData, sqlStatement.getRules(), currentRuleConfig);
+        ShardingTableRuleStatementChecker.checkCreation(metaData, sqlStatement.getRules(), currentRuleConfig);
     }
     
     @Override

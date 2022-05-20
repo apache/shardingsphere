@@ -39,9 +39,9 @@ import java.util.stream.Collectors;
 public final class CreateShardingBindingTableRuleStatementUpdater implements RuleDefinitionCreateUpdater<CreateShardingBindingTableRulesStatement, ShardingRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final CreateShardingBindingTableRulesStatement sqlStatement,
+    public void checkSQLStatement(final ShardingSphereMetaData metaData, final CreateShardingBindingTableRulesStatement sqlStatement,
                                   final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String databaseName = shardingSphereMetaData.getDatabase().getName();
+        String databaseName = metaData.getDatabase().getName();
         checkCurrentRuleConfiguration(databaseName, currentRuleConfig);
         checkToBeCreatedBindingTables(databaseName, sqlStatement, currentRuleConfig);
         checkToBeCreatedDuplicateBindingTables(databaseName, sqlStatement, currentRuleConfig);

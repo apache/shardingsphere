@@ -50,12 +50,12 @@ import java.util.stream.Collectors;
 public final class AlterReadwriteSplittingRuleStatementUpdater implements RuleDefinitionAlterUpdater<AlterReadwriteSplittingRuleStatement, ReadwriteSplittingRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final AlterReadwriteSplittingRuleStatement sqlStatement,
+    public void checkSQLStatement(final ShardingSphereMetaData metaData, final AlterReadwriteSplittingRuleStatement sqlStatement,
                                   final ReadwriteSplittingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String databaseName = shardingSphereMetaData.getDatabase().getName();
+        String databaseName = metaData.getDatabase().getName();
         checkCurrentRuleConfiguration(databaseName, currentRuleConfig);
         checkToBeAlteredRules(databaseName, sqlStatement, currentRuleConfig);
-        checkToBeAlteredResources(databaseName, sqlStatement, shardingSphereMetaData);
+        checkToBeAlteredResources(databaseName, sqlStatement, metaData);
         checkToBeAlteredLoadBalancer(sqlStatement);
     }
     

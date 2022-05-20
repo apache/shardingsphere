@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResour
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
 
 import java.util.Collection;
@@ -34,15 +35,15 @@ import java.util.Collections;
 public final class CreateDefaultSingleTableRuleStatementUpdater implements RuleDefinitionCreateUpdater<CreateDefaultSingleTableRuleStatement, SingleTableRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final CreateDefaultSingleTableRuleStatement sqlStatement,
-                                  final SingleTableRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String databaseName = shardingSphereMetaData.getDatabase().getName();
-        checkResourceExist(databaseName, shardingSphereMetaData, sqlStatement);
+    public void checkSQLStatement(final ShardingSphereMetaData metaData,
+                                  final CreateDefaultSingleTableRuleStatement sqlStatement, final SingleTableRuleConfiguration currentRuleConfig) throws DistSQLException {
+        String databaseName = metaData.getDatabase().getName();
+        checkResourceExist(databaseName, metaData.getResource(), sqlStatement);
         checkDefaultResourceDuplicate(databaseName, currentRuleConfig);
     }
     
-    private void checkResourceExist(final String databaseName, final ShardingSphereMetaData metaData, final CreateDefaultSingleTableRuleStatement sqlStatement) throws DistSQLException {
-        Collection<String> resourceNames = metaData.getResource().getDataSources().keySet();
+    private void checkResourceExist(final String databaseName, final ShardingSphereResource resource, final CreateDefaultSingleTableRuleStatement sqlStatement) throws DistSQLException {
+        Collection<String> resourceNames = resource.getDataSources().keySet();
         DistSQLException.predictionThrow(resourceNames.contains(sqlStatement.getDefaultResource()), () -> new RequiredResourceMissedException(
                 databaseName, Collections.singleton(sqlStatement.getDefaultResource())));
     }

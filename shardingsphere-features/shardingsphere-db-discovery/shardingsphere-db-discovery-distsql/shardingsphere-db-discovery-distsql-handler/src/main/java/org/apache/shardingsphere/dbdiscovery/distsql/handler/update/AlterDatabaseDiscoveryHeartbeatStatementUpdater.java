@@ -48,9 +48,9 @@ public final class AlterDatabaseDiscoveryHeartbeatStatementUpdater implements Ru
     }
     
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final AlterDatabaseDiscoveryHeartbeatStatement sqlStatement,
+    public void checkSQLStatement(final ShardingSphereMetaData metaData, final AlterDatabaseDiscoveryHeartbeatStatement sqlStatement,
                                   final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String databaseName = shardingSphereMetaData.getDatabase().getName();
+        String databaseName = metaData.getDatabase().getName();
         checkCurrentConfiguration(databaseName, currentRuleConfig);
         checkDuplicateHeartbeat(databaseName, sqlStatement);
         checkNotExistHeartbeat(databaseName, sqlStatement, currentRuleConfig);

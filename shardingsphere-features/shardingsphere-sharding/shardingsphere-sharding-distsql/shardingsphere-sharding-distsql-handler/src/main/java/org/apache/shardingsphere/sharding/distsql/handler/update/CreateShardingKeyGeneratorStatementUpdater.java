@@ -41,9 +41,9 @@ import java.util.stream.Collectors;
 public final class CreateShardingKeyGeneratorStatementUpdater implements RuleDefinitionCreateUpdater<CreateShardingKeyGeneratorStatement, ShardingRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final CreateShardingKeyGeneratorStatement sqlStatement,
+    public void checkSQLStatement(final ShardingSphereMetaData metaData, final CreateShardingKeyGeneratorStatement sqlStatement,
                                   final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        checkDuplicate(shardingSphereMetaData.getDatabase().getName(), sqlStatement, currentRuleConfig);
+        checkDuplicate(metaData.getDatabase().getName(), sqlStatement, currentRuleConfig);
         checkKeyGeneratorAlgorithm(sqlStatement);
     }
     

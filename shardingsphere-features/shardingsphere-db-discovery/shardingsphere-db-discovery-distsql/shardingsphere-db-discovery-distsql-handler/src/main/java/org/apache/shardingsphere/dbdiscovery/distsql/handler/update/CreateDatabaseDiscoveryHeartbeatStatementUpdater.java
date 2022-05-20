@@ -47,9 +47,9 @@ public final class CreateDatabaseDiscoveryHeartbeatStatementUpdater implements R
     }
     
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final CreateDatabaseDiscoveryHeartbeatStatement sqlStatement,
+    public void checkSQLStatement(final ShardingSphereMetaData metaData, final CreateDatabaseDiscoveryHeartbeatStatement sqlStatement,
                                   final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String databaseName = shardingSphereMetaData.getDatabase().getName();
+        String databaseName = metaData.getDatabase().getName();
         checkDuplicateHeartbeat(databaseName, sqlStatement, currentRuleConfig);
     }
     

@@ -42,9 +42,9 @@ import java.util.stream.Collectors;
 public final class CreateEncryptRuleStatementUpdater implements RuleDefinitionCreateUpdater<CreateEncryptRuleStatement, EncryptRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final CreateEncryptRuleStatement sqlStatement,
+    public void checkSQLStatement(final ShardingSphereMetaData metaData, final CreateEncryptRuleStatement sqlStatement,
                                   final EncryptRuleConfiguration currentRuleConfig) throws DistSQLException {
-        checkDuplicateRuleNames(shardingSphereMetaData.getDatabase().getName(), sqlStatement, currentRuleConfig);
+        checkDuplicateRuleNames(metaData.getDatabase().getName(), sqlStatement, currentRuleConfig);
         checkDataType(sqlStatement);
         checkToBeCreatedEncryptors(sqlStatement);
         // TODO check resource

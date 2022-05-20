@@ -51,11 +51,11 @@ import java.util.stream.Collectors;
 public final class CreateReadwriteSplittingRuleStatementUpdater implements RuleDefinitionCreateUpdater<CreateReadwriteSplittingRuleStatement, ReadwriteSplittingRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final CreateReadwriteSplittingRuleStatement sqlStatement,
+    public void checkSQLStatement(final ShardingSphereMetaData metaData, final CreateReadwriteSplittingRuleStatement sqlStatement,
                                   final ReadwriteSplittingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String databaseName = shardingSphereMetaData.getDatabase().getName();
-        checkDuplicateRuleNames(databaseName, sqlStatement, currentRuleConfig, shardingSphereMetaData.getResource());
-        checkToBeCreatedResources(databaseName, sqlStatement, shardingSphereMetaData);
+        String databaseName = metaData.getDatabase().getName();
+        checkDuplicateRuleNames(databaseName, sqlStatement, currentRuleConfig, metaData.getResource());
+        checkToBeCreatedResources(databaseName, sqlStatement, metaData);
         checkToBeCreatedLoadBalancers(sqlStatement);
     }
     

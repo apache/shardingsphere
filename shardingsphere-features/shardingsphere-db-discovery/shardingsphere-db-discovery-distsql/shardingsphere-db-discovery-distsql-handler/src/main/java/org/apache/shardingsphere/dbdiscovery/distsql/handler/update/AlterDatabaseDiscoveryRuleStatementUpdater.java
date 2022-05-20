@@ -50,12 +50,12 @@ import java.util.stream.Collectors;
 public final class AlterDatabaseDiscoveryRuleStatementUpdater implements RuleDefinitionAlterUpdater<AlterDatabaseDiscoveryRuleStatement, DatabaseDiscoveryRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final AlterDatabaseDiscoveryRuleStatement sqlStatement,
+    public void checkSQLStatement(final ShardingSphereMetaData metaData, final AlterDatabaseDiscoveryRuleStatement sqlStatement,
                                   final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String databaseName = shardingSphereMetaData.getDatabase().getName();
+        String databaseName = metaData.getDatabase().getName();
         checkCurrentRuleConfiguration(databaseName, currentRuleConfig);
         checkToBeAlteredRules(databaseName, sqlStatement, currentRuleConfig);
-        checkToBeAlteredResources(databaseName, sqlStatement, shardingSphereMetaData.getResource());
+        checkToBeAlteredResources(databaseName, sqlStatement, metaData.getResource());
         checkDiscoverTypeAndHeartbeat(sqlStatement, currentRuleConfig);
     }
     

@@ -41,12 +41,12 @@ public final class DropShardingKeyGeneratorStatementUpdater implements RuleDefin
     private static final String TYPE = DropShardingKeyGeneratorStatement.class.getName();
     
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final DropShardingKeyGeneratorStatement sqlStatement,
+    public void checkSQLStatement(final ShardingSphereMetaData metaData, final DropShardingKeyGeneratorStatement sqlStatement,
                                   final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
         if (null == currentRuleConfig && sqlStatement.isContainsExistClause()) {
             return;
         }
-        String databaseName = shardingSphereMetaData.getDatabase().getName();
+        String databaseName = metaData.getDatabase().getName();
         Collection<String> keyGeneratorNames = new LinkedList<>(sqlStatement.getKeyGeneratorNames());
         checkExist(databaseName, keyGeneratorNames, currentRuleConfig, sqlStatement);
         checkInUsed(databaseName, keyGeneratorNames, currentRuleConfig);
