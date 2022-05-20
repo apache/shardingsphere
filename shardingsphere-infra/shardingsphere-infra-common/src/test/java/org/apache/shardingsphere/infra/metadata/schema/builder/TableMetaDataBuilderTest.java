@@ -31,6 +31,7 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Properties;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -44,22 +45,18 @@ public final class TableMetaDataBuilderTest {
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private DataSource dataSource;
     
-    @Mock
-    private ConfigurationProperties props;
-    
     @Test
     public void assertLoadWithExistedTableName() throws SQLException {
         assertFalse(TableMetaDataBuilder.load(Collections.singletonList("data_node_routed_table1"), new SchemaBuilderMaterials(
-                databaseType, databaseType, Collections.singletonMap("logic_db", dataSource), Arrays.asList(new CommonFixtureRule(),
-                        new DataNodeContainedFixtureRule()),
-                props, "sharding_db")).isEmpty());
+                databaseType, databaseType, Collections.singletonMap("logic_db", dataSource), Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule()), 
+                new ConfigurationProperties(new Properties()), "sharding_db")).isEmpty());
     }
     
     @Test
     public void assertLoadWithNotExistedTableName() throws SQLException {
         assertTrue(TableMetaDataBuilder.load(Collections.singletonList("invalid_table"), new SchemaBuilderMaterials(
                 databaseType, databaseType, Collections.singletonMap("logic_db", dataSource), Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule()),
-                props, "sharding_db")).isEmpty());
+                new ConfigurationProperties(new Properties()), "sharding_db")).isEmpty());
     }
     
 }
