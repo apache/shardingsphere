@@ -34,7 +34,6 @@
     <logger name="org.apache.shardingsphere.mode.manager.cluster.coordinator.lock" level="DEBUG" additivity="false">
         <appender-ref ref="console" />
     </logger>
-    <logger name="ShardingSphere-SQL" level="INFO" />
     <logger name="com.zaxxer.hikari.pool.ProxyConnection" level="OFF" />
     <root>
         <level value="WARN" />
