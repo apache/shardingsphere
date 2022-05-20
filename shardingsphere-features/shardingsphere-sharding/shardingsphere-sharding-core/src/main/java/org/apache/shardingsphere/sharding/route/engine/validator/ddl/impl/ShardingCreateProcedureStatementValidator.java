@@ -49,7 +49,7 @@ public final class ShardingCreateProcedureStatementValidator extends ShardingDDL
         TableExtractor extractor = new TableExtractor();
         String defaultSchema = sqlStatementContext.getDatabaseType().getDefaultSchema(database.getName());
         ShardingSphereSchema schema = sqlStatementContext.getSqlStatement().getProcedureName().flatMap(optional -> optional.getOwner()
-                .map(owner -> database.getDatabaseMetaData().getSchema(owner.getIdentifier().getValue()))).orElseGet(() -> database.getDatabaseMetaData().getSchema(defaultSchema));
+                .map(owner -> database.getDatabaseMetaData().getSchemas().get(owner.getIdentifier().getValue()))).orElseGet(() -> database.getDatabaseMetaData().getSchemas().get(defaultSchema));
         Collection<SimpleTableSegment> existTables = extractor.extractExistTableFromRoutineBody(routineBodySegment.get());
         validateShardingTable(shardingRule, existTables);
         validateTableExist(schema, existTables);

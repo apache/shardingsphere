@@ -58,8 +58,8 @@ public final class ShardingAlterIndexStatementValidatorTest {
         TableMetaData tableMetaData = mock(TableMetaData.class);
         Map<String, IndexMetaData> indexes = mock(HashMap.class);
         when(tableMetaData.getIndexes()).thenReturn(indexes);
-        when(database.getDatabaseMetaData().getSchema("public").getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
-        when(database.getDatabaseMetaData().getSchema("public").get("t_order")).thenReturn(tableMetaData);
+        when(database.getDatabaseMetaData().getSchemas().get("public").getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
+        when(database.getDatabaseMetaData().getSchemas().get("public").get("t_order")).thenReturn(tableMetaData);
         when(indexes.containsKey("t_order_index")).thenReturn(true);
         when(indexes.containsKey("t_order_index_new")).thenReturn(false);
         new ShardingAlterIndexStatementValidator().preValidate(shardingRule, new AlterIndexStatementContext(sqlStatement), Collections.emptyList(), database);
@@ -73,8 +73,8 @@ public final class ShardingAlterIndexStatementValidatorTest {
         TableMetaData tableMetaData = mock(TableMetaData.class);
         Map<String, IndexMetaData> indexes = mock(HashMap.class);
         when(tableMetaData.getIndexes()).thenReturn(indexes);
-        when(database.getDatabaseMetaData().getSchema("public").getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
-        when(database.getDatabaseMetaData().getSchema("public").get("t_order")).thenReturn(tableMetaData);
+        when(database.getDatabaseMetaData().getSchemas().get("public").getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
+        when(database.getDatabaseMetaData().getSchemas().get("public").get("t_order")).thenReturn(tableMetaData);
         when(indexes.containsKey("t_order_index")).thenReturn(false);
         new ShardingAlterIndexStatementValidator().preValidate(shardingRule, new AlterIndexStatementContext(sqlStatement), Collections.emptyList(), database);
     }
@@ -87,8 +87,8 @@ public final class ShardingAlterIndexStatementValidatorTest {
         TableMetaData tableMetaData = mock(TableMetaData.class);
         Map<String, IndexMetaData> indexes = mock(HashMap.class);
         when(tableMetaData.getIndexes()).thenReturn(indexes);
-        when(database.getDatabaseMetaData().getSchema("public").getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
-        when(database.getDatabaseMetaData().getSchema("public").get("t_order")).thenReturn(tableMetaData);
+        when(database.getDatabaseMetaData().getSchemas().get("public").getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
+        when(database.getDatabaseMetaData().getSchemas().get("public").get("t_order")).thenReturn(tableMetaData);
         when(indexes.containsKey("t_order_index")).thenReturn(true);
         when(indexes.containsKey("t_order_index_new")).thenReturn(true);
         new ShardingAlterIndexStatementValidator().preValidate(shardingRule, new AlterIndexStatementContext(sqlStatement), Collections.emptyList(), database);

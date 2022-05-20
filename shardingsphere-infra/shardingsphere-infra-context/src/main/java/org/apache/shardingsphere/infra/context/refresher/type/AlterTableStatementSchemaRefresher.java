@@ -55,18 +55,18 @@ public final class AlterTableStatementSchemaRefresher implements MetaDataRefresh
             String renameTable = sqlStatement.getRenameTable().get().getTableName().getIdentifier().getValue();
             putTableMetaData(database, federationDatabaseMetaData, optimizerPlanners, logicDataSourceNames, schemaName, renameTable, props);
             removeTableMetaData(database, federationDatabaseMetaData, optimizerPlanners, schemaName, tableName);
-            event.getAlteredTables().add(database.getDatabaseMetaData().getSchema(schemaName).get(renameTable));
+            event.getAlteredTables().add(database.getDatabaseMetaData().getSchemas().get(schemaName).get(renameTable));
             event.getDroppedTables().add(tableName);
         } else {
             putTableMetaData(database, federationDatabaseMetaData, optimizerPlanners, logicDataSourceNames, schemaName, tableName, props);
-            event.getAlteredTables().add(database.getDatabaseMetaData().getSchema(schemaName).get(tableName));
+            event.getAlteredTables().add(database.getDatabaseMetaData().getSchemas().get(schemaName).get(tableName));
         }
         ShardingSphereEventBus.getInstance().post(event);
     }
     
     private void removeTableMetaData(final ShardingSphereDatabase database, final FederationDatabaseMetaData federationDatabaseMetaData,
                                      final Map<String, OptimizerPlannerContext> optimizerPlanners, final String schemaName, final String tableName) {
-        database.getDatabaseMetaData().getSchema(schemaName).remove(tableName);
+        database.getDatabaseMetaData().getSchemas().get(schemaName).remove(tableName);
         database.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.remove(schemaName, tableName));
         federationDatabaseMetaData.removeTableMetadata(schemaName, tableName);
         optimizerPlanners.put(federationDatabaseMetaData.getName(), OptimizerPlannerContextFactory.create(federationDatabaseMetaData));
@@ -82,7 +82,7 @@ public final class AlterTableStatementSchemaRefresher implements MetaDataRefresh
         Map<String, SchemaMetaData> metaDataMap = TableMetaDataBuilder.load(Collections.singletonList(tableName), materials);
         Optional<TableMetaData> actualTableMetaData = Optional.ofNullable(metaDataMap.get(schemaName)).map(optional -> optional.getTables().get(tableName));
         actualTableMetaData.ifPresent(optional -> {
-            database.getDatabaseMetaData().getSchema(schemaName).put(tableName, optional);
+            database.getDatabaseMetaData().getSchemas().get(schemaName).put(tableName, optional);
             federationDatabaseMetaData.putTableMetadata(schemaName, optional);
             optimizerPlanners.put(federationDatabaseMetaData.getName(), OptimizerPlannerContextFactory.create(federationDatabaseMetaData));
         });

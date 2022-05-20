@@ -55,8 +55,8 @@ public final class SchemaLoader {
     public static Map<String, ShardingSphereSchema> load(final String defaultSchemaName, final DatabaseType frontendDatabaseType,
                                                          final DatabaseType backendDatabaseType, final Map<String, DataSource> dataSourceMap,
                                                          final Collection<ShardingSphereRule> rules, final ConfigurationProperties props) throws SQLException {
-        Map<String, SchemaMetaData> schemaMetaDataMap = TableMetaDataBuilder.load(getAllTableNames(rules),
-                new SchemaBuilderMaterials(frontendDatabaseType, backendDatabaseType, dataSourceMap, rules, props, defaultSchemaName));
+        Map<String, SchemaMetaData> schemaMetaDataMap = TableMetaDataBuilder.load(
+                getAllTableNames(rules), new SchemaBuilderMaterials(frontendDatabaseType, backendDatabaseType, dataSourceMap, rules, props, defaultSchemaName));
         if (schemaMetaDataMap.isEmpty()) {
             return Collections.singletonMap(defaultSchemaName, new ShardingSphereSchema());
         }
