@@ -23,7 +23,6 @@ import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAltere
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
-import org.apache.shardingsphere.data.pipeline.api.prepare.datasource.ActualTableDefinition;
 import org.apache.shardingsphere.data.pipeline.api.prepare.datasource.TableDefinitionSQLType;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
@@ -35,12 +34,9 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /**
  * Abstract data source preparer.
@@ -123,10 +119,6 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
             }
             throw ex;
         }
-    }
-    
-    protected final Collection<String> splitTableDefinitionToSQLs(final ActualTableDefinition actualTableDefinition) {
-        return Arrays.stream(actualTableDefinition.getTableDefinition().split(";")).collect(Collectors.toList());
     }
     
     // TODO simple lexer
