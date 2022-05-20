@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContextFactory;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.event.SchemaAlteredEvent;
@@ -48,46 +48,46 @@ public final class RenameTableStatementSchemaRefresher implements MetaDataRefres
     private static final String TYPE = RenameTableStatement.class.getName();
     
     @Override
-    public void refresh(final ShardingSphereMetaData metaData, final FederationDatabaseMetaData database, final Map<String, OptimizerPlannerContext> optimizerPlanners,
+    public void refresh(final ShardingSphereDatabaseMetaData databaseMetaData, final FederationDatabaseMetaData database, final Map<String, OptimizerPlannerContext> optimizerPlanners,
                         final Collection<String> logicDataSourceNames, final String schemaName, final RenameTableStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
-        SchemaAlteredEvent event = new SchemaAlteredEvent(metaData.getDatabaseName(), schemaName);
+        SchemaAlteredEvent event = new SchemaAlteredEvent(databaseMetaData.getDatabase().getName(), schemaName);
         for (RenameTableDefinitionSegment each : sqlStatement.getRenameTables()) {
             String tableName = each.getTable().getTableName().getIdentifier().getValue();
             String renameTable = each.getRenameTable().getTableName().getIdentifier().getValue();
-            putTableMetaData(metaData, database, optimizerPlanners, logicDataSourceNames, schemaName, renameTable, props);
-            removeTableMetaData(metaData, database, optimizerPlanners, schemaName, tableName);
-            event.getAlteredTables().add(metaData.getSchemaByName(schemaName).get(renameTable));
+            putTableMetaData(databaseMetaData, database, optimizerPlanners, logicDataSourceNames, schemaName, renameTable, props);
+            removeTableMetaData(databaseMetaData, database, optimizerPlanners, schemaName, tableName);
+            event.getAlteredTables().add(databaseMetaData.getDatabase().getSchema(schemaName).get(renameTable));
             event.getDroppedTables().add(tableName);
         }
         ShardingSphereEventBus.getInstance().post(event);
     }
     
-    private void removeTableMetaData(final ShardingSphereMetaData metaData, final FederationDatabaseMetaData database,
+    private void removeTableMetaData(final ShardingSphereDatabaseMetaData databaseMetaData, final FederationDatabaseMetaData database,
                                      final Map<String, OptimizerPlannerContext> optimizerPlanners, final String schemaName, final String tableName) {
-        metaData.getSchemaByName(schemaName).remove(tableName);
-        metaData.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.remove(schemaName, tableName));
+        databaseMetaData.getDatabase().getSchema(schemaName).remove(tableName);
+        databaseMetaData.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.remove(schemaName, tableName));
         database.removeTableMetadata(schemaName, tableName);
         optimizerPlanners.put(database.getName(), OptimizerPlannerContextFactory.create(database));
     }
     
-    private void putTableMetaData(final ShardingSphereMetaData metaData, final FederationDatabaseMetaData database, final Map<String, OptimizerPlannerContext> optimizerPlanners,
+    private void putTableMetaData(final ShardingSphereDatabaseMetaData databaseMetaData, final FederationDatabaseMetaData database, final Map<String, OptimizerPlannerContext> optimizerPlanners,
                                   final Collection<String> logicDataSourceNames, final String schemaName, final String tableName, final ConfigurationProperties props) throws SQLException {
-        if (!containsInImmutableDataNodeContainedRule(tableName, metaData)) {
-            metaData.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.put(logicDataSourceNames.iterator().next(), schemaName, tableName));
+        if (!containsInImmutableDataNodeContainedRule(tableName, databaseMetaData)) {
+            databaseMetaData.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.put(logicDataSourceNames.iterator().next(), schemaName, tableName));
         }
-        SchemaBuilderMaterials materials = new SchemaBuilderMaterials(metaData.getFrontendDatabaseType(),
-                metaData.getResource().getDatabaseType(), metaData.getResource().getDataSources(), metaData.getRuleMetaData().getRules(), props, schemaName);
+        SchemaBuilderMaterials materials = new SchemaBuilderMaterials(databaseMetaData.getProtocolType(),
+                databaseMetaData.getResource().getDatabaseType(), databaseMetaData.getResource().getDataSources(), databaseMetaData.getRuleMetaData().getRules(), props, schemaName);
         Map<String, SchemaMetaData> metaDataMap = TableMetaDataBuilder.load(Collections.singletonList(tableName), materials);
         Optional<TableMetaData> actualTableMetaData = Optional.ofNullable(metaDataMap.get(schemaName)).map(optional -> optional.getTables().get(tableName));
         actualTableMetaData.ifPresent(optional -> {
-            metaData.getSchemaByName(schemaName).put(tableName, optional);
+            databaseMetaData.getDatabase().getSchema(schemaName).put(tableName, optional);
             database.putTableMetadata(schemaName, optional);
             optimizerPlanners.put(database.getName(), OptimizerPlannerContextFactory.create(database));
         });
     }
     
-    private boolean containsInImmutableDataNodeContainedRule(final String tableName, final ShardingSphereMetaData metaData) {
-        return metaData.getRuleMetaData().findRules(DataNodeContainedRule.class).stream()
+    private boolean containsInImmutableDataNodeContainedRule(final String tableName, final ShardingSphereDatabaseMetaData databaseMetaData) {
+        return databaseMetaData.getRuleMetaData().findRules(DataNodeContainedRule.class).stream()
                 .filter(each -> !(each instanceof MutableDataNodeRule)).anyMatch(each -> each.getAllTables().contains(tableName));
     }
     

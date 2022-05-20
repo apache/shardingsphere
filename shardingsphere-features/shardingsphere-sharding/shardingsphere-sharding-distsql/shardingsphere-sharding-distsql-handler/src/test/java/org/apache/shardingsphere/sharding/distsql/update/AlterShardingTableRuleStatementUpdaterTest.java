@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.distsql.update;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -37,6 +37,7 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterSharding
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -56,8 +57,8 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class AlterShardingTableRuleStatementUpdaterTest {
     
-    @Mock
-    private ShardingSphereMetaData shardingSphereMetaData;
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private ShardingSphereDatabaseMetaData databaseMetaData;
     
     @Mock
     private ShardingSphereRuleMetaData shardingSphereRuleMetaData;
@@ -70,16 +71,16 @@ public final class AlterShardingTableRuleStatementUpdaterTest {
     
     @Before
     public void before() {
-        when(shardingSphereMetaData.getDatabaseName()).thenReturn("schema");
-        when(shardingSphereMetaData.getResource()).thenReturn(shardingSphereResource);
-        when(shardingSphereMetaData.getRuleMetaData()).thenReturn(shardingSphereRuleMetaData);
+        when(databaseMetaData.getDatabase().getName()).thenReturn("schema");
+        when(databaseMetaData.getResource()).thenReturn(shardingSphereResource);
+        when(databaseMetaData.getRuleMetaData()).thenReturn(shardingSphereRuleMetaData);
         when(shardingSphereRuleMetaData.getRules()).thenReturn(Collections.emptyList());
     }
     
     @Test
     public void assertUpdate() throws DistSQLException {
         AlterShardingTableRuleStatement statement = new AlterShardingTableRuleStatement(Arrays.asList(createCompleteAutoTableRule("t_order_item"), createCompleteTableRule("t_order")));
-        updater.checkSQLStatement(shardingSphereMetaData, statement, currentRuleConfig);
+        updater.checkSQLStatement(databaseMetaData, statement, currentRuleConfig);
         ShardingRuleConfiguration toBeAlteredRuleConfig = updater.buildToBeAlteredRuleConfiguration(statement);
         updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
         assertThat(currentRuleConfig.getTables().size(), is(1));
@@ -104,7 +105,7 @@ public final class AlterShardingTableRuleStatementUpdaterTest {
     @Test
     public void assertUpdateWithDifferentCase() throws DistSQLException {
         AlterShardingTableRuleStatement statement = new AlterShardingTableRuleStatement(Arrays.asList(createCompleteAutoTableRule("T_ORDER_ITEM"), createCompleteTableRule("T_ORDER")));
-        updater.checkSQLStatement(shardingSphereMetaData, statement, currentRuleConfig);
+        updater.checkSQLStatement(databaseMetaData, statement, currentRuleConfig);
         ShardingRuleConfiguration toBeAlteredRuleConfig = updater.buildToBeAlteredRuleConfiguration(statement);
         updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
         assertThat(currentRuleConfig.getTables().size(), is(1));
@@ -129,7 +130,7 @@ public final class AlterShardingTableRuleStatementUpdaterTest {
     @Test
     public void assertUpdateTableType() throws DistSQLException {
         AlterShardingTableRuleStatement statement = new AlterShardingTableRuleStatement(Arrays.asList(createCompleteAutoTableRule("t_order"), createCompleteTableRule("t_order_item")));
-        updater.checkSQLStatement(shardingSphereMetaData, statement, currentRuleConfig);
+        updater.checkSQLStatement(databaseMetaData, statement, currentRuleConfig);
         ShardingRuleConfiguration toBeAlteredRuleConfig = updater.buildToBeAlteredRuleConfiguration(statement);
         updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
         assertThat(currentRuleConfig.getTables().size(), is(1));

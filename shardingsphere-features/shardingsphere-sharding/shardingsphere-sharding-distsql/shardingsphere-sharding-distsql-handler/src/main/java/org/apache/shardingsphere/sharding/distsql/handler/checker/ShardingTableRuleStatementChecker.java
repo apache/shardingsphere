@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmCo
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredAlgorithmMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.expr.InlineExpressionParser;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
@@ -63,50 +63,50 @@ public final class ShardingTableRuleStatementChecker {
     /**
      * Check create sharing table rule statement.
      *
-     * @param shardingSphereMetaData ShardingSphere meta data
+     * @param databaseMetaData database meta data
      * @param rules rules
      * @param currentRuleConfig current rule configuration
      * @throws DistSQLException definition violation exception
      */
-    public static void checkCreation(final ShardingSphereMetaData shardingSphereMetaData, final Collection<AbstractTableRuleSegment> rules,
+    public static void checkCreation(final ShardingSphereDatabaseMetaData databaseMetaData, final Collection<AbstractTableRuleSegment> rules,
                                      final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        check(shardingSphereMetaData, rules, currentRuleConfig, true);
+        check(databaseMetaData, rules, currentRuleConfig, true);
     }
     
     /**
      * Check alter sharing table rule statement.
      *
-     * @param shardingSphereMetaData ShardingSphere meta data
+     * @param databaseMetaData database meta data
      * @param rules rules
      * @param currentRuleConfig current rule configuration
      * @throws DistSQLException definition violation exception
      */
-    public static void checkAlteration(final ShardingSphereMetaData shardingSphereMetaData, final Collection<AbstractTableRuleSegment> rules,
+    public static void checkAlteration(final ShardingSphereDatabaseMetaData databaseMetaData, final Collection<AbstractTableRuleSegment> rules,
                                        final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        check(shardingSphereMetaData, rules, currentRuleConfig, false);
+        check(databaseMetaData, rules, currentRuleConfig, false);
     }
     
-    private static void check(final ShardingSphereMetaData shardingSphereMetaData, final Collection<AbstractTableRuleSegment> rules,
+    private static void check(final ShardingSphereDatabaseMetaData databaseMetaData, final Collection<AbstractTableRuleSegment> rules,
                               final ShardingRuleConfiguration currentRuleConfig, final boolean isCreate) throws DistSQLException {
-        String databaseName = shardingSphereMetaData.getDatabaseName();
+        String databaseName = databaseMetaData.getDatabase().getName();
         checkShardingTables(databaseName, rules, currentRuleConfig, isCreate);
-        checkResources(databaseName, rules, shardingSphereMetaData);
+        checkResources(databaseName, rules, databaseMetaData);
         checkKeyGenerators(rules, currentRuleConfig);
         Map<String, List<AbstractTableRuleSegment>> groupedTableRule = groupingByClassType(rules);
         checkAutoTableRule(groupedTableRule.getOrDefault(AutoTableRuleSegment.class.getSimpleName(), Collections.emptyList()));
         checkTableRule(databaseName, currentRuleConfig, groupedTableRule.getOrDefault(TableRuleSegment.class.getSimpleName(), Collections.emptyList()));
     }
     
-    private static void checkResources(final String databaseName, final Collection<AbstractTableRuleSegment> rules, final ShardingSphereMetaData shardingSphereMetaData) throws DistSQLException {
+    private static void checkResources(final String databaseName, final Collection<AbstractTableRuleSegment> rules, final ShardingSphereDatabaseMetaData databaseMetaData) throws DistSQLException {
         Collection<String> requiredResource = getRequiredResources(rules);
-        Collection<String> notExistedResources = shardingSphereMetaData.getResource().getNotExistedResources(requiredResource);
-        Collection<String> logicResources = getLogicResources(shardingSphereMetaData);
+        Collection<String> notExistedResources = databaseMetaData.getResource().getNotExistedResources(requiredResource);
+        Collection<String> logicResources = getLogicResources(databaseMetaData);
         notExistedResources.removeIf(logicResources::contains);
         DistSQLException.predictionThrow(notExistedResources.isEmpty(), () -> new RequiredResourceMissedException(databaseName, notExistedResources));
     }
     
-    private static Collection<String> getLogicResources(final ShardingSphereMetaData shardingSphereMetaData) {
-        return shardingSphereMetaData.getRuleMetaData().getRules().stream().filter(each -> each instanceof DataSourceContainedRule)
+    private static Collection<String> getLogicResources(final ShardingSphereDatabaseMetaData databaseMetaData) {
+        return databaseMetaData.getRuleMetaData().getRules().stream().filter(each -> each instanceof DataSourceContainedRule)
                 .map(each -> ((DataSourceContainedRule) each).getDataSourceMapper().keySet()).flatMap(Collection::stream).collect(Collectors.toCollection(LinkedHashSet::new));
     }
     

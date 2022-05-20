@@ -26,16 +26,26 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class LockNodeUtil {
     
-    private static final String LOCK_DELIMITER = "#@#";
+    private static final String LOCK_NAME_DELIMITER = "#@#";
     
     /**
-     * Generate mutex Lock leases node path.
+     * Generate Lock leases node path.
      *
      * @param lockName lock name
-     * @return mutex lock leases
+     * @return lock leases
      */
-    public static String generateMutexLockReleasedNodePath(final String lockName) {
+    public static String generateLockLeasesNodePath(final String lockName) {
         return lockName + "/leases";
+    }
+    
+    /**
+     * generate ack path name.
+     *
+     * @param lockName lock name
+     * @return ack path name
+     */
+    public static String generateAckPathName(final String lockName) {
+        return lockName + "/ack";
     }
     
     /**
@@ -46,7 +56,7 @@ public final class LockNodeUtil {
      * @return ack locked name
      */
     public static String generateAckLockedName(final String lockName, final String instanceId) {
-        return lockName + LOCK_DELIMITER + instanceId;
+        return lockName + LOCK_NAME_DELIMITER + instanceId;
     }
     
     /**
@@ -56,7 +66,7 @@ public final class LockNodeUtil {
      * @return string array of locked name and instance id
      */
     public static String[] parseAckLockName(final String ackLockedName) {
-        return ackLockedName.trim().split(LOCK_DELIMITER);
+        return ackLockedName.trim().split(LOCK_NAME_DELIMITER);
     }
     
     /**

@@ -23,7 +23,8 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -69,15 +70,16 @@ public final class OrderByStreamMergedResultTest {
                 new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC),
                 new IndexOrderByItemSegment(0, 0, 2, OrderDirection.ASC, OrderDirection.ASC))));
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
-        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-        selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, metaData), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
+        ShardingSphereDatabaseMetaData databaseMetaData = mock(ShardingSphereDatabaseMetaData.class);
+        selectStatementContext = new SelectStatementContext(
+                Collections.singletonMap(DefaultDatabase.LOGIC_NAME, databaseMetaData), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
     }
     
     @Test
     public void assertNextForResultSetsAllEmpty() throws SQLException {
         List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class, RETURNS_DEEP_STUBS), mock(QueryResult.class, RETURNS_DEEP_STUBS), mock(QueryResult.class, RETURNS_DEEP_STUBS));
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeFactory.getInstance("MySQL"));
-        MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, buildMetaData());
+        MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, createDatabaseMetaData());
         assertFalse(actual.next());
     }
     
@@ -95,7 +97,7 @@ public final class OrderByStreamMergedResultTest {
         when(queryResults.get(0).getValue(1, Object.class)).thenReturn("2");
         when(queryResults.get(2).next()).thenReturn(true, true, false);
         when(queryResults.get(2).getValue(1, Object.class)).thenReturn("1", "1", "3", "3");
-        MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, buildMetaData());
+        MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, createDatabaseMetaData());
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Object.class).toString(), is("1"));
         assertTrue(actual.next());
@@ -121,7 +123,7 @@ public final class OrderByStreamMergedResultTest {
         when(queryResults.get(1).getValue(1, Object.class)).thenReturn("2", "2", "3", "3", "4", "4");
         when(queryResults.get(2).next()).thenReturn(true, true, false);
         when(queryResults.get(2).getValue(1, Object.class)).thenReturn("1", "1", "3", "3");
-        MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, buildMetaData());
+        MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, createDatabaseMetaData());
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Object.class).toString(), is("1"));
         assertTrue(actual.next());
@@ -153,7 +155,7 @@ public final class OrderByStreamMergedResultTest {
         when(queryResults.get(2).next()).thenReturn(true, false);
         when(queryResults.get(2).getValue(1, Object.class)).thenReturn("A");
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeFactory.getInstance("MySQL"));
-        MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, buildMetaData());
+        MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, createDatabaseMetaData());
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Object.class).toString(), is("A"));
         assertTrue(actual.next());
@@ -181,7 +183,7 @@ public final class OrderByStreamMergedResultTest {
         when(queryResults.get(2).next()).thenReturn(true, false);
         when(queryResults.get(2).getValue(2, Object.class)).thenReturn("A");
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeFactory.getInstance("MySQL"));
-        MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, buildMetaData());
+        MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, createDatabaseMetaData());
         assertTrue(actual.next());
         assertThat(actual.getValue(2, Object.class).toString(), is("a"));
         assertTrue(actual.next());
@@ -193,12 +195,12 @@ public final class OrderByStreamMergedResultTest {
         assertFalse(actual.next());
     }
     
-    private ShardingSphereMetaData buildMetaData() {
+    private ShardingSphereDatabaseMetaData createDatabaseMetaData() {
         ColumnMetaData columnMetaData1 = new ColumnMetaData("col1", 0, false, false, true);
         ColumnMetaData columnMetaData2 = new ColumnMetaData("col2", 0, false, false, false);
         TableMetaData tableMetaData = new TableMetaData("tbl", Arrays.asList(columnMetaData1, columnMetaData2), Collections.emptyList(), Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema(Collections.singletonMap("tbl", tableMetaData));
-        return new ShardingSphereMetaData(DefaultDatabase.LOGIC_NAME, DatabaseTypeFactory.getInstance("MySQL"), mock(ShardingSphereResource.class),
-                mock(ShardingSphereRuleMetaData.class), Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema));
+        return new ShardingSphereDatabaseMetaData(DatabaseTypeFactory.getInstance("MySQL"), mock(ShardingSphereResource.class),
+                mock(ShardingSphereRuleMetaData.class), new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema)));
     }
 }

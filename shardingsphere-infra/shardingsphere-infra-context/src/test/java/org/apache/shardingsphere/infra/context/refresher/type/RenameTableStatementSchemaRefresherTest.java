@@ -21,10 +21,12 @@ import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.dialect.SQL92DatabaseType;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -53,7 +55,7 @@ public final class RenameTableStatementSchemaRefresherTest {
     public void assertRefresh() throws SQLException {
         RenameTableLister listener = new RenameTableLister(2);
         ShardingSphereEventBus.getInstance().register(listener);
-        new RenameTableStatementSchemaRefresher().refresh(createShardingSphereMetaData(), new FederationDatabaseMetaData("foo_database", Collections.emptyMap()),
+        new RenameTableStatementSchemaRefresher().refresh(createDatabaseMetaData(), new FederationDatabaseMetaData("foo_database", Collections.emptyMap()),
                 new HashMap<>(), Collections.singleton("foo_ds"), "foo_schema", createRenameTableStatement(), mock(ConfigurationProperties.class));
         assertThat(listener.getActualCount(), is(listener.getRenameCount()));
         ShardingSphereEventBus.getInstance().unregister(listener);
@@ -73,9 +75,9 @@ public final class RenameTableStatementSchemaRefresherTest {
         return result;
     }
     
-    private ShardingSphereMetaData createShardingSphereMetaData() {
-        return new ShardingSphereMetaData("foo_database", new SQL92DatabaseType(),
-                mockShardingSphereResource(), new ShardingSphereRuleMetaData(new LinkedList<>(), new LinkedList<>()), Collections.singletonMap("foo_schema", mock(ShardingSphereSchema.class)));
+    private ShardingSphereDatabaseMetaData createDatabaseMetaData() {
+        return new ShardingSphereDatabaseMetaData(new SQL92DatabaseType(), mockShardingSphereResource(), new ShardingSphereRuleMetaData(new LinkedList<>(), new LinkedList<>()),
+                new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, Collections.singletonMap("foo_schema", mock(ShardingSphereSchema.class))));
     }
     
     private ShardingSphereResource mockShardingSphereResource() {

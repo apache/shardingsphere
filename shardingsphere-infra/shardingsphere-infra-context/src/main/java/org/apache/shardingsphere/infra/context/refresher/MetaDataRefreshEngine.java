@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
@@ -42,7 +42,7 @@ public final class MetaDataRefreshEngine {
     
     private static final Set<Class<? extends SQLStatement>> IGNORABLE_SQL_STATEMENT_CLASSES = Collections.newSetFromMap(new ConcurrentHashMap<>());
     
-    private final ShardingSphereMetaData metaData;
+    private final ShardingSphereDatabaseMetaData databaseMetaData;
     
     private final FederationDatabaseMetaData federationMetaData;
     
@@ -65,8 +65,9 @@ public final class MetaDataRefreshEngine {
         }
         Optional<MetaDataRefresher> schemaRefresher = MetaDataRefresherFactory.findInstance(sqlStatementClass);
         if (schemaRefresher.isPresent()) {
-            String schemaName = sqlStatementContext.getTablesContext().getSchemaName().orElseGet(() -> sqlStatementContext.getDatabaseType().getDefaultSchema(metaData.getDatabaseName()));
-            schemaRefresher.get().refresh(metaData, federationMetaData, optimizerPlanners, logicDataSourceNamesSupplier.get(), schemaName, sqlStatementContext.getSqlStatement(), props);
+            String schemaName = sqlStatementContext.getTablesContext().getSchemaName()
+                    .orElseGet(() -> sqlStatementContext.getDatabaseType().getDefaultSchema(databaseMetaData.getDatabase().getName()));
+            schemaRefresher.get().refresh(databaseMetaData, federationMetaData, optimizerPlanners, logicDataSourceNamesSupplier.get(), schemaName, sqlStatementContext.getSqlStatement(), props);
         } else {
             IGNORABLE_SQL_STATEMENT_CLASSES.add(sqlStatementClass);
         }

@@ -30,7 +30,7 @@ import java.sql.Statement;
  */
 public final class OpenGaussDDLGenerator implements DialectDDLGenerator {
     
-    private static final String SELECT_TABLE_DEF_SQL = "SELECT * FROM pg_get_tabledef('%s')";
+    private static final String SELECT_TABLE_DEF_SQL = "SELECT * FROM pg_get_tabledef('%s.%s')";
     
     private static final String COLUMN_LABEL = "pg_get_tabledef";
     
@@ -38,7 +38,7 @@ public final class OpenGaussDDLGenerator implements DialectDDLGenerator {
     public String generateDDLSQL(final String tableName, final String schemaName, final DataSource dataSource) throws SQLException {
         try (
                 Statement statement = dataSource.getConnection().createStatement();
-                ResultSet resultSet = statement.executeQuery(String.format(SELECT_TABLE_DEF_SQL, tableName))) {
+                ResultSet resultSet = statement.executeQuery(String.format(SELECT_TABLE_DEF_SQL, schemaName, tableName))) {
             if (resultSet.next()) {
                 return resultSet.getString(COLUMN_LABEL);
             }

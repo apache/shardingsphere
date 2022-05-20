@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.Projecti
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 
 import java.util.Collections;
 import java.util.List;
@@ -41,7 +41,7 @@ public final class EncryptAlgorithmMetaData {
     
     private final String databaseName;
     
-    private final ShardingSphereMetaData metaData;
+    private final ShardingSphereDatabaseMetaData databaseMetaData;
     
     private final EncryptRule encryptRule;
     
@@ -80,8 +80,9 @@ public final class EncryptAlgorithmMetaData {
             return Optional.empty();
         }
         TablesContext tablesContext = selectStatementContext.getTablesContext();
-        String schemaName = tablesContext.getSchemaName().orElse(selectStatementContext.getDatabaseType().getDefaultSchema(metaData.getDatabaseName()));
-        Map<String, String> expressionTableNames = tablesContext.findTableNamesByColumnProjection(Collections.singletonList(columnProjection.get()), metaData.getSchemaByName(schemaName));
+        String schemaName = tablesContext.getSchemaName().orElse(selectStatementContext.getDatabaseType().getDefaultSchema(databaseMetaData.getDatabase().getName()));
+        Map<String, String> expressionTableNames = tablesContext.findTableNamesByColumnProjection(
+                Collections.singletonList(columnProjection.get()), databaseMetaData.getDatabase().getSchema(schemaName));
         Optional<String> tableName = findTableName(columnProjection.get(), expressionTableNames);
         return tableName.map(optional -> EncryptContextBuilder.build(databaseName, schemaName, optional, columnProjection.get().getName(), encryptRule));
     }

@@ -22,11 +22,11 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util;
  */
 public final class TimeoutMilliseconds {
     
-    public static final int CHECK_ACK_INTERVAL = 1000;
+    public static final long MAX_TRY_LOCK = 3 * 60 * 1000L;
     
-    public static final long MAX_TRY_LOCK = 3 * 60 * 1000;
+    public static final long MIN_TRY_LOCK = 200L;
     
-    public static final long MIN_TRY_LOCK = 200;
+    public static final long DEFAULT_REGISTRY = 50L;
     
-    public static final long DEFAULT_REGISTRY = 50;
+    public static final long MAX_ACK_EXPEND = 100L;
 }

@@ -26,11 +26,15 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingV
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAccessor;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -157,11 +161,14 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
     }
     
     private String getDateTimeText(final Comparable<?> endpoint) {
-        if (endpoint instanceof LocalDateTime) {
-            return ((LocalDateTime) endpoint).format(dateTimeFormatter);
+        if (endpoint instanceof LocalDateTime || endpoint instanceof ZonedDateTime || endpoint instanceof OffsetDateTime) {
+            return dateTimeFormatter.format((TemporalAccessor) endpoint);
+        }
+        if (endpoint instanceof Instant) {
+            return dateTimeFormatter.withZone(ZoneId.systemDefault()).format((Instant) endpoint);
         }
         if (endpoint instanceof Date) {
-            return ((Date) endpoint).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().format(dateTimeFormatter);
+            return dateTimeFormatter.format(((Date) endpoint).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
         }
         return endpoint.toString();
     }

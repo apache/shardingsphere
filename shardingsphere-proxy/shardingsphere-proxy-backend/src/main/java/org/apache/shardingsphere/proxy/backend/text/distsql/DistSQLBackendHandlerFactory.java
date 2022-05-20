@@ -77,7 +77,7 @@ public final class DistSQLBackendHandlerFactory {
         if (null == databaseName) {
             return;
         }
-        if (ProxyContext.getInstance().getContextManager().getInstanceContext().getLockContext().isLockedDatabase(databaseName)) {
+        if (ProxyContext.getInstance().getContextManager().getInstanceContext().getLockContext().isLocked(databaseName)) {
             throw new DatabaseLockedException(databaseName);
         }
     }

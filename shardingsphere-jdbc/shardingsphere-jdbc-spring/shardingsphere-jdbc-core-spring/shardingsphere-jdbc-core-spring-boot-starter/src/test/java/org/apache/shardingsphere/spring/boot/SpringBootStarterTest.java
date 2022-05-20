@@ -70,7 +70,7 @@ public class SpringBootStarterTest {
     
     @Test
     public void assertDataSources() {
-        Map<String, DataSource> dataSources = dataSource.getContextManager().getMetaDataContexts().getMetaData("foo_db").getResource().getDataSources();
+        Map<String, DataSource> dataSources = dataSource.getContextManager().getMetaDataContexts().getDatabaseMetaData("foo_db").getResource().getDataSources();
         assertThat(dataSources.size(), is(2));
         assertTrue(dataSources.containsKey("ds0"));
         assertTrue(dataSources.containsKey("ds1"));
@@ -78,7 +78,7 @@ public class SpringBootStarterTest {
     
     @Test
     public void assertRules() {
-        Collection<ShardingSphereRule> rules = dataSource.getContextManager().getMetaDataContexts().getMetaData("foo_db").getRuleMetaData().getRules();
+        Collection<ShardingSphereRule> rules = dataSource.getContextManager().getMetaDataContexts().getDatabaseMetaData("foo_db").getRuleMetaData().getRules();
         assertThat(rules.size(), is(5));
         for (ShardingSphereRule each : rules) {
             if (each instanceof ShardingRule) {
@@ -192,7 +192,6 @@ public class SpringBootStarterTest {
     private void assertCacheOption(final CacheOption actual) {
         assertThat(actual.getInitialCapacity(), is(1024));
         assertThat(actual.getMaximumSize(), is(1024L));
-        assertThat(actual.getConcurrencyLevel(), is(4));
     }
     
     @Test

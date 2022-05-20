@@ -23,10 +23,9 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.JDBCBackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.transaction.core.TransactionType;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
@@ -43,9 +42,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class ConnectionSessionTest {
-    
-    private static ContextManager contextManagerBackup;
+public final class ConnectionSessionTest extends ProxyContextRestorer {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ContextManager contextManager;
@@ -55,14 +52,9 @@ public final class ConnectionSessionTest {
     
     private ConnectionSession connectionSession;
     
-    @BeforeClass
-    public static void setupProxyContext() {
-        contextManagerBackup = ProxyContext.getInstance().getContextManager();
-    }
-    
     @Before
     public void setup() {
-        ProxyContext.getInstance().init(contextManager);
+        ProxyContext.init(contextManager);
         connectionSession = new ConnectionSession(mock(MySQLDatabaseType.class), TransactionType.LOCAL, null);
         when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
     }
@@ -98,10 +90,5 @@ public final class ConnectionSessionTest {
     public void assertSetAutocommit() {
         connectionSession.setAutoCommit(false);
         assertFalse(connectionSession.isAutoCommit());
-    }
-    
-    @AfterClass
-    public static void restoreContextManager() {
-        ProxyContext.getInstance().init(contextManagerBackup);
     }
 }

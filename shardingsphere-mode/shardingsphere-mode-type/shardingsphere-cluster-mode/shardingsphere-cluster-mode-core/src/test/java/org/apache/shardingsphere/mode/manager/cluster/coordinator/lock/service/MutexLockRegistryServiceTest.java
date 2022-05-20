@@ -49,7 +49,7 @@ public final class MutexLockRegistryServiceTest {
     @Test
     public void assertRemoveLock() {
         lockRegistryService.removeLock("test");
-        verify(clusterPersistRepository).delete(LockNodeUtil.generateMutexLockReleasedNodePath("test"));
+        verify(clusterPersistRepository).delete(LockNodeUtil.generateLockLeasesNodePath("test"));
     }
     
     @Test

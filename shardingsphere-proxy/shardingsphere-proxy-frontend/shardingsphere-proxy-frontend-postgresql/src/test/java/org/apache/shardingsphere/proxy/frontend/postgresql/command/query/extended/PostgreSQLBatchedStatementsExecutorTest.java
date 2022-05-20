@@ -30,10 +30,10 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDB
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.JDBCBackendStatement;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.frontend.postgresql.ProxyContextRestorer;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLInsertStatement;
 import org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfiguration;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -64,7 +64,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class PostgreSQLBatchedStatementsExecutorTest {
+public final class PostgreSQLBatchedStatementsExecutorTest extends ProxyContextRestorer {
     
     @Mock
     private ConnectionSession connectionSession;
@@ -75,8 +75,6 @@ public final class PostgreSQLBatchedStatementsExecutorTest {
     @Mock
     private JDBCBackendStatement backendStatement;
     
-    private ContextManager previousContextManager;
-    
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ContextManager contextManager;
     
@@ -84,12 +82,11 @@ public final class PostgreSQLBatchedStatementsExecutorTest {
     public void setup() {
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
         when(connectionSession.getStatementManager()).thenReturn(backendStatement);
-        previousContextManager = ProxyContext.getInstance().getContextManager();
-        ProxyContext.getInstance().init(contextManager);
+        ProxyContext.init(contextManager);
         when(contextManager.getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE)).thenReturn(1);
         when(contextManager.getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY)).thenReturn(1);
         when(contextManager.getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
-        when(contextManager.getMetaDataContexts().getMetaData(any(String.class)).getRuleMetaData().findSingleRule(SQLTranslatorRule.class))
+        when(contextManager.getMetaDataContexts().getDatabaseMetaData(any(String.class)).getRuleMetaData().findSingleRule(SQLTranslatorRule.class))
                 .thenReturn(Optional.of(new SQLTranslatorRule(new SQLTranslatorRuleConfiguration())));
     }
     
@@ -127,10 +124,5 @@ public final class PostgreSQLBatchedStatementsExecutorTest {
         executionUnitParametersField.setAccessible(true);
         Map<ExecutionUnit, List<List<Object>>> map = (Map<ExecutionUnit, List<List<Object>>>) executionUnitParametersField.get(target);
         map.replaceAll((k, v) -> parameterSets);
-    }
-    
-    @After
-    public void tearDown() {
-        ProxyContext.getInstance().init(previousContextManager);
     }
 }

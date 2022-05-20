@@ -31,6 +31,4 @@ public final class CacheOptionSegment implements ASTNode {
     private final Integer initialCapacity;
     
     private final Long maximumSize;
-    
-    private final Integer concurrencyLevel;
 }

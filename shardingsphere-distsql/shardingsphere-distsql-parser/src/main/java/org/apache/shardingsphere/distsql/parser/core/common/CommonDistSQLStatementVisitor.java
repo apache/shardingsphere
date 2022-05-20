@@ -392,8 +392,7 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     public CacheOptionSegment visitCacheOption(final CacheOptionContext ctx) {
         return new CacheOptionSegment(
                 null == ctx.initialCapacity() ? null : Integer.parseInt(getIdentifierValue(ctx.initialCapacity())),
-                null == ctx.maximumSize() ? null : Long.parseLong(getIdentifierValue(ctx.maximumSize())),
-                null == ctx.concurrencyLevel() ? null : Integer.parseInt(getIdentifierValue(ctx.concurrencyLevel())));
+                null == ctx.maximumSize() ? null : Long.parseLong(getIdentifierValue(ctx.maximumSize())));
     }
     
     @Override

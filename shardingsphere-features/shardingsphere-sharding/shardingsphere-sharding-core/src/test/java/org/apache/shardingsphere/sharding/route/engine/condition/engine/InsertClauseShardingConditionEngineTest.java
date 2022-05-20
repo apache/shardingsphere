@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.binder.segment.insert.values.InsertSelect
 import org.apache.shardingsphere.infra.binder.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.engine.impl.InsertClauseShardingConditionEngine;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -31,6 +31,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.junit.Before;
 import org.junit.Test;
@@ -64,10 +65,17 @@ public final class InsertClauseShardingConditionEngineTest {
     
     @Before
     public void setUp() {
-        shardingConditionEngine = new InsertClauseShardingConditionEngine(shardingRule, mock(ShardingSphereMetaData.class));
+        InsertStatement insertStatement = mockInsertStatement();
+        shardingConditionEngine = new InsertClauseShardingConditionEngine(shardingRule, mock(ShardingSphereDatabaseMetaData.class));
+        when(insertStatementContext.getSqlStatement()).thenReturn(insertStatement);
         when(insertStatementContext.getColumnNames()).thenReturn(Collections.singletonMap(0, Collections.singletonList("foo_col")));
         when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonMap(0, Collections.singletonList(createInsertValueContext())));
-        when(insertStatementContext.getTables()).thenReturn(Collections.singletonMap(0, new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_table")))));
+    }
+    
+    private InsertStatement mockInsertStatement() {
+        InsertStatement result = mock(InsertStatement.class);
+        when(result.getTable()).thenReturn(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_table"))));
+        return result;
     }
     
     private InsertValueContext createInsertValueContext() {

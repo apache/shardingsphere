@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.infra.executor.kernel.thread;
 
-import com.google.common.util.concurrent.ListeningExecutorService;
-import com.google.common.util.concurrent.MoreExecutors;
 import lombok.Getter;
 
 import java.util.concurrent.ExecutorService;
@@ -36,14 +34,14 @@ public final class ExecutorServiceManager {
     
     private static final ExecutorService SHUTDOWN_EXECUTOR = Executors.newSingleThreadExecutor(ExecutorThreadFactoryBuilder.build("Executor-Engine-Closer"));
     
-    private final ListeningExecutorService executorService;
+    private final ExecutorService executorService;
     
     public ExecutorServiceManager(final int executorSize) {
         this(executorSize, DEFAULT_NAME_FORMAT);
     }
     
     public ExecutorServiceManager(final int executorSize, final String nameFormat) {
-        executorService = MoreExecutors.listeningDecorator(getExecutorService(executorSize, nameFormat));
+        executorService = getExecutorService(executorSize, nameFormat);
     }
     
     private ExecutorService getExecutorService(final int executorSize, final String nameFormat) {
