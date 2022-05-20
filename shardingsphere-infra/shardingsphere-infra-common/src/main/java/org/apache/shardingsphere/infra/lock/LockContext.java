@@ -31,7 +31,8 @@ public interface LockContext {
      *
      * @param instanceContext instance context
      */
-    void initLockState(InstanceContext instanceContext);
+    default void initLockState(InstanceContext instanceContext) {
+    }
     
     /**
      * Get or create mutex lock.
