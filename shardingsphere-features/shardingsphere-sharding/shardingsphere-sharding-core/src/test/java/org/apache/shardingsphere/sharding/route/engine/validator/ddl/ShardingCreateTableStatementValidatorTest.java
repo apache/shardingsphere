@@ -106,7 +106,7 @@ public final class ShardingCreateTableStatementValidatorTest {
         SQLStatementContext<CreateTableStatement> sqlStatementContext = new CreateTableStatementContext(sqlStatement);
         ShardingSphereDatabaseMetaData databaseMetaData = mock(ShardingSphereDatabaseMetaData.class, RETURNS_DEEP_STUBS);
         when(databaseMetaData.getDatabase().getName()).thenReturn("sharding_db");
-        when(databaseMetaData.getSchema(schemaName).containsTable("t_order")).thenReturn(true);
+        when(databaseMetaData.getDatabase().getSchema(schemaName).containsTable("t_order")).thenReturn(true);
         new ShardingCreateTableStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), databaseMetaData);
     }
     
@@ -128,7 +128,7 @@ public final class ShardingCreateTableStatementValidatorTest {
     
     private void assertPreValidateCreateTableIfNotExists(final CreateTableStatement sqlStatement) {
         SQLStatementContext<CreateTableStatement> sqlStatementContext = new CreateTableStatementContext(sqlStatement);
-        ShardingSphereDatabaseMetaData databaseMetaData = mock(ShardingSphereDatabaseMetaData.class);
+        ShardingSphereDatabaseMetaData databaseMetaData = mock(ShardingSphereDatabaseMetaData.class, RETURNS_DEEP_STUBS);
         new ShardingCreateTableStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), databaseMetaData);
     }
     

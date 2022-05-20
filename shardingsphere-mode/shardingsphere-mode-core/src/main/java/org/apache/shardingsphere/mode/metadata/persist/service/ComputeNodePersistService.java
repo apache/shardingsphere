@@ -46,7 +46,7 @@ public final class ComputeNodePersistService {
      * 
      * @param instanceId instance id
      * @param labels collection of label
-     * @param isOverwrite whether overwrite registry center's configuration if existed              
+     * @param isOverwrite whether overwrite registry center's configuration if existed
      */
     public void persistInstanceLabels(final String instanceId, final Collection<String> labels, final boolean isOverwrite) {
         if (null != labels && !labels.isEmpty() && (isOverwrite || !isExisted(instanceId))) {

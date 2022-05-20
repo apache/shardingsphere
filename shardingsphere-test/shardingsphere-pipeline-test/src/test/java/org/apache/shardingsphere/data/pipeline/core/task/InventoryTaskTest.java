@@ -107,7 +107,7 @@ public final class InventoryTaskTest {
         InventoryDumperConfiguration result = new InventoryDumperConfiguration(taskConfig.getDumperConfig());
         result.setLogicTableName(logicTableName);
         result.setActualTableName(actualTableName);
-        result.setPrimaryKey("order_id");
+        result.setUniqueKey("order_id");
         result.setUniqueKeyDataType(Types.INTEGER);
         result.setPosition(null == taskConfig.getDumperConfig().getPosition() ? new IntegerPrimaryKeyPosition(0, 1000) : taskConfig.getDumperConfig().getPosition());
         return result;

@@ -43,7 +43,7 @@ public final class QueryHeaderBuilderEngine {
      *
      * @param queryResultMetaData query result meta data
      * @param databaseMetaData database meta data
-     * @param columnIndex column index 
+     * @param columnIndex column index
      * @param dataNodeContainedRule data node contained rule
      * @return query header
      * @throws SQLException SQL exception

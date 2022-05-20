@@ -41,6 +41,8 @@ public final class PipelineColumnMetaData implements Comparable<PipelineColumnMe
     
     private final String dataTypeName;
     
+    private final boolean nullable;
+    
     private final boolean primaryKey;
     
     @Override

@@ -55,7 +55,7 @@ public final class AlterSchemaStatementSchemaRefresher implements MetaDataRefres
         putSchemaMetaData(databaseMetaData, database, optimizerPlanners, actualSchemaName, renameSchemaName.get().getValue(), logicDataSourceNames);
         removeSchemaMetaData(databaseMetaData, database, optimizerPlanners, actualSchemaName);
         AlterSchemaEvent event = new AlterSchemaEvent(databaseMetaData.getDatabase().getName(),
-                actualSchemaName, renameSchemaName.get().getValue(), databaseMetaData.getSchema(renameSchemaName.get().getValue()));
+                actualSchemaName, renameSchemaName.get().getValue(), databaseMetaData.getDatabase().getSchema(renameSchemaName.get().getValue()));
         ShardingSphereEventBus.getInstance().post(event);
     }
     
@@ -78,7 +78,7 @@ public final class AlterSchemaStatementSchemaRefresher implements MetaDataRefres
     
     private void putSchemaMetaData(final ShardingSphereDatabaseMetaData databaseMetaData, final FederationDatabaseMetaData database, final Map<String, OptimizerPlannerContext> optimizerPlanners,
                                    final String schemaName, final String renameSchemaName, final Collection<String> logicDataSourceNames) {
-        ShardingSphereSchema schema = databaseMetaData.getSchema(schemaName);
+        ShardingSphereSchema schema = databaseMetaData.getDatabase().getSchema(schemaName);
         databaseMetaData.getDatabase().getSchemas().put(renameSchemaName, schema);
         database.getSchemaMetadata(schemaName).ifPresent(optional -> database.putSchemaMetadata(renameSchemaName, optional));
         optimizerPlanners.put(database.getName(), OptimizerPlannerContextFactory.create(database));

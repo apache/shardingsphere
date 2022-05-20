@@ -41,7 +41,7 @@ public interface MetaDataRefresher<T extends SQLStatement> extends TypedSPI {
      * Refresh schema.
      *
      * @param databaseMetaData database meta data
-     * @param database federation database meta data                      
+     * @param database federation database meta data
      * @param optimizerPlanners optimizer planners
      * @param logicDataSourceNames route data source names
      * @param schemaName schema name
