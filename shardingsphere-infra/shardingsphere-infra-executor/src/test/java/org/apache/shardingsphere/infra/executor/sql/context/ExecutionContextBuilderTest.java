@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.CachedDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
@@ -105,17 +104,17 @@ public final class ExecutionContextBuilderTest {
         assertThat(actual, is(expected));
     }
     
-    private ShardingSphereDatabaseMetaData buildDatabaseWithoutPrimaryKey() {
+    private Map<String, ShardingSphereSchema> buildDatabaseWithoutPrimaryKey() {
         Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(3, 1);
         tableMetaDataMap.put("logicName1", new TableMetaData("logicName1", Arrays.asList(new ColumnMetaData("order_id", Types.INTEGER, true, false, false),
                 new ColumnMetaData("user_id", Types.INTEGER, false, false, false),
                 new ColumnMetaData("status", Types.INTEGER, false, false, false)), Collections.emptySet(), Collections.emptyList()));
         tableMetaDataMap.put("t_other", new TableMetaData("t_other", Collections.singletonList(
                 new ColumnMetaData("order_id", Types.INTEGER, true, false, false)), Collections.emptySet(), Collections.emptyList()));
-        return new ShardingSphereDatabaseMetaData(Collections.singletonMap("name", new ShardingSphereSchema(tableMetaDataMap)));
+        return Collections.singletonMap("name", new ShardingSphereSchema(tableMetaDataMap));
     }
     
-    private ShardingSphereDatabaseMetaData buildDatabase() {
+    private Map<String, ShardingSphereSchema> buildDatabase() {
         Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(3, 1);
         tableMetaDataMap.put("logicName1", new TableMetaData("logicName1", Arrays.asList(new ColumnMetaData("order_id", Types.INTEGER, true, false, false),
                 new ColumnMetaData("user_id", Types.INTEGER, false, false, false),
@@ -127,6 +126,6 @@ public final class ExecutionContextBuilderTest {
                 new ColumnMetaData("c_date", Types.TIMESTAMP, false, false, false)), Collections.emptySet(), Collections.emptyList()));
         tableMetaDataMap.put("t_other", new TableMetaData("t_other", Collections.singletonList(
                 new ColumnMetaData("order_id", Types.INTEGER, true, false, false)), Collections.emptySet(), Collections.emptyList()));
-        return new ShardingSphereDatabaseMetaData(Collections.singletonMap("name", new ShardingSphereSchema(tableMetaDataMap)));
+        return Collections.singletonMap("name", new ShardingSphereSchema(tableMetaDataMap));
     }
 }

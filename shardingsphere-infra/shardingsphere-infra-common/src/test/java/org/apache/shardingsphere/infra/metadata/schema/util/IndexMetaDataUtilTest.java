@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.QualifiedTable;
@@ -94,7 +93,6 @@ public final class IndexMetaDataUtilTest {
         TableMetaData tableMetaData = new TableMetaData(TABLE_NAME, Collections.emptyList(), Collections.singleton(new IndexMetaData(INDEX_NAME)), Collections.emptyList());
         Map<String, TableMetaData> tables = Collections.singletonMap(TABLE_NAME, tableMetaData);
         Map<String, ShardingSphereSchema> schemas = Collections.singletonMap(DefaultDatabase.LOGIC_NAME, new ShardingSphereSchema(tables));
-        ShardingSphereDatabaseMetaData database = new ShardingSphereDatabaseMetaData(schemas);
-        return new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class), mock(ShardingSphereResource.class), mock(ShardingSphereRuleMetaData.class), database);
+        return new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class), mock(ShardingSphereResource.class), mock(ShardingSphereRuleMetaData.class), schemas);
     }
 }
