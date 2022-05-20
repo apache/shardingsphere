@@ -112,7 +112,7 @@ public final class SingleTableSchemaMetaDataBuilderTest {
     }
     
     @Test
-    public void testLoad() throws SQLException {
+    public void assertLoad() throws SQLException {
         Collection<ShardingSphereRule> rules = Collections.singletonList(singleTableRule);
         SingleTableSchemaMetaDataBuilder builder = (SingleTableSchemaMetaDataBuilder) RuleBasedSchemaMetaDataBuilderFactory.getInstances(rules).get(singleTableRule);
         Map<String, SchemaMetaData> actual = builder.load(Collections.singleton("tbl"), singleTableRule,
@@ -129,7 +129,7 @@ public final class SingleTableSchemaMetaDataBuilderTest {
     }
     
     @Test
-    public void testDecorate() throws SQLException {
+    public void assertDecorate() throws SQLException {
         Collection<ShardingSphereRule> rules = Collections.singletonList(singleTableRule);
         final SingleTableSchemaMetaDataBuilder builder = (SingleTableSchemaMetaDataBuilder) RuleBasedSchemaMetaDataBuilderFactory.getInstances(rules).get(singleTableRule);
         Map<String, SchemaMetaData> actual = builder.load(Collections.singleton("tbl"), singleTableRule,
