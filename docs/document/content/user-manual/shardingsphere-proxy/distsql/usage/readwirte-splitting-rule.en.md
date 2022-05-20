@@ -1,5 +1,5 @@
 +++
-title = "readwrite_splitting"
+title = "Readwrite_splitting"
 weight = 2
 +++
 
@@ -23,7 +23,7 @@ PASSWORD=root
 
 ## Rule Operation
 
-- Create readwrite_splitting rule
+- Create Readwrite_splitting rule
 
 ```sql
 CREATE READWRITE_SPLITTING RULE group_0 (
@@ -33,7 +33,7 @@ TYPE(NAME=random)
 );
 ```
 
-- Alter readwrite_splitting rule
+- Alter Readwrite_splitting rule
 
 ```sql
 ALTER READWRITE_SPLITTING RULE group_0 (
@@ -43,7 +43,7 @@ TYPE(NAME=random,PROPERTIES(read_weight='2:0'))
 );
 ```
 
-- Drop readwrite_splitting rule
+- Drop Readwrite_splitting rule
 
 ```sql
 DROP READWRITE_SPLITTING RULE group_0;
