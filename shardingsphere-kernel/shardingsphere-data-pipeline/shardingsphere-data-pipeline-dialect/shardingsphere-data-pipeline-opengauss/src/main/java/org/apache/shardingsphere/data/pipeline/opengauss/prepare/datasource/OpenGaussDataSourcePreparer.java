@@ -47,7 +47,6 @@ public final class OpenGaussDataSourcePreparer extends AbstractDataSourcePrepare
             for (String createLogicalTableSQL : createLogicalTableSQLs) {
                 for (String each : Splitter.on(";").splitToList(createLogicalTableSQL).stream().filter(StringUtils::isNotBlank).collect(Collectors.toList())) {
                     executeTargetTableSQL(targetConnection, each);
-                    log.info("create target table '{}' success", each);
                 }
             }
         } catch (final SQLException ex) {
