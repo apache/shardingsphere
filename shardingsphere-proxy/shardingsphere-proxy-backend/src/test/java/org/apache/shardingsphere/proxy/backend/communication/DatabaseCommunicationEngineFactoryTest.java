@@ -78,7 +78,7 @@ public final class DatabaseCommunicationEngineFactoryTest {
         when(backendConnection.getConnectionSession().getDatabaseName()).thenReturn("db");
         SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.emptyList());
-        DatabaseCommunicationEngine<?> engine = DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(sqlStatementContext, "schemaName", Collections.emptyList(), backendConnection);
-        assertThat(engine, instanceOf(DatabaseCommunicationEngine.class));
+        assertThat(DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(sqlStatementContext, "schemaName", Collections.emptyList(), backendConnection),
+                instanceOf(DatabaseCommunicationEngine.class));
     }
 }
