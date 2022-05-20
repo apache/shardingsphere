@@ -65,13 +65,13 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
         }
     }
     
-    private MetaDataContextsBuilder createMetaDataContextsBuilder(final MetaDataPersistService metaDataPersistService, final ContextManagerBuilderParameter parameter) throws SQLException {
+    private MetaDataContextsBuilder createMetaDataContextsBuilder(final MetaDataPersistService metaDataPersistService, final ContextManagerBuilderParameter parameter) {
         Collection<String> databaseNames = InstanceType.JDBC == parameter.getInstanceDefinition().getInstanceType()
                 ? parameter.getDatabaseConfigs().keySet()
                 : metaDataPersistService.getSchemaMetaDataService().loadAllDatabaseNames();
+        Map<String, DatabaseConfiguration> databaseConfigMap = getDatabaseConfigMap(databaseNames, metaDataPersistService, parameter);
         Collection<RuleConfiguration> globalRuleConfigs = metaDataPersistService.getGlobalRuleService().load();
         ConfigurationProperties props = new ConfigurationProperties(metaDataPersistService.getPropsService().load());
-        Map<String, ? extends DatabaseConfiguration> databaseConfigMap = getDatabaseConfigMap(databaseNames, metaDataPersistService, parameter);
         return new MetaDataContextsBuilder(databaseConfigMap, globalRuleConfigs, props);
     }
     
@@ -90,12 +90,11 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
     }
     
     private ContextManager createContextManager(final MetaDataPersistService metaDataPersistService, final ContextManagerBuilderParameter parameter, final MetaDataContexts metaDataContexts) {
-        ContextManager result = new ContextManager();
         InstanceContext instanceContext = new InstanceContext(metaDataPersistService.getComputeNodePersistService().loadComputeNodeInstance(parameter.getInstanceDefinition()),
                 new StandaloneWorkerIdGenerator(), parameter.getModeConfig(), new StandaloneLockContext());
         generateTransactionConfigurationFile(instanceContext, metaDataContexts);
-        TransactionContexts transactionContexts = new TransactionContextsBuilder(metaDataContexts.getMetaDataMap(), metaDataContexts.getGlobalRuleMetaData().getRules()).build();
-        result.init(metaDataContexts, transactionContexts, instanceContext);
+        TransactionContexts transactionContexts = new TransactionContextsBuilder(metaDataContexts.getDatabaseMap(), metaDataContexts.getGlobalRuleMetaData().getRules()).build();
+        ContextManager result = new ContextManager(metaDataContexts, transactionContexts, instanceContext);
         setInstanceContext(result);
         return result;
     }
@@ -110,7 +109,7 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
     }
     
     private void setInstanceContext(final ContextManager contextManager) {
-        contextManager.getMetaDataContexts().getMetaDataMap().forEach((key, value) -> value.getRuleMetaData().getRules().stream().filter(each -> each instanceof InstanceAwareRule)
+        contextManager.getMetaDataContexts().getDatabaseMap().forEach((key, value) -> value.getRuleMetaData().getRules().stream().filter(each -> each instanceof InstanceAwareRule)
                 .forEach(each -> ((InstanceAwareRule) each).setInstanceContext(contextManager.getInstanceContext())));
     }
     

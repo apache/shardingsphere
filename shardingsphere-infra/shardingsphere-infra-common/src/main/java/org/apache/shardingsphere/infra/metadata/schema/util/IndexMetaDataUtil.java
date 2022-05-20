@@ -21,7 +21,7 @@ import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
@@ -79,19 +79,19 @@ public class IndexMetaDataUtil {
     }
     
     /**
-     * Get table names from metadata.
+     * Get table names.
      *
-     * @param metaData meta data
+     * @param database database
      * @param indexes indexes
-     * @param databaseType database type
+     * @param type database type
      * @return table names
      */
-    public static Collection<QualifiedTable> getTableNamesFromMetaData(final ShardingSphereMetaData metaData, final Collection<IndexSegment> indexes, final DatabaseType databaseType) {
+    public static Collection<QualifiedTable> getTableNames(final ShardingSphereDatabase database, final DatabaseType type, final Collection<IndexSegment> indexes) {
         Collection<QualifiedTable> result = new LinkedList<>();
-        String schemaName = databaseType.getDefaultSchema(metaData.getDatabase().getName());
+        String schemaName = type.getDefaultSchema(database.getName());
         for (IndexSegment each : indexes) {
             String actualSchemaName = each.getOwner().map(optional -> optional.getIdentifier().getValue()).orElse(schemaName);
-            findLogicTableNameFromMetaData(metaData.getSchemaByName(actualSchemaName),
+            findLogicTableNameFromMetaData(database.getSchemas().get(actualSchemaName),
                     each.getIndexName().getIdentifier().getValue()).ifPresent(optional -> result.add(new QualifiedTable(actualSchemaName, optional)));
         }
         return result;

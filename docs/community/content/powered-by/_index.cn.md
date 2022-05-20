@@ -13,7 +13,7 @@ chapter = true
 
 ## 谁在使用 ShardingSphere?
 
-共计 201 家公司。
+共计 206 家公司。
 
 ### 基础软件
 <ul>
@@ -79,6 +79,7 @@ chapter = true
 <ul>
     <li><a href="https://www.yuanqisenlin.com/" rel="nofollow">元气森林</a></li>
     <li><a href="http://www.3songshu.com/" rel="nofollow">三只松鼠</a></li>
+    <li><a href="http://www.heilan.com.cn/" rel="nofollow">海澜集团</a></li>
     <li><a href="http://www.pagoda.com.cn/" rel="nofollow">百果园</a></li>
     <li><a href="https://www.dayi35.com/" rel="nofollow">大易有塑</a></li>
     <li><a href="https://www.xiaohongchun.com/" rel="nofollow">小红唇</a></li>
@@ -122,6 +123,7 @@ chapter = true
     <li><a href="https://www.maxrocky.com/" rel="nofollow">迈动互联</a></li>
     <li><a href="https://www.teddymobile.cn/" rel="nofollow">泰迪熊移动</a></li>
     <li><a href="https://www.ecopiatech.com/" rel="nofollow">Ecopia</a></li>
+    <li><a href="https://xiaoman.cn/" rel="nofollow">小满科技</a></li>
 </ul>
 
 ### 出行
@@ -227,6 +229,7 @@ chapter = true
     <li><a href="http://www.chiscdc.com/" rel="nofollow">中卫信</a></li>
     <li><a href="http://www.taxchina.com/" rel="nofollow">中税网</a></li>
     <li><a href="http://www.gddxit.com/" rel="nofollow">广东达信</a></li>
+    <li><a href="http://www.tshaisen.com/" rel="nofollow">海森电子</a></li>
 </ul>
 
 ### 通信科技
@@ -297,6 +300,8 @@ chapter = true
     <li><a href="https://www.xingren.com/" rel="nofollow">未来医生</a></li>
     <li><a href="https://www.medbanks.cn/" rel="nofollow">思派网络</a></li>
     <li><a href="http://swifthealth.cn/" rel="nofollow">朝前科技</a></li>
+    <li><a href="http://www.greenbon.cn/" rel="nofollow">绿葆</a></li>
+    <li><a href="http://yilihui.com/" rel="nofollow">伊丽汇</a></li>
 </ul>
 
 ### 招聘

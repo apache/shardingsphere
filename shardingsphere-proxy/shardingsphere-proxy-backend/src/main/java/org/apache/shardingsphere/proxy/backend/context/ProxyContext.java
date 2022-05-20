@@ -21,7 +21,7 @@ import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -43,24 +43,24 @@ public final class ProxyContext {
     
     private final JDBCBackendDataSource backendDataSource = new JDBCBackendDataSource();
     
-    private volatile ContextManager contextManager = new ContextManager();
-    
-    /**
-     * Get instance of proxy schema schemas.
-     *
-     * @return instance of ShardingSphere schemas.
-     */
-    public static ProxyContext getInstance() {
-        return INSTANCE;
-    }
+    private ContextManager contextManager;
     
     /**
      * Initialize proxy context.
      *
      * @param contextManager context manager
      */
-    public void init(final ContextManager contextManager) {
-        this.contextManager = contextManager;
+    public static void init(final ContextManager contextManager) {
+        INSTANCE.contextManager = contextManager;
+    }
+    
+    /**
+     * Get instance of proxy context.
+     *
+     * @return got instance
+     */
+    public static ProxyContext getInstance() {
+        return INSTANCE;
     }
     
     /**
@@ -74,16 +74,16 @@ public final class ProxyContext {
     }
     
     /**
-     * Get ShardingSphere meta data.
+     * Get database.
      *
-     * @param databaseName database name
-     * @return ShardingSphere meta data
+     * @param name database name
+     * @return got database
      */
-    public ShardingSphereMetaData getMetaData(final String databaseName) {
-        if (Strings.isNullOrEmpty(databaseName) || !contextManager.getMetaDataContexts().getAllDatabaseNames().contains(databaseName)) {
+    public ShardingSphereDatabase getDatabase(final String name) {
+        if (Strings.isNullOrEmpty(name) || !contextManager.getMetaDataContexts().getAllDatabaseNames().contains(name)) {
             throw new NoDatabaseSelectedException();
         }
-        return contextManager.getMetaDataContexts().getMetaData(databaseName);
+        return contextManager.getMetaDataContexts().getDatabaseMetaData(name);
     }
     
     /**
@@ -114,7 +114,7 @@ public final class ProxyContext {
     public Collection<ShardingSphereRule> getRules(final String databaseName) {
         Collection<ShardingSphereRule> result = new LinkedList<>();
         if (!Strings.isNullOrEmpty(databaseName) && databaseExists(databaseName)) {
-            result.addAll(contextManager.getMetaDataContexts().getMetaData(databaseName).getRuleMetaData().getRules());
+            result.addAll(contextManager.getMetaDataContexts().getDatabaseMetaData(databaseName).getRuleMetaData().getRules());
         }
         result.addAll(contextManager.getMetaDataContexts().getGlobalRuleMetaData().getRules());
         return result;

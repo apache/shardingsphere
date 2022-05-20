@@ -52,7 +52,7 @@ public final class SQL92ParserStatementExample {
     
     public static void main(String[] args) {
         SQL92_PARSER_STATEMENT_LIST.forEach(sql -> {
-            CacheOption cacheOption = new CacheOption(128, 1024L, 4);
+            CacheOption cacheOption = new CacheOption(128, 1024L);
             SQLParserEngine parserEngine = new SQLParserEngine("SQL92", cacheOption);
             ParseASTNode parseASTNode = parserEngine.parse(sql, false);
             SQLVisitorEngine visitorEngine = new SQLVisitorEngine("SQL92", "STATEMENT", false, new Properties());

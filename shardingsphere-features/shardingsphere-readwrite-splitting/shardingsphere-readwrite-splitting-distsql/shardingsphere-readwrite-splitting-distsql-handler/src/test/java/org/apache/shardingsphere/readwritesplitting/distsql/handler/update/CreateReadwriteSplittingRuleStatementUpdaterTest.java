@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResour
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidRuleConfigurationException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
@@ -49,7 +49,7 @@ import static org.mockito.Mockito.when;
 public final class CreateReadwriteSplittingRuleStatementUpdaterTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private ShardingSphereMetaData shardingSphereMetaData;
+    private ShardingSphereDatabase database;
     
     @Mock
     private ShardingSphereResource resource;
@@ -58,34 +58,34 @@ public final class CreateReadwriteSplittingRuleStatementUpdaterTest {
     
     @Before
     public void before() {
-        when(shardingSphereMetaData.getResource()).thenReturn(resource);
+        when(database.getResource()).thenReturn(resource);
     }
     
     @Test(expected = DuplicateRuleException.class)
     public void assertCheckSQLStatementWithDuplicateRuleNames() throws DistSQLException {
-        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        when(metaData.getResource().getDataSources().keySet()).thenReturn(Collections.emptySet());
-        updater.checkSQLStatement(metaData, createSQLStatement("TEST"), createCurrentRuleConfiguration());
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getResource().getDataSources().keySet()).thenReturn(Collections.emptySet());
+        updater.checkSQLStatement(database, createSQLStatement("TEST"), createCurrentRuleConfiguration());
     }
     
     @Test(expected = InvalidRuleConfigurationException.class)
     public void assertCheckSQLStatementWithDuplicateResource() throws DistSQLException {
-        ShardingSphereMetaData shardingSphereMetaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        when(shardingSphereMetaData.getResource()).thenReturn(resource);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getResource()).thenReturn(resource);
         when(resource.getDataSources()).thenReturn(Collections.singletonMap("write_ds", null));
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement("write_ds", "TEST"), createCurrentRuleConfiguration());
+        updater.checkSQLStatement(database, createSQLStatement("write_ds", "TEST"), createCurrentRuleConfiguration());
     }
     
     @Test(expected = RequiredResourceMissedException.class)
     public void assertCheckSQLStatementWithoutExistedResources() throws DistSQLException {
         when(resource.getNotExistedResources(any())).thenReturn(Arrays.asList("read_ds_0", "read_ds_1"));
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement("TEST"), null);
+        updater.checkSQLStatement(database, createSQLStatement("TEST"), null);
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
     public void assertCheckSQLStatementWithoutToBeCreatedLoadBalancers() throws DistSQLException {
-        when(shardingSphereMetaData.getRuleMetaData().findRules(any())).thenReturn(Collections.emptyList());
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement("INVALID_TYPE"), null);
+        when(database.getRuleMetaData().findRules(any())).thenReturn(Collections.emptyList());
+        updater.checkSQLStatement(database, createSQLStatement("INVALID_TYPE"), null);
     }
     
     private CreateReadwriteSplittingRuleStatement createSQLStatement(final String loadBalancerName) {

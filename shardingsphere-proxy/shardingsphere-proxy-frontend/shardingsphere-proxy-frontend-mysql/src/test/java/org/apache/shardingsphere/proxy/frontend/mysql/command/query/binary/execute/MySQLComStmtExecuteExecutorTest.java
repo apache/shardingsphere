@@ -22,9 +22,8 @@ import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.execute.MySQLComStmtExecutePacket;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -54,7 +53,6 @@ import org.mockito.plugins.MemberAccessor;
 import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -82,10 +80,9 @@ public final class MySQLComStmtExecuteExecutorTest {
     public void setUp() throws ReflectiveOperationException {
         Field contextManagerField = ProxyContext.getInstance().getClass().getDeclaredField("contextManager");
         contextManagerField.setAccessible(true);
-        ShardingSphereMetaData metaData = mockMetaData();
-        Map<String, ShardingSphereMetaData> metaDataMap = Collections.singletonMap("logic_db", metaData);
-        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), metaDataMap,
-                mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), mock(OptimizerContext.class, RETURNS_DEEP_STUBS), new ConfigurationProperties(new Properties()));
+        ShardingSphereDatabase database = mockDatabase();
+        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), Collections.singletonMap("logic_db", database),
+                mock(ShardingSphereRuleMetaData.class), mock(OptimizerContext.class, RETURNS_DEEP_STUBS), new ConfigurationProperties(new Properties()));
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         contextManagerField.set(ProxyContext.getInstance(), contextManager);
@@ -95,11 +92,11 @@ public final class MySQLComStmtExecuteExecutorTest {
         when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(SQLParserRule.class)).thenReturn(Optional.of(sqlParserRule));
     }
     
-    private ShardingSphereMetaData mockMetaData() {
-        ShardingSphereMetaData result = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
+    private ShardingSphereDatabase mockDatabase() {
+        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(result.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         when(result.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
-        when(result.getFrontendDatabaseType()).thenReturn(new MySQLDatabaseType());
+        when(result.getProtocolType()).thenReturn(new MySQLDatabaseType());
         return result;
     }
     

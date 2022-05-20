@@ -70,7 +70,7 @@ public abstract class CasesLoader {
     /**
      * build case map.
      * @param caseMap result map
-     * @param inputStream xml inputStream 
+     * @param inputStream xml inputStream
      * @throws JAXBException JAXBException
      */
     protected abstract void buildCaseMap(Map<String, Case> caseMap, InputStream inputStream) throws JAXBException;

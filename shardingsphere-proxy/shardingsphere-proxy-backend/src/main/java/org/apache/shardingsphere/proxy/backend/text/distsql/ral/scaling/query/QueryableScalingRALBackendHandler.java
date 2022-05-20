@@ -45,7 +45,7 @@ public final class QueryableScalingRALBackendHandler extends DatabaseRequiredBac
     
     @Override
     protected ResponseHeader execute(final String databaseName, final RALStatement sqlStatement) {
-        resultSet.init(ProxyContext.getInstance().getMetaData(databaseName), sqlStatement);
+        resultSet.init(ProxyContext.getInstance().getDatabase(databaseName), sqlStatement);
         List<QueryHeader> queryHeaders = new ArrayList<>();
         for (String each : resultSet.getColumnNames()) {
             queryHeaders.add(new QueryHeader(databaseName, "", each, each, Types.CHAR, "CHAR", 255, 0, false, false, false, false));

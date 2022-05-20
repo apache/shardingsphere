@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager;
 
 import com.google.common.base.Preconditions;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.database.ShardingSphereDistributeDatabaseLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.InterReentrantMutexLock;
@@ -28,6 +29,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.Time
 /**
  * Distribute lock manager.
  */
+@Slf4j
 public final class DistributeLockManager implements ShardingSphereLockManager {
     
     private InterReentrantMutexLock sequencedLock;
@@ -55,18 +57,21 @@ public final class DistributeLockManager implements ShardingSphereLockManager {
     
     @Override
     public boolean tryLockWrite(final String databaseName, final long timeoutMilliseconds) {
-        return innerTryLock(databaseName, timeoutMilliseconds);
+        return innerDatabaseTryLock(databaseName, timeoutMilliseconds);
     }
     
-    private synchronized boolean innerTryLock(final String databaseName, final long timeoutMilliseconds) {
-        Preconditions.checkNotNull(databaseName, "Try Lock write for databaseName args database name can not be null.");
+    private synchronized boolean innerDatabaseTryLock(final String databaseName, final long timeoutMilliseconds) {
+        Preconditions.checkNotNull(databaseName, "Try Lock write for database args database name can not be null.");
         if (!sequencedLock.tryLock(TimeoutMilliseconds.DEFAULT_REGISTRY)) {
+            log.debug("Distribute database lock acquire sequenced failed, database name: {}", databaseName);
             return false;
         }
         try {
+            log.debug("Distribute database lock acquire sequenced success, database name: {}", databaseName);
             return databaseLock.tryLock(databaseName, timeoutMilliseconds - TimeoutMilliseconds.DEFAULT_REGISTRY);
         } finally {
             sequencedLock.unlock();
+            log.debug("Distribute database lock release sequenced success, database name: {}", databaseName);
         }
     }
     

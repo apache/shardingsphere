@@ -20,8 +20,7 @@ package org.apache.shardingsphere.infra.federation.optimizer;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContextFactory;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -109,14 +108,14 @@ public final class ShardingSphereOptimizerTest {
         Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(2, 1);
         tableMetaDataMap.put("t_order_federate", createOrderTableMetaData());
         tableMetaDataMap.put("t_user_info", createUserInfoTableMetaData());
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(
-                new H2DatabaseType(), mockResource(), null, new ShardingSphereDatabase(databaseName, Collections.singletonMap(schemaName, new ShardingSphereSchema(tableMetaDataMap))));
-        optimizer = new ShardingSphereOptimizer(OptimizerContextFactory.create(Collections.singletonMap(databaseName, metaData), createGlobalRuleMetaData()));
+        ShardingSphereDatabase database = new ShardingSphereDatabase(databaseName,
+                new H2DatabaseType(), mockResource(), null, Collections.singletonMap(schemaName, new ShardingSphereSchema(tableMetaDataMap)));
+        optimizer = new ShardingSphereOptimizer(OptimizerContextFactory.create(Collections.singletonMap(databaseName, database), createGlobalRuleMetaData()));
     }
     
     private ShardingSphereRuleMetaData createGlobalRuleMetaData() {
         Collection<ShardingSphereRule> rules = new LinkedList<>();
-        CacheOption cacheOption = new CacheOption(128, 1024L, 4);
+        CacheOption cacheOption = new CacheOption(128, 1024L);
         rules.add(new SQLParserRule(new SQLParserRuleConfiguration(false, cacheOption, cacheOption)));
         return new ShardingSphereRuleMetaData(Collections.emptyList(), rules);
     }

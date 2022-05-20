@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmC
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.update.CreateShardingAlgorithmStatementUpdater;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.ShardingAlgorithmSegment;
@@ -42,14 +42,14 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class CreateShardingAlgorithmStatementUpdaterTest {
     
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private ShardingSphereMetaData shardingSphereMetaData;
-    
     private final CreateShardingAlgorithmStatementUpdater updater = new CreateShardingAlgorithmStatementUpdater();
+    
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private ShardingSphereDatabase database;
     
     @Before
     public void before() {
-        when(shardingSphereMetaData.getDatabase().getName()).thenReturn("test");
+        when(database.getName()).thenReturn("test");
     }
     
     @Test(expected = DuplicateRuleException.class)
@@ -57,7 +57,7 @@ public final class CreateShardingAlgorithmStatementUpdaterTest {
         Properties props = new Properties();
         props.put("inputKey", "inputValue");
         ShardingAlgorithmSegment algorithmSegment = new ShardingAlgorithmSegment("inputAlgorithmName", new AlgorithmSegment("inputAlgorithmName", props));
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(algorithmSegment, algorithmSegment), null);
+        updater.checkSQLStatement(database, createSQLStatement(algorithmSegment, algorithmSegment), null);
     }
     
     @Test(expected = DuplicateRuleException.class)
@@ -67,7 +67,7 @@ public final class CreateShardingAlgorithmStatementUpdaterTest {
         ShardingAlgorithmSegment algorithmSegment = new ShardingAlgorithmSegment("existAlgorithmName", new AlgorithmSegment("inputAlgorithmName", props));
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
         ruleConfig.getShardingAlgorithms().put("existAlgorithmName", new ShardingSphereAlgorithmConfiguration("hash_mod", props));
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(algorithmSegment), ruleConfig);
+        updater.checkSQLStatement(database, createSQLStatement(algorithmSegment), ruleConfig);
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
@@ -75,7 +75,7 @@ public final class CreateShardingAlgorithmStatementUpdaterTest {
         Properties props = new Properties();
         props.put("inputKey", "inputValue");
         ShardingAlgorithmSegment algorithmSegment = new ShardingAlgorithmSegment("inputAlgorithmName", new AlgorithmSegment("inputAlgorithmName", props));
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(algorithmSegment), null);
+        updater.checkSQLStatement(database, createSQLStatement(algorithmSegment), null);
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
@@ -85,7 +85,7 @@ public final class CreateShardingAlgorithmStatementUpdaterTest {
         ShardingAlgorithmSegment algorithmSegment = new ShardingAlgorithmSegment("inputAlgorithmName", new AlgorithmSegment("inputAlgorithmName", props));
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
         ruleConfig.getShardingAlgorithms().put("existAlgorithmName", new ShardingSphereAlgorithmConfiguration("InvalidAlgorithm", props));
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(algorithmSegment), ruleConfig);
+        updater.checkSQLStatement(database, createSQLStatement(algorithmSegment), ruleConfig);
     }
     
     private CreateShardingAlgorithmStatement createSQLStatement(final ShardingAlgorithmSegment... ruleSegments) {

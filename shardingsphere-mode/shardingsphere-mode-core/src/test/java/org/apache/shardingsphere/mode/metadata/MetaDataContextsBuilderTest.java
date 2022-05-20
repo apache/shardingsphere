@@ -56,13 +56,18 @@ public final class MetaDataContextsBuilderTest {
         AuthorityRuleConfiguration authorityRuleConfig = new AuthorityRuleConfiguration(Collections.singleton(user),
                 new ShardingSphereAlgorithmConfiguration("ALL_PERMITTED", new Properties()));
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.singletonList(new FixtureRuleConfiguration()));
-        MetaDataContextsBuilder builder = new MetaDataContextsBuilder(
-                Collections.singletonMap("logic_db", databaseConfig), Collections.singleton(authorityRuleConfig), new ConfigurationProperties(props));
-        MetaDataContexts actual = builder.build(mock(MetaDataPersistService.class));
+        MetaDataContexts actual = new MetaDataContextsBuilder(
+                Collections.singletonMap("logic_db", databaseConfig), Collections.singleton(authorityRuleConfig), new ConfigurationProperties(props)).build(mock(MetaDataPersistService.class));
         assertRules(actual);
-        assertTrue(actual.getMetaData("logic_db").getResource().getDataSources().isEmpty());
+        assertTrue(actual.getDatabaseMetaData("logic_db").getResource().getDataSources().isEmpty());
         assertThat(actual.getProps().getProps().size(), is(1));
         assertThat(actual.getProps().getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE), is(1));
+    }
+    
+    private void assertRules(final MetaDataContexts actual) {
+        Collection<ShardingSphereRule> rules = actual.getDatabaseMetaData("logic_db").getRuleMetaData().getRules();
+        assertThat(rules.size(), is(1));
+        assertThat(rules.iterator().next(), instanceOf(FixtureRule.class));
     }
     
     @Test
@@ -78,22 +83,16 @@ public final class MetaDataContextsBuilderTest {
     
     @Test
     public void assertBuildWithEmptyRuleConfigurations() throws SQLException {
-        MetaDataContextsBuilder builder = new MetaDataContextsBuilder(Collections.emptyMap(), Collections.emptyList(), new ConfigurationProperties(new Properties()));
-        MetaDataContexts actual = builder.build(mock(MetaDataPersistService.class));
-        assertThat(actual.getMetaDataMap().size(), is(4));
-        assertTrue(actual.getMetaDataMap().containsKey("information_schema"));
-        assertTrue(actual.getMetaDataMap().containsKey("performance_schema"));
-        assertTrue(actual.getMetaDataMap().containsKey("mysql"));
-        assertTrue(actual.getMetaDataMap().containsKey("sys"));
-        assertThat(actual.getMetaDataMap().get("information_schema").getRuleMetaData().getRules(), instanceOf(LinkedList.class));
-        assertThat(actual.getMetaDataMap().get("performance_schema").getRuleMetaData().getRules(), instanceOf(LinkedList.class));
-        assertThat(actual.getMetaDataMap().get("mysql").getRuleMetaData().getRules(), instanceOf(LinkedList.class));
-        assertThat(actual.getMetaDataMap().get("sys").getRuleMetaData().getRules(), instanceOf(LinkedList.class));
-    }
-    
-    private void assertRules(final MetaDataContexts actual) {
-        Collection<ShardingSphereRule> rules = actual.getMetaData("logic_db").getRuleMetaData().getRules();
-        assertThat(rules.size(), is(1));
-        assertThat(rules.iterator().next(), instanceOf(FixtureRule.class));
+        MetaDataContexts actual = new MetaDataContextsBuilder(
+                Collections.emptyMap(), Collections.emptyList(), new ConfigurationProperties(new Properties())).build(mock(MetaDataPersistService.class));
+        assertThat(actual.getDatabaseMap().size(), is(4));
+        assertTrue(actual.getDatabaseMap().containsKey("information_schema"));
+        assertTrue(actual.getDatabaseMap().containsKey("performance_schema"));
+        assertTrue(actual.getDatabaseMap().containsKey("mysql"));
+        assertTrue(actual.getDatabaseMap().containsKey("sys"));
+        assertThat(actual.getDatabaseMap().get("information_schema").getRuleMetaData().getRules(), instanceOf(LinkedList.class));
+        assertThat(actual.getDatabaseMap().get("performance_schema").getRuleMetaData().getRules(), instanceOf(LinkedList.class));
+        assertThat(actual.getDatabaseMap().get("mysql").getRuleMetaData().getRules(), instanceOf(LinkedList.class));
+        assertThat(actual.getDatabaseMap().get("sys").getRuleMetaData().getRules(), instanceOf(LinkedList.class));
     }
 }

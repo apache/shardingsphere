@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.context.refresher.MetaDataRefresher;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.metadata.schema.event.SchemaAlteredEvent;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
@@ -46,26 +46,26 @@ public final class DropIndexStatementSchemaRefresher implements MetaDataRefreshe
     private static final String TYPE = DropIndexStatement.class.getName();
     
     @Override
-    public void refresh(final ShardingSphereMetaData metaData, final FederationDatabaseMetaData database, final Map<String, OptimizerPlannerContext> optimizerPlanners,
+    public void refresh(final ShardingSphereDatabase database, final FederationDatabaseMetaData federationDatabaseMetaData, final Map<String, OptimizerPlannerContext> optimizerPlanners,
                         final Collection<String> logicDataSourceNames, final String schemaName, final DropIndexStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         for (IndexSegment each : sqlStatement.getIndexes()) {
             String actualSchemaName = each.getOwner().map(optional -> optional.getIdentifier().getValue()).orElse(schemaName);
-            Optional<String> logicTableName = findLogicTableName(metaData, sqlStatement, Collections.singletonList(each));
+            Optional<String> logicTableName = findLogicTableName(database, sqlStatement, Collections.singletonList(each));
             if (!logicTableName.isPresent()) {
                 continue;
             }
-            TableMetaData tableMetaData = metaData.getSchemaByName(actualSchemaName).get(logicTableName.get());
+            TableMetaData tableMetaData = database.getSchemas().get(actualSchemaName).get(logicTableName.get());
             tableMetaData.getIndexes().remove(each.getIndexName().getIdentifier().getValue());
-            post(metaData.getDatabase().getName(), actualSchemaName, tableMetaData);
+            post(database.getName(), actualSchemaName, tableMetaData);
         }
     }
     
-    private Optional<String> findLogicTableName(final ShardingSphereMetaData metaData, final DropIndexStatement sqlStatement, final Collection<IndexSegment> indexSegments) {
+    private Optional<String> findLogicTableName(final ShardingSphereDatabase database, final DropIndexStatement sqlStatement, final Collection<IndexSegment> indexSegments) {
         Optional<SimpleTableSegment> simpleTableSegment = DropIndexStatementHandler.getSimpleTableSegment(sqlStatement);
         if (simpleTableSegment.isPresent()) {
             return Optional.of(simpleTableSegment.get().getTableName().getIdentifier().getValue());
         }
-        Collection<QualifiedTable> tableNames = IndexMetaDataUtil.getTableNamesFromMetaData(metaData, indexSegments, metaData.getResource().getDatabaseType());
+        Collection<QualifiedTable> tableNames = IndexMetaDataUtil.getTableNames(database, database.getResource().getDatabaseType(), indexSegments);
         return tableNames.isEmpty() ? Optional.empty() : Optional.of(tableNames.iterator().next().getTableName());
     }
     

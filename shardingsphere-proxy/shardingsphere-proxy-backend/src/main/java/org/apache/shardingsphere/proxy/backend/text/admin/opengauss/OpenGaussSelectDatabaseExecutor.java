@@ -67,7 +67,7 @@ public final class OpenGaussSelectDatabaseExecutor implements DatabaseAdminQuery
             connection.setSchema(PG_CATALOG);
             try (Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery(sql)) {
                 queryResultMetaData = new JDBCQueryResultMetaData(resultSet.getMetaData());
-                mergedResult = new IteratorStreamMergedResult(Collections.singletonList(new JDBCMemoryQueryResult(resultSet)));
+                mergedResult = new IteratorStreamMergedResult(Collections.singletonList(new JDBCMemoryQueryResult(resultSet, connectionSession.getDatabaseType())));
             }
         }
     }

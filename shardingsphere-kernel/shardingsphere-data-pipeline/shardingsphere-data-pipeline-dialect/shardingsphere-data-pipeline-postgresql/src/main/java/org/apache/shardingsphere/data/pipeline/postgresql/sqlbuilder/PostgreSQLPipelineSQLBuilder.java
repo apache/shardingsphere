@@ -61,7 +61,7 @@ public final class PostgreSQLPipelineSQLBuilder extends AbstractPipelineSQLBuild
         result.append(") DO UPDATE SET ");
         for (int i = 0; i < dataRecord.getColumnCount(); i++) {
             Column column = dataRecord.getColumn(i);
-            if (column.isPrimaryKey() || isShardingColumn(shardingColumnsMap, dataRecord.getTableName(), column.getName())) {
+            if (column.isUniqueKey() || isShardingColumn(shardingColumnsMap, dataRecord.getTableName(), column.getName())) {
                 continue;
             }
             result.append(quote(column.getName())).append("=EXCLUDED.").append(quote(column.getName())).append(",");

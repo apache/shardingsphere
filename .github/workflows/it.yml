@@ -88,6 +88,7 @@ jobs:
         with:
           name: it-image
           path: /tmp/shardingsphere-proxy-test.tar
+          retention-days: 1
   
   it-empty-rule:
     name: empty rule

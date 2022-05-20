@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.AlgorithmInUsedExc
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionAlterUpdater;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
@@ -67,12 +67,12 @@ public final class AlterShadowRuleStatementUpdater implements RuleDefinitionAlte
     }
     
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData metaData, final AlterShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String databaseName = metaData.getDatabase().getName();
+    public void checkSQLStatement(final ShardingSphereDatabase database, final AlterShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) throws DistSQLException {
+        String databaseName = database.getName();
         Collection<ShadowRuleSegment> rules = sqlStatement.getRules();
         checkConfigurationExist(databaseName, currentRuleConfig);
         checkRuleNames(databaseName, rules, currentRuleConfig);
-        checkResources(databaseName, rules, metaData);
+        checkResources(databaseName, database, rules);
         checkAlgorithms(databaseName, rules);
     }
     
@@ -87,9 +87,9 @@ public final class AlterShadowRuleStatementUpdater implements RuleDefinitionAlte
         ShadowRuleStatementChecker.checkRulesExist(requireRuleNames, currentRuleNames, different -> new InvalidAlgorithmConfigurationException("shadow rule name ", different));
     }
     
-    private void checkResources(final String databaseName, final Collection<ShadowRuleSegment> rules, final ShardingSphereMetaData metaData) throws DistSQLException {
+    private void checkResources(final String databaseName, final ShardingSphereDatabase database, final Collection<ShadowRuleSegment> rules) throws DistSQLException {
         Collection<String> requireResource = ShadowRuleStatementSupporter.getResourceNames(rules);
-        ShadowRuleStatementChecker.checkResourceExist(requireResource, metaData, databaseName);
+        ShadowRuleStatementChecker.checkResourceExist(requireResource, database, databaseName);
     }
     
     private void checkAlgorithms(final String databaseName, final Collection<ShadowRuleSegment> rules) throws DistSQLException {

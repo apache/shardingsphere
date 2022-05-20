@@ -62,12 +62,11 @@ public final class AlterSQLParserRuleHandler extends UpdatableRALBackendHandler<
     private CacheOption createCacheOption(final CacheOption cacheOption, final CacheOptionSegment segment) {
         int initialCapacity = null == segment.getInitialCapacity() ? cacheOption.getInitialCapacity() : segment.getInitialCapacity();
         long maximumSize = null == segment.getMaximumSize() ? cacheOption.getMaximumSize() : segment.getMaximumSize();
-        int concurrencyLevel = null == segment.getConcurrencyLevel() ? cacheOption.getConcurrencyLevel() : segment.getConcurrencyLevel();
-        return new CacheOption(initialCapacity, maximumSize, concurrencyLevel);
+        return new CacheOption(initialCapacity, maximumSize);
     }
     
     private void persistNewRuleConfigurations(final Collection<RuleConfiguration> globalRuleConfigs) {
-        Optional<MetaDataPersistService> metaDataPersistService = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataPersistService();
+        Optional<MetaDataPersistService> metaDataPersistService = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getPersistService();
         if (metaDataPersistService.isPresent() && null != metaDataPersistService.get().getGlobalRuleService()) {
             metaDataPersistService.get().getGlobalRuleService().persist(globalRuleConfigs, true);
         }

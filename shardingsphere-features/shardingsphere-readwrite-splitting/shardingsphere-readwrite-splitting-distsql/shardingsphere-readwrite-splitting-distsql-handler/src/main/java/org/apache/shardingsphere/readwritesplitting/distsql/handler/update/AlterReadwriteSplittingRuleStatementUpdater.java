@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResour
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionAlterUpdater;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.type.ExportableRule;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
@@ -50,12 +50,12 @@ import java.util.stream.Collectors;
 public final class AlterReadwriteSplittingRuleStatementUpdater implements RuleDefinitionAlterUpdater<AlterReadwriteSplittingRuleStatement, ReadwriteSplittingRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final AlterReadwriteSplittingRuleStatement sqlStatement,
+    public void checkSQLStatement(final ShardingSphereDatabase database, final AlterReadwriteSplittingRuleStatement sqlStatement,
                                   final ReadwriteSplittingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String databaseName = shardingSphereMetaData.getDatabase().getName();
+        String databaseName = database.getName();
         checkCurrentRuleConfiguration(databaseName, currentRuleConfig);
         checkToBeAlteredRules(databaseName, sqlStatement, currentRuleConfig);
-        checkToBeAlteredResources(databaseName, sqlStatement, shardingSphereMetaData);
+        checkToBeAlteredResources(databaseName, sqlStatement, database);
         checkToBeAlteredLoadBalancer(sqlStatement);
     }
     
@@ -86,8 +86,7 @@ public final class AlterReadwriteSplittingRuleStatementUpdater implements RuleDe
         }
     }
     
-    private void checkToBeAlteredResources(final String databaseName, final AlterReadwriteSplittingRuleStatement sqlStatement,
-                                           final ShardingSphereMetaData shardingSphereMetaData) throws DistSQLException {
+    private void checkToBeAlteredResources(final String databaseName, final AlterReadwriteSplittingRuleStatement sqlStatement, final ShardingSphereDatabase database) throws DistSQLException {
         Collection<String> requireResources = new LinkedHashSet<>();
         Collection<String> requireDiscoverableResources = new LinkedHashSet<>();
         sqlStatement.getRules().forEach(each -> {
@@ -98,17 +97,17 @@ public final class AlterReadwriteSplittingRuleStatementUpdater implements RuleDe
                 requireDiscoverableResources.add(each.getAutoAwareResource());
             }
         });
-        Collection<String> notExistResources = shardingSphereMetaData.getResource().getNotExistedResources(requireResources);
+        Collection<String> notExistResources = database.getResource().getNotExistedResources(requireResources);
         DistSQLException.predictionThrow(notExistResources.isEmpty(), () -> new RequiredResourceMissedException(databaseName, notExistResources));
-        Collection<String> logicResources = getLogicResources(shardingSphereMetaData);
+        Collection<String> logicResources = getLogicResources(database);
         Set<String> notExistLogicResources = requireDiscoverableResources.stream().filter(each -> !logicResources.contains(each)).collect(Collectors.toSet());
         DistSQLException.predictionThrow(notExistLogicResources.isEmpty(), () -> new RequiredResourceMissedException(databaseName, notExistLogicResources));
     }
     
     @SuppressWarnings("unchecked")
-    private Collection<String> getLogicResources(final ShardingSphereMetaData shardingSphereMetaData) {
+    private Collection<String> getLogicResources(final ShardingSphereDatabase database) {
         Collection<String> result = new LinkedHashSet<>();
-        Optional<ExportableRule> exportableRule = shardingSphereMetaData.getRuleMetaData().findRules(ExportableRule.class).stream()
+        Optional<ExportableRule> exportableRule = database.getRuleMetaData().findRules(ExportableRule.class).stream()
                 .filter(each -> each.containExportableKey(Collections.singletonList(ExportableConstants.EXPORTABLE_KEY_PRIMARY_DATA_SOURCE))).findAny();
         exportableRule.ifPresent(optional -> {
             Map<String, Object> exportData = optional.export(Collections.singletonList(ExportableConstants.EXPORTABLE_KEY_PRIMARY_DATA_SOURCE));

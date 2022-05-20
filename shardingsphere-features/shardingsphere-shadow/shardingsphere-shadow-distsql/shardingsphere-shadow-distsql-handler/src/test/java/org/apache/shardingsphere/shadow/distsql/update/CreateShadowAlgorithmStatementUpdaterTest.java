@@ -21,7 +21,7 @@ import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.distsql.handler.update.CreateShadowAlgorithmStatementUpdater;
 import org.apache.shardingsphere.shadow.distsql.parser.segment.ShadowAlgorithmSegment;
@@ -42,7 +42,7 @@ import static org.mockito.Mockito.when;
 public final class CreateShadowAlgorithmStatementUpdaterTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private ShardingSphereMetaData shardingSphereMetaData;
+    private ShardingSphereDatabase database;
     
     @Mock
     private ShadowRuleConfiguration currentConfig;
@@ -55,7 +55,7 @@ public final class CreateShadowAlgorithmStatementUpdaterTest {
         props.setProperty("type", "value");
         CreateShadowAlgorithmStatement sqlStatement = createSQLStatement(new ShadowAlgorithmSegment("foo_algorithm", new AlgorithmSegment("SIMPLE_HINT", props)),
                 new ShadowAlgorithmSegment("foo_algorithm", new AlgorithmSegment("SIMPLE_HINT", props)));
-        updater.checkSQLStatement(shardingSphereMetaData, sqlStatement, currentConfig);
+        updater.checkSQLStatement(database, sqlStatement, currentConfig);
     }
     
     @Test(expected = DuplicateRuleException.class)
@@ -64,7 +64,7 @@ public final class CreateShadowAlgorithmStatementUpdaterTest {
         Properties props = new Properties();
         props.setProperty("type", "value");
         CreateShadowAlgorithmStatement sqlStatement = createSQLStatement(new ShadowAlgorithmSegment("foo_algorithm", new AlgorithmSegment("SIMPLE_HINT", props)));
-        updater.checkSQLStatement(shardingSphereMetaData, sqlStatement, currentConfig);
+        updater.checkSQLStatement(database, sqlStatement, currentConfig);
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
@@ -72,7 +72,7 @@ public final class CreateShadowAlgorithmStatementUpdaterTest {
         Properties props = new Properties();
         props.setProperty("type", "value");
         CreateShadowAlgorithmStatement sqlStatement = createSQLStatement(new ShadowAlgorithmSegment("foo_algorithm", new AlgorithmSegment("", props)));
-        updater.checkSQLStatement(shardingSphereMetaData, sqlStatement, currentConfig);
+        updater.checkSQLStatement(database, sqlStatement, currentConfig);
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
@@ -80,7 +80,7 @@ public final class CreateShadowAlgorithmStatementUpdaterTest {
         Properties props = new Properties();
         props.setProperty("type", "value");
         CreateShadowAlgorithmStatement sqlStatement = createSQLStatement(new ShadowAlgorithmSegment("foo_algorithm", new AlgorithmSegment("NOT_EXISTED_ALGORITHM", props)));
-        updater.checkSQLStatement(shardingSphereMetaData, sqlStatement, currentConfig);
+        updater.checkSQLStatement(database, sqlStatement, currentConfig);
     }
     
     private CreateShadowAlgorithmStatement createSQLStatement(final ShadowAlgorithmSegment... ruleSegments) {

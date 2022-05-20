@@ -21,7 +21,7 @@ import lombok.SneakyThrows;
 import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
@@ -38,15 +38,15 @@ public final class MySQLQueryHeaderBuilder implements QueryHeaderBuilder {
     
     @SneakyThrows(ConcurrentException.class)
     @Override
-    public QueryHeader build(final QueryResultMetaData queryResultMetaData, final ShardingSphereMetaData metaData, final String columnName, final String columnLabel,
+    public QueryHeader build(final QueryResultMetaData queryResultMetaData, final ShardingSphereDatabase database, final String columnName, final String columnLabel,
                              final int columnIndex, final LazyInitializer<DataNodeContainedRule> dataNodeContainedRule) throws SQLException {
-        String schemaName = null == metaData ? "" : metaData.getDatabase().getName();
+        String schemaName = null == database ? "" : database.getName();
         String actualTableName = queryResultMetaData.getTableName(columnIndex);
         String tableName;
         boolean primaryKey;
         if (null != actualTableName && null != dataNodeContainedRule.get()) {
             tableName = dataNodeContainedRule.get().findLogicTableByActualTable(actualTableName).orElse("");
-            TableMetaData tableMetaData = metaData.getSchemaByName(schemaName).get(tableName);
+            TableMetaData tableMetaData = database.getSchemas().get(schemaName).get(tableName);
             primaryKey = null != tableMetaData && Optional.ofNullable(tableMetaData.getColumns().get(columnName.toLowerCase())).map(ColumnMetaData::isPrimaryKey).orElse(false);
         } else {
             tableName = actualTableName;

@@ -25,5 +25,4 @@ Attributes：
 |------------------|--------------|--------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------|
 | initialCapacity  | int          | Initial capacity of local cache                                                            | parser syntax tree local cache default value 128, SQL statement cache default value 2000                                |
 | maximumSize(?)   | long         | Maximum capacity of local cache                                                            | The default value of local cache for parsing syntax tree is 1024, and the default value of sql statement cache is 65535 |
-| concurrencyLevel | int          | Local cache concurrency level, the maximum number of concurrent updates allowed by threads | 4                                                                                                                       |
 

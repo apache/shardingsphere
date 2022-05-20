@@ -101,7 +101,7 @@ public final class TextProtocolBackendHandlerFactory {
             }
             return DistSQLBackendHandlerFactory.newInstance(databaseType, (DistSQLStatement) sqlStatement, connectionSession);
         }
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap(),
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getDatabaseMap(),
                 sqlStatement, connectionSession.getDefaultDatabaseName());
         Optional<TextProtocolBackendHandler> backendHandler = DatabaseAdminBackendHandlerFactory.newInstance(databaseType, sqlStatementContext, connectionSession, sql);
         if (backendHandler.isPresent()) {
@@ -123,7 +123,7 @@ public final class TextProtocolBackendHandlerFactory {
                 ? sqlStatementContext.getTablesContext().getDatabaseName().get()
                 : connectionSession.getDatabaseName();
         SQLCheckEngine.check(sqlStatement, Collections.emptyList(),
-                getRules(databaseName), databaseName, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap(), connectionSession.getGrantee());
+                getRules(databaseName), databaseName, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getDatabaseMap(), connectionSession.getGrantee());
         if (sqlStatement instanceof TCLStatement) {
             return TransactionBackendHandlerFactory.newInstance((SQLStatementContext<TCLStatement>) sqlStatementContext, sql, connectionSession);
         }
@@ -135,7 +135,7 @@ public final class TextProtocolBackendHandlerFactory {
         String databaseName = connectionSession.getDatabaseName();
         return Strings.isNullOrEmpty(databaseName) || !ProxyContext.getInstance().databaseExists(databaseName)
                 ? defaultDatabaseType
-                : ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(databaseName).getFrontendDatabaseType();
+                : ProxyContext.getInstance().getContextManager().getMetaDataContexts().getDatabaseMetaData(databaseName).getProtocolType();
     }
     
     private static Optional<ExtraTextProtocolBackendHandler> findExtraTextProtocolBackendHandler(final SQLStatement sqlStatement) {
@@ -160,7 +160,7 @@ public final class TextProtocolBackendHandlerFactory {
             return contexts.getGlobalRuleMetaData().getRules();
         }
         Collection<ShardingSphereRule> result;
-        result = new LinkedList<>(contexts.getMetaData(databaseName).getRuleMetaData().getRules());
+        result = new LinkedList<>(contexts.getDatabaseMetaData(databaseName).getRuleMetaData().getRules());
         result.addAll(contexts.getGlobalRuleMetaData().getRules());
         return result;
     }

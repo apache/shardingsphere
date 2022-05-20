@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.distsql.query;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -44,10 +44,10 @@ public final class ShardingTableNodesQueryResultSetTest {
     
     @Test
     public void assertGetRowData() {
-        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        when(metaData.getRuleMetaData().getConfigurations()).thenReturn(Collections.singleton(createRuleConfiguration()));
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.singleton(createRuleConfiguration()));
         DistSQLResultSet resultSet = new ShardingTableNodesQueryResultSet();
-        resultSet.init(metaData, mock(ShowShardingTableNodesStatement.class));
+        resultSet.init(database, mock(ShowShardingTableNodesStatement.class));
         List<Object> actual = new ArrayList<>(resultSet.getRowData());
         assertThat(actual.size(), is(2));
         assertThat(actual.get(0), is("t_order"));

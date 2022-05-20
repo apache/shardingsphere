@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.AlgorithmInUsedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredAlgorithmMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.distsql.handler.update.AlterShadowAlgorithmStatementUpdater;
 import org.apache.shardingsphere.shadow.distsql.parser.segment.ShadowAlgorithmSegment;
@@ -44,7 +44,7 @@ import static org.mockito.Mockito.when;
 public final class AlterShadowAlgorithmStatementUpdaterTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private ShardingSphereMetaData shardingSphereMetaData;
+    private ShardingSphereDatabase database;
     
     @Mock
     private ShadowRuleConfiguration currentConfig;
@@ -57,7 +57,7 @@ public final class AlterShadowAlgorithmStatementUpdaterTest {
         prop.setProperty("type", "value");
         AlterShadowAlgorithmStatement sqlStatement = createSQLStatement(new ShadowAlgorithmSegment("simpleHintAlgorithm", new AlgorithmSegment("SIMPLE_HINT", prop)),
                 new ShadowAlgorithmSegment("simpleHintAlgorithm", new AlgorithmSegment("SIMPLE_HINT", prop)));
-        updater.checkSQLStatement(shardingSphereMetaData, sqlStatement, currentConfig);
+        updater.checkSQLStatement(database, sqlStatement, currentConfig);
     }
     
     @Test(expected = RequiredRuleMissedException.class)
@@ -65,7 +65,7 @@ public final class AlterShadowAlgorithmStatementUpdaterTest {
         Properties prop = new Properties();
         prop.setProperty("type", "value");
         AlterShadowAlgorithmStatement sqlStatement = createSQLStatement(new ShadowAlgorithmSegment("simpleHintAlgorithm", new AlgorithmSegment("SIMPLE_HINT", prop)));
-        updater.checkSQLStatement(shardingSphereMetaData, sqlStatement, null);
+        updater.checkSQLStatement(database, sqlStatement, null);
     }
     
     @Test(expected = RequiredAlgorithmMissedException.class)
@@ -74,7 +74,7 @@ public final class AlterShadowAlgorithmStatementUpdaterTest {
         prop.setProperty("type", "value");
         when(currentConfig.getShadowAlgorithms()).thenReturn(Collections.singletonMap("simpleHintAlgorithm", new ShardingSphereAlgorithmConfiguration("type", prop)));
         AlterShadowAlgorithmStatement sqlStatement = createSQLStatement(new ShadowAlgorithmSegment("simpleHintAlgorithm1", new AlgorithmSegment("SIMPLE_HINT", prop)));
-        updater.checkSQLStatement(shardingSphereMetaData, sqlStatement, currentConfig);
+        updater.checkSQLStatement(database, sqlStatement, currentConfig);
     }
     
     private AlterShadowAlgorithmStatement createSQLStatement(final ShadowAlgorithmSegment... ruleSegments) {

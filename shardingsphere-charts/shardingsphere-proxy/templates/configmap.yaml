@@ -15,9 +15,11 @@
 #  limitations under the License.
 #
 
+
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: shardingsphere-proxy
+  name: {{ printf "%s-configuration" (include "common.names.fullname" .) }}
 data:
-{{ (.Files.Glob "conf/*").AsConfig |replace "__namespace__" .Release.Namespace | indent 2 }}
+  server.yaml: |-
+  {{- include "common.tplvalues.render" (dict "value" .Values.compute.serverConfig "context" $) | nindent 4 }}

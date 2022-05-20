@@ -21,7 +21,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.I
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesValidator;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
@@ -34,6 +34,7 @@ import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandle
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.checker.DatabaseDiscoveryRuleConfigurationImportChecker;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.checker.ReadwriteSplittingRuleConfigurationImportChecker;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.checker.ShardingRuleConfigurationImportChecker;
+import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Before;
 import org.junit.Test;
@@ -58,7 +59,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class ImportDatabaseConfigurationHandlerTest {
+public final class ImportDatabaseConfigurationHandlerTest extends ProxyContextRestorer {
     
     private final String shardingFilePath = "/conf/import/config-sharding.yaml";
     
@@ -102,7 +103,7 @@ public final class ImportDatabaseConfigurationHandlerTest {
         shardingRuleConfigurationImportCheckerField.setAccessible(true);
         shardingRuleConfigurationImportCheckerField.set(importDatabaseConfigurationHandler, shardingRuleConfigurationImportChecker);
         assertNotNull(ProxyContext.getInstance().getContextManager().getDataSourceMap(sharding));
-        assertNotNull(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(sharding).getRuleMetaData().getConfigurations());
+        assertNotNull(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getDatabaseMetaData(sharding).getRuleMetaData().getConfigurations());
         assertThat(importDatabaseConfigurationHandler.execute(), instanceOf(UpdateResponseHeader.class));
     }
     
@@ -113,7 +114,7 @@ public final class ImportDatabaseConfigurationHandlerTest {
         readwriteSplittingRuleConfigurationImportCheckerField.setAccessible(true);
         readwriteSplittingRuleConfigurationImportCheckerField.set(importDatabaseConfigurationHandler, readwriteSplittingRuleConfigurationImportChecker);
         assertNotNull(ProxyContext.getInstance().getContextManager().getDataSourceMap(readwriteSplitting));
-        assertNotNull(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(readwriteSplitting).getRuleMetaData().getConfigurations());
+        assertNotNull(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getDatabaseMetaData(readwriteSplitting).getRuleMetaData().getConfigurations());
         assertThat(importDatabaseConfigurationHandler.execute(), instanceOf(UpdateResponseHeader.class));
     }
     
@@ -124,7 +125,7 @@ public final class ImportDatabaseConfigurationHandlerTest {
         databaseDiscoveryRuleConfigurationImportCheckerField.setAccessible(true);
         databaseDiscoveryRuleConfigurationImportCheckerField.set(importDatabaseConfigurationHandler, databaseDiscoveryRuleConfigurationImportChecker);
         assertNotNull(ProxyContext.getInstance().getContextManager().getDataSourceMap(databaseDiscovery));
-        assertNotNull(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(databaseDiscovery).getRuleMetaData().getConfigurations());
+        assertNotNull(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getDatabaseMetaData(databaseDiscovery).getRuleMetaData().getConfigurations());
         assertThat(importDatabaseConfigurationHandler.execute(), instanceOf(UpdateResponseHeader.class));
     }
     
@@ -135,11 +136,11 @@ public final class ImportDatabaseConfigurationHandlerTest {
         validatorField.set(importDatabaseConfigurationHandler, validator);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getAllDatabaseNames()).thenReturn(Collections.singletonList(feature));
-        ShardingSphereMetaData shardingSphereMetaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        when(shardingSphereMetaData.getSchemaByName(DefaultDatabase.LOGIC_NAME)).thenReturn(new ShardingSphereSchema(createTableMap()));
-        when(shardingSphereMetaData.getResource().getDataSources()).thenReturn(createDataSourceMap());
-        when(contextManager.getMetaDataContexts().getMetaData(feature)).thenReturn(shardingSphereMetaData);
-        ProxyContext.getInstance().init(contextManager);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getSchemas().get(DefaultDatabase.LOGIC_NAME)).thenReturn(new ShardingSphereSchema(createTableMap()));
+        when(database.getResource().getDataSources()).thenReturn(createDataSourceMap());
+        when(contextManager.getMetaDataContexts().getDatabaseMetaData(feature)).thenReturn(database);
+        ProxyContext.init(contextManager);
     }
     
     private Map<String, DataSource> createDataSourceMap() {

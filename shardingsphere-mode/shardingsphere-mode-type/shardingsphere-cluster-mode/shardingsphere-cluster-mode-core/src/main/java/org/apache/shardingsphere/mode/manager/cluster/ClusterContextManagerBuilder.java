@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
@@ -69,8 +69,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         MetaDataPersistService metaDataPersistService = new MetaDataPersistService(repository);
         persistConfigurations(metaDataPersistService, parameter);
         RegistryCenter registryCenter = new RegistryCenter(repository);
-        MetaDataContextsBuilder builder = createMetaDataContextsBuilder(metaDataPersistService, parameter);
-        MetaDataContexts metaDataContexts = builder.build(metaDataPersistService);
+        MetaDataContexts metaDataContexts = createMetaDataContextsBuilder(metaDataPersistService, parameter).build(metaDataPersistService);
         persistMetaData(metaDataContexts);
         Properties transactionProps = getTransactionProperties(metaDataContexts);
         persistTransactionConfiguration(parameter, metaDataPersistService, transactionProps);
@@ -87,13 +86,13 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         metaDataPersistService.persistInstanceLabels(parameter.getInstanceDefinition().getInstanceId().getId(), parameter.getLabels(), isOverwrite);
     }
     
-    private MetaDataContextsBuilder createMetaDataContextsBuilder(final MetaDataPersistService metaDataPersistService, final ContextManagerBuilderParameter parameter) throws SQLException {
+    private MetaDataContextsBuilder createMetaDataContextsBuilder(final MetaDataPersistService metaDataPersistService, final ContextManagerBuilderParameter parameter) {
         Collection<String> databaseNames = InstanceType.JDBC == parameter.getInstanceDefinition().getInstanceType()
                 ? parameter.getDatabaseConfigs().keySet()
                 : metaDataPersistService.getSchemaMetaDataService().loadAllDatabaseNames();
+        Map<String, DatabaseConfiguration> databaseConfigMap = getDatabaseConfigMap(databaseNames, metaDataPersistService, parameter);
         Collection<RuleConfiguration> globalRuleConfigs = metaDataPersistService.getGlobalRuleService().load();
         ConfigurationProperties props = new ConfigurationProperties(metaDataPersistService.getPropsService().load());
-        Map<String, ? extends DatabaseConfiguration> databaseConfigMap = getDatabaseConfigMap(databaseNames, metaDataPersistService, parameter);
         return new MetaDataContextsBuilder(databaseConfigMap, globalRuleConfigs, props);
     }
     
@@ -107,9 +106,9 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         if (!databaseName.isPresent() || !fileGenerator.isPresent()) {
             return transactionRule.isPresent() ? transactionRule.get().getProps() : new Properties();
         }
-        ShardingSphereMetaData metaData = metaDataContexts.getMetaData(databaseName.get());
+        ShardingSphereDatabase database = metaDataContexts.getDatabaseMetaData(databaseName.get());
         Properties result = fileGenerator.get().getTransactionProps(transactionRule.get().getProps(),
-                new DataSourceProvidedDatabaseConfiguration(metaData.getResource().getDataSources(), metaData.getRuleMetaData().getConfigurations()), getType());
+                new DataSourceProvidedDatabaseConfiguration(database.getResource().getDataSources(), database.getRuleMetaData().getConfigurations()), getType());
         Optional<TransactionRuleConfiguration> transactionRuleConfig = metaDataContexts.getGlobalRuleMetaData().findSingleRuleConfiguration(TransactionRuleConfiguration.class);
         Preconditions.checkState(transactionRuleConfig.isPresent());
         transactionRuleConfig.get().getProps().clear();
@@ -144,11 +143,11 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     }
     
     private void persistMetaData(final MetaDataContexts metaDataContexts) {
-        metaDataContexts.getMetaDataMap().forEach((databaseName, schemas) -> schemas.getDatabase().getSchemas().forEach((schemaName, tables) -> {
+        metaDataContexts.getDatabaseMap().forEach((databaseName, schemas) -> schemas.getSchemas().forEach((schemaName, tables) -> {
             if (tables.getTables().isEmpty()) {
-                metaDataContexts.getMetaDataPersistService().ifPresent(optional -> optional.getSchemaMetaDataService().persistSchema(databaseName, schemaName));
+                metaDataContexts.getPersistService().ifPresent(optional -> optional.getSchemaMetaDataService().persistSchema(databaseName, schemaName));
             } else {
-                metaDataContexts.getMetaDataPersistService().ifPresent(optional -> optional.getSchemaMetaDataService().persistTables(databaseName, schemaName, tables));
+                metaDataContexts.getPersistService().ifPresent(optional -> optional.getSchemaMetaDataService().persistTables(databaseName, schemaName, tables));
             }
         }));
     }
@@ -163,10 +162,8 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         instanceContext.initLockContext();
         repository.watchSessionConnection(instanceContext);
         generateTransactionConfigurationFile(instanceContext, metaDataContexts, transactionProps);
-        TransactionContexts transactionContexts = new TransactionContextsBuilder(metaDataContexts.getMetaDataMap(), metaDataContexts.getGlobalRuleMetaData().getRules()).build();
-        ContextManager result = new ContextManager();
-        result.init(metaDataContexts, transactionContexts, instanceContext);
-        return result;
+        TransactionContexts transactionContexts = new TransactionContextsBuilder(metaDataContexts.getDatabaseMap(), metaDataContexts.getGlobalRuleMetaData().getRules()).build();
+        return new ContextManager(metaDataContexts, transactionContexts, instanceContext);
     }
     
     private void generateTransactionConfigurationFile(final InstanceContext instanceContext, final MetaDataContexts metaDataContexts, final Properties transactionProps) {
@@ -181,8 +178,8 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     private void registerOnline(final MetaDataPersistService metaDataPersistService, final InstanceDefinition instanceDefinition, final ContextManager contextManager,
                                 final RegistryCenter registryCenter) {
         new ClusterContextManagerCoordinator(metaDataPersistService, contextManager, registryCenter);
-        registryCenter.onlineInstance(instanceDefinition);
         contextManager.getInstanceContext().getComputeNodeInstances().addAll(metaDataPersistService.getComputeNodePersistService().loadAllComputeNodeInstances());
+        registryCenter.onlineInstance(instanceDefinition);
     }
     
     @Override
