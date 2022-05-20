@@ -31,21 +31,21 @@ import static org.junit.Assert.assertTrue;
  * Count schema rules statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class CountSchemaRulesStatementAssert {
+public final class CountDatabaseRulesStatementAssert {
     
     /**
-     * Assert count schema rules statement is correct with expected parser result.
+     * Assert count database rules statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual count schema rules statement
-     * @param expected expected count schema rules statement test case
+     * @param actual actual count database rules statement
+     * @param expected expected count database rules statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final CountDatabaseRulesStatement actual, final CountSchemaRulesStatementTestCase expected) {
-        if (null != expected.getSchema()) {
-            assertTrue(assertContext.getText("Actual schema should exist."), actual.getDatabase().isPresent());
-            DatabaseAssert.assertIs(assertContext, actual.getDatabase().get(), expected.getSchema());
+        if (null != expected.getDatabase()) {
+            assertTrue(assertContext.getText("Actual database should exist."), actual.getDatabase().isPresent());
+            DatabaseAssert.assertIs(assertContext, actual.getDatabase().get(), expected.getDatabase());
         } else {
-            assertFalse(assertContext.getText("Actual schema should not exist."), actual.getDatabase().isPresent());
+            assertFalse(assertContext.getText("Actual database should not exist."), actual.getDatabase().isPresent());
         }
     }
 }

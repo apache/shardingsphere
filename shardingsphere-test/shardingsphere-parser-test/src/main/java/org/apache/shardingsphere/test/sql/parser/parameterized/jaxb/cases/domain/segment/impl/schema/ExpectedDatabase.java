@@ -26,5 +26,5 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
  */
 @Getter
 @Setter
-public final class ExpectedSchema extends AbstractExpectedIdentifierSQLSegment {
+public final class ExpectedDatabase extends AbstractExpectedIdentifierSQLSegment {
 }

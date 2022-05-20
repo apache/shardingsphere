@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.value.IdentifierValueAssert;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.schema.ExpectedSchema;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.schema.ExpectedDatabase;
 
 /**
  * Database assert.
@@ -37,7 +37,7 @@ public final class DatabaseAssert {
      * @param actual actual database
      * @param expected expected database test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final DatabaseSegment actual, final ExpectedSchema expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final DatabaseSegment actual, final ExpectedDatabase expected) {
         IdentifierValueAssert.assertIs(assertContext, actual.getIdentifier(), expected, "schema");
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }

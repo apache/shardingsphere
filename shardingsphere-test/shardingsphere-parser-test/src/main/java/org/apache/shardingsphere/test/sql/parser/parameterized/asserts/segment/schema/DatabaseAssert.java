@@ -23,7 +23,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseS
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.value.IdentifierValueAssert;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.schema.ExpectedSchema;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.schema.ExpectedDatabase;
 
 /**
  * Database assert.
@@ -38,7 +38,7 @@ public final class DatabaseAssert {
      * @param actual actual database segment
      * @param expected expected database
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final DatabaseSegment actual, final ExpectedSchema expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final DatabaseSegment actual, final ExpectedDatabase expected) {
         IdentifierValueAssert.assertIs(assertContext, actual.getIdentifier(), expected, "Database");
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
