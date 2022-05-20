@@ -69,10 +69,10 @@ public final class DropDatabaseDiscoveryRuleStatementUpdaterTest {
     
     @Test(expected = RuleInUsedException.class)
     public void assertCheckSQLStatementWithRuleInUsed() throws DistSQLException {
-        when(databaseMetaData.getRuleMetaData()).thenReturn(mock(ShardingSphereRuleMetaData.class, RETURNS_DEEP_STUBS));
-        when(databaseMetaData.getRuleMetaData().findRules(ExportableRule.class)).thenReturn(Collections.singleton(new ReadwriteSplittingRuleExportableFixture()));
+        when(database.getRuleMetaData()).thenReturn(mock(ShardingSphereRuleMetaData.class, RETURNS_DEEP_STUBS));
+        when(database.getRuleMetaData().findRules(ExportableRule.class)).thenReturn(Collections.singleton(new ReadwriteSplittingRuleExportableFixture()));
         DatabaseDiscoveryDataSourceRuleConfiguration configuration = new DatabaseDiscoveryDataSourceRuleConfiguration("ha_group", null, null, null);
-        updater.checkSQLStatement(databaseMetaData, createSQLStatement(),
+        updater.checkSQLStatement(database, createSQLStatement(),
                 new DatabaseDiscoveryRuleConfiguration(Collections.singletonList(configuration), Collections.emptyMap(), Collections.emptyMap()));
     }
     

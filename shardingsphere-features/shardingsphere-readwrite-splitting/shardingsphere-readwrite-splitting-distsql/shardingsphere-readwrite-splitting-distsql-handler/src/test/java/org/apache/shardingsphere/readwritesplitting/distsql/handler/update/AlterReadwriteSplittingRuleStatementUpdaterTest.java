@@ -78,9 +78,9 @@ public final class AlterReadwriteSplittingRuleStatementUpdaterTest {
     
     @Test(expected = RequiredResourceMissedException.class)
     public void assertCheckSQLStatementWithoutExistedAutoAwareResources() throws DistSQLException {
-        when(databaseMetaData.getRuleMetaData().findRules(ExportableRule.class)).thenReturn(Collections.singleton(new DatabaseDiscoveryRuleExportableFixture()));
+        when(database.getRuleMetaData().findRules(ExportableRule.class)).thenReturn(Collections.singleton(new DatabaseDiscoveryRuleExportableFixture()));
         ReadwriteSplittingRuleSegment ruleSegment = new ReadwriteSplittingRuleSegment("readwrite_ds", "ha_group", "TEST", new Properties());
-        updater.checkSQLStatement(databaseMetaData, new AlterReadwriteSplittingRuleStatement(Collections.singleton(ruleSegment)), createCurrentRuleConfiguration());
+        updater.checkSQLStatement(database, new AlterReadwriteSplittingRuleStatement(Collections.singleton(ruleSegment)), createCurrentRuleConfiguration());
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
