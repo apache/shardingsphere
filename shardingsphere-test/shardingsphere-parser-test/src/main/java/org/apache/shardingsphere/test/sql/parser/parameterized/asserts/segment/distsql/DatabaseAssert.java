@@ -19,25 +19,25 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.value.IdentifierValueAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.schema.ExpectedSchema;
 
 /**
- * Schema assert.
+ * Database assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SchemaAssert {
+public final class DatabaseAssert {
     
     /**
-     * Assert schema is correct with expected parser result.
+     * Assert database is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual schema
-     * @param expected expected schema test case
+     * @param actual actual database
+     * @param expected expected database test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final SchemaSegment actual, final ExpectedSchema expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final DatabaseSegment actual, final ExpectedSchema expected) {
         IdentifierValueAssert.assertIs(assertContext, actual.getIdentifier(), expected, "schema");
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }

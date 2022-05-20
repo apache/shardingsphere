@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.ShowShadowRulesStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.schema.SchemaAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.schema.DatabaseAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShadowRulesStatementTestCase;
 
 import static org.junit.Assert.assertFalse;
@@ -42,10 +42,10 @@ public final class ShowShadowRulesStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ShowShadowRulesStatement actual, final ShowShadowRulesStatementTestCase expected) {
         if (null != expected.getSchema()) {
-            assertTrue(assertContext.getText("Actual schema should exist."), actual.getSchema().isPresent());
-            SchemaAssert.assertIs(assertContext, actual.getSchema().get(), expected.getSchema());
+            assertTrue(assertContext.getText("Actual schema should exist."), actual.getDatabase().isPresent());
+            DatabaseAssert.assertIs(assertContext, actual.getDatabase().get(), expected.getSchema());
         } else {
-            assertFalse(assertContext.getText("Actual schema should not exist."), actual.getSchema().isPresent());
+            assertFalse(assertContext.getText("Actual schema should not exist."), actual.getDatabase().isPresent());
         }
     }
 }

@@ -19,9 +19,9 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.CountSchemaRulesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.CountDatabaseRulesStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.schema.SchemaAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.schema.DatabaseAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.CountSchemaRulesStatementTestCase;
 
 import static org.junit.Assert.assertFalse;
@@ -40,12 +40,12 @@ public final class CountSchemaRulesStatementAssert {
      * @param actual actual count schema rules statement
      * @param expected expected count schema rules statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final CountSchemaRulesStatement actual, final CountSchemaRulesStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final CountDatabaseRulesStatement actual, final CountSchemaRulesStatementTestCase expected) {
         if (null != expected.getSchema()) {
-            assertTrue(assertContext.getText("Actual schema should exist."), actual.getSchema().isPresent());
-            SchemaAssert.assertIs(assertContext, actual.getSchema().get(), expected.getSchema());
+            assertTrue(assertContext.getText("Actual schema should exist."), actual.getDatabase().isPresent());
+            DatabaseAssert.assertIs(assertContext, actual.getDatabase().get(), expected.getSchema());
         } else {
-            assertFalse(assertContext.getText("Actual schema should not exist."), actual.getSchema().isPresent());
+            assertFalse(assertContext.getText("Actual schema should not exist."), actual.getDatabase().isPresent());
         }
     }
 }

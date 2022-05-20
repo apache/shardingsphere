@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.ShowDatabaseDiscoveryHeartbeatsStatement;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.ShowDatabaseDiscoveryRulesStatement;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.ShowDatabaseDiscoveryTypesStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.CountSchemaRulesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.CountDatabaseRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesUsedResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowSingleTableRulesStatement;
@@ -136,8 +136,8 @@ public final class ShowRulesStatementAssert {
             ShowUnusedShardingAlgorithmsStatementAssert.assertIs(assertContext, (ShowUnusedShardingAlgorithmsStatement) actual, (ShowUnusedShardingAlgorithmsStatementTestCase) expected);
         } else if (actual instanceof ShowUnusedShardingKeyGeneratorsStatement) {
             ShowUnusedShardingKeyGeneratorsStatementAssert.assertIs(assertContext, (ShowUnusedShardingKeyGeneratorsStatement) actual, (ShowUnusedShardingKeyGeneratorsStatementTestCase) expected);
-        } else if (actual instanceof CountSchemaRulesStatement) {
-            CountSchemaRulesStatementAssert.assertIs(assertContext, (CountSchemaRulesStatement) actual, (CountSchemaRulesStatementTestCase) expected);
+        } else if (actual instanceof CountDatabaseRulesStatement) {
+            CountSchemaRulesStatementAssert.assertIs(assertContext, (CountDatabaseRulesStatement) actual, (CountSchemaRulesStatementTestCase) expected);
         } else if (actual instanceof ShowRulesUsedResourceStatement) {
             ShowRulesUsedResourceStatementAssert.assertIs(assertContext, (ShowRulesUsedResourceStatement) actual, (ShowRulesUsedResourceStatementTestCase) expected);
         } else if (actual instanceof ShowShardingTableRulesUsedAlgorithmStatement) {
