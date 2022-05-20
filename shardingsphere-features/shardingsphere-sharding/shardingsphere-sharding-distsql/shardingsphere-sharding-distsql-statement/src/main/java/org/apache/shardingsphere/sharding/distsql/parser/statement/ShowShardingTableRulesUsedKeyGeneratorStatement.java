@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.distsql.parser.statement;
 
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStatement;
 import org.apache.shardingsphere.distsql.parser.subject.impl.ShardingSubjectSupplier;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 
 import java.util.Optional;
 
@@ -30,7 +30,7 @@ public final class ShowShardingTableRulesUsedKeyGeneratorStatement extends ShowR
     
     private final String keyGeneratorName;
     
-    public ShowShardingTableRulesUsedKeyGeneratorStatement(final String keyGeneratorName, final SchemaSegment schema) {
+    public ShowShardingTableRulesUsedKeyGeneratorStatement(final String keyGeneratorName, final DatabaseSegment schema) {
         super(schema);
         this.keyGeneratorName = keyGeneratorName;
     }

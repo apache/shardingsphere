@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.distsql.parser.statement;
 import lombok.Getter;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStatement;
 import org.apache.shardingsphere.distsql.parser.subject.impl.ShardingSubjectSupplier;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -33,7 +33,7 @@ public final class ShowShardingTableRulesStatement extends ShowRulesStatement im
     
     private final String tableName;
     
-    public ShowShardingTableRulesStatement(final String tableName, final SchemaSegment schema) {
+    public ShowShardingTableRulesStatement(final String tableName, final DatabaseSegment schema) {
         super(schema);
         this.tableName = tableName;
     }

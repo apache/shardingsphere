@@ -15,23 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.generic;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.available;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
+
+import java.util.Optional;
 
 /**
- * Schema segment.
+ * From schema available.
  */
-@RequiredArgsConstructor
-@Getter
-public final class SchemaSegment implements SQLSegment {
+public interface FromDatabaseAvailable {
     
-    private final int startIndex;
-    
-    private final int stopIndex;
-    
-    private final IdentifierValue identifier;
+    /**
+     * Get schema.
+     * 
+     * @return schema segment
+     */
+    Optional<DatabaseSegment> getDatabase();
 }
