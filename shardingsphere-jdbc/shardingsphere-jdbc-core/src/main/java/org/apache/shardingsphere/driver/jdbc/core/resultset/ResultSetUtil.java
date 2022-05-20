@@ -61,7 +61,6 @@ public final class ResultSetUtil {
         if (value.getClass() == convertType) {
             return value;
         }
-        // converting to String need a higher priority
         if (String.class.equals(convertType)) {
             return value.toString();
         }
