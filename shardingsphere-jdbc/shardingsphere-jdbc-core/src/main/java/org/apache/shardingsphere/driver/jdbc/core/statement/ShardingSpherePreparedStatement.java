@@ -69,7 +69,7 @@ import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
@@ -178,7 +178,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(
                 metaDataContexts.getDatabaseMetaData(connection.getDatabaseName()).getResource().getDatabaseType()), sqlParserRule.get().toParserConfiguration());
         sqlStatement = sqlParserEngine.parse(sql, true);
-        sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getDatabaseMetaDataMap(), sqlStatement, connection.getDatabaseName());
+        sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getDatabaseMap(), sqlStatement, connection.getDatabaseName());
         parameterMetaData = new ShardingSphereParameterMetaData(sqlStatement);
         statementOption = returnGeneratedKeys ? new StatementOption(true) : new StatementOption(resultSetType, resultSetConcurrency, resultSetHoldability);
         executor = new DriverExecutor(connection);
@@ -283,7 +283,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     private ResultSet executeFederationQuery(final LogicSQL logicSQL) throws SQLException {
         PreparedStatementExecuteQueryCallback callback = new PreparedStatementExecuteQueryCallback(metaDataContexts.getDatabaseMetaData(connection.getDatabaseName()).getResource().getDatabaseType(),
                 sqlStatement, SQLExecutorExceptionHandler.isExceptionThrown());
-        FederationContext context = new FederationContext(false, logicSQL, metaDataContexts.getDatabaseMetaDataMap());
+        FederationContext context = new FederationContext(false, logicSQL, metaDataContexts.getDatabaseMap());
         return executor.getFederationExecutor().executeQuery(createDriverExecutionPrepareEngine(), callback, context);
     }
     
@@ -467,7 +467,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private ExecutionContext createExecutionContext(final LogicSQL logicSQL) {
         SQLCheckEngine.check(logicSQL.getSqlStatementContext().getSqlStatement(), logicSQL.getParameters(),
-                metaDataContexts.getDatabaseMetaData(connection.getDatabaseName()).getRuleMetaData().getRules(), connection.getDatabaseName(), metaDataContexts.getDatabaseMetaDataMap(), null);
+                metaDataContexts.getDatabaseMetaData(connection.getDatabaseName()).getRuleMetaData().getRules(), connection.getDatabaseName(), metaDataContexts.getDatabaseMap(), null);
         ExecutionContext result = kernelProcessor.generateExecutionContext(logicSQL, metaDataContexts.getDatabaseMetaData(connection.getDatabaseName()), metaDataContexts.getProps());
         findGeneratedKey(result).ifPresent(generatedKey -> generatedValues.addAll(generatedKey.getGeneratedValues()));
         return result;
@@ -482,9 +482,9 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     }
     
     private MergedResult mergeQuery(final List<QueryResult> queryResults) throws SQLException {
-        ShardingSphereDatabaseMetaData databaseMetaData = metaDataContexts.getDatabaseMetaData(connection.getDatabaseName());
-        MergeEngine mergeEngine = new MergeEngine(connection.getDatabaseName(), databaseMetaData.getResource().getDatabaseType(), databaseMetaData,
-                metaDataContexts.getProps(), databaseMetaData.getRuleMetaData().getRules());
+        ShardingSphereDatabase database = metaDataContexts.getDatabaseMetaData(connection.getDatabaseName());
+        MergeEngine mergeEngine = new MergeEngine(connection.getDatabaseName(),
+                database.getResource().getDatabaseType(), database, metaDataContexts.getProps(), database.getRuleMetaData().getRules());
         return mergeEngine.merge(queryResults, executionContext.getSqlStatementContext());
     }
     

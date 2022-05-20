@@ -23,8 +23,8 @@ import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem
 import org.apache.shardingsphere.infra.binder.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
@@ -224,17 +224,17 @@ public final class ProjectionsContextEngineTest {
     }
     
     private SelectStatementContext createSelectStatementContext(final SelectStatement selectStatement) {
-        ShardingSphereDatabaseMetaData databaseMetaData = mock(ShardingSphereDatabaseMetaData.class);
-        when(databaseMetaData.getDatabase()).thenReturn(mockDatabase());
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        when(database.getDatabaseMetaData()).thenReturn(mockDatabase());
         when(schema.getAllColumnNames("t_order")).thenReturn(Arrays.asList("order_id", "content"));
-        return new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, databaseMetaData), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
+        return new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
     }
     
-    private ShardingSphereDatabase mockDatabase() {
-        Map<String, ShardingSphereSchema> result = new LinkedHashMap<>();
+    private ShardingSphereDatabaseMetaData mockDatabase() {
+        Map<String, ShardingSphereSchema> result = new LinkedHashMap<>(2, 1);
         result.put(DefaultDatabase.LOGIC_NAME, schema);
         result.put("public", schema);
-        return new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, result);
+        return new ShardingSphereDatabaseMetaData(result);
     }
     
     @Test

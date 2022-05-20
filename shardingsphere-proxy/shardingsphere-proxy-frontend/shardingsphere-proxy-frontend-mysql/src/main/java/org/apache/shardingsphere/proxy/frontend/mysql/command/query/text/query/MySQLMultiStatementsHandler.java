@@ -119,14 +119,14 @@ public final class MySQLMultiStatementsHandler implements TextProtocolBackendHan
     
     private LogicSQL createLogicSQL(final String sql, final SQLStatement sqlStatement) {
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(
-                metaDataContexts.getDatabaseMetaDataMap(), Collections.emptyList(), sqlStatement, connectionSession.getDatabaseName());
+                metaDataContexts.getDatabaseMap(), Collections.emptyList(), sqlStatement, connectionSession.getDatabaseName());
         return new LogicSQL(sqlStatementContext, sql, Collections.emptyList());
     }
     
     private ExecutionContext createExecutionContext(final LogicSQL logicSQL) {
         SQLCheckEngine.check(logicSQL.getSqlStatementContext().getSqlStatement(), logicSQL.getParameters(),
                 metaDataContexts.getDatabaseMetaData(connectionSession.getDatabaseName()).getRuleMetaData().getRules(),
-                connectionSession.getDatabaseName(), metaDataContexts.getDatabaseMetaDataMap(), null);
+                connectionSession.getDatabaseName(), metaDataContexts.getDatabaseMap(), null);
         return kernelProcessor.generateExecutionContext(logicSQL, metaDataContexts.getDatabaseMetaData(connectionSession.getDatabaseName()), metaDataContexts.getProps());
     }
     

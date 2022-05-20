@@ -118,6 +118,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterTriggerStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterViewStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterPackageStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateSPFileStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropPackageStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AnalyzeStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AssociateStatisticsStatementTestCase;
@@ -1336,6 +1337,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "create-context")
     private final List<CreateContextStatementTestCase> createContextStatementTestCases = new LinkedList<>();
     
+    @XmlElement(name = "create-spfile")
+    private final List<CreateSPFileStatementTestCase> createSPFileStatementTestCases = new LinkedList<>();
+    
     /**
      * Get all SQL parser test cases.
      *
@@ -1669,6 +1673,7 @@ public final class SQLParserTestCases {
         putAll(alterAnalyticViewStatementTestCases, result);
         putAll(alterAttributeDimensionTestCases, result);
         putAll(createContextStatementTestCases, result);
+        putAll(createSPFileStatementTestCases, result);
         return result;
     }
     // CHECKSTYLE:ON
