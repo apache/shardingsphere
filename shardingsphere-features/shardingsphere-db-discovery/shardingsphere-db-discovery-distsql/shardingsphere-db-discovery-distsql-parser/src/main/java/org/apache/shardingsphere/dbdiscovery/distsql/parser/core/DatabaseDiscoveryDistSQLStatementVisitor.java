@@ -60,7 +60,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQL
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Collection;
@@ -116,7 +116,7 @@ public final class DatabaseDiscoveryDistSQLStatementVisitor extends DatabaseDisc
     
     @Override
     public ASTNode visitShowDatabaseDiscoveryRules(final ShowDatabaseDiscoveryRulesContext ctx) {
-        return new ShowDatabaseDiscoveryRulesStatement(null == ctx.schemaName() ? null : (SchemaSegment) visit(ctx.schemaName()));
+        return new ShowDatabaseDiscoveryRulesStatement(null == ctx.schemaName() ? null : (DatabaseSegment) visit(ctx.schemaName()));
     }
     
     @Override
@@ -152,12 +152,12 @@ public final class DatabaseDiscoveryDistSQLStatementVisitor extends DatabaseDisc
     
     @Override
     public ASTNode visitShowDatabaseDiscoveryTypes(final ShowDatabaseDiscoveryTypesContext ctx) {
-        return new ShowDatabaseDiscoveryTypesStatement(null == ctx.schemaName() ? null : (SchemaSegment) visit(ctx.schemaName()));
+        return new ShowDatabaseDiscoveryTypesStatement(null == ctx.schemaName() ? null : (DatabaseSegment) visit(ctx.schemaName()));
     }
     
     @Override
     public ASTNode visitShowDatabaseDiscoveryHeartbeats(final ShowDatabaseDiscoveryHeartbeatsContext ctx) {
-        return new ShowDatabaseDiscoveryHeartbeatsStatement(null == ctx.schemaName() ? null : (SchemaSegment) visit(ctx.schemaName()));
+        return new ShowDatabaseDiscoveryHeartbeatsStatement(null == ctx.schemaName() ? null : (DatabaseSegment) visit(ctx.schemaName()));
     }
     
     private String getIdentifierValue(final ParseTree context) {
@@ -169,7 +169,7 @@ public final class DatabaseDiscoveryDistSQLStatementVisitor extends DatabaseDisc
     
     @Override
     public ASTNode visitSchemaName(final SchemaNameContext ctx) {
-        return new SchemaSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), new IdentifierValue(ctx.getText()));
+        return new DatabaseSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), new IdentifierValue(ctx.getText()));
     }
     
     @Override

@@ -19,15 +19,15 @@ package org.apache.shardingsphere.distsql.parser.statement.rql.show;
 
 import lombok.Getter;
 import org.apache.shardingsphere.distsql.parser.subject.DistSQLSubjectTypeEnum;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 
 /**
  * Count schema rules statement.
  */
 @Getter
-public final class CountSchemaRulesStatement extends ShowRulesStatement {
+public final class CountDatabaseRulesStatement extends ShowRulesStatement {
     
-    public CountSchemaRulesStatement(final SchemaSegment schema) {
+    public CountDatabaseRulesStatement(final DatabaseSegment schema) {
         super(schema);
     }
     

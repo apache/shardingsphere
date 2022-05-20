@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.distsql.parser.statement.rql.show;
 
 import org.apache.shardingsphere.distsql.parser.subject.impl.ResourceSubjectSupplier;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 
 import java.util.Optional;
 
@@ -29,7 +29,7 @@ public final class ShowRulesUsedResourceStatement extends ShowRulesStatement imp
     
     private final String resourceName;
     
-    public ShowRulesUsedResourceStatement(final String resourceName, final SchemaSegment schema) {
+    public ShowRulesUsedResourceStatement(final String resourceName, final DatabaseSegment schema) {
         super(schema);
         this.resourceName = resourceName;
     }

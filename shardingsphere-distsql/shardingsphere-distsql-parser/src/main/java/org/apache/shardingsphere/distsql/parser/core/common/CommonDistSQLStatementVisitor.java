@@ -113,7 +113,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResource
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateDefaultSingleTableRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropDefaultSingleTableRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.CountSchemaRulesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.CountDatabaseRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesUsedResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowSingleTableRulesStatement;
@@ -121,7 +121,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowSingleTab
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowUnusedResourcesStatement;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Collection;
@@ -148,7 +148,7 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     @Override
     public ASTNode visitShowTableMetadata(final ShowTableMetadataContext ctx) {
         Collection<String> tableNames = ctx.tableName().stream().map(this::getIdentifierValue).collect(Collectors.toSet());
-        return new ShowTableMetadataStatement(tableNames, null == ctx.schemaName() ? null : (SchemaSegment) visit(ctx.schemaName()));
+        return new ShowTableMetadataStatement(tableNames, null == ctx.schemaName() ? null : (DatabaseSegment) visit(ctx.schemaName()));
     }
     
     @Override
@@ -249,7 +249,7 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     
     @Override
     public ASTNode visitCountSchemaRules(final CountSchemaRulesContext ctx) {
-        return new CountSchemaRulesStatement(null == ctx.schemaName() ? null : (SchemaSegment) visit(ctx.schemaName()));
+        return new CountDatabaseRulesStatement(null == ctx.schemaName() ? null : (DatabaseSegment) visit(ctx.schemaName()));
     }
     
     @Override
@@ -287,17 +287,17 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     
     @Override
     public ASTNode visitShowResources(final ShowResourcesContext ctx) {
-        return new ShowResourcesStatement(null == ctx.schemaName() ? null : (SchemaSegment) visit(ctx.schemaName()));
+        return new ShowResourcesStatement(null == ctx.schemaName() ? null : (DatabaseSegment) visit(ctx.schemaName()));
     }
     
     @Override
     public ASTNode visitShowUnusedResources(final ShowUnusedResourcesContext ctx) {
-        return new ShowUnusedResourcesStatement(null == ctx.schemaName() ? null : (SchemaSegment) visit(ctx.schemaName()));
+        return new ShowUnusedResourcesStatement(null == ctx.schemaName() ? null : (DatabaseSegment) visit(ctx.schemaName()));
     }
     
     @Override
     public ASTNode visitSchemaName(final SchemaNameContext ctx) {
-        return new SchemaSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), new IdentifierValue(ctx.getText()));
+        return new DatabaseSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), new IdentifierValue(ctx.getText()));
     }
     
     @Override
@@ -307,12 +307,12 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     
     @Override
     public ASTNode visitShowSingleTableRules(final ShowSingleTableRulesContext ctx) {
-        return new ShowSingleTableRulesStatement(null == ctx.schemaName() ? null : (SchemaSegment) visit(ctx.schemaName()));
+        return new ShowSingleTableRulesStatement(null == ctx.schemaName() ? null : (DatabaseSegment) visit(ctx.schemaName()));
     }
     
     @Override
     public ASTNode visitShowSingleTable(final ShowSingleTableContext ctx) {
-        return new ShowSingleTableStatement(null == ctx.table() ? null : getIdentifierValue(ctx.table().tableName()), null == ctx.schemaName() ? null : (SchemaSegment) visit(ctx.schemaName()));
+        return new ShowSingleTableStatement(null == ctx.table() ? null : getIdentifierValue(ctx.table().tableName()), null == ctx.schemaName() ? null : (DatabaseSegment) visit(ctx.schemaName()));
     }
     
     @Override
@@ -457,12 +457,12 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     
     @Override
     public ASTNode visitExportDatabaseConfiguration(final ExportDatabaseConfigurationContext ctx) {
-        return new ExportDatabaseConfigurationStatement(null == ctx.databaseName() ? null : (SchemaSegment) visit(ctx.databaseName()), getIdentifierValue(ctx.filePath()));
+        return new ExportDatabaseConfigurationStatement(null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()), getIdentifierValue(ctx.filePath()));
     }
     
     @Override
     public ASTNode visitShowRulesUsedResource(final ShowRulesUsedResourceContext ctx) {
-        return new ShowRulesUsedResourceStatement(getIdentifierValue(ctx.resourceName()), null == ctx.schemaName() ? null : (SchemaSegment) visit(ctx.schemaName()));
+        return new ShowRulesUsedResourceStatement(getIdentifierValue(ctx.resourceName()), null == ctx.schemaName() ? null : (DatabaseSegment) visit(ctx.schemaName()));
     }
     
     @Override
