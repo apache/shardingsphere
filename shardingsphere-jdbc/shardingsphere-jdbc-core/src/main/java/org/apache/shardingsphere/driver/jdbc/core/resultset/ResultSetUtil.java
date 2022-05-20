@@ -61,6 +61,9 @@ public final class ResultSetUtil {
         if (value.getClass() == convertType) {
             return value;
         }
+        if (String.class.equals(convertType)) {
+            return value.toString();
+        }
         if (value instanceof LocalDateTime) {
             return convertLocalDateTimeValue(value, convertType);
         }
@@ -81,9 +84,6 @@ public final class ResultSetUtil {
         }
         if (boolean.class.equals(convertType)) {
             return convertBooleanValue(value);
-        }
-        if (String.class.equals(convertType)) {
-            return value.toString();
         }
         throw new SQLFeatureNotSupportedException("getObject with type");
     }
