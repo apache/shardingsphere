@@ -35,13 +35,13 @@ public final class DataTypeLoader {
     /**
      * Load data type.
      * 
-     * @param databaseMetaData database meta data
+     * @param database database
      * @return data type map
      * @throws SQLException SQL exception
      */
-    public static Map<String, Integer> load(final DatabaseMetaData databaseMetaData) throws SQLException {
+    public static Map<String, Integer> load(final DatabaseMetaData database) throws SQLException {
         Map<String, Integer> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-        try (ResultSet resultSet = databaseMetaData.getTypeInfo()) {
+        try (ResultSet resultSet = database.getTypeInfo()) {
             while (resultSet.next()) {
                 result.put(resultSet.getString("TYPE_NAME"), resultSet.getInt("DATA_TYPE"));
             }

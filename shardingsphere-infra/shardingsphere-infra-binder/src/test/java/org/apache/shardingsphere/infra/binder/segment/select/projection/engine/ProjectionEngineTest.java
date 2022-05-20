@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.Par
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ShorthandProjection;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
@@ -168,8 +168,7 @@ public final class ProjectionEngineTest {
         assertThat(actual.get().getAlias().orElse(null), is("alias"));
     }
     
-    private ShardingSphereDatabase mockDatabase() {
-        Map<String, ShardingSphereSchema> schemas = Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema);
-        return new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, schemas);
+    private ShardingSphereDatabaseMetaData mockDatabase() {
+        return new ShardingSphereDatabaseMetaData(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema));
     }
 }

@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionAlterUpdater;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
 
 import java.util.Collections;
@@ -34,11 +34,11 @@ import java.util.Set;
 public final class AlterDefaultSingleTableRuleStatementUpdater implements RuleDefinitionAlterUpdater<AlterDefaultSingleTableRuleStatement, SingleTableRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereDatabaseMetaData databaseMetaData, final AlterDefaultSingleTableRuleStatement sqlStatement,
-                                  final SingleTableRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String databaseName = databaseMetaData.getDatabase().getName();
+    public void checkSQLStatement(final ShardingSphereDatabase database,
+                                  final AlterDefaultSingleTableRuleStatement sqlStatement, final SingleTableRuleConfiguration currentRuleConfig) throws DistSQLException {
+        String databaseName = database.getName();
         checkConfigurationExist(databaseName, currentRuleConfig);
-        checkResourceExist(databaseName, databaseMetaData, sqlStatement);
+        checkResourceExist(databaseName, database, sqlStatement);
         checkDefaultResourceExist(databaseName, currentRuleConfig);
     }
     
@@ -46,9 +46,8 @@ public final class AlterDefaultSingleTableRuleStatementUpdater implements RuleDe
         DistSQLException.predictionThrow(null != currentRuleConfig, () -> new RequiredRuleMissedException(databaseName, "single table"));
     }
     
-    private void checkResourceExist(final String databaseName,
-                                    final ShardingSphereDatabaseMetaData databaseMetaData, final AlterDefaultSingleTableRuleStatement sqlStatement) throws DistSQLException {
-        Set<String> resourceNames = databaseMetaData.getResource().getDataSources().keySet();
+    private void checkResourceExist(final String databaseName, final ShardingSphereDatabase database, final AlterDefaultSingleTableRuleStatement sqlStatement) throws DistSQLException {
+        Set<String> resourceNames = database.getResource().getDataSources().keySet();
         DistSQLException.predictionThrow(resourceNames.contains(sqlStatement.getDefaultResource()), () -> new RequiredResourceMissedException(
                 databaseName, Collections.singleton(sqlStatement.getDefaultResource())));
     }

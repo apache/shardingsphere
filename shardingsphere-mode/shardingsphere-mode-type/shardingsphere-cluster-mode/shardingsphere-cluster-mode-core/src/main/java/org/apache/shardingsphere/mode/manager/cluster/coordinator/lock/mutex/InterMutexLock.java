@@ -31,6 +31,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 /**
  * Inter mutex lock.
@@ -133,10 +134,12 @@ public final class InterMutexLock implements MutexLock, LockAckAble {
             lockedInstances.addAll(lockService.acquireAckLockedInstances(LockNodeUtil.generateAckPathName(lockName)));
         }
         if (computeNodeInstances.size() > lockedInstances.size()) {
+            log.debug("computeNodeInstanceId {}, lockedInstances {}", computeNodeInstances.stream().map(ComputeNodeInstance::getCurrentInstanceId).collect(Collectors.toList()), lockedInstances);
             return false;
         }
         for (ComputeNodeInstance each : computeNodeInstances) {
             if (!lockedInstances.contains(each.getInstanceDefinition().getInstanceId().getId())) {
+                log.debug("each: {}, lockedInstances: {}", each.getCurrentInstanceId(), lockedInstances);
                 return false;
             }
         }

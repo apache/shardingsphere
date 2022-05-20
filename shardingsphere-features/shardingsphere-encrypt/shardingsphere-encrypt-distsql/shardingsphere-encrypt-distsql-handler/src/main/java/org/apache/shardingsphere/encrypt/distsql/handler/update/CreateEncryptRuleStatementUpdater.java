@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleExcep
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -42,9 +42,8 @@ import java.util.stream.Collectors;
 public final class CreateEncryptRuleStatementUpdater implements RuleDefinitionCreateUpdater<CreateEncryptRuleStatement, EncryptRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereDatabaseMetaData databaseMetaData, final CreateEncryptRuleStatement sqlStatement,
-                                  final EncryptRuleConfiguration currentRuleConfig) throws DistSQLException {
-        checkDuplicateRuleNames(databaseMetaData.getDatabase().getName(), sqlStatement, currentRuleConfig);
+    public void checkSQLStatement(final ShardingSphereDatabase database, final CreateEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) throws DistSQLException {
+        checkDuplicateRuleNames(database.getName(), sqlStatement, currentRuleConfig);
         checkDataType(sqlStatement);
         checkToBeCreatedEncryptors(sqlStatement);
         // TODO check resource

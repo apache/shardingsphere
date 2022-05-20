@@ -20,7 +20,7 @@ package org.apache.shardingsphere.scaling.distsql.handler.update;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RuleEnabledException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.scaling.distsql.statement.EnableShardingScalingRuleStatement;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.junit.Before;
@@ -39,25 +39,25 @@ import static org.mockito.Mockito.when;
 public final class EnableShardingScalingRuleStatementUpdaterTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private ShardingSphereDatabaseMetaData databaseMetaData;
+    private ShardingSphereDatabase database;
     
     private final EnableShardingScalingRuleStatementUpdater updater = new EnableShardingScalingRuleStatementUpdater();
     
     @Before
     public void before() {
-        when(databaseMetaData.getDatabase().getName()).thenReturn("test");
+        when(database.getName()).thenReturn("test");
     }
     
     @Test(expected = RequiredRuleMissedException.class)
     public void assertCheckWithoutShardingRule() throws DistSQLException {
-        updater.checkSQLStatement(databaseMetaData, createSQLStatement("default_scaling"), null);
+        updater.checkSQLStatement(database, createSQLStatement("default_scaling"), null);
     }
     
     @Test(expected = RequiredRuleMissedException.class)
     public void assertCheckNotExist() throws DistSQLException {
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
         currentRuleConfig.getScaling().put("default_scaling", null);
-        updater.checkSQLStatement(databaseMetaData, createSQLStatement("new_scaling"), currentRuleConfig);
+        updater.checkSQLStatement(database, createSQLStatement("new_scaling"), currentRuleConfig);
     }
     
     @Test(expected = RuleEnabledException.class)
@@ -66,7 +66,7 @@ public final class EnableShardingScalingRuleStatementUpdaterTest {
         String scalingName = "default_scaling";
         currentRuleConfig.getScaling().put(scalingName, null);
         currentRuleConfig.setScalingName(scalingName);
-        updater.checkSQLStatement(databaseMetaData, createSQLStatement(scalingName), currentRuleConfig);
+        updater.checkSQLStatement(database, createSQLStatement(scalingName), currentRuleConfig);
     }
     
     @Test

@@ -74,7 +74,7 @@ public final class AddResourceBackendHandler extends DatabaseRequiredBackendHand
         Collection<String> dataSourceNames = new ArrayList<>(sqlStatement.getDataSources().size());
         Collection<String> duplicateDataSourceNames = new HashSet<>(sqlStatement.getDataSources().size(), 1);
         for (DataSourceSegment each : sqlStatement.getDataSources()) {
-            if (dataSourceNames.contains(each.getName()) || ProxyContext.getInstance().getMetaData(databaseName).getResource().getDataSources().containsKey(each.getName())) {
+            if (dataSourceNames.contains(each.getName()) || ProxyContext.getInstance().getDatabase(databaseName).getResource().getDataSources().containsKey(each.getName())) {
                 duplicateDataSourceNames.add(each.getName());
             }
             dataSourceNames.add(each.getName());

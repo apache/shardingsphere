@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -60,10 +60,10 @@ public final class DataSourceQueryResultSet implements DistSQLResultSet {
     private Iterator<String> dataSourceNames;
     
     @Override
-    public void init(final ShardingSphereDatabaseMetaData databaseMetaData, final SQLStatement sqlStatement) {
-        resource = databaseMetaData.getResource();
-        dataSourcePropsMap = new LinkedHashMap<>(databaseMetaData.getResource().getDataSources().size(), 1);
-        for (Entry<String, DataSource> entry : databaseMetaData.getResource().getDataSources().entrySet()) {
+    public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
+        resource = database.getResource();
+        dataSourcePropsMap = new LinkedHashMap<>(database.getResource().getDataSources().size(), 1);
+        for (Entry<String, DataSource> entry : database.getResource().getDataSources().entrySet()) {
             dataSourcePropsMap.put(entry.getKey(), DataSourcePropertiesCreator.create(entry.getValue()));
         }
         dataSourceNames = dataSourcePropsMap.keySet().iterator();

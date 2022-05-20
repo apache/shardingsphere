@@ -87,7 +87,7 @@ public final class EncryptSchemaMetaDataBuilderTest {
         mockOracleResultSet(connection);
         mockPGResultSet(connection);
         mockSQLServerResultSet(connection);
-        mockDatabaseMetaData(connection);
+        mockDatabase(connection);
     }
     
     private void mockSQLServerResultSet(final Connection connection) throws SQLException {
@@ -126,15 +126,15 @@ public final class EncryptSchemaMetaDataBuilderTest {
         when(connection.prepareStatement(startsWith("SELECT TABLE_CATALOG, TABLE_NAME"))).thenReturn(preparedStatement);
     }
     
-    private void mockDatabaseMetaData(final Connection connection) throws SQLException {
-        DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class, RETURNS_DEEP_STUBS);
-        when(connection.getMetaData()).thenReturn(databaseMetaData);
+    private void mockDatabase(final Connection connection) throws SQLException {
+        DatabaseMetaData database = mock(DatabaseMetaData.class, RETURNS_DEEP_STUBS);
+        when(connection.getMetaData()).thenReturn(database);
         ResultSet dataTypeResultSet = createDataTypeResultSet();
-        when(databaseMetaData.getTypeInfo()).thenReturn(dataTypeResultSet);
+        when(database.getTypeInfo()).thenReturn(dataTypeResultSet);
         ResultSet tableResultSet = createTableResultSet();
         ResultSet columnResultSet = createColumnResultSet();
-        when(databaseMetaData.getTables(any(), any(), any(), eq(null))).thenReturn(tableResultSet);
-        when(databaseMetaData.getColumns(any(), any(), any(), eq("%"))).thenReturn(columnResultSet);
+        when(database.getTables(any(), any(), any(), eq(null))).thenReturn(tableResultSet);
+        when(database.getColumns(any(), any(), any(), eq("%"))).thenReturn(columnResultSet);
     }
     
     private ResultSet createTableResultSet() throws SQLException {

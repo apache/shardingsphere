@@ -103,7 +103,7 @@ public final class PostgreSQLBatchedStatementsExecutor {
     }
     
     private SQLStatementContext<?> createSQLStatementContext(final List<Object> parameters) {
-        return SQLStatementContextFactory.newInstance(metaDataContexts.getDatabaseMetaDataMap(), parameters, preparedStatement.getSqlStatement(), connectionSession.getDatabaseName());
+        return SQLStatementContextFactory.newInstance(metaDataContexts.getDatabaseMap(), parameters, preparedStatement.getSqlStatement(), connectionSession.getDatabaseName());
     }
     
     private void prepareForRestOfParametersSet(final Iterator<List<Object>> parameterSetsIterator, final SQLStatementContext<?> sqlStatementContext) {
@@ -126,7 +126,7 @@ public final class PostgreSQLBatchedStatementsExecutor {
     private ExecutionContext createExecutionContext(final LogicSQL logicSQL) {
         SQLCheckEngine.check(logicSQL.getSqlStatementContext().getSqlStatement(), logicSQL.getParameters(),
                 metaDataContexts.getDatabaseMetaData(connectionSession.getDatabaseName()).getRuleMetaData().getRules(),
-                connectionSession.getDatabaseName(), metaDataContexts.getDatabaseMetaDataMap(), null);
+                connectionSession.getDatabaseName(), metaDataContexts.getDatabaseMap(), null);
         return kernelProcessor.generateExecutionContext(logicSQL, metaDataContexts.getDatabaseMetaData(connectionSession.getDatabaseName()), metaDataContexts.getProps());
     }
     
