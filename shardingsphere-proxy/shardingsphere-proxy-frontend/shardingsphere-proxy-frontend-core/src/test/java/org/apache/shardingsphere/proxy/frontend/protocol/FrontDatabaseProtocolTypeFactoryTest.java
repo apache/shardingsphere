@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -54,16 +54,16 @@ public final class FrontDatabaseProtocolTypeFactoryTest extends ProxyContextRest
         MetaDataContexts metaDataContexts = new MetaDataContexts(
                 mock(MetaDataPersistService.class), Collections.emptyMap(), mock(ShardingSphereRuleMetaData.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
         ProxyContext.init(new ContextManager(metaDataContexts, mock(TransactionContexts.class), mock(InstanceContext.class)));
-        assertTrue(metaDataContexts.getDatabaseMetaDataMap().isEmpty());
+        assertTrue(metaDataContexts.getDatabaseMap().isEmpty());
         assertThat(FrontDatabaseProtocolTypeFactory.getDatabaseType().getType(), is("MySQL"));
     }
     
     @Test
     public void assertGetDatabaseTypeInstanceOfMySQLDatabaseTypeFromMetaDataContextsSchemaName() {
         MetaDataContexts metaDataContexts = new MetaDataContexts(
-                mock(MetaDataPersistService.class), mockDatabaseMetaDataMap(), mock(ShardingSphereRuleMetaData.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
+                mock(MetaDataPersistService.class), mockDatabaseMap(), mock(ShardingSphereRuleMetaData.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
         ProxyContext.init(new ContextManager(metaDataContexts, mock(TransactionContexts.class), mock(InstanceContext.class)));
-        assertFalse(metaDataContexts.getDatabaseMetaDataMap().isEmpty());
+        assertFalse(metaDataContexts.getDatabaseMap().isEmpty());
         String configuredDatabaseType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE);
         assertTrue(configuredDatabaseType.isEmpty());
         assertTrue(metaDataContexts.getAllDatabaseNames().contains(DefaultDatabase.LOGIC_NAME));
@@ -75,9 +75,9 @@ public final class FrontDatabaseProtocolTypeFactoryTest extends ProxyContextRest
     @Test
     public void assertGetDatabaseTypeOfPostgreSQLDatabaseTypeFromMetaDataContextsProps() {
         MetaDataContexts metaDataContexts = new MetaDataContexts(
-                mock(MetaDataPersistService.class), mockDatabaseMetaDataMap(), mock(ShardingSphereRuleMetaData.class), mock(OptimizerContext.class), new ConfigurationProperties(createProperties()));
+                mock(MetaDataPersistService.class), mockDatabaseMap(), mock(ShardingSphereRuleMetaData.class), mock(OptimizerContext.class), new ConfigurationProperties(createProperties()));
         ProxyContext.init(new ContextManager(metaDataContexts, mock(TransactionContexts.class), mock(InstanceContext.class)));
-        assertFalse(metaDataContexts.getDatabaseMetaDataMap().isEmpty());
+        assertFalse(metaDataContexts.getDatabaseMap().isEmpty());
         String configuredDatabaseType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE);
         assertThat(configuredDatabaseType, is("PostgreSQL"));
         assertTrue(metaDataContexts.getAllDatabaseNames().contains(DefaultDatabase.LOGIC_NAME));
@@ -93,8 +93,8 @@ public final class FrontDatabaseProtocolTypeFactoryTest extends ProxyContextRest
         return result;
     }
     
-    private Map<String, ShardingSphereDatabaseMetaData> mockDatabaseMetaDataMap() {
-        ShardingSphereDatabaseMetaData result = mock(ShardingSphereDatabaseMetaData.class, RETURNS_DEEP_STUBS);
+    private Map<String, ShardingSphereDatabase> mockDatabaseMap() {
+        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(result.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
         return Collections.singletonMap(DefaultDatabase.LOGIC_NAME, result);
     }

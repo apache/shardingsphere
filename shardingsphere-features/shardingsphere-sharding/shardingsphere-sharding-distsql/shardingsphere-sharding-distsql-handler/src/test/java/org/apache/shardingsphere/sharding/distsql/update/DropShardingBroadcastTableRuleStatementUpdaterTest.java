@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.distsql.update;
 
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -40,24 +40,24 @@ import static org.junit.Assert.assertTrue;
 public final class DropShardingBroadcastTableRuleStatementUpdaterTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private ShardingSphereDatabaseMetaData databaseMetaData;
+    private ShardingSphereDatabase database;
     
     private final DropShardingBroadcastTableRuleStatementUpdater updater = new DropShardingBroadcastTableRuleStatementUpdater();
     
     @Test(expected = RequiredRuleMissedException.class)
     public void assertCheckSQLStatementWithoutCurrentRule() throws DistSQLException {
-        updater.checkSQLStatement(databaseMetaData, createSQLStatement("t_order"), null);
+        updater.checkSQLStatement(database, createSQLStatement("t_order"), null);
     }
     
     @Test(expected = RequiredRuleMissedException.class)
     public void assertCheckSQLStatementWithoutExistBroadcastTableRule() throws DistSQLException {
-        updater.checkSQLStatement(databaseMetaData, createSQLStatement("t_order"), new ShardingRuleConfiguration());
+        updater.checkSQLStatement(database, createSQLStatement("t_order"), new ShardingRuleConfiguration());
     }
     
     @Test
     public void assertCheckSQLStatementWithIfExists() throws DistSQLException {
-        updater.checkSQLStatement(databaseMetaData, createSQLStatement(true, "t_order"), new ShardingRuleConfiguration());
-        updater.checkSQLStatement(databaseMetaData, createSQLStatement(true, "t_order"), null);
+        updater.checkSQLStatement(database, createSQLStatement(true, "t_order"), new ShardingRuleConfiguration());
+        updater.checkSQLStatement(database, createSQLStatement(true, "t_order"), null);
     }
     
     @Test
@@ -69,7 +69,7 @@ public final class DropShardingBroadcastTableRuleStatementUpdaterTest {
     
     @Test(expected = RequiredRuleMissedException.class)
     public void assertCheckSQLStatementWithBroadcastTableRuleAreNotTheSame() throws DistSQLException {
-        updater.checkSQLStatement(databaseMetaData, createSQLStatement("t_order_item"), createCurrentRuleConfiguration());
+        updater.checkSQLStatement(database, createSQLStatement("t_order_item"), createCurrentRuleConfiguration());
     }
     
     @Test

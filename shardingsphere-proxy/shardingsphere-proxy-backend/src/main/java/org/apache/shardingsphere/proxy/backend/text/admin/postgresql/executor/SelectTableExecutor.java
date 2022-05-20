@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.admin.postgresql.executor;
 
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.AbstractDatabaseMetadataExecutor;
@@ -53,9 +53,9 @@ public final class SelectTableExecutor extends DefaultDatabaseMetadataExecutor {
     
     @Override
     protected void initDatabaseData(final String databaseName) {
-        ShardingSphereDatabaseMetaData databaseMetaData = ProxyContext.getInstance().getMetaData(databaseName);
-        String schema = databaseMetaData.getResource().getDatabaseType().getDefaultSchema(databaseName);
-        tableNames = new ArrayList<>(databaseMetaData.getDatabase().getSchema(schema).getAllTableNames());
+        ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(databaseName);
+        String schema = database.getResource().getDatabaseType().getDefaultSchema(databaseName);
+        tableNames = new ArrayList<>(database.getDatabaseMetaData().getSchema(schema).getAllTableNames());
     }
     
     @Override

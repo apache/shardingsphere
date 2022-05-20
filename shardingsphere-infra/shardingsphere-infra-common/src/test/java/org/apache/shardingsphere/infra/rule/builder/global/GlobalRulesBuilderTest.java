@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.rule.builder.global;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -32,6 +32,6 @@ public final class GlobalRulesBuilderTest {
     @Test
     public void assertBuildRules() {
         assertThat(GlobalRulesBuilder.buildRules(
-                Collections.singletonList(mock(RuleConfiguration.class)), Collections.singletonMap("logic_db", mock(ShardingSphereDatabaseMetaData.class))).size(), is(1));
+                Collections.singletonList(mock(RuleConfiguration.class)), Collections.singletonMap("logic_db", mock(ShardingSphereDatabase.class))).size(), is(1));
     }
 }
