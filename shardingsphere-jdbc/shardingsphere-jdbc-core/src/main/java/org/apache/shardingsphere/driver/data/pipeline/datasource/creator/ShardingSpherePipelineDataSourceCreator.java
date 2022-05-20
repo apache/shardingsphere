@@ -45,8 +45,7 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
         enableRangeQueryForInline(shardingRuleConfig);
         Map<String, DataSource> dataSourceMap = new YamlDataSourceConfigurationSwapper().swapToDataSources(rootConfig.getDataSources());
         try {
-            return ShardingSphereDataSourceFactory.createDataSource(rootConfig.getDatabaseName(), dataSourceMap,
-                    Collections.singletonList(shardingRuleConfig), null);
+            return ShardingSphereDataSourceFactory.createDataSource(rootConfig.getDatabaseName(), dataSourceMap, Collections.singletonList(shardingRuleConfig), null);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
