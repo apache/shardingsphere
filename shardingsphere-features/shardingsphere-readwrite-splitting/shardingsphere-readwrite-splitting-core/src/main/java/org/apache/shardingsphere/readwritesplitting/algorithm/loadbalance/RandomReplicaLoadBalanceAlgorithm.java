@@ -20,7 +20,6 @@ package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
 import lombok.Getter;
 import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.transaction.TransactionHolder;
-import org.apache.zookeeper.Transaction;
 
 import java.util.List;
 import java.util.Properties;

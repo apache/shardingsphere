@@ -42,8 +42,7 @@ public final class ReadwriteSplittingDataSourceRuleTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void assertNewReadwriteSplittingDataSourceRuleWithoutName() {
-        new ReadwriteSplittingDataSourceRule(new ReadwriteSplittingDataSourceRuleConfiguration("", "Static", getProperties("write_ds", "read_ds"), null),
-                new RoundRobinReplicaLoadBalanceAlgorithm());
+        new ReadwriteSplittingDataSourceRule(new ReadwriteSplittingDataSourceRuleConfiguration("", "Static", getProperties("write_ds", "read_ds"), null), new RoundRobinReplicaLoadBalanceAlgorithm());
     }
     
     @Test(expected = IllegalArgumentException.class)
