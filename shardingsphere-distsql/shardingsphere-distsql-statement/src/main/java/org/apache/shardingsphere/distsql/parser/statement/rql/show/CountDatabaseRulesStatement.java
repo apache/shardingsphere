@@ -27,8 +27,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseS
 @Getter
 public final class CountDatabaseRulesStatement extends ShowRulesStatement {
     
-    public CountDatabaseRulesStatement(final DatabaseSegment schema) {
-        super(schema);
+    public CountDatabaseRulesStatement(final DatabaseSegment database) {
+        super(database);
     }
     
     @Override
