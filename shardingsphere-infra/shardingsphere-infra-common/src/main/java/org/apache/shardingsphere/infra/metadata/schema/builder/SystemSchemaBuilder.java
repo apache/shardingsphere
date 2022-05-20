@@ -52,8 +52,7 @@ public final class SystemSchemaBuilder {
         Map<String, ShardingSphereSchema> result = new LinkedHashMap<>(databaseType.getSystemSchemas().size(), 1);
         TableMetaDataYamlSwapper swapper = new TableMetaDataYamlSwapper();
         for (String each : getSystemSchemas(databaseName, databaseType)) {
-            Collection<InputStream> schemaStreams = getSchemaStreams(each, databaseType);
-            result.put(each, createSchema(schemaStreams, swapper));
+            result.put(each.toLowerCase(), createSchema(getSchemaStreams(each, databaseType), swapper));
         }
         return result;
     }

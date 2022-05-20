@@ -28,8 +28,8 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Database loader.
@@ -51,7 +51,7 @@ public final class DatabaseLoader {
     public static ShardingSphereDatabaseMetaData load(final String databaseName, final DatabaseType frontendDatabaseType,
                                                       final DatabaseType backendDatabaseType, final Map<String, DataSource> dataSourceMap,
                                                       final Collection<ShardingSphereRule> rules, final ConfigurationProperties props) throws SQLException {
-        Map<String, ShardingSphereSchema> schemas = new LinkedHashMap<>();
+        Map<String, ShardingSphereSchema> schemas = new ConcurrentHashMap<>();
         schemas.putAll(SchemaLoader.load(databaseName, frontendDatabaseType, backendDatabaseType, dataSourceMap, rules, props));
         schemas.putAll(SystemSchemaBuilder.build(databaseName, frontendDatabaseType));
         return new ShardingSphereDatabaseMetaData(schemas);

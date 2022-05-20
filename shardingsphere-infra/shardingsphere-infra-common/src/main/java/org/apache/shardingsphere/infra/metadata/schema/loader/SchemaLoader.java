@@ -30,9 +30,9 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -60,9 +60,9 @@ public final class SchemaLoader {
         if (schemaMetaDataMap.isEmpty()) {
             return Collections.singletonMap(defaultSchemaName, new ShardingSphereSchema());
         }
-        Map<String, ShardingSphereSchema> result = new LinkedHashMap<>();
+        Map<String, ShardingSphereSchema> result = new ConcurrentHashMap<>();
         for (Entry<String, SchemaMetaData> entry : schemaMetaDataMap.entrySet()) {
-            result.put(entry.getKey(), new ShardingSphereSchema(entry.getValue().getTables()));
+            result.put(entry.getKey().toLowerCase(), new ShardingSphereSchema(entry.getValue().getTables()));
         }
         return result;
     }
