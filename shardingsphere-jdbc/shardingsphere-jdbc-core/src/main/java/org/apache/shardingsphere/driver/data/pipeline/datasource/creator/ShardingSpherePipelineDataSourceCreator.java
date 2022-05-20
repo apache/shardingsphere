@@ -47,7 +47,9 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
         try {
             return ShardingSphereDataSourceFactory.createDataSource(rootConfig.getDatabaseName(), dataSourceMap,
                     Collections.singletonList(shardingRuleConfig), null);
-        } catch (final SQLException ex) {
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
             closeDataSources(dataSourceMap.values());
             throw ex;
         }
