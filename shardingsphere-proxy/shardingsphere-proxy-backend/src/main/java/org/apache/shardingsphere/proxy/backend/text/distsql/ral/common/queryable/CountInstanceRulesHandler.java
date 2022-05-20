@@ -22,7 +22,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.C
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.QueryableRALBackendHandler;
@@ -75,18 +75,18 @@ public final class CountInstanceRulesHandler extends QueryableRALBackendHandler<
     @Override
     protected Collection<List<Object>> getRows(final ContextManager contextManager) throws SQLException {
         Map<String, List<Object>> dataMap = new LinkedHashMap<>();
-        ProxyContext.getInstance().getAllDatabaseNames().forEach(each -> addSchemaData(dataMap, ProxyContext.getInstance().getMetaData(each)));
+        ProxyContext.getInstance().getAllDatabaseNames().forEach(each -> addSchemaData(dataMap, ProxyContext.getInstance().getDatabase(each)));
         return dataMap.values();
     }
     
-    private void addSchemaData(final Map<String, List<Object>> dataMap, final ShardingSphereDatabaseMetaData databaseMetaData) {
+    private void addSchemaData(final Map<String, List<Object>> dataMap, final ShardingSphereDatabase database) {
         initData(dataMap);
-        Collection<SingleTableRule> singleTableRules = databaseMetaData.getRuleMetaData().findRules(SingleTableRule.class);
+        Collection<SingleTableRule> singleTableRules = database.getRuleMetaData().findRules(SingleTableRule.class);
         if (!singleTableRules.isEmpty()) {
             addSingleTableData(dataMap, singleTableRules);
         }
-        if (hasRuleConfiguration(databaseMetaData)) {
-            addConfigurationData(dataMap, databaseMetaData.getRuleMetaData().getConfigurations());
+        if (hasRuleConfiguration(database)) {
+            addConfigurationData(dataMap, database.getRuleMetaData().getConfigurations());
         }
     }
     
@@ -96,8 +96,8 @@ public final class CountInstanceRulesHandler extends QueryableRALBackendHandler<
         dataMap.compute(SINGLE_TABLE, (key, value) -> buildRow(value, SINGLE_TABLE, count.orElse(DEFAULT_COUNT)));
     }
     
-    private boolean hasRuleConfiguration(final ShardingSphereDatabaseMetaData databaseMetaData) {
-        Collection<RuleConfiguration> configs = databaseMetaData.getRuleMetaData().getConfigurations();
+    private boolean hasRuleConfiguration(final ShardingSphereDatabase database) {
+        Collection<RuleConfiguration> configs = database.getRuleMetaData().getConfigurations();
         return null != configs && !configs.isEmpty();
     }
     

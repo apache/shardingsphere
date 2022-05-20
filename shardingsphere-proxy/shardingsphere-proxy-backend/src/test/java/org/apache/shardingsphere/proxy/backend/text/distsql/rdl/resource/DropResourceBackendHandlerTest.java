@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.resource;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceStatement;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -59,7 +59,7 @@ public final class DropResourceBackendHandlerTest extends ProxyContextRestorer {
     private ConnectionSession connectionSession;
     
     @Mock
-    private ShardingSphereDatabaseMetaData databaseMetaData;
+    private ShardingSphereDatabase database;
     
     @Mock
     private ShardingSphereResource resource;
@@ -84,9 +84,9 @@ public final class DropResourceBackendHandlerTest extends ProxyContextRestorer {
     public void setUp() throws Exception {
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
         when(metaDataContexts.getAllDatabaseNames()).thenReturn(Collections.singleton("test"));
-        when(metaDataContexts.getDatabaseMetaData("test")).thenReturn(databaseMetaData);
-        when(databaseMetaData.getRuleMetaData()).thenReturn(ruleMetaData);
-        when(databaseMetaData.getResource()).thenReturn(resource);
+        when(metaDataContexts.getDatabaseMetaData("test")).thenReturn(database);
+        when(database.getRuleMetaData()).thenReturn(ruleMetaData);
+        when(database.getResource()).thenReturn(resource);
         contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);

@@ -21,7 +21,7 @@ import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableItemConstants;
 import org.apache.shardingsphere.infra.exception.DatabaseNotExistedException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.schema.QualifiedDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.type.ExportableRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -76,8 +76,8 @@ public final class ShowReadwriteSplittingReadResourcesHandler extends QueryableR
     protected Collection<List<Object>> getRows(final ContextManager contextManager) {
         String databaseName = getDatabaseName();
         MetaDataContexts metaDataContexts = contextManager.getMetaDataContexts();
-        ShardingSphereDatabaseMetaData databaseMetaData = metaDataContexts.getDatabaseMetaData(databaseName);
-        Collection<String> allReadResources = getAllReadResources(databaseMetaData);
+        ShardingSphereDatabase database = metaDataContexts.getDatabaseMetaData(databaseName);
+        Collection<String> allReadResources = getAllReadResources(database);
         Map<String, StorageNodeDataSource> persistentReadResources = getPersistentReadResources(databaseName, metaDataContexts.getPersistService().orElse(null));
         return buildRows(allReadResources, persistentReadResources);
     }
@@ -93,9 +93,9 @@ public final class ShowReadwriteSplittingReadResourcesHandler extends QueryableR
         return result;
     }
     
-    private Collection<String> getAllReadResources(final ShardingSphereDatabaseMetaData databaseMetaData) {
+    private Collection<String> getAllReadResources(final ShardingSphereDatabase database) {
         Collection<String> exportKeys = Arrays.asList(ExportableConstants.EXPORT_STATIC_READ_WRITE_SPLITTING_RULE, ExportableConstants.EXPORT_DYNAMIC_READ_WRITE_SPLITTING_RULE);
-        Map<String, Object> exportMap = databaseMetaData.getRuleMetaData().getRules().stream().filter(each -> each instanceof ExportableRule).map(each -> (ExportableRule) each)
+        Map<String, Object> exportMap = database.getRuleMetaData().getRules().stream().filter(each -> each instanceof ExportableRule).map(each -> (ExportableRule) each)
                 .filter(each -> each.containExportableKey(exportKeys)).findFirst().map(each -> each.export(exportKeys)).orElse(Collections.emptyMap());
         Map<String, Map<String, String>> allReadwriteRuleMap = exportMap.values().stream().map(each -> ((Map<String, Map<String, String>>) each).entrySet())
                 .flatMap(Collection::stream).collect(Collectors.toMap(Entry::getKey, Entry::getValue, (v1, v2) -> v2, LinkedHashMap::new));

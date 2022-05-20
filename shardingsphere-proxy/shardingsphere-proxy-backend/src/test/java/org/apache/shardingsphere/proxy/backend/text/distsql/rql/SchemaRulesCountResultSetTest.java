@@ -23,7 +23,7 @@ import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfigu
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.rule.SchemaRulesCountResultSet;
@@ -56,7 +56,7 @@ import static org.mockito.Mockito.when;
 public final class SchemaRulesCountResultSetTest {
     
     @Mock
-    private ShardingSphereDatabaseMetaData databaseMetaData;
+    private ShardingSphereDatabase database;
     
     @Before
     public void before() {
@@ -69,7 +69,7 @@ public final class SchemaRulesCountResultSetTest {
         ruleConfigs.add(mockReadwriteSplittingRule());
         ruleConfigs.add(mockEncryptRule());
         when(ruleMetaData.getConfigurations()).thenReturn(ruleConfigs);
-        when(databaseMetaData.getRuleMetaData()).thenReturn(ruleMetaData);
+        when(database.getRuleMetaData()).thenReturn(ruleMetaData);
     }
     
     private SingleTableRule mockSingleTableRule() {
@@ -102,7 +102,7 @@ public final class SchemaRulesCountResultSetTest {
     @Test
     public void assertGetRowData() {
         DistSQLResultSet resultSet = new SchemaRulesCountResultSet();
-        resultSet.init(databaseMetaData, mock(CountSchemaRulesStatement.class));
+        resultSet.init(database, mock(CountSchemaRulesStatement.class));
         Collection<Object> actual = resultSet.getRowData();
         assertThat(actual.size(), is(2));
         Iterator<Object> rowData = actual.iterator();
@@ -148,8 +148,8 @@ public final class SchemaRulesCountResultSetTest {
     @Test
     public void assertGetRowDataWithoutConfiguration() {
         DistSQLResultSet resultSet = new SchemaRulesCountResultSet();
-        when(databaseMetaData.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
-        resultSet.init(databaseMetaData, mock(CountSchemaRulesStatement.class));
+        when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
+        resultSet.init(database, mock(CountSchemaRulesStatement.class));
         Collection<Object> actual = resultSet.getRowData();
         assertThat(actual.size(), is(2));
         Iterator<Object> rowData = actual.iterator();

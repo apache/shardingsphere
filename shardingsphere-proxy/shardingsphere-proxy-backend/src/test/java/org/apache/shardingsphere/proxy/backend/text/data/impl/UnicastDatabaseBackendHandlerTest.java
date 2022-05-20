@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -80,7 +80,7 @@ public final class UnicastDatabaseBackendHandlerTest {
         contextManagerField.setAccessible(true);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = new MetaDataContexts(
-                mock(MetaDataPersistService.class), getDatabaseMetaDataMap(), mock(ShardingSphereRuleMetaData.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
+                mock(MetaDataPersistService.class), getDatabaseMap(), mock(ShardingSphereRuleMetaData.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         contextManagerField.set(ProxyContext.getInstance(), contextManager);
         when(connectionSession.getDefaultDatabaseName()).thenReturn(String.format(DATABASE_PATTERN, 0));
@@ -89,13 +89,13 @@ public final class UnicastDatabaseBackendHandlerTest {
         setBackendHandlerFactory(unicastDatabaseBackendHandler);
     }
     
-    private Map<String, ShardingSphereDatabaseMetaData> getDatabaseMetaDataMap() {
-        Map<String, ShardingSphereDatabaseMetaData> result = new HashMap<>(10, 1);
+    private Map<String, ShardingSphereDatabase> getDatabaseMap() {
+        Map<String, ShardingSphereDatabase> result = new HashMap<>(10, 1);
         for (int i = 0; i < 10; i++) {
-            ShardingSphereDatabaseMetaData databaseMetaData = mock(ShardingSphereDatabaseMetaData.class, RETURNS_DEEP_STUBS);
-            when(databaseMetaData.hasDataSource()).thenReturn(true);
-            when(databaseMetaData.getResource().getDatabaseType()).thenReturn(new H2DatabaseType());
-            result.put(String.format(DATABASE_PATTERN, i), databaseMetaData);
+            ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+            when(database.hasDataSource()).thenReturn(true);
+            when(database.getResource().getDatabaseType()).thenReturn(new H2DatabaseType());
+            result.put(String.format(DATABASE_PATTERN, i), database);
         }
         return result;
     }

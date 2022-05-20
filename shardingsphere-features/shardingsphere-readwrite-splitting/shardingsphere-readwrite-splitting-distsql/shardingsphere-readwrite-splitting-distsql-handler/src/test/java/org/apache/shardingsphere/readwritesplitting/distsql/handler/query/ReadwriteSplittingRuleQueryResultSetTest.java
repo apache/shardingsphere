@@ -19,7 +19,7 @@ package org.apache.shardingsphere.readwritesplitting.distsql.handler.query;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.type.ExportableRule;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
@@ -44,13 +44,13 @@ public final class ReadwriteSplittingRuleQueryResultSetTest {
     
     @Test
     public void assertGetRowData() {
-        ShardingSphereDatabaseMetaData databaseMetaData = mock(ShardingSphereDatabaseMetaData.class, RETURNS_DEEP_STUBS);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         ExportableRule exportableRule = mock(ExportableRule.class);
-        when(databaseMetaData.getRuleMetaData().findRules(any())).thenReturn(Collections.singletonList(exportableRule));
+        when(database.getRuleMetaData().findRules(any())).thenReturn(Collections.singletonList(exportableRule));
         when(exportableRule.export(anyCollection())).thenReturn(Collections.emptyMap());
-        when(databaseMetaData.getRuleMetaData().findRuleConfiguration(any())).thenReturn(Collections.singleton(createRuleConfiguration()));
+        when(database.getRuleMetaData().findRuleConfiguration(any())).thenReturn(Collections.singleton(createRuleConfiguration()));
         ReadwriteSplittingRuleQueryResultSet resultSet = new ReadwriteSplittingRuleQueryResultSet();
-        resultSet.init(databaseMetaData, mock(ShowReadwriteSplittingRulesStatement.class));
+        resultSet.init(database, mock(ShowReadwriteSplittingRulesStatement.class));
         Collection<Object> actual = resultSet.getRowData();
         assertThat(actual.size(), is(6));
         assertTrue(actual.contains("readwrite_ds"));
@@ -70,13 +70,13 @@ public final class ReadwriteSplittingRuleQueryResultSetTest {
     
     @Test
     public void assertGetRowDataWithoutLoadBalancer() {
-        ShardingSphereDatabaseMetaData databaseMetaData = mock(ShardingSphereDatabaseMetaData.class, RETURNS_DEEP_STUBS);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         ExportableRule exportableRule = mock(ExportableRule.class);
-        when(databaseMetaData.getRuleMetaData().findRules(any())).thenReturn(Collections.singletonList(exportableRule));
+        when(database.getRuleMetaData().findRules(any())).thenReturn(Collections.singletonList(exportableRule));
         when(exportableRule.export(anyCollection())).thenReturn(Collections.emptyMap());
-        when(databaseMetaData.getRuleMetaData().findRuleConfiguration(any())).thenReturn(Collections.singleton(createRuleConfigurationWithoutLoadBalancer()));
+        when(database.getRuleMetaData().findRuleConfiguration(any())).thenReturn(Collections.singleton(createRuleConfigurationWithoutLoadBalancer()));
         ReadwriteSplittingRuleQueryResultSet resultSet = new ReadwriteSplittingRuleQueryResultSet();
-        resultSet.init(databaseMetaData, mock(ShowReadwriteSplittingRulesStatement.class));
+        resultSet.init(database, mock(ShowReadwriteSplittingRulesStatement.class));
         Collection<Object> actual = resultSet.getRowData();
         assertThat(actual.size(), is(6));
         assertTrue(actual.contains("readwrite_ds"));
@@ -99,7 +99,7 @@ public final class ReadwriteSplittingRuleQueryResultSetTest {
     
     @Test
     public void assertGetRowDataWithAutoAwareDataSource() {
-        ShardingSphereDatabaseMetaData metaData = mock(ShardingSphereDatabaseMetaData.class, RETURNS_DEEP_STUBS);
+        ShardingSphereDatabase metaData = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(metaData.getRuleMetaData().findRules(ExportableRule.class)).thenReturn(Collections.singletonList(new ReadwriteSplittingRuleExportableFixture()));
         when(metaData.getRuleMetaData().findRuleConfiguration(any())).thenReturn(Collections.singleton(createRuleConfigurationWithAutoAwareDataSource()));
         ReadwriteSplittingRuleQueryResultSet resultSet = new ReadwriteSplittingRuleQueryResultSet();

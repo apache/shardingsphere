@@ -71,10 +71,10 @@ public final class SchemaAssignedDatabaseBackendHandler implements DatabaseBacke
     private void prepareDatabaseCommunicationEngine() throws RequiredResourceMissedException {
         boolean isSystemSchema = SystemSchemaUtil.containsSystemSchema(
                 sqlStatementContext.getDatabaseType(), sqlStatementContext.getTablesContext().getSchemaNames(), connectionSession.getDatabaseName());
-        if (!isSystemSchema && !ProxyContext.getInstance().getMetaData(connectionSession.getDatabaseName()).hasDataSource()) {
+        if (!isSystemSchema && !ProxyContext.getInstance().getDatabase(connectionSession.getDatabaseName()).hasDataSource()) {
             throw new RequiredResourceMissedException(connectionSession.getDatabaseName());
         }
-        if (!isSystemSchema && !ProxyContext.getInstance().getMetaData(connectionSession.getDatabaseName()).isComplete()) {
+        if (!isSystemSchema && !ProxyContext.getInstance().getDatabase(connectionSession.getDatabaseName()).isComplete()) {
             throw new RuleNotExistedException();
         }
         databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatementContext, sql, connectionSession.getBackendConnection());

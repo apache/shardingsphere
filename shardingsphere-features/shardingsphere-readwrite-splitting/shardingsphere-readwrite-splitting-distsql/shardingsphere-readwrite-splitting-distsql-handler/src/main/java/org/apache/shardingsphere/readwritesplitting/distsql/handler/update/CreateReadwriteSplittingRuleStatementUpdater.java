@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleExcep
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.rule.identifier.type.ExportableRule;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
@@ -50,11 +50,11 @@ import java.util.stream.Collectors;
 public final class CreateReadwriteSplittingRuleStatementUpdater implements RuleDefinitionCreateUpdater<CreateReadwriteSplittingRuleStatement, ReadwriteSplittingRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereDatabaseMetaData databaseMetaData, final CreateReadwriteSplittingRuleStatement sqlStatement,
-                                  final ReadwriteSplittingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String databaseName = databaseMetaData.getDatabase().getName();
-        checkDuplicateRuleNames(databaseName, sqlStatement, currentRuleConfig, databaseMetaData.getResource());
-        checkToBeCreatedResources(databaseName, sqlStatement, databaseMetaData);
+    public void checkSQLStatement(final ShardingSphereDatabase database,
+                                  final CreateReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration currentRuleConfig) throws DistSQLException {
+        String databaseName = database.getName();
+        checkDuplicateRuleNames(databaseName, sqlStatement, currentRuleConfig, database.getResource());
+        checkToBeCreatedResources(databaseName, sqlStatement, database);
         checkToBeCreatedLoadBalancers(sqlStatement);
     }
     
@@ -77,8 +77,7 @@ public final class CreateReadwriteSplittingRuleStatementUpdater implements RuleD
         }
     }
     
-    private void checkToBeCreatedResources(final String databaseName,
-                                           final CreateReadwriteSplittingRuleStatement sqlStatement, final ShardingSphereDatabaseMetaData databaseMetaData) throws DistSQLException {
+    private void checkToBeCreatedResources(final String databaseName, final CreateReadwriteSplittingRuleStatement sqlStatement, final ShardingSphereDatabase database) throws DistSQLException {
         Collection<String> requireResources = new LinkedHashSet<>();
         Collection<String> requireDiscoverableResources = new LinkedHashSet<>();
         sqlStatement.getRules().forEach(each -> {
@@ -89,17 +88,17 @@ public final class CreateReadwriteSplittingRuleStatementUpdater implements RuleD
                 requireDiscoverableResources.add(each.getAutoAwareResource());
             }
         });
-        Collection<String> notExistResources = databaseMetaData.getResource().getNotExistedResources(requireResources);
+        Collection<String> notExistResources = database.getResource().getNotExistedResources(requireResources);
         DistSQLException.predictionThrow(notExistResources.isEmpty(), () -> new RequiredResourceMissedException(databaseName, notExistResources));
-        Collection<String> logicResources = getLogicResources(databaseMetaData);
+        Collection<String> logicResources = getLogicResources(database);
         Collection<String> notExistLogicResources = requireDiscoverableResources.stream().filter(each -> !logicResources.contains(each)).collect(Collectors.toSet());
         DistSQLException.predictionThrow(notExistLogicResources.isEmpty(), () -> new RequiredResourceMissedException(databaseName, notExistLogicResources));
     }
     
     @SuppressWarnings("unchecked")
-    private Collection<String> getLogicResources(final ShardingSphereDatabaseMetaData databaseMetaData) {
+    private Collection<String> getLogicResources(final ShardingSphereDatabase database) {
         Collection<String> result = new LinkedHashSet<>();
-        Optional<ExportableRule> exportableRule = databaseMetaData.getRuleMetaData().findRules(ExportableRule.class).stream()
+        Optional<ExportableRule> exportableRule = database.getRuleMetaData().findRules(ExportableRule.class).stream()
                 .filter(each -> each.containExportableKey(Collections.singletonList(ExportableConstants.EXPORT_DB_DISCOVERY_PRIMARY_DATA_SOURCES))).findAny();
         exportableRule.ifPresent(optional -> {
             Map<String, Object> exportData = optional.export(Collections.singletonList(ExportableConstants.EXPORT_DB_DISCOVERY_PRIMARY_DATA_SOURCES));

@@ -23,8 +23,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -70,9 +69,9 @@ public final class OrderByStreamMergedResultTest {
                 new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC),
                 new IndexOrderByItemSegment(0, 0, 2, OrderDirection.ASC, OrderDirection.ASC))));
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
-        ShardingSphereDatabaseMetaData databaseMetaData = mock(ShardingSphereDatabaseMetaData.class);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         selectStatementContext = new SelectStatementContext(
-                Collections.singletonMap(DefaultDatabase.LOGIC_NAME, databaseMetaData), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
+                Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
     }
     
     @Test
@@ -195,12 +194,12 @@ public final class OrderByStreamMergedResultTest {
         assertFalse(actual.next());
     }
     
-    private ShardingSphereDatabaseMetaData createDatabaseMetaData() {
+    private ShardingSphereDatabase createDatabaseMetaData() {
         ColumnMetaData columnMetaData1 = new ColumnMetaData("col1", 0, false, false, true);
         ColumnMetaData columnMetaData2 = new ColumnMetaData("col2", 0, false, false, false);
         TableMetaData tableMetaData = new TableMetaData("tbl", Arrays.asList(columnMetaData1, columnMetaData2), Collections.emptyList(), Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema(Collections.singletonMap("tbl", tableMetaData));
-        return new ShardingSphereDatabaseMetaData(DatabaseTypeFactory.getInstance("MySQL"), mock(ShardingSphereResource.class),
-                mock(ShardingSphereRuleMetaData.class), new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema)));
+        return new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME,
+                DatabaseTypeFactory.getInstance("MySQL"), mock(ShardingSphereResource.class), mock(ShardingSphereRuleMetaData.class), Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema));
     }
 }

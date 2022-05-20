@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurat
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.expr.InlineExpressionParser;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
@@ -374,21 +374,21 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
     /**
      * Judge whether logic table is all binding tables.
      *
-     * @param databaseMetaData database meta data
+     * @param database database
      * @param sqlStatementContext sqlStatementContext
      * @param logicTableNames logic table names
      * @return whether logic table is all binding tables
      */
-    public boolean isAllBindingTables(final ShardingSphereDatabaseMetaData databaseMetaData, final SQLStatementContext<?> sqlStatementContext, final Collection<String> logicTableNames) {
+    public boolean isAllBindingTables(final ShardingSphereDatabase database, final SQLStatementContext<?> sqlStatementContext, final Collection<String> logicTableNames) {
         if (!(sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).isContainsJoinQuery())) {
             return isAllBindingTables(logicTableNames);
         }
         if (!isAllBindingTables(logicTableNames)) {
             return false;
         }
-        String defaultSchema = sqlStatementContext.getDatabaseType().getDefaultSchema(databaseMetaData.getDatabase().getName());
+        String defaultSchema = sqlStatementContext.getDatabaseType().getDefaultSchema(database.getName());
         ShardingSphereSchema schema = sqlStatementContext.getTablesContext().getSchemaName()
-                .map(optional -> databaseMetaData.getDatabase().getSchema(optional)).orElseGet(() -> databaseMetaData.getDatabase().getSchema(defaultSchema));
+                .map(optional -> database.getSchemas().get(optional)).orElseGet(() -> database.getSchemas().get(defaultSchema));
         SelectStatementContext select = (SelectStatementContext) sqlStatementContext;
         Collection<WhereSegment> joinSegments = WhereExtractUtil.getJoinWhereSegments(select.getSqlStatement());
         return isJoinConditionContainsShardingColumns(schema, select, logicTableNames, joinSegments)

@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResour
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidRuleConfigurationException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.rule.identifier.type.ExportableRule;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
@@ -60,7 +60,7 @@ import static org.mockito.Mockito.when;
 public final class CreateReadwriteSplittingRuleStatementUpdaterTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private ShardingSphereDatabaseMetaData databaseMetaData;
+    private ShardingSphereDatabase database;
     
     @Mock
     private ShardingSphereResource resource;
@@ -69,28 +69,28 @@ public final class CreateReadwriteSplittingRuleStatementUpdaterTest {
     
     @Before
     public void before() {
-        when(databaseMetaData.getResource()).thenReturn(resource);
+        when(database.getResource()).thenReturn(resource);
     }
     
     @Test(expected = DuplicateRuleException.class)
     public void assertCheckSQLStatementWithDuplicateRuleNames() throws DistSQLException {
-        ShardingSphereDatabaseMetaData databaseMetaData = mock(ShardingSphereDatabaseMetaData.class, RETURNS_DEEP_STUBS);
-        when(databaseMetaData.getResource().getDataSources().keySet()).thenReturn(Collections.emptySet());
-        updater.checkSQLStatement(databaseMetaData, createSQLStatement("TEST"), createCurrentRuleConfiguration());
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getResource().getDataSources().keySet()).thenReturn(Collections.emptySet());
+        updater.checkSQLStatement(database, createSQLStatement("TEST"), createCurrentRuleConfiguration());
     }
     
     @Test(expected = InvalidRuleConfigurationException.class)
     public void assertCheckSQLStatementWithDuplicateResource() throws DistSQLException {
-        ShardingSphereDatabaseMetaData databaseMetaData = mock(ShardingSphereDatabaseMetaData.class, RETURNS_DEEP_STUBS);
-        when(databaseMetaData.getResource()).thenReturn(resource);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getResource()).thenReturn(resource);
         when(resource.getDataSources()).thenReturn(Collections.singletonMap("write_ds", null));
-        updater.checkSQLStatement(databaseMetaData, createSQLStatement("write_ds", "TEST"), createCurrentRuleConfiguration());
+        updater.checkSQLStatement(database, createSQLStatement("write_ds", "TEST"), createCurrentRuleConfiguration());
     }
     
     @Test(expected = RequiredResourceMissedException.class)
     public void assertCheckSQLStatementWithoutExistedResources() throws DistSQLException {
         when(resource.getNotExistedResources(any())).thenReturn(Arrays.asList("read_ds_0", "read_ds_1"));
-        updater.checkSQLStatement(databaseMetaData, createSQLStatement("TEST"), null);
+        updater.checkSQLStatement(database, createSQLStatement("TEST"), null);
     }
     
     @Test(expected = RequiredResourceMissedException.class)
@@ -102,8 +102,8 @@ public final class CreateReadwriteSplittingRuleStatementUpdaterTest {
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
     public void assertCheckSQLStatementWithoutToBeCreatedLoadBalancers() throws DistSQLException {
-        when(databaseMetaData.getRuleMetaData().findRules(any())).thenReturn(Collections.emptyList());
-        updater.checkSQLStatement(databaseMetaData, createSQLStatement("INVALID_TYPE"), null);
+        when(database.getRuleMetaData().findRules(any())).thenReturn(Collections.emptyList());
+        updater.checkSQLStatement(database, createSQLStatement("INVALID_TYPE"), null);
     }
     
     @Test

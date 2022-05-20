@@ -123,7 +123,7 @@ public final class PostgreSQLComDescribeExecutorTest extends ProxyContextRestore
                 new ColumnMetaData("c", Types.CHAR, true, false, false),
                 new ColumnMetaData("pad", Types.CHAR, true, false, false));
         TableMetaData tableMetaData = new TableMetaData(TABLE_NAME, columnMetaData, Collections.emptyList(), Collections.emptyList());
-        when(mockContextManager.getMetaDataContexts().getDatabaseMetaData(DATABASE_NAME).getDatabase().getSchema("public").get(TABLE_NAME)).thenReturn(tableMetaData);
+        when(mockContextManager.getMetaDataContexts().getDatabaseMetaData(DATABASE_NAME).getSchemas().get("public").get(TABLE_NAME)).thenReturn(tableMetaData);
         when(mockContextManager.getMetaDataContexts().getDatabaseMetaData(DATABASE_NAME).getResource().getDatabaseType()).thenReturn(new PostgreSQLDatabaseType());
     }
     

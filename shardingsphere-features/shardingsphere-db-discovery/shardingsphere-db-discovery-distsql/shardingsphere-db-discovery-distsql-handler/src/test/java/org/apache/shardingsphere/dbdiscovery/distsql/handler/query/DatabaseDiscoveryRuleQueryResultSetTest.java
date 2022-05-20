@@ -25,7 +25,7 @@ import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.ShowDataba
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -47,11 +47,11 @@ public final class DatabaseDiscoveryRuleQueryResultSetTest {
     
     @Test
     public void assertGetRowData() {
-        ShardingSphereDatabaseMetaData databaseMetaData = mock(ShardingSphereDatabaseMetaData.class, RETURNS_DEEP_STUBS);
-        when(databaseMetaData.getRuleMetaData().getConfigurations()).thenReturn(Collections.singleton(createRuleConfiguration()));
-        when(databaseMetaData.getRuleMetaData().getRules()).thenReturn(Collections.singleton(new DatabaseDiscoveryRuleExportableFixture()));
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.singleton(createRuleConfiguration()));
+        when(database.getRuleMetaData().getRules()).thenReturn(Collections.singleton(new DatabaseDiscoveryRuleExportableFixture()));
         DistSQLResultSet resultSet = new DatabaseDiscoveryRuleQueryResultSet();
-        resultSet.init(databaseMetaData, mock(ShowDatabaseDiscoveryRulesStatement.class));
+        resultSet.init(database, mock(ShowDatabaseDiscoveryRulesStatement.class));
         Collection<String> columnNames = resultSet.getColumnNames();
         List<Object> actual = new ArrayList<>(resultSet.getRowData());
         assertThat(columnNames.size(), is(5));
