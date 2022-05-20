@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.driver.data.pipeline.datasource.creator;
 
-import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.datasource.creator.PipelineDataSourceCreator;
+import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -28,7 +29,9 @@ import org.apache.shardingsphere.sharding.yaml.swapper.ShardingRuleConfiguration
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 
 /**
  * ShardingSphere pipeline data source creator.
@@ -40,8 +43,15 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
         YamlRootConfiguration rootConfig = (YamlRootConfiguration) pipelineDataSourceConfig;
         ShardingRuleConfiguration shardingRuleConfig = ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(rootConfig.getRules());
         enableRangeQueryForInline(shardingRuleConfig);
-        return ShardingSphereDataSourceFactory.createDataSource(rootConfig.getDatabaseName(), new YamlDataSourceConfigurationSwapper().swapToDataSources(rootConfig.getDataSources()),
-                Collections.singletonList(shardingRuleConfig), null);
+        Map<String, DataSource> dataSourceMap = new YamlDataSourceConfigurationSwapper().swapToDataSources(rootConfig.getDataSources());
+        try {
+            return ShardingSphereDataSourceFactory.createDataSource(rootConfig.getDatabaseName(), dataSourceMap, Collections.singletonList(shardingRuleConfig), null);
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            closeDataSources(dataSourceMap.values());
+            throw ex;
+        }
     }
     
     private void enableRangeQueryForInline(final ShardingRuleConfiguration shardingRuleConfig) {
@@ -50,6 +60,10 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
                 each.getProps().put("allow-range-query-with-inline-sharding", Boolean.TRUE.toString());
             }
         }
+    }
+    
+    private void closeDataSources(final Collection<DataSource> dataSourceMap) {
+        dataSourceMap.stream().map(DataSourcePoolDestroyer::new).forEach(DataSourcePoolDestroyer::asyncDestroy);
     }
     
     @Override
