@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.CachedDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
@@ -107,14 +106,14 @@ public final class SelectInformationExecutorTest extends ProxyContextRestorer {
         ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class);
         when(ruleMetaData.getRules()).thenReturn(Collections.singletonList(mock(AuthorityRule.class, RETURNS_DEEP_STUBS)));
         return new ShardingSphereDatabase("sharding_db", new MySQLDatabaseType(), new ShardingSphereResource(mockDatasourceMap(), mockDataSourcesMetaData(),
-                mock(CachedDatabaseMetaData.class), new MySQLDatabaseType()), ruleMetaData, new ShardingSphereDatabaseMetaData(Collections.emptyMap()));
+                mock(CachedDatabaseMetaData.class), new MySQLDatabaseType()), ruleMetaData, Collections.emptyMap());
     }
     
     private ShardingSphereDatabase getEmptyDatabase(final String schemaName) {
         ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class);
         when(ruleMetaData.getRules()).thenReturn(Collections.singletonList(mock(AuthorityRule.class, RETURNS_DEEP_STUBS)));
         return new ShardingSphereDatabase(schemaName, new MySQLDatabaseType(), new ShardingSphereResource(Collections.emptyMap(), mockDataSourcesMetaData(),
-                mock(CachedDatabaseMetaData.class), new MySQLDatabaseType()), ruleMetaData, new ShardingSphereDatabaseMetaData(Collections.emptyMap()));
+                mock(CachedDatabaseMetaData.class), new MySQLDatabaseType()), ruleMetaData, Collections.emptyMap());
     }
     
     private Map<String, DataSource> mockDatasourceMap() throws SQLException {

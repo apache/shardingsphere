@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.CachedDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
@@ -98,7 +97,7 @@ public final class SelectDatabaseExecutorTest extends ProxyContextRestorer {
     private ShardingSphereDatabase getDatabase() throws SQLException {
         return new ShardingSphereDatabase("sharding_db", new PostgreSQLDatabaseType(),
                 new ShardingSphereResource(mockDatasourceMap(), mockDataSourcesMetaData(), mock(CachedDatabaseMetaData.class), new PostgreSQLDatabaseType()),
-                mock(ShardingSphereRuleMetaData.class), new ShardingSphereDatabaseMetaData(Collections.emptyMap()));
+                mock(ShardingSphereRuleMetaData.class), Collections.emptyMap());
     }
     
     private ShardingSphereDatabase getEmptyDatabaseMetaData(final String schemaName) {
@@ -106,7 +105,7 @@ public final class SelectDatabaseExecutorTest extends ProxyContextRestorer {
         when(ruleMetaData.getRules()).thenReturn(Collections.emptyList());
         return new ShardingSphereDatabase(schemaName, new PostgreSQLDatabaseType(),
                 new ShardingSphereResource(Collections.emptyMap(), mockDataSourcesMetaData(), mock(CachedDatabaseMetaData.class), new PostgreSQLDatabaseType()),
-                ruleMetaData, new ShardingSphereDatabaseMetaData(Collections.emptyMap()));
+                ruleMetaData, Collections.emptyMap());
     }
     
     private Map<String, DataSource> mockDatasourceMap() throws SQLException {

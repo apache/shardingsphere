@@ -41,7 +41,7 @@ import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
 import org.apache.shardingsphere.infra.exception.DatabaseNotExistedException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.ParameterMarkerType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.SubqueryType;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
@@ -109,10 +109,9 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         subqueryContexts = createSubqueryContexts(databaseMap, parameters, defaultDatabaseName);
         tablesContext = new TablesContext(getAllTableSegments(), subqueryContexts, getDatabaseType());
         String databaseName = tablesContext.getDatabaseName().orElse(defaultDatabaseName);
-        ShardingSphereDatabaseMetaData database = getDatabase(databaseMap, databaseName);
         groupByContext = new GroupByContextEngine().createGroupByContext(sqlStatement);
         orderByContext = new OrderByContextEngine().createOrderBy(sqlStatement, groupByContext);
-        projectionsContext = new ProjectionsContextEngine(databaseName, database, getDatabaseType())
+        projectionsContext = new ProjectionsContextEngine(databaseName, getSchemas(databaseMap, databaseName), getDatabaseType())
                 .createProjectionsContext(getSqlStatement().getFrom(), getSqlStatement().getProjections(), groupByContext, orderByContext);
         paginationContext = new PaginationContextEngine().createPaginationContext(sqlStatement, projectionsContext, parameters, whereSegments);
     }
@@ -128,16 +127,16 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         return result;
     }
     
-    private ShardingSphereDatabaseMetaData getDatabase(final Map<String, ShardingSphereDatabase> databaseMap, final String databaseName) {
+    private Map<String, ShardingSphereSchema> getSchemas(final Map<String, ShardingSphereDatabase> databaseMap, final String databaseName) {
         ShardingSphereDatabase database = databaseMap.get(databaseName);
         if (null == database) {
             if (tablesContext.getTables().isEmpty()) {
-                return new ShardingSphereDatabaseMetaData(Collections.emptyMap());
+                return Collections.emptyMap();
             } else {
                 throw new DatabaseNotExistedException(databaseName);
             }
         }
-        return database.getDatabaseMetaData();
+        return database.getSchemas();
     }
     
     /**

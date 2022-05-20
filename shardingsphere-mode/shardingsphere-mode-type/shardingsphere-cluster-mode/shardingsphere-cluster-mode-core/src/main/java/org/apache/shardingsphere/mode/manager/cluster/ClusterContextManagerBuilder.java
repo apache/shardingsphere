@@ -143,7 +143,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     }
     
     private void persistMetaData(final MetaDataContexts metaDataContexts) {
-        metaDataContexts.getDatabaseMap().forEach((databaseName, schemas) -> schemas.getDatabaseMetaData().getSchemas().forEach((schemaName, tables) -> {
+        metaDataContexts.getDatabaseMap().forEach((databaseName, schemas) -> schemas.getSchemas().forEach((schemaName, tables) -> {
             if (tables.getTables().isEmpty()) {
                 metaDataContexts.getPersistService().ifPresent(optional -> optional.getSchemaMetaDataService().persistSchema(databaseName, schemaName));
             } else {

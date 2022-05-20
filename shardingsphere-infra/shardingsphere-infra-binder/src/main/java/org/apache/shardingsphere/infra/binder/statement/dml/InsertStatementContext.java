@@ -103,7 +103,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
         }
         String defaultSchema = getDatabaseType().getDefaultSchema(databaseName);
         return tablesContext.getSchemaName()
-                .map(optional -> database.getDatabaseMetaData().getSchemas().get(optional)).orElseGet(() -> database.getDatabaseMetaData().getSchemas().get(defaultSchema));
+                .map(optional -> database.getSchemas().get(optional)).orElseGet(() -> database.getSchemas().get(defaultSchema));
     }
     
     private Collection<SimpleTableSegment> getAllSimpleTableSegments() {

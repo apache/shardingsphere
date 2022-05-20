@@ -58,18 +58,18 @@ public final class AlterViewStatementSchemaRefresher implements MetaDataRefreshe
             String renameViewName = renameView.get().getTableName().getIdentifier().getValue();
             putTableMetaData(database, federationDatabaseMetaData, optimizerPlanners, logicDataSourceNames, schemaName, renameViewName, props);
             removeTableMetaData(database, federationDatabaseMetaData, optimizerPlanners, schemaName, viewName);
-            event.getAlteredTables().add(database.getDatabaseMetaData().getSchemas().get(schemaName).get(renameViewName));
+            event.getAlteredTables().add(database.getSchemas().get(schemaName).get(renameViewName));
             event.getDroppedTables().add(viewName);
         } else {
             putTableMetaData(database, federationDatabaseMetaData, optimizerPlanners, logicDataSourceNames, schemaName, viewName, props);
-            event.getAlteredTables().add(database.getDatabaseMetaData().getSchemas().get(schemaName).get(viewName));
+            event.getAlteredTables().add(database.getSchemas().get(schemaName).get(viewName));
         }
         ShardingSphereEventBus.getInstance().post(event);
     }
     
     private void removeTableMetaData(final ShardingSphereDatabase database, final FederationDatabaseMetaData federationDatabaseMetaData,
                                      final Map<String, OptimizerPlannerContext> optimizerPlanners, final String schemaName, final String viewName) {
-        database.getDatabaseMetaData().getSchemas().get(schemaName).remove(viewName);
+        database.getSchemas().get(schemaName).remove(viewName);
         database.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.remove(schemaName, viewName));
         federationDatabaseMetaData.removeTableMetadata(schemaName, viewName);
         optimizerPlanners.put(federationDatabaseMetaData.getName(), OptimizerPlannerContextFactory.create(federationDatabaseMetaData));
@@ -85,7 +85,7 @@ public final class AlterViewStatementSchemaRefresher implements MetaDataRefreshe
         Map<String, SchemaMetaData> metaDataMap = TableMetaDataBuilder.load(Collections.singletonList(viewName), materials);
         Optional<TableMetaData> actualViewMetaData = Optional.ofNullable(metaDataMap.get(schemaName)).map(optional -> optional.getTables().get(viewName));
         actualViewMetaData.ifPresent(optional -> {
-            database.getDatabaseMetaData().getSchemas().get(schemaName).put(viewName, optional);
+            database.getSchemas().get(schemaName).put(viewName, optional);
             federationDatabaseMetaData.putTableMetadata(schemaName, optional);
             optimizerPlanners.put(federationDatabaseMetaData.getName(), OptimizerPlannerContextFactory.create(federationDatabaseMetaData));
         });

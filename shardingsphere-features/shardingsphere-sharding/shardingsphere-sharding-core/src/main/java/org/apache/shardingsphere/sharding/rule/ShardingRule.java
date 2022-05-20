@@ -388,7 +388,7 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
         }
         String defaultSchema = sqlStatementContext.getDatabaseType().getDefaultSchema(database.getName());
         ShardingSphereSchema schema = sqlStatementContext.getTablesContext().getSchemaName()
-                .map(optional -> database.getDatabaseMetaData().getSchemas().get(optional)).orElseGet(() -> database.getDatabaseMetaData().getSchemas().get(defaultSchema));
+                .map(optional -> database.getSchemas().get(optional)).orElseGet(() -> database.getSchemas().get(defaultSchema));
         SelectStatementContext select = (SelectStatementContext) sqlStatementContext;
         Collection<WhereSegment> joinSegments = WhereExtractUtil.getJoinWhereSegments(select.getSqlStatement());
         return isJoinConditionContainsShardingColumns(schema, select, logicTableNames, joinSegments)

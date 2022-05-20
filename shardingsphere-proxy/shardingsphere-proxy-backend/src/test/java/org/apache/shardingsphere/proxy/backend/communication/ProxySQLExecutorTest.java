@@ -141,7 +141,7 @@ public final class ProxySQLExecutorTest {
         MySQLInsertStatement sqlStatement = new MySQLInsertStatement();
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getDatabaseMetaData().getSchemas().get(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
+        when(database.getSchemas().get(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
         return new InsertStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), Collections.emptyList(), sqlStatement, DefaultDatabase.LOGIC_NAME);
     }
     
@@ -155,7 +155,7 @@ public final class ProxySQLExecutorTest {
         PostgreSQLInsertStatement sqlStatement = new PostgreSQLInsertStatement();
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getDatabaseMetaData().getSchemas().get("public")).thenReturn(mock(ShardingSphereSchema.class));
+        when(database.getSchemas().get("public")).thenReturn(mock(ShardingSphereSchema.class));
         return new InsertStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), Collections.emptyList(), sqlStatement, DefaultDatabase.LOGIC_NAME);
     }
 }

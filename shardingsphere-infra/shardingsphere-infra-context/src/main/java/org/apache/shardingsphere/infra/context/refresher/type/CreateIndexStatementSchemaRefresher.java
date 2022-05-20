@@ -49,9 +49,9 @@ public final class CreateIndexStatementSchemaRefresher implements MetaDataRefres
             return;
         }
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
-        database.getDatabaseMetaData().getSchemas().get(schemaName).get(tableName).getIndexes().put(indexName, new IndexMetaData(indexName));
+        database.getSchemas().get(schemaName).get(tableName).getIndexes().put(indexName, new IndexMetaData(indexName));
         SchemaAlteredEvent event = new SchemaAlteredEvent(database.getName(), schemaName);
-        event.getAlteredTables().add(database.getDatabaseMetaData().getSchemas().get(schemaName).get(tableName));
+        event.getAlteredTables().add(database.getSchemas().get(schemaName).get(tableName));
         ShardingSphereEventBus.getInstance().post(event);
     }
     

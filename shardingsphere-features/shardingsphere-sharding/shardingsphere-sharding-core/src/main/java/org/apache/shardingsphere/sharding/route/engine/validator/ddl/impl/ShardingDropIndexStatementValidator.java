@@ -47,7 +47,7 @@ public final class ShardingDropIndexStatementValidator extends ShardingDDLStatem
         String defaultSchema = sqlStatementContext.getDatabaseType().getDefaultSchema(database.getName());
         for (IndexSegment each : sqlStatementContext.getSqlStatement().getIndexes()) {
             ShardingSphereSchema schema = each.getOwner().map(optional -> optional.getIdentifier().getValue())
-                    .map(optional -> database.getDatabaseMetaData().getSchemas().get(optional)).orElseGet(() -> database.getDatabaseMetaData().getSchemas().get(defaultSchema));
+                    .map(optional -> database.getSchemas().get(optional)).orElseGet(() -> database.getSchemas().get(defaultSchema));
             if (!isSchemaContainsIndex(schema, each)) {
                 throw new ShardingSphereException("Index '%s' does not exist.", each.getIndexName().getIdentifier().getValue());
             }
@@ -65,7 +65,7 @@ public final class ShardingDropIndexStatementValidator extends ShardingDDLStatem
             String defaultSchema = sqlStatementContext.getDatabaseType().getDefaultSchema(database.getName());
             for (IndexSegment each : indexSegments) {
                 ShardingSphereSchema schema = each.getOwner().map(optional -> optional.getIdentifier().getValue())
-                        .map(optional -> database.getDatabaseMetaData().getSchemas().get(optional)).orElseGet(() -> database.getDatabaseMetaData().getSchemas().get(defaultSchema));
+                        .map(optional -> database.getSchemas().get(optional)).orElseGet(() -> database.getSchemas().get(defaultSchema));
                 logicTableName = schema.getAllTableNames().stream().filter(tableName -> schema.get(tableName).getIndexes().containsKey(each.getIndexName().getIdentifier().getValue())).findFirst();
                 logicTableName.ifPresent(optional -> validateDropIndexRouteUnit(shardingRule, routeContext, indexSegments, optional));
             }

@@ -101,7 +101,7 @@ public final class TextProtocolBackendHandlerFactoryTest extends ProxyContextRes
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(result.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
-        when(result.getDatabaseMetaData().getSchemas().get(DefaultDatabase.LOGIC_NAME).getAllColumnNames("t_order")).thenReturn(Collections.singletonList("order_id"));
+        when(result.getSchemas().get(DefaultDatabase.LOGIC_NAME).getAllColumnNames("t_order")).thenReturn(Collections.singletonList("order_id"));
         return result;
     }
     

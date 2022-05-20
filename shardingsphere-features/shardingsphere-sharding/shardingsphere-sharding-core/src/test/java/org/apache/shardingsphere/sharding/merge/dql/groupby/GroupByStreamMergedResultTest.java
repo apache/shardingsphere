@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -162,7 +161,7 @@ public final class GroupByStreamMergedResultTest {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setFrom(tableSegment);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getDatabaseMetaData().getSchemas().get(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
+        when(database.getSchemas().get(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         projectionsSegment.getProjections().add(new AggregationProjectionSegment(0, 0, AggregationType.COUNT, "(*)"));
         projectionsSegment.getProjections().add(new AggregationProjectionSegment(0, 0, AggregationType.AVG, "(num)"));
@@ -178,8 +177,8 @@ public final class GroupByStreamMergedResultTest {
         ColumnMetaData columnMetaData3 = new ColumnMetaData("col3", 0, false, false, false);
         TableMetaData tableMetaData = new TableMetaData("tbl", Arrays.asList(columnMetaData1, columnMetaData2, columnMetaData3), Collections.emptyList(), Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema(Collections.singletonMap("tbl", tableMetaData));
-        return new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, DatabaseTypeFactory.getInstance("MySQL"), mock(ShardingSphereResource.class),
-                mock(ShardingSphereRuleMetaData.class), new ShardingSphereDatabaseMetaData(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema)));
+        return new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, DatabaseTypeFactory.getInstance("MySQL"),
+                mock(ShardingSphereResource.class), mock(ShardingSphereRuleMetaData.class), Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema));
     }
     
     private QueryResult mockQueryResult() throws SQLException {

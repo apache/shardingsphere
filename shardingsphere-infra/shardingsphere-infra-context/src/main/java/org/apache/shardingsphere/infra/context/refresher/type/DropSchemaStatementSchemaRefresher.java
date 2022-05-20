@@ -50,7 +50,7 @@ public final class DropSchemaStatementSchemaRefresher implements MetaDataRefresh
         Collection<String> tobeRemovedSchemas = new LinkedHashSet<>();
         Collection<String> schemaNames = getSchemaNames(sqlStatement);
         for (String each : schemaNames) {
-            Optional.ofNullable(database.getDatabaseMetaData().getSchemas().remove(each)).ifPresent(optional -> tobeRemovedTables.addAll(optional.getAllTableNames()));
+            Optional.ofNullable(database.getSchemas().remove(each)).ifPresent(optional -> tobeRemovedTables.addAll(optional.getAllTableNames()));
             tobeRemovedSchemas.add(each.toLowerCase());
             federationDatabaseMetaData.removeSchemaMetadata(each);
             optimizerPlanners.put(federationDatabaseMetaData.getName(), OptimizerPlannerContextFactory.create(federationDatabaseMetaData));
