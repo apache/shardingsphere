@@ -2352,3 +2352,6 @@ accessedClause
     : ACCESSED GLOBALLY
     ;
 
+createSPFile
+    : CREATE SPFILE (EQ_ spfileName)? FROM (PFILE (EQ_ pfileName)? (AS COPY)? | MEMORY)
+    ;

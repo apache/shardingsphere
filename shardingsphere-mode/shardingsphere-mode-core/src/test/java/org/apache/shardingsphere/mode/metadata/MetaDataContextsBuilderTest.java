@@ -85,14 +85,14 @@ public final class MetaDataContextsBuilderTest {
     public void assertBuildWithEmptyRuleConfigurations() throws SQLException {
         MetaDataContexts actual = new MetaDataContextsBuilder(
                 Collections.emptyMap(), Collections.emptyList(), new ConfigurationProperties(new Properties())).build(mock(MetaDataPersistService.class));
-        assertThat(actual.getDatabaseMetaDataMap().size(), is(4));
-        assertTrue(actual.getDatabaseMetaDataMap().containsKey("information_schema"));
-        assertTrue(actual.getDatabaseMetaDataMap().containsKey("performance_schema"));
-        assertTrue(actual.getDatabaseMetaDataMap().containsKey("mysql"));
-        assertTrue(actual.getDatabaseMetaDataMap().containsKey("sys"));
-        assertThat(actual.getDatabaseMetaDataMap().get("information_schema").getRuleMetaData().getRules(), instanceOf(LinkedList.class));
-        assertThat(actual.getDatabaseMetaDataMap().get("performance_schema").getRuleMetaData().getRules(), instanceOf(LinkedList.class));
-        assertThat(actual.getDatabaseMetaDataMap().get("mysql").getRuleMetaData().getRules(), instanceOf(LinkedList.class));
-        assertThat(actual.getDatabaseMetaDataMap().get("sys").getRuleMetaData().getRules(), instanceOf(LinkedList.class));
+        assertThat(actual.getDatabaseMap().size(), is(4));
+        assertTrue(actual.getDatabaseMap().containsKey("information_schema"));
+        assertTrue(actual.getDatabaseMap().containsKey("performance_schema"));
+        assertTrue(actual.getDatabaseMap().containsKey("mysql"));
+        assertTrue(actual.getDatabaseMap().containsKey("sys"));
+        assertThat(actual.getDatabaseMap().get("information_schema").getRuleMetaData().getRules(), instanceOf(LinkedList.class));
+        assertThat(actual.getDatabaseMap().get("performance_schema").getRuleMetaData().getRules(), instanceOf(LinkedList.class));
+        assertThat(actual.getDatabaseMap().get("mysql").getRuleMetaData().getRules(), instanceOf(LinkedList.class));
+        assertThat(actual.getDatabaseMap().get("sys").getRuleMetaData().getRules(), instanceOf(LinkedList.class));
     }
 }

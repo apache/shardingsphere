@@ -20,7 +20,7 @@ package org.apache.shardingsphere.driver.jdbc.core.datasource.metadata;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.DatabaseMetaDataResultSet;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.resource.CachedDatabaseMetaData;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -93,11 +93,11 @@ public final class ShardingSphereDatabaseMetaDataTest {
         when(shardingSphereConnection.getContextManager().getMetaDataContexts()).thenReturn(metaDataContexts);
         when(shardingSphereConnection.getContextManager().getDataSourceMap(DefaultDatabase.LOGIC_NAME)).thenReturn(dataSourceMap);
         when(shardingSphereConnection.getDatabaseName()).thenReturn(DefaultDatabase.LOGIC_NAME);
-        ShardingSphereDatabaseMetaData databaseMetaData = mock(ShardingSphereDatabaseMetaData.class, RETURNS_DEEP_STUBS);
-        when(metaDataContexts.getDatabaseMetaData(shardingSphereConnection.getDatabaseName())).thenReturn(databaseMetaData);
-        when(databaseMetaData.getResource().getCachedDatabaseMetaData()).thenReturn(cachedDatabaseMetaData);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(metaDataContexts.getDatabaseMetaData(shardingSphereConnection.getDatabaseName())).thenReturn(database);
+        when(database.getResource().getCachedDatabaseMetaData()).thenReturn(cachedDatabaseMetaData);
         ShardingRule shardingRule = mockShardingRule();
-        when(databaseMetaData.getRuleMetaData().getRules()).thenReturn(Collections.singleton(shardingRule));
+        when(database.getRuleMetaData().getRules()).thenReturn(Collections.singleton(shardingRule));
         shardingSphereDatabaseMetaData = new org.apache.shardingsphere.driver.jdbc.core.datasource.metadata.ShardingSphereDatabaseMetaData(shardingSphereConnection);
     }
     

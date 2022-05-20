@@ -21,7 +21,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ExportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
@@ -62,11 +62,11 @@ public final class ExportDatabaseConfigurationHandlerTest extends ProxyContextRe
     public void init() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getAllDatabaseNames()).thenReturn(Collections.singletonList("sharding_db"));
-        ShardingSphereDatabaseMetaData databaseMetaData = mock(ShardingSphereDatabaseMetaData.class, RETURNS_DEEP_STUBS);
-        when(databaseMetaData.getDatabase().getSchema("sharding_db")).thenReturn(new ShardingSphereSchema(createTableMap()));
-        when(databaseMetaData.getResource().getDataSources()).thenReturn(createDataSourceMap());
-        when(databaseMetaData.getRuleMetaData().getConfigurations()).thenReturn(Collections.singletonList(createShardingRuleConfiguration()));
-        when(contextManager.getMetaDataContexts().getDatabaseMetaData("sharding_db")).thenReturn(databaseMetaData);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getSchemas().get("sharding_db")).thenReturn(new ShardingSphereSchema(createTableMap()));
+        when(database.getResource().getDataSources()).thenReturn(createDataSourceMap());
+        when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.singletonList(createShardingRuleConfiguration()));
+        when(contextManager.getMetaDataContexts().getDatabaseMetaData("sharding_db")).thenReturn(database);
         ProxyContext.init(contextManager);
     }
     

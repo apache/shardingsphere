@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shadow.distsql.query;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.distsql.handler.query.ShadowAlgorithmQueryResultSet;
@@ -42,10 +42,10 @@ public final class ShadowAlgorithmQueryResultSetTest {
     
     @Test
     public void assertGetRowData() {
-        ShardingSphereDatabaseMetaData databaseMetaData = mock(ShardingSphereDatabaseMetaData.class, RETURNS_DEEP_STUBS);
-        when(databaseMetaData.getRuleMetaData().getConfigurations()).thenReturn(Collections.singleton(createRuleConfiguration()));
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.singleton(createRuleConfiguration()));
         DistSQLResultSet resultSet = new ShadowAlgorithmQueryResultSet();
-        resultSet.init(databaseMetaData, mock(ShowShadowAlgorithmsStatement.class));
+        resultSet.init(database, mock(ShowShadowAlgorithmsStatement.class));
         List<Object> actual = new ArrayList<>(resultSet.getRowData());
         assertThat(actual.size(), is(4));
         assertThat(actual.get(0), is("shadowAlgorithmName"));

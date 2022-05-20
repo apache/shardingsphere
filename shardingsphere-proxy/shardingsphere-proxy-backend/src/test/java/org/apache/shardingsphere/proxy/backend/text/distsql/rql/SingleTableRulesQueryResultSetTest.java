@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rql;
 
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowSingleTableStatement;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.rule.SingleTableRulesQueryResultSet;
 import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
 import org.junit.Before;
@@ -42,17 +42,17 @@ import static org.mockito.Mockito.when;
 public final class SingleTableRulesQueryResultSetTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private ShardingSphereDatabaseMetaData databaseMetaData;
+    private ShardingSphereDatabase database;
     
     @Before
     public void before() {
-        when(databaseMetaData.getRuleMetaData().getConfigurations()).thenReturn(Collections.singletonList(new SingleTableRuleConfiguration("ds_0")));
+        when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.singletonList(new SingleTableRuleConfiguration("ds_0")));
     }
     
     @Test
     public void assertGetRowData() {
         DistSQLResultSet resultSet = new SingleTableRulesQueryResultSet();
-        resultSet.init(databaseMetaData, mock(ShowSingleTableStatement.class));
+        resultSet.init(database, mock(ShowSingleTableStatement.class));
         Collection<Object> actual = resultSet.getRowData();
         assertThat(actual.size(), is(2));
         Iterator<Object> rowData = actual.iterator();

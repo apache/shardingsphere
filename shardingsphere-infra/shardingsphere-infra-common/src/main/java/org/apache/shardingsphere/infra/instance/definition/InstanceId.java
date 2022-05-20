@@ -39,30 +39,30 @@ public final class InstanceId {
     
     private final String ip;
     
-    private final Integer uniqueSign;
+    private final String uniqueSign;
     
-    public InstanceId(final String ip, final Integer uniqueSign) {
+    public InstanceId(final String ip, final String uniqueSign) {
         this.ip = ip;
         this.uniqueSign = uniqueSign;
-        id = String.join(DELIMITER, ip, String.valueOf(uniqueSign));
+        id = String.join(DELIMITER, ip, uniqueSign);
     }
     
-    public InstanceId(final Integer uniqueSign) {
-        this.uniqueSign = uniqueSign;
-        ip = IpUtils.getIp();
-        id = String.join(DELIMITER, ip, String.valueOf(uniqueSign));
-    }
-    
-    public InstanceId(final String id) {
-        this.id = id;
-        List<String> ids = Splitter.on("@").splitToList(id);
-        ip = ids.get(0);
-        uniqueSign = Integer.valueOf(ids.get(1));
+    public InstanceId(final String instance) {
+        if (instance.indexOf(DELIMITER) >= 0) {
+            id = instance;
+            List<String> ids = Splitter.on("@").splitToList(instance);
+            ip = ids.get(0);
+            uniqueSign = ids.get(1);
+        } else {
+            uniqueSign = instance;
+            ip = IpUtils.getIp();
+            id = String.join(DELIMITER, ip, uniqueSign);
+        }
     }
     
     public InstanceId() {
         ip = IpUtils.getIp();
-        uniqueSign = Integer.valueOf(String.join("", ManagementFactory.getRuntimeMXBean().getName().split(DELIMITER)[0], String.valueOf(ATOMIC_LONG.incrementAndGet())));
-        id = String.join(DELIMITER, ip, String.valueOf(uniqueSign));
+        uniqueSign = String.join("", ManagementFactory.getRuntimeMXBean().getName().split(DELIMITER)[0], String.valueOf(ATOMIC_LONG.incrementAndGet()));
+        id = String.join(DELIMITER, ip, uniqueSign);
     }
 }

@@ -65,7 +65,7 @@ public final class ShowTableMetadataHandler extends QueryableRALBackendHandler<S
     protected Collection<List<Object>> getRows(final ContextManager contextManager) {
         String databaseName = getDatabaseName();
         String defaultSchema = connectionSession.getDatabaseType().getDefaultSchema(connectionSession.getDatabaseName());
-        ShardingSphereSchema schema = ProxyContext.getInstance().getMetaData(databaseName).getDatabase().getSchema(defaultSchema);
+        ShardingSphereSchema schema = ProxyContext.getInstance().getDatabase(databaseName).getSchemas().get(defaultSchema);
         return schema.getAllTableNames().stream().filter(each -> sqlStatement.getTableNames().contains(each))
                 .map(each -> buildTableRows(databaseName, schema, each)).flatMap(Collection::stream).collect(Collectors.toList());
     }

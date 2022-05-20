@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.Par
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ShorthandProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.SubqueryProjection;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationDistinctProjectionSegment;
@@ -48,6 +48,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -60,7 +61,7 @@ public final class ProjectionEngine {
     
     private final String databaseName;
     
-    private final ShardingSphereDatabase database;
+    private final Map<String, ShardingSphereSchema> schemas;
     
     private final DatabaseType databaseType;
     
@@ -157,9 +158,9 @@ public final class ProjectionEngine {
         String schemaName = ((SimpleTableSegment) table).getOwner().map(optional -> optional.getIdentifier().getValue()).orElse(databaseType.getDefaultSchema(databaseName));
         Collection<ColumnProjection> result = new LinkedList<>();
         if (null == owner) {
-            database.getSchemas().get(schemaName).getAllColumnNames(tableName).stream().map(each -> new ColumnProjection(tableAlias, each, null)).forEach(result::add);
+            schemas.get(schemaName).getAllColumnNames(tableName).stream().map(each -> new ColumnProjection(tableAlias, each, null)).forEach(result::add);
         } else if (owner.equalsIgnoreCase(tableAlias)) {
-            database.getSchemas().get(schemaName).getAllColumnNames(tableName).stream().map(each -> new ColumnProjection(owner, each, null)).forEach(result::add);
+            schemas.get(schemaName).getAllColumnNames(tableName).stream().map(each -> new ColumnProjection(owner, each, null)).forEach(result::add);
         }
         return result;
     }
