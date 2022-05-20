@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidRuleConfigurationException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
@@ -41,18 +41,18 @@ import java.util.Properties;
 public final class CreateEncryptRuleStatementUpdaterTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private ShardingSphereDatabaseMetaData databaseMetaData;
+    private ShardingSphereDatabase database;
     
     private final CreateEncryptRuleStatementUpdater updater = new CreateEncryptRuleStatementUpdater();
     
     @Test(expected = DuplicateRuleException.class)
     public void assertCheckSQLStatementWithDuplicateEncryptRule() throws DistSQLException {
-        updater.checkSQLStatement(databaseMetaData, createSQLStatement("MD5"), getCurrentRuleConfig());
+        updater.checkSQLStatement(database, createSQLStatement("MD5"), getCurrentRuleConfig());
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
     public void assertCheckSQLStatementWithoutToBeCreatedEncryptors() throws DistSQLException {
-        updater.checkSQLStatement(databaseMetaData, createSQLStatement("INVALID_TYPE"), null);
+        updater.checkSQLStatement(database, createSQLStatement("INVALID_TYPE"), null);
     }
     
     @Test(expected = InvalidRuleConfigurationException.class)
@@ -61,7 +61,7 @@ public final class CreateEncryptRuleStatementUpdaterTest {
                 "int varchar(10)", null, null, null, new AlgorithmSegment("test", new Properties()));
         EncryptRuleSegment ruleSegment = new EncryptRuleSegment("t_encrypt", Collections.singleton(columnSegment), null);
         CreateEncryptRuleStatement statement = new CreateEncryptRuleStatement(Collections.singleton(ruleSegment));
-        updater.checkSQLStatement(databaseMetaData, statement, null);
+        updater.checkSQLStatement(database, statement, null);
     }
     
     private CreateEncryptRuleStatement createSQLStatement(final String encryptorName) {

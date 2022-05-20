@@ -92,7 +92,7 @@ public class ShardingSchemaMetaDataBuilderTest {
         mockOracleResultSet(connection);
         mockPGResultSet(connection);
         mockSQLServerResultSet(connection);
-        mockDatabaseMetaData(connection);
+        mockDatabase(connection);
     }
     
     private ShardingRule createShardingRule() {
@@ -184,19 +184,19 @@ public class ShardingSchemaMetaDataBuilderTest {
         return result;
     }
     
-    private void mockDatabaseMetaData(final Connection connection) throws SQLException {
-        DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class, RETURNS_DEEP_STUBS);
-        when(connection.getMetaData()).thenReturn(databaseMetaData);
+    private void mockDatabase(final Connection connection) throws SQLException {
+        DatabaseMetaData database = mock(DatabaseMetaData.class, RETURNS_DEEP_STUBS);
+        when(connection.getMetaData()).thenReturn(database);
         ResultSet dataTypeResultSet = createDataTypeResultSet();
-        when(databaseMetaData.getTypeInfo()).thenReturn(dataTypeResultSet);
+        when(database.getTypeInfo()).thenReturn(dataTypeResultSet);
         ResultSet tableResultSet1 = createTableResultSet();
         ResultSet tableResultSet2 = createTableResultSet();
         ResultSet columnResultSet1 = createColumnResultSet("t_order_0");
         ResultSet columnResultSet2 = createColumnResultSet("t_order_1");
-        when(databaseMetaData.getTables(any(), any(), eq("t_order_0"), eq(null))).thenReturn(tableResultSet1);
-        when(databaseMetaData.getTables(any(), any(), eq("t_order_1"), eq(null))).thenReturn(tableResultSet2);
-        when(databaseMetaData.getColumns(any(), any(), eq("t_order_0"), eq("%"))).thenReturn(columnResultSet1);
-        when(databaseMetaData.getColumns(any(), any(), eq("t_order_1"), eq("%"))).thenReturn(columnResultSet2);
+        when(database.getTables(any(), any(), eq("t_order_0"), eq(null))).thenReturn(tableResultSet1);
+        when(database.getTables(any(), any(), eq("t_order_1"), eq(null))).thenReturn(tableResultSet2);
+        when(database.getColumns(any(), any(), eq("t_order_0"), eq("%"))).thenReturn(columnResultSet1);
+        when(database.getColumns(any(), any(), eq("t_order_1"), eq("%"))).thenReturn(columnResultSet2);
     }
     
     private ResultSet createTableResultSet() throws SQLException {

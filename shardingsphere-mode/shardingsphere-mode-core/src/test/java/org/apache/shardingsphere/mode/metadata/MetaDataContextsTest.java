@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.metadata;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
@@ -43,12 +43,12 @@ public final class MetaDataContextsTest {
     private OptimizerContext optimizerContext;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private ShardingSphereDatabaseMetaData databaseMetaData;
+    private ShardingSphereDatabase database;
     
     @Test
     public void assertGetDefaultMetaData() {
-        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), Collections.singletonMap(DefaultDatabase.LOGIC_NAME, databaseMetaData),
+        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database),
                 mock(ShardingSphereRuleMetaData.class), optimizerContext, new ConfigurationProperties(new Properties()));
-        assertThat(metaDataContexts.getDatabaseMetaData(DefaultDatabase.LOGIC_NAME), is(databaseMetaData));
+        assertThat(metaDataContexts.getDatabaseMetaData(DefaultDatabase.LOGIC_NAME), is(database));
     }
 }

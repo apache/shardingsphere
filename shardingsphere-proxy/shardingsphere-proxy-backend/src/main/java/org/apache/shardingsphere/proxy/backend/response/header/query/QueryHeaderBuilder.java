@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.response.header.query;
 
 import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.spi.type.required.RequiredSPI;
@@ -37,7 +37,7 @@ public interface QueryHeaderBuilder extends TypedSPI, RequiredSPI {
      * Build query header.
      * 
      * @param queryResultMetaData query result meta data
-     * @param databaseMetaData database meta data
+     * @param database database
      * @param columnName column name
      * @param columnLabel column label
      * @param columnIndex column index
@@ -45,6 +45,6 @@ public interface QueryHeaderBuilder extends TypedSPI, RequiredSPI {
      * @return query header
      * @throws SQLException SQL exception
      */
-    QueryHeader build(QueryResultMetaData queryResultMetaData, ShardingSphereDatabaseMetaData databaseMetaData,
+    QueryHeader build(QueryResultMetaData queryResultMetaData, ShardingSphereDatabase database,
                       String columnName, String columnLabel, int columnIndex, LazyInitializer<DataNodeContainedRule> dataNodeContainedRule) throws SQLException;
 }

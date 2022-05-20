@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -40,5 +40,5 @@ public final class FederationContext {
     
     private final LogicSQL logicSQL;
     
-    private final Map<String, ShardingSphereDatabaseMetaData> databaseMetaDataMap;
+    private final Map<String, ShardingSphereDatabase> databaseMap;
 }

@@ -1927,6 +1927,10 @@ SPFILE
     : S P F I L E
     ;
 
+PFILE
+    : P F I L E
+    ;
+
 BOTH
     : B O T H
     ;

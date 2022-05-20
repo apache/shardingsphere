@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.distsql.query;
 
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -31,10 +31,10 @@ public interface DistSQLResultSet extends TypedSPI {
     /**
      * Initialize data.
      * 
-     * @param databaseMetaData database meta data
+     * @param database database
      * @param sqlStatement SQL statement
      */
-    void init(ShardingSphereDatabaseMetaData databaseMetaData, SQLStatement sqlStatement);
+    void init(ShardingSphereDatabase database, SQLStatement sqlStatement);
     
     /**
      * Get result set column names.

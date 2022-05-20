@@ -89,5 +89,6 @@ execute
     | alterSequence
     | alterPackage
     | createContext
+    | createSPFile
     ) SEMI_?
     ;

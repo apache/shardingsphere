@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 import org.apache.shardingsphere.sharding.route.engine.type.standard.ShardingStandardRoutingEngine;
@@ -52,7 +52,7 @@ public final class ShardingInsertStatementValidator extends ShardingDMLStatement
     
     @Override
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<InsertStatement> sqlStatementContext,
-                            final List<Object> parameters, final ShardingSphereDatabaseMetaData databaseMetaData) {
+                            final List<Object> parameters, final ShardingSphereDatabase databaseMetaData) {
         InsertStatementContext insertStatementContext = (InsertStatementContext) sqlStatementContext;
         if (null == insertStatementContext.getInsertSelectContext()) {
             validateMultipleTable(shardingRule, sqlStatementContext);
@@ -84,7 +84,7 @@ public final class ShardingInsertStatementValidator extends ShardingDMLStatement
     
     @Override
     public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<InsertStatement> sqlStatementContext, final List<Object> parameters,
-                             final ShardingSphereDatabaseMetaData databaseMetaData, final ConfigurationProperties props, final RouteContext routeContext) {
+                             final ShardingSphereDatabase database, final ConfigurationProperties props, final RouteContext routeContext) {
         InsertStatementContext insertStatementContext = (InsertStatementContext) sqlStatementContext;
         Optional<SubquerySegment> insertSelect = insertStatementContext.getSqlStatement().getInsertSelect();
         if (insertSelect.isPresent() && shardingConditions.isNeedMerge()) {
