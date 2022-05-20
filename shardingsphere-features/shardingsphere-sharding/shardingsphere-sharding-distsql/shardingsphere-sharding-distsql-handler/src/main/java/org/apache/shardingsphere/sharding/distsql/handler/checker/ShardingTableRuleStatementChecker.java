@@ -237,7 +237,7 @@ public final class ShardingTableRuleStatementChecker {
     }
     
     /**
-     * Check alter bind table rule.
+     * Check alter bind table rules.
      *
      * @param currentRuleConfig current rule configuration
      * @param toBeAlteredRuleConfig to be altered rule configuration
