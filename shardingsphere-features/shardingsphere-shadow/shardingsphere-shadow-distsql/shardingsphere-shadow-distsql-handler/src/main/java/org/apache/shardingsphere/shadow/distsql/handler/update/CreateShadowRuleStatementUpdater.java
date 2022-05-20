@@ -64,7 +64,7 @@ public final class CreateShadowRuleStatementUpdater implements RuleDefinitionCre
         String databaseName = metaData.getDatabase().getName();
         Collection<ShadowRuleSegment> rules = sqlStatement.getRules();
         checkRuleNames(databaseName, rules, currentRuleConfig);
-        checkResources(databaseName, rules, metaData);
+        checkResources(rules, metaData);
         checkAlgorithms(databaseName, rules, currentRuleConfig);
     }
     
@@ -75,9 +75,9 @@ public final class CreateShadowRuleStatementUpdater implements RuleDefinitionCre
         ShadowRuleStatementChecker.checkAnyDuplicate(requireRuleNames, currentRuleName, identical -> new DuplicateRuleException(SHADOW, databaseName, identical));
     }
     
-    private void checkResources(final String databaseName, final Collection<ShadowRuleSegment> rules, final ShardingSphereMetaData metaData) throws DistSQLException {
+    private void checkResources(final Collection<ShadowRuleSegment> rules, final ShardingSphereMetaData metaData) throws DistSQLException {
         Collection<String> requireResource = ShadowRuleStatementSupporter.getResourceNames(rules);
-        ShadowRuleStatementChecker.checkResourceExist(requireResource, metaData, databaseName);
+        ShadowRuleStatementChecker.checkResourceExist(requireResource, metaData);
     }
     
     private void checkAlgorithms(final String databaseName, final Collection<ShadowRuleSegment> rules, final ShadowRuleConfiguration currentRuleConfig) throws DistSQLException {

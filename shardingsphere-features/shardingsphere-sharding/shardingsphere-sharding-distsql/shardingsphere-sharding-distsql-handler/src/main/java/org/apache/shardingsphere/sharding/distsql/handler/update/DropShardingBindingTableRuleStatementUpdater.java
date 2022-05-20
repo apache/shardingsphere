@@ -46,8 +46,8 @@ public final class DropShardingBindingTableRuleStatementUpdater implements RuleD
     private Map<String, String> bindingTableRules = Collections.emptyMap();
     
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final DropShardingBindingTableRulesStatement sqlStatement,
-                                  final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
+    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData,
+                                  final DropShardingBindingTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
         String databaseName = shardingSphereMetaData.getDatabase().getName();
         if (!isExistRuleConfig(currentRuleConfig) && sqlStatement.isContainsExistClause()) {
             return;
@@ -63,12 +63,12 @@ public final class DropShardingBindingTableRuleStatementUpdater implements RuleD
     
     private Map<String, String> buildBindingTableRule(final ShardingRuleConfiguration config) {
         Map<String, String> result = new LinkedHashMap<>();
-        config.getBindingTableGroups().forEach(each -> Arrays.stream(each.split(",")).forEach(each1 -> result.put(each1, each)));
+        config.getBindingTableGroups().forEach(group -> Arrays.stream(group.split(",")).forEach(each -> result.put(each, group)));
         return result;
     }
     
-    private void checkBindingTableRuleExist(final String databaseName, final DropShardingBindingTableRulesStatement sqlStatement,
-                                            final Map<String, String> bindingRelationship) throws DistSQLException {
+    private void checkBindingTableRuleExist(final String databaseName,
+                                            final DropShardingBindingTableRulesStatement sqlStatement, final Map<String, String> bindingRelationship) throws DistSQLException {
         if (sqlStatement.isContainsExistClause()) {
             return;
         }
@@ -81,21 +81,21 @@ public final class DropShardingBindingTableRuleStatementUpdater implements RuleD
         DistSQLException.predictionThrow(notExistBindingGroups.isEmpty(), () -> new RequiredRuleMissedException("Binding", databaseName, notExistBindingGroups));
     }
     
-    private boolean isToBeDroppedRuleExists(final BindingTableRuleSegment bindingRule, final Map<String, String> bindingRelationship) {
-        Optional<String> anyTableInToBeAlteredRule = bindingRule.getBindingTables().stream().findAny();
-        if (anyTableInToBeAlteredRule.isPresent()) {
-            Optional<String> currentBindingRule = bindingRelationship.entrySet().stream()
-                    .filter(each -> each.getKey().equalsIgnoreCase(anyTableInToBeAlteredRule.get())).map(Entry::getValue).findFirst();
-            if (currentBindingRule.isPresent() && !Strings.isNullOrEmpty(currentBindingRule.get())) {
-                Collection<String> currentBindingTables = Splitter.on(",").trimResults().splitToList(currentBindingRule.get());
-                return bindingRule.getBindingTables().stream().allMatch(each -> containsIgnoreCase(currentBindingTables, each));
-            }
+    private boolean isToBeDroppedRuleExists(final BindingTableRuleSegment segment, final Map<String, String> bindingRelationship) {
+        if (segment.getBindingTables().isEmpty()) {
+            return false;
+        }
+        String ruleNameInSegment = segment.getBindingTables().iterator().next();
+        Optional<String> currentBindingRule = bindingRelationship.entrySet().stream().filter(each -> each.getKey().equalsIgnoreCase(ruleNameInSegment)).map(Entry::getValue).findFirst();
+        if (currentBindingRule.isPresent() && !Strings.isNullOrEmpty(currentBindingRule.get())) {
+            Collection<String> currentBindingTables = Splitter.on(",").trimResults().splitToList(currentBindingRule.get());
+            return segment.getBindingTables().stream().allMatch(each -> containsIgnoreCase(currentBindingTables, each));
         }
         return false;
     }
     
-    private static boolean containsIgnoreCase(final Collection<String> collection, final String str) {
-        return collection.stream().anyMatch(each -> each.equalsIgnoreCase(str));
+    private static boolean containsIgnoreCase(final Collection<String> collection, final String value) {
+        return collection.stream().anyMatch(each -> each.equalsIgnoreCase(value));
     }
     
     @Override
