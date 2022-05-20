@@ -25,11 +25,13 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabaseMetaData;
-import org.apache.shardingsphere.infra.metadata.database.loader.DatabaseLoader;
 import org.apache.shardingsphere.infra.metadata.resource.CachedDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.schema.builder.SystemSchemaBuilder;
+import org.apache.shardingsphere.infra.metadata.schema.loader.SchemaLoader;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.schema.DatabaseRulesBuilder;
 
@@ -41,6 +43,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * ShardingSphere database.
@@ -73,8 +76,10 @@ public final class ShardingSphereDatabase {
     public static ShardingSphereDatabase create(final String name, final DatabaseType protocolType, final DatabaseType backendDatabaseType,
                                                 final DatabaseConfiguration databaseConfig, final ConfigurationProperties props) throws SQLException {
         Collection<ShardingSphereRule> databaseRules = DatabaseRulesBuilder.build(name, databaseConfig, props);
-        ShardingSphereDatabaseMetaData database = DatabaseLoader.load(name, protocolType, backendDatabaseType, databaseConfig.getDataSources(), databaseRules, props);
-        return create(name, protocolType, databaseConfig, databaseRules, database);
+        Map<String, ShardingSphereSchema> schemas = new ConcurrentHashMap<>();
+        schemas.putAll(SchemaLoader.load(name, protocolType, backendDatabaseType, databaseConfig.getDataSources(), databaseRules, props));
+        schemas.putAll(SystemSchemaBuilder.build(name, protocolType));
+        return create(name, protocolType, databaseConfig, databaseRules, new ShardingSphereDatabaseMetaData(schemas));
     }
     
     /**
@@ -86,7 +91,7 @@ public final class ShardingSphereDatabase {
      * @throws SQLException SQL exception
      */
     public static ShardingSphereDatabase create(final String name, final DatabaseType protocolType) throws SQLException {
-        ShardingSphereDatabaseMetaData systemDatabase = DatabaseLoader.load(name, protocolType);
+        ShardingSphereDatabaseMetaData systemDatabase = new ShardingSphereDatabaseMetaData(SystemSchemaBuilder.build(name, protocolType));
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(new LinkedHashMap<>(), new LinkedList<>());
         return create(name, protocolType, databaseConfig, new LinkedList<>(), systemDatabase);
     }
