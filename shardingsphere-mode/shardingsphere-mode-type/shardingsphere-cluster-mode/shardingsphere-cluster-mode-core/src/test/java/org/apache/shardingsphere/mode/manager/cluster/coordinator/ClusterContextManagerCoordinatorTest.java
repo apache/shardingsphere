@@ -310,7 +310,7 @@ public final class ClusterContextManagerCoordinatorTest {
     @Test
     public void assertRenewInstanceOfflineEvent() {
         coordinator.renew(new InstanceOfflineEvent(contextManager.getInstanceContext().getInstance().getInstanceDefinition()));
-        assertThat(contextManager.getInstanceContext().getInstance().getInstanceDefinition().getInstanceId().getUniqueSign(), is(3307));
+        assertThat(contextManager.getInstanceContext().getInstance().getInstanceDefinition().getInstanceId().getUniqueSign(), is("3307"));
     }
     
     @Test
