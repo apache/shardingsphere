@@ -34,7 +34,6 @@ import java.util.Optional;
 
 /**
  * Instance context.
- * 
  */
 @RequiredArgsConstructor
 @Getter

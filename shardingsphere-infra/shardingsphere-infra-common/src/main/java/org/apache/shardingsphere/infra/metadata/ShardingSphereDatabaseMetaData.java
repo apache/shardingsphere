@@ -30,9 +30,8 @@ import org.apache.shardingsphere.infra.metadata.resource.CachedDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRulesBuilder;
+import org.apache.shardingsphere.infra.rule.builder.schema.DatabaseRulesBuilder;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -44,13 +43,13 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * ShardingSphere meta data.
+ * ShardingSphere database meta data.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShardingSphereMetaData {
+public final class ShardingSphereDatabaseMetaData {
     
-    private final DatabaseType frontendDatabaseType;
+    private final DatabaseType protocolType;
     
     private final ShardingSphereResource resource;
     
@@ -59,42 +58,42 @@ public final class ShardingSphereMetaData {
     private final ShardingSphereDatabase database;
     
     /**
-     * Create ShardingSphere meta data.
+     * Create database meta data.
      * 
      * @param databaseName database name
-     * @param frontendDatabaseType frontend database type
+     * @param protocolType database protocol type
      * @param backendDatabaseType backend database type
      * @param databaseConfig database configuration
      * @param props configuration properties
-     * @return ShardingSphere meta data
+     * @return database meta data
      * @throws SQLException SQL exception
      */
-    public static ShardingSphereMetaData create(final String databaseName, final DatabaseType frontendDatabaseType, final DatabaseType backendDatabaseType,
-                                                final DatabaseConfiguration databaseConfig, final ConfigurationProperties props) throws SQLException {
-        Collection<ShardingSphereRule> databaseRules = SchemaRulesBuilder.buildRules(databaseName, databaseConfig, props);
-        ShardingSphereDatabase database = DatabaseLoader.load(databaseName, frontendDatabaseType, backendDatabaseType, databaseConfig.getDataSources(), databaseRules, props);
-        return create(frontendDatabaseType, databaseConfig, databaseRules, database);
+    public static ShardingSphereDatabaseMetaData create(final String databaseName, final DatabaseType protocolType, final DatabaseType backendDatabaseType,
+                                                        final DatabaseConfiguration databaseConfig, final ConfigurationProperties props) throws SQLException {
+        Collection<ShardingSphereRule> databaseRules = DatabaseRulesBuilder.build(databaseName, databaseConfig, props);
+        ShardingSphereDatabase database = DatabaseLoader.load(databaseName, protocolType, backendDatabaseType, databaseConfig.getDataSources(), databaseRules, props);
+        return create(protocolType, databaseConfig, databaseRules, database);
     }
     
     /**
-     * Create ShardingSphere meta data for system database.
+     * Create system database meta data.
      * 
      * @param systemDatabaseName system database name
-     * @param frontendDatabaseType frontend database type
-     * @return ShardingSphere meta data
+     * @param protocolType protocol database type
+     * @return system database meta data
      * @throws SQLException SQL exception
      */
-    public static ShardingSphereMetaData create(final String systemDatabaseName, final DatabaseType frontendDatabaseType) throws SQLException {
-        ShardingSphereDatabase systemDatabase = DatabaseLoader.load(systemDatabaseName, frontendDatabaseType);
+    public static ShardingSphereDatabaseMetaData create(final String systemDatabaseName, final DatabaseType protocolType) throws SQLException {
+        ShardingSphereDatabase systemDatabase = DatabaseLoader.load(systemDatabaseName, protocolType);
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(new LinkedHashMap<>(), new LinkedList<>());
-        return create(frontendDatabaseType, databaseConfig, new LinkedList<>(), systemDatabase);
+        return create(protocolType, databaseConfig, new LinkedList<>(), systemDatabase);
     }
     
-    private static ShardingSphereMetaData create(final DatabaseType frontendDatabaseType,
-                                                 final DatabaseConfiguration databaseConfig, final Collection<ShardingSphereRule> rules, final ShardingSphereDatabase database) throws SQLException {
+    private static ShardingSphereDatabaseMetaData create(final DatabaseType frontendDatabaseType, final DatabaseConfiguration databaseConfig,
+                                                         final Collection<ShardingSphereRule> rules, final ShardingSphereDatabase database) throws SQLException {
         ShardingSphereResource resource = createResource(frontendDatabaseType, databaseConfig.getDataSources());
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(databaseConfig.getRuleConfigurations(), rules);
-        return new ShardingSphereMetaData(frontendDatabaseType, resource, ruleMetaData, database);
+        return new ShardingSphereDatabaseMetaData(frontendDatabaseType, resource, ruleMetaData, database);
     }
     
     private static ShardingSphereResource createResource(final DatabaseType frontendDatabaseType, final Map<String, DataSource> dataSourceMap) throws SQLException {
@@ -129,15 +128,5 @@ public final class ShardingSphereMetaData {
      */
     public boolean hasDataSource() {
         return !resource.getDataSources().isEmpty();
-    }
-    
-    /**
-     * Get schema by name.
-     * 
-     * @param schemaName schema name
-     * @return ShardingSphereSchema schema
-     */
-    public ShardingSphereSchema getSchemaByName(final String schemaName) {
-        return database.getSchemas().get(schemaName);
     }
 }

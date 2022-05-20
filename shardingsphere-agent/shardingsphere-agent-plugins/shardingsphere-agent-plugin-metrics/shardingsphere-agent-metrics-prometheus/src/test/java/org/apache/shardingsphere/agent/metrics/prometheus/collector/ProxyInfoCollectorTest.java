@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.agent.metrics.prometheus.collector;
 
+import org.apache.shardingsphere.agent.metrics.prometheus.ProxyContextRestorer;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
@@ -25,6 +26,7 @@ import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.memory.workerid.generator.MemoryWorkerIdGenerator;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Test;
@@ -32,13 +34,13 @@ import org.junit.Test;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.mock;
 
-public final class ProxyInfoCollectorTest {
+public final class ProxyInfoCollectorTest extends ProxyContextRestorer {
     
     @Test
     public void assertCollect() {
-        ContextManager contextManager = new ContextManager(mock(MetaDataContexts.class), mock(TransactionContexts.class), new InstanceContext(new ComputeNodeInstance(mock(InstanceDefinition.class)),
-                new MemoryWorkerIdGenerator(), new ModeConfiguration("Memory", null, false), mock(LockContext.class)));
-        ProxyContext.init(contextManager);
+        InstanceContext instanceContext = new InstanceContext(
+                new ComputeNodeInstance(mock(InstanceDefinition.class)), new MemoryWorkerIdGenerator(), new ModeConfiguration("Memory", null, false), mock(LockContext.class));
+        ProxyContext.init(new ContextManager(new MetaDataContexts(mock(MetaDataPersistService.class)), mock(TransactionContexts.class), instanceContext));
         assertFalse(new ProxyInfoCollector().collect().isEmpty());
     }
 }

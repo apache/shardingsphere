@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
@@ -43,17 +43,19 @@ import java.util.stream.Collectors;
 public final class ShardingDropTableStatementValidator extends ShardingDDLStatementValidator<DropTableStatement> {
     
     @Override
-    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<DropTableStatement> sqlStatementContext, final List<Object> parameters, final ShardingSphereMetaData metaData) {
+    public void preValidate(final ShardingRule shardingRule,
+                            final SQLStatementContext<DropTableStatement> sqlStatementContext, final List<Object> parameters, final ShardingSphereDatabaseMetaData databaseMetaData) {
         if (!DropTableStatementHandler.containsExistClause(sqlStatementContext.getSqlStatement())) {
-            String defaultSchema = sqlStatementContext.getDatabaseType().getDefaultSchema(metaData.getDatabase().getName());
-            ShardingSphereSchema schema = sqlStatementContext.getTablesContext().getSchemaName().map(metaData::getSchemaByName).orElseGet(() -> metaData.getSchemaByName(defaultSchema));
+            String defaultSchema = sqlStatementContext.getDatabaseType().getDefaultSchema(databaseMetaData.getDatabase().getName());
+            ShardingSphereSchema schema = sqlStatementContext.getTablesContext().getSchemaName()
+                    .map(optional -> databaseMetaData.getDatabase().getSchema(optional)).orElseGet(() -> databaseMetaData.getDatabase().getSchema(defaultSchema));
             validateTableExist(schema, sqlStatementContext.getTablesContext().getTables());
         }
     }
     
     @Override
     public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<DropTableStatement> sqlStatementContext, final List<Object> parameters,
-                             final ShardingSphereMetaData metaData, final ConfigurationProperties props, final RouteContext routeContext) {
+                             final ShardingSphereDatabaseMetaData databaseMetaData, final ConfigurationProperties props, final RouteContext routeContext) {
         checkTableInUsed(shardingRule, sqlStatementContext.getSqlStatement(), routeContext);
         for (SimpleTableSegment each : sqlStatementContext.getSqlStatement().getTables()) {
             if (isRouteUnitDataNodeDifferentSize(shardingRule, routeContext, each.getTableName().getIdentifier().getValue())) {

@@ -32,7 +32,6 @@ import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
@@ -41,6 +40,7 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResult;
+import org.apache.shardingsphere.proxy.frontend.opengauss.ProxyContextRestorer;
 import org.apache.shardingsphere.proxy.frontend.opengauss.authentication.fixture.OpenGaussAuthenticationAlgorithm;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.InvalidAuthorizationSpecificationException;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.PostgreSQLAuthenticationException;
@@ -68,7 +68,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class OpenGaussAuthenticationEngineTest {
+public final class OpenGaussAuthenticationEngineTest extends ProxyContextRestorer {
     
     private final String username = "root";
     
@@ -77,6 +77,7 @@ public final class OpenGaussAuthenticationEngineTest {
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ChannelHandlerContext channelHandlerContext;
     
+    @SuppressWarnings("unchecked")
     @Before
     public void setup() {
         when(channelHandlerContext.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
@@ -166,8 +167,8 @@ public final class OpenGaussAuthenticationEngineTest {
     }
     
     private MetaDataContexts getMetaDataContexts(final ShardingSphereUser user) {
-        return new MetaDataContexts(mock(MetaDataPersistService.class), new LinkedHashMap<>(),
-                buildGlobalRuleMetaData(user), mock(ExecutorEngine.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
+        return new MetaDataContexts(
+                mock(MetaDataPersistService.class), new LinkedHashMap<>(), buildGlobalRuleMetaData(user), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
     }
     
     private ShardingSphereRuleMetaData buildGlobalRuleMetaData(final ShardingSphereUser user) {

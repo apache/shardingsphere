@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.CommentSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
@@ -87,7 +87,7 @@ public final class TrafficRuleTest {
         when(sqlStatement.getCommentSegments()).thenReturn(includeComments ? Collections.singleton(new CommentSegment("/* ShardingSphere hint: useTraffic=true */", 0, 0)) : Collections.emptyList());
         when(sqlStatement.getProjections()).thenReturn(new ProjectionsSegment(0, 0));
         SQLStatementContext statementContext = new SelectStatementContext(
-                Collections.singletonMap("sharding_db", mock(ShardingSphereMetaData.class)), Collections.emptyList(), sqlStatement, "sharding_db");
+                Collections.singletonMap("sharding_db", mock(ShardingSphereDatabaseMetaData.class)), Collections.emptyList(), sqlStatement, "sharding_db");
         when(result.getSqlStatementContext()).thenReturn(statementContext);
         return result;
     }

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.encrypt.distsql.parser.statement.ShowEncryptRul
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -43,10 +43,10 @@ public final class EncryptRuleQueryResultSetTest {
     
     @Test
     public void assertGetRowData() {
-        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        when(metaData.getRuleMetaData().findRuleConfiguration(any())).thenReturn(Collections.singleton(getRuleConfiguration()));
+        ShardingSphereDatabaseMetaData databaseMetaData = mock(ShardingSphereDatabaseMetaData.class, RETURNS_DEEP_STUBS);
+        when(databaseMetaData.getRuleMetaData().findRuleConfiguration(any())).thenReturn(Collections.singleton(getRuleConfiguration()));
         DistSQLResultSet resultSet = new EncryptRuleQueryResultSet();
-        resultSet.init(metaData, mock(ShowEncryptRulesStatement.class));
+        resultSet.init(databaseMetaData, mock(ShowEncryptRulesStatement.class));
         Collection<Object> actual = resultSet.getRowData();
         assertThat(actual.size(), is(12));
         assertTrue(actual.contains("t_encrypt"));

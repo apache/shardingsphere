@@ -20,7 +20,7 @@ package org.apache.shardingsphere.scaling.distsql.handler.update;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.scaling.distsql.statement.DropShardingScalingRuleStatement;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 
@@ -30,9 +30,9 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 public final class DropShardingScalingRuleStatementUpdater implements RuleDefinitionDropUpdater<DropShardingScalingRuleStatement, ShardingRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final DropShardingScalingRuleStatement sqlStatement,
+    public void checkSQLStatement(final ShardingSphereDatabaseMetaData databaseMetaData, final DropShardingScalingRuleStatement sqlStatement,
                                   final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String databaseName = shardingSphereMetaData.getDatabase().getName();
+        String databaseName = databaseMetaData.getDatabase().getName();
         if (!isExistRuleConfig(currentRuleConfig) && sqlStatement.isContainsExistClause()) {
             return;
         }

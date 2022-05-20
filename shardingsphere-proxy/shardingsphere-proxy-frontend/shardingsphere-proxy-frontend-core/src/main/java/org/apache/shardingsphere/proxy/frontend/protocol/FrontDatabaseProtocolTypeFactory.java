@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
@@ -47,14 +47,11 @@ public final class FrontDatabaseProtocolTypeFactory {
             return configuredDatabaseType.get();
         }
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        if (metaDataContexts.getMetaDataMap().isEmpty()) {
+        if (metaDataContexts.getDatabaseMetaDataMap().isEmpty()) {
             return DatabaseTypeEngine.getTrunkDatabaseType(DEFAULT_FRONTEND_DATABASE_PROTOCOL_TYPE);
         }
-        Optional<ShardingSphereMetaData> metaDataOptional = metaDataContexts.getMetaDataMap().values().stream().filter(ShardingSphereMetaData::isComplete).findFirst();
-        if (!metaDataOptional.isPresent()) {
-            return DatabaseTypeEngine.getTrunkDatabaseType(DEFAULT_FRONTEND_DATABASE_PROTOCOL_TYPE);
-        }
-        return metaDataOptional.get().getResource().getDatabaseType();
+        Optional<ShardingSphereDatabaseMetaData> databaseMetaData = metaDataContexts.getDatabaseMetaDataMap().values().stream().filter(ShardingSphereDatabaseMetaData::isComplete).findFirst();
+        return databaseMetaData.isPresent() ? databaseMetaData.get().getResource().getDatabaseType() : DatabaseTypeEngine.getTrunkDatabaseType(DEFAULT_FRONTEND_DATABASE_PROTOCOL_TYPE);
     }
     
     private static Optional<DatabaseType> findConfiguredDatabaseType() {

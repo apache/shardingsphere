@@ -2762,3 +2762,7 @@ GLOBALLY
 ACCESSED
     : A C C E S S E D
     ;
+
+RESTART
+    : R E S T A R T
+    ;

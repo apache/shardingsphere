@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleExcep
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.scaling.distsql.handler.converter.ShardingScalingRuleStatementConverter;
 import org.apache.shardingsphere.scaling.distsql.statement.CreateShardingScalingRuleStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.segment.ShardingScalingRuleConfigurationSegment;
@@ -44,9 +44,9 @@ import java.util.Properties;
 public final class CreateShardingScalingRuleStatementUpdater implements RuleDefinitionCreateUpdater<CreateShardingScalingRuleStatement, ShardingRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final CreateShardingScalingRuleStatement sqlStatement,
+    public void checkSQLStatement(final ShardingSphereDatabaseMetaData databaseMetaData, final CreateShardingScalingRuleStatement sqlStatement,
                                   final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String databaseName = shardingSphereMetaData.getDatabase().getName();
+        String databaseName = databaseMetaData.getDatabase().getName();
         checkCurrentRuleConfiguration(databaseName, currentRuleConfig);
         checkDuplicate(databaseName, sqlStatement, currentRuleConfig);
         checkAlgorithms(sqlStatement.getScalingRuleConfigSegment());

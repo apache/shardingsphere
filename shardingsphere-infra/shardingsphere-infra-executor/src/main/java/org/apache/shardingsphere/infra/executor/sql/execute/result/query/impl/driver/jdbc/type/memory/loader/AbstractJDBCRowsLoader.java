@@ -15,10 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.memory;
+package org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.memory.loader;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory.row.MemoryQueryResultDataRow;
 
 import java.math.BigDecimal;
@@ -32,22 +30,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * JDBC rows loader.
+ * Abstract JDBC rows loader.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class JDBCRowsLoader {
+public abstract class AbstractJDBCRowsLoader implements JDBCRowsLoader {
     
-    private static final String YEAR_DATA_TYPE = "YEAR";
-    
-    /**
-     * Load rows.
-     * 
-     * @param columnCount column count
-     * @param resultSet result set of JDBC
-     * @return Query result data rows
-     * @throws SQLException SQL exception
-     */
-    public static Collection<MemoryQueryResultDataRow> load(final int columnCount, final ResultSet resultSet) throws SQLException {
+    @Override
+    public Collection<MemoryQueryResultDataRow> load(final int columnCount, final ResultSet resultSet) throws SQLException {
         Collection<MemoryQueryResultDataRow> result = new LinkedList<>();
         while (resultSet.next()) {
             List<Object> rowData = new ArrayList<>(columnCount);
@@ -61,7 +49,7 @@ public final class JDBCRowsLoader {
     }
     
     @SuppressWarnings("ReturnOfNull")
-    private static Object loadRowValue(final ResultSet resultSet, final int columnIndex) throws SQLException {
+    private Object loadRowValue(final ResultSet resultSet, final int columnIndex) throws SQLException {
         ResultSetMetaData metaData = resultSet.getMetaData();
         switch (metaData.getColumnType(columnIndex)) {
             case Types.BOOLEAN:
@@ -91,11 +79,7 @@ public final class JDBCRowsLoader {
             case Types.LONGVARCHAR:
                 return resultSet.getString(columnIndex);
             case Types.DATE:
-                if (isYearDataType(resultSet.getMetaData().getColumnTypeName(columnIndex))) {
-                    Object result = resultSet.getObject(columnIndex);
-                    return resultSet.wasNull() ? null : result;
-                }
-                return resultSet.getDate(columnIndex);
+                return getDate(resultSet, columnIndex);
             case Types.TIME:
                 return resultSet.getTime(columnIndex);
             case Types.TIMESTAMP:
@@ -115,7 +99,13 @@ public final class JDBCRowsLoader {
         }
     }
     
-    private static boolean isYearDataType(final String columnDataTypeName) {
-        return YEAR_DATA_TYPE.equalsIgnoreCase(columnDataTypeName);
-    }
+    /**
+     * Get date from result set.
+     * 
+     * @param resultSet result set
+     * @param columnIndex column index
+     * @return date
+     * @throws SQLException sql exception
+     */
+    protected abstract Object getDate(ResultSet resultSet, int columnIndex) throws SQLException;
 }

@@ -27,6 +27,8 @@ import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositor
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.type.required.RequiredSPIRegistry;
 
+import java.util.Set;
+
 /**
  * Distribute lock context.
  */
@@ -52,8 +54,18 @@ public final class DistributeLockContext implements LockContext {
     }
     
     @Override
+    public ShardingSphereLock getMutexLock() {
+        return lockManager.getMutexLock();
+    }
+    
+    @Override
     public boolean lockWrite(final String databaseName) {
         return lockManager.lockWrite(databaseName);
+    }
+    
+    @Override
+    public boolean lockWrite(final String databaseName, final Set<String> schemaNames) {
+        return lockManager.lockWrite(databaseName, schemaNames);
     }
     
     @Override
@@ -62,8 +74,18 @@ public final class DistributeLockContext implements LockContext {
     }
     
     @Override
+    public boolean tryLockWrite(final String databaseName, final Set<String> schemaNames, final long timeoutMilliseconds) {
+        return lockManager.tryLockWrite(databaseName, schemaNames, timeoutMilliseconds);
+    }
+    
+    @Override
     public void releaseLockWrite(final String databaseName) {
         lockManager.releaseLockWrite(databaseName);
+    }
+    
+    @Override
+    public void releaseLockWrite(final String databaseName, final String schemaName) {
+        lockManager.releaseLockWrite(databaseName, schemaName);
     }
     
     @Override
@@ -72,7 +94,7 @@ public final class DistributeLockContext implements LockContext {
     }
     
     @Override
-    public ShardingSphereLock getMutexLock() {
-        return lockManager.getMutexLock();
+    public boolean isLocked(final String databaseName, final String schema) {
+        return lockManager.isLocked(databaseName, schema);
     }
 }

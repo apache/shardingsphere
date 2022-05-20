@@ -27,11 +27,11 @@ public final class MutexLockNodeService extends AbstractDistributeLockNodeServic
     
     @Override
     public String getSequenceNodePath() {
-        return PATH_DELIMITER + LOCK_ROOT + PATH_DELIMITER + getLockLevel() + PATH_DELIMITER + "sequence";
+        return PATH_DELIMITER + LOCK_ROOT + PATH_DELIMITER + getLockTypeName() + PATH_DELIMITER + "sequence";
     }
     
     @Override
-    protected String getLockLevel() {
+    protected String getLockTypeName() {
         return "mutex";
     }
     

@@ -66,7 +66,7 @@ public final class AlterSQLParserRuleHandler extends UpdatableRALBackendHandler<
     }
     
     private void persistNewRuleConfigurations(final Collection<RuleConfiguration> globalRuleConfigs) {
-        Optional<MetaDataPersistService> metaDataPersistService = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataPersistService();
+        Optional<MetaDataPersistService> metaDataPersistService = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getPersistService();
         if (metaDataPersistService.isPresent() && null != metaDataPersistService.get().getGlobalRuleService()) {
             metaDataPersistService.get().getGlobalRuleService().persist(globalRuleConfigs, true);
         }

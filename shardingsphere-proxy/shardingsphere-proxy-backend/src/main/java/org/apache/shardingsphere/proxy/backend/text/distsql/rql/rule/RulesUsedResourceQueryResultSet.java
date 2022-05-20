@@ -22,7 +22,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesUsed
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
@@ -68,12 +68,12 @@ public final class RulesUsedResourceQueryResultSet implements DistSQLResultSet {
     }
     
     @Override
-    public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
+    public void init(final ShardingSphereDatabaseMetaData databaseMetaData, final SQLStatement sqlStatement) {
         List<Collection<Object>> data = new ArrayList<>();
         ShowRulesUsedResourceStatement statement = (ShowRulesUsedResourceStatement) sqlStatement;
         String resourceName = statement.getResourceName().orElse(null);
-        if (hasRulesConfiguration(metaData) && metaData.getResource().getDataSources().containsKey(resourceName)) {
-            getRulesConfig(metaData.getRuleMetaData().getConfigurations(), resourceName, data);
+        if (hasRulesConfiguration(databaseMetaData) && databaseMetaData.getResource().getDataSources().containsKey(resourceName)) {
+            getRulesConfig(databaseMetaData.getRuleMetaData().getConfigurations(), resourceName, data);
         }
         this.data = data.iterator();
     }
@@ -152,8 +152,8 @@ public final class RulesUsedResourceQueryResultSet implements DistSQLResultSet {
         return Arrays.asList(type, name);
     }
     
-    private boolean hasRulesConfiguration(final ShardingSphereMetaData metaData) {
-        Collection<RuleConfiguration> configs = metaData.getRuleMetaData().getConfigurations();
+    private boolean hasRulesConfiguration(final ShardingSphereDatabaseMetaData databaseMetaData) {
+        Collection<RuleConfiguration> configs = databaseMetaData.getRuleMetaData().getConfigurations();
         return null != configs && !configs.isEmpty();
     }
     

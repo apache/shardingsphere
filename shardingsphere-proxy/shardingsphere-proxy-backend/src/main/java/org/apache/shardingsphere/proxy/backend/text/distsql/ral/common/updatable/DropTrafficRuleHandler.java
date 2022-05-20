@@ -72,7 +72,7 @@ public final class DropTrafficRuleHandler extends UpdatableRALBackendHandler<Dro
     
     private void updateToRepository(final TrafficRuleConfiguration config) {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        Optional<MetaDataPersistService> metaDataPersistService = metaDataContexts.getMetaDataPersistService();
+        Optional<MetaDataPersistService> metaDataPersistService = metaDataContexts.getPersistService();
         getUnusedLoadBalancer(config).forEach(each -> config.getLoadBalancers().remove(each));
         metaDataPersistService.ifPresent(optional -> optional.getGlobalRuleService().persist(metaDataContexts.getGlobalRuleMetaData().getConfigurations(), true));
     }

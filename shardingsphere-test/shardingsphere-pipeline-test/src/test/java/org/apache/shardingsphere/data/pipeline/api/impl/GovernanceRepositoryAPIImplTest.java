@@ -152,7 +152,7 @@ public final class GovernanceRepositoryAPIImplTest {
         dumperConfig.setPosition(new PlaceholderPosition());
         dumperConfig.setActualTableName("t_order");
         dumperConfig.setLogicTableName("t_order");
-        dumperConfig.setPrimaryKey("order_id");
+        dumperConfig.setUniqueKey("order_id");
         dumperConfig.setUniqueKeyDataType(Types.INTEGER);
         dumperConfig.setShardingItem(0);
         PipelineDataSourceWrapper dataSource = mock(PipelineDataSourceWrapper.class);
