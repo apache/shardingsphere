@@ -237,13 +237,13 @@ public final class ShardingTableRuleStatementChecker {
     }
     
     /**
-     * Check alter bind table rules.
+     * Check binding table rules.
      *
      * @param currentRuleConfig current rule configuration
      * @param toBeAlteredRuleConfig to be altered rule configuration
      * @throws DistSQLException definition violation exception
      */
-    public static void checkBindingTablesAlteration(final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeAlteredRuleConfig) throws DistSQLException {
+    public static void checkBindingTableRules(final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeAlteredRuleConfig) throws DistSQLException {
         if (null == currentRuleConfig || currentRuleConfig.getBindingTableGroups().isEmpty()) {
             return;
         }
