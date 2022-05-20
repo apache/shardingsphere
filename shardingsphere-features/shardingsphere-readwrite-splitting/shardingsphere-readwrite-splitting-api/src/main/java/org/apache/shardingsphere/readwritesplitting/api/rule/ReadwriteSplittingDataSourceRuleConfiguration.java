@@ -19,7 +19,6 @@ package org.apache.shardingsphere.readwritesplitting.api.rule;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.readwritesplitting.constant.RouteMode;
 
 import java.util.Optional;
 import java.util.Properties;
@@ -38,8 +37,6 @@ public final class ReadwriteSplittingDataSourceRuleConfiguration {
     private final Properties props;
     
     private final String loadBalancerName;
-    
-    private final RouteMode routeMode;
     
     /**
      * Get auto aware data source name.

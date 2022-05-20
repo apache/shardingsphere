@@ -21,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.hint.HintManager;
-import org.apache.shardingsphere.transaction.TransactionHolder;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
@@ -33,8 +32,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatem
 @RequiredArgsConstructor
 public final class ReadwriteSplittingDataSourceRouter {
     
-    private static final ThreadLocal<String> SLAVE_ROUTE_HOLDER = new ThreadLocal<>();
-    
     private final ReadwriteSplittingDataSourceRule rule;
     
     /**
@@ -44,40 +41,8 @@ public final class ReadwriteSplittingDataSourceRouter {
      * @return data source name
      */
     public String route(final SQLStatementContext<?> sqlStatementContext) {
-        if (TransactionHolder.isTransaction()) {
-            return routeInTransaction(sqlStatementContext);
-        }
-        return routeNotInTransaction(sqlStatementContext);
-    }
-    
-    private String routeInTransaction(final SQLStatementContext<?> sqlStatementContext) {
-        switch (rule.getRouteMode()) {
-            case SELECT_TO_MASTER:
-                return rule.getReadwriteSplittingStrategy().getWriteDataSource();
-            case SELECT_TO_ONE_SLAVE:
-                if (!TransactionHolder.isTransactionReadOnly() && isPrimaryRoute(sqlStatementContext)) {
-                    return rule.getReadwriteSplittingStrategy().getWriteDataSource();
-                }
-                if (null == SLAVE_ROUTE_HOLDER.get()) {
-                    SLAVE_ROUTE_HOLDER.set(rule.getLoadBalancer().getDataSource(rule.getName(), rule.getWriteDataSource(), rule.getReadDataSourceNames()));
-                }
-                return SLAVE_ROUTE_HOLDER.get();
-            case SELECT_TO_MULTI_SLAVE:
-                if (!TransactionHolder.isTransactionReadOnly() && isPrimaryRoute(sqlStatementContext)) {
-                    return rule.getReadwriteSplittingStrategy().getWriteDataSource();
-                }
-                return rule.getLoadBalancer().getDataSource(rule.getName(), rule.getWriteDataSource(), rule.getReadDataSourceNames());
-            default:
-                throw new UnsupportedOperationException(String.format("RouteMode: %s not support yet", rule.getRouteMode()));
-        }
-    }
-    
-    private String routeNotInTransaction(final SQLStatementContext<?> sqlStatementContext) {
         if (isPrimaryRoute(sqlStatementContext)) {
-            return rule.getReadwriteSplittingStrategy().getWriteDataSource();
-        }
-        if (1 == rule.getReadDataSourceNames().size()) {
-            return rule.getReadDataSourceNames().get(0);
+            return rule.getWriteDataSource();
         }
         return rule.getLoadBalancer().getDataSource(rule.getName(), rule.getWriteDataSource(), rule.getReadDataSourceNames());
     }

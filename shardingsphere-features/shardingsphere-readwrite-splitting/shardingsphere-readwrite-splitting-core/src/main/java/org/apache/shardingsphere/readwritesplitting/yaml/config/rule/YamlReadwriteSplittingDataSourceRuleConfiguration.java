@@ -35,6 +35,4 @@ public final class YamlReadwriteSplittingDataSourceRuleConfiguration implements 
     private Properties props;
     
     private String loadBalancerName;
-    
-    private String routeMode;
 }

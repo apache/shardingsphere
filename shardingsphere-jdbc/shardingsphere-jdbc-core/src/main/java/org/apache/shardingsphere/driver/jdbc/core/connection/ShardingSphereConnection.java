@@ -138,7 +138,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     private void processLocalTransaction() throws SQLException {
         connectionManager.setAutoCommit(autoCommit);
         if (!autoCommit) {
-            TransactionHolder.setInTransaction(readOnly);
+            TransactionHolder.setInTransaction();
         }
     }
     
@@ -147,7 +147,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
             case BEGIN:
                 connectionManager.close();
                 connectionManager.getConnectionTransaction().begin();
-                TransactionHolder.setInTransaction(readOnly);
+                TransactionHolder.setInTransaction();
                 break;
             case COMMIT:
                 connectionManager.getConnectionTransaction().commit();

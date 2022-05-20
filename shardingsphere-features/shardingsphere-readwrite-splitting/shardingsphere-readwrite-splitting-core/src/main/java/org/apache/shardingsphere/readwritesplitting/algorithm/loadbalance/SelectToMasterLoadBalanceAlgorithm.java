@@ -15,23 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.constant;
+package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
+
+import java.util.List;
+import java.util.Properties;
 
 /**
- * Route mode enum.
+ * Select-to-master replica load-balance algorithm.
  */
-@RequiredArgsConstructor
-@Getter
-public enum RouteMode {
+public final class SelectToMasterLoadBalanceAlgorithm implements ReplicaLoadBalanceAlgorithm {
     
-    SELECT_TO_MASTER("SELECT_TO_MASTER"),
+    @Getter
+    private Properties props;
     
-    SELECT_TO_ONE_SLAVE("SELECT_TO_ONE_SLAVE"),
+    @Override
+    public void init(final Properties props) {
+        this.props = props;
+    }
     
-    SELECT_TO_MULTI_SLAVE("SELECT_TO_MULTI_SLAVE");
+    @Override
+    public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames) {
+        return writeDataSourceName;
+    }
     
-    private final String value;
+    @Override
+    public String getType() {
+        return "SELECT_TO_MASTER";
+    }
+    
+    @Override
+    public boolean isDefault() {
+        return true;
+    }
 }

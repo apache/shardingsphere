@@ -19,7 +19,6 @@ package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
 
 import lombok.Getter;
 import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
-import org.apache.shardingsphere.transaction.TransactionHolder;
 
 import java.util.Arrays;
 import java.util.List;
@@ -28,14 +27,16 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * Weight replica load-balance algorithm.
+ * Select-to-one-slave-weight replica load-balance algorithm.
  */
 @Getter
-public final class WeightReplicaLoadBalanceAlgorithm implements ReplicaLoadBalanceAlgorithm {
+public final class SelectToOneSlaveWeightReplicaLoadBalanceAlgorithm implements ReplicaLoadBalanceAlgorithm {
     
     private static final double ACCURACY_THRESHOLD = 0.0001;
     
     private static final ConcurrentHashMap<String, double[]> WEIGHT_MAP = new ConcurrentHashMap<>();
+    
+    private static final ThreadLocal<String> SLAVE_ROUTE_HOLDER = new ThreadLocal<>();
     
     private Properties props;
     
@@ -46,12 +47,13 @@ public final class WeightReplicaLoadBalanceAlgorithm implements ReplicaLoadBalan
     
     @Override
     public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames) {
-        if (TransactionHolder.isTransaction()) {
-            return writeDataSourceName;
+        if (null != SLAVE_ROUTE_HOLDER.get()) {
+            return SLAVE_ROUTE_HOLDER.get();
         }
         double[] weight = WEIGHT_MAP.containsKey(name) ? WEIGHT_MAP.get(name) : initWeight(readDataSourceNames);
         WEIGHT_MAP.putIfAbsent(name, weight);
-        return getDataSourceName(readDataSourceNames, weight);
+        SLAVE_ROUTE_HOLDER.set(getDataSourceName(readDataSourceNames, weight));
+        return SLAVE_ROUTE_HOLDER.get();
     }
     
     private String getDataSourceName(final List<String> readDataSourceNames, final double[] weight) {
@@ -122,6 +124,6 @@ public final class WeightReplicaLoadBalanceAlgorithm implements ReplicaLoadBalan
     
     @Override
     public String getType() {
-        return "WEIGHT";
+        return "SELECT_TO_ONE_SLAVE_WEIGHT";
     }
 }

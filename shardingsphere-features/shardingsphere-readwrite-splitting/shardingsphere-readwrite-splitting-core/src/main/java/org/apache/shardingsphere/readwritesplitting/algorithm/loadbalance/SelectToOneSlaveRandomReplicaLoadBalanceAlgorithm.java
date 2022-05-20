@@ -19,21 +19,20 @@ package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
 
 import lombok.Getter;
 import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
-import org.apache.shardingsphere.transaction.TransactionHolder;
 
 import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * Round-robin replica load-balance algorithm.
+ * Select-to-one-slave-random replica load-balance algorithm.
  */
-public final class RoundRobinReplicaLoadBalanceAlgorithm implements ReplicaLoadBalanceAlgorithm {
+@Getter
+public final class SelectToOneSlaveRandomReplicaLoadBalanceAlgorithm implements ReplicaLoadBalanceAlgorithm {
     
-    private final AtomicInteger count = new AtomicInteger(0);
+    private static final ThreadLocal<String> SLAVE_ROUTE_HOLDER = new ThreadLocal<>();
     
-    @Getter
-    private Properties props;
+    private Properties props = new Properties();
     
     @Override
     public void init(final Properties props) {
@@ -42,19 +41,14 @@ public final class RoundRobinReplicaLoadBalanceAlgorithm implements ReplicaLoadB
     
     @Override
     public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames) {
-        if (TransactionHolder.isTransaction()) {
-            return writeDataSourceName;
+        if(null == SLAVE_ROUTE_HOLDER.get()) {
+            SLAVE_ROUTE_HOLDER.set(readDataSourceNames.get(ThreadLocalRandom.current().nextInt(readDataSourceNames.size())));
         }
-        return readDataSourceNames.get(Math.abs(count.getAndIncrement()) % readDataSourceNames.size());
+        return SLAVE_ROUTE_HOLDER.get();
     }
     
     @Override
     public String getType() {
-        return "ROUND_ROBIN";
-    }
-    
-    @Override
-    public boolean isDefault() {
-        return true;
+        return "SELECT_TO_ONE_SLAVE_RANDOM";
     }
 }

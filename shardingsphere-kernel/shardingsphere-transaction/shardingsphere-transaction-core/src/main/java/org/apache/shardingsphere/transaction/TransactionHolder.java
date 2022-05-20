@@ -20,9 +20,6 @@ package org.apache.shardingsphere.transaction;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 /**
  * Transaction holder.
  * 
@@ -31,14 +28,7 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TransactionHolder {
     
-    private static final ThreadLocal<Map<String, Boolean>> TRANSACTION = ThreadLocal.withInitial(() -> initValue());
-    
-    private static Map<String, Boolean> initValue() {
-        Map<String, Boolean> result = new LinkedHashMap<>(1);
-        result.put("status", false);
-        result.put("readOnly", false);
-        return result;
-    }
+    private static final ThreadLocal<Boolean> TRANSACTION = ThreadLocal.withInitial(() -> false);
     
     /**
      * Judge is transaction in current thread.
@@ -46,26 +36,14 @@ public final class TransactionHolder {
      * @return is transaction in current thread.
      */
     public static boolean isTransaction() {
-        return TRANSACTION.get().get("status");
-    }
-    
-    /**
-     * Judge is transaction read only in current thread.
-     *
-     * @return is transaction read only in current thread.
-     */
-    public static boolean isTransactionReadOnly() {
-        return TRANSACTION.get().get("readOnly");
+        return TRANSACTION.get();
     }
     
     /**
      * Set transaction in current thread.
-     *
-     * @param readOnly read only.
      */
-    public static void setInTransaction(final boolean readOnly) {
-        TRANSACTION.get().put("status", true);
-        TRANSACTION.get().put("readOnly", readOnly);
+    public static void setInTransaction() {
+        TRANSACTION.set(true);
     }
     
     /**
