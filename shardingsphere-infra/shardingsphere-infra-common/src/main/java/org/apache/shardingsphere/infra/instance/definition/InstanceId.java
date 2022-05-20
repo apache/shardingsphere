@@ -44,26 +44,25 @@ public final class InstanceId {
     public InstanceId(final String ip, final String uniqueSign) {
         this.ip = ip;
         this.uniqueSign = uniqueSign;
-        this.id = String.join(this.DELIMITER, ip, uniqueSign);
+        id = String.join(DELIMITER, ip, uniqueSign);
     }
     
     public InstanceId(final String instance) {
         if (instance.indexOf(DELIMITER) >= 0) {
-            this.id = instance;
+            id = instance;
             List<String> ids = Splitter.on("@").splitToList(instance);
-            this.ip = ids.get(0);
-            this.uniqueSign = ids.get(1);
+            ip = ids.get(0);
+            uniqueSign = ids.get(1);
         } else {
-            this.uniqueSign = instance;
-            this.ip = IpUtils.getIp();
-            this.id = String.join(this.DELIMITER, this.ip, this.uniqueSign);
+            uniqueSign = instance;
+            ip = IpUtils.getIp();
+            id = String.join(DELIMITER, ip, uniqueSign);
         }
     }
     
     public InstanceId() {
-        this.ip = IpUtils.getIp();
-        this.uniqueSign = String.join("", ManagementFactory.getRuntimeMXBean().getName().split(this.DELIMITER)[0], 
-                String.valueOf(this.ATOMIC_LONG.incrementAndGet()));
-        this.id = String.join(this.DELIMITER, this.ip, this.uniqueSign);
+        ip = IpUtils.getIp();
+        uniqueSign = String.join("", ManagementFactory.getRuntimeMXBean().getName().split(DELIMITER)[0], String.valueOf(ATOMIC_LONG.incrementAndGet()));
+        id = String.join(DELIMITER, ip, uniqueSign);
     }
 }
