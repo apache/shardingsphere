@@ -53,6 +53,14 @@ header .select-style select{
     /* set img size */
 }
 
+#sidebar,
+#sidebar ul{
+    -webkit-transition: backgroud-color 0.2s ease;
+    -moz-transition: backgroud-color 0.2s ease;
+    transition: backgroud-color 0.2s ease;
+}
+
+
 #sidebar{
     width:350px;
     position: sticky;
