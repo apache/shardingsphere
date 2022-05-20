@@ -28,7 +28,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandler.HandlerParameter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.junit.Test;
 
@@ -85,7 +85,7 @@ public final class ShowTableMetadataHandlerTest {
     }
     
     private ShowTableMetadataStatement createSqlStatement() {
-        return new ShowTableMetadataStatement(Collections.singleton("t_order"), new SchemaSegment(0, 0, new IdentifierValue("db_name")));
+        return new ShowTableMetadataStatement(Collections.singleton("t_order"), new DatabaseSegment(0, 0, new IdentifierValue("db_name")));
     }
     
     private HandlerParameter<ShowTableMetadataStatement> getParameter(final ShowTableMetadataStatement statement, final ConnectionSession connectionSession) {

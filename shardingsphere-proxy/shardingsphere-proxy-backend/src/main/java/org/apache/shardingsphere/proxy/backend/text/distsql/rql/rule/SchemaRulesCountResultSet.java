@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.rql.rule;
 
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.CountSchemaRulesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.CountDatabaseRulesStatement;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
@@ -184,6 +184,6 @@ public final class SchemaRulesCountResultSet implements DistSQLResultSet {
     
     @Override
     public String getType() {
-        return CountSchemaRulesStatement.class.getName();
+        return CountDatabaseRulesStatement.class.getName();
     }
 }

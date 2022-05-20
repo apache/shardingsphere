@@ -119,11 +119,11 @@ public abstract class AbstractDatabaseMetadataExecutor implements DatabaseAdminQ
     /**
      * Get the source object of the row data.
      *
-     * @param schemaName schema name
+     * @param databaseName database name
      * @param callback callback for processing source data of information_schema
      * @throws SQLException SQLException
      */
-    protected abstract void getSourceData(String schemaName, FunctionWithException<ResultSet, SQLException> callback) throws SQLException;
+    protected abstract void getSourceData(String databaseName, FunctionWithException<ResultSet, SQLException> callback) throws SQLException;
     
     /**
      * Get the source object of the row data.
@@ -146,13 +146,13 @@ public abstract class AbstractDatabaseMetadataExecutor implements DatabaseAdminQ
     }
     
     /**
-     * Determine whether the current schema has a data source.
+     * Determine whether the current database has a data source.
      *
-     * @param schemaName schema name
+     * @param databaseName database name
      * @return has datasource or not
      */
-    protected static Boolean hasDatasource(final String schemaName) {
-        return ProxyContext.getInstance().getMetaData(schemaName).hasDataSource();
+    protected static Boolean hasDatasource(final String databaseName) {
+        return ProxyContext.getInstance().getMetaData(databaseName).hasDataSource();
     }
     
     /**
