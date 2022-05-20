@@ -22,7 +22,7 @@ import org.apache.shardingsphere.distsql.parser.subject.DistSQLSubjectTypeEnum;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 
 /**
- * Count schema rules statement.
+ * Count database rules statement.
  */
 @Getter
 public final class CountDatabaseRulesStatement extends ShowRulesStatement {
