@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 
+org.apache.shardingsphere.example.generator.scenario.transaction.type.LocalExampleScenario
 org.apache.shardingsphere.example.generator.scenario.transaction.type.SeataExampleScenario
 org.apache.shardingsphere.example.generator.scenario.transaction.type.XAAtomikosExampleScenario
 org.apache.shardingsphere.example.generator.scenario.transaction.type.XABitronixExampleScenario
