@@ -38,5 +38,5 @@ positionalNotation
     ;
 
 namedNotation
-    :identifier EQ_ GT_ aExpr
+    : identifier EQ_ GT_ aExpr
     ;
