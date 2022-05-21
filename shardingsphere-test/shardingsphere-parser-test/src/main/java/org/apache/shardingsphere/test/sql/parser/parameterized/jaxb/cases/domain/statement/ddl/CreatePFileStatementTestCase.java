@@ -15,32 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import lombok.SneakyThrows;
-
-import java.util.concurrent.TimeUnit;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Timeout milliseconds.
+ * Create statement test case.
  */
-public final class TimeoutMilliseconds {
-    
-    public static final long MAX_TRY_LOCK = 3 * 60 * 1000L;
-    
-    public static final long MIN_TRY_LOCK = 200L;
-    
-    public static final long DEFAULT_REGISTRY = 50L;
-    
-    public static final long MAX_ACK_EXPEND = 100L;
-    
-    /**
-     * Sleep interval.
-     *
-     * @param timeMilliseconds time milliseconds
-     */
-    @SneakyThrows(InterruptedException.class)
-    public static void sleepInterval(final long timeMilliseconds) {
-        TimeUnit.MILLISECONDS.sleep(timeMilliseconds);
-    }
+public final class CreatePFileStatementTestCase extends SQLParserTestCase {
 }

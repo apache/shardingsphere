@@ -90,5 +90,6 @@ execute
     | alterPackage
     | createContext
     | createSPFile
+    | createPFile
     ) SEMI_?
     ;
