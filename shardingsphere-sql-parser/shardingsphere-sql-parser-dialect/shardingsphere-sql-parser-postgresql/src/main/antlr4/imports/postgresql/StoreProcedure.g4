@@ -26,10 +26,10 @@ call
     ;
 
 callArguments
-    : parameterName (COMMA_ parameterName)*
+    : callArgument (COMMA_ callArgument)*
     ;
 
-parameterName
+callArgument
     : positionalNotation | namedNotation
     ;
 

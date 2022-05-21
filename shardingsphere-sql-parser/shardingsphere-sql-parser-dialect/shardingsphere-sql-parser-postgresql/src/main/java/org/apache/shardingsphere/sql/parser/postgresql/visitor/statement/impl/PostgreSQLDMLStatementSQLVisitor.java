@@ -22,10 +22,10 @@ import org.antlr.v4.runtime.misc.Interval;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DMLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CallArgumentContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CallContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CopyContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DoStatementContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ParameterNameContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -54,7 +54,7 @@ public final class PostgreSQLDMLStatementSQLVisitor extends PostgreSQLStatementS
         result.setProcedureName(((IdentifierValue) visit(ctx.identifier())).getValue());
         if (null != ctx.callArguments()) {
             Collection<ExpressionSegment> parameters = new LinkedList<>();
-            for (ParameterNameContext each : ctx.callArguments().parameterName()) {
+            for (CallArgumentContext each : ctx.callArguments().callArgument()) {
                 parameters.add((ExpressionSegment) visit(each));
             }
             result.getParameters().addAll(parameters);
@@ -63,7 +63,7 @@ public final class PostgreSQLDMLStatementSQLVisitor extends PostgreSQLStatementS
     }
     
     @Override
-    public ASTNode visitParameterName(final ParameterNameContext ctx) {
+    public ASTNode visitCallArgument(final CallArgumentContext ctx) {
         if (null != ctx.positionalNotation()) {
             return visit(ctx.positionalNotation().aExpr());
         } else {
