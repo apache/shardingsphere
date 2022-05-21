@@ -19,7 +19,6 @@ package org.apache.shardingsphere.encrypt.rule;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptColumnDataType;
@@ -31,6 +30,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 /**
  * Encrypt table.
@@ -175,7 +175,7 @@ public final class EncryptTable {
      * @return logic and cipher columns
      */
     public Map<String, String> getLogicAndCipherColumns() {
-        return Maps.transformValues(columns, EncryptColumn::getCipherColumn);
+        return columns.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getCipherColumn()));
     }
     
     /**

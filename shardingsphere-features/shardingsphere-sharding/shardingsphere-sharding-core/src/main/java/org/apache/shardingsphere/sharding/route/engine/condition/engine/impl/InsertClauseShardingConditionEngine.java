@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementConte
 import org.apache.shardingsphere.infra.datetime.DatetimeService;
 import org.apache.shardingsphere.infra.datetime.DatetimeServiceFactory;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.route.engine.condition.ExpressionConditionUtils;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.engine.ShardingConditionEngine;
@@ -55,7 +55,7 @@ public final class InsertClauseShardingConditionEngine implements ShardingCondit
     
     private final ShardingRule shardingRule;
     
-    private final ShardingSphereMetaData metaData;
+    private final ShardingSphereDatabase database;
     
     @Override
     public List<ShardingCondition> createShardingConditions(final InsertStatementContext sqlStatementContext, final List<Object> parameters) {
@@ -99,7 +99,7 @@ public final class InsertClauseShardingConditionEngine implements ShardingCondit
                 result.getValues().add(new ListShardingConditionValue<>(shardingColumn.get(), tableName, Collections.singletonList(getShardingValue((SimpleExpressionSegment) each, parameters))));
             } else if (ExpressionConditionUtils.isNowExpression(each)) {
                 if (null == datetimeService) {
-                    datetimeService = DatetimeServiceFactory.newInstance();
+                    datetimeService = DatetimeServiceFactory.getInstance();
                 }
                 result.getValues().add(new ListShardingConditionValue<>(shardingColumn.get(), tableName, Collections.singletonList(datetimeService.getDatetime())));
             } else if (ExpressionConditionUtils.isNullExpression(each)) {
@@ -123,7 +123,7 @@ public final class InsertClauseShardingConditionEngine implements ShardingCondit
     
     private List<ShardingCondition> createShardingConditionsWithInsertSelect(final InsertStatementContext sqlStatementContext, final List<Object> parameters) {
         SelectStatementContext selectStatementContext = sqlStatementContext.getInsertSelectContext().getSelectStatementContext();
-        return new LinkedList<>(new WhereClauseShardingConditionEngine(shardingRule, metaData).createShardingConditions(selectStatementContext, parameters));
+        return new LinkedList<>(new WhereClauseShardingConditionEngine(shardingRule, database).createShardingConditions(selectStatementContext, parameters));
     }
     
     private void appendGeneratedKeyConditions(final InsertStatementContext sqlStatementContext, final List<ShardingCondition> shardingConditions) {

@@ -284,6 +284,10 @@ editionName
     : identifier
     ;
 
+outlineName
+    : identifier
+    ;
+
 containerName
     : identifier
     ;
@@ -1252,4 +1256,20 @@ externalDatatype
     
 capacityUnit
     : ('K' | 'M' | 'G' | 'T' | 'P' | 'E')
+    ;
+
+attributeDimensionName
+    : identifier
+    ;
+
+sequenceName
+    : identifier
+    ;
+    
+spfileName
+    : STRING_
+    ;
+
+pfileName
+    : STRING_
     ;

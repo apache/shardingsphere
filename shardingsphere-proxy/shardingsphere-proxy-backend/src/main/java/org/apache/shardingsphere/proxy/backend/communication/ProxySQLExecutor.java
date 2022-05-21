@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.sane.JDBCSaneQueryResultEngineFactory;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.sane.SaneQueryResultEngineFactory;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.RawExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.RawSQLExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.callback.RawSQLExecutorCallback;
@@ -113,7 +113,7 @@ public final class ProxySQLExecutor {
      */
     public List<ExecuteResult> execute(final ExecutionContext executionContext) throws SQLException {
         String databaseName = backendConnection.getConnectionSession().getDatabaseName();
-        Collection<ShardingSphereRule> rules = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(databaseName).getRuleMetaData().getRules();
+        Collection<ShardingSphereRule> rules = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getDatabaseMetaData(databaseName).getRuleMetaData().getRules();
         int maxConnectionsSizePerQuery = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         boolean isReturnGeneratedKeys = executionContext.getSqlStatementContext().getSqlStatement() instanceof MySQLInsertStatement;
         return execute(executionContext, rules, maxConnectionsSizePerQuery, isReturnGeneratedKeys);
@@ -165,8 +165,8 @@ public final class ProxySQLExecutor {
     }
     
     private List<ExecuteResult> getSaneExecuteResults(final ExecutionContext executionContext, final SQLException originalException) throws SQLException {
-        DatabaseType databaseType = ProxyContext.getInstance().getMetaData(backendConnection.getConnectionSession().getDatabaseName()).getResource().getDatabaseType();
-        Optional<ExecuteResult> executeResult = JDBCSaneQueryResultEngineFactory.newInstance(databaseType).getSaneQueryResult(executionContext.getSqlStatementContext().getSqlStatement());
+        DatabaseType databaseType = ProxyContext.getInstance().getDatabase(backendConnection.getConnectionSession().getDatabaseName()).getResource().getDatabaseType();
+        Optional<ExecuteResult> executeResult = SaneQueryResultEngineFactory.getInstance(databaseType).getSaneQueryResult(executionContext.getSqlStatementContext().getSqlStatement());
         if (executeResult.isPresent()) {
             return Collections.singletonList(executeResult.get());
         }

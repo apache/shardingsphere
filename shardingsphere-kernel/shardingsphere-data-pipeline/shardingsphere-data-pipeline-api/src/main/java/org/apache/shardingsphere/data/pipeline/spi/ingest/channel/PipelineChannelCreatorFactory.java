@@ -38,7 +38,7 @@ public final class PipelineChannelCreatorFactory {
      * Create new instance of pipeline channel creator.
      *
      * @param pipelineChannelCreatorConfig pipeline channel creator configuration
-     * @return new instance of pipeline channel creator
+     * @return created instance
      */
     public static PipelineChannelCreator newInstance(final ShardingSphereAlgorithmConfiguration pipelineChannelCreatorConfig) {
         return ShardingSphereAlgorithmFactory.createAlgorithm(pipelineChannelCreatorConfig, PipelineChannelCreator.class);
@@ -51,6 +51,6 @@ public final class PipelineChannelCreatorFactory {
      * @return contains pipeline channel creator or not
      */
     public static boolean contains(final String pipelineChannelCreatorType) {
-        return TypedSPIRegistry.findRegisteredService(PipelineChannelCreator.class, pipelineChannelCreatorType, null).isPresent();
+        return TypedSPIRegistry.findRegisteredService(PipelineChannelCreator.class, pipelineChannelCreatorType).isPresent();
     }
 }

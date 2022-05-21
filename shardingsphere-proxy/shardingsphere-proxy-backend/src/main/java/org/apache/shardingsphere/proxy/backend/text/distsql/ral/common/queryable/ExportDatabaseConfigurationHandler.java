@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.exception.DatabaseNotExistedException;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -114,11 +114,11 @@ public final class ExportDatabaseConfigurationHandler extends QueryableRALBacken
     @Override
     protected Collection<List<Object>> getRows(final ContextManager contextManager) {
         String databaseName = getDatabaseName();
-        ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(databaseName);
+        ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(databaseName);
         StringBuilder result = new StringBuilder();
         configItem(ZERO, "databaseName", databaseName, result);
-        getDataSourcesConfig(metaData, result);
-        getRuleConfigurations(metaData.getRuleMetaData().getConfigurations(), result);
+        getDataSourcesConfig(database, result);
+        getRuleConfigurations(database.getRuleMetaData().getConfigurations(), result);
         if (!sqlStatement.getFilePath().isPresent()) {
             return Collections.singleton(Collections.singletonList(result.toString()));
         }
@@ -135,12 +135,12 @@ public final class ExportDatabaseConfigurationHandler extends QueryableRALBacken
         return Collections.singleton(Collections.singletonList(String.format("Successfully exported to：'%s'", sqlStatement.getFilePath().get())));
     }
     
-    private void getDataSourcesConfig(final ShardingSphereMetaData metaData, final StringBuilder result) {
-        if (null == metaData.getResource().getDataSources() || metaData.getResource().getDataSources().isEmpty()) {
+    private void getDataSourcesConfig(final ShardingSphereDatabase database, final StringBuilder result) {
+        if (null == database.getResource().getDataSources() || database.getResource().getDataSources().isEmpty()) {
             return;
         }
         configItem(ZERO, "dataSources", result);
-        for (Entry<String, DataSource> each : metaData.getResource().getDataSources().entrySet()) {
+        for (Entry<String, DataSource> each : database.getResource().getDataSources().entrySet()) {
             configItem(ONE, each.getKey(), result);
             DataSourceProperties dataSourceProps = DataSourcePropertiesCreator.create(each.getValue());
             dataSourceProps.getConnectionPropertySynonyms().getStandardProperties().forEach((key, value) -> configItem(TWO, key, value, result));

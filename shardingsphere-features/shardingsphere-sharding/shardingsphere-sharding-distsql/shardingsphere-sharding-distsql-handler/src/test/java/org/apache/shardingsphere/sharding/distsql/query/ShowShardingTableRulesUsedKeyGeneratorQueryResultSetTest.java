@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.distsql.query;
 
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -46,13 +46,13 @@ public final class ShowShardingTableRulesUsedKeyGeneratorQueryResultSetTest {
     
     @Test
     public void assertGetRowData() {
-        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        when(metaData.getRuleMetaData().findRuleConfiguration(ShardingRuleConfiguration.class)).thenReturn(Collections.singleton(createRuleConfiguration()));
-        when(metaData.getDatabaseName()).thenReturn("sharding_db");
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getRuleMetaData().findRuleConfiguration(ShardingRuleConfiguration.class)).thenReturn(Collections.singleton(createRuleConfiguration()));
+        when(database.getName()).thenReturn("sharding_db");
         DistSQLResultSet resultSet = new ShardingTableRulesUsedKeyGeneratorQueryResultSet();
         ShowShardingTableRulesUsedKeyGeneratorStatement statement = mock(ShowShardingTableRulesUsedKeyGeneratorStatement.class);
         when(statement.getKeyGeneratorName()).thenReturn(Optional.of("snowflake"));
-        resultSet.init(metaData, statement);
+        resultSet.init(database, statement);
         List<Object> actual = new ArrayList<>(resultSet.getRowData());
         assertThat(actual.size(), is(3));
         assertThat(actual.get(0), is("sharding_db"));

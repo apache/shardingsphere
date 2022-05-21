@@ -34,11 +34,11 @@ public final class SQLExecutionHookFactory {
     }
     
     /**
-     * Create new instances of SQL Execution hook.
+     * Get all instances of SQL Execution hook.
      *
-     * @return new instances of SQL Execution hook
+     * @return got instances
      */
-    public static Collection<SQLExecutionHook> newInstances() {
+    public static Collection<SQLExecutionHook> getAllInstances() {
         return ShardingSphereServiceLoader.getServiceInstances(SQLExecutionHook.class);
     }
 }

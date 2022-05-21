@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.infra.executor.check;
 
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.spi.type.ordered.OrderedSPI;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -30,6 +31,7 @@ import java.util.function.BiPredicate;
 /**
  * SQL checker.
  */
+@SingletonSPI
 public interface SQLChecker<T extends ShardingSphereRule> extends OrderedSPI<T> {
     
     /**
@@ -49,11 +51,11 @@ public interface SQLChecker<T extends ShardingSphereRule> extends OrderedSPI<T> 
      * @param parameters SQL parameters
      * @param grantee grantee
      * @param currentDatabase current database
-     * @param metaDataMap meta data map
+     * @param databaseMap database map
      * @param rule rule
      * @return SQL check result
      */
-    SQLCheckResult check(SQLStatement sqlStatement, List<Object> parameters, Grantee grantee, String currentDatabase, Map<String, ShardingSphereMetaData> metaDataMap, T rule);
+    SQLCheckResult check(SQLStatement sqlStatement, List<Object> parameters, Grantee grantee, String currentDatabase, Map<String, ShardingSphereDatabase> databaseMap, T rule);
     
     /**
      * Check User.

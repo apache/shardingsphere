@@ -20,7 +20,8 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryabl
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ExportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
@@ -29,6 +30,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandler.HandlerParameter;
+import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
@@ -43,7 +45,6 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,23 +56,23 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ExportDatabaseConfigurationHandlerTest {
+public final class ExportDatabaseConfigurationHandlerTest extends ProxyContextRestorer {
     
     @Before
     public void init() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getAllDatabaseNames()).thenReturn(Collections.singletonList("sharding_db"));
-        ShardingSphereMetaData shardingSphereMetaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        when(shardingSphereMetaData.getSchemaByName("sharding_db")).thenReturn(new ShardingSphereSchema(createTableMap()));
-        when(shardingSphereMetaData.getResource().getDataSources()).thenReturn(createDataSourceMap());
-        when(shardingSphereMetaData.getRuleMetaData().getConfigurations()).thenReturn(Collections.singletonList(createShardingRuleConfiguration()));
-        when(contextManager.getMetaDataContexts().getMetaData("sharding_db")).thenReturn(shardingSphereMetaData);
-        ProxyContext.getInstance().init(contextManager);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getSchemas().get("sharding_db")).thenReturn(new ShardingSphereSchema(createTableMap()));
+        when(database.getResource().getDataSources()).thenReturn(createDataSourceMap());
+        when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.singletonList(createShardingRuleConfiguration()));
+        when(contextManager.getMetaDataContexts().getDatabaseMetaData("sharding_db")).thenReturn(database);
+        ProxyContext.init(contextManager);
     }
     
     @Test
     public void assertExportDatabaseExecutor() throws SQLException {
-        ExportDatabaseConfigurationHandler handler = new ExportDatabaseConfigurationHandler().init(getParameter(createSQLStatement(), mock(ConnectionSession.class)));
+        ExportDatabaseConfigurationHandler handler = new ExportDatabaseConfigurationHandler().init(createParameter(createSQLStatement(), mock(ConnectionSession.class)));
         handler.execute();
         handler.next();
         List<Object> data = new ArrayList<>(handler.getRowData());
@@ -118,11 +119,9 @@ public final class ExportDatabaseConfigurationHandlerTest {
     }
     
     private Map<String, TableMetaData> createTableMap() {
-        Map<String, TableMetaData> result = new HashMap<>(1, 1);
         List<ColumnMetaData> columns = Collections.singletonList(new ColumnMetaData("order_id", 0, false, false, false));
         List<IndexMetaData> indexes = Collections.singletonList(new IndexMetaData("primary"));
-        result.put("t_order", new TableMetaData("t_order", columns, indexes, Collections.emptyList()));
-        return result;
+        return Collections.singletonMap("t_order", new TableMetaData("t_order", columns, indexes, Collections.emptyList()));
     }
     
     private ShardingTableRuleConfiguration createTableRuleConfiguration() {
@@ -135,7 +134,7 @@ public final class ExportDatabaseConfigurationHandlerTest {
         return new ExportDatabaseConfigurationStatement(new SchemaSegment(0, 0, new IdentifierValue("sharding_db")), null);
     }
     
-    private HandlerParameter<ExportDatabaseConfigurationStatement> getParameter(final ExportDatabaseConfigurationStatement statement, final ConnectionSession connectionSession) {
-        return new HandlerParameter<ExportDatabaseConfigurationStatement>().setStatement(statement).setConnectionSession(connectionSession);
+    private HandlerParameter<ExportDatabaseConfigurationStatement> createParameter(final ExportDatabaseConfigurationStatement statement, final ConnectionSession connectionSession) {
+        return new HandlerParameter<>(statement, new MySQLDatabaseType(), connectionSession);
     }
 }

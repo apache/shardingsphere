@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shadow.algorithm.shadow.column;
 
 import com.google.common.base.Preconditions;
+import lombok.Getter;
 import org.apache.shardingsphere.shadow.algorithm.shadow.validator.ShadowValueValidator;
 import org.apache.shardingsphere.shadow.algorithm.shadow.validator.column.ShadowDateValueValidator;
 import org.apache.shardingsphere.shadow.algorithm.shadow.validator.column.ShadowEnumValueValidator;
@@ -41,12 +42,16 @@ public abstract class AbstractColumnMatchShadowAlgorithm implements ColumnShadow
     
     private static final Collection<ShadowValueValidator> SHADOW_VALUE_VALIDATORS = new LinkedList<>();
     
+    @Getter
+    private Properties props;
+    
     private String shadowColumn;
     
     private ShadowOperationType shadowOperationType;
     
     @Override
     public void init(final Properties props) {
+        this.props = props;
         shadowColumn = getShadowColumn(props);
         shadowOperationType = getShadowOperationType(props);
         initShadowValueValidator();

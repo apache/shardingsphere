@@ -21,10 +21,10 @@ import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CreateTableStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -58,11 +58,11 @@ public final class SingleTableSQLRouterTest {
     
     @Test
     public void assertCreateRouteContextWithSingleDataSource() {
-        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), DefaultSchema.LOGIC_NAME, mock(DatabaseType.class),
+        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class),
                 createSingleDataSourceMap(), Collections.emptyList(), new ConfigurationProperties(new Properties()));
         singleTableRule.getSingleTableDataNodes().put("t_order", Collections.singletonList(mockDataNode("ds_0")));
-        ShardingSphereMetaData metaData = mockSingleDataSourceMetaData();
-        RouteContext actual = new SingleTableSQLRouter().createRouteContext(createLogicSQL(), metaData, singleTableRule, new ConfigurationProperties(new Properties()));
+        ShardingSphereDatabase database = mockSingleDataSourceMetaData();
+        RouteContext actual = new SingleTableSQLRouter().createRouteContext(createLogicSQL(), database, singleTableRule, new ConfigurationProperties(new Properties()));
         List<RouteUnit> routeUnits = new ArrayList<>(actual.getRouteUnits());
         assertThat(actual.getRouteUnits().size(), is(1));
         assertThat(routeUnits.get(0).getDataSourceMapper().getLogicName(), is("ds_0"));
@@ -73,11 +73,11 @@ public final class SingleTableSQLRouterTest {
     
     @Test
     public void assertCreateRouteContextWithReadwriteSplittingDataSource() {
-        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), DefaultSchema.LOGIC_NAME, mock(DatabaseType.class),
+        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class),
                 createReadwriteSplittingDataSourceMap(), Collections.emptyList(), new ConfigurationProperties(new Properties()));
         singleTableRule.getSingleTableDataNodes().put("t_order", Collections.singletonList(mockDataNode("write_ds")));
-        ShardingSphereMetaData metaData = mockReadwriteSplittingDataSourceMetaData();
-        RouteContext actual = new SingleTableSQLRouter().createRouteContext(createLogicSQL(), metaData, singleTableRule, new ConfigurationProperties(new Properties()));
+        ShardingSphereDatabase database = mockReadwriteSplittingDataSourceMetaData();
+        RouteContext actual = new SingleTableSQLRouter().createRouteContext(createLogicSQL(), database, singleTableRule, new ConfigurationProperties(new Properties()));
         List<RouteUnit> routeUnits = new ArrayList<>(actual.getRouteUnits());
         assertThat(actual.getRouteUnits().size(), is(1));
         assertThat(routeUnits.get(0).getDataSourceMapper().getLogicName(), is("readwrite_ds"));
@@ -88,11 +88,11 @@ public final class SingleTableSQLRouterTest {
     
     @Test
     public void assertCreateRouteContextWithMultiDataSource() {
-        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), DefaultSchema.LOGIC_NAME, mock(DatabaseType.class),
+        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class),
                 createMultiDataSourceMap(), Collections.emptyList(), new ConfigurationProperties(new Properties()));
         singleTableRule.getSingleTableDataNodes().put("t_order", Collections.singletonList(mockDataNode("ds_0")));
-        ShardingSphereMetaData metaData = mockMultiDataSourceMetaData();
-        RouteContext actual = new SingleTableSQLRouter().createRouteContext(createLogicSQL(), metaData, singleTableRule, new ConfigurationProperties(new Properties()));
+        ShardingSphereDatabase database = mockMultiDataSourceMetaData();
+        RouteContext actual = new SingleTableSQLRouter().createRouteContext(createLogicSQL(), database, singleTableRule, new ConfigurationProperties(new Properties()));
         List<RouteUnit> routeUnits = new ArrayList<>(actual.getRouteUnits());
         assertThat(actual.getRouteUnits().size(), is(1));
         assertThat(routeUnits.get(0).getDataSourceMapper().getLogicName(), is("ds_0"));
@@ -106,33 +106,33 @@ public final class SingleTableSQLRouterTest {
     
     private DataNode mockDataNode(final String dataSourceName) {
         DataNode result = new DataNode(dataSourceName, "t_order");
-        result.setSchemaName(DefaultSchema.LOGIC_NAME);
+        result.setSchemaName(DefaultDatabase.LOGIC_NAME);
         return result;
     }
     
-    private ShardingSphereMetaData mockSingleDataSourceMetaData() {
-        ShardingSphereMetaData result = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
+    private ShardingSphereDatabase mockSingleDataSourceMetaData() {
+        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
         dataSourceMap.put("ds_0", mock(DataSource.class, RETURNS_DEEP_STUBS));
         when(result.getResource().getDataSources()).thenReturn(dataSourceMap);
         return result;
     }
     
-    private ShardingSphereMetaData mockReadwriteSplittingDataSourceMetaData() {
-        ShardingSphereMetaData result = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
+    private ShardingSphereDatabase mockReadwriteSplittingDataSourceMetaData() {
+        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
         dataSourceMap.put("write_ds", mock(DataSource.class, RETURNS_DEEP_STUBS));
         when(result.getResource().getDataSources()).thenReturn(dataSourceMap);
         return result;
     }
     
-    private ShardingSphereMetaData mockMultiDataSourceMetaData() {
-        ShardingSphereMetaData result = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
+    private ShardingSphereDatabase mockMultiDataSourceMetaData() {
+        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
         dataSourceMap.put("ds_0", mock(DataSource.class, RETURNS_DEEP_STUBS));
         dataSourceMap.put("ds_1", mock(DataSource.class, RETURNS_DEEP_STUBS));
         when(result.getResource().getDataSources()).thenReturn(dataSourceMap);
-        when(result.getDatabaseName()).thenReturn(DefaultSchema.LOGIC_NAME);
+        when(result.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         return result;
     }
     

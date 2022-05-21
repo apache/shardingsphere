@@ -80,6 +80,19 @@ dropEdition
     : DROP EDITION editionName CASCADE?
     ;
 
+dropOutline
+    : DROP OUTLINE outlineName
+    ;
+
+alterOutline
+    : ALTER OUTLINE (PUBLIC | PRIVATE)? outlineName
+    ( REBUILD
+    | RENAME TO outlineName
+    | CHANGE CATEGORY TO categoryName
+    | (ENABLE | DISABLE)
+    )+
+    ;
+
 truncateTable
     : TRUNCATE TABLE tableName materializedViewLogClause? dropReuseClause? CASCADE?
     ;
@@ -1002,6 +1015,17 @@ rowMovementClause
 
 flashbackArchiveClause
     : FLASHBACK ARCHIVE flashbackArchiveName? | NO FLASHBACK ARCHIVE
+    ;
+
+alterPackage
+    : ALTER PACKAGE packageName (
+    | packageCompileClause
+    | (EDITIONABLE | NONEDITIONABLE)
+    )
+    ;
+
+packageCompileClause
+    : COMPILE DEBUG? (PACKAGE | SPECIFICATION | BODY)? (compilerParametersClause*)? (REUSE SETTINGS)?
     ;
 
 alterSynonym
@@ -2253,4 +2277,85 @@ externalParameter
 
 property
     : (INDICATOR (STRUCT | TDO)? | LENGTH | DURATION | MAXLEN | CHARSETID | CHARSETFORM)
+    ;
+
+alterAnalyticView
+    : ALTER ANALYTIC VIEW analyticViewName (RENAME TO analyticViewName | COMPILE)
+    ;
+
+alterAttributeDimension
+    : ALTER ATTRIBUTE DIMENSION (schemaName DOT_)? attributeDimensionName (RENAME TO attributeDimensionName | COMPILE)
+    ;
+
+createSequence
+    : CREATE SEQUENCE (schemaName DOT_)? sequenceName (SHARING EQ_ (METADATA | DATA | NONE))? createSequenceClause+
+    ;
+
+createSequenceClause
+    : (INCREMENT BY | START WITH) INTEGER_
+    | MAXVALUE INTEGER_
+    | NOMAXVALUE
+    | MINVALUE INTEGER_
+    | NOMINVALUE
+    | CYCLE
+    | NOCYCLE
+    | CACHE INTEGER_
+    | NOCACHE
+    | ORDER
+    | NOORDER
+    | KEEP
+    | NOKEEP
+    | SCALE (EXTEND | NOEXTEND)
+    | NOSCALE
+    | SHARD (EXTEND | NOEXTEND)
+    | NOSHARD
+    | SESSION
+    | GLOBAL
+    ;
+
+alterSequence
+    : ALTER SEQUENCE (schemaName DOT_)? sequenceName alterSequenceClause+
+    ;
+
+alterSequenceClause
+   : (INCREMENT BY | START WITH) INTEGER_
+   | MAXVALUE INTEGER_
+   | NOMAXVALUE
+   | MINVALUE INTEGER_
+   | NOMINVALUE
+   | RESTART
+   | CYCLE
+   | NOCYCLE
+   | CACHE INTEGER_
+   | NOCACHE
+   | ORDER
+   | NOORDER
+   | KEEP
+   | NOKEEP
+   | SCALE (EXTEND | NOEXTEND)
+   | NOSCALE
+   | SHARD (EXTEND | NOEXTEND)
+   | NOSHARD
+   | SESSION
+   | GLOBAL
+   ;
+
+createContext
+    : CREATE (OR REPLACE)? CONTEXT namespace USING (schemaName DOT_)? packageName sharingClause? (initializedClause | accessedClause)?
+    ;
+
+initializedClause
+    : INITIALIZED (EXTERNALLY | GLOBALLY)
+    ;
+
+accessedClause
+    : ACCESSED GLOBALLY
+    ;
+
+createSPFile
+    : CREATE SPFILE (EQ_ spfileName)? FROM (PFILE (EQ_ pfileName)? (AS COPY)? | MEMORY)
+    ;
+
+createPFile
+    : CREATE PFILE (EQ_ pfileName)? FROM (SPFILE (EQ_ spfileName)? (AS COPY)? | MEMORY)
     ;

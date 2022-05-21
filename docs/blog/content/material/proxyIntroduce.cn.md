@@ -117,7 +117,7 @@ rules: # 认证信息
      - root@%:root
      - sharding@:sharding
    provider:
-     type: ALL_PRIVILEGES_PERMITTED
+     type: ALL_PERMITTED
  - !TRANSACTION
    defaultType: XA
    providerType: Atomikos
@@ -126,11 +126,9 @@ rules: # 认证信息
    sqlStatementCache:
      initialCapacity: 2000
      maximumSize: 65535
-     concurrencyLevel: 4
    parseTreeCache:
      initialCapacity: 128
      maximumSize: 1024
-     concurrencyLevel: 4
 
 props: # 公用配置
  max-connections-size-per-query: 1

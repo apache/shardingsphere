@@ -29,6 +29,7 @@ public final class GeneratedKeyAssignmentTokenTest {
     @Test
     public void assertCustomGeneratedKeyAssignmentTokenToString() {
         generatedKeyAssignmentToken = new GeneratedKeyAssignmentToken(0, "id") {
+            
             @Override
             protected String getRightValue() {
                 return "0";

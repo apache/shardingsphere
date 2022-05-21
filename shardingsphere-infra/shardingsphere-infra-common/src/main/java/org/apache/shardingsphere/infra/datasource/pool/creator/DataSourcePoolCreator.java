@@ -63,7 +63,7 @@ public final class DataSourcePoolCreator {
     public static DataSource create(final DataSourceProperties dataSourceProps) {
         // TODO when aggregation is enabled, some data source properties should be changed, e.g. maxPoolSize
         DataSource result = createDataSource(dataSourceProps.getDataSourceClassName());
-        Optional<DataSourcePoolMetaData> poolMetaData = DataSourcePoolMetaDataFactory.newInstance(dataSourceProps.getDataSourceClassName());
+        Optional<DataSourcePoolMetaData> poolMetaData = DataSourcePoolMetaDataFactory.findInstance(dataSourceProps.getDataSourceClassName());
         DataSourceReflection dataSourceReflection = new DataSourceReflection(result);
         if (poolMetaData.isPresent()) {
             setDefaultFields(dataSourceReflection, poolMetaData.get());

@@ -18,9 +18,10 @@
 package org.apache.shardingsphere.data.pipeline.core.execute;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPI;
+import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.yaml.RuleAlteredJobConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
@@ -37,6 +38,8 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.confi
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
 
 /**
@@ -47,13 +50,15 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
     
     private static final Pattern CONFIG_PATTERN = Pattern.compile(DataPipelineConstants.DATA_PIPELINE_ROOT + "/(\\d{2}[0-9a-f]+)/config");
     
+    private final ExecutorService executor = Executors.newFixedThreadPool(20);
+    
     @Override
     protected void doStart() {
         watchGovernanceRepositoryConfiguration();
     }
     
     private void watchGovernanceRepositoryConfiguration() {
-        RuleAlteredJobAPI ruleAlteredJobAPI = PipelineJobAPIFactory.newInstance();
+        RuleAlteredJobAPI ruleAlteredJobAPI = RuleAlteredJobAPIFactory.getInstance();
         PipelineAPIFactory.getGovernanceRepositoryAPI().watch(DataPipelineConstants.DATA_PIPELINE_ROOT, event -> {
             Optional<JobConfigurationPOJO> jobConfigPOJOOptional = getJobConfigPOJO(event);
             if (!jobConfigPOJOOptional.isPresent()) {
@@ -66,7 +71,7 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
                 log.info("jobId={}, deleted={}, disabled={}", jobConfigPOJO.getJobName(), deleted, disabled);
                 RuleAlteredJobSchedulerCenter.stop(jobConfigPOJO.getJobName());
                 // TODO refactor: dispatch to different job types
-                RuleAlteredJobConfiguration jobConfig = YamlEngine.unmarshal(jobConfigPOJO.getJobParameter(), RuleAlteredJobConfiguration.class, true);
+                RuleAlteredJobConfiguration jobConfig = RuleAlteredJobConfigurationSwapper.swapToObject(jobConfigPOJO.getJobParameter());
                 if (deleted) {
                     new RuleAlteredJobPreparer().cleanup(jobConfig);
                 } else if (RuleAlteredJobProgressDetector.isJobSuccessful(jobConfig.getJobShardingCount(), ruleAlteredJobAPI.getProgress(jobConfig).values())) {
@@ -80,12 +85,10 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
             switch (event.getType()) {
                 case ADDED:
                 case UPDATED:
-                    RuleAlteredJobConfiguration jobConfig = YamlEngine.unmarshal(jobConfigPOJO.getJobParameter(), RuleAlteredJobConfiguration.class, true);
-                    String databaseName = jobConfig.getDatabaseName();
-                    if (PipelineSimpleLock.getInstance().tryLock(databaseName, 1000)) {
-                        execute(jobConfigPOJO);
+                    if (RuleAlteredJobSchedulerCenter.existJob(jobConfigPOJO.getJobName())) {
+                        log.info("{} added to executing jobs failed since it already exists", jobConfigPOJO.getJobName());
                     } else {
-                        log.info("tryLock failed, databaseName={}", databaseName);
+                        executor.execute(() -> execute(jobConfigPOJO));
                     }
                     break;
                 default:
@@ -109,15 +112,19 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
     }
     
     private void execute(final JobConfigurationPOJO jobConfigPOJO) {
-        if (!RuleAlteredJobSchedulerCenter.existJob(jobConfigPOJO.getJobName())) {
+        RuleAlteredJobConfiguration jobConfig = RuleAlteredJobConfigurationSwapper.swapToObject(jobConfigPOJO.getJobParameter());
+        String databaseName = jobConfig.getDatabaseName();
+        if (PipelineSimpleLock.getInstance().tryLock(databaseName, 3000)) {
             log.info("{} added to executing jobs success", jobConfigPOJO.getJobName());
             new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(), new RuleAlteredJob(), jobConfigPOJO.toJobConfiguration()).execute();
         } else {
-            log.info("{} added to executing jobs failed since it already exists", jobConfigPOJO.getJobName());
+            log.info("tryLock failed, databaseName={}", databaseName);
         }
     }
     
     @Override
     protected void doStop() {
+        executor.shutdown();
+        executor.shutdownNow();
     }
 }

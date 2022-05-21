@@ -19,7 +19,7 @@ package org.apache.shardingsphere.singletable.metadata;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataBuilder;
@@ -68,17 +68,14 @@ public final class SingleTableSchemaBuilderTest {
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private DataSource dataSource;
     
-    @Mock
-    private ConfigurationProperties props;
-    
     @Test
     public void assertBuildOfSingleTables() throws SQLException {
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(dataSource.getConnection()).thenReturn(connection);
         Collection<ShardingSphereRule> rules = Collections.singletonList(mockSingleTableRuleLoad(connection));
         mockSQLLoad(connection);
-        Map<String, SchemaMetaData> actual = TableMetaDataBuilder.load(Arrays.asList(singleTableNames),
-                new SchemaBuilderMaterials(databaseType, Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSource), rules, props, DefaultSchema.LOGIC_NAME));
+        Map<String, SchemaMetaData> actual = TableMetaDataBuilder.load(Arrays.asList(singleTableNames), new SchemaBuilderMaterials(
+                databaseType, databaseType, Collections.singletonMap(DefaultDatabase.LOGIC_NAME, dataSource), rules, new ConfigurationProperties(new Properties()), DefaultDatabase.LOGIC_NAME));
         assertThat(actual.size(), is(1));
         assertThat(actual.values().iterator().next().getTables().size(), is(2));
         assertActualOfSingleTables(actual.values().iterator().next().getTables().values());
@@ -116,7 +113,7 @@ public final class SingleTableSchemaBuilderTest {
         when(connection.getMetaData().getTables(any(), any(), eq(null), any())).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true, true, true, true, true, true, false);
         when(resultSet.getString(TABLE_NAME)).thenReturn(singleTableNames[0], singleTableNames[1]);
-        return new SingleTableRule(new SingleTableRuleConfiguration(), DefaultSchema.LOGIC_NAME, databaseType, Collections.singletonMap("logic_db", dataSource),
+        return new SingleTableRule(new SingleTableRuleConfiguration(), DefaultDatabase.LOGIC_NAME, databaseType, Collections.singletonMap("logic_db", dataSource),
                 Collections.emptyList(), new ConfigurationProperties(new Properties()));
     }
     

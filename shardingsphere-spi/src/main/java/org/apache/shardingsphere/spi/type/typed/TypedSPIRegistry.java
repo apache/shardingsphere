@@ -20,7 +20,6 @@ package org.apache.shardingsphere.spi.type.typed;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.aware.SPIPropertiesAware;
 import org.apache.shardingsphere.spi.exception.ServiceProviderNotFoundException;
 import org.apache.shardingsphere.spi.lifecycle.SPIPostProcessor;
 
@@ -62,12 +61,9 @@ public final class TypedSPIRegistry {
     public static <T extends TypedSPI> Optional<T> findRegisteredService(final Class<T> spiClass, final String type, final Properties props) {
         for (T each : ShardingSphereServiceLoader.getServiceInstances(spiClass)) {
             if (matchesType(type, each)) {
-                // TODO for AlgorithmFactory contains judge only, should fix here
-                if (null != props && each instanceof SPIPostProcessor) {
-                    init((SPIPostProcessor) each, props);
-                }
-                if (each instanceof SPIPropertiesAware) {
-                    ((SPIPropertiesAware) each).setProps(null == props ? new Properties() : props);
+                Properties stringTypeProps = convertToStringTypedProperties(props);
+                if (each instanceof SPIPostProcessor) {
+                    ((SPIPostProcessor) each).init(stringTypeProps);
                 }
                 return Optional.of(each);
             }
@@ -75,14 +71,17 @@ public final class TypedSPIRegistry {
         return Optional.empty();
     }
     
-    private static boolean matchesType(final String type, final TypedSPI typedSPI) {
-        return typedSPI.getType().equalsIgnoreCase(type) || typedSPI.getTypeAliases().contains(type);
+    private static boolean matchesType(final String type, final TypedSPI instance) {
+        return instance.getType().equalsIgnoreCase(type) || instance.getTypeAliases().contains(type);
     }
     
-    private static <T extends SPIPostProcessor> void init(final T spiPostProcessor, final Properties props) {
-        Properties newProps = new Properties();
-        props.forEach((key, value) -> newProps.setProperty(key.toString(), null == value ? null : value.toString()));
-        spiPostProcessor.init(newProps);
+    private static Properties convertToStringTypedProperties(final Properties props) {
+        if (null == props) {
+            return new Properties();
+        }
+        Properties result = new Properties();
+        props.forEach((key, value) -> result.setProperty(key.toString(), null == value ? null : value.toString()));
+        return result;
     }
     
     /**

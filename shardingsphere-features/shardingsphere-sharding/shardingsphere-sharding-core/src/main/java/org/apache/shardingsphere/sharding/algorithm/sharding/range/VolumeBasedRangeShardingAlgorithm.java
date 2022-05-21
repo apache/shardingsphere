@@ -20,8 +20,6 @@ package org.apache.shardingsphere.sharding.algorithm.sharding.range;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Range;
 import com.google.common.math.LongMath;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.math.RoundingMode;
 import java.util.HashMap;
@@ -39,18 +37,14 @@ public final class VolumeBasedRangeShardingAlgorithm extends AbstractRangeShardi
     
     private static final String SHARDING_VOLUME_KEY = "sharding-volume";
     
-    @Getter
-    @Setter
-    private Properties props;
-    
     @Override
     public Map<Integer, Range<Comparable<?>>> calculatePartitionRange(final Properties props) {
         Preconditions.checkState(props.containsKey(RANGE_LOWER_KEY), "Lower range cannot be null.");
         Preconditions.checkState(props.containsKey(RANGE_UPPER_KEY), "Upper range cannot be null.");
         Preconditions.checkState(props.containsKey(SHARDING_VOLUME_KEY), "Sharding volume cannot be null.");
-        long lower = Long.parseLong(props.get(RANGE_LOWER_KEY).toString());
-        long upper = Long.parseLong(props.get(RANGE_UPPER_KEY).toString());
-        long volume = Long.parseLong(props.get(SHARDING_VOLUME_KEY).toString());
+        long lower = Long.parseLong(props.getProperty(RANGE_LOWER_KEY));
+        long upper = Long.parseLong(props.getProperty(RANGE_UPPER_KEY));
+        long volume = Long.parseLong(props.getProperty(SHARDING_VOLUME_KEY));
         Preconditions.checkArgument(upper - lower >= volume, "Range can not be smaller than volume.");
         int partitionSize = Math.toIntExact(LongMath.divide(upper - lower, volume, RoundingMode.CEILING));
         Map<Integer, Range<Comparable<?>>> result = new HashMap<>(partitionSize + 2, 1);

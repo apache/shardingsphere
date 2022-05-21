@@ -39,32 +39,32 @@ public final class SchemaRuleBuilderFactory {
     }
     
     /**
-     * Create new instance of schema rule builder.
+     * Get instances of schema rule builder.
      *
-     * @return new instance of schema rule builder
+     * @return got instances
      */
-    public static Collection<SchemaRuleBuilder> newInstance() {
+    public static Collection<SchemaRuleBuilder> getInstances() {
         return OrderedSPIRegistry.getRegisteredServices(SchemaRuleBuilder.class);
     }
     
     /**
-     * Create new instance of schema rule builder.
+     * Get instance map of schema rule builder.
      *
      * @param ruleConfigs rule configurations
-     * @return new instance of schema rule builder
+     * @return got instance map
      */
-    public static Map<RuleConfiguration, SchemaRuleBuilder> newInstance(final Collection<RuleConfiguration> ruleConfigs) {
+    public static Map<RuleConfiguration, SchemaRuleBuilder> getInstanceMap(final Collection<RuleConfiguration> ruleConfigs) {
         return OrderedSPIRegistry.getRegisteredServices(SchemaRuleBuilder.class, ruleConfigs);
     }
     
     /**
-     * Create new instance of schema rule builder.
+     * Get instance map of schema rule builder.
      *
      * @param ruleConfigs rule configurations
      * @param orderComparator order comparator
-     * @return new instance of schema rule builder
+     * @return got instance map
      */
-    public static Map<RuleConfiguration, SchemaRuleBuilder> newInstance(final Collection<RuleConfiguration> ruleConfigs, final Comparator<Integer> orderComparator) {
+    public static Map<RuleConfiguration, SchemaRuleBuilder> getInstanceMap(final Collection<RuleConfiguration> ruleConfigs, final Comparator<Integer> orderComparator) {
         return OrderedSPIRegistry.getRegisteredServices(SchemaRuleBuilder.class, ruleConfigs, orderComparator);
     }
 }

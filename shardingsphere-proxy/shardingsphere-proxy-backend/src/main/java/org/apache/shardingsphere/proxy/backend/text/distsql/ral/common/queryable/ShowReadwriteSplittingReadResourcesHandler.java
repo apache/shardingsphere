@@ -20,11 +20,11 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryabl
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.exception.DatabaseNotExistedException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.schema.QualifiedDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.type.ExportableRule;
-import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
-import org.apache.shardingsphere.infra.storage.StorageNodeStatus;
+import org.apache.shardingsphere.mode.metadata.storage.StorageNodeDataSource;
+import org.apache.shardingsphere.mode.metadata.storage.StorageNodeStatus;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.service.StorageNodeStatusService;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -76,9 +76,9 @@ public final class ShowReadwriteSplittingReadResourcesHandler extends QueryableR
     protected Collection<List<Object>> getRows(final ContextManager contextManager) {
         String databaseName = getDatabaseName();
         MetaDataContexts metaDataContexts = contextManager.getMetaDataContexts();
-        ShardingSphereMetaData metaData = metaDataContexts.getMetaData(databaseName);
-        Collection<String> allReadResources = getAllReadResources(metaData);
-        Map<String, StorageNodeDataSource> persistentReadResources = getPersistentReadResources(databaseName, metaDataContexts.getMetaDataPersistService().orElse(null));
+        ShardingSphereDatabase database = metaDataContexts.getDatabaseMetaData(databaseName);
+        Collection<String> allReadResources = getAllReadResources(database);
+        Map<String, StorageNodeDataSource> persistentReadResources = getPersistentReadResources(databaseName, metaDataContexts.getPersistService().orElse(null));
         return buildRows(allReadResources, persistentReadResources);
     }
     
@@ -93,9 +93,9 @@ public final class ShowReadwriteSplittingReadResourcesHandler extends QueryableR
         return result;
     }
     
-    private Collection<String> getAllReadResources(final ShardingSphereMetaData metaData) {
+    private Collection<String> getAllReadResources(final ShardingSphereDatabase database) {
         Collection<String> result = new LinkedHashSet<>();
-        Map<String, Map<String, String>> readResourceData = getReadResourceData(metaData);
+        Map<String, Map<String, String>> readResourceData = getReadResourceData(database);
         readResourceData.forEach((key, value) -> {
             String resources = value.getOrDefault(ExportableConstants.REPLICA_DATA_SOURCE_NAMES, "");
             result.addAll(deconstructString(resources));
@@ -103,8 +103,8 @@ public final class ShowReadwriteSplittingReadResourcesHandler extends QueryableR
         return result;
     }
     
-    private Map<String, Map<String, String>> getReadResourceData(final ShardingSphereMetaData metaData) {
-        return metaData.getRuleMetaData().getRules().stream().filter(each -> each instanceof ExportableRule)
+    private Map<String, Map<String, String>> getReadResourceData(final ShardingSphereDatabase database) {
+        return database.getRuleMetaData().getRules().stream().filter(each -> each instanceof ExportableRule)
                 .map(each -> ((ExportableRule) each).export(ExportableConstants.EXPORTABLE_KEY_DATA_SOURCE))
                 .map(each -> (Map<String, Map<String, String>>) each.orElse(Collections.emptyMap()))
                 .map(Map::entrySet).flatMap(Collection::stream).filter(entry -> !entry.getValue().isEmpty())

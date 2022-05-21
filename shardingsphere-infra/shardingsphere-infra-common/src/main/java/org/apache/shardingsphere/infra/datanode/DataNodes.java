@@ -41,7 +41,7 @@ public final class DataNodes {
     
     public DataNodes(final Collection<ShardingSphereRule> rules) {
         this.rules = rules;
-        dataNodeBuilders = DataNodeBuilderFactory.newInstance(rules);
+        dataNodeBuilders = DataNodeBuilderFactory.getInstances(rules);
     }
     
     /**

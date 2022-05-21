@@ -17,12 +17,22 @@
 
 package org.apache.shardingsphere.dbdiscovery.distsql.handler.fixture;
 
+import lombok.Getter;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
 import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
 
 import javax.sql.DataSource;
+import java.util.Properties;
 
+@Getter
 public final class DistSQLDatabaseDiscoveryProviderAlgorithmFixture implements DatabaseDiscoveryProviderAlgorithm {
+    
+    private Properties props;
+    
+    @Override
+    public void init(final Properties props) {
+        this.props = props;
+    }
     
     @Override
     public void checkEnvironment(final String databaseName, final DataSource dataSource) {

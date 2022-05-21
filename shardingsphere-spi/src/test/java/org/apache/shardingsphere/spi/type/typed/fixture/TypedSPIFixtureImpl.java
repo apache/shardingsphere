@@ -18,17 +18,20 @@
 package org.apache.shardingsphere.spi.type.typed.fixture;
 
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Properties;
 
 @Getter
-@Setter
 public final class TypedSPIFixtureImpl implements TypedSPIFixture {
     
-    private Properties props = new Properties();
+    private String value;
+    
+    @Override
+    public void init(final Properties props) {
+        value = props.getProperty("key");
+    }
     
     @Override
     public String getType() {

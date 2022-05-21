@@ -37,8 +37,9 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.internal.util.reflection.FieldReader;
-import org.mockito.internal.util.reflection.FieldSetter;
+import org.mockito.plugins.MemberAccessor;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -89,7 +90,8 @@ public final class ShardingSphereTransformerTest {
                 .build()
                 .install();
         interceptorPointMap.put(interceptorPointInTwice.getClassNameOfTarget(), interceptorPointInTwice);
-        FieldSetter.setField(LOADER, LOADER.getClass().getDeclaredField("interceptorPointMap"), interceptorPointMap);
+        MemberAccessor accessor = Plugins.getMemberAccessor();
+        accessor.set(LOADER.getClass().getDeclaredField("interceptorPointMap"), LOADER, interceptorPointMap);
         byteBuddyAgent = new AgentBuilder.Default().with(new ByteBuddy().with(TypeValidation.ENABLED))
                 .ignore(ElementMatchers.isSynthetic()).or(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent.")
                         .and(ElementMatchers.not(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent.core.mock"))))

@@ -42,6 +42,7 @@ import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEve
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.sql.Types;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
@@ -139,7 +140,7 @@ public final class GovernanceRepositoryAPIImplTest {
     }
     
     private RuleAlteredJobContext mockJobContext() {
-        RuleAlteredJobContext result = new RuleAlteredJobContext(JobConfigurationBuilder.createJobConfiguration());
+        RuleAlteredJobContext result = new RuleAlteredJobContext(JobConfigurationBuilder.createJobConfiguration(), 0);
         TaskConfiguration taskConfig = result.getTaskConfig();
         result.getInventoryTasks().add(mockInventoryTask(taskConfig));
         result.getIncrementalTasks().add(mockIncrementalTask(taskConfig));
@@ -151,7 +152,8 @@ public final class GovernanceRepositoryAPIImplTest {
         dumperConfig.setPosition(new PlaceholderPosition());
         dumperConfig.setActualTableName("t_order");
         dumperConfig.setLogicTableName("t_order");
-        dumperConfig.setPrimaryKey("order_id");
+        dumperConfig.setUniqueKey("order_id");
+        dumperConfig.setUniqueKeyDataType(Types.INTEGER);
         dumperConfig.setShardingItem(0);
         PipelineDataSourceWrapper dataSource = mock(PipelineDataSourceWrapper.class);
         PipelineTableMetaDataLoader metaDataLoader = new PipelineTableMetaDataLoader(dataSource);

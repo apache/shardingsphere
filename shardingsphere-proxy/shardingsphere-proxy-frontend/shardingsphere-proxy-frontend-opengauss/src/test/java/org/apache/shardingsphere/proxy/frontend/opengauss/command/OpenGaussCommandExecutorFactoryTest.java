@@ -56,8 +56,9 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -74,7 +75,7 @@ public final class OpenGaussCommandExecutorFactoryTest {
     public void assertNewOpenGaussBatchBindExecutor() throws SQLException {
         OpenGaussComBatchBindPacket batchBindPacket = mock(OpenGaussComBatchBindPacket.class);
         CommandExecutor actual = OpenGaussCommandExecutorFactory.newInstance(OpenGaussCommandPacketType.BATCH_BIND_COMMAND, batchBindPacket, connectionSession, connectionContext);
-        assertTrue(actual instanceof OpenGaussComBatchBindExecutor);
+        assertThat(actual, instanceOf(OpenGaussComBatchBindExecutor.class));
     }
     
     @Test
@@ -82,13 +83,13 @@ public final class OpenGaussCommandExecutorFactoryTest {
         PostgreSQLComQueryPacket queryPacket = mock(PostgreSQLComQueryPacket.class);
         when(queryPacket.getSql()).thenReturn("");
         CommandExecutor actual = OpenGaussCommandExecutorFactory.newInstance(PostgreSQLCommandPacketType.SIMPLE_QUERY, queryPacket, connectionSession, connectionContext);
-        assertTrue(actual instanceof OpenGaussComQueryExecutor);
+        assertThat(actual, instanceOf(OpenGaussComQueryExecutor.class));
     }
     
     @Test
     public void assertNewUnsupportedExecutor() throws SQLException {
         CommandExecutor actual = OpenGaussCommandExecutorFactory.newInstance(PostgreSQLCommandPacketType.FLUSH_COMMAND, null, connectionSession, connectionContext);
-        assertTrue(actual instanceof PostgreSQLUnsupportedCommandExecutor);
+        assertThat(actual, instanceOf(PostgreSQLUnsupportedCommandExecutor.class));
     }
     
     @Test
@@ -107,13 +108,13 @@ public final class OpenGaussCommandExecutorFactoryTest {
         when(packet.isContainsBatchedStatements()).thenReturn(false);
         when(packet.getPackets()).thenReturn(Arrays.asList(parsePacket, bindPacket, describePacket, executePacket, syncPacket));
         CommandExecutor actual = OpenGaussCommandExecutorFactory.newInstance(null, packet, connectionSession, connectionContext);
-        assertTrue(actual instanceof PostgreSQLAggregatedCommandExecutor);
+        assertThat(actual, instanceOf(PostgreSQLAggregatedCommandExecutor.class));
         Iterator<CommandExecutor> actualPacketsIterator = getExecutorsFromAggregatedCommandExecutor((PostgreSQLAggregatedCommandExecutor) actual).iterator();
-        assertTrue(actualPacketsIterator.next() instanceof PostgreSQLComParseExecutor);
-        assertTrue(actualPacketsIterator.next() instanceof PostgreSQLComBindExecutor);
-        assertTrue(actualPacketsIterator.next() instanceof PostgreSQLComDescribeExecutor);
-        assertTrue(actualPacketsIterator.next() instanceof PostgreSQLComExecuteExecutor);
-        assertTrue(actualPacketsIterator.next() instanceof PostgreSQLComSyncExecutor);
+        assertThat(actualPacketsIterator.next(), instanceOf(PostgreSQLComParseExecutor.class));
+        assertThat(actualPacketsIterator.next(), instanceOf(PostgreSQLComBindExecutor.class));
+        assertThat(actualPacketsIterator.next(), instanceOf(PostgreSQLComDescribeExecutor.class));
+        assertThat(actualPacketsIterator.next(), instanceOf(PostgreSQLComExecuteExecutor.class));
+        assertThat(actualPacketsIterator.next(), instanceOf(PostgreSQLComSyncExecutor.class));
         assertFalse(actualPacketsIterator.hasNext());
     }
     
@@ -137,13 +138,13 @@ public final class OpenGaussCommandExecutorFactoryTest {
         when(packet.getFirstBindIndex()).thenReturn(1);
         when(packet.getLastExecuteIndex()).thenReturn(6);
         CommandExecutor actual = OpenGaussCommandExecutorFactory.newInstance(null, packet, connectionSession, connectionContext);
-        assertTrue(actual instanceof PostgreSQLAggregatedCommandExecutor);
+        assertThat(actual, instanceOf(PostgreSQLAggregatedCommandExecutor.class));
         Iterator<CommandExecutor> actualPacketsIterator = getExecutorsFromAggregatedCommandExecutor((PostgreSQLAggregatedCommandExecutor) actual).iterator();
-        assertTrue(actualPacketsIterator.next() instanceof PostgreSQLComParseExecutor);
-        assertTrue(actualPacketsIterator.next() instanceof PostgreSQLAggregatedBatchedStatementsCommandExecutor);
-        assertTrue(actualPacketsIterator.next() instanceof PostgreSQLComCloseExecutor);
-        assertTrue(actualPacketsIterator.next() instanceof PostgreSQLComSyncExecutor);
-        assertTrue(actualPacketsIterator.next() instanceof PostgreSQLComTerminationExecutor);
+        assertThat(actualPacketsIterator.next(), instanceOf(PostgreSQLComParseExecutor.class));
+        assertThat(actualPacketsIterator.next(), instanceOf(PostgreSQLAggregatedBatchedStatementsCommandExecutor.class));
+        assertThat(actualPacketsIterator.next(), instanceOf(PostgreSQLComCloseExecutor.class));
+        assertThat(actualPacketsIterator.next(), instanceOf(PostgreSQLComSyncExecutor.class));
+        assertThat(actualPacketsIterator.next(), instanceOf(PostgreSQLComTerminationExecutor.class));
         assertFalse(actualPacketsIterator.hasNext());
     }
     

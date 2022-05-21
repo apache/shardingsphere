@@ -38,7 +38,7 @@ public final class DatabaseDiscoveryRuleConfigurationCheckerTest {
     @Test
     public void assertValidCheck() {
         DatabaseDiscoveryRuleConfiguration config = getValidConfiguration();
-        Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.newInstance(config);
+        Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.findInstance(config);
         assertTrue(checker.isPresent());
         assertThat(checker.get(), instanceOf(DatabaseDiscoveryRuleConfigurationChecker.class));
         checker.get().check("test", config);
@@ -56,7 +56,7 @@ public final class DatabaseDiscoveryRuleConfigurationCheckerTest {
     @Test(expected = IllegalStateException.class)
     public void assertInvalidCheck() {
         DatabaseDiscoveryRuleConfiguration config = getInvalidConfiguration();
-        Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.newInstance(config);
+        Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.findInstance(config);
         assertTrue(checker.isPresent());
         assertThat(checker.get(), instanceOf(DatabaseDiscoveryRuleConfigurationChecker.class));
         checker.get().check("test", config);

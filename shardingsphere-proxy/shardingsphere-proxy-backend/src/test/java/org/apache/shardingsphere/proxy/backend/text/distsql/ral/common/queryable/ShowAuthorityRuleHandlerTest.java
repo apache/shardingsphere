@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.junit.Test;
 
 import java.sql.SQLException;
@@ -38,7 +39,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowAuthorityRuleHandlerTest {
+public final class ShowAuthorityRuleHandlerTest extends ProxyContextRestorer {
     
     private final ShowAuthorityRuleHandler handler = new ShowAuthorityRuleHandler().initStatement(new ShowAuthorityRuleStatement());
     
@@ -46,20 +47,20 @@ public final class ShowAuthorityRuleHandlerTest {
     public void assertAuthorityRule() throws SQLException {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getGlobalRuleMetaData()).thenReturn(getGlobalRuleMetaData());
-        ProxyContext.getInstance().init(contextManager);
+        ProxyContext.init(contextManager);
         handler.execute();
         handler.next();
         List<Object> data = new ArrayList<>(handler.getRowData());
         assertThat(data.size(), is(3));
         assertThat(data.get(0), is("root@localhost"));
-        assertThat(data.get(1), is("ALL_PRIVILEGES_PERMITTED"));
+        assertThat(data.get(1), is("ALL_PERMITTED"));
         assertThat(data.get(2), is(""));
     }
     
     private ShardingSphereRuleMetaData getGlobalRuleMetaData() {
         ShardingSphereUser root = new ShardingSphereUser("root", "", "localhost");
         AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(
-                Collections.singletonList(root), new ShardingSphereAlgorithmConfiguration("ALL_PRIVILEGES_PERMITTED", new Properties()));
+                Collections.singletonList(root), new ShardingSphereAlgorithmConfiguration("ALL_PERMITTED", new Properties()));
         return new ShardingSphereRuleMetaData(Collections.singleton(ruleConfig), Collections.emptyList());
     }
 }

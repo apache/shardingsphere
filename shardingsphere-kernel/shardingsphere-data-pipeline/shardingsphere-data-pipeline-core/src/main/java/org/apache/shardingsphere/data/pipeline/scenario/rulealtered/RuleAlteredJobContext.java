@@ -66,6 +66,7 @@ public final class RuleAlteredJobContext {
     private final PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager();
     
     private final LazyInitializer<PipelineDataSourceWrapper> sourceDataSourceLazyInitializer = new LazyInitializer<PipelineDataSourceWrapper>() {
+        
         @Override
         protected PipelineDataSourceWrapper initialize() {
             return dataSourceManager.getDataSource(taskConfig.getDumperConfig().getDataSourceConfig());
@@ -73,6 +74,7 @@ public final class RuleAlteredJobContext {
     };
     
     private final LazyInitializer<PipelineTableMetaDataLoader> sourceMetaDataLoaderLazyInitializer = new LazyInitializer<PipelineTableMetaDataLoader>() {
+        
         @Override
         protected PipelineTableMetaDataLoader initialize() throws ConcurrentException {
             return new PipelineTableMetaDataLoader(sourceDataSourceLazyInitializer.get());
@@ -81,13 +83,12 @@ public final class RuleAlteredJobContext {
     
     private RuleAlteredJobPreparer jobPreparer;
     
-    public RuleAlteredJobContext(final RuleAlteredJobConfiguration jobConfig) {
+    public RuleAlteredJobContext(final RuleAlteredJobConfiguration jobConfig, final int jobShardingItem) {
         ruleAlteredContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
         this.jobConfig = jobConfig;
-        jobConfig.buildHandleConfig();
         jobId = jobConfig.getJobId();
-        shardingItem = jobConfig.getJobShardingItem();
-        taskConfig = RuleAlteredJobWorker.buildTaskConfig(jobConfig, ruleAlteredContext.getOnRuleAlteredActionConfig());
+        this.shardingItem = jobShardingItem;
+        taskConfig = RuleAlteredJobWorker.buildTaskConfig(jobConfig, jobShardingItem, ruleAlteredContext.getOnRuleAlteredActionConfig());
     }
     
     /**

@@ -42,17 +42,17 @@ public final class ConnectionTransaction {
     
     private final ShardingSphereTransactionManager transactionManager;
     
-    public ConnectionTransaction(final String schemaName, final TransactionContexts transactionContexts) {
-        this(schemaName, TransactionType.LOCAL, transactionContexts);
+    public ConnectionTransaction(final String databaseName, final TransactionContexts transactionContexts) {
+        this(databaseName, TransactionType.LOCAL, transactionContexts);
     }
     
-    public ConnectionTransaction(final String schemaName, final TransactionRule rule, final TransactionContexts transactionContexts) {
-        this(schemaName, rule.getDefaultType(), transactionContexts);
+    public ConnectionTransaction(final String databaseName, final TransactionRule rule, final TransactionContexts transactionContexts) {
+        this(databaseName, rule.getDefaultType(), transactionContexts);
     }
     
-    public ConnectionTransaction(final String schemaName, final TransactionType transactionType, final TransactionContexts transactionContexts) {
+    public ConnectionTransaction(final String databaseName, final TransactionType transactionType, final TransactionContexts transactionContexts) {
         this.transactionType = transactionType;
-        transactionManager = transactionContexts.getEngines().get(schemaName).getTransactionManager(transactionType);
+        transactionManager = transactionContexts.getEngines().get(databaseName).getTransactionManager(transactionType);
         TransactionTypeHolder.set(transactionType);
     }
     

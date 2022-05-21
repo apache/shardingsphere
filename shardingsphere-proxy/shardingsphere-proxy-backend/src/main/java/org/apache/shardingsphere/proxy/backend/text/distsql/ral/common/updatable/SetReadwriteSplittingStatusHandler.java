@@ -25,13 +25,13 @@ import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResour
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.exception.DatabaseNotExistedException;
 import org.apache.shardingsphere.infra.metadata.schema.QualifiedDatabase;
-import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
-import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
-import org.apache.shardingsphere.infra.storage.StorageNodeRole;
-import org.apache.shardingsphere.infra.storage.StorageNodeStatus;
+import org.apache.shardingsphere.mode.metadata.storage.StorageNodeDataSource;
+import org.apache.shardingsphere.mode.metadata.storage.StorageNodeRole;
+import org.apache.shardingsphere.mode.metadata.storage.StorageNodeStatus;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.service.StorageNodeStatusService;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.storage.event.DataSourceDisabledEvent;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
@@ -86,7 +86,7 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
     }
     
     private ReadwriteSplittingRuleConfiguration checkReadwriteSplittingRule(final ContextManager contextManager, final String databaseName) {
-        Optional<ReadwriteSplittingRuleConfiguration> result = contextManager.getMetaDataContexts().getMetaData(databaseName)
+        Optional<ReadwriteSplittingRuleConfiguration> result = contextManager.getMetaDataContexts().getDatabaseMetaData(databaseName)
                 .getRuleMetaData().findRuleConfiguration(ReadwriteSplittingRuleConfiguration.class).stream().findAny();
         if (!result.isPresent()) {
             throw new UnsupportedOperationException("The current schema has no read_write splitting rules");
@@ -98,7 +98,7 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
         if (!"Cluster".equals(contextManager.getInstanceContext().getModeConfiguration().getType())) {
             throw new UnsupportedOperationException("Mode must be `Cluster`.");
         }
-        if (!contextManager.getMetaDataContexts().getMetaDataPersistService().isPresent()) {
+        if (!contextManager.getMetaDataContexts().getPersistService().isPresent()) {
             throw new UnsupportedOperationException("Persistence must be configured");
         }
     }
@@ -120,7 +120,7 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
     }
     
     private Map<String, String> getDisabledResources(final ContextManager contextManager, final String databaseName) {
-        Optional<MetaDataPersistService> persistService = contextManager.getMetaDataContexts().getMetaDataPersistService();
+        Optional<MetaDataPersistService> persistService = contextManager.getMetaDataContexts().getPersistService();
         Map<String, String> result = new HashMap<>();
         persistService.ifPresent(optional -> {
             Map<String, String> disableNodes = getDisabledStorageNodes(databaseName, optional).stream()
@@ -136,7 +136,8 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
     }
     
     private void checkResourceExists(final ContextManager contextManager, final String databaseName, final String toBeDisabledResource) throws DistSQLException {
-        Collection<String> notExistedResources = contextManager.getMetaDataContexts().getMetaData(databaseName).getResource().getNotExistedResources(Collections.singleton(toBeDisabledResource));
+        Collection<String> notExistedResources = contextManager
+                .getMetaDataContexts().getDatabaseMetaData(databaseName).getResource().getNotExistedResources(Collections.singleton(toBeDisabledResource));
         DistSQLException.predictionThrow(notExistedResources.isEmpty(), () -> new RequiredResourceMissedException(databaseName, Collections.singleton(toBeDisabledResource)));
     }
     
@@ -197,7 +198,7 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
     
     private Map<String, Map<String, String>> getExportedReadwriteSplittingRules(final ContextManager contextManager, final String databaseName) {
         Map<String, Map<String, String>> result = new HashMap<>();
-        contextManager.getMetaDataContexts().getMetaData(databaseName).getRuleMetaData().findRules(ReadwriteSplittingRule.class).stream().findAny()
+        contextManager.getMetaDataContexts().getDatabaseMetaData(databaseName).getRuleMetaData().findRules(ReadwriteSplittingRule.class).stream().findAny()
                 .filter(each -> each.containExportableKey(Arrays.asList(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE, ExportableConstants.EXPORTABLE_KEY_ENABLED_DATA_SOURCE)))
                 .map(each -> each.export(Arrays.asList(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE, ExportableConstants.EXPORTABLE_KEY_ENABLED_DATA_SOURCE)))
                 .ifPresent(optional -> {

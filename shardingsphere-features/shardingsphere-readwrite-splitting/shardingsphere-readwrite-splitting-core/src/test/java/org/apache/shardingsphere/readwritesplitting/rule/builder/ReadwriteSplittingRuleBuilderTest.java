@@ -38,7 +38,7 @@ public final class ReadwriteSplittingRuleBuilderTest {
     public void assertBuild() {
         ReadwriteSplittingRuleConfiguration ruleConfig = new ReadwriteSplittingRuleConfiguration(
                 Collections.singletonList(new ReadwriteSplittingDataSourceRuleConfiguration("name", "Static", createProperties(), "loadBalancerName")), Collections.emptyMap());
-        SchemaRuleBuilder builder = SchemaRuleBuilderFactory.newInstance(Collections.singletonList(ruleConfig)).get(ruleConfig);
+        SchemaRuleBuilder builder = SchemaRuleBuilderFactory.getInstanceMap(Collections.singletonList(ruleConfig)).get(ruleConfig);
         assertThat(builder.build(ruleConfig, "", Collections.emptyMap(), Collections.emptyList(), new ConfigurationProperties(new Properties())), instanceOf(ReadwriteSplittingRule.class));
     }
     

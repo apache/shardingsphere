@@ -40,7 +40,7 @@
 #      - root@%:root
 #      - sharding@:sharding
 #    provider:
-#      type: ALL_PRIVILEGES_PERMITTED
+#      type: ALL_PERMITTED
 #  - !TRANSACTION
 #    defaultType: XA
 #    providerType: Atomikos
@@ -55,11 +55,9 @@
 #    sqlStatementCache:
 #      initialCapacity: 2000
 #      maximumSize: 65535
-#      concurrencyLevel: 4
 #    parseTreeCache:
 #      initialCapacity: 128
 #      maximumSize: 1024
-#      concurrencyLevel: 4
 
 #props:
 #  max-connections-size-per-query: 1

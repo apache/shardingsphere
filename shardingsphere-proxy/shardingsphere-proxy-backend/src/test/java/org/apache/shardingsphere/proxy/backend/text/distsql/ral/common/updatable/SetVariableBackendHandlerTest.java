@@ -21,11 +21,10 @@ import io.netty.util.DefaultAttributeMap;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.SetVariableStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -39,9 +38,9 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandler.HandlerParameter;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.enums.VariableEnum;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.exception.UnsupportedVariableException;
+import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtil;
 import org.apache.shardingsphere.transaction.core.TransactionType;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -58,33 +57,30 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class SetVariableBackendHandlerTest {
+public final class SetVariableBackendHandlerTest extends ProxyContextRestorer {
     
     private static final String DATABASE_PATTERN = "db_%s";
-    
-    private ContextManager contextManagerBefore;
     
     private ConnectionSession connectionSession;
     
     @Before
     public void setUp() {
-        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), createMetaDataMap(),
-                mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), mock(OptimizerContext.class), new ConfigurationProperties(createProperties()));
-        contextManagerBefore = ProxyContext.getInstance().getContextManager();
+        MetaDataContexts metaDataContexts = new MetaDataContexts(
+                mock(MetaDataPersistService.class), createDatabaseMap(), mock(ShardingSphereRuleMetaData.class), mock(OptimizerContext.class), new ConfigurationProperties(createProperties()));
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        ProxyContext.getInstance().init(contextManager);
+        ProxyContext.init(contextManager);
         connectionSession = new ConnectionSession(mock(MySQLDatabaseType.class), TransactionType.LOCAL, new DefaultAttributeMap());
     }
     
-    private Map<String, ShardingSphereMetaData> createMetaDataMap() {
-        Map<String, ShardingSphereMetaData> result = new HashMap<>(10, 1);
+    private Map<String, ShardingSphereDatabase> createDatabaseMap() {
+        Map<String, ShardingSphereDatabase> result = new HashMap<>(10, 1);
         for (int i = 0; i < 10; i++) {
-            ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-            when(metaData.getResource()).thenReturn(new ShardingSphereResource(Collections.emptyMap(), null, null, new MySQLDatabaseType()));
-            when(metaData.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()));
-            when(metaData.getSchemaByName(DefaultSchema.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
-            result.put(String.format(DATABASE_PATTERN, i), metaData);
+            ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+            when(database.getResource()).thenReturn(new ShardingSphereResource(Collections.emptyMap(), null, null, new MySQLDatabaseType()));
+            when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()));
+            when(database.getSchemas().get(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
+            result.put(String.format(DATABASE_PATTERN, i), database);
         }
         return result;
     }
@@ -155,11 +151,6 @@ public final class SetVariableBackendHandlerTest {
     }
     
     private HandlerParameter<SetVariableStatement> getParameter(final SetVariableStatement statement, final ConnectionSession connectionSession) {
-        return new HandlerParameter<SetVariableStatement>().setStatement(statement).setConnectionSession(connectionSession);
-    }
-    
-    @After
-    public void tearDown() {
-        ProxyContext.getInstance().init(contextManagerBefore);
+        return new HandlerParameter<>(statement, new MySQLDatabaseType(), connectionSession);
     }
 }

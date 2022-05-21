@@ -35,9 +35,9 @@ public final class ExtraSQLCommand {
     @XmlElement(name = "create-table-order-item")
     private String createTableOrderItem;
     
-    @XmlElement(name = "use-database")
-    private String useDatabase;
+    @XmlElement(name = "full-insert-order")
+    private String fullInsertOrder;
     
-    @XmlElement(name = "insert-order")
-    private String insertOrder;
+    @XmlElement(name = "full-insert-order-item")
+    private String fullInsertOrderItem;
 }

@@ -38,7 +38,5 @@ public final class SQLParserRuleBeanDefinitionTag {
     
     public static final String MAXIMUM_SIZE = "maximum-size";
     
-    public static final String CONCURRENCY_LEVEL = "concurrency-level";
-    
     public static final String CACHE_OPTION = "cache-option";
 }

@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-schemaName: logic_db
+databaseName: logic_db
 
 props:
   sql-show: true

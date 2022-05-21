@@ -38,7 +38,7 @@ public final class JobCompletionDetectAlgorithmFactory {
      * Create new instance of job completion detect algorithm.
      *
      * @param jobCompletionDetectAlgorithmConfig job completion detect algorithm configuration
-     * @return new instance of job completion detect algorithm
+     * @return created instance
      */
     @SuppressWarnings("rawtypes")
     public static JobCompletionDetectAlgorithm newInstance(final ShardingSphereAlgorithmConfiguration jobCompletionDetectAlgorithmConfig) {
@@ -52,6 +52,6 @@ public final class JobCompletionDetectAlgorithmFactory {
      * @return contains job completion detect algorithm or not
      */
     public static boolean contains(final String jobCompletionDetectAlgorithmType) {
-        return TypedSPIRegistry.findRegisteredService(JobCompletionDetectAlgorithm.class, jobCompletionDetectAlgorithmType, null).isPresent();
+        return TypedSPIRegistry.findRegisteredService(JobCompletionDetectAlgorithm.class, jobCompletionDetectAlgorithmType).isPresent();
     }
 }

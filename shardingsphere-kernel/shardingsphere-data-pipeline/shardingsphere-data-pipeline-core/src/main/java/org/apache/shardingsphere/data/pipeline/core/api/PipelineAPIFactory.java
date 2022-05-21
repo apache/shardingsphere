@@ -46,14 +46,14 @@ import java.util.Optional;
 public final class PipelineAPIFactory {
     
     private static final LazyInitializer<GovernanceRepositoryAPI> REPOSITORY_API_LAZY_INITIALIZER = new LazyInitializer<GovernanceRepositoryAPI>() {
+        
         @Override
         protected GovernanceRepositoryAPI initialize() {
-            Optional<MetaDataPersistService> persistServiceOptional = PipelineContext.getContextManager().getMetaDataContexts().getMetaDataPersistService();
-            if (!persistServiceOptional.isPresent()) {
+            Optional<MetaDataPersistService> persistService = PipelineContext.getContextManager().getMetaDataContexts().getPersistService();
+            if (!persistService.isPresent()) {
                 throw new RuntimeException("persistService is not present");
             }
-            ClusterPersistRepository repository = (ClusterPersistRepository) persistServiceOptional.get().getRepository();
-            return new GovernanceRepositoryAPIImpl(repository);
+            return new GovernanceRepositoryAPIImpl((ClusterPersistRepository) persistService.get().getRepository());
         }
     };
     

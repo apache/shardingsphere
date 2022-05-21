@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmCo
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredAlgorithmMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.expr.InlineExpressionParser;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
@@ -47,6 +47,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -62,50 +63,50 @@ public final class ShardingTableRuleStatementChecker {
     /**
      * Check create sharing table rule statement.
      *
-     * @param shardingSphereMetaData ShardingSphere meta data
+     * @param database database
      * @param rules rules
      * @param currentRuleConfig current rule configuration
      * @throws DistSQLException definition violation exception
      */
-    public static void checkCreation(final ShardingSphereMetaData shardingSphereMetaData, final Collection<AbstractTableRuleSegment> rules,
-                                     final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        check(shardingSphereMetaData, rules, currentRuleConfig, true);
+    public static void checkCreation(final ShardingSphereDatabase database,
+                                     final Collection<AbstractTableRuleSegment> rules, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
+        check(database, rules, currentRuleConfig, true);
     }
     
     /**
      * Check alter sharing table rule statement.
      *
-     * @param shardingSphereMetaData ShardingSphere meta data
+     * @param database database
      * @param rules rules
      * @param currentRuleConfig current rule configuration
      * @throws DistSQLException definition violation exception
      */
-    public static void checkAlteration(final ShardingSphereMetaData shardingSphereMetaData, final Collection<AbstractTableRuleSegment> rules,
-                                       final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        check(shardingSphereMetaData, rules, currentRuleConfig, false);
+    public static void checkAlteration(final ShardingSphereDatabase database,
+                                       final Collection<AbstractTableRuleSegment> rules, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
+        check(database, rules, currentRuleConfig, false);
     }
     
-    private static void check(final ShardingSphereMetaData shardingSphereMetaData, final Collection<AbstractTableRuleSegment> rules,
-                              final ShardingRuleConfiguration currentRuleConfig, final boolean isCreate) throws DistSQLException {
-        String databaseName = shardingSphereMetaData.getDatabaseName();
+    private static void check(final ShardingSphereDatabase database,
+                              final Collection<AbstractTableRuleSegment> rules, final ShardingRuleConfiguration currentRuleConfig, final boolean isCreate) throws DistSQLException {
+        String databaseName = database.getName();
         checkShardingTables(databaseName, rules, currentRuleConfig, isCreate);
-        checkResources(databaseName, rules, shardingSphereMetaData);
+        checkResources(databaseName, rules, database);
         checkKeyGenerators(rules, currentRuleConfig);
         Map<String, List<AbstractTableRuleSegment>> groupedTableRule = groupingByClassType(rules);
         checkAutoTableRule(groupedTableRule.getOrDefault(AutoTableRuleSegment.class.getSimpleName(), Collections.emptyList()));
         checkTableRule(databaseName, currentRuleConfig, groupedTableRule.getOrDefault(TableRuleSegment.class.getSimpleName(), Collections.emptyList()));
     }
     
-    private static void checkResources(final String databaseName, final Collection<AbstractTableRuleSegment> rules, final ShardingSphereMetaData shardingSphereMetaData) throws DistSQLException {
+    private static void checkResources(final String databaseName, final Collection<AbstractTableRuleSegment> rules, final ShardingSphereDatabase database) throws DistSQLException {
         Collection<String> requiredResource = getRequiredResources(rules);
-        Collection<String> notExistedResources = shardingSphereMetaData.getResource().getNotExistedResources(requiredResource);
-        Collection<String> logicResources = getLogicResources(shardingSphereMetaData);
+        Collection<String> notExistedResources = database.getResource().getNotExistedResources(requiredResource);
+        Collection<String> logicResources = getLogicResources(database);
         notExistedResources.removeIf(logicResources::contains);
         DistSQLException.predictionThrow(notExistedResources.isEmpty(), () -> new RequiredResourceMissedException(databaseName, notExistedResources));
     }
     
-    private static Collection<String> getLogicResources(final ShardingSphereMetaData shardingSphereMetaData) {
-        return shardingSphereMetaData.getRuleMetaData().getRules().stream().filter(each -> each instanceof DataSourceContainedRule)
+    private static Collection<String> getLogicResources(final ShardingSphereDatabase database) {
+        return database.getRuleMetaData().getRules().stream().filter(each -> each instanceof DataSourceContainedRule)
                 .map(each -> ((DataSourceContainedRule) each).getDataSourceMapper().keySet()).flatMap(Collection::stream).collect(Collectors.toCollection(LinkedHashSet::new));
     }
     
@@ -134,7 +135,7 @@ public final class ShardingTableRuleStatementChecker {
     private static void checkShardingTables(final String databaseName, final Collection<AbstractTableRuleSegment> rules,
                                             final ShardingRuleConfiguration currentRuleConfig, final boolean isCreate) throws DistSQLException {
         Collection<String> requiredShardingTables = rules.stream().map(AbstractTableRuleSegment::getLogicTable).collect(Collectors.toList());
-        Set<String> duplicatedShardingTables = getDuplicate(requiredShardingTables);
+        Collection<String> duplicatedShardingTables = getDuplicate(requiredShardingTables);
         DistSQLException.predictionThrow(duplicatedShardingTables.isEmpty(), () -> new DuplicateRuleException("sharding", databaseName, duplicatedShardingTables));
         Collection<String> currentShardingTables = null == currentRuleConfig ? Collections.emptyList() : getCurrentShardingTables(currentRuleConfig);
         if (isCreate) {
@@ -147,16 +148,21 @@ public final class ShardingTableRuleStatementChecker {
     }
     
     private static Set<String> getDuplicate(final Collection<String> collection) {
-        return collection.stream().collect(Collectors.groupingBy(each -> each, Collectors.counting())).entrySet().stream()
-                .filter(each -> each.getValue() > 1).map(Map.Entry::getKey).collect(Collectors.toSet());
+        Collection<String> duplicate = collection.stream().collect(Collectors.groupingBy(String::toLowerCase, Collectors.counting())).entrySet().stream()
+                .filter(each -> each.getValue() > 1).map(Entry::getKey).collect(Collectors.toSet());
+        return collection.stream().filter(each -> containsIgnoreCase(duplicate, each)).collect(Collectors.toSet());
     }
     
     private static Set<String> getIdentical(final Collection<String> require, final Collection<String> current) {
-        return require.stream().filter(current::contains).collect(Collectors.toSet());
+        return require.stream().filter(each -> containsIgnoreCase(current, each)).collect(Collectors.toSet());
     }
     
     private static Set<String> getDifferent(final Collection<String> require, final Collection<String> current) {
-        return require.stream().filter(each -> !current.contains(each)).collect(Collectors.toSet());
+        return require.stream().filter(each -> !containsIgnoreCase(current, each)).collect(Collectors.toSet());
+    }
+    
+    private static boolean containsIgnoreCase(final Collection<String> collection, final String str) {
+        return collection.stream().anyMatch(each -> each.equalsIgnoreCase(str));
     }
     
     private static Collection<String> getCurrentShardingTables(final ShardingRuleConfiguration currentRuleConfig) {

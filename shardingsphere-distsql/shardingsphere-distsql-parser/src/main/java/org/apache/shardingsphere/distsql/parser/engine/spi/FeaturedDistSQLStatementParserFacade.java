@@ -17,12 +17,14 @@
 
 package org.apache.shardingsphere.distsql.parser.engine.spi;
 
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserFacade;
 
 /**
  * Featured dist SQL statement parser facade.
  */
+@SingletonSPI
 public interface FeaturedDistSQLStatementParserFacade extends SQLParserFacade {
     
     /**
@@ -31,11 +33,4 @@ public interface FeaturedDistSQLStatementParserFacade extends SQLParserFacade {
      * @return visitor class
      */
     Class<? extends SQLVisitor> getVisitorClass();
-    
-    /**
-     * Get feature type.
-     *
-     * @return feature type
-     */
-    String getFeatureType();
 }

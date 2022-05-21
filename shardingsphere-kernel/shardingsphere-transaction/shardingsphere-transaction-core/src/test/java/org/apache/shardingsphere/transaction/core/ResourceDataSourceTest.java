@@ -20,6 +20,7 @@ package org.apache.shardingsphere.transaction.core;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -30,7 +31,7 @@ public final class ResourceDataSourceTest {
     public void assertNewInstance() {
         ResourceDataSource actual = new ResourceDataSource("fooDataSource", new MockedDataSource());
         assertThat(actual.getOriginalName(), is("fooDataSource"));
-        assertTrue(actual.getDataSource() instanceof MockedDataSource);
+        assertThat(actual.getDataSource(), instanceOf(MockedDataSource.class));
         assertTrue(actual.getUniqueResourceName().startsWith("resource"));
         assertTrue(actual.getUniqueResourceName().endsWith("fooDataSource"));
     }

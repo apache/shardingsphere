@@ -73,6 +73,7 @@ public final class MockSeataServer {
                 .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                 .childOption(ChannelOption.TCP_NODELAY, true)
                 .childHandler(new ChannelInitializer<SocketChannel>() {
+                    
                     @Override
                     public void initChannel(final SocketChannel socketChannel) {
                         socketChannel.pipeline()

@@ -17,9 +17,20 @@
 
 package org.apache.shardingsphere.test.integration.fixture;
 
+import lombok.Getter;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
+import java.util.Properties;
+
+@Getter
 public final class ITKeyGenerateAlgorithmFixture implements KeyGenerateAlgorithm {
+    
+    private Properties props;
+    
+    @Override
+    public void init(final Properties props) {
+        this.props = props;
+    }
     
     @Override
     public Long generateKey() {

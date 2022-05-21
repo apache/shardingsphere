@@ -81,5 +81,15 @@ execute
     | dropSynonym
     | dropPackage
     | dropEdition
+    | dropOutline
+    | alterOutline
+    | alterAnalyticView
+    | alterAttributeDimension
+    | createSequence
+    | alterSequence
+    | alterPackage
+    | createContext
+    | createSPFile
+    | createPFile
     ) SEMI_?
     ;

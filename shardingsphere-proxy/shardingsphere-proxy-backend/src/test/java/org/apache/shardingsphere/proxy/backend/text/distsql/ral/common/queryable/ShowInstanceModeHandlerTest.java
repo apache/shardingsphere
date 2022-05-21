@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.junit.Test;
 
 import java.sql.SQLException;
@@ -36,7 +37,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowInstanceModeHandlerTest {
+public final class ShowInstanceModeHandlerTest extends ProxyContextRestorer {
     
     @Test
     public void assertExecutor() throws SQLException {
@@ -44,7 +45,7 @@ public final class ShowInstanceModeHandlerTest {
         InstanceContext instanceContext = createInstanceContext();
         when(contextManager.getInstanceContext()).thenReturn(instanceContext);
         ShowInstanceModeHandler handler = new ShowInstanceModeHandler().initStatement(new ShowInstanceModeStatement());
-        ProxyContext.getInstance().init(contextManager);
+        ProxyContext.init(contextManager);
         handler.execute();
         handler.next();
         List<Object> data = new ArrayList<>(handler.getRowData());

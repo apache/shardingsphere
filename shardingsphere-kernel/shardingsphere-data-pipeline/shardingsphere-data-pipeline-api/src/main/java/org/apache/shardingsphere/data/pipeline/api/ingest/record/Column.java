@@ -38,10 +38,10 @@ public final class Column {
     
     private final boolean updated;
     
-    private final boolean primaryKey;
+    private final boolean uniqueKey;
     
-    public Column(final String name, final Object value, final boolean updated, final boolean primaryKey) {
-        this(name, null, value, updated, primaryKey);
+    public Column(final String name, final Object value, final boolean updated, final boolean uniqueKey) {
+        this(name, null, value, updated, uniqueKey);
     }
     
     @Override

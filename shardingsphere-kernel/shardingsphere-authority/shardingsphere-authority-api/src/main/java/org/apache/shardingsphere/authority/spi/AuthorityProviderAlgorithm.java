@@ -17,15 +17,13 @@
 
 package org.apache.shardingsphere.authority.spi;
 
-import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
+import org.apache.shardingsphere.authority.model.AuthorityRegistry;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Authority provide algorithm.
@@ -33,26 +31,11 @@ import java.util.Optional;
 public interface AuthorityProviderAlgorithm extends ShardingSphereAlgorithm {
     
     /**
-     * Initialize authority.
+     * Build authority registry.
      * 
-     * @param metaDataMap meta data map
+     * @param databaseMap database map
      * @param users users
+     * @return built authority registry
      */
-    void init(Map<String, ShardingSphereMetaData> metaDataMap, Collection<ShardingSphereUser> users);
-    
-    /**
-     * Refresh authority.
-     *
-     * @param metaDataMap meta data map
-     * @param users users
-     */
-    void refresh(Map<String, ShardingSphereMetaData> metaDataMap, Collection<ShardingSphereUser> users);
-    
-    /**
-     * Find Privileges.
-     *
-     * @param grantee grantee
-     * @return found privileges
-     */
-    Optional<ShardingSpherePrivileges> findPrivileges(Grantee grantee);
+    AuthorityRegistry buildAuthorityRegistry(Map<String, ShardingSphereDatabase> databaseMap, Collection<ShardingSphereUser> users);
 }

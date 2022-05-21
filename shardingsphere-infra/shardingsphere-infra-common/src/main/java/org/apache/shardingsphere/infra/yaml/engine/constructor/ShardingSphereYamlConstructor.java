@@ -37,7 +37,7 @@ public class ShardingSphereYamlConstructor extends Constructor {
     
     public ShardingSphereYamlConstructor(final Class<?> rootClass) {
         super(rootClass);
-        ShardingSphereYamlConstructFactory.newInstances().forEach(each -> typeConstructs.put(each.getType(), each));
+        ShardingSphereYamlConstructFactory.getInstances().forEach(each -> typeConstructs.put(each.getType(), each));
         YamlRuleConfigurationSwapperEngine.getYamlShortcuts().forEach((key, value) -> addTypeDescription(new TypeDescription(value, key)));
         this.rootClass = rootClass;
     }

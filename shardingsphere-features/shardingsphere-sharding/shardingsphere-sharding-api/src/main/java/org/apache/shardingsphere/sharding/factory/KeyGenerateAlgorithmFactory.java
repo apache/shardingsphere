@@ -39,7 +39,7 @@ public final class KeyGenerateAlgorithmFactory {
     /**
      * Create new instance of key generate algorithm.
      *
-     * @return new instance of key generate algorithm
+     * @return created instance
      */
     public static KeyGenerateAlgorithm newInstance() {
         return RequiredSPIRegistry.getRegisteredService(KeyGenerateAlgorithm.class);
@@ -49,7 +49,7 @@ public final class KeyGenerateAlgorithmFactory {
      * Create new instance of key generate algorithm.
      *
      * @param keyGenerateAlgorithmConfig key generate algorithm configuration
-     * @return new instance of key generate algorithm
+     * @return created instance
      */
     public static KeyGenerateAlgorithm newInstance(final ShardingSphereAlgorithmConfiguration keyGenerateAlgorithmConfig) {
         return ShardingSphereAlgorithmFactory.createAlgorithm(keyGenerateAlgorithmConfig, KeyGenerateAlgorithm.class);
@@ -62,6 +62,6 @@ public final class KeyGenerateAlgorithmFactory {
      * @return contains key generate algorithm or not
      */
     public static boolean contains(final String keyGenerateAlgorithmType) {
-        return TypedSPIRegistry.findRegisteredService(KeyGenerateAlgorithm.class, keyGenerateAlgorithmType, null).isPresent();
+        return TypedSPIRegistry.findRegisteredService(KeyGenerateAlgorithm.class, keyGenerateAlgorithmType).isPresent();
     }
 }

@@ -41,7 +41,7 @@ public final class EncryptAlgorithmFactory {
      * @param encryptAlgorithmConfig encrypt algorithm configuration
      * @param <I> type of to be encrypted data
      * @param <O> type of to be decrypted data
-     * @return new instance of encrypt algorithm
+     * @return created instance
      */
     public static <I, O> EncryptAlgorithm<I, O> newInstance(final ShardingSphereAlgorithmConfiguration encryptAlgorithmConfig) {
         return ShardingSphereAlgorithmFactory.createAlgorithm(encryptAlgorithmConfig, EncryptAlgorithm.class);
@@ -54,6 +54,6 @@ public final class EncryptAlgorithmFactory {
      * @return contains encrypt algorithm or not
      */
     public static boolean contains(final String encryptAlgorithmType) {
-        return TypedSPIRegistry.findRegisteredService(EncryptAlgorithm.class, encryptAlgorithmType, null).isPresent();
+        return TypedSPIRegistry.findRegisteredService(EncryptAlgorithm.class, encryptAlgorithmType).isPresent();
     }
 }

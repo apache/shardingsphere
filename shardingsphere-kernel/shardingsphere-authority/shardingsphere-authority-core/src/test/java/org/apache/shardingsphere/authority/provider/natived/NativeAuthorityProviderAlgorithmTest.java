@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.authority.provider.natived;
 
+import org.apache.shardingsphere.authority.model.AuthorityRegistry;
 import org.apache.shardingsphere.authority.model.PrivilegeType;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.junit.Test;
@@ -46,25 +47,11 @@ public final class NativeAuthorityProviderAlgorithmTest {
         Collection<ShardingSphereUser> users = new LinkedList<>();
         ShardingSphereUser root = new ShardingSphereUser("root", "", "localhost");
         users.add(root);
-        ShardingSphereMetaData metaData = mockShardingSphereMetaData(users);
-        algorithm.init(Collections.singletonMap("db0", metaData), users);
-        Optional<ShardingSpherePrivileges> privileges = algorithm.findPrivileges(new Grantee("root", "localhost"));
+        ShardingSphereDatabase database = mockDatabase(users);
+        AuthorityRegistry authorityRegistry = algorithm.buildAuthorityRegistry(Collections.singletonMap("db0", database), users);
+        Optional<ShardingSpherePrivileges> privileges = authorityRegistry.findPrivileges(new Grantee("root", "localhost"));
         assertTrue(privileges.isPresent());
         assertPrivilege(privileges.get());
-    }
-    
-    @Test
-    public void assertRefreshPrivileges() throws SQLException {
-        NativeAuthorityProviderAlgorithm algorithm = new NativeAuthorityProviderAlgorithm();
-        Collection<ShardingSphereUser> users = Collections.singletonList(new ShardingSphereUser("root", "", "localhost"));
-        algorithm.init(Collections.emptyMap(), users);
-        Optional<ShardingSpherePrivileges> privileges1 = algorithm.findPrivileges(new Grantee("root", "localhost"));
-        assertTrue(privileges1.isPresent());
-        assertTrue(privileges1.get().hasPrivileges(Collections.singletonList(PrivilegeType.SUPER)));
-        algorithm.refresh(Collections.singletonMap("db0", mockShardingSphereMetaData(users)), users);
-        Optional<ShardingSpherePrivileges> privileges2 = algorithm.findPrivileges(new Grantee("root", "localhost"));
-        assertTrue(privileges2.isPresent());
-        assertPrivilege(privileges2.get());
     }
     
     private void assertPrivilege(final ShardingSpherePrivileges privileges) {
@@ -78,8 +65,8 @@ public final class NativeAuthorityProviderAlgorithmTest {
         assertTrue(privileges.hasPrivileges(expected));
     }
     
-    private ShardingSphereMetaData mockShardingSphereMetaData(final Collection<ShardingSphereUser> users) throws SQLException {
-        ShardingSphereMetaData result = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
+    private ShardingSphereDatabase mockDatabase(final Collection<ShardingSphereUser> users) throws SQLException {
+        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         DataSource dataSource = mockDataSourceForPrivileges(users);
         when(result.getResource().getAllInstanceDataSources()).thenReturn(Collections.singletonList(dataSource));
         when(result.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.data.pipeline.scenario.rulealtered.spi;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.data.pipeline.api.detect.RuleAlteredJobAlmostCompletedParameter;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosition;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
@@ -41,13 +40,13 @@ public final class IdleRuleAlteredJobCompletionDetectAlgorithm implements JobCom
     private static final long DEFAULT_IDLE_SECONDS_THRESHOLD = 1800L;
     
     @Getter
-    @Setter
     private Properties props;
     
     private volatile long incrementalTaskIdleSecondsThreshold;
     
     @Override
     public void init(final Properties props) {
+        this.props = props;
         incrementalTaskIdleSecondsThreshold = getIncrementalTaskIdleSecondsThreshold(props);
     }
     

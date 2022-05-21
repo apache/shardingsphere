@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.dbdiscovery.rule;
 
-import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHeartBeatConfiguration;
@@ -29,10 +28,10 @@ import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.HashMap;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -64,22 +63,27 @@ public final class DatabaseDiscoveryRuleTest {
     public void assertGetDataSourceMapper() {
         DatabaseDiscoveryRule databaseDiscoveryRule = createRule();
         Map<String, Collection<String>> actual = databaseDiscoveryRule.getDataSourceMapper();
-        Map<String, Collection<String>> expected = ImmutableMap.of("ds_0", Collections.singletonList("ds_0"), "ds_1", Collections.singletonList("ds_1"));
+        Map<String, Collection<String>> expected = getDataSourceMapper();
         assertThat(actual, is(expected));
+    }
+    
+    private Map<String, Collection<String>> getDataSourceMapper() {
+        Map<String, Collection<String>> result = new HashMap<>(2, 1);
+        result.put("ds_0", Collections.singletonList("ds_0"));
+        result.put("ds_1", Collections.singletonList("ds_1"));
+        return result;
     }
     
     @Test
     public void assertGetExportedMethods() {
         DatabaseDiscoveryRule databaseDiscoveryRule = createRule();
-        Map<String, String> singleDataSourceRuleMap = new HashMap<>(1, 1);
-        singleDataSourceRuleMap.put("test_pr", "primary");
-        assertThat(databaseDiscoveryRule.getExportedMethods().get(ExportableConstants.EXPORTABLE_KEY_PRIMARY_DATA_SOURCE).get(), is(singleDataSourceRuleMap));
+        assertThat(databaseDiscoveryRule.getExportedMethods().get(ExportableConstants.EXPORTABLE_KEY_PRIMARY_DATA_SOURCE).get(), is(Collections.singletonMap("test_pr", "primary")));
     }
     
     private DatabaseDiscoveryRule createRule() {
         DatabaseDiscoveryDataSourceRuleConfiguration config = new DatabaseDiscoveryDataSourceRuleConfiguration("test_pr", Arrays.asList("ds_0", "ds_1"), "", "CORE.FIXTURE");
         return new DatabaseDiscoveryRule("db_discovery", dataSourceMap, new DatabaseDiscoveryRuleConfiguration(
                 Collections.singleton(config), Collections.singletonMap("discovery_heartbeat", new DatabaseDiscoveryHeartBeatConfiguration(new Properties())),
-                ImmutableMap.of("CORE.FIXTURE", new ShardingSphereAlgorithmConfiguration("CORE.FIXTURE", new Properties()))));
+                Collections.singletonMap("CORE.FIXTURE", new ShardingSphereAlgorithmConfiguration("CORE.FIXTURE", new Properties()))));
     }
 }

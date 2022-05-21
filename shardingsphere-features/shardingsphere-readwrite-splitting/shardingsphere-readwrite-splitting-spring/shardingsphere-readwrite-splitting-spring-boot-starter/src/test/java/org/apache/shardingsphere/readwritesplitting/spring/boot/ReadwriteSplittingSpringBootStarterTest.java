@@ -57,8 +57,8 @@ public class ReadwriteSplittingSpringBootStarterTest {
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig = config.getDataSources().stream().findFirst().get();
         assertThat(dataSourceRuleConfig.getName(), is("readwrite_ds"));
         assertThat(dataSourceRuleConfig.getType(), is("Static"));
-        assertThat(dataSourceRuleConfig.getProps().get("write-data-source-name"), is("write_ds"));
-        assertThat(dataSourceRuleConfig.getProps().get("read-data-source-names"), is("read_ds_0,read_ds_1"));
+        assertThat(dataSourceRuleConfig.getProps().getProperty("write-data-source-name"), is("write_ds"));
+        assertThat(dataSourceRuleConfig.getProps().getProperty("read-data-source-names"), is("read_ds_0,read_ds_1"));
         assertThat(dataSourceRuleConfig.getLoadBalancerName(), is("random"));
         assertTrue(config.getDataSources().contains(dataSourceRuleConfig));
         assertThat(config.getLoadBalanceAlgorithms().size(), is(1));

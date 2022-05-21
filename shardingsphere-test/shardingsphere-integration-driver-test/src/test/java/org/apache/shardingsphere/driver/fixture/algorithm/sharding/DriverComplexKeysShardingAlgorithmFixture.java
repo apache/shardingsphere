@@ -17,13 +17,23 @@
 
 package org.apache.shardingsphere.driver.fixture.algorithm.sharding;
 
+import lombok.Getter;
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingValue;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Properties;
 
+@Getter
 public final class DriverComplexKeysShardingAlgorithmFixture implements ComplexKeysShardingAlgorithm<String> {
+    
+    private Properties props;
+    
+    @Override
+    public void init(final Properties props) {
+        this.props = props;
+    }
     
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final ComplexKeysShardingValue<String> shardingValue) {

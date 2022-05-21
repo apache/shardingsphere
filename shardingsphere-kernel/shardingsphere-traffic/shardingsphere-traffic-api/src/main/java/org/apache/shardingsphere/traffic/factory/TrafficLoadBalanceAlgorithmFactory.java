@@ -39,7 +39,7 @@ public final class TrafficLoadBalanceAlgorithmFactory {
      * Create new instance of traffic load balance algorithm.
      * 
      * @param trafficLoadBalanceAlgorithmConfig traffic load balance algorithm configuration
-     * @return new instance of traffic load balance algorithm
+     * @return created instance
      */
     public static TrafficLoadBalanceAlgorithm newInstance(final ShardingSphereAlgorithmConfiguration trafficLoadBalanceAlgorithmConfig) {
         return ShardingSphereAlgorithmFactory.createAlgorithm(trafficLoadBalanceAlgorithmConfig, TrafficLoadBalanceAlgorithm.class);
@@ -52,6 +52,6 @@ public final class TrafficLoadBalanceAlgorithmFactory {
      * @return contains traffic load balance algorithm or not
      */
     public static boolean contains(final String trafficLoadBalanceAlgorithmType) {
-        return TypedSPIRegistry.findRegisteredService(TrafficLoadBalanceAlgorithm.class, trafficLoadBalanceAlgorithmType, null).isPresent();
+        return TypedSPIRegistry.findRegisteredService(TrafficLoadBalanceAlgorithm.class, trafficLoadBalanceAlgorithmType).isPresent();
     }
 }

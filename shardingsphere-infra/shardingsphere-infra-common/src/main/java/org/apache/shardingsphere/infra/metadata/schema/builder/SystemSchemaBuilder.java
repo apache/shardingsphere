@@ -52,8 +52,7 @@ public final class SystemSchemaBuilder {
         Map<String, ShardingSphereSchema> result = new LinkedHashMap<>(databaseType.getSystemSchemas().size(), 1);
         TableMetaDataYamlSwapper swapper = new TableMetaDataYamlSwapper();
         for (String each : getSystemSchemas(databaseName, databaseType)) {
-            Collection<InputStream> schemaStreams = getSchemaStreams(each, databaseType);
-            result.put(each, createSchema(schemaStreams, swapper));
+            result.put(each.toLowerCase(), createSchema(getSchemaStreams(each, databaseType), swapper));
         }
         return result;
     }
@@ -64,10 +63,10 @@ public final class SystemSchemaBuilder {
     }
     
     private static Collection<InputStream> getSchemaStreams(final String schemaName, final DatabaseType databaseType) {
-        SystemSchemaBuilderRule builderRule = SystemSchemaBuilderRule.valueOf(databaseType.getName(), schemaName);
+        SystemSchemaBuilderRule builderRule = SystemSchemaBuilderRule.valueOf(databaseType.getType(), schemaName);
         Collection<InputStream> result = new LinkedList<>();
         for (String each : builderRule.getTables()) {
-            result.add(SystemSchemaBuilder.class.getClassLoader().getResourceAsStream("schema/" + databaseType.getName().toLowerCase() + "/" + schemaName + "/" + each + ".yaml"));
+            result.add(SystemSchemaBuilder.class.getClassLoader().getResourceAsStream("schema/" + databaseType.getType().toLowerCase() + "/" + schemaName + "/" + each + ".yaml"));
         }
         return result;
     }
