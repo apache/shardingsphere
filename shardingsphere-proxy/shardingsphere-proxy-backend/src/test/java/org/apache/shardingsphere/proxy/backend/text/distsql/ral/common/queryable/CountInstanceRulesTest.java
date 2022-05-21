@@ -22,7 +22,7 @@ import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -59,10 +59,10 @@ import static org.mockito.Mockito.when;
 public final class CountInstanceRulesTest extends ProxyContextRestorer {
     
     @Mock
-    private ShardingSphereDatabaseMetaData databaseMetaData1;
+    private ShardingSphereDatabase database1;
     
     @Mock
-    private ShardingSphereDatabaseMetaData databaseMetaData2;
+    private ShardingSphereDatabase database2;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ContextManager contextManager;
@@ -78,11 +78,11 @@ public final class CountInstanceRulesTest extends ProxyContextRestorer {
         ruleConfigs.add(mockReadwriteSplittingRule());
         ruleConfigs.add(mockEncryptRule());
         when(ruleMetaData.getConfigurations()).thenReturn(ruleConfigs);
-        when(databaseMetaData1.getRuleMetaData()).thenReturn(ruleMetaData);
-        when(databaseMetaData2.getRuleMetaData()).thenReturn(ruleMetaData);
+        when(database1.getRuleMetaData()).thenReturn(ruleMetaData);
+        when(database2.getRuleMetaData()).thenReturn(ruleMetaData);
         when(contextManager.getMetaDataContexts().getAllDatabaseNames()).thenReturn(Arrays.asList("db_1", "db_2"));
-        when(contextManager.getMetaDataContexts().getDatabaseMetaData("db_1")).thenReturn(databaseMetaData1);
-        when(contextManager.getMetaDataContexts().getDatabaseMetaData("db_2")).thenReturn(databaseMetaData2);
+        when(contextManager.getMetaDataContexts().getDatabaseMetaData("db_1")).thenReturn(database1);
+        when(contextManager.getMetaDataContexts().getDatabaseMetaData("db_2")).thenReturn(database2);
         ProxyContext.init(contextManager);
     }
     
@@ -163,8 +163,8 @@ public final class CountInstanceRulesTest extends ProxyContextRestorer {
     @Test
     public void assertGetRowDataWithoutConfiguration() throws SQLException {
         CountInstanceRulesHandler handler = new CountInstanceRulesHandler().initStatement(new CountInstanceRulesStatement());
-        when(databaseMetaData1.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
-        when(databaseMetaData2.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
+        when(database1.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
+        when(database2.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
         handler.execute();
         handler.next();
         Collection<Object> actual = handler.getRowData();

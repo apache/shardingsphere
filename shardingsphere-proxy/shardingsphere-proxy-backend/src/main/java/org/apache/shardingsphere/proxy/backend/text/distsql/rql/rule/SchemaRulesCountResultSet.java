@@ -23,7 +23,7 @@ import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -68,15 +68,15 @@ public final class SchemaRulesCountResultSet implements DistSQLResultSet {
     private Iterator<Collection<Object>> data;
     
     @Override
-    public void init(final ShardingSphereDatabaseMetaData databaseMetaData, final SQLStatement sqlStatement) {
+    public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
         Map<String, Collection<Object>> dataMap = new LinkedHashMap<>();
         initData(dataMap);
-        Collection<SingleTableRule> singleTableRules = databaseMetaData.getRuleMetaData().findRules(SingleTableRule.class);
+        Collection<SingleTableRule> singleTableRules = database.getRuleMetaData().findRules(SingleTableRule.class);
         if (!singleTableRules.isEmpty()) {
             addSingleTableData(dataMap, singleTableRules);
         }
-        if (hasRuleConfiguration(databaseMetaData)) {
-            addConfigurationData(dataMap, databaseMetaData.getRuleMetaData().getConfigurations());
+        if (hasRuleConfiguration(database)) {
+            addConfigurationData(dataMap, database.getRuleMetaData().getConfigurations());
         }
         data = dataMap.values().iterator();
     }
@@ -87,8 +87,8 @@ public final class SchemaRulesCountResultSet implements DistSQLResultSet {
         dataMap.compute(SINGLE_TABLE, (key, value) -> buildRow(value, SINGLE_TABLE, count.orElse(DEFAULT_COUNT)));
     }
     
-    private boolean hasRuleConfiguration(final ShardingSphereDatabaseMetaData databaseMetaData) {
-        Collection<RuleConfiguration> configs = databaseMetaData.getRuleMetaData().getConfigurations();
+    private boolean hasRuleConfiguration(final ShardingSphereDatabase database) {
+        Collection<RuleConfiguration> configs = database.getRuleMetaData().getConfigurations();
         return null != configs && !configs.isEmpty();
     }
     

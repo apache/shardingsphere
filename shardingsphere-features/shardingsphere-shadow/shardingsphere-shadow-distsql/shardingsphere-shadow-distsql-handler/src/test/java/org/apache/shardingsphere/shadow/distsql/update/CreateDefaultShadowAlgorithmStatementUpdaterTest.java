@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shadow.distsql.update;
 
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredAlgorithmMissedException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.distsql.handler.update.CreateDefaultShadowAlgorithmStatementUpdater;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.CreateDefaultShadowAlgorithmStatement;
@@ -37,7 +37,7 @@ import static org.mockito.Mockito.when;
 public final class CreateDefaultShadowAlgorithmStatementUpdaterTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private ShardingSphereDatabaseMetaData databaseMetaData;
+    private ShardingSphereDatabase database;
     
     @Mock
     private ShadowRuleConfiguration currentConfig;
@@ -47,6 +47,6 @@ public final class CreateDefaultShadowAlgorithmStatementUpdaterTest {
     @Test(expected = RequiredAlgorithmMissedException.class)
     public void assertExecuteWithNotExistAlgorithm() throws DistSQLException {
         when(currentConfig.getShadowAlgorithms()).thenReturn(Collections.singletonMap("default_name", null));
-        updater.checkSQLStatement(databaseMetaData, new CreateDefaultShadowAlgorithmStatement("input_default_name"), currentConfig);
+        updater.checkSQLStatement(database, new CreateDefaultShadowAlgorithmStatement("input_default_name"), currentConfig);
     }
 }

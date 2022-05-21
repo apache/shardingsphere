@@ -125,5 +125,6 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
     @Override
     protected void doStop() {
         executor.shutdown();
+        executor.shutdownNow();
     }
 }

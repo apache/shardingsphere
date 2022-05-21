@@ -25,7 +25,7 @@ import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.rule.RulesUsedResourceQueryResultSet;
@@ -57,7 +57,7 @@ import static org.mockito.Mockito.when;
 public final class RulesUsedResourceQueryResultSetTest {
     
     @Mock
-    private ShardingSphereDatabaseMetaData databaseMetaData;
+    private ShardingSphereDatabase database;
     
     @Test
     public void assertGetRowDataForSharding() {
@@ -65,7 +65,7 @@ public final class RulesUsedResourceQueryResultSetTest {
         DistSQLResultSet resultSet = new RulesUsedResourceQueryResultSet();
         ShowRulesUsedResourceStatement sqlStatement = mock(ShowRulesUsedResourceStatement.class);
         when(sqlStatement.getResourceName()).thenReturn(Optional.of("ds_0"));
-        resultSet.init(databaseMetaData, sqlStatement);
+        resultSet.init(database, sqlStatement);
         Collection<Object> actual = resultSet.getRowData();
         assertThat(actual.size(), is(2));
         Iterator<Object> rowData = actual.iterator();
@@ -85,7 +85,7 @@ public final class RulesUsedResourceQueryResultSetTest {
         DistSQLResultSet resultSet = new RulesUsedResourceQueryResultSet();
         ShowRulesUsedResourceStatement sqlStatement = mock(ShowRulesUsedResourceStatement.class);
         when(sqlStatement.getResourceName()).thenReturn(Optional.of("ds_0"));
-        resultSet.init(databaseMetaData, sqlStatement);
+        resultSet.init(database, sqlStatement);
         Collection<Object> actual = resultSet.getRowData();
         assertThat(actual.size(), is(2));
         Iterator<Object> rowData = actual.iterator();
@@ -99,7 +99,7 @@ public final class RulesUsedResourceQueryResultSetTest {
         DistSQLResultSet resultSet = new RulesUsedResourceQueryResultSet();
         ShowRulesUsedResourceStatement sqlStatement = mock(ShowRulesUsedResourceStatement.class);
         when(sqlStatement.getResourceName()).thenReturn(Optional.of("ds_0"));
-        resultSet.init(databaseMetaData, sqlStatement);
+        resultSet.init(database, sqlStatement);
         Collection<Object> actual = resultSet.getRowData();
         assertThat(actual.size(), is(2));
         Iterator<Object> rowData = actual.iterator();
@@ -113,7 +113,7 @@ public final class RulesUsedResourceQueryResultSetTest {
         DistSQLResultSet resultSet = new RulesUsedResourceQueryResultSet();
         ShowRulesUsedResourceStatement sqlStatement = mock(ShowRulesUsedResourceStatement.class);
         when(sqlStatement.getResourceName()).thenReturn(Optional.of("ds_0"));
-        resultSet.init(databaseMetaData, sqlStatement);
+        resultSet.init(database, sqlStatement);
         Collection<Object> actual = resultSet.getRowData();
         assertThat(actual.size(), is(2));
         Iterator<Object> rowData = actual.iterator();
@@ -127,7 +127,7 @@ public final class RulesUsedResourceQueryResultSetTest {
         DistSQLResultSet resultSet = new RulesUsedResourceQueryResultSet();
         ShowRulesUsedResourceStatement sqlStatement = mock(ShowRulesUsedResourceStatement.class);
         when(sqlStatement.getResourceName()).thenReturn(Optional.of("ds_0"));
-        resultSet.init(databaseMetaData, sqlStatement);
+        resultSet.init(database, sqlStatement);
         Collection<Object> actual = resultSet.getRowData();
         assertThat(actual.size(), is(2));
         Iterator<Object> rowData = actual.iterator();
@@ -138,8 +138,8 @@ public final class RulesUsedResourceQueryResultSetTest {
     private void init(final RuleConfiguration ruleConfig) {
         ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class);
         when(ruleMetaData.getConfigurations()).thenReturn(Collections.singletonList(ruleConfig));
-        when(databaseMetaData.getRuleMetaData()).thenReturn(ruleMetaData);
-        when(databaseMetaData.getResource()).thenReturn(createResource());
+        when(database.getRuleMetaData()).thenReturn(ruleMetaData);
+        when(database.getResource()).thenReturn(createResource());
     }
     
     private ShardingSphereResource createResource() {

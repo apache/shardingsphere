@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shadow.distsql.update;
 
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.distsql.handler.update.DropShadowRuleStatementUpdater;
@@ -43,7 +43,7 @@ import static org.mockito.Mockito.when;
 public final class DropShadowRuleStatementUpdaterTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private ShardingSphereDatabaseMetaData databaseMetaData;
+    private ShardingSphereDatabase database;
     
     @Mock
     private ShadowRuleConfiguration currentConfig;
@@ -57,14 +57,14 @@ public final class DropShadowRuleStatementUpdaterTest {
     
     @Test(expected = RequiredRuleMissedException.class)
     public void assertExecuteWithoutRuleNameInMetaData() throws DistSQLException {
-        updater.checkSQLStatement(databaseMetaData, createSQLStatement("ruleSegment"), null);
+        updater.checkSQLStatement(database, createSQLStatement("ruleSegment"), null);
     }
     
     @Test
     public void assertExecuteWithIfExists() throws DistSQLException {
         DropShadowRuleStatement sqlStatement = createSQLStatement("ruleSegment");
         sqlStatement.setContainsExistClause(true);
-        updater.checkSQLStatement(databaseMetaData, sqlStatement, mock(ShadowRuleConfiguration.class));
+        updater.checkSQLStatement(database, sqlStatement, mock(ShadowRuleConfiguration.class));
     }
     
     @Test
@@ -73,14 +73,14 @@ public final class DropShadowRuleStatementUpdaterTest {
         sqlStatement.setContainsExistClause(true);
         ShadowRuleConfiguration ruleConfig = new ShadowRuleConfiguration();
         ruleConfig.getTables().put("t_order", new ShadowTableConfiguration(new ArrayList<>(Collections.singleton("ds_0")), Collections.emptyList()));
-        updater.checkSQLStatement(databaseMetaData, sqlStatement, ruleConfig);
+        updater.checkSQLStatement(database, sqlStatement, ruleConfig);
         updater.updateCurrentRuleConfiguration(sqlStatement, ruleConfig);
         assertFalse(ruleConfig.getTables().containsKey("ds_0"));
     }
     
     @Test
     public void assertExecuteSuccess() throws DistSQLException {
-        updater.checkSQLStatement(databaseMetaData, createSQLStatement("initRuleName"), currentConfig);
+        updater.checkSQLStatement(database, createSQLStatement("initRuleName"), currentConfig);
     }
     
     private DropShadowRuleStatement createSQLStatement(final String... ruleName) {
