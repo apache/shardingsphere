@@ -41,7 +41,7 @@ public final class SelectToOneSlaveRandomReplicaLoadBalanceAlgorithm implements 
     
     @Override
     public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames) {
-        if(null == SLAVE_ROUTE_HOLDER.get()) {
+        if (null == SLAVE_ROUTE_HOLDER.get()) {
             SLAVE_ROUTE_HOLDER.set(readDataSourceNames.get(ThreadLocalRandom.current().nextInt(readDataSourceNames.size())));
         }
         return SLAVE_ROUTE_HOLDER.get();
