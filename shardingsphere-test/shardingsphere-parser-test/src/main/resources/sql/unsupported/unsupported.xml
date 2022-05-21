@@ -4202,13 +4202,6 @@
     <sql-case id="alter_by_postgresql_source_test_case459" value="ALTER TYPE test_typex DROP ATTRIBUTE a;" db-types="PostgreSQL"/>
     <sql-case id="alter_by_postgresql_source_test_case460" value="ALTER TYPE tt_t0 DROP ATTRIBUTE z;" db-types="PostgreSQL"/>
     <sql-case id="analyze_by_postgresql_source_test_case1" value="ANALYZE (nonexistent-arg) does_not_exist;" db-types="PostgreSQL"/>
-    <sql-case id="call_by_postgresql_source_test_case1" value="CALL ptest10(a =&gt; null, b =&gt; 8, c =&gt; 2);" db-types="PostgreSQL"/>
-    <sql-case id="call_by_postgresql_source_test_case2" value="CALL ptest10(b =&gt; 8, c =&gt; 2, a =&gt; 0);" db-types="PostgreSQL"/>
-    <sql-case id="call_by_postgresql_source_test_case3" value="CALL ptest10(null, 7, c =&gt; 2);" db-types="PostgreSQL"/>
-    <sql-case id="call_by_postgresql_source_test_case4" value="CALL ptest10(null, c =&gt; 4, b =&gt; 11);" db-types="PostgreSQL"/>
-    <sql-case id="call_by_postgresql_source_test_case5" value="CALL ptest5(10, b =&gt; &apos;Hello&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="call_by_postgresql_source_test_case6" value="CALL ptest5(b =&gt; &apos;Hello&apos;, a =&gt; 10);" db-types="PostgreSQL"/>
-    <sql-case id="call_by_postgresql_source_test_case7" value="CALL ptest9(1./0.);" db-types="PostgreSQL"/>
     <sql-case id="checkpoint;_by_postgresql_source_test_case1" value="CHECKPOINT;" db-types="PostgreSQL"/>
     <sql-case id="close_by_postgresql_source_test_case1" value="CLOSE ALL;" db-types="PostgreSQL"/>
     <sql-case id="close_by_postgresql_source_test_case2" value="CLOSE ALL;" db-types="PostgreSQL"/>
