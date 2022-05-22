@@ -41,13 +41,13 @@ public final class DatabaseTypeEngine {
     private static final String DEFAULT_DATABASE_TYPE = "MySQL";
     
     /**
-     * Get frontend database type.
+     * Get protocol type.
      *
      * @param databaseConfigs database configs
      * @param props props
-     * @return frontend database type
+     * @return protocol type
      */
-    public static DatabaseType getFrontendDatabaseType(final Map<String, ? extends DatabaseConfiguration> databaseConfigs, final ConfigurationProperties props) {
+    public static DatabaseType getProtocolType(final Map<String, ? extends DatabaseConfiguration> databaseConfigs, final ConfigurationProperties props) {
         Optional<DatabaseType> configuredDatabaseType = findConfiguredDatabaseType(props);
         if (configuredDatabaseType.isPresent()) {
             return configuredDatabaseType.get();
