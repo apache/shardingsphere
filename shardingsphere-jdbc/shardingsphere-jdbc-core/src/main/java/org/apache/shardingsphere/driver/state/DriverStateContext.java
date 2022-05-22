@@ -19,6 +19,7 @@ package org.apache.shardingsphere.driver.state;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.metadata.resource.CachedDatabaseMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.sql.Connection;
@@ -34,9 +35,10 @@ public final class DriverStateContext {
      *
      * @param databaseName database name
      * @param contextManager context manager
+     * @param cachedDatabaseMetaData cached database meta data
      * @return connection
      */
-    public static Connection getConnection(final String databaseName, final ContextManager contextManager) {
-        return DriverStateFactory.getInstance(contextManager.getInstanceContext().getInstance().getState().getCurrentState()).getConnection(databaseName, contextManager);
+    public static Connection getConnection(final String databaseName, final ContextManager contextManager, final CachedDatabaseMetaData cachedDatabaseMetaData) {
+        return DriverStateFactory.getInstance(contextManager.getInstanceContext().getInstance().getState().getCurrentState()).getConnection(databaseName, contextManager, cachedDatabaseMetaData);
     }
 }

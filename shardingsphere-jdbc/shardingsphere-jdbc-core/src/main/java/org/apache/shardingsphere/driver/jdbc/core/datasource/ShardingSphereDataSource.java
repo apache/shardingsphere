@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.scope.GlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
+import org.apache.shardingsphere.infra.metadata.resource.CachedDatabaseMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderFactory;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
@@ -38,6 +39,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -50,9 +52,12 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
     
     private final ContextManager contextManager;
     
+    private volatile CachedDatabaseMetaData cachedDatabaseMetaData;
+    
     public ShardingSphereDataSource(final String databaseName, final ModeConfiguration modeConfig) throws SQLException {
         this.databaseName = databaseName;
         contextManager = createContextManager(databaseName, modeConfig, new HashMap<>(), new LinkedList<>(), new Properties());
+        cachedDatabaseMetaData = createCachedDatabaseMetaData(contextManager.getDataSourceMap(databaseName)).orElse(null);
     }
     
     public ShardingSphereDataSource(final String databaseName, final ModeConfiguration modeConfig, final Map<String, DataSource> dataSourceMap,
@@ -60,6 +65,7 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
         checkRuleConfiguration(databaseName, ruleConfigs);
         this.databaseName = databaseName;
         contextManager = createContextManager(databaseName, modeConfig, dataSourceMap, ruleConfigs, null == props ? new Properties() : props);
+        cachedDatabaseMetaData = createCachedDatabaseMetaData(contextManager.getDataSourceMap(databaseName)).orElse(null);
     }
     
     @SuppressWarnings("unchecked")
@@ -78,14 +84,34 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
         return ContextManagerBuilderFactory.getInstance(modeConfig).build(parameter);
     }
     
-    @Override
-    public Connection getConnection() {
-        return DriverStateContext.getConnection(databaseName, contextManager);
+    private Optional<CachedDatabaseMetaData> createCachedDatabaseMetaData(final Map<String, DataSource> dataSources) throws SQLException {
+        if (dataSources.isEmpty()) {
+            return Optional.empty();
+        }
+        try (Connection connection = dataSources.values().iterator().next().getConnection()) {
+            return Optional.of(new CachedDatabaseMetaData(connection.getMetaData()));
+        }
     }
     
     @Override
-    public Connection getConnection(final String username, final String password) {
+    public Connection getConnection() throws SQLException {
+        assignCachedDatabaseMetaData();
+        return DriverStateContext.getConnection(databaseName, contextManager, cachedDatabaseMetaData);
+    }
+    
+    @Override
+    public Connection getConnection(final String username, final String password) throws SQLException {
         return getConnection();
+    }
+    
+    private void assignCachedDatabaseMetaData() throws SQLException {
+        if (null == cachedDatabaseMetaData) {
+            synchronized (this) {
+                if (null == cachedDatabaseMetaData) {
+                    cachedDatabaseMetaData = createCachedDatabaseMetaData(contextManager.getDataSourceMap(databaseName)).orElse(null);
+                }
+            }
+        }
     }
     
     /**
