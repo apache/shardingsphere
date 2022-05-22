@@ -56,25 +56,25 @@ public final class MetaDataContextsBuilder {
      */
     public MetaDataContexts build(final MetaDataPersistService metaDataPersistService) throws SQLException {
         DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(databaseConfigMap, props);
-        DatabaseType backendDatabaseType = DatabaseTypeEngine.getBackendDatabaseType(databaseConfigMap);
-        Map<String, ShardingSphereDatabase> databaseMap = getDatabaseMap(protocolType, backendDatabaseType);
+        DatabaseType storageType = DatabaseTypeEngine.getStorageType(databaseConfigMap);
+        Map<String, ShardingSphereDatabase> databaseMap = getDatabaseMap(protocolType, storageType);
         ShardingSphereRuleMetaData globalMetaData = new ShardingSphereRuleMetaData(globalRuleConfigs, GlobalRulesBuilder.buildRules(globalRuleConfigs, databaseMap));
         return new MetaDataContexts(metaDataPersistService, databaseMap, globalMetaData, OptimizerContextFactory.create(databaseMap, globalMetaData), props);
     }
     
-    private Map<String, ShardingSphereDatabase> getDatabaseMap(final DatabaseType protocolType, final DatabaseType backendDatabaseType) throws SQLException {
+    private Map<String, ShardingSphereDatabase> getDatabaseMap(final DatabaseType protocolType, final DatabaseType storageType) throws SQLException {
         Map<String, ShardingSphereDatabase> result = new HashMap<>(databaseConfigMap.size() + protocolType.getSystemDatabaseSchemaMap().size(), 1);
-        result.putAll(getGenericDatabaseMap(protocolType, backendDatabaseType));
+        result.putAll(getGenericDatabaseMap(protocolType, storageType));
         result.putAll(getSystemDatabaseMap(protocolType));
         return result;
     }
     
-    private Map<String, ShardingSphereDatabase> getGenericDatabaseMap(final DatabaseType protocolType, final DatabaseType backendDatabaseType) throws SQLException {
+    private Map<String, ShardingSphereDatabase> getGenericDatabaseMap(final DatabaseType protocolType, final DatabaseType storageType) throws SQLException {
         Map<String, ShardingSphereDatabase> result = new HashMap<>(databaseConfigMap.size(), 1);
         for (Entry<String, DatabaseConfiguration> entry : databaseConfigMap.entrySet()) {
             String databaseName = entry.getKey();
             if (!protocolType.getSystemSchemas().contains(databaseName)) {
-                result.put(databaseName, ShardingSphereDatabase.create(databaseName, protocolType, backendDatabaseType, entry.getValue(), props));
+                result.put(databaseName, ShardingSphereDatabase.create(databaseName, protocolType, storageType, entry.getValue(), props));
             }
         }
         return result;

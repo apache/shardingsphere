@@ -36,7 +36,7 @@ public final class SchemaBuilderMaterials {
     
     private final DatabaseType protocolType;
     
-    private final DatabaseType backendDatabaseType;
+    private final DatabaseType storageType;
     
     private final Map<String, DataSource> dataSourceMap;
     

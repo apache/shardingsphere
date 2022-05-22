@@ -104,13 +104,13 @@ public final class TableMetaDataBuilder {
     
     private static Map<String, SchemaMetaData> getFrontendSchemaMetaDataMap(final Map<String, SchemaMetaData> schemaMetaDataMap, final SchemaBuilderMaterials materials) {
         DatabaseType protocolType = materials.getProtocolType();
-        DatabaseType backendDatabaseType = materials.getBackendDatabaseType();
-        if (protocolType.equals(backendDatabaseType)) {
+        DatabaseType storageType = materials.getStorageType();
+        if (protocolType.equals(storageType)) {
             return schemaMetaDataMap;
         }
         Map<String, SchemaMetaData> result = new LinkedHashMap<>();
         Map<String, TableMetaData> tableMetaDataMap = Optional.ofNullable(schemaMetaDataMap.get(
-                backendDatabaseType.getDefaultSchema(materials.getDefaultSchemaName()))).map(SchemaMetaData::getTables).orElseGet(Collections::emptyMap);
+                storageType.getDefaultSchema(materials.getDefaultSchemaName()))).map(SchemaMetaData::getTables).orElseGet(Collections::emptyMap);
         String frontendSchemaName = protocolType.getDefaultSchema(materials.getDefaultSchemaName());
         result.put(frontendSchemaName, new SchemaMetaData(frontendSchemaName, tableMetaDataMap));
         return result;

@@ -52,7 +52,7 @@ public class TableMetaDataUtil {
         Map<String, Collection<String>> dataSourceTableGroups = new LinkedHashMap<>();
         DataNodes dataNodes = new DataNodes(materials.getRules());
         for (String each : tableNames) {
-            checkDataSourceTypeIncludeInstanceAndSetDatabaseTableMap(materials.getBackendDatabaseType(), dataNodes, each);
+            checkDataSourceTypeIncludeInstanceAndSetDatabaseTableMap(materials.getStorageType(), dataNodes, each);
             if (checkMetaDataEnable) {
                 addAllActualTableDataNode(materials, dataSourceTableGroups, dataNodes, each);
             } else {

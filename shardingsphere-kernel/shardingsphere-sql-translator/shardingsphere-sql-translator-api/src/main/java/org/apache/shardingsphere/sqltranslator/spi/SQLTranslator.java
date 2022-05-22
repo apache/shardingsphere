@@ -36,9 +36,9 @@ public interface SQLTranslator extends TypedSPI, RequiredSPI {
      * @param sql to be translated SQL
      * @param sqlStatement to be translated SQL statement
      * @param protocolType protocol type
-     * @param backendDatabaseType backend database type
+     * @param storageType storage type
      * @return translated SQL
      * @throws SQLTranslationException SQL translation exception
      */
-    String translate(String sql, SQLStatement sqlStatement, DatabaseType protocolType, DatabaseType backendDatabaseType) throws SQLTranslationException;
+    String translate(String sql, SQLStatement sqlStatement, DatabaseType protocolType, DatabaseType storageType) throws SQLTranslationException;
 }
