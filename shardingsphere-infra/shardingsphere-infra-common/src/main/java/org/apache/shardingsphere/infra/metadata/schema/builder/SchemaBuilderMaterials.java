@@ -34,9 +34,9 @@ import java.util.Map;
 @Getter
 public final class SchemaBuilderMaterials {
     
-    private final DatabaseType frontendDatabaseType;
+    private final DatabaseType protocolType;
     
-    private final DatabaseType backendDatabaseType;
+    private final DatabaseType storageType;
     
     private final Map<String, DataSource> dataSourceMap;
     

@@ -54,7 +54,7 @@ public final class SingleTableSchemaMetaDataBuilder implements RuleBasedSchemaMe
         if (tableMetaDataLoaderMaterials.isEmpty()) {
             return Collections.emptyMap();
         }
-        return SchemaMetaDataLoaderEngine.load(tableMetaDataLoaderMaterials, materials.getBackendDatabaseType());
+        return SchemaMetaDataLoaderEngine.load(tableMetaDataLoaderMaterials, materials.getStorageType());
     }
     
     @Override

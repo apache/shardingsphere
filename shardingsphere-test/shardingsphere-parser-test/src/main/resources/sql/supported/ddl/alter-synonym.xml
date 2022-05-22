@@ -20,4 +20,5 @@
     <sql-case id="alter_synonym_compile" value="ALTER SYNONYM offices COMPILE" db-types="Oracle" />
     <sql-case id="alter_public_synonym_compile" value="ALTER PUBLIC SYNONYM emp_table COMPILE" db-types="Oracle" />
     <sql-case id="alter_synonym_noneditionable" value="ALTER SYNONYM offices NONEDITIONABLE" db-types="Oracle" />
+    <sql-case id="alter_synonym_new_owner" value="ALTER SYNONYM t1 OWNER TO u1" db-types="openGauss" />
 </sql-cases>

@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sqltranslator.spi.SQLTranslator;
 public final class NativeSQLTranslator implements SQLTranslator {
     
     @Override
-    public String translate(final String sql, final SQLStatement statement, final DatabaseType frontendDatabaseType, final DatabaseType backendDatabaseType) {
+    public String translate(final String sql, final SQLStatement statement, final DatabaseType protocolType, final DatabaseType storageType) {
         // TODO
         return sql;
     }

@@ -15,7 +15,7 @@
   ~ limitations under the License.
   -->
 
-<dataset update-count="2" >
+<dataset update-count="2">
     <metadata data-nodes="db.t_shadow">
         <column name="order_id" type="long" />
         <column name="user_id" type="int" />
@@ -27,7 +27,7 @@
         <column name="type_decimal" type="decimal" />
         <column name="type_date" type="Date" />
         <column name="type_time" type="time" />
-        <column name="type_timestamp" type="timestamp"/>
+        <column name="type_timestamp" type="timestamp" />
     </metadata>
     <row data-node="db.t_shadow" values="1, 1, pro_order, S, true, 5, summer, 10.00, 2017-08-08, 18:30:30, 2017-08-08 18:30:30.0" />
     <row data-node="db.t_shadow" values="2, 1, pro_order, S, true, 5, summer, 10.00, 2017-08-08, 18:30:30, 2017-08-08 18:30:30.0" />

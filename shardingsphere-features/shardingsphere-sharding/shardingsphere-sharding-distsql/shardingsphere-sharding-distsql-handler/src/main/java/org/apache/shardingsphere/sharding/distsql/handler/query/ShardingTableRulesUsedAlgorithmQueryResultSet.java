@@ -40,7 +40,7 @@ public final class ShardingTableRulesUsedAlgorithmQueryResultSet implements Dist
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
         ShowShardingTableRulesUsedAlgorithmStatement statement = (ShowShardingTableRulesUsedAlgorithmStatement) sqlStatement;
         Collection<Collection<Object>> data = new LinkedList<>();
-        Collection<ShardingRuleConfiguration> shardingTableRules = database.getRuleMetaData().findRuleConfiguration(ShardingRuleConfiguration.class);
+        Collection<ShardingRuleConfiguration> shardingTableRules = database.getRuleMetaData().findRuleConfigurations(ShardingRuleConfiguration.class);
         shardingTableRules.forEach(each -> requireResult(statement, database.getName(), data, each));
         this.data = data.iterator();
     }
