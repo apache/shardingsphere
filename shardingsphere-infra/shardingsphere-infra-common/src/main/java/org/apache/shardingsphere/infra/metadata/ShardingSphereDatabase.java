@@ -94,15 +94,15 @@ public final class ShardingSphereDatabase {
         return create(name, protocolType, databaseConfig, new LinkedList<>(), SystemSchemaBuilder.build(name, protocolType));
     }
     
-    private static ShardingSphereDatabase create(final String name, final DatabaseType frontendDatabaseType, final DatabaseConfiguration databaseConfig,
+    private static ShardingSphereDatabase create(final String name, final DatabaseType protocolType, final DatabaseConfiguration databaseConfig,
                                                  final Collection<ShardingSphereRule> rules, final Map<String, ShardingSphereSchema> schemas) throws SQLException {
-        ShardingSphereResource resource = createResource(frontendDatabaseType, databaseConfig.getDataSources());
+        ShardingSphereResource resource = createResource(protocolType, databaseConfig.getDataSources());
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(databaseConfig.getRuleConfigurations(), rules);
-        return new ShardingSphereDatabase(name, frontendDatabaseType, resource, ruleMetaData, schemas);
+        return new ShardingSphereDatabase(name, protocolType, resource, ruleMetaData, schemas);
     }
     
-    private static ShardingSphereResource createResource(final DatabaseType frontendDatabaseType, final Map<String, DataSource> dataSourceMap) throws SQLException {
-        DatabaseType databaseType = dataSourceMap.isEmpty() ? frontendDatabaseType : DatabaseTypeEngine.getDatabaseType(dataSourceMap.values());
+    private static ShardingSphereResource createResource(final DatabaseType protocolType, final Map<String, DataSource> dataSourceMap) throws SQLException {
+        DatabaseType databaseType = dataSourceMap.isEmpty() ? protocolType : DatabaseTypeEngine.getDatabaseType(dataSourceMap.values());
         DataSourcesMetaData dataSourcesMetaData = new DataSourcesMetaData(databaseType, dataSourceMap);
         CachedDatabaseMetaData cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap).orElse(null);
         return new ShardingSphereResource(dataSourceMap, dataSourcesMetaData, cachedDatabaseMetaData, databaseType);

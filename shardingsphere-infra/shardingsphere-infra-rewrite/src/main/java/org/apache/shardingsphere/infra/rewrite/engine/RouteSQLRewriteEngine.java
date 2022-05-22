@@ -51,7 +51,7 @@ public final class RouteSQLRewriteEngine {
     
     private final SQLTranslatorRule translatorRule;
     
-    private final DatabaseType frontendDatabaseType;
+    private final DatabaseType protocolType;
     
     private final DatabaseType backendDatabaseType;
     
@@ -156,7 +156,7 @@ public final class RouteSQLRewriteEngine {
     private Map<RouteUnit, SQLRewriteUnit> translate(final SQLStatement sqlStatement, final Map<RouteUnit, SQLRewriteUnit> sqlRewriteUnits) {
         Map<RouteUnit, SQLRewriteUnit> result = new LinkedHashMap<>(sqlRewriteUnits.size(), 1);
         for (Entry<RouteUnit, SQLRewriteUnit> entry : sqlRewriteUnits.entrySet()) {
-            String sql = translatorRule.translate(entry.getValue().getSql(), sqlStatement, frontendDatabaseType, backendDatabaseType);
+            String sql = translatorRule.translate(entry.getValue().getSql(), sqlStatement, protocolType, backendDatabaseType);
             SQLRewriteUnit sqlRewriteUnit = new SQLRewriteUnit(sql, entry.getValue().getParameters());
             result.put(entry.getKey(), sqlRewriteUnit);
         }

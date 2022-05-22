@@ -33,7 +33,7 @@ public final class GenericSQLRewriteEngine {
     
     private final SQLTranslatorRule translatorRule;
     
-    private final DatabaseType frontendDatabaseType;
+    private final DatabaseType protocolType;
     
     private final DatabaseType backendDatabaseType;
     
@@ -45,7 +45,7 @@ public final class GenericSQLRewriteEngine {
      */
     public GenericSQLRewriteResult rewrite(final SQLRewriteContext sqlRewriteContext) {
         String sql = translatorRule.translate(
-                new DefaultSQLBuilder(sqlRewriteContext).toSQL(), sqlRewriteContext.getSqlStatementContext().getSqlStatement(), frontendDatabaseType, backendDatabaseType);
+                new DefaultSQLBuilder(sqlRewriteContext).toSQL(), sqlRewriteContext.getSqlStatementContext().getSqlStatement(), protocolType, backendDatabaseType);
         return new GenericSQLRewriteResult(new SQLRewriteUnit(sql, sqlRewriteContext.getParameterBuilder().getParameters()));
     }
 }
