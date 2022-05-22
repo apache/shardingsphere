@@ -17,13 +17,12 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.datasource;
 
-import lombok.Getter;
 import org.apache.shardingsphere.driver.jdbc.adapter.AbstractDataSourceAdapter;
 import org.apache.shardingsphere.driver.state.DriverStateContext;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.checker.RuleConfigurationCheckerFactory;
-import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
+import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.scope.GlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
@@ -45,7 +44,6 @@ import java.util.stream.Collectors;
 /**
  * ShardingSphere data source.
  */
-@Getter
 public final class ShardingSphereDataSource extends AbstractDataSourceAdapter implements AutoCloseable {
     
     private final String databaseName;
