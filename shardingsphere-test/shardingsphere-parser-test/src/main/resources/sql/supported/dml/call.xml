@@ -17,9 +17,9 @@
   -->
 
 <sql-cases>
-    <sql-case id="call_without_parameters" value="CALL p"  db-types="MySQL"/>
+    <sql-case id="call_without_parameters" value="CALL p" db-types="MySQL" />
     <sql-case id="call_with_parameters_all_variable" value="CALL p(@order_id, @user_id)" db-types="MySQL" />
     <sql-case id="call_with_parameters_all_placeholder" value="CALL p(?, ?) " db-types="MySQL" />
     <sql-case id="call_with_parameters_all_expression" value="CALL p('user', 'order')" db-types="MySQL" />
-    <sql-case id="call_with_parameters_mix" value="CALL p(@order_id, 'user', ?)"  db-types="MySQL" />
+    <sql-case id="call_with_parameters_mix" value="CALL p(@order_id, 'user', ?)" db-types="MySQL" />
 </sql-cases>

@@ -17,8 +17,8 @@
   -->
 
 <sql-parser-test-cases>
-    <flush sql-case-id="flush_privileges" flush-table="false"/>
-    <flush sql-case-id="flush_tables" flush-table="true"/>
+    <flush sql-case-id="flush_privileges" flush-table="false" />
+    <flush sql-case-id="flush_tables" flush-table="true" />
     <flush sql-case-id="flush_tables_with_tables" flush-table="true">
         <table name="t_order" start-index="13" stop-index="19" />
         <table name="t_order_item" start-index="21" stop-index="32" />
