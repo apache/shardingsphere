@@ -131,7 +131,7 @@ public final class EncryptRuleTest {
     
     @Test
     public void assertGetAssistedQueryColumns() {
-        assertTrue(new EncryptRule(createEncryptRuleConfiguration(), Collections.emptyMap()).getAssistedQueryColumns("t_encrypt").isEmpty());
+        assertThat(new EncryptRule(createEncryptRuleConfiguration(), Collections.emptyMap()).getAssistedQueryColumns("t_encrypt"), is(Collections.singletonList("pwd_assist")));
     }
     
     @Test
@@ -192,7 +192,7 @@ public final class EncryptRuleTest {
     private EncryptRuleConfiguration createEncryptRuleConfiguration() {
         ShardingSphereAlgorithmConfiguration queryAssistedEncryptConfig = new ShardingSphereAlgorithmConfiguration("CORE.QUERY_ASSISTED.FIXTURE", new Properties());
         ShardingSphereAlgorithmConfiguration metaDataAwareEncryptConfig = new ShardingSphereAlgorithmConfiguration("CORE.METADATA_AWARE.FIXTURE", new Properties());
-        EncryptColumnRuleConfiguration pwdColumnConfig = new EncryptColumnRuleConfiguration("pwd", "pwd_cipher", "", "pwd_plain", "test_encryptor", "");
+        EncryptColumnRuleConfiguration pwdColumnConfig = new EncryptColumnRuleConfiguration("pwd", "pwd_cipher", "pwd_assist", "pwd_plain", "test_encryptor", "test_encryptor");
         EncryptColumnRuleConfiguration creditCardColumnConfig = new EncryptColumnRuleConfiguration("credit_card", "credit_card_cipher", "", "credit_card_plain", "test_encryptor", "");
         EncryptColumnRuleConfiguration nameColumnConfig = new EncryptColumnRuleConfiguration("name", "name_cipher", "", "name_plain", "customized_encryptor", "");
         EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration("t_encrypt", Arrays.asList(pwdColumnConfig, creditCardColumnConfig, nameColumnConfig), null);
