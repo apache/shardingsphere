@@ -52,7 +52,7 @@ public final class ShowSQLParserRuleHandler extends QueryableRALBackendHandler<S
     @Override
     protected Collection<List<Object>> getRows(final ContextManager contextManager) {
         Optional<SQLParserRuleConfiguration> sqlParserRuleConfigurationOptional = ProxyContext.getInstance().getContextManager()
-                .getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(SQLParserRuleConfiguration.class).stream().findAny();
+                .getMetaDataContexts().getGlobalRuleMetaData().findRuleConfigurations(SQLParserRuleConfiguration.class).stream().findAny();
         if (!sqlParserRuleConfigurationOptional.isPresent()) {
             return Collections.emptyList();
         }

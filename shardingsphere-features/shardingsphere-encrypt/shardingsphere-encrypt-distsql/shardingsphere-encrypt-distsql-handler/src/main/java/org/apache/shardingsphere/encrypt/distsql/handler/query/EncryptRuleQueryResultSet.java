@@ -45,7 +45,7 @@ public final class EncryptRuleQueryResultSet implements DistSQLResultSet {
     
     @Override
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
-        Optional<EncryptRuleConfiguration> ruleConfig = database.getRuleMetaData().findRuleConfiguration(EncryptRuleConfiguration.class).stream().findAny();
+        Optional<EncryptRuleConfiguration> ruleConfig = database.getRuleMetaData().findRuleConfigurations(EncryptRuleConfiguration.class).stream().findAny();
         ruleConfig.ifPresent(optional -> data = buildData(optional, (ShowEncryptRulesStatement) sqlStatement).iterator());
     }
     

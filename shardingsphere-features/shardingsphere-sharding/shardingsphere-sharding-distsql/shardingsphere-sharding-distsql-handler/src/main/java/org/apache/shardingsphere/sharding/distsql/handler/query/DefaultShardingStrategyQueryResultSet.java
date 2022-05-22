@@ -45,7 +45,7 @@ public final class DefaultShardingStrategyQueryResultSet implements DistSQLResul
     
     @Override
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
-        Optional<ShardingRuleConfiguration> shardingRuleConfig = database.getRuleMetaData().findRuleConfiguration(ShardingRuleConfiguration.class).stream().findAny();
+        Optional<ShardingRuleConfiguration> shardingRuleConfig = database.getRuleMetaData().findRuleConfigurations(ShardingRuleConfiguration.class).stream().findAny();
         shardingRuleConfig.ifPresent(optional -> data = buildData(optional).entrySet().iterator());
     }
     

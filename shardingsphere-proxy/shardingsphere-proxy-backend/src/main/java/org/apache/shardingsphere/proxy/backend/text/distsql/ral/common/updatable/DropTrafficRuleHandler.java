@@ -41,7 +41,7 @@ public final class DropTrafficRuleHandler extends UpdatableRALBackendHandler<Dro
     @Override
     protected void update(final ContextManager contextManager, final DropTrafficRuleStatement sqlStatement) throws DistSQLException {
         Optional<TrafficRuleConfiguration> config = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData()
-                .findRuleConfiguration(TrafficRuleConfiguration.class).stream().findAny();
+                .findRuleConfigurations(TrafficRuleConfiguration.class).stream().findAny();
         if (!sqlStatement.isContainsIfExistClause()) {
             DistSQLException.predictionThrow(config.isPresent(), () -> new RequiredRuleMissedException("Traffic"));
             checkTrafficRuleConfiguration(sqlStatement, config.get());

@@ -46,7 +46,7 @@ public final class ShardingDefaultShardingStrategyQueryResultSetTest {
     @Test
     public void assertGetRowData() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getRuleMetaData().findRuleConfiguration(any())).thenReturn(Collections.singleton(createRuleConfiguration1()));
+        when(database.getRuleMetaData().findRuleConfigurations(any())).thenReturn(Collections.singleton(createRuleConfiguration1()));
         DefaultShardingStrategyQueryResultSet resultSet = new DefaultShardingStrategyQueryResultSet();
         resultSet.init(database, mock(ShowShardingAlgorithmsStatement.class));
         List<Object> actual = new ArrayList<>(resultSet.getRowData());
@@ -65,7 +65,7 @@ public final class ShardingDefaultShardingStrategyQueryResultSetTest {
         assertThat(actual.get(3), is("database_inline"));
         assertThat(actual.get(4), is("INLINE"));
         assertThat(actual.get(5).toString(), is("{algorithm-expression=ds_${user_id % 2}}"));
-        when(database.getRuleMetaData().findRuleConfiguration(any())).thenReturn(Collections.singleton(createRuleConfiguration2()));
+        when(database.getRuleMetaData().findRuleConfigurations(any())).thenReturn(Collections.singleton(createRuleConfiguration2()));
         resultSet = new DefaultShardingStrategyQueryResultSet();
         resultSet.init(database, mock(ShowShardingAlgorithmsStatement.class));
         actual = new ArrayList<>(resultSet.getRowData());

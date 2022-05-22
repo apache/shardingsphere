@@ -51,7 +51,7 @@ public final class ReadwriteSplittingRuleQueryResultSet implements DistSQLResult
     
     @Override
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
-        Optional<ReadwriteSplittingRuleConfiguration> ruleConfig = database.getRuleMetaData().findRuleConfiguration(ReadwriteSplittingRuleConfiguration.class).stream().findAny();
+        Optional<ReadwriteSplittingRuleConfiguration> ruleConfig = database.getRuleMetaData().findRuleConfigurations(ReadwriteSplittingRuleConfiguration.class).stream().findAny();
         buildExportableMap(database);
         ruleConfig.ifPresent(optional -> data = buildData(optional).iterator());
     }

@@ -41,7 +41,7 @@ public final class ShardingTableRulesUsedKeyGeneratorQueryResultSet implements D
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
         ShowShardingTableRulesUsedKeyGeneratorStatement statement = (ShowShardingTableRulesUsedKeyGeneratorStatement) sqlStatement;
         List<Collection<Object>> result = new ArrayList<>();
-        Collection<ShardingRuleConfiguration> shardingTableRules = database.getRuleMetaData().findRuleConfiguration(ShardingRuleConfiguration.class);
+        Collection<ShardingRuleConfiguration> shardingTableRules = database.getRuleMetaData().findRuleConfigurations(ShardingRuleConfiguration.class);
         shardingTableRules.forEach(each -> requireResult(statement, database.getName(), result, each));
         data = result.iterator();
     }
