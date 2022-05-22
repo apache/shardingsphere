@@ -331,8 +331,8 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         RuleAlteredContext ruleAlteredContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
         GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
         if (isDataConsistencyCheckNeeded(ruleAlteredContext)) {
-            Optional<Boolean> checkResultOptional = repositoryAPI.getJobCheckResult(jobId);
-            if (!checkResultOptional.isPresent() || !checkResultOptional.get()) {
+            Optional<Boolean> checkResult = repositoryAPI.getJobCheckResult(jobId);
+            if (!checkResult.isPresent() || !checkResult.get()) {
                 throw new PipelineVerifyFailedException("Data consistency check is not finished or failed.");
             }
         }

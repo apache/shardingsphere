@@ -84,11 +84,11 @@ public final class DatabaseDiscoveryRuleConfigurationYamlSwapperTest {
     }
     
     private DatabaseDiscoveryRuleConfigurationYamlSwapper getHARuleConfigurationYamlSwapper() {
-        Optional<DatabaseDiscoveryRuleConfigurationYamlSwapper> optional = YamlRuleConfigurationSwapperFactory.getAllInstances().stream()
+        Optional<DatabaseDiscoveryRuleConfigurationYamlSwapper> result = YamlRuleConfigurationSwapperFactory.getAllInstances().stream()
                 .filter(each -> each instanceof DatabaseDiscoveryRuleConfigurationYamlSwapper)
                 .map(each -> (DatabaseDiscoveryRuleConfigurationYamlSwapper) each)
                 .findFirst();
-        assertTrue(optional.isPresent());
-        return optional.get();
+        assertTrue(result.isPresent());
+        return result.get();
     }
 }

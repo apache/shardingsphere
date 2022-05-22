@@ -51,18 +51,16 @@ public final class ShowSQLParserRuleHandler extends QueryableRALBackendHandler<S
     
     @Override
     protected Collection<List<Object>> getRows(final ContextManager contextManager) {
-        Optional<SQLParserRuleConfiguration> sqlParserRuleConfigurationOptional = ProxyContext.getInstance().getContextManager()
+        Optional<SQLParserRuleConfiguration> sqlParserRuleConfig = ProxyContext.getInstance().getContextManager()
                 .getMetaDataContexts().getGlobalRuleMetaData().findRuleConfigurations(SQLParserRuleConfiguration.class).stream().findAny();
-        if (!sqlParserRuleConfigurationOptional.isPresent()) {
-            return Collections.emptyList();
-        }
-        SQLParserRuleConfiguration sqlParserRuleConfig = sqlParserRuleConfigurationOptional.get();
-        List<Object> row = new LinkedList<>();
-        row.add(String.valueOf(sqlParserRuleConfig.isSqlCommentParseEnabled()));
-        row.add(GSON.toJson(sqlParserRuleConfig.getParseTreeCache()));
-        row.add(GSON.toJson(sqlParserRuleConfig.getSqlStatementCache()));
-        Collection<List<Object>> result = new LinkedList<>();
-        result.add(row);
+        return sqlParserRuleConfig.isPresent() ? Collections.singleton(getRow(sqlParserRuleConfig.get())) : Collections.emptyList();
+    }
+    
+    private List<Object> getRow(final SQLParserRuleConfiguration sqlParserRuleConfig) {
+        List<Object> result = new LinkedList<>();
+        result.add(String.valueOf(sqlParserRuleConfig.isSqlCommentParseEnabled()));
+        result.add(GSON.toJson(sqlParserRuleConfig.getParseTreeCache()));
+        result.add(GSON.toJson(sqlParserRuleConfig.getSqlStatementCache()));
         return result;
     }
 }

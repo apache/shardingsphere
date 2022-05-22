@@ -52,9 +52,9 @@ public final class JobProgressTest {
     @Test
     public void assertGetIncrementalPosition() {
         JobProgress jobProgress = getJobProgress(ConfigurationFileUtil.readFile("job-progress.yaml"));
-        Optional<IngestPosition<?>> positionOptional = jobProgress.getIncrementalPosition("ds0");
-        assertTrue(positionOptional.isPresent());
-        assertThat(positionOptional.get(), instanceOf(PlaceholderPosition.class));
+        Optional<IngestPosition<?>> position = jobProgress.getIncrementalPosition("ds0");
+        assertTrue(position.isPresent());
+        assertThat(position.get(), instanceOf(PlaceholderPosition.class));
     }
     
     @Test
