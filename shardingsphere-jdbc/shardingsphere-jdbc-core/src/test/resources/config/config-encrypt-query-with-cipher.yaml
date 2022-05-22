@@ -32,6 +32,7 @@ rules:
           cipherColumn: cipher_pwd
           assistedQueryColumn: assist_pwd
           encryptorName: jdbc_query_assisted_encryptor_fixture
+          assistedEncryptorName: jdbc_query_assisted_encryptor_fixture
     t_encrypt_contains_column:
       columns:
         plain_pwd:
