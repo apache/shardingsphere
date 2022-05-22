@@ -51,10 +51,7 @@ public final class ShowAuthorityRuleHandler extends QueryableRALBackendHandler<S
     protected Collection<List<Object>> getRows(final ContextManager contextManager) {
         Optional<AuthorityRuleConfiguration> authorityRuleConfig = ProxyContext.getInstance().getContextManager()
                 .getMetaDataContexts().getGlobalRuleMetaData().findRuleConfigurations(AuthorityRuleConfiguration.class).stream().findFirst();
-        if (!authorityRuleConfig.isPresent()) {
-            return Collections.emptyList();
-        }
-        return Collections.singleton(getRow(authorityRuleConfig.get()));
+        return authorityRuleConfig.isPresent() ? Collections.singleton(getRow(authorityRuleConfig.get())) : Collections.emptyList();
     }
     
     private List<Object> getRow(final AuthorityRuleConfiguration authorityRuleConfig) {
