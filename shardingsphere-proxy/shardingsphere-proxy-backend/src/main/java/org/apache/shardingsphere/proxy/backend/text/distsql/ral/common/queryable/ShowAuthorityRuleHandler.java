@@ -49,18 +49,19 @@ public final class ShowAuthorityRuleHandler extends QueryableRALBackendHandler<S
     
     @Override
     protected Collection<List<Object>> getRows(final ContextManager contextManager) {
-        Optional<AuthorityRuleConfiguration> authorityRuleConfigurationOptional = ProxyContext.getInstance().getContextManager()
-                .getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(AuthorityRuleConfiguration.class).stream().findFirst();
-        if (!authorityRuleConfigurationOptional.isPresent()) {
+        Optional<AuthorityRuleConfiguration> authorityRuleConfig = ProxyContext.getInstance().getContextManager()
+                .getMetaDataContexts().getGlobalRuleMetaData().findRuleConfigurations(AuthorityRuleConfiguration.class).stream().findFirst();
+        if (!authorityRuleConfig.isPresent()) {
             return Collections.emptyList();
         }
-        AuthorityRuleConfiguration ruleConfig = authorityRuleConfigurationOptional.get();
-        List<Object> row = new LinkedList<>();
-        row.add(ruleConfig.getUsers().stream().map(each -> each.getGrantee().toString()).collect(Collectors.joining("; ")));
-        row.add(ruleConfig.getProvider().getType());
-        row.add(ruleConfig.getProvider().getProps().size() == 0 ? "" : ruleConfig.getProvider().getProps());
-        Collection<List<Object>> result = new LinkedList<>();
-        result.add(row);
+        return Collections.singleton(getRow(authorityRuleConfig.get()));
+    }
+    
+    private List<Object> getRow(final AuthorityRuleConfiguration authorityRuleConfig) {
+        List<Object> result = new LinkedList<>();
+        result.add(authorityRuleConfig.getUsers().stream().map(each -> each.getGrantee().toString()).collect(Collectors.joining("; ")));
+        result.add(authorityRuleConfig.getProvider().getType());
+        result.add(authorityRuleConfig.getProvider().getProps().size() == 0 ? "" : authorityRuleConfig.getProvider().getProps());
         return result;
     }
 }
