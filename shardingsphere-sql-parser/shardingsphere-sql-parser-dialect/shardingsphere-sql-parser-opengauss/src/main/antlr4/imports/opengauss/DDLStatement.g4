@@ -724,6 +724,10 @@ alterCollationClause
     | SET SCHEMA schemaName
     ;
 
+alterSynonym
+    : ALTER SYNONYM synonymName OWNER TO owner
+    ;
+
 alterConversion
     : ALTER CONVERSION anyName alterConversionClause
     ;
