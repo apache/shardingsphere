@@ -15,28 +15,12 @@
  * limitations under the License.
  */
 
-parser grammar StoreProcedure;
+package org.apache.shardingsphere.example.generator.scenario.transaction;
 
-import BaseRule;
+import org.apache.shardingsphere.example.generator.scenario.ExampleScenario;
 
-options {tokenVocab = ModeLexer;}
-
-call
-    : CALL identifier LP_ callArguments? RP_
-    ;
-
-callArguments
-    : callArgument (COMMA_ callArgument)*
-    ;
-
-callArgument
-    : positionalNotation | namedNotation
-    ;
-
-positionalNotation
-    : aExpr
-    ;
-
-namedNotation
-    : identifier EQ_ GT_ aExpr
-    ;
+/**
+ * Transaction example scenario.
+ */
+public interface TransactionExampleScenario extends ExampleScenario {
+}
