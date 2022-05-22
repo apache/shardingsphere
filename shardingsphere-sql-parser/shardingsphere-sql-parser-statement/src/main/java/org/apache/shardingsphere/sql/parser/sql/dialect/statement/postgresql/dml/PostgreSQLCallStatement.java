@@ -17,13 +17,25 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.CallStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * PostgreSQL call statement.
  */
 @ToString
+@Getter
+@Setter
 public final class PostgreSQLCallStatement extends CallStatement implements PostgreSQLStatement {
+    
+    private String procedureName;
+    
+    private final Collection<ExpressionSegment> parameters = new LinkedList<>();
 }
