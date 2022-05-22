@@ -58,12 +58,12 @@ public final class DatabaseTypeEngine {
     }
     
     /**
-     * Get backend database type.
+     * Get storage type.
      *
      * @param databaseConfigs database configs
-     * @return backend database type
+     * @return storage type
      */
-    public static DatabaseType getBackendDatabaseType(final Map<String, ? extends DatabaseConfiguration> databaseConfigs) {
+    public static DatabaseType getStorageType(final Map<String, ? extends DatabaseConfiguration> databaseConfigs) {
         return getDatabaseType(
                 databaseConfigs.values().stream().filter(DatabaseTypeEngine::isComplete).findFirst().map(optional -> optional.getDataSources().values()).orElseGet(Collections::emptyList));
     }

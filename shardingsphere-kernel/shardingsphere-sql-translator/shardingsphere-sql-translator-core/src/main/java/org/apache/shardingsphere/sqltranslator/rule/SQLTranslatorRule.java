@@ -46,15 +46,15 @@ public final class SQLTranslatorRule implements GlobalRule {
      * @param sql to be translated SQL
      * @param sqlStatement to be translated SQL statement
      * @param protocolType protocol type
-     * @param backendDatabaseType backend database type
+     * @param storageType storage type
      * @return translated SQL
      */
-    public String translate(final String sql, final SQLStatement sqlStatement, final DatabaseType protocolType, final DatabaseType backendDatabaseType) {
-        if (protocolType.equals(backendDatabaseType)) {
+    public String translate(final String sql, final SQLStatement sqlStatement, final DatabaseType protocolType, final DatabaseType storageType) {
+        if (protocolType.equals(storageType)) {
             return sql;
         }
         try {
-            return translator.translate(sql, sqlStatement, protocolType, backendDatabaseType);
+            return translator.translate(sql, sqlStatement, protocolType, storageType);
         } catch (final SQLTranslationException ex) {
             if (useOriginalSQLWhenTranslatingFailed) {
                 return sql;
