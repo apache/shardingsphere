@@ -167,12 +167,11 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
      *
      * @param logicTable logic table name
      * @param logicColumn logic column name
-     * @param isEncryptOrAssisted true on encrypt, assisted false
      * @return encryptor
      */
     @SuppressWarnings("rawtypes")
-    public Optional<EncryptAlgorithm> findEncryptor(final String logicTable, final String logicColumn, final boolean isEncryptOrAssisted) {
-        return tables.containsKey(logicTable.toLowerCase()) ? tables.get(logicTable.toLowerCase()).findEncryptorName(logicColumn, isEncryptOrAssisted).map(encryptors::get) : Optional.empty();
+    public Optional<EncryptAlgorithm> findEncryptor(final String logicTable, final String logicColumn) {
+        return tables.containsKey(logicTable.toLowerCase()) ? tables.get(logicTable.toLowerCase()).findEncryptorName(logicColumn).map(encryptors::get) : Optional.empty();
     }
     
     /**
@@ -187,7 +186,7 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
      */
     @SuppressWarnings("rawtypes")
     public List<Object> getEncryptValues(final String databaseName, final String schemaName, final String logicTable, final String logicColumn, final List<Object> originalValues) {
-        Optional<EncryptAlgorithm> encryptor = findEncryptor(logicTable, logicColumn, true);
+        Optional<EncryptAlgorithm> encryptor = findEncryptor(logicTable, logicColumn);
         EncryptContext encryptContext = EncryptContextBuilder.build(databaseName, schemaName, logicTable, logicColumn, this);
         Preconditions.checkArgument(encryptor.isPresent(), "Can not find EncryptAlgorithm by %s.%s.", logicTable, logicColumn);
         return getEncryptValues(encryptor.get(), originalValues, encryptContext);
@@ -257,7 +256,7 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
      */
     @SuppressWarnings("rawtypes")
     public List<Object> getEncryptAssistedQueryValues(final String databaseName, final String schemaName, final String logicTable, final String logicColumn, final List<Object> originalValues) {
-        Optional<EncryptAlgorithm> encryptor = findEncryptor(logicTable, logicColumn, false);
+        Optional<EncryptAlgorithm> encryptor = findEncryptor(logicTable, logicColumn);
         EncryptContext encryptContext = EncryptContextBuilder.build(databaseName, schemaName, logicTable, logicColumn, this);
         Preconditions.checkArgument(encryptor.isPresent() && encryptor.get() instanceof QueryAssistedEncryptAlgorithm,
                 "Can not find QueryAssistedEncryptAlgorithm by %s.%s.", logicTable, logicColumn);

@@ -46,7 +46,7 @@ public final class EncryptTable {
         for (EncryptColumnRuleConfiguration each : config.getColumns()) {
             checkColumnConfig(each);
             columns.put(each.getLogicColumn(), new EncryptColumn(getEncryptColumnDataType(each.getLogicDataType(), dataTypes), each.getCipherColumn(),
-                    getEncryptColumnDataType(each.getCipherDataType(), dataTypes), each.getAssistedQueryColumn(), 
+                    getEncryptColumnDataType(each.getCipherDataType(), dataTypes), each.getAssistedQueryColumn(),
                     getEncryptColumnDataType(each.getAssistedQueryDataType(), dataTypes),
                     each.getPlainColumn(), getEncryptColumnDataType(each.getPlainDataType(), dataTypes), each.getEncryptorName(), each.getAssistedEncryptorName()));
         }
@@ -69,16 +69,24 @@ public final class EncryptTable {
      * Find encrypt algorithm name.
      *
      * @param logicColumn column name
-     * @param isEncryptOrAssisted true on encrypt, false assisted
      * @return encrypt algorithm name
      */
-    public Optional<String> findEncryptorName(final String logicColumn, final boolean isEncryptOrAssisted) {
+    public Optional<String> findEncryptorName(final String logicColumn) {
         if (columns.containsKey(logicColumn)) {
-            if (isEncryptOrAssisted) {
-                return Optional.of(columns.get(logicColumn).getEncryptorName());
-            } else {
-                return Optional.of(columns.get(logicColumn).getAssistedEncryptorName());
-            }
+            return Optional.of(columns.get(logicColumn).getEncryptorName());
+        }
+        return Optional.empty();
+    }
+    
+    /**
+     * Find assisted encrypt algorithm name.
+     *
+     * @param logicColumn column name
+     * @return assisted encrypt algorithm name
+     */
+    public Optional<String> findAssistedEncryptorName(final String logicColumn) {
+        if (columns.containsKey(logicColumn) && findAssistedQueryColumn(logicColumn).isPresent()) {
+            return Optional.of(columns.get(logicColumn).getAssistedEncryptorName());
         }
         return Optional.empty();
     }
