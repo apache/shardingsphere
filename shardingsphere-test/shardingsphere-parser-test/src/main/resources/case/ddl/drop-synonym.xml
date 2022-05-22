@@ -19,4 +19,7 @@
 <sql-parser-test-cases>
     <drop-synonym sql-case-id="drop_synonym" />
     <drop-synonym sql-case-id="drop_synonym_with_force" />
+    <drop-synonym sql-case-id="drop_synonym_if_exists" />
+    <drop-synonym sql-case-id="drop_synonym_cascade" />
+    <drop-synonym sql-case-id="drop_synonym_restrict" />
 </sql-parser-test-cases>
