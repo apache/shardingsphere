@@ -1032,6 +1032,32 @@
 &lt;project</replacement>
                         </replace>
                     </pom>
+                    <formats>
+                        <format>
+                            <includes>
+                                <include>src/**/resources/**/*.xml</include>
+                            </includes>
+                            <eclipseWtp>
+                                <type>XML</type>
+                                <files>
+                                    <file>${maven.multiModuleProjectDirectory}/src/resources/spotless_shardingsphere_formatter_xml.prefs</file>
+                                </files>
+                            </eclipseWtp>
+                            
+                            <replaceRegex>
+                                <name>First set of replacement XML rules</name>
+                                <searchRegex>(properties|RANDOM|FIXTURE|noneStrategy|UUID|uuidAlgorithm|SeverityMatchFilter|xpath.xml|sqlStatementCache|1024|db-types="Oracle"|Oracle)" /&gt;</searchRegex>
+                                <replacement>$1" /&gt;
+    </replacement>
+                            </replaceRegex>
+                            <replaceRegex>
+                                <name>The second set of replacement XML rules</name>
+                                <searchRegex>(check-scaling|create-table-order|sharding:rule|create-table-order-item|update-order-item-by-id|delete-order-by-id|update-order-by-id|insert-order-item|insert-order|full-insert-order|describe|show-columns|create-table|drop-index|drop-table|select|logger|alter-table|truncate|disassociate-statistics|create-login|add-resource|create-sharding-auto-table-rule|create-sharding-table-rule|create-sharding-broadcast-table-rule|create-readwrite-splitting-rule|create-encrypt-rule|create-shadow-rule|rewrite-assertion|appender|test-case|revoke|show-sharding-binding-table-rules|show-sharding-table-rules|show-sharding-algorithms|show-readwrite-splitting-rules|show-db-discovery-rules|show-encrypt-rules|show-shadow-rules|show-shadow-table-rules|show-shadow-algorithms|show-single-table|show-sharding-table-nodes|show-sharding-key-generators|show-default-sharding-strateg|show-sharding-scaling-rules|show-unused-sharding-algorithms|show-unused-sharding-key-generators|count-schema-rules|show-rules-used-resource|show-sharding-table-rules-used-key-generator|show-sharding-table-rules-used-algorithm|deny-user|alter-login|uninstall-component|install-component|drop-resource|drop-sharding-table-rule|drop-sharding-binding-table-rules|drop-sharding-broadcast-table-rules|drop-readwrite-splitting-rule|call|create-index|associate-statistics|alter-index|grant|database-discovery:rule|alter-resource|alter-sharding-table-rule|alter-database-discovery-heartbeat|alter-database-discovery-type|alter-encrypt-rule)&gt;</searchRegex>
+                                <replacement>$1&gt;
+    </replacement>
+                            </replaceRegex>
+                        </format>
+                    </formats>
                 </configuration>
                 <executions>
                     <execution>

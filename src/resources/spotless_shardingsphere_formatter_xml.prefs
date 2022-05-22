@@ -1,0 +1,8 @@
+clearAllBlankLines=false
+eclipse.preferences.version=1
+honourAllSchemaLocations=true
+formatCommentText=false
+indentationChar=space
+indentationSize=4
+lineWidth=20000
+preserveCDATAContent=true
