@@ -79,7 +79,7 @@ public final class ShardingSphereDatabaseMetaDataTest {
     
     private final Map<String, DataSource> dataSourceMap = new HashMap<>();
     
-    private org.apache.shardingsphere.driver.jdbc.core.datasource.metadata.ShardingSphereDatabaseMetaData shardingSphereDatabaseMetaData;
+    private ShardingSphereDatabaseMetaData shardingSphereDatabaseMetaData;
     
     @Before
     public void setUp() throws SQLException {
@@ -87,7 +87,6 @@ public final class ShardingSphereDatabaseMetaDataTest {
         when(dataSource.getConnection()).thenReturn(connection);
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         when(resultSet.getMetaData()).thenReturn(mock(ResultSetMetaData.class));
-        CachedDatabaseMetaData cachedDatabaseMetaData = new CachedDatabaseMetaData(databaseMetaData);
         when(shardingSphereConnection.getConnectionManager().getRandomPhysicalDataSourceName()).thenReturn(DATA_SOURCE_NAME);
         when(shardingSphereConnection.getConnectionManager().getRandomConnection()).thenReturn(connection);
         when(shardingSphereConnection.getContextManager().getMetaDataContexts()).thenReturn(metaDataContexts);
@@ -95,10 +94,11 @@ public final class ShardingSphereDatabaseMetaDataTest {
         when(shardingSphereConnection.getDatabaseName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(metaDataContexts.getDatabaseMetaData(shardingSphereConnection.getDatabaseName())).thenReturn(database);
-        when(database.getResource().getCachedDatabaseMetaData()).thenReturn(cachedDatabaseMetaData);
+        CachedDatabaseMetaData cachedDatabaseMetaData = new CachedDatabaseMetaData(databaseMetaData);
+        when(shardingSphereConnection.getCachedDatabaseMetaData()).thenReturn(cachedDatabaseMetaData);
         ShardingRule shardingRule = mockShardingRule();
         when(database.getRuleMetaData().getRules()).thenReturn(Collections.singleton(shardingRule));
-        shardingSphereDatabaseMetaData = new org.apache.shardingsphere.driver.jdbc.core.datasource.metadata.ShardingSphereDatabaseMetaData(shardingSphereConnection);
+        shardingSphereDatabaseMetaData = new ShardingSphereDatabaseMetaData(shardingSphereConnection);
     }
     
     private ShardingRule mockShardingRule() {

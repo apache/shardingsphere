@@ -78,11 +78,11 @@ public abstract class AbstractShardingSphereDataSourceForEncryptTest extends Abs
         }
     }
     
-    protected final Connection getEncryptConnection() {
+    protected final Connection getEncryptConnection() throws SQLException {
         return queryWithPlainDataSource.getConnection();
     }
     
-    protected final ShardingSphereConnection getEncryptConnectionWithProps() {
+    protected final ShardingSphereConnection getEncryptConnectionWithProps() throws SQLException {
         return (ShardingSphereConnection) queryWithCipherDataSource.getConnection();
     }
     

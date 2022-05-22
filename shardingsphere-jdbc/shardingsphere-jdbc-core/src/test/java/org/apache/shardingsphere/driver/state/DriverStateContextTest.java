@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.resource.CachedDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -68,7 +69,7 @@ public final class DriverStateContextTest {
     
     @Test
     public void assertGetConnectionWithOkState() {
-        Connection actual = DriverStateContext.getConnection(DefaultDatabase.LOGIC_NAME, contextManager);
+        Connection actual = DriverStateContext.getConnection(DefaultDatabase.LOGIC_NAME, contextManager, mock(CachedDatabaseMetaData.class));
         assertThat(actual, instanceOf(ShardingSphereConnection.class));
     }
 }

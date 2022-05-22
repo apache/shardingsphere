@@ -57,7 +57,7 @@ public final class EncryptStatementTest extends AbstractShardingSphereDataSource
     private static final String SHOW_COLUMNS_SQL = "SHOW columns FROM t_encrypt";
     
     @Test
-    public void assertSQLShow() {
+    public void assertSQLShow() throws SQLException {
         assertTrue(getEncryptConnectionWithProps().getContextManager().getMetaDataContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
     }
     

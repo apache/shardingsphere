@@ -20,6 +20,7 @@ package org.apache.shardingsphere.driver.jdbc.core.connection;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
+import org.apache.shardingsphere.infra.metadata.resource.CachedDatabaseMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.transaction.ConnectionTransaction;
 import org.apache.shardingsphere.transaction.ConnectionTransaction.DistributedTransactionOperationType;
@@ -53,7 +54,7 @@ public final class ShardingSphereConnectionTest {
     
     @Before
     public void setUp() throws SQLException {
-        connection = new ShardingSphereConnection(DefaultDatabase.LOGIC_NAME, mockContextManager());
+        connection = new ShardingSphereConnection(DefaultDatabase.LOGIC_NAME, mockContextManager(), mock(CachedDatabaseMetaData.class));
     }
     
     private ContextManager mockContextManager() {

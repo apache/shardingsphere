@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
+import org.apache.shardingsphere.infra.metadata.resource.CachedDatabaseMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -62,7 +63,7 @@ public abstract class AbstractBaseExecutorTest {
         SQLExecutorExceptionHandler.setExceptionThrown(true);
         executorEngine = ExecutorEngine.createExecutorEngineWithCPU();
         TransactionTypeHolder.set(TransactionType.LOCAL);
-        connection = new ShardingSphereConnection(DefaultDatabase.LOGIC_NAME, mockContextManager());
+        connection = new ShardingSphereConnection(DefaultDatabase.LOGIC_NAME, mockContextManager(), mock(CachedDatabaseMetaData.class));
     }
     
     private ContextManager mockContextManager() {
