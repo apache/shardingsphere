@@ -27,16 +27,16 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * Select-to-one-slave-weight replica load-balance algorithm.
+ * Fixed-replica-weight load-balance algorithm.
  */
 @Getter
-public final class SelectToOneSlaveWeightReplicaLoadBalanceAlgorithm implements ReplicaLoadBalanceAlgorithm {
+public final class FixedReplicaWeightLoadBalanceAlgorithm implements ReplicaLoadBalanceAlgorithm {
     
     private static final double ACCURACY_THRESHOLD = 0.0001;
     
     private static final ConcurrentHashMap<String, double[]> WEIGHT_MAP = new ConcurrentHashMap<>();
     
-    private static final ThreadLocal<String> SLAVE_ROUTE_HOLDER = new ThreadLocal<>();
+    private static final ThreadLocal<String> REPLICA_ROUTE_HOLDER = new ThreadLocal<>();
     
     private Properties props;
     
@@ -47,13 +47,13 @@ public final class SelectToOneSlaveWeightReplicaLoadBalanceAlgorithm implements 
     
     @Override
     public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames) {
-        if (null != SLAVE_ROUTE_HOLDER.get()) {
-            return SLAVE_ROUTE_HOLDER.get();
+        if (null != REPLICA_ROUTE_HOLDER.get()) {
+            return REPLICA_ROUTE_HOLDER.get();
         }
         double[] weight = WEIGHT_MAP.containsKey(name) ? WEIGHT_MAP.get(name) : initWeight(readDataSourceNames);
         WEIGHT_MAP.putIfAbsent(name, weight);
-        SLAVE_ROUTE_HOLDER.set(getDataSourceName(readDataSourceNames, weight));
-        return SLAVE_ROUTE_HOLDER.get();
+        REPLICA_ROUTE_HOLDER.set(getDataSourceName(readDataSourceNames, weight));
+        return REPLICA_ROUTE_HOLDER.get();
     }
     
     private String getDataSourceName(final List<String> readDataSourceNames, final double[] weight) {
@@ -124,6 +124,6 @@ public final class SelectToOneSlaveWeightReplicaLoadBalanceAlgorithm implements 
     
     @Override
     public String getType() {
-        return "SELECT_TO_ONE_SLAVE_WEIGHT";
+        return "FIXED_REPLICA_WEIGHT";
     }
 }

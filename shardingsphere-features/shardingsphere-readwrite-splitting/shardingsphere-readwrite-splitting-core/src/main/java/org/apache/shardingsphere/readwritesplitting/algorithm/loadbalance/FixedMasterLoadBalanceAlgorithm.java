@@ -24,9 +24,9 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * Select-to-master replica load-balance algorithm.
+ * Fixed-master load-balance algorithm.
  */
-public final class SelectToMasterLoadBalanceAlgorithm implements ReplicaLoadBalanceAlgorithm {
+public final class FixedMasterLoadBalanceAlgorithm implements ReplicaLoadBalanceAlgorithm {
     
     @Getter
     private Properties props;
@@ -43,11 +43,6 @@ public final class SelectToMasterLoadBalanceAlgorithm implements ReplicaLoadBala
     
     @Override
     public String getType() {
-        return "SELECT_TO_MASTER";
-    }
-    
-    @Override
-    public boolean isDefault() {
-        return true;
+        return "FIXED_MASTER";
     }
 }
