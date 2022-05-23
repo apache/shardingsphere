@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.resource.CachedDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
@@ -95,17 +94,15 @@ public final class SelectDatabaseExecutorTest extends ProxyContextRestorer {
     }
     
     private ShardingSphereDatabase getDatabase() throws SQLException {
-        return new ShardingSphereDatabase("sharding_db", new PostgreSQLDatabaseType(),
-                new ShardingSphereResource(mockDatasourceMap(), mockDataSourcesMetaData(), mock(CachedDatabaseMetaData.class), new PostgreSQLDatabaseType()),
-                mock(ShardingSphereRuleMetaData.class), Collections.emptyMap());
+        return new ShardingSphereDatabase("sharding_db", new PostgreSQLDatabaseType(), 
+                new ShardingSphereResource(mockDatasourceMap(), mockDataSourcesMetaData(), new PostgreSQLDatabaseType()), mock(ShardingSphereRuleMetaData.class), Collections.emptyMap());
     }
     
     private ShardingSphereDatabase getEmptyDatabaseMetaData(final String schemaName) {
         ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class);
         when(ruleMetaData.getRules()).thenReturn(Collections.emptyList());
         return new ShardingSphereDatabase(schemaName, new PostgreSQLDatabaseType(),
-                new ShardingSphereResource(Collections.emptyMap(), mockDataSourcesMetaData(), mock(CachedDatabaseMetaData.class), new PostgreSQLDatabaseType()),
-                ruleMetaData, Collections.emptyMap());
+                new ShardingSphereResource(Collections.emptyMap(), mockDataSourcesMetaData(), new PostgreSQLDatabaseType()), ruleMetaData, Collections.emptyMap());
     }
     
     private Map<String, DataSource> mockDatasourceMap() throws SQLException {
