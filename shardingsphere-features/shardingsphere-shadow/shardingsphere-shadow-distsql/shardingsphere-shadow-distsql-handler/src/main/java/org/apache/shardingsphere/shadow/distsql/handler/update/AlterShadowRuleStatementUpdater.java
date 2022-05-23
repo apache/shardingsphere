@@ -72,7 +72,7 @@ public final class AlterShadowRuleStatementUpdater implements RuleDefinitionAlte
         Collection<ShadowRuleSegment> rules = sqlStatement.getRules();
         checkConfigurationExist(databaseName, currentRuleConfig);
         checkRuleNames(databaseName, rules, currentRuleConfig);
-        checkResources(databaseName, database, rules);
+        checkResources(database, rules);
         checkAlgorithms(databaseName, rules);
     }
     
@@ -87,9 +87,9 @@ public final class AlterShadowRuleStatementUpdater implements RuleDefinitionAlte
         ShadowRuleStatementChecker.checkRulesExist(requireRuleNames, currentRuleNames, different -> new InvalidAlgorithmConfigurationException("shadow rule name ", different));
     }
     
-    private void checkResources(final String databaseName, final ShardingSphereDatabase database, final Collection<ShadowRuleSegment> rules) throws DistSQLException {
+    private void checkResources(final ShardingSphereDatabase database, final Collection<ShadowRuleSegment> rules) throws DistSQLException {
         Collection<String> requireResource = ShadowRuleStatementSupporter.getResourceNames(rules);
-        ShadowRuleStatementChecker.checkResourceExist(requireResource, database, databaseName);
+        ShadowRuleStatementChecker.checkResourceExist(requireResource, database);
     }
     
     private void checkAlgorithms(final String databaseName, final Collection<ShadowRuleSegment> rules) throws DistSQLException {

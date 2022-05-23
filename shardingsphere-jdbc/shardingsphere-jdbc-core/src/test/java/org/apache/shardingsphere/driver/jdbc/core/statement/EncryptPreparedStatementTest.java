@@ -54,7 +54,7 @@ public final class EncryptPreparedStatementTest extends AbstractShardingSphereDa
     private static final String SELECT_SQL_FOR_CONTAINS_COLUMN = "SELECT * FROM t_encrypt_contains_column WHERE plain_pwd = ?";
     
     @Test
-    public void assertSQLShow() {
+    public void assertSQLShow() throws SQLException {
         assertTrue(getEncryptConnectionWithProps().getContextManager().getMetaDataContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
     }
     

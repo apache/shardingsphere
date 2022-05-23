@@ -40,7 +40,7 @@ public final class DatabaseDiscoveryTypeQueryResultSet implements DistSQLResultS
     
     @Override
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
-        Collection<DatabaseDiscoveryRuleConfiguration> ruleConfig = database.getRuleMetaData().findRuleConfiguration(DatabaseDiscoveryRuleConfiguration.class);
+        Collection<DatabaseDiscoveryRuleConfiguration> ruleConfig = database.getRuleMetaData().findRuleConfigurations(DatabaseDiscoveryRuleConfiguration.class);
         data = ruleConfig.stream().map(DatabaseDiscoveryRuleConfiguration::getDiscoveryTypes)
                 .flatMap(each -> each.entrySet().stream()).collect(Collectors.toMap(Entry::getKey, Entry::getValue)).entrySet().iterator();
     }

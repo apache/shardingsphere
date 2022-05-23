@@ -44,6 +44,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Create
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateDefinitionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateDimensionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreatePFileContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateSPFileContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropEditionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropOutlineContext;
@@ -130,6 +131,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.Ora
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateDimensionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateFunctionStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreatePFileStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateSPFileStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropEditionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropOutlineStatement;
@@ -747,5 +749,10 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
     @Override
     public ASTNode visitCreateSPFile(final CreateSPFileContext ctx) {
         return new OracleCreateSPFileStatement();
+    }
+    
+    @Override
+    public ASTNode visitCreatePFile(final CreatePFileContext ctx) {
+        return new OracleCreatePFileStatement();
     }
 }

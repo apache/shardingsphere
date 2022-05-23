@@ -47,7 +47,7 @@ public final class ShowShardingTableRulesUsedKeyGeneratorQueryResultSetTest {
     @Test
     public void assertGetRowData() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getRuleMetaData().findRuleConfiguration(ShardingRuleConfiguration.class)).thenReturn(Collections.singleton(createRuleConfiguration()));
+        when(database.getRuleMetaData().findRuleConfigurations(ShardingRuleConfiguration.class)).thenReturn(Collections.singleton(createRuleConfiguration()));
         when(database.getName()).thenReturn("sharding_db");
         DistSQLResultSet resultSet = new ShardingTableRulesUsedKeyGeneratorQueryResultSet();
         ShowShardingTableRulesUsedKeyGeneratorStatement statement = mock(ShowShardingTableRulesUsedKeyGeneratorStatement.class);

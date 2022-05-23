@@ -31,10 +31,10 @@ import org.jooq.impl.DSL;
 public final class JooQSQLTranslator implements SQLTranslator {
     
     @Override
-    public String translate(final String sql, final SQLStatement statement, final DatabaseType frontendDatabaseType, final DatabaseType backendDatabaseType) throws SQLTranslationException {
+    public String translate(final String sql, final SQLStatement statement, final DatabaseType protocolType, final DatabaseType storageType) throws SQLTranslationException {
         try {
-            Query query = DSL.using(JooQDialectRegistry.getSQLDialect(frontendDatabaseType)).parser().parseQuery(sql);
-            return DSL.using(JooQDialectRegistry.getSQLDialect(backendDatabaseType)).render(query);
+            Query query = DSL.using(JooQDialectRegistry.getSQLDialect(protocolType)).parser().parseQuery(sql);
+            return DSL.using(JooQDialectRegistry.getSQLDialect(storageType)).render(query);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON

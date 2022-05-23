@@ -41,7 +41,7 @@ public final class ShardingKeyGeneratorsQueryResultSetTest {
     @Test
     public void assertGetRowData() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getRuleMetaData().findRuleConfiguration(ShardingRuleConfiguration.class)).thenReturn(createRuleConfigurations());
+        when(database.getRuleMetaData().findRuleConfigurations(ShardingRuleConfiguration.class)).thenReturn(createRuleConfigurations());
         ShardingKeyGeneratorsQueryResultSet resultSet = new ShardingKeyGeneratorsQueryResultSet();
         resultSet.init(database, mock(ShowShardingKeyGeneratorsStatement.class));
         List<Object> actual = new ArrayList<>(resultSet.getRowData());

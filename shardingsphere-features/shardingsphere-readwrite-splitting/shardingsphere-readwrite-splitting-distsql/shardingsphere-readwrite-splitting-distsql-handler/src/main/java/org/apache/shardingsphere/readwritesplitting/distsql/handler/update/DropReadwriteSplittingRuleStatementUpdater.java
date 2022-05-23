@@ -68,7 +68,7 @@ public final class DropReadwriteSplittingRuleStatementUpdater implements RuleDef
     }
     
     private void checkToBeDroppedInUsed(final String databaseName, final DropReadwriteSplittingRuleStatement sqlStatement, final ShardingSphereDatabase database) throws RuleInUsedException {
-        Collection<String> resourceBeUsed = database.getRuleMetaData().findRuleConfiguration(ResourceRequiredRuleConfiguration.class).stream()
+        Collection<String> resourceBeUsed = database.getRuleMetaData().findRuleConfigurations(ResourceRequiredRuleConfiguration.class).stream()
                 .map(ResourceRequiredRuleConfiguration::getRequiredResource).flatMap(Collection::stream).collect(Collectors.toSet());
         Collection<String> ruleInUsed = sqlStatement.getRuleNames().stream().filter(resourceBeUsed::contains).collect(Collectors.toSet());
         if (!ruleInUsed.isEmpty()) {

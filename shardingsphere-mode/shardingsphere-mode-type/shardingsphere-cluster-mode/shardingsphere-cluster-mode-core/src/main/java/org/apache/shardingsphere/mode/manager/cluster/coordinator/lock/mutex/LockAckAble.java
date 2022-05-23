@@ -48,4 +48,9 @@ public interface LockAckAble {
      * @param instanceId instance id
      */
     void removeLockedInstance(String instanceId);
+    
+    /**
+     * Re-set lock state.
+     */
+    void reSetLockState();
 }

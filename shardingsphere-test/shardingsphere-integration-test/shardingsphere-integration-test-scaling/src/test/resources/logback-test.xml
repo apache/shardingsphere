@@ -25,6 +25,7 @@
     <logger name="org.springframework.jdbc.core.JdbcTemplate" level="DEBUG" additivity="false">
         <appender-ref ref="console" />
     </logger>
+    <logger name="org.apache.shardingsphere.test.integration.framework.container.atomic.DockerITContainer" level="WARN" />
     <logger name="com.zaxxer.hikari.pool.ProxyConnection" level="OFF" />
     <root level="INFO">
         <appender-ref ref="console" />

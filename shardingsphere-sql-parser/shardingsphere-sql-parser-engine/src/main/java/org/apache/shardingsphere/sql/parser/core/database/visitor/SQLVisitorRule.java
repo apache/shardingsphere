@@ -510,7 +510,9 @@ public enum SQLVisitorRule {
     
     CREATE_CONTEXT("CreateContext", SQLStatementType.DDL),
     
-    CREATE_SPFILE("CreateSPFile", SQLStatementType.DDL);
+    CREATE_SPFILE("CreateSPFile", SQLStatementType.DDL),
+    
+    CREATE_PFILE("CreatePFile", SQLStatementType.DDL);
     
     private final String name;
     

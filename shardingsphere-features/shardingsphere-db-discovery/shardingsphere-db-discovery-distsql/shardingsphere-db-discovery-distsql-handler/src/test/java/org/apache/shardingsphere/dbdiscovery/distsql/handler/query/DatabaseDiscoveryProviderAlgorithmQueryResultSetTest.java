@@ -46,7 +46,7 @@ public final class DatabaseDiscoveryProviderAlgorithmQueryResultSetTest {
     @Test
     public void assertGetRowData() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getRuleMetaData().findRuleConfiguration(any())).thenReturn(Collections.singleton(createRuleConfiguration()));
+        when(database.getRuleMetaData().findRuleConfigurations(any())).thenReturn(Collections.singleton(createRuleConfiguration()));
         DistSQLResultSet resultSet = new DatabaseDiscoveryTypeQueryResultSet();
         resultSet.init(database, mock(ShowDatabaseDiscoveryRulesStatement.class));
         Collection<String> columnNames = resultSet.getColumnNames();

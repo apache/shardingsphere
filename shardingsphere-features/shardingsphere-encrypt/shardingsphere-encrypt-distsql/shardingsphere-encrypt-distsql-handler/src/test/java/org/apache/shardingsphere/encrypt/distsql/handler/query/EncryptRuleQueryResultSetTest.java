@@ -44,7 +44,7 @@ public final class EncryptRuleQueryResultSetTest {
     @Test
     public void assertGetRowData() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getRuleMetaData().findRuleConfiguration(any())).thenReturn(Collections.singleton(getRuleConfiguration()));
+        when(database.getRuleMetaData().findRuleConfigurations(any())).thenReturn(Collections.singleton(getRuleConfiguration()));
         DistSQLResultSet resultSet = new EncryptRuleQueryResultSet();
         resultSet.init(database, mock(ShowEncryptRulesStatement.class));
         Collection<Object> actual = resultSet.getRowData();

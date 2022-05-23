@@ -39,8 +39,6 @@ public final class ShardingSphereResource {
     
     private final DataSourcesMetaData dataSourcesMetaData;
     
-    private final CachedDatabaseMetaData cachedDatabaseMetaData;
-    
     private final DatabaseType databaseType;
     
     /**

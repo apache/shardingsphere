@@ -19,6 +19,7 @@ package org.apache.shardingsphere.driver.executor;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import org.apache.shardingsphere.driver.jdbc.context.JDBCContext;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
@@ -62,7 +63,7 @@ public abstract class AbstractBaseExecutorTest {
         SQLExecutorExceptionHandler.setExceptionThrown(true);
         executorEngine = ExecutorEngine.createExecutorEngineWithCPU();
         TransactionTypeHolder.set(TransactionType.LOCAL);
-        connection = new ShardingSphereConnection(DefaultDatabase.LOGIC_NAME, mockContextManager());
+        connection = new ShardingSphereConnection(DefaultDatabase.LOGIC_NAME, mockContextManager(), mock(JDBCContext.class));
     }
     
     private ContextManager mockContextManager() {
