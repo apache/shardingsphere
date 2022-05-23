@@ -94,7 +94,7 @@ public final class SelectDatabaseExecutorTest extends ProxyContextRestorer {
     }
     
     private ShardingSphereDatabase getDatabase() throws SQLException {
-        return new ShardingSphereDatabase("sharding_db", new PostgreSQLDatabaseType(), 
+        return new ShardingSphereDatabase("sharding_db", new PostgreSQLDatabaseType(),
                 new ShardingSphereResource(mockDatasourceMap(), mockDataSourcesMetaData(), new PostgreSQLDatabaseType()), mock(ShardingSphereRuleMetaData.class), Collections.emptyMap());
     }
     
