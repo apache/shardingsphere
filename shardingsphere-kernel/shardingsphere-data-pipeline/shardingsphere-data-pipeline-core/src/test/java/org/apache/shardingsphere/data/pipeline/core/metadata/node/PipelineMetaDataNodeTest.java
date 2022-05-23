@@ -36,4 +36,14 @@ public final class PipelineMetaDataNodeTest {
         actualOffsetPath = PipelineMetaDataNode.getScalingJobOffsetPath("0130317c30317c3054317c7368617264696e675f6462", 1);
         assertThat(actualOffsetPath, is("/scaling/0130317c30317c3054317c7368617264696e675f6462/offset/1"));
     }
+    
+    @Test
+    public void assertGetScalingJobConfigPath() {
+        assertThat(PipelineMetaDataNode.getScalingJobConfigPath("0130317c30317c3054317c7368617264696e675f6462"), is("/scaling/0130317c30317c3054317c7368617264696e675f6462/config"));
+    }
+    
+    @Test
+    public void assertGetScalingCheckResultPath() {
+        assertThat(PipelineMetaDataNode.getScalingCheckResultPath("0130317c30317c3054317c7368617264696e675f6462"), is("/scaling/0130317c30317c3054317c7368617264696e675f6462/check/result"));
+    }
 }

@@ -23,8 +23,8 @@ import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAltere
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.yaml.RuleAlteredJobConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
-import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
 import org.apache.shardingsphere.data.pipeline.core.lock.PipelineSimpleLock;
+import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJob;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobPreparer;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobProgressDetector;
@@ -47,13 +47,13 @@ import java.util.regex.Pattern;
 @Slf4j
 public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
     
-    private static final Pattern CONFIG_PATTERN = Pattern.compile(DataPipelineConstants.DATA_PIPELINE_ROOT + "/(\\d{2}[0-9a-f]+)/config");
+    private static final Pattern CONFIG_PATTERN = Pattern.compile(PipelineMetaDataNode.getScalingRootPath() + "/(\\d{2}[0-9a-f]+)/config");
     
     private final ExecutorService executor = Executors.newFixedThreadPool(20);
     
     @Override
     protected void doStart() {
-        PipelineAPIFactory.getGovernanceRepositoryAPI().watch(DataPipelineConstants.DATA_PIPELINE_ROOT, event -> getJobConfigPOJO(event).ifPresent(optional -> processEvent(event, optional)));
+        PipelineAPIFactory.getGovernanceRepositoryAPI().watch(PipelineMetaDataNode.getScalingRootPath(), event -> getJobConfigPOJO(event).ifPresent(optional -> processEvent(event, optional)));
     }
     
     private Optional<JobConfigurationPOJO> getJobConfigPOJO(final DataChangedEvent event) {

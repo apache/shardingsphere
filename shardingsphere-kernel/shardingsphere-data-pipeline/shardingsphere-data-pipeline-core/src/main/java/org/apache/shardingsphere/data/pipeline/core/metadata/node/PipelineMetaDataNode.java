@@ -29,6 +29,15 @@ public final class PipelineMetaDataNode {
     public static final String ROOT_NODE = "scaling";
     
     /**
+     * Get scaling root path.
+     *
+     * @return root path
+     */
+    public static String getScalingRootPath() {
+        return "/" + ROOT_NODE;
+    }
+    
+    /**
      * Get job config path.
      *
      * @param jobId job id.
@@ -41,10 +50,11 @@ public final class PipelineMetaDataNode {
     /**
      * Get scaling root path.
      *
+     * @param jobId job id.
      * @return root path
      */
-    public static String getScalingRootPath() {
-        return "/" + ROOT_NODE;
+    public static String getScalingJobPath(final String jobId) {
+        return String.join("/", getScalingRootPath(), jobId);
     }
     
     /**
@@ -66,5 +76,25 @@ public final class PipelineMetaDataNode {
      */
     public static String getScalingJobOffsetPath(final String jobId) {
         return String.join("/", getScalingRootPath(), jobId, "offset");
+    }
+    
+    /**
+     * Get scaling job config path.
+     *
+     * @param jobId job id.
+     * @return job config path.
+     */
+    public static String getScalingJobConfigPath(final String jobId) {
+        return String.join("/", getScalingRootPath(), jobId, "config");
+    }
+    
+    /**
+     * Get scaling job config path.
+     *
+     * @param jobId job id.
+     * @return job config path.
+     */
+    public static String getScalingCheckResultPath(final String jobId) {
+        return String.join("/", getScalingRootPath(), jobId, "check", "result");
     }
 }
