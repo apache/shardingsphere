@@ -230,7 +230,7 @@ public abstract class BaseITCase {
         Object jobId = scalingListMap.get(0).get("id");
         log.info("jobId: {}", jobId);
         Map<String, String> actualStatusMap = new HashMap<>(2, 1);
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 15; i++) {
             List<Map<String, Object>> showScalingStatusResMap = jdbcTemplate.queryForList(String.format("SHOW SCALING STATUS %s", jobId));
             log.info("actualStatusMap: {}", actualStatusMap);
             boolean finished = true;

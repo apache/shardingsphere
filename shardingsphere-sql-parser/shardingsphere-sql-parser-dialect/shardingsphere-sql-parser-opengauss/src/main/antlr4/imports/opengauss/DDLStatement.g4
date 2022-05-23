@@ -961,18 +961,20 @@ alterMaterializedViewClauses
     ;
 
 declare
-    : DECLARE name cursorOptions CURSOR (WITH HOLD | WITHOUT HOLD)? FOR select
+    : DECLARE cursorName cursorOptions CURSOR (WITH HOLD | WITHOUT HOLD)? FOR select
     ;
 
+cursor
+    : CURSOR cursorName cursorOptions (WITH HOLD | WITHOUT HOLD)? FOR select
+    ;
+    
 cursorOptions
     : cursorOption*
     ;
 
 cursorOption
-    : NO SCROLL
-    | SCROLL
-    | BINARY
-    | INSENSITIVE
+    : BINARY
+    | NO SCROLL
     ;
 
 executeStmt
