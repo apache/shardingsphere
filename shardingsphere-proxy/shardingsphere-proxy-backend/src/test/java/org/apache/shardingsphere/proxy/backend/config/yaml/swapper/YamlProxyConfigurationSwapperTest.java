@@ -22,9 +22,6 @@ import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
-import org.apache.shardingsphere.infra.metadata.user.Grantee;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUsers;
 import org.apache.shardingsphere.proxy.backend.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoader;
 import org.apache.shardingsphere.proxy.backend.config.YamlProxyConfiguration;
@@ -34,7 +31,6 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
@@ -51,7 +47,7 @@ public final class YamlProxyConfigurationSwapperTest {
         ProxyConfiguration actual = new YamlProxyConfigurationSwapper().swap(yamlProxyConfig);
         assertSchemaDataSources(actual);
         assertSchemaRules(actual);
-        assertAuthority(actual);
+        assertAuthorityRuleConfiguration(actual);
         assertProxyConfigurationProps(actual);
     }
     
@@ -93,15 +89,15 @@ public final class YamlProxyConfigurationSwapperTest {
         assertThat(loadBalancer.getType(), is("ROUND_ROBIN"));
     }
     
-    private void assertAuthority(final ProxyConfiguration proxyConfig) {
-        Optional<ShardingSphereUser> actual = new ShardingSphereUsers(findUsers(proxyConfig.getGlobalConfiguration().getRules())).findUser(new Grantee("root", ""));
+    private void assertAuthorityRuleConfiguration(final ProxyConfiguration proxyConfig) {
+        Optional<AuthorityRuleConfiguration> actual = findAuthorityRuleConfiguration(proxyConfig.getGlobalConfiguration().getRules());
         assertTrue(actual.isPresent());
-        assertThat(actual.get().getPassword(), is("123"));
+        assertThat(actual.get().getUsers().size(), is(1));
+        assertThat(actual.get().getUsers().iterator().next().getPassword(), is("123"));
     }
     
-    private Collection<ShardingSphereUser> findUsers(final Collection<RuleConfiguration> globalRuleConfigs) {
-        return globalRuleConfigs.stream().filter(each -> each instanceof AuthorityRuleConfiguration).findFirst()
-                .map(each -> ((AuthorityRuleConfiguration) each).getUsers()).orElse(Collections.emptyList());
+    private Optional<AuthorityRuleConfiguration> findAuthorityRuleConfiguration(final Collection<RuleConfiguration> globalRuleConfigs) {
+        return globalRuleConfigs.stream().filter(each -> each instanceof AuthorityRuleConfiguration).findFirst().map(each -> ((AuthorityRuleConfiguration) each));
     }
     
     private void assertProxyConfigurationProps(final ProxyConfiguration proxyConfig) {
