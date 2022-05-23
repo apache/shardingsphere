@@ -50,8 +50,6 @@ public final class EncryptColumnSegment implements ASTNode {
     
     private final AlgorithmSegment encryptor;
     
-    private final Boolean queryWithCipherColumn;
-    
     /**
      * Is the data type correct.
      *

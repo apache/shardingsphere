@@ -88,8 +88,7 @@ public final class EncryptDistSQLStatementVisitor extends EncryptDistSQLStatemen
                 getIdentifierValue(ctx.cipherColumnDefinition().dataType()),
                 null == ctx.plainColumnDefinition() ? null : getIdentifierValue(ctx.plainColumnDefinition().dataType()),
                 null == ctx.assistedQueryColumnDefinition() ? null : getIdentifierValue(ctx.assistedQueryColumnDefinition().dataType()),
-                (AlgorithmSegment) visit(ctx.algorithmDefinition()),
-                null == ctx.queryWithCipherColumn() ? null : Boolean.parseBoolean(getIdentifierValue(ctx.queryWithCipherColumn())));
+                (AlgorithmSegment) visit(ctx.algorithmDefinition()));
     }
     
     @Override
