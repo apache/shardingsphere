@@ -54,12 +54,11 @@ public class ShadowRuleStatementChecker {
      *
      * @param resources resource being checked
      * @param database database
-     * @param databaseName database name
      * @throws DistSQLException DistSQL exception
      */
-    public static void checkResourceExist(final Collection<String> resources, final ShardingSphereDatabase database, final String databaseName) throws DistSQLException {
+    public static void checkResourceExist(final Collection<String> resources, final ShardingSphereDatabase database) throws DistSQLException {
         Collection<String> notExistedResources = database.getResource().getNotExistedResources(resources);
-        DistSQLException.predictionThrow(notExistedResources.isEmpty(), () -> new RequiredResourceMissedException(databaseName, notExistedResources));
+        DistSQLException.predictionThrow(notExistedResources.isEmpty(), () -> new RequiredResourceMissedException(database.getName(), notExistedResources));
     }
     
     /**

@@ -28,10 +28,8 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.Time
 import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
 /**
  * Inter mutex lock.
@@ -79,17 +77,16 @@ public final class InterMutexLock implements MutexLock, LockAckAble {
                 return true;
             }
         }
-        reSetLock();
+        reSetLockState();
         log.debug("Inter mutex lock try Lock acquire lock failed, lock name: {}", lockName);
         return false;
     }
     
     private boolean acquire(final String lockName, final long timeout) {
-        String currentInstanceId = getCurrentInstanceId();
         long acquireStart = System.currentTimeMillis();
         boolean isLocked = lockService.tryLock(lockName, timeout);
         if (isLocked) {
-            lockedInstances.add(currentInstanceId);
+            lockedInstances.add(currentInstance.getCurrentInstanceId());
             long acquireEnd = System.currentTimeMillis();
             long acquireExpend = acquireEnd - acquireStart;
             log.debug("inter mutex lock acquire lock success then await for ack, lock name: {}, expend time millis {}ms", lockName, acquireExpend);
@@ -99,21 +96,11 @@ public final class InterMutexLock implements MutexLock, LockAckAble {
                 return true;
             } else {
                 lockService.releaseLock(lockName);
-                lockedInstances.remove(currentInstanceId);
                 return false;
             }
         }
         log.debug("inter mutex lock acquire lock timeout. lock name: {}, timeout millis {}ms", lockName, timeout);
         return false;
-    }
-    
-    private void reSetLock() {
-        isOwner.set(false);
-        synchronizedLockState.set(LockState.UNLOCKED);
-    }
-    
-    private String getCurrentInstanceId() {
-        return currentInstance.getInstanceDefinition().getInstanceId().getId();
     }
     
     private boolean isAckOK(final long timeout) {
@@ -122,7 +109,7 @@ public final class InterMutexLock implements MutexLock, LockAckAble {
             if (isAckCompleted(expend)) {
                 return true;
             }
-            sleepInterval();
+            TimeoutMilliseconds.sleepInterval(TimeoutMilliseconds.DEFAULT_REGISTRY);
             expend += TimeoutMilliseconds.DEFAULT_REGISTRY;
         } while (timeout > expend);
         log.debug("inter mutex ack lock timeout, timeout millis {}ms", timeout);
@@ -134,23 +121,14 @@ public final class InterMutexLock implements MutexLock, LockAckAble {
             lockedInstances.addAll(lockService.acquireAckLockedInstances(LockNodeUtil.generateAckPathName(lockName)));
         }
         if (computeNodeInstances.size() > lockedInstances.size()) {
-            log.debug("computeNodeInstanceId {}, lockedInstances {}", computeNodeInstances.stream().map(ComputeNodeInstance::getCurrentInstanceId).collect(Collectors.toList()), lockedInstances);
             return false;
         }
         for (ComputeNodeInstance each : computeNodeInstances) {
             if (!lockedInstances.contains(each.getInstanceDefinition().getInstanceId().getId())) {
-                log.debug("each: {}, lockedInstances: {}", each.getCurrentInstanceId(), lockedInstances);
                 return false;
             }
         }
         return true;
-    }
-    
-    private void sleepInterval() {
-        try {
-            TimeUnit.MILLISECONDS.sleep(TimeoutMilliseconds.DEFAULT_REGISTRY);
-        } catch (final InterruptedException ignore) {
-        }
     }
     
     @Override
@@ -160,13 +138,13 @@ public final class InterMutexLock implements MutexLock, LockAckAble {
             log.debug("inter mutex lock unlock. lock name: {}", lockName);
             if (isOwner.get()) {
                 lockService.releaseLock(lockName);
-                lockedInstances.remove(getCurrentInstanceId());
-                reSetLock();
                 log.debug("inter mutex lock owner lock release lock success. lock name: {}", lockName);
-                return;
+            } else {
+                lockService.removeLock(lockName);
+                log.debug("inter mutex lock not owner remove lock success. lock name: {}", lockName);
             }
-            lockService.removeLock(lockName);
-            log.debug("inter mutex lock not owner remove lock success. lock name: {}", lockName);
+            reSetLockState();
+            return;
         }
         log.debug("inter mutex lock ignore unlock, lock name: {} lock state: {}", lockName, lockState);
     }
@@ -196,8 +174,7 @@ public final class InterMutexLock implements MutexLock, LockAckAble {
             lockService.releaseAckLock(ackLockName);
             log.debug("inter mutex lock not owner release ack lock success, ack lock name: {}, locked instanceId: {}", ackLockName, lockedInstanceId);
         }
-        lockedInstances.remove(lockedInstanceId);
-        reSetLock();
+        reSetLockState();
     }
     
     @Override
@@ -210,5 +187,12 @@ public final class InterMutexLock implements MutexLock, LockAckAble {
     public void removeLockedInstance(final String lockedInstanceId) {
         lockedInstances.remove(lockedInstanceId);
         log.debug("inter mutex lock remove locked instance id, id: {}", lockedInstanceId);
+    }
+    
+    @Override
+    public void reSetLockState() {
+        lockedInstances.clear();
+        isOwner.set(false);
+        synchronizedLockState.set(LockState.UNLOCKED);
     }
 }

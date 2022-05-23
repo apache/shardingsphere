@@ -17,25 +17,25 @@
   -->
 
 <sql-parser-test-cases>
-    <alter-system sql-case-id="alter_system_archive_log_change"/>
-    <alter-system sql-case-id="alter_system_archive_log_logfile"/>
-    <alter-system sql-case-id="alter_system_check_datafiles"/>
-    <alter-system sql-case-id="alter_system_quiesce_restricted"/>
-    <alter-system sql-case-id="alter_system_start_rolling_migration"/>
-    <alter-system sql-case-id="alter_system_start_rolling_patch"/>
-    <alter-system sql-case-id="alter_system_enable_affinity_service"/>
-    <alter-system sql-case-id="alter_system_shutdown_immediate"/>
-    <alter-system sql-case-id="alter_system_set_comment_container_scope"/>
-    <alter-system sql-case-id="alter_system_set_query_rewrite_enabled"/>
-    <alter-system sql-case-id="alter_system_reset_parameter_scope"/>
-    <alter-system sql-case-id="alter_system_relocate_client"/>
-    <alter-system sql-case-id="alter_system_enable_restricted_session"/>
-    <alter-system sql-case-id="alter_system_encryption_wallet_open_identified_by_password"/>
-    <alter-system sql-case-id="alter_system_encryption_key_identified_by_password"/>
-    <alter-system sql-case-id="alter_system_flush_shared_pool"/>
-    <alter-system sql-case-id="alter_system_checkpoint"/>
-    <alter-system sql-case-id="alter_system_set_dispatchers"/>
-    <alter-system sql-case-id="alter_system_switch_logfile"/>
-    <alter-system sql-case-id="alter_system_enable_distributed_recovery"/>
-    <alter-system sql-case-id="alter_system_flush_passwordfile_metada_cache"/>
+    <alter-system sql-case-id="alter_system_archive_log_change" />
+    <alter-system sql-case-id="alter_system_archive_log_logfile" />
+    <alter-system sql-case-id="alter_system_check_datafiles" />
+    <alter-system sql-case-id="alter_system_quiesce_restricted" />
+    <alter-system sql-case-id="alter_system_start_rolling_migration" />
+    <alter-system sql-case-id="alter_system_start_rolling_patch" />
+    <alter-system sql-case-id="alter_system_enable_affinity_service" />
+    <alter-system sql-case-id="alter_system_shutdown_immediate" />
+    <alter-system sql-case-id="alter_system_set_comment_container_scope" />
+    <alter-system sql-case-id="alter_system_set_query_rewrite_enabled" />
+    <alter-system sql-case-id="alter_system_reset_parameter_scope" />
+    <alter-system sql-case-id="alter_system_relocate_client" />
+    <alter-system sql-case-id="alter_system_enable_restricted_session" />
+    <alter-system sql-case-id="alter_system_encryption_wallet_open_identified_by_password" />
+    <alter-system sql-case-id="alter_system_encryption_key_identified_by_password" />
+    <alter-system sql-case-id="alter_system_flush_shared_pool" />
+    <alter-system sql-case-id="alter_system_checkpoint" />
+    <alter-system sql-case-id="alter_system_set_dispatchers" />
+    <alter-system sql-case-id="alter_system_switch_logfile" />
+    <alter-system sql-case-id="alter_system_enable_distributed_recovery" />
+    <alter-system sql-case-id="alter_system_flush_passwordfile_metada_cache" />
 </sql-parser-test-cases>

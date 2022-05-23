@@ -127,13 +127,11 @@ public final class PipelineDDLGenerator {
     
     private String generateActualDDLSQL(final DatabaseType databaseType, final String schemaName, final String tableName, final ShardingSphereDatabase database) throws SQLException {
         DataNodes dataNodes = new DataNodes(database.getRuleMetaData().getRules());
-        Optional<DataNode> optional = dataNodes.getDataNodes(tableName).stream()
-                .filter(dataNode -> database.getResource().getDataSources().containsKey(dataNode.getDataSourceName().contains(".")
-                        ? dataNode.getDataSourceName().split("\\.")[0]
-                        : dataNode.getDataSourceName()))
+        Optional<DataNode> filteredDataNode = dataNodes.getDataNodes(tableName).stream()
+                .filter(each -> database.getResource().getDataSources().containsKey(each.getDataSourceName().contains(".") ? each.getDataSourceName().split("\\.")[0] : each.getDataSourceName()))
                 .findFirst();
-        String dataSourceName = optional.map(DataNode::getDataSourceName).orElseGet(() -> database.getResource().getDataSources().keySet().iterator().next());
-        String actualTable = optional.map(DataNode::getTableName).orElse(tableName);
+        String dataSourceName = filteredDataNode.map(DataNode::getDataSourceName).orElseGet(() -> database.getResource().getDataSources().keySet().iterator().next());
+        String actualTable = filteredDataNode.map(DataNode::getTableName).orElse(tableName);
         return DialectDDLSQLGeneratorFactory.findInstance(databaseType).orElseThrow(() -> new ShardingSphereException("Failed to get dialect ddl sql generator"))
                 .generateDDLSQL(actualTable, schemaName, database.getResource().getDataSources().get(dataSourceName));
     }

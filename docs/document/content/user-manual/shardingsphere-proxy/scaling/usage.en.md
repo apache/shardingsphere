@@ -1,41 +1,43 @@
 +++
-title = "使用手册"
+title = "Manual"
 weight = 2
 +++
 
-## 使用手册
+## Manual
 
-### 环境要求
+### Environment
 
-纯  JAVA 开发，JDK  建议 1.8 以上版本。
+JAVA, JDK 1.8+.
 
-支持的数据库及版本如下：
+The migration scene we support:
 
-| 源端                   | 目标端                   |
-| --------------------- | ----------------------- |
-| MySQL(5.1.15 ~ 5.7.x) | MySQL(5.1.15 ~ 5.7.x)   |
-| PostgreSQL(9.4 ~ )    | PostgreSQL(9.4 ~ )      |
-| openGauss(2.1.0)      | openGauss(2.1.0)        |
+| Source                     | Target                  |
+| -------------------------- | ----------------------- |
+| MySQL(5.1.15 ~ 5.7.x)      | MySQL(5.1.15 ~ 5.7.x)   |
+| PostgreSQL(9.4 ~ )         | PostgreSQL(9.4 ~ )      |
+| openGauss(2.1.0)           | openGauss(2.1.0)        |
 
-功能支持情况：
+Supported features:
 
-| 功能                   | MySQL         | PostgreSQL   | openGauss     |
-| --------------------- | ------------- |--------------| ------------- |
-| 全量迁移               | 支持           | 支持           | 支持           |
-| 增量迁移               | 支持           | 支持           | 支持           |
-| 自动建表               | 支持           | 支持           | 支持            |
-| DATA_MATCH一致性校验   | 支持           | 支持           | 支持           |
-| CRC32_MATCH一致性校验  | 支持           | 不支持          | 不支持          |
+| Feature                                  | MySQL         | PostgreSQL    | openGauss     |
+| ---------------------------------------- | ------------- |---------------| ------------- |
+| Inventory migration                      | Supported     | Supported     | Supported     |
+| Incremental migration                    | Supported     | Supported     | Supported     |
+| Create table automatically               | Supported     | Supported     | Supported     |
+| DATA_MATCH data consistency check        | Supported     | Supported     | Supported     |
+| CRC32_MATCH data consistency check       | Supported     | Unsupported   | Unsupported   |
 
-**注意**：
+**Attention**:
 
-还没开启 `自动建表` 的数据库需要手动创建分表。
+For RDBMS which `Create table automatically` feature is not supported, we need to create sharding tables manually.
 
-### 权限要求
+### Privileges
+
 #### MySQL
-1. 开启 `binlog`
 
-MySQL 5.7 `my.cnf` 示例配置：
+1. Enable `binlog`
+
+Configuration Example of MySQL 5.7 `my.cnf`:
 ```
 [mysqld]
 server-id=1
@@ -45,13 +47,13 @@ binlog-row-image=full
 max_connections=600
 ```
 
-执行以下命令，确认是否有开启 binlog：
-```
+Execute the following SQL to confirm whether binlog is turned on or not:
+```sql
 show variables like '%log_bin%';
 show variables like '%binlog%';
 ```
 
-如以下显示，则说明 binlog 已开启
+As shown below, it means binlog has been turned on:
 ```
 +-----------------------------------------+---------------------------------------+
 | Variable_name                           | Value                                 |
@@ -62,14 +64,14 @@ show variables like '%binlog%';
 +-----------------------------------------+---------------------------------------+
 ```
 
-2. 赋予 MySQL 账号 Replication 相关权限。
+2. Privileges of account that scaling use should include Replication privileges.
 
-执行以下命令，查看该用户是否有迁移权限：
-```
+Execute the following SQL to confirm whether the user has migration permission or not:
+```sql
 SHOW GRANTS FOR 'user';
 ```
 
-示例结果：
+Result Example:
 ```
 +------------------------------------------------------------------------------+
 |Grants for ${username}@${host}                                                |
@@ -81,29 +83,29 @@ SHOW GRANTS FOR 'user';
 
 #### PostgreSQL
 
-1. 开启 [test_decoding](https://www.postgresql.org/docs/9.4/test-decoding.html)。
+1. Enable [test_decoding](https://www.postgresql.org/docs/9.4/test-decoding.html) feature.
 
-2. 调整 WAL 配置。
+2. Adjust WAL configuration
 
-`postgresql.conf` 示例配置：
+Configuration Example of `postgresql.conf`:
 ```
 wal_level = logical
 max_replication_slots = 10
 max_connections = 600
 ```
 
-详情请参见 [Write Ahead Log](https://www.postgresql.org/docs/9.6/runtime-config-wal.html) 和 [Replication](https://www.postgresql.org/docs/9.6/runtime-config-replication.html )。
+Please refer to [Write Ahead Log](https://www.postgresql.org/docs/9.6/runtime-config-wal.html) and [Replication](https://www.postgresql.org/docs/9.6/runtime-config-replication.html ) for more details.
 
-### DistSQL 自动模式接口
+### DistSQL API for auto mode
 
-#### 预览当前分片规则
+#### Preview current sharding rule
 
-示例：
+Example:
 ```sql
 preview SELECT COUNT(1) FROM t_order;
 ```
 
-返回信息：
+Response:
 ```
 mysql> preview SELECT COUNT(1) FROM t_order;
 +------------------+-------------------------------------------------------------------------+
@@ -115,15 +117,15 @@ mysql> preview SELECT COUNT(1) FROM t_order;
 2 rows in set (0.65 sec)
 ```
 
-#### 创建迁移任务
+#### Start scaling job
 
-1. 添加新的数据源。
+1. Add new data source resources
 
-详情请参见 [RDL #数据源资源](/cn/user-manual/shardingsphere-proxy/distsql/syntax/rdl/resource-definition/)。
+Please refer to [RDL#Data Source](/en/user-manual/shardingsphere-proxy/distsql/syntax/rdl/resource-definition/) for more details.
 
-先在底层数据库系统创建需要的分库，下面的 `DistSQL` 需要用到。
+Create database on underlying RDBMS first, it will be used in following `DistSQL`.
 
-示例：
+Example:
 ```sql
 ADD RESOURCE ds_2 (
     URL="jdbc:mysql://127.0.0.1:3306/scaling_ds_2?serverTimezone=UTC&useSSL=false",
@@ -143,23 +145,23 @@ ADD RESOURCE ds_2 (
 );
 ```
 
-2. 修改待迁移表的分片规则。
+2. Alter sharding table rule for tables to be scaled
 
-待迁移表可以是所有表，也可以是部分表。绑定表只能一块迁移。
+We could scale all tables or partial tables. Binding tables must be scaled together.
 
-目前只有通过执行 `ALTER SHARDING TABLE RULE` DistSQL 来触发迁移。
+Currently, scaling job could only be emitted by executing `ALTER SHARDING TABLE RULE` DistSQL.
 
-详情请参见 [RDL #数据分片](/cn/user-manual/shardingsphere-proxy/distsql/syntax/rdl/rule-definition/sharding/)。
+Please refer to [RDL#Sharding](/en/user-manual/shardingsphere-proxy/distsql/syntax/rdl/rule-definition/sharding/) for more details.
 
-`SHARDING TABLE RULE` 支持 2 种类型：`TableRule` 和 `AutoTableRule`。以下是两种分片规则的对比：
+`SHARDING TABLE RULE` support two types: `TableRule` and `AutoTableRule`. Following is a comparison of the two sharding rule types: 
 
-| 类型         | AutoTableRule（自动分片）                                      | TableRule（自定义分片）                                        |
+| Type         | AutoTableRule                                               | TableRule                                                    |
 | ----------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| 定义         | [自动化分片算法](/cn/features/sharding/concept/sharding/#自动化分片算法) | [自定义分片算法](/cn/features/sharding/concept/sharding/#自定义分片算法)   |
+| Definition   | [Auto Sharding Algorithm](/en/features/sharding/concept/sharding/#auto-sharding-algorithm) | [User-Defined Sharding Algorithm](/en/features/sharding/concept/sharding/#user-defined-sharding-algorithm)   |
 
-DistSQL 字段含义和 YAML 配置保持一致，详情请参见 [YAML 配置#数据分片](/cn/user-manual/shardingsphere-jdbc/yaml-config/rules/sharding/)。
+Meaning of fields in DistSQL is the same as YAML configuration, please refer to [YAML Configuration#Sharding](/en/user-manual/shardingsphere-jdbc/yaml-config/rules/sharding/) for more details.
 
-`AutoTableRule` 修改示例：
+Example of alter `AutoTableRule`:
 ```sql
 ALTER SHARDING TABLE RULE t_order (
 RESOURCES(ds_2, ds_3, ds_4),
@@ -169,9 +171,9 @@ KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME=snowflake))
 );
 ```
 
-`RESOURCES` 从 `(ds_0, ds_1)` 改为了 `(ds_2, ds_3, ds_4)`，`sharding-count` 从 `4` 改为了 `6`，会触发迁移。
+`RESOURCES` is altered from `(ds_0, ds_1)` to `(ds_2, ds_3, ds_4)`, and `sharding-count` is altered from `4` to `6`, it will emit scaling job.
 
-`TableRule` 修改示例：
+Uncompleted example of alter `TableRule`:
 ```sql
 ALTER SHARDING ALGORITHM database_inline (
 TYPE(NAME=INLINE,PROPERTIES("algorithm-expression"="ds_${user_id % 3 + 2}"))
@@ -190,20 +192,20 @@ KEY_GENERATE_STRATEGY(COLUMN=order_item_id,TYPE(NAME=snowflake))
 );
 ```
 
-`database_inline` 的 `algorithm-expression` 从 `ds_${user_id % 2}` 改为 `ds_${user_id % 3 + 2}`，`t_order` 的 `DATANODES` 从 `ds_${0..1}.t_order_${0..1}` 改为 `ds_${2..4}.t_order_${0..1}`，会触发迁移。
+`algorithm-expression` of `database_inline` is alerted from `ds_${user_id % 2}` to `ds_${user_id % 3 + 2}`, and `DATANODES` of `t_order` is alerted from `ds_${0..1}.t_order_${0..1}` to `ds_${2..4}.t_order_${0..1}`, it will emit scaling job.
 
-目前 `ALTER SHARDING ALGORITHM` 会即时生效、但是规则还没生效，可能会导致源端 insert 异常，所以建议优先修改为 `AutoTableRule`。
+Currently, `ALTER SHARDING ALGORITHM` will take effect immediately, but table rule will not, it might cause inserting data into source side failure, so alter sharding table rule to `AutoTableRule` is recommended for now.
 
-#### 查询所有迁移任务
+#### List scaling jobs
 
-详情请参见 [RAL #弹性伸缩](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/#%E5%BC%B9%E6%80%A7%E4%BC%B8%E7%BC%A9)。
+Please refer to [RAL#Scaling](/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/#scaling) for more details.
 
-示例：
+Example:
 ```sql
 show scaling list;
 ```
 
-返回信息：
+Response:
 ```
 mysql> show scaling list;
 +--------------------+-----------------------+----------------------+--------+---------------------+---------------------+
@@ -215,14 +217,14 @@ mysql> show scaling list;
 2 rows in set (0.04 sec)
 ```
 
-#### 查询迁移任务进度
+#### Get scaling progress
 
-示例：
+Example:
 ```sql
 show scaling status {jobId};
 ```
 
-返回信息：
+Response:
 ```
 mysql> show scaling status 660152090995195904;
 +------+-------------+----------+-------------------------------+--------------------------+
@@ -233,33 +235,33 @@ mysql> show scaling status 660152090995195904;
 +------+-------------+----------+-------------------------------+--------------------------+
 2 rows in set (0.00 sec)
 ```
-当前迁移任务已完成，新的分片规则已生效。如果迁移失败，新的分片规则不会生效。
+Current scaling job is finished, new sharding rule should take effect, and not if scaling job is failed.
 
-`status` 的取值：
+`status` values:
 
-| 取值                                               | 描述                                                         |
+| Value                                             | Description                                                  |
 | ------------------------------------------------- | ------------------------------------------------------------ |
-| PREPARING                                         | 准备中                                                        |
-| RUNNING                                           | 运行中                                                        |
-| EXECUTE_INVENTORY_TASK                            | 全量迁移中                                                     |
-| EXECUTE_INCREMENTAL_TASK                          | 增量迁移中                                                     |
-| FINISHED                                          | 已完成（整个流程完成了，新规则已生效）                              |
-| PREPARING_FAILURE                                 | 准备阶段失败                                                    |
-| EXECUTE_INVENTORY_TASK_FAILURE                    | 全量迁移阶段失败                                                 |
-| EXECUTE_INCREMENTAL_TASK_FAILURE                  | 增量迁移阶段失败                                                 |
+| PREPARING                                         | preparing                                                    |
+| RUNNING                                           | running                                                      |
+| EXECUTE_INVENTORY_TASK                            | inventory task running                                       |
+| EXECUTE_INCREMENTAL_TASK                          | incremental task running                                     |
+| FINISHED                                          | finished (The whole process is completed, and the new rules have been taken effect) |
+| PREPARING_FAILURE                                 | preparation failed                                           |
+| EXECUTE_INVENTORY_TASK_FAILURE                    | inventory task failed                                        |
+| EXECUTE_INCREMENTAL_TASK_FAILURE                  | incremental task failed                                      |
 
-如果 `status` 出现失败的情况，可以查看 `proxy` 的日志查看错误堆栈分析问题。
+If `status` fails, you can check the log of `proxy` to view the error stack and analyze the problem.
 
-#### 预览新的分片规则是否生效
+#### Preview new sharding rule
 
-示例：
+Example:
 ```sql
 preview SELECT COUNT(1) FROM t_order;
 ```
 
-返回信息：
+Response:
 ```
-mysql> preview SELECT COUNT(1) FROM t_order;
+mysql> PREVIEW SELECT COUNT(1) FROM t_order;
 +------------------+-------------------------------------------------------------------------+
 | data_source_name | actual_sql                                                              |
 +------------------+-------------------------------------------------------------------------+
@@ -270,22 +272,22 @@ mysql> preview SELECT COUNT(1) FROM t_order;
 3 rows in set (0.21 sec)
 ```
 
-#### 其他 DistSQL
-详情请参见 [RAL #弹性伸缩](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/#%E5%BC%B9%E6%80%A7%E4%BC%B8%E7%BC%A9)。
+#### Other DistSQL
+Please refer to [RAL#Scaling](/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/#scaling) for more details.
 
-### DistSQL 手动模式完整流程示例
+### DistSQL manual mode whole process example
 
-手动模式下，数据校验、切换配置等操作可以手动执行。详情请参见：[RAL #弹性伸缩](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/#%E5%BC%B9%E6%80%A7%E4%BC%B8%E7%BC%A9)。
+On manual mode, data consistency check and switch configuration could be emitted manually. Please refer to [RAL#Scaling](/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/#scaling) for more details.
 
-本示例演示从已有 MySQL 数据库迁移到 proxy。
+This example show how to migrate data from MySQL to proxy.
 
-除了明确说明在 MySQL 执行的 SQL，其他都是在 proxy 执行。
+Most SQLs should be executed in proxy, except few ones mentioned for MySQL.
 
-#### 新建源端库
+#### Create source databases
 
-已有数据不需要这个步骤。这里是模拟一个源端库用于测试。
+It's not needed in practice. It just simulates databases for testing.
 
-在 MySQL 执行 SQL：
+Execute SQLs in MySQL:
 ```sql
 DROP DATABASE IF EXISTS scaling_ds_0;
 CREATE DATABASE scaling_ds_0 DEFAULT CHARSET utf8;
@@ -294,22 +296,22 @@ DROP DATABASE IF EXISTS scaling_ds_1;
 CREATE DATABASE scaling_ds_1 DEFAULT CHARSET utf8;
 ```
 
-#### 登录 proxy
+#### Login proxy
 
 ```shell
 mysql -h127.0.0.1 -P3307 -uroot -proot
 ```
 
-#### 创建并配置 schema
+#### Create and configure schema
 
-创建 schema：
+Create schema:
 ```sql
 CREATE DATABASE scaling_db;
 
 USE scaling_db
 ```
 
-加入源端数据库资源：
+Add source database resource:
 ```sql
 ADD RESOURCE ds_0 (
     URL="jdbc:mysql://127.0.0.1:3306/scaling_ds_0?serverTimezone=UTC&useSSL=false",
@@ -324,8 +326,8 @@ ADD RESOURCE ds_0 (
 );
 ```
 
-配置规则：
-把现有系统中的表配置到规则里，使用 tables 规则 INLINE 算法，方便适配已有的表名。
+Configure rules:
+Configure tables of existing system in sharding rule, sharding table rules and INLINE algorithm will be used to fit existing tables name.
 ```sql
 CREATE SHARDING ALGORITHM database_inline (
 TYPE(NAME=INLINE,PROPERTIES("algorithm-expression"="ds_${user_id % 2}"))
@@ -349,28 +351,26 @@ TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=t_order
 KEY_GENERATE_STRATEGY(COLUMN=order_item_id,TYPE(NAME=snowflake))
 );
 
-CREATE SHARDING BINDING TABLE RULES (t_order,t_order_item);
-
 CREATE SHARDING SCALING RULE scaling_manual2 (
 DATA_CONSISTENCY_CHECKER(TYPE(NAME=CRC32_MATCH))
 );
 ```
 
-#### 创建测试表并初始化数据
+#### Create test tables and initialize records
 
-该步骤在实际使用中不需要。
+It's not needed in practice.
 
 ```sql
 CREATE TABLE t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) CHARSET utf8mb4, PRIMARY KEY (order_id));
 CREATE TABLE t_order_item (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) CHARSET utf8mb4, creation_date DATE, PRIMARY KEY (item_id));
 
-INSERT INTO t_order (order_id, user_id, status) VALUES (1,2,'ok'),(2,4,'ok'),(3,6,'ok'),(4,1,'ok'),(5,3,'ok'),(6,5,'ok');
-INSERT INTO t_order_item (item_id, order_id, user_id, status) VALUES (1,1,2,'ok'),(2,2,4,'ok'),(3,3,6,'ok'),(4,4,1,'ok'),(5,5,3,'ok'),(6,6,5,'ok');
+INSERT INTO T_ORDER (order_id, user_id, status) VALUES (1,2,'ok'),(2,4,'ok'),(3,6,'ok'),(4,1,'ok'),(5,3,'ok'),(6,5,'ok');
+INSERT INTO T_ORDER_ITEM (item_id, order_id, user_id, status) VALUES (1,1,2,'ok'),(2,2,4,'ok'),(3,3,6,'ok'),(4,4,1,'ok'),(5,5,3,'ok'),(6,6,5,'ok');
 ```
 
-#### 执行迁移
+#### Run migration
 
-预览分片：
+Preview sharding:
 ```sql
 mysql> PREVIEW SELECT COUNT(1) FROM t_order;
 +------------------+-------------------------------------------------------------------------+
@@ -382,7 +382,7 @@ mysql> PREVIEW SELECT COUNT(1) FROM t_order;
 2 rows in set (0.65 sec)
 ```
 
-在 MySQL 创建目标端库：
+Create target databases in MySQL:
 ```sql
 DROP DATABASE IF EXISTS scaling_ds_10;
 CREATE DATABASE scaling_ds_10 DEFAULT CHARSET utf8;
@@ -394,7 +394,7 @@ DROP DATABASE IF EXISTS scaling_ds_12;
 CREATE DATABASE scaling_ds_12 DEFAULT CHARSET utf8;
 ```
 
-加入目标端数据库资源：
+Add target database resource:
 ```sql
 ADD RESOURCE ds_2 (
     URL="jdbc:mysql://127.0.0.1:3306/scaling_ds_10?serverTimezone=UTC&useSSL=false",
@@ -414,7 +414,7 @@ ADD RESOURCE ds_2 (
 );
 ```
 
-修改分片规则触发迁移：
+Alter sharding rule to emit scaling job:
 ```sql
 ALTER SHARDING ALGORITHM database_inline (
 TYPE(NAME=INLINE,PROPERTIES("algorithm-expression"="ds_${user_id % 3 + 2}"))
@@ -433,7 +433,7 @@ KEY_GENERATE_STRATEGY(COLUMN=order_item_id,TYPE(NAME=snowflake))
 );
 ```
 
-查看当前迁移任务的进度：
+Query job progress:
 ```sql
 mysql> SHOW SCALING LIST;
 +--------------------------------------------+----------------------+----------------------+--------+---------------------+-----------+
@@ -452,18 +452,17 @@ mysql> SHOW SCALING STATUS 0130317c30317c3054317c7363616c696e675f6462;
 +------+-------------+--------------------------+--------+-------------------------------+--------------------------+
 2 rows in set (0.02 sec)
 ```
-当 status 达到 EXECUTE_INCREMENTAL_TASK，全量迁移已完成，在增量迁移阶段。
+When `status` is `EXECUTE_INCREMENTAL_TASK`, it means inventory migration stage is successful, it's running on incremental migration stage.
 
+Choose an idle time of business system, stop source database writing or stop upper database operation.
 
-选择一个业务低峰期，对源端库或数据操作入口做停写。
-
-proxy 停写：
+Stop source writing in proxy:
 ```sql
 mysql> STOP SCALING SOURCE WRITING 0130317c30317c3054317c7363616c696e675f6462;
 Query OK, 0 rows affected (0.07 sec)
 ```
 
-数据一致性校验：
+Data consistency check:
 ```sql
 mysql> CHECK SCALING 0130317c30317c3054317c7363616c696e675f6462 BY TYPE (NAME=CRC32_MATCH);
 +--------------+----------------------+----------------------+-----------------------+-------------------------+
@@ -475,13 +474,13 @@ mysql> CHECK SCALING 0130317c30317c3054317c7363616c696e675f6462 BY TYPE (NAME=CR
 2 rows in set (2.16 sec)
 ```
 
-切换元数据：
+Apply metadata:
 ```sql
 mysql> APPLY SCALING 0130317c30317c3054317c7363616c696e675f6462;
 Query OK, 0 rows affected (0.22 sec)
 ```
 
-预览分片是否已生效：
+Preview sharding again:
 ```sql
 mysql> PREVIEW SELECT COUNT(1) FROM t_order;
 +------------------+-------------------------------------------------------------------------+
@@ -493,6 +492,6 @@ mysql> PREVIEW SELECT COUNT(1) FROM t_order;
 +------------------+-------------------------------------------------------------------------+
 3 rows in set (0.21 sec)
 ```
-数据已经分片到新的数据库资源。
+Sharding already take effect.
 
-可选择性删除不再使用的 ds_0 和 ds_1。
+Optionally, unused `ds_0` and `ds_1` could be removed.

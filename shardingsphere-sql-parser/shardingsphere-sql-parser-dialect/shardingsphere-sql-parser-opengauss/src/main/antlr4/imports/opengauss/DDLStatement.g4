@@ -724,6 +724,10 @@ alterCollationClause
     | SET SCHEMA schemaName
     ;
 
+alterSynonym
+    : ALTER SYNONYM synonymName OWNER TO owner
+    ;
+
 alterConversion
     : ALTER CONVERSION anyName alterConversionClause
     ;
@@ -832,6 +836,10 @@ alterExtension
     : ALTER EXTENSION name alterExtensionClauses
     ;
 
+createSynonym
+    : CREATE (OR REPLACE)? SYNONYM synonymName FOR objectName
+    ;
+    
 alterExtensionClauses
     : UPDATE alterExtensionOptList
     | (ADD | DROP) ACCESS METHOD name
@@ -953,18 +961,20 @@ alterMaterializedViewClauses
     ;
 
 declare
-    : DECLARE name cursorOptions CURSOR (WITH HOLD | WITHOUT HOLD)? FOR select
+    : DECLARE cursorName cursorOptions CURSOR (WITH HOLD | WITHOUT HOLD)? FOR select
     ;
 
+cursor
+    : CURSOR cursorName cursorOptions (WITH HOLD | WITHOUT HOLD)? FOR select
+    ;
+    
 cursorOptions
     : cursorOption*
     ;
 
 cursorOption
-    : NO SCROLL
-    | SCROLL
-    | BINARY
-    | INSENSITIVE
+    : BINARY
+    | NO SCROLL
     ;
 
 executeStmt
@@ -1705,6 +1715,10 @@ dropRule
 
 dropSequence
     : DROP SEQUENCE existClause? qualifiedNameList dropBehavior?
+    ;
+
+dropSynonym
+    : DROP SYNONYM existClause? synonymName dropBehavior?
     ;
 
 dropServer

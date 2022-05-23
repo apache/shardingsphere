@@ -40,7 +40,7 @@ public final class ShardingKeyGeneratorsQueryResultSet implements DistSQLResultS
     
     @Override
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
-        database.getRuleMetaData().findRuleConfiguration(ShardingRuleConfiguration.class)
+        database.getRuleMetaData().findRuleConfigurations(ShardingRuleConfiguration.class)
                 .forEach(each -> data = each.getKeyGenerators().entrySet().iterator());
     }
     

@@ -2355,3 +2355,7 @@ accessedClause
 createSPFile
     : CREATE SPFILE (EQ_ spfileName)? FROM (PFILE (EQ_ pfileName)? (AS COPY)? | MEMORY)
     ;
+
+createPFile
+    : CREATE PFILE (EQ_ pfileName)? FROM (SPFILE (EQ_ spfileName)? (AS COPY)? | MEMORY)
+    ;

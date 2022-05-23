@@ -51,7 +51,7 @@ public final class DataSourceQueryResultSetTest {
     public void before() {
         DatabaseType databaseType = new MySQLDatabaseType();
         DataSourcesMetaData dataSourcesMetaData = new DataSourcesMetaData(databaseType, Collections.singletonMap("foo_ds", createDataSource()));
-        ShardingSphereResource resource = new ShardingSphereResource(Collections.singletonMap("foo_ds", createDataSource()), dataSourcesMetaData, null, databaseType);
+        ShardingSphereResource resource = new ShardingSphereResource(Collections.singletonMap("foo_ds", createDataSource()), dataSourcesMetaData, databaseType);
         when(database.getResource()).thenReturn(resource);
     }
     

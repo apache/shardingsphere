@@ -16,10 +16,7 @@
   ~ limitations under the License.
   -->
 
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:shadow="http://shardingsphere.apache.org/schema/shardingsphere/shadow"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:shadow="http://shardingsphere.apache.org/schema/shardingsphere/shadow" xsi:schemaLocation="http://www.springframework.org/schema/beans 
                            http://www.springframework.org/schema/beans/spring-beans.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/shadow
                            http://shardingsphere.apache.org/schema/shardingsphere/shadow/shadow.xsd
@@ -32,7 +29,7 @@
     </shadow:shadow-algorithm>
 
     <shadow:rule id="shadowRule">
-        <shadow:data-source id="shadow-data-source" source-data-source-name="ds" shadow-data-source-name="ds-shadow"/>
-        <shadow:default-shadow-algorithm-name name="simple-hint-algorithm"/>
+        <shadow:data-source id="shadow-data-source" source-data-source-name="ds" shadow-data-source-name="ds-shadow" />
+        <shadow:default-shadow-algorithm-name name="simple-hint-algorithm" />
     </shadow:rule>
 </beans>

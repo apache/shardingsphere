@@ -19,6 +19,7 @@ package org.apache.shardingsphere.driver.jdbc.core.connection;
 
 import lombok.Getter;
 import org.apache.shardingsphere.driver.jdbc.adapter.AbstractConnectionAdapter;
+import org.apache.shardingsphere.driver.jdbc.context.JDBCContext;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement;
@@ -45,6 +46,9 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     private final ContextManager contextManager;
     
     @Getter
+    private final JDBCContext jdbcContext;
+    
+    @Getter
     private final ConnectionManager connectionManager;
     
     private boolean autoCommit = true;
@@ -55,9 +59,10 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     
     private volatile boolean closed;
     
-    public ShardingSphereConnection(final String databaseName, final ContextManager contextManager) {
+    public ShardingSphereConnection(final String databaseName, final ContextManager contextManager, final JDBCContext jdbcContext) {
         this.databaseName = databaseName;
         this.contextManager = contextManager;
+        this.jdbcContext = jdbcContext;
         connectionManager = new ConnectionManager(databaseName, contextManager);
     }
     
@@ -252,7 +257,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     }
     
     @Override
-    public String getSchema() throws SQLException {
+    public String getSchema() {
         // TODO return databaseName for now in getSchema(), the same as before
         return databaseName;
     }
