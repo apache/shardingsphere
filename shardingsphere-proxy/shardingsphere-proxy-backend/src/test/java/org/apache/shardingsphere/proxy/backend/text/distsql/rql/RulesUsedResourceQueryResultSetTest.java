@@ -143,7 +143,7 @@ public final class RulesUsedResourceQueryResultSetTest {
     }
     
     private ShardingSphereResource createResource() {
-        return new ShardingSphereResource(Collections.singletonMap("ds_0", new HikariDataSource()), null, null, null);
+        return new ShardingSphereResource(Collections.singletonMap("ds_0", new HikariDataSource()), null, null);
     }
     
     private RuleConfiguration mockShardingTableRule() {

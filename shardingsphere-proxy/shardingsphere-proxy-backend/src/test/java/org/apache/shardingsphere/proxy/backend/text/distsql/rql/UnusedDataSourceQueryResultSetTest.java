@@ -61,7 +61,7 @@ public final class UnusedDataSourceQueryResultSetTest {
     public void before() {
         DatabaseType databaseType = new MySQLDatabaseType();
         DataSourcesMetaData dataSourcesMetaData = new DataSourcesMetaData(databaseType, createDataSources());
-        ShardingSphereResource resource = new ShardingSphereResource(createDataSources(), dataSourcesMetaData, null, databaseType);
+        ShardingSphereResource resource = new ShardingSphereResource(createDataSources(), dataSourcesMetaData, databaseType);
         ShardingSphereRuleMetaData metaData = new ShardingSphereRuleMetaData(null, Collections.singleton(createShardingRule()));
         when(database.getResource()).thenReturn(resource);
         when(database.getRuleMetaData()).thenReturn(metaData);
