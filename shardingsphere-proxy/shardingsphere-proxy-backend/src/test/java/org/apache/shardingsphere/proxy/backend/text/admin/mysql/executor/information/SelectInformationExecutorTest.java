@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
@@ -40,6 +39,7 @@ import org.apache.shardingsphere.proxy.backend.text.admin.executor.AbstractDatab
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,6 +48,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Field;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -104,27 +105,19 @@ public final class SelectInformationExecutorTest extends ProxyContextRestorer {
     private ShardingSphereDatabase getDatabase() throws SQLException {
         ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class);
         when(ruleMetaData.getRules()).thenReturn(Collections.singletonList(mock(AuthorityRule.class, RETURNS_DEEP_STUBS)));
-        return new ShardingSphereDatabase("sharding_db",
-                new MySQLDatabaseType(), new ShardingSphereResource(mockDatasourceMap(), mockDataSourcesMetaData(), new MySQLDatabaseType()), ruleMetaData, Collections.emptyMap());
+        return new ShardingSphereDatabase("sharding_db", new MySQLDatabaseType(), new ShardingSphereResource(new MySQLDatabaseType(), mockDatasourceMap()), ruleMetaData, Collections.emptyMap());
     }
     
     private ShardingSphereDatabase getEmptyDatabase(final String schemaName) {
         ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class);
         when(ruleMetaData.getRules()).thenReturn(Collections.singletonList(mock(AuthorityRule.class, RETURNS_DEEP_STUBS)));
-        return new ShardingSphereDatabase(schemaName,
-                new MySQLDatabaseType(), new ShardingSphereResource(Collections.emptyMap(), mockDataSourcesMetaData(), new MySQLDatabaseType()), ruleMetaData, Collections.emptyMap());
+        return new ShardingSphereDatabase(schemaName, new MySQLDatabaseType(), new ShardingSphereResource(new MySQLDatabaseType(), Collections.emptyMap()), ruleMetaData, Collections.emptyMap());
     }
     
     private Map<String, DataSource> mockDatasourceMap() throws SQLException {
-        DataSource dataSource = mock(DataSource.class, RETURNS_DEEP_STUBS);
-        when(dataSource.getConnection().prepareStatement(any(String.class)).executeQuery()).thenReturn(RESULT_SET);
-        return Collections.singletonMap("ds_0", dataSource);
-    }
-    
-    private DataSourcesMetaData mockDataSourcesMetaData() {
-        DataSourcesMetaData result = mock(DataSourcesMetaData.class, RETURNS_DEEP_STUBS);
-        when(result.getDataSourceMetaData("ds_0").getCatalog()).thenReturn("demo_ds_0");
-        return result;
+        Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
+        when(connection.prepareStatement(any(String.class)).executeQuery()).thenReturn(RESULT_SET);
+        return Collections.singletonMap("ds_0", new MockedDataSource(connection));
     }
     
     @Test
@@ -132,7 +125,7 @@ public final class SelectInformationExecutorTest extends ProxyContextRestorer {
         final String sql = "SELECT SCHEMA_NAME, DEFAULT_CHARACTER_SET_NAME, DEFAULT_COLLATION_NAME FROM information_schema.SCHEMATA";
         final SQLStatement sqlStatement = new ShardingSphereSQLParserEngine("MySQL", parserConfig).parse(sql, false);
         Map<String, String> mockResultSetMap = new HashMap<>();
-        mockResultSetMap.put("SCHEMA_NAME", "demo_ds_0");
+        mockResultSetMap.put("SCHEMA_NAME", "foo_ds");
         mockResultSetMap.put("DEFAULT_CHARACTER_SET_NAME", "utf8mb4_0900_ai_ci");
         mockResultSetMap.put("DEFAULT_COLLATION_NAME", "utf8mb4");
         mockResultSet(mockResultSetMap);
@@ -163,7 +156,7 @@ public final class SelectInformationExecutorTest extends ProxyContextRestorer {
         final String sql = "SELECT SCHEMA_NAME, DEFAULT_CHARACTER_SET_NAME, DEFAULT_COLLATION_NAME, DEFAULT_ENCRYPTION FROM information_schema.SCHEMATA";
         final SQLStatement sqlStatement = new ShardingSphereSQLParserEngine("MySQL", parserConfig).parse(sql, false);
         Map<String, String> mockResultSetMap = new HashMap<>(4, 1);
-        mockResultSetMap.put("SCHEMA_NAME", "demo_ds_0");
+        mockResultSetMap.put("SCHEMA_NAME", "foo_ds");
         mockResultSetMap.put("DEFAULT_CHARACTER_SET_NAME", "utf8mb4_0900_ai_ci");
         mockResultSetMap.put("DEFAULT_COLLATION_NAME", "utf8mb4");
         mockResultSetMap.put("DEFAULT_ENCRYPTION", "NO");
@@ -194,15 +187,15 @@ public final class SelectInformationExecutorTest extends ProxyContextRestorer {
     public void assertSelectSchemaAliasExecute() throws SQLException {
         final String sql = "SELECT SCHEMA_NAME AS sn, DEFAULT_CHARACTER_SET_NAME FROM information_schema.SCHEMATA";
         Map<String, String> mockResultSetMap = new HashMap<>();
-        mockResultSetMap.put("sn", "demo_ds_0");
+        mockResultSetMap.put("sn", "foo_ds");
         mockResultSetMap.put("DEFAULT_CHARACTER_SET_NAME", "utf8mb4");
         mockResultSet(mockResultSetMap);
         Map<String, ShardingSphereDatabase> databaseMap = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getDatabaseMap();
-        databaseMap.put("demo_ds_0", getDatabase());
+        databaseMap.put("foo_ds", getDatabase());
         databaseMap.put("test", getEmptyDatabase("test"));
         DefaultDatabaseMetadataExecutor selectExecutor = new DefaultDatabaseMetadataExecutor(sql);
         selectExecutor.execute(connectionSession);
-        assertThat(selectExecutor.getRows().get(0).get("sn"), is("demo_ds_0"));
+        assertThat(selectExecutor.getRows().get(0).get("sn"), is("foo_ds"));
         assertThat(selectExecutor.getRows().get(0).get("DEFAULT_CHARACTER_SET_NAME"), is("utf8mb4"));
     }
     

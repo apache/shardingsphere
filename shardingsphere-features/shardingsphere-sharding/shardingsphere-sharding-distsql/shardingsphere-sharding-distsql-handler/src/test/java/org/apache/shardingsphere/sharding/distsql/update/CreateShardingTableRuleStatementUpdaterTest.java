@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.distsql.update;
 
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
@@ -35,6 +36,7 @@ import org.apache.shardingsphere.sharding.distsql.parser.segment.KeyGenerateStra
 import org.apache.shardingsphere.sharding.distsql.parser.segment.ShardingStrategySegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.TableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingTableRuleStatement;
+import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -68,7 +70,7 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
     
     private final ShardingRuleConfiguration currentRuleConfig = createCurrentShardingRuleConfiguration();
     
-    private final ShardingSphereResource shardingSphereResource = new ShardingSphereResource(createDataSource(), null, null);
+    private final ShardingSphereResource shardingSphereResource = new ShardingSphereResource(mock(DatabaseType.class), createDataSource());
     
     private final CreateShardingTableRuleStatementUpdater updater = new CreateShardingTableRuleStatementUpdater();
     
@@ -167,8 +169,8 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
     
     private Map<String, DataSource> createDataSource() {
         Map<String, DataSource> result = new HashMap<>(2, 1);
-        result.put("ds_0", mock(DataSource.class));
-        result.put("ds_1", mock(DataSource.class));
+        result.put("ds_0", new MockedDataSource());
+        result.put("ds_1", new MockedDataSource());
         return result;
     }
     

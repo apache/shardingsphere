@@ -30,7 +30,6 @@ import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationD
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationSchemaMetaData;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -86,7 +85,7 @@ public final class ContextManagerTest {
     
     @Test
     public void assertGetDataSourceMap() {
-        ShardingSphereResource resource = new ShardingSphereResource(Collections.singletonMap("foo_ds", new MockedDataSource()), mock(DataSourcesMetaData.class), mock(DatabaseType.class));
+        ShardingSphereResource resource = new ShardingSphereResource(mock(DatabaseType.class), Collections.singletonMap("foo_ds", new MockedDataSource()));
         when(metaDataContexts.getDatabaseMetaData(DefaultDatabase.LOGIC_NAME)).thenReturn(
                 new ShardingSphereDatabase("foo_db", mock(DatabaseType.class), resource, mock(ShardingSphereRuleMetaData.class), Collections.emptyMap()));
         assertThat(contextManager.getDataSourceMap(DefaultDatabase.LOGIC_NAME).size(), is(1));

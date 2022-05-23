@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.parser.ParserConfiguration;
@@ -37,6 +36,7 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,6 +44,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Field;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -95,26 +96,20 @@ public final class SelectDatabaseExecutorTest extends ProxyContextRestorer {
     
     private ShardingSphereDatabase getDatabase() throws SQLException {
         return new ShardingSphereDatabase("sharding_db", new PostgreSQLDatabaseType(),
-                new ShardingSphereResource(mockDatasourceMap(), mockDataSourcesMetaData(), new PostgreSQLDatabaseType()), mock(ShardingSphereRuleMetaData.class), Collections.emptyMap());
+                new ShardingSphereResource(new PostgreSQLDatabaseType(), mockDatasourceMap()), mock(ShardingSphereRuleMetaData.class), Collections.emptyMap());
     }
     
     private ShardingSphereDatabase getEmptyDatabaseMetaData(final String schemaName) {
         ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class);
         when(ruleMetaData.getRules()).thenReturn(Collections.emptyList());
-        return new ShardingSphereDatabase(schemaName, new PostgreSQLDatabaseType(),
-                new ShardingSphereResource(Collections.emptyMap(), mockDataSourcesMetaData(), new PostgreSQLDatabaseType()), ruleMetaData, Collections.emptyMap());
+        return new ShardingSphereDatabase(
+                schemaName, new PostgreSQLDatabaseType(), new ShardingSphereResource(new PostgreSQLDatabaseType(), Collections.emptyMap()), ruleMetaData, Collections.emptyMap());
     }
     
     private Map<String, DataSource> mockDatasourceMap() throws SQLException {
-        DataSource dataSource = mock(DataSource.class, RETURNS_DEEP_STUBS);
-        when(dataSource.getConnection().prepareStatement(any(String.class)).executeQuery()).thenReturn(RESULT_SET);
-        return Collections.singletonMap("ds_0", dataSource);
-    }
-    
-    private DataSourcesMetaData mockDataSourcesMetaData() {
-        DataSourcesMetaData result = mock(DataSourcesMetaData.class, RETURNS_DEEP_STUBS);
-        when(result.getDataSourceMetaData("ds_0").getCatalog()).thenReturn("demo_ds_0");
-        return result;
+        Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
+        when(connection.prepareStatement(any(String.class)).executeQuery()).thenReturn(RESULT_SET);
+        return Collections.singletonMap("ds_0", new MockedDataSource(connection));
     }
     
     @Test
@@ -124,7 +119,7 @@ public final class SelectDatabaseExecutorTest extends ProxyContextRestorer {
                 + "FROM pg_database d LEFT JOIN pg_tablespace t ON d.dattablespace = t.oid;";
         final SQLStatement sqlStatement = new ShardingSphereSQLParserEngine("PostgreSQL", parserConfig).parse(sql, false);
         Map<String, String> mockResultSetMap = new HashMap<>();
-        mockResultSetMap.put("databasename", "demo_ds_0");
+        mockResultSetMap.put("databasename", "foo_ds");
         mockResultSetMap.put("databaseowner", "postgres");
         mockResultSetMap.put("datconnlimit", "-1");
         mockResultSetMap.put("datctype", "en_US.utf8");
@@ -158,7 +153,7 @@ public final class SelectDatabaseExecutorTest extends ProxyContextRestorer {
                 + "FROM pg_database d LEFT JOIN pg_tablespace t ON d.dattablespace = t.oid;";
         final SQLStatement sqlStatement = new ShardingSphereSQLParserEngine("PostgreSQL", parserConfig).parse(sql, false);
         Map<String, String> mockResultSetMap = new HashMap<>(4, 1);
-        mockResultSetMap.put("databasename", "demo_ds_0");
+        mockResultSetMap.put("databasename", "foo_ds");
         mockResultSetMap.put("databaseowner", "postgres");
         mockResultSetMap.put("datconnlimit", "-1");
         mockResultSetMap.put("datctype", "en_US.utf8");
@@ -177,7 +172,7 @@ public final class SelectDatabaseExecutorTest extends ProxyContextRestorer {
         final String sql = "SELECT d.oid, d.datname AS databasename, d.datacl, d.datistemplate FROM pg_database d LEFT JOIN pg_tablespace t ON d.dattablespace = t.oid;";
         final SQLStatement sqlStatement = new ShardingSphereSQLParserEngine("PostgreSQL", parserConfig).parse(sql, false);
         Map<String, String> mockResultSetMap = new HashMap<>(4, 1);
-        mockResultSetMap.put("databasename", "demo_ds_0");
+        mockResultSetMap.put("databasename", "foo_ds");
         mockResultSetMap.put("databaseowner", "postgres");
         mockResultSetMap.put("datconnlimit", "-1");
         mockResultSetMap.put("datctype", "en_US.utf8");

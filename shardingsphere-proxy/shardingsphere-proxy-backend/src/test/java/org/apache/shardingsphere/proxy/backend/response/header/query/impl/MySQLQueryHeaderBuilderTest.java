@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
@@ -101,9 +100,7 @@ public final class MySQLQueryHeaderBuilderTest {
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(schema.get("t_logic_order")).thenReturn(new TableMetaData("t_logic_order",
                 Collections.singletonList(columnMetaData), Collections.singletonList(new IndexMetaData("order_id")), Collections.emptyList()));
-        DataSourcesMetaData dataSourcesMetaData = mock(DataSourcesMetaData.class);
-        when(dataSourcesMetaData.getDataSourceMetaData("ds_0")).thenReturn(mock(DataSourceMetaData.class));
-        when(result.getResource().getDataSourcesMetaData()).thenReturn(dataSourcesMetaData);
+        when(result.getResource().getDataSourceMetaData("ds_0")).thenReturn(mock(DataSourceMetaData.class));
         when(result.getSchemas().get(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
         ShardingRule shardingRule = mock(ShardingRule.class);
         when(shardingRule.findLogicTableByActualTable("t_order")).thenReturn(Optional.of("t_logic_order"));

@@ -140,7 +140,7 @@ public final class OpenGaussAuthenticationHandlerTest {
         for (int i = 0; i < 10; i++) {
             ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
             ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-            when(database.getResource()).thenReturn(new ShardingSphereResource(Collections.emptyMap(), null, new MySQLDatabaseType()));
+            when(database.getResource()).thenReturn(new ShardingSphereResource(new MySQLDatabaseType(), Collections.emptyMap()));
             when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()));
             when(database.getSchemas().get(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
             when(schema.getTables()).thenReturn(Collections.emptyMap());

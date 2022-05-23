@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -33,6 +32,7 @@ import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
+import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,6 +40,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Field;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -89,22 +90,14 @@ public final class SelectTableExecutorTest extends ProxyContextRestorer {
     }
     
     private ShardingSphereDatabase getDatabaseMetaData() throws SQLException {
-        return new ShardingSphereDatabase("sharding_db", new PostgreSQLDatabaseType(), new ShardingSphereResource(mockDatasourceMap(), mockDataSourcesMetaData(), new PostgreSQLDatabaseType()),
+        return new ShardingSphereDatabase("sharding_db", new PostgreSQLDatabaseType(), new ShardingSphereResource(new PostgreSQLDatabaseType(), mockDatasourceMap()),
                 mock(ShardingSphereRuleMetaData.class), Collections.singletonMap("public", new ShardingSphereSchema(Collections.singletonMap("t_order", mock(TableMetaData.class)))));
     }
     
     private Map<String, DataSource> mockDatasourceMap() throws SQLException {
-        DataSource dataSource = mock(DataSource.class, RETURNS_DEEP_STUBS);
-        when(dataSource.getConnection().prepareStatement(any(String.class)).executeQuery()).thenReturn(RESULT_SET);
-        Map<String, DataSource> dataSourceMap = new HashMap<>();
-        dataSourceMap.put("ds_0", dataSource);
-        return dataSourceMap;
-    }
-    
-    private DataSourcesMetaData mockDataSourcesMetaData() {
-        DataSourcesMetaData result = mock(DataSourcesMetaData.class, RETURNS_DEEP_STUBS);
-        when(result.getDataSourceMetaData("ds_0").getCatalog()).thenReturn("demo_ds_0");
-        return result;
+        Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
+        when(connection.prepareStatement(any(String.class)).executeQuery()).thenReturn(RESULT_SET);
+        return Collections.singletonMap("ds_0", new MockedDataSource(connection));
     }
     
     @Test
