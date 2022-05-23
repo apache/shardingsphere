@@ -119,5 +119,6 @@ execute
     | createSynonym
     | alterSynonym
     | dropSynonym
+    | cursor
     ) SEMI_? EOF
     ;
