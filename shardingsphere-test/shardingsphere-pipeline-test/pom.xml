@@ -48,6 +48,13 @@
             <artifactId>shardingsphere-cluster-mode-repository-zookeeper-curator</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-test-common</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
         
         <dependency>
             <groupId>com.h2database</groupId>

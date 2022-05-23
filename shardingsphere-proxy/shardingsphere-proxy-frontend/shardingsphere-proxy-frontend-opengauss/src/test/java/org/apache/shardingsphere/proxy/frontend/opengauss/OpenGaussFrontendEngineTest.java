@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.frontend.opengauss;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.db.protocol.opengauss.codec.OpenGaussPacketCodecEngine;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.opengauss.authentication.OpenGaussAuthenticationEngine;
@@ -39,19 +38,13 @@ import static org.mockito.Mockito.verify;
 @RunWith(MockitoJUnitRunner.class)
 public final class OpenGaussFrontendEngineTest {
     
-    private OpenGaussFrontendEngine openGaussFrontendEngine;
+    private final OpenGaussFrontendEngine openGaussFrontendEngine = new OpenGaussFrontendEngine();
     
     @Mock
     private PostgreSQLFrontendEngine mockPostgreSQLFrontendEngine;
     
     @Before
-    public void setup() {
-        openGaussFrontendEngine = new OpenGaussFrontendEngine();
-        prepareMock();
-    }
-    
-    @SneakyThrows
-    private void prepareMock() {
+    public void setup() throws ReflectiveOperationException {
         Field field = OpenGaussFrontendEngine.class.getDeclaredField("postgreSQLFrontendEngine");
         field.setAccessible(true);
         field.set(openGaussFrontendEngine, mockPostgreSQLFrontendEngine);

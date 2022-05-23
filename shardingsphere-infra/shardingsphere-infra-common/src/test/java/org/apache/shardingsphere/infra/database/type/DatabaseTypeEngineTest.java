@@ -110,7 +110,7 @@ public final class DatabaseTypeEngineTest {
     public void assertCantGetConnectionFromDataSource() throws SQLException {
         DataSource mockDataSource = mock(DataSource.class);
         when(mockDataSource.getConnection()).thenThrow(SQLException.class);
-        DatabaseTypeEngine.getDatabaseType(Collections.singletonList(mockDataSource));
+        DatabaseTypeEngine.getDatabaseType(Collections.singleton(mockDataSource));
     }
     
     private DataSource mockDataSource(final DatabaseType databaseType) throws SQLException {

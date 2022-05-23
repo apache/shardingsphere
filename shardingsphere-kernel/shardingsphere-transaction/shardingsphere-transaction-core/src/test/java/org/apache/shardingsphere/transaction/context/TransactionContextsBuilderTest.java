@@ -20,6 +20,7 @@ package org.apache.shardingsphere.transaction.context;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -61,8 +62,8 @@ public final class TransactionContextsBuilderTest {
     
     private Map<String, DataSource> createDataSourceMap() {
         Map<String, DataSource> result = new HashMap<>(2, 1);
-        result.put("ds_0", mock(DataSource.class));
-        result.put("ds_1", mock(DataSource.class));
+        result.put("ds_0", new MockedDataSource());
+        result.put("ds_1", new MockedDataSource());
         return result;
     }
 }
