@@ -58,7 +58,7 @@
             <artifactId>shardingsphere-encrypt-sm</artifactId>
             <version>${project.version}</version>
         </dependency>
-
+        
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-test-common</artifactId>
