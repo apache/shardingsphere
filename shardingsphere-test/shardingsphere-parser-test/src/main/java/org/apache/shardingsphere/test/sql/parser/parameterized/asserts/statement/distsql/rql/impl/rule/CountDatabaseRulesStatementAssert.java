@@ -28,7 +28,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Count schema rules statement assert.
+ * Count database rules statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CountDatabaseRulesStatementAssert {
