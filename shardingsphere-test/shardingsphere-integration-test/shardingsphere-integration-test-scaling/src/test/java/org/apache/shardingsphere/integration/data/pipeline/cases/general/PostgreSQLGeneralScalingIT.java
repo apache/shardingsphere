@@ -75,7 +75,6 @@ public final class PostgreSQLGeneralScalingIT extends BaseExtraSQLITCase {
         createScalingRule();
         createSchema("test");
         createAllSharingTableRule();
-        bindingShardingRule();
         createOrderTable();
         createOrderItemTable();
         SnowflakeKeyGenerateAlgorithm keyGenerateAlgorithm = new SnowflakeKeyGenerateAlgorithm();
@@ -85,7 +84,7 @@ public final class PostgreSQLGeneralScalingIT extends BaseExtraSQLITCase {
         startIncrementTask(new PostgreSQLIncrementTask(getJdbcTemplate(), new SnowflakeKeyGenerateAlgorithm(), "test", true));
         assertOriginalSourceSuccess();
         addTargetResource();
-        getJdbcTemplate().execute(getCommonSQLCommand().getAutoAlterAllShardingTableRule());
+        getJdbcTemplate().execute(getCommonSQLCommand().getAutoAlterOrderShardingTableRule());
         assertCheckMatchConsistencySuccess();
     }
 }

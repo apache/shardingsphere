@@ -70,7 +70,6 @@ public final class MySQLGeneralScalingIT extends BaseExtraSQLITCase {
         assertTrue(waitShardingAlgorithmEffect(15));
         createScalingRule();
         createAllSharingTableRule();
-        bindingShardingRule();
         createNoUseTable();
         createOrderTable();
         createOrderItemTable();
@@ -81,7 +80,7 @@ public final class MySQLGeneralScalingIT extends BaseExtraSQLITCase {
         startIncrementTask(new MySQLIncrementTask(getJdbcTemplate(), keyGenerateAlgorithm, true));
         assertOriginalSourceSuccess();
         addTargetResource();
-        getJdbcTemplate().execute(getCommonSQLCommand().getAutoAlterAllShardingTableRule());
+        getJdbcTemplate().execute(getCommonSQLCommand().getAutoAlterOrderShardingTableRule());
         assertCheckMatchConsistencySuccess();
     }
 }
