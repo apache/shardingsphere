@@ -26,10 +26,10 @@ import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
+import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.JobProgressYamlSwapper;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
-import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 import org.apache.shardingsphere.data.pipeline.core.util.ConfigurationFileUtil;
@@ -88,7 +88,7 @@ public final class GovernanceRepositoryAPIImplTest {
     
     @Test
     public void assertDeleteJob() {
-        governanceRepositoryAPI.persist(PipelineMetaDataNode.getScalingRootPath() + "/1", "");
+        governanceRepositoryAPI.persist(DataPipelineConstants.DATA_PIPELINE_ROOT + "/1", "");
         governanceRepositoryAPI.deleteJob("1");
         JobProgress actual = governanceRepositoryAPI.getJobProgress("1", 0);
         assertNull(actual);
@@ -96,8 +96,8 @@ public final class GovernanceRepositoryAPIImplTest {
     
     @Test
     public void assertGetChildrenKeys() {
-        governanceRepositoryAPI.persist(PipelineMetaDataNode.getScalingRootPath() + "/1", "");
-        List<String> actual = governanceRepositoryAPI.getChildrenKeys(PipelineMetaDataNode.getScalingRootPath());
+        governanceRepositoryAPI.persist(DataPipelineConstants.DATA_PIPELINE_ROOT + "/1", "");
+        List<String> actual = governanceRepositoryAPI.getChildrenKeys(DataPipelineConstants.DATA_PIPELINE_ROOT);
         assertFalse(actual.isEmpty());
         assertTrue(actual.contains("1"));
     }
@@ -106,8 +106,8 @@ public final class GovernanceRepositoryAPIImplTest {
     public void assertWatch() throws InterruptedException {
         AtomicReference<DataChangedEvent> eventReference = new AtomicReference<>();
         CountDownLatch countDownLatch = new CountDownLatch(1);
-        String key = PipelineMetaDataNode.getScalingRootPath() + "/1";
-        governanceRepositoryAPI.watch(PipelineMetaDataNode.getScalingRootPath(), event -> {
+        String key = DataPipelineConstants.DATA_PIPELINE_ROOT + "/1";
+        governanceRepositoryAPI.watch(DataPipelineConstants.DATA_PIPELINE_ROOT, event -> {
             if (event.getKey().equals(key)) {
                 eventReference.set(event);
                 countDownLatch.countDown();
