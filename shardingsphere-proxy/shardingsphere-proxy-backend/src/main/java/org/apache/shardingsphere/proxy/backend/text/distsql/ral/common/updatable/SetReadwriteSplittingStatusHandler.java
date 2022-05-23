@@ -215,9 +215,9 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
                 .filter(entry -> entry.getValue() <= 1).map(Entry::getKey).collect(Collectors.toSet());
     }
     
-    private void addReplicaResource(final Map<String, String> replicaResources, final Entry<String, Map<String, String>> entry) {
-        entry.getValue().entrySet().stream().filter(entry1 -> ExportableItemConstants.REPLICA_DATA_SOURCE_NAMES.equals(entry1.getKey()))
-                .map(entry1 -> Arrays.asList(entry1.getValue().split(","))).flatMap(Collection::stream).forEach(each -> put(replicaResources, each, entry.getKey()));
+    private void addReplicaResource(final Map<String, String> replicaResources, final Entry<String, Map<String, String>> readwriteSplittingRule) {
+        readwriteSplittingRule.getValue().entrySet().stream().filter(entry -> ExportableItemConstants.REPLICA_DATA_SOURCE_NAMES.equals(entry.getKey()))
+                .map(entry -> Arrays.asList(entry.getValue().split(","))).flatMap(Collection::stream).forEach(each -> put(replicaResources, each, readwriteSplittingRule.getKey()));
     }
     
     private void put(final Map<String, String> map, final String key, final String value) {
