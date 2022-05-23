@@ -38,7 +38,9 @@ helm install shardingsphere-proxy shardingsphere/shardingsphere-proxy
 
 #### Source installation
 ```shell
-cd shardingsphere-proxy
+cd shardingsphere-proxy/charts/governance
+helm dependency build 
+cd ../..
 helm dependency build 
 cd ..
 helm install shardingsphere-proxy shardingsphere-proxy

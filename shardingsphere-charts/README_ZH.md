@@ -39,10 +39,12 @@ helm install shardingsphere-proxy shardingsphere/shardingsphere-proxy
 
 #### 源码安装
 ```shell
-cd shardingsphere-proxy                                 
-helm dependency build                                   
-cd ..                                                   
-helm install shardingsphere-proxy shardingsphere-proxy  
+cd shardingsphere-proxy/charts/governance
+helm dependency build 
+cd ../..
+helm dependency build 
+cd ..
+helm install shardingsphere-proxy shardingsphere-proxy 
 ```
 
 执行上述命令以执行默认配置进行安装。

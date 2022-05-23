@@ -43,10 +43,12 @@ helm install shardingsphere-proxy shardingsphere/shardingsphere-proxy
 
 #### Source installation
 ```shell
-cd shardingsphere-proxy
+cd shardingsphere-proxy/charts/governance
 helm dependency build 
-cd ..
-helm install shardingsphere-proxy shardingsphere-proxy
+cd ../..                               
+helm dependency build                                   
+cd ..                                                   
+helm install shardingsphere-proxy shardingsphere-proxy 
 ```
 
 Charts will be installed with default configuration if above commands executed.
