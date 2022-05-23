@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
@@ -59,7 +59,7 @@ public final class SQLStatementContextFactoryTest {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setLimit(new LimitSegment(0, 10, null, null));
         selectStatement.setProjections(projectionsSegment);
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(mockDatabaseMetaDataMap(), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(mockDatabaseMap(), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
         assertThat(sqlStatementContext, instanceOf(SelectStatementContext.class));
     }
     
@@ -96,17 +96,17 @@ public final class SQLStatementContextFactoryTest {
     
     private void assertSQLStatementContextCreatedWhenSQLStatementInstanceOfInsertStatement(final InsertStatement insertStatement) {
         insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(mockDatabaseMetaDataMap(), Collections.emptyList(), insertStatement, DefaultDatabase.LOGIC_NAME);
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(mockDatabaseMap(), Collections.emptyList(), insertStatement, DefaultDatabase.LOGIC_NAME);
         assertThat(sqlStatementContext, instanceOf(InsertStatementContext.class));
     }
     
     @Test
     public void assertSQLStatementContextCreatedWhenSQLStatementNotInstanceOfSelectStatementAndInsertStatement() {
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(mockDatabaseMetaDataMap(), Collections.emptyList(), mock(MySQLStatement.class), DefaultDatabase.LOGIC_NAME);
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(mockDatabaseMap(), Collections.emptyList(), mock(MySQLStatement.class), DefaultDatabase.LOGIC_NAME);
         assertThat(sqlStatementContext, instanceOf(CommonSQLStatementContext.class));
     }
     
-    private Map<String, ShardingSphereDatabaseMetaData> mockDatabaseMetaDataMap() {
-        return Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mock(ShardingSphereDatabaseMetaData.class, RETURNS_DEEP_STUBS));
+    private Map<String, ShardingSphereDatabase> mockDatabaseMap() {
+        return Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS));
     }
 }

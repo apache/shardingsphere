@@ -17,6 +17,10 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util;
 
+import lombok.SneakyThrows;
+
+import java.util.concurrent.TimeUnit;
+
 /**
  * Timeout milliseconds.
  */
@@ -29,4 +33,14 @@ public final class TimeoutMilliseconds {
     public static final long DEFAULT_REGISTRY = 50L;
     
     public static final long MAX_ACK_EXPEND = 100L;
+    
+    /**
+     * Sleep interval.
+     *
+     * @param timeMilliseconds time milliseconds
+     */
+    @SneakyThrows(InterruptedException.class)
+    public static void sleepInterval(final long timeMilliseconds) {
+        TimeUnit.MILLISECONDS.sleep(timeMilliseconds);
+    }
 }

@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rewrite.engine.result.GenericSQLRewriteResult;
 import org.apache.shardingsphere.infra.rewrite.engine.result.RouteSQLRewriteResult;
 import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteResult;
@@ -46,20 +46,20 @@ public final class ExecutionContextBuilder {
     /**
      * Build execution contexts.
      * 
-     * @param databaseMetaData database meta data
+     * @param database database
      * @param sqlRewriteResult SQL rewrite result
      * @param sqlStatementContext SQL statement context
      * @return execution contexts
      */
-    public static Collection<ExecutionUnit> build(final ShardingSphereDatabaseMetaData databaseMetaData, final SQLRewriteResult sqlRewriteResult, final SQLStatementContext<?> sqlStatementContext) {
+    public static Collection<ExecutionUnit> build(final ShardingSphereDatabase database, final SQLRewriteResult sqlRewriteResult, final SQLStatementContext<?> sqlStatementContext) {
         return sqlRewriteResult instanceof GenericSQLRewriteResult
-                ? build(databaseMetaData, (GenericSQLRewriteResult) sqlRewriteResult, sqlStatementContext)
+                ? build(database, (GenericSQLRewriteResult) sqlRewriteResult, sqlStatementContext)
                 : build((RouteSQLRewriteResult) sqlRewriteResult);
     }
     
-    private static Collection<ExecutionUnit> build(final ShardingSphereDatabaseMetaData databaseMetaData,
+    private static Collection<ExecutionUnit> build(final ShardingSphereDatabase database,
                                                    final GenericSQLRewriteResult sqlRewriteResult, final SQLStatementContext<?> sqlStatementContext) {
-        Collection<String> instanceDataSourceNames = databaseMetaData.getResource().getDataSourcesMetaData().getAllInstanceDataSourceNames();
+        Collection<String> instanceDataSourceNames = database.getResource().getDataSourcesMetaData().getAllInstanceDataSourceNames();
         if (instanceDataSourceNames.isEmpty()) {
             return Collections.emptyList();
         }

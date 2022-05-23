@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContextFactory;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
@@ -55,35 +55,35 @@ public final class MetaDataContextsBuilder {
      * @return meta data contexts
      */
     public MetaDataContexts build(final MetaDataPersistService metaDataPersistService) throws SQLException {
-        DatabaseType frontendDatabaseType = DatabaseTypeEngine.getFrontendDatabaseType(databaseConfigMap, props);
-        DatabaseType backendDatabaseType = DatabaseTypeEngine.getBackendDatabaseType(databaseConfigMap);
-        Map<String, ShardingSphereDatabaseMetaData> databaseMetaDataMap = getDatabaseMetaDataMap(frontendDatabaseType, backendDatabaseType);
-        ShardingSphereRuleMetaData globalMetaData = new ShardingSphereRuleMetaData(globalRuleConfigs, GlobalRulesBuilder.buildRules(globalRuleConfigs, databaseMetaDataMap));
-        return new MetaDataContexts(metaDataPersistService, databaseMetaDataMap, globalMetaData, OptimizerContextFactory.create(databaseMetaDataMap, globalMetaData), props);
+        DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(databaseConfigMap, props);
+        DatabaseType storageType = DatabaseTypeEngine.getStorageType(databaseConfigMap);
+        Map<String, ShardingSphereDatabase> databaseMap = getDatabaseMap(protocolType, storageType);
+        ShardingSphereRuleMetaData globalMetaData = new ShardingSphereRuleMetaData(globalRuleConfigs, GlobalRulesBuilder.buildRules(globalRuleConfigs, databaseMap));
+        return new MetaDataContexts(metaDataPersistService, databaseMap, globalMetaData, OptimizerContextFactory.create(databaseMap, globalMetaData), props);
     }
     
-    private Map<String, ShardingSphereDatabaseMetaData> getDatabaseMetaDataMap(final DatabaseType frontendDatabaseType, final DatabaseType backendDatabaseType) throws SQLException {
-        Map<String, ShardingSphereDatabaseMetaData> result = new HashMap<>(databaseConfigMap.size() + frontendDatabaseType.getSystemDatabaseSchemaMap().size(), 1);
-        result.putAll(getGenericDatabaseMetaDataMap(frontendDatabaseType, backendDatabaseType));
-        result.putAll(getSystemDatabaseMetaDataMap(frontendDatabaseType));
+    private Map<String, ShardingSphereDatabase> getDatabaseMap(final DatabaseType protocolType, final DatabaseType storageType) throws SQLException {
+        Map<String, ShardingSphereDatabase> result = new HashMap<>(databaseConfigMap.size() + protocolType.getSystemDatabaseSchemaMap().size(), 1);
+        result.putAll(getGenericDatabaseMap(protocolType, storageType));
+        result.putAll(getSystemDatabaseMap(protocolType));
         return result;
     }
     
-    private Map<String, ShardingSphereDatabaseMetaData> getGenericDatabaseMetaDataMap(final DatabaseType frontendDatabaseType, final DatabaseType backendDatabaseType) throws SQLException {
-        Map<String, ShardingSphereDatabaseMetaData> result = new HashMap<>(databaseConfigMap.size(), 1);
+    private Map<String, ShardingSphereDatabase> getGenericDatabaseMap(final DatabaseType protocolType, final DatabaseType storageType) throws SQLException {
+        Map<String, ShardingSphereDatabase> result = new HashMap<>(databaseConfigMap.size(), 1);
         for (Entry<String, DatabaseConfiguration> entry : databaseConfigMap.entrySet()) {
             String databaseName = entry.getKey();
-            if (!frontendDatabaseType.getSystemSchemas().contains(databaseName)) {
-                result.put(databaseName, ShardingSphereDatabaseMetaData.create(databaseName, frontendDatabaseType, backendDatabaseType, entry.getValue(), props));
+            if (!protocolType.getSystemSchemas().contains(databaseName)) {
+                result.put(databaseName, ShardingSphereDatabase.create(databaseName, protocolType, storageType, entry.getValue(), props));
             }
         }
         return result;
     }
     
-    private Map<String, ShardingSphereDatabaseMetaData> getSystemDatabaseMetaDataMap(final DatabaseType frontendDatabaseType) throws SQLException {
-        Map<String, ShardingSphereDatabaseMetaData> result = new HashMap<>(frontendDatabaseType.getSystemDatabaseSchemaMap().size(), 1);
-        for (String each : frontendDatabaseType.getSystemDatabaseSchemaMap().keySet()) {
-            result.put(each, ShardingSphereDatabaseMetaData.create(each, frontendDatabaseType));
+    private Map<String, ShardingSphereDatabase> getSystemDatabaseMap(final DatabaseType protocolType) throws SQLException {
+        Map<String, ShardingSphereDatabase> result = new HashMap<>(protocolType.getSystemDatabaseSchemaMap().size(), 1);
+        for (String each : protocolType.getSystemDatabaseSchemaMap().keySet()) {
+            result.put(each, ShardingSphereDatabase.create(each, protocolType));
         }
         return result;
     }

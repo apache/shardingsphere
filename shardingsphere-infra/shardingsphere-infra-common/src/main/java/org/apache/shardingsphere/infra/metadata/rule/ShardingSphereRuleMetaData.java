@@ -62,7 +62,7 @@ public final class ShardingSphereRuleMetaData {
      * @param <T> type of rule configuration
      * @return found rule configurations
      */
-    public <T extends RuleConfiguration> Collection<T> findRuleConfiguration(final Class<T> clazz) {
+    public <T extends RuleConfiguration> Collection<T> findRuleConfigurations(final Class<T> clazz) {
         Collection<T> result = new LinkedList<>();
         for (RuleConfiguration each : configurations) {
             if (clazz.isAssignableFrom(each.getClass())) {
@@ -70,18 +70,6 @@ public final class ShardingSphereRuleMetaData {
             }
         }
         return result;
-    }
-    
-    /**
-     * Find single rule configuration by class.
-     *
-     * @param clazz target class
-     * @param <T> type of rule configuration
-     * @return found rule configuration
-     */
-    public <T extends RuleConfiguration> Optional<T> findSingleRuleConfiguration(final Class<T> clazz) {
-        Collection<T> foundRuleConfig = findRuleConfiguration(clazz);
-        return foundRuleConfig.isEmpty() ? Optional.empty() : Optional.of(foundRuleConfig.iterator().next());
     }
     
     /**
@@ -94,5 +82,17 @@ public final class ShardingSphereRuleMetaData {
     public <T extends ShardingSphereRule> Optional<T> findSingleRule(final Class<T> clazz) {
         Collection<T> foundRules = findRules(clazz);
         return foundRules.isEmpty() ? Optional.empty() : Optional.of(foundRules.iterator().next());
+    }
+    
+    /**
+     * Find single rule configuration by class.
+     *
+     * @param clazz target class
+     * @param <T> type of rule configuration
+     * @return found rule configuration
+     */
+    public <T extends RuleConfiguration> Optional<T> findSingleRuleConfiguration(final Class<T> clazz) {
+        Collection<T> foundRuleConfig = findRuleConfigurations(clazz);
+        return foundRuleConfig.isEmpty() ? Optional.empty() : Optional.of(foundRuleConfig.iterator().next());
     }
 }

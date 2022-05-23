@@ -1,8 +1,6 @@
 +++
-pre = "<b>5.4. </b>"
-title = "ShardingSphere-Scaling"
-weight = 4
-chapter = true
+title = "Scaling"
+weight = 5
 +++
 
 ## Introduction

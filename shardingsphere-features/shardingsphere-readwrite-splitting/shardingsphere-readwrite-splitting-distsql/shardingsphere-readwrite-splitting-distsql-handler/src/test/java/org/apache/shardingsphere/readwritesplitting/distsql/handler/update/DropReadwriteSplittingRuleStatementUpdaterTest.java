@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.config.function.ResourceRequiredRuleConfi
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RuleInUsedException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.DropReadwriteSplittingRuleStatement;
@@ -51,31 +51,31 @@ public final class DropReadwriteSplittingRuleStatementUpdaterTest {
     private final DropReadwriteSplittingRuleStatementUpdater updater = new DropReadwriteSplittingRuleStatementUpdater();
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private ShardingSphereDatabaseMetaData databaseMetaData;
+    private ShardingSphereDatabase database;
     
     @Test(expected = RequiredRuleMissedException.class)
     public void assertCheckSQLStatementWithoutCurrentRule() throws RuleDefinitionViolationException {
-        updater.checkSQLStatement(databaseMetaData, createSQLStatement(), null);
+        updater.checkSQLStatement(database, createSQLStatement(), null);
     }
     
     @Test(expected = RequiredRuleMissedException.class)
     public void assertCheckSQLStatementWithoutToBeDroppedRule() throws RuleDefinitionViolationException {
-        updater.checkSQLStatement(databaseMetaData, createSQLStatement(), new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), Collections.emptyMap()));
+        updater.checkSQLStatement(database, createSQLStatement(), new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), Collections.emptyMap()));
     }
     
     @Test
     public void assertCheckSQLStatementWithIfExists() throws RuleDefinitionViolationException {
-        when(databaseMetaData.getRuleMetaData().findRuleConfiguration(ResourceRequiredRuleConfiguration.class)).thenReturn(Collections.emptyList());
-        updater.checkSQLStatement(databaseMetaData, new DropReadwriteSplittingRuleStatement(true, Collections.singleton("readwrite_ds")),
+        when(database.getRuleMetaData().findRuleConfigurations(ResourceRequiredRuleConfiguration.class)).thenReturn(Collections.emptyList());
+        updater.checkSQLStatement(database, new DropReadwriteSplittingRuleStatement(true, Collections.singleton("readwrite_ds")),
                 new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), Collections.emptyMap()));
-        updater.checkSQLStatement(databaseMetaData, new DropReadwriteSplittingRuleStatement(true, Collections.singleton("readwrite_ds")), null);
+        updater.checkSQLStatement(database, new DropReadwriteSplittingRuleStatement(true, Collections.singleton("readwrite_ds")), null);
     }
     
     @Test(expected = RuleInUsedException.class)
     public void assertCheckSQLStatementWithInUsed() throws RuleDefinitionViolationException {
-        when(databaseMetaData.getRuleMetaData().findRuleConfiguration(any()))
+        when(database.getRuleMetaData().findRuleConfigurations(any()))
                 .thenReturn(Collections.singletonList((ResourceRequiredRuleConfiguration) () -> Collections.singleton("readwrite_ds")));
-        updater.checkSQLStatement(databaseMetaData, createSQLStatement(), createCurrentRuleConfiguration());
+        updater.checkSQLStatement(database, createSQLStatement(), createCurrentRuleConfiguration());
     }
     
     @Test

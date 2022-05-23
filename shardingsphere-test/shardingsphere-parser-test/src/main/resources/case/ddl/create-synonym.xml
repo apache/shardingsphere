@@ -20,4 +20,5 @@
     <create-synonym sql-case-id="create_synonym" />
     <create-synonym sql-case-id="create_synonym_remote" />
     <create-synonym sql-case-id="create_synonym_public" />
+    <create-synonym sql-case-id="create_synonym_or_replace" />
 </sql-parser-test-cases>

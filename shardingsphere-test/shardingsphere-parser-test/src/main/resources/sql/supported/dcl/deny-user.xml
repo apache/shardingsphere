@@ -17,7 +17,7 @@
   -->
 
 <sql-cases>
-    <sql-case id="deny_user" value="DENY UPDATE ON t_order TO user_dev CASCADEK" db-types="SQLServer"/>
+    <sql-case id="deny_user" value="DENY UPDATE ON t_order TO user_dev CASCADEK" db-types="SQLServer" />
     <sql-case id="deny_select" value="DENY SELECT ON t_order TO user1" db-types="SQLServer" />
     <sql-case id="deny_select_column" value="DENY SELECT (order_id) ON t_order TO user1" db-types="SQLServer" />
     <sql-case id="deny_select_to_users" value="DENY SELECT (order_id) ON t_order TO user1, user2" db-types="SQLServer" />

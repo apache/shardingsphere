@@ -21,7 +21,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowUnusedRes
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
@@ -55,16 +55,16 @@ import static org.mockito.Mockito.when;
 public final class UnusedDataSourceQueryResultSetTest {
     
     @Mock
-    private ShardingSphereDatabaseMetaData databaseMetaData;
+    private ShardingSphereDatabase database;
     
     @Before
     public void before() {
         DatabaseType databaseType = new MySQLDatabaseType();
         DataSourcesMetaData dataSourcesMetaData = new DataSourcesMetaData(databaseType, createDataSources());
-        ShardingSphereResource resource = new ShardingSphereResource(createDataSources(), dataSourcesMetaData, null, databaseType);
+        ShardingSphereResource resource = new ShardingSphereResource(createDataSources(), dataSourcesMetaData, databaseType);
         ShardingSphereRuleMetaData metaData = new ShardingSphereRuleMetaData(null, Collections.singleton(createShardingRule()));
-        when(databaseMetaData.getResource()).thenReturn(resource);
-        when(databaseMetaData.getRuleMetaData()).thenReturn(metaData);
+        when(database.getResource()).thenReturn(resource);
+        when(database.getRuleMetaData()).thenReturn(metaData);
     }
     
     private ShardingRule createShardingRule() {
@@ -107,7 +107,7 @@ public final class UnusedDataSourceQueryResultSetTest {
     @Test
     public void assertGetRowData() {
         DistSQLResultSet resultSet = new UnusedDataSourceQueryResultSet();
-        resultSet.init(databaseMetaData, mock(ShowUnusedResourcesStatement.class));
+        resultSet.init(database, mock(ShowUnusedResourcesStatement.class));
         Collection<Object> actual = resultSet.getRowData();
         assertThat(actual.size(), is(12));
         Iterator<Object> rowData = actual.iterator();

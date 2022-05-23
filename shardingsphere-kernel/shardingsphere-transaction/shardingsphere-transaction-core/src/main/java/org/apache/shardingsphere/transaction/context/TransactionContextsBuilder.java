@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.transaction.context;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
@@ -36,7 +36,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public final class TransactionContextsBuilder {
     
-    private final Map<String, ShardingSphereDatabaseMetaData> databaseMetaData;
+    private final Map<String, ShardingSphereDatabase> databaseMap;
     
     private final Collection<ShardingSphereRule> globalRules;
     
@@ -46,11 +46,11 @@ public final class TransactionContextsBuilder {
      * @return transaction contexts
      */
     public TransactionContexts build() {
-        Map<String, ShardingSphereTransactionManagerEngine> engines = new HashMap<>(databaseMetaData.keySet().size(), 1);
+        Map<String, ShardingSphereTransactionManagerEngine> engines = new HashMap<>(databaseMap.keySet().size(), 1);
         TransactionRule transactionRule = getTransactionRule();
-        for (String each : databaseMetaData.keySet()) {
+        for (String each : databaseMap.keySet()) {
             ShardingSphereTransactionManagerEngine engine = new ShardingSphereTransactionManagerEngine();
-            ShardingSphereResource resource = databaseMetaData.get(each).getResource();
+            ShardingSphereResource resource = databaseMap.get(each).getResource();
             engine.init(resource.getDatabaseType(), resource.getDataSources(), transactionRule);
             engines.put(each, engine);
         }

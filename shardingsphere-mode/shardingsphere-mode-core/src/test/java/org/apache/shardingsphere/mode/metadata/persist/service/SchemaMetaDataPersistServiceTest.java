@@ -79,15 +79,14 @@ public final class SchemaMetaDataPersistServiceTest {
         SchemaMetaDataPersistService schemaMetaDataPersistService = new SchemaMetaDataPersistService(repository);
         when(repository.getChildrenKeys("/metadata/foo_db/schemas/foo_schema/tables")).thenReturn(Collections.singletonList("t_order"));
         when(repository.get("/metadata/foo_db/schemas/foo_schema/tables/t_order")).thenReturn(readYAML());
-        Optional<ShardingSphereSchema> schemaOptional = schemaMetaDataPersistService.load("foo_db", "foo_schema");
-        assertTrue(schemaOptional.isPresent());
+        Optional<ShardingSphereSchema> schema = schemaMetaDataPersistService.load("foo_db", "foo_schema");
+        assertTrue(schema.isPresent());
         Optional<ShardingSphereSchema> empty = schemaMetaDataPersistService.load("test", "test");
         assertThat(empty, is(Optional.empty()));
-        ShardingSphereSchema schema = schemaOptional.get();
-        assertThat(schema.getAllTableNames(), is(Collections.singleton("t_order")));
-        assertThat(schema.get("t_order").getIndexes().keySet(), is(Collections.singleton("primary")));
-        assertThat(schema.getAllColumnNames("t_order").size(), is(1));
-        assertThat(schema.get("t_order").getColumns().keySet(), is(Collections.singleton("id")));
+        assertThat(schema.get().getAllTableNames(), is(Collections.singleton("t_order")));
+        assertThat(schema.get().get("t_order").getIndexes().keySet(), is(Collections.singleton("primary")));
+        assertThat(schema.get().getAllColumnNames("t_order").size(), is(1));
+        assertThat(schema.get().get("t_order").getColumns().keySet(), is(Collections.singleton("id")));
     }
     
     @Test

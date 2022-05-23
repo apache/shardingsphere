@@ -461,6 +461,14 @@ schemaName
     : identifier
     ;
 
+synonymName
+    : identifier
+    ;
+
+objectName
+    : (owner DOT_)? identifier
+    ;
+    
 tableName
     : (owner DOT_)? name
     ;

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex;
 
 import com.google.common.eventbus.Subscribe;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeService;
@@ -32,18 +33,23 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.Time
 /**
  * Distribute mutex lock of ShardingSphere.
  */
+@Slf4j
 public final class ShardingSphereDistributeMutexLock implements ShardingSphereLock {
     
     private final LockNodeService lockNodeService = LockNodeServiceFactory.getInstance().getLockNodeService(LockNodeType.MUTEX);
     
-    private final MutexLock sequencedLock;
+    private final MutexLock sequenced;
     
     private final ShardingSphereInterMutexLockHolder lockHolder;
     
     public ShardingSphereDistributeMutexLock(final ShardingSphereInterMutexLockHolder lockHolder) {
         this.lockHolder = lockHolder;
-        this.sequencedLock = lockHolder.getInterReentrantMutexLock(lockNodeService.getSequenceNodePath());
+        this.sequenced = lockHolder.getInterReentrantMutexLock(lockNodeService.getSequenceNodePath());
         ShardingSphereEventBus.getInstance().register(this);
+        syncMutexLockStatus();
+    }
+    
+    private void syncMutexLockStatus() {
         lockHolder.synchronizeMutexLock(lockNodeService);
     }
     
@@ -58,13 +64,16 @@ public final class ShardingSphereDistributeMutexLock implements ShardingSphereLo
     }
     
     private boolean innerTryLock(final String lockName, final long timeoutMillis) {
-        if (!sequencedLock.tryLock(TimeoutMilliseconds.DEFAULT_REGISTRY)) {
+        if (!sequenced.tryLock(TimeoutMilliseconds.DEFAULT_REGISTRY)) {
+            log.debug("Distribute mutex lock acquire sequenced failed, lock name: {}", lockName);
             return false;
         }
         try {
+            log.debug("Distribute mutex lock acquire sequenced success, lock name: {}", lockName);
             return getInterMutexLock(lockName).tryLock(timeoutMillis);
         } finally {
-            sequencedLock.unlock();
+            sequenced.unlock();
+            log.debug("Distribute mutex lock release sequenced success, lock name: {}", lockName);
         }
     }
     

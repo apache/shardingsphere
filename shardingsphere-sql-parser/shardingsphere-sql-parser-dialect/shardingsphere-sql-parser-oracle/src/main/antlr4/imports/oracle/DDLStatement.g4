@@ -2313,6 +2313,33 @@ createSequenceClause
     | GLOBAL
     ;
 
+alterSequence
+    : ALTER SEQUENCE (schemaName DOT_)? sequenceName alterSequenceClause+
+    ;
+
+alterSequenceClause
+   : (INCREMENT BY | START WITH) INTEGER_
+   | MAXVALUE INTEGER_
+   | NOMAXVALUE
+   | MINVALUE INTEGER_
+   | NOMINVALUE
+   | RESTART
+   | CYCLE
+   | NOCYCLE
+   | CACHE INTEGER_
+   | NOCACHE
+   | ORDER
+   | NOORDER
+   | KEEP
+   | NOKEEP
+   | SCALE (EXTEND | NOEXTEND)
+   | NOSCALE
+   | SHARD (EXTEND | NOEXTEND)
+   | NOSHARD
+   | SESSION
+   | GLOBAL
+   ;
+
 createContext
     : CREATE (OR REPLACE)? CONTEXT namespace USING (schemaName DOT_)? packageName sharingClause? (initializedClause | accessedClause)?
     ;
@@ -2325,3 +2352,10 @@ accessedClause
     : ACCESSED GLOBALLY
     ;
 
+createSPFile
+    : CREATE SPFILE (EQ_ spfileName)? FROM (PFILE (EQ_ pfileName)? (AS COPY)? | MEMORY)
+    ;
+
+createPFile
+    : CREATE PFILE (EQ_ pfileName)? FROM (SPFILE (EQ_ spfileName)? (AS COPY)? | MEMORY)
+    ;

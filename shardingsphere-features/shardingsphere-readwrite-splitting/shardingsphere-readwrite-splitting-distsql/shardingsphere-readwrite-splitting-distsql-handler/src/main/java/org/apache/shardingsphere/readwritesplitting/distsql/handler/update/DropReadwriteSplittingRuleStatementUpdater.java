@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissed
 import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RuleInUsedException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.DropReadwriteSplittingRuleStatement;
@@ -38,15 +38,15 @@ import java.util.stream.Collectors;
 public final class DropReadwriteSplittingRuleStatementUpdater implements RuleDefinitionDropUpdater<DropReadwriteSplittingRuleStatement, ReadwriteSplittingRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereDatabaseMetaData databaseMetaData, final DropReadwriteSplittingRuleStatement sqlStatement,
+    public void checkSQLStatement(final ShardingSphereDatabase database, final DropReadwriteSplittingRuleStatement sqlStatement,
                                   final ReadwriteSplittingRuleConfiguration currentRuleConfig) throws RuleDefinitionViolationException {
-        String databaseName = databaseMetaData.getDatabase().getName();
         if (!isExistRuleConfig(currentRuleConfig) && sqlStatement.isContainsExistClause()) {
             return;
         }
+        String databaseName = database.getName();
         checkCurrentRuleConfiguration(databaseName, currentRuleConfig);
         checkToBeDroppedRuleNames(databaseName, sqlStatement, currentRuleConfig);
-        checkToBeDroppedInUsed(databaseName, sqlStatement, databaseMetaData);
+        checkToBeDroppedInUsed(databaseName, sqlStatement, database);
     }
     
     private void checkCurrentRuleConfiguration(final String databaseName, final ReadwriteSplittingRuleConfiguration currentRuleConfig) throws RequiredRuleMissedException {
@@ -67,9 +67,8 @@ public final class DropReadwriteSplittingRuleStatementUpdater implements RuleDef
         }
     }
     
-    private void checkToBeDroppedInUsed(final String databaseName,
-                                        final DropReadwriteSplittingRuleStatement sqlStatement, final ShardingSphereDatabaseMetaData databaseMetaData) throws RuleInUsedException {
-        Collection<String> resourceBeUsed = databaseMetaData.getRuleMetaData().findRuleConfiguration(ResourceRequiredRuleConfiguration.class).stream()
+    private void checkToBeDroppedInUsed(final String databaseName, final DropReadwriteSplittingRuleStatement sqlStatement, final ShardingSphereDatabase database) throws RuleInUsedException {
+        Collection<String> resourceBeUsed = database.getRuleMetaData().findRuleConfigurations(ResourceRequiredRuleConfiguration.class).stream()
                 .map(ResourceRequiredRuleConfiguration::getRequiredResource).flatMap(Collection::stream).collect(Collectors.toSet());
         Collection<String> ruleInUsed = sqlStatement.getRuleNames().stream().filter(resourceBeUsed::contains).collect(Collectors.toSet());
         if (!ruleInUsed.isEmpty()) {

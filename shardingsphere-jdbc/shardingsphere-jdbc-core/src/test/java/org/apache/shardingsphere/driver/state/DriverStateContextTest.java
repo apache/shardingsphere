@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.driver.state;
 
+import org.apache.shardingsphere.driver.jdbc.context.JDBCContext;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -52,23 +53,23 @@ public final class DriverStateContextTest {
     
     @Before
     public void setUp() {
-        Map<String, ShardingSphereDatabaseMetaData> databaseMetaDataMap = mockDatabaseMetaDataMap();
+        Map<String, ShardingSphereDatabase> databaseMap = mockDatabaseMap();
         when(contextManager.getMetaDataContexts()).thenReturn(new MetaDataContexts(
-                mock(MetaDataPersistService.class), databaseMetaDataMap, mock(ShardingSphereRuleMetaData.class), mock(OptimizerContext.class), mock(ConfigurationProperties.class)));
+                mock(MetaDataPersistService.class), databaseMap, mock(ShardingSphereRuleMetaData.class), mock(OptimizerContext.class), mock(ConfigurationProperties.class)));
         when(contextManager.getInstanceContext().getInstance().getState()).thenReturn(new StateContext());
     }
     
-    private Map<String, ShardingSphereDatabaseMetaData> mockDatabaseMetaDataMap() {
-        Map<String, ShardingSphereDatabaseMetaData> result = new LinkedHashMap<>();
-        ShardingSphereDatabaseMetaData databaseMetaData = mock(ShardingSphereDatabaseMetaData.class, Answers.RETURNS_DEEP_STUBS);
-        when(databaseMetaData.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
-        result.put(DefaultDatabase.LOGIC_NAME, databaseMetaData);
+    private Map<String, ShardingSphereDatabase> mockDatabaseMap() {
+        Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>();
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, Answers.RETURNS_DEEP_STUBS);
+        when(database.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        result.put(DefaultDatabase.LOGIC_NAME, database);
         return result;
     }
     
     @Test
     public void assertGetConnectionWithOkState() {
-        Connection actual = DriverStateContext.getConnection(DefaultDatabase.LOGIC_NAME, contextManager);
+        Connection actual = DriverStateContext.getConnection(DefaultDatabase.LOGIC_NAME, contextManager, mock(JDBCContext.class));
         assertThat(actual, instanceOf(ShardingSphereConnection.class));
     }
 }
