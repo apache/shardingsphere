@@ -94,7 +94,7 @@ public final class ShowReadwriteSplittingReadResourcesHandler extends QueryableR
     }
     
     private Collection<String> getAllReadResources(final ShardingSphereDatabase database) {
-        Collection<String> exportKeys = Arrays.asList(ExportableConstants.EXPORT_STATIC_READ_WRITE_SPLITTING_RULE, ExportableConstants.EXPORT_DYNAMIC_READ_WRITE_SPLITTING_RULE);
+        Collection<String> exportKeys = Arrays.asList(ExportableConstants.EXPORT_STATIC_READWRITE_SPLITTING_RULE, ExportableConstants.EXPORT_DYNAMIC_READWRITE_SPLITTING_RULE);
         Map<String, Object> exportMap = database.getRuleMetaData().getRules().stream().filter(each -> each instanceof ExportableRule).map(each -> (ExportableRule) each)
                 .filter(each -> each.containExportableKey(exportKeys)).findFirst().map(each -> each.export(exportKeys)).orElse(Collections.emptyMap());
         Map<String, Map<String, String>> allReadwriteRuleMap = exportMap.values().stream().map(each -> ((Map<String, Map<String, String>>) each).entrySet())

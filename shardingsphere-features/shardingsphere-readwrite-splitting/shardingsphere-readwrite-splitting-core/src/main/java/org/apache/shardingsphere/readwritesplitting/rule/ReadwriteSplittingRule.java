@@ -119,8 +119,8 @@ public final class ReadwriteSplittingRule implements SchemaRule, DataSourceConta
     @Override
     public Map<String, Supplier<Object>> getExportedMethods() {
         Map<String, Supplier<Object>> result = new HashMap<>(2, 1);
-        result.put(ExportableConstants.EXPORT_DYNAMIC_READ_WRITE_SPLITTING_RULE, this::exportDynamicDataSources);
-        result.put(ExportableConstants.EXPORT_STATIC_READ_WRITE_SPLITTING_RULE, this::exportStaticDataSources);
+        result.put(ExportableConstants.EXPORT_DYNAMIC_READWRITE_SPLITTING_RULE, this::exportDynamicDataSources);
+        result.put(ExportableConstants.EXPORT_STATIC_READWRITE_SPLITTING_RULE, this::exportStaticDataSources);
         return result;
     }
     

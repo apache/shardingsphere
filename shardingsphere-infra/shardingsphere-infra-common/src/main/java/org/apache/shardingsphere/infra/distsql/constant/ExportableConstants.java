@@ -28,9 +28,9 @@ public final class ExportableConstants {
     
     public static final String EXPORT_DB_DISCOVERY_PRIMARY_DATA_SOURCES = "primary_data_source";
     
-    public static final String EXPORT_DYNAMIC_READ_WRITE_SPLITTING_RULE = "dynamic_read_write_rules";
+    public static final String EXPORT_DYNAMIC_READWRITE_SPLITTING_RULE = "dynamic_readwrite_splitting_rules";
     
-    public static final String EXPORT_STATIC_READ_WRITE_SPLITTING_RULE = "static_read_write_rules";
+    public static final String EXPORT_STATIC_READWRITE_SPLITTING_RULE = "static_readwrite_splitting_rules";
     
     public static final String EXPORT_SINGLE_TABLES = "single_tables";
 }

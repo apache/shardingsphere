@@ -61,15 +61,15 @@ public final class ReadwriteSplittingRuleQueryResultSet implements DistSQLResult
         Optional<ExportableRule> exportableRule = getExportableRule(database);
         exportableRule.ifPresent(optional -> {
             Map<String, Object> exportable = exportableRule.get()
-                    .export(Arrays.asList(ExportableConstants.EXPORT_DYNAMIC_READ_WRITE_SPLITTING_RULE, ExportableConstants.EXPORT_STATIC_READ_WRITE_SPLITTING_RULE));
-            exportableAutoAwareDataSource = (Map<String, Map<String, String>>) exportable.getOrDefault(ExportableConstants.EXPORT_DYNAMIC_READ_WRITE_SPLITTING_RULE, Collections.emptyMap());
-            exportableDataSourceMap = (Map<String, Map<String, String>>) exportable.getOrDefault(ExportableConstants.EXPORT_STATIC_READ_WRITE_SPLITTING_RULE, Collections.emptyMap());
+                    .export(Arrays.asList(ExportableConstants.EXPORT_DYNAMIC_READWRITE_SPLITTING_RULE, ExportableConstants.EXPORT_STATIC_READWRITE_SPLITTING_RULE));
+            exportableAutoAwareDataSource = (Map<String, Map<String, String>>) exportable.getOrDefault(ExportableConstants.EXPORT_DYNAMIC_READWRITE_SPLITTING_RULE, Collections.emptyMap());
+            exportableDataSourceMap = (Map<String, Map<String, String>>) exportable.getOrDefault(ExportableConstants.EXPORT_STATIC_READWRITE_SPLITTING_RULE, Collections.emptyMap());
         });
     }
     
     private Optional<ExportableRule> getExportableRule(final ShardingSphereDatabase database) {
         return database.getRuleMetaData().findRules(ExportableRule.class).stream()
-                .filter(each -> each.containExportableKey(Arrays.asList(ExportableConstants.EXPORT_DYNAMIC_READ_WRITE_SPLITTING_RULE, ExportableConstants.EXPORT_STATIC_READ_WRITE_SPLITTING_RULE)))
+                .filter(each -> each.containExportableKey(Arrays.asList(ExportableConstants.EXPORT_DYNAMIC_READWRITE_SPLITTING_RULE, ExportableConstants.EXPORT_STATIC_READWRITE_SPLITTING_RULE)))
                 .findAny();
     }
     

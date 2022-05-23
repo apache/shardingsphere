@@ -200,11 +200,11 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
     private Map<String, Map<String, String>> getExportedReadwriteSplittingRules(final ContextManager contextManager, final String databaseName) {
         Map<String, Map<String, String>> result = new HashMap<>();
         contextManager.getMetaDataContexts().getDatabaseMetaData(databaseName).getRuleMetaData().findRules(ReadwriteSplittingRule.class).stream().findAny()
-                .filter(each -> each.containExportableKey(Arrays.asList(ExportableConstants.EXPORT_DYNAMIC_READ_WRITE_SPLITTING_RULE, ExportableConstants.EXPORT_STATIC_READ_WRITE_SPLITTING_RULE)))
-                .map(each -> each.export(Arrays.asList(ExportableConstants.EXPORT_DYNAMIC_READ_WRITE_SPLITTING_RULE, ExportableConstants.EXPORT_STATIC_READ_WRITE_SPLITTING_RULE)))
+                .filter(each -> each.containExportableKey(Arrays.asList(ExportableConstants.EXPORT_DYNAMIC_READWRITE_SPLITTING_RULE, ExportableConstants.EXPORT_STATIC_READWRITE_SPLITTING_RULE)))
+                .map(each -> each.export(Arrays.asList(ExportableConstants.EXPORT_DYNAMIC_READWRITE_SPLITTING_RULE, ExportableConstants.EXPORT_STATIC_READWRITE_SPLITTING_RULE)))
                 .ifPresent(optional -> {
-                    result.putAll((Map) optional.getOrDefault(ExportableConstants.EXPORT_DYNAMIC_READ_WRITE_SPLITTING_RULE, Collections.emptyMap()));
-                    result.putAll((Map) optional.getOrDefault(ExportableConstants.EXPORT_STATIC_READ_WRITE_SPLITTING_RULE, Collections.emptyMap()));
+                    result.putAll((Map) optional.getOrDefault(ExportableConstants.EXPORT_DYNAMIC_READWRITE_SPLITTING_RULE, Collections.emptyMap()));
+                    result.putAll((Map) optional.getOrDefault(ExportableConstants.EXPORT_STATIC_READWRITE_SPLITTING_RULE, Collections.emptyMap()));
                 });
         return result;
     }

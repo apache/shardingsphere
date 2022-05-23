@@ -69,10 +69,10 @@ public final class DropDatabaseDiscoveryRuleStatementUpdater implements RuleDefi
     
     private void checkIsInUse(final String databaseName, final DropDatabaseDiscoveryRuleStatement sqlStatement, final ShardingSphereDatabase database) throws DistSQLException {
         Optional<ExportableRule> exportableRule = database.getRuleMetaData().findRules(ExportableRule.class).stream()
-                .filter(each -> each.containExportableKey(Collections.singletonList(ExportableConstants.EXPORT_DYNAMIC_READ_WRITE_SPLITTING_RULE))).findFirst();
+                .filter(each -> each.containExportableKey(Collections.singletonList(ExportableConstants.EXPORT_DYNAMIC_READWRITE_SPLITTING_RULE))).findFirst();
         Collection<String> rulesInUse = new ArrayList<>();
         exportableRule.ifPresent(op -> {
-            Map<String, Map<String, String>> readwriteRuleMap = op.export(ExportableConstants.EXPORT_DYNAMIC_READ_WRITE_SPLITTING_RULE)
+            Map<String, Map<String, String>> readwriteRuleMap = op.export(ExportableConstants.EXPORT_DYNAMIC_READWRITE_SPLITTING_RULE)
                     .map(each -> (Map<String, Map<String, String>>) each).orElse(Collections.emptyMap());
             readwriteRuleMap.values().stream().map(each -> each.get(ExportableItemConstants.AUTO_AWARE_DATA_SOURCE_NAME)).forEach(rulesInUse::add);
         });
