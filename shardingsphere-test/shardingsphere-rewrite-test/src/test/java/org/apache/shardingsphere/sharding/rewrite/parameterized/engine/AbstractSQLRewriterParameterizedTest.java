@@ -30,7 +30,6 @@ import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -107,8 +106,7 @@ public abstract class AbstractSQLRewriterParameterizedTest {
         Collection<ShardingSphereRule> databaseRules = DatabaseRulesBuilder.build(DefaultDatabase.LOGIC_NAME, databaseConfig, new ConfigurationProperties(new Properties()));
         mockRules(databaseRules, schemaName);
         databaseRules.add(sqlParserRule);
-        ShardingSphereDatabase database = new ShardingSphereDatabase(schemaName, databaseType, resource,
-                new ShardingSphereRuleMetaData(Collections.emptyList(), databaseRules), new ShardingSphereDatabaseMetaData(schemas));
+        ShardingSphereDatabase database = new ShardingSphereDatabase(schemaName, databaseType, resource, new ShardingSphereRuleMetaData(Collections.emptyList(), databaseRules), schemas);
         Map<String, ShardingSphereDatabase> databaseMap = new HashMap<>(2, 1);
         databaseMap.put(schemaName, database);
         SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine(getTestParameters().getDatabaseType(),

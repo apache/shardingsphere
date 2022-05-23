@@ -39,6 +39,7 @@ import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositor
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryFactory;
 
+import java.lang.reflect.Field;
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collections;
@@ -93,11 +94,18 @@ public final class PipelineContextUtil {
         }
         ShardingSpherePipelineDataSourceConfiguration pipelineDataSourceConfig = new ShardingSpherePipelineDataSourceConfiguration(
                 ConfigurationFileUtil.readFile("config_sharding_sphere_jdbc_source.yaml"));
-        ShardingSphereDataSource shardingSphereDataSource = (ShardingSphereDataSource) PipelineDataSourceFactory.newInstance(pipelineDataSourceConfig).getDataSource();
-        ContextManager contextManager = shardingSphereDataSource.getContextManager();
+        ShardingSphereDataSource dataSource = (ShardingSphereDataSource) PipelineDataSourceFactory.newInstance(pipelineDataSourceConfig).getDataSource();
+        ContextManager contextManager = getContextManager(dataSource);
         MetaDataPersistService metaDataPersistService = new MetaDataPersistService(getClusterPersistRepository());
         MetaDataContexts metaDataContexts = renewMetaDataContexts(contextManager.getMetaDataContexts(), metaDataPersistService);
         PipelineContext.initContextManager(new ContextManager(metaDataContexts, contextManager.getTransactionContexts(), contextManager.getInstanceContext()));
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private static ContextManager getContextManager(final ShardingSphereDataSource dataSource) {
+        Field field = ShardingSphereDataSource.class.getDeclaredField("contextManager");
+        field.setAccessible(true);
+        return (ContextManager) field.get(dataSource);
     }
     
     @SneakyThrows(ConcurrentException.class)
@@ -109,7 +117,7 @@ public final class PipelineContextUtil {
         Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(3, 1);
         tableMetaDataMap.put("t_order", new TableMetaData("t_order", Arrays.asList(new ColumnMetaData("order_id", Types.INTEGER, true, false, false),
                 new ColumnMetaData("user_id", Types.VARCHAR, false, false, false)), Collections.emptyList(), Collections.emptyList()));
-        old.getDatabaseMap().get(DefaultDatabase.LOGIC_NAME).getDatabaseMetaData().getSchema(DefaultDatabase.LOGIC_NAME).putAll(tableMetaDataMap);
+        old.getDatabaseMap().get(DefaultDatabase.LOGIC_NAME).getSchemas().get(DefaultDatabase.LOGIC_NAME).putAll(tableMetaDataMap);
         return new MetaDataContexts(metaDataPersistService, old.getDatabaseMap(), old.getGlobalRuleMetaData(), old.getOptimizerContext(), old.getProps());
     }
     

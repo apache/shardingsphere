@@ -143,7 +143,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     }
     
     private void persistMetaData(final MetaDataContexts metaDataContexts) {
-        metaDataContexts.getDatabaseMap().forEach((databaseName, schemas) -> schemas.getDatabaseMetaData().getSchemas().forEach((schemaName, tables) -> {
+        metaDataContexts.getDatabaseMap().forEach((databaseName, schemas) -> schemas.getSchemas().forEach((schemaName, tables) -> {
             if (tables.getTables().isEmpty()) {
                 metaDataContexts.getPersistService().ifPresent(optional -> optional.getSchemaMetaDataService().persistSchema(databaseName, schemaName));
             } else {
@@ -159,7 +159,6 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         ClusterWorkerIdGenerator clusterWorkerIdGenerator = new ClusterWorkerIdGenerator(repository, metaDataPersistService, instanceDefinition);
         DistributeLockContext distributeLockContext = new DistributeLockContext(repository);
         InstanceContext instanceContext = new InstanceContext(computeNodeInstance, clusterWorkerIdGenerator, modeConfig, distributeLockContext);
-        instanceContext.initLockContext();
         repository.watchSessionConnection(instanceContext);
         generateTransactionConfigurationFile(instanceContext, metaDataContexts, transactionProps);
         TransactionContexts transactionContexts = new TransactionContextsBuilder(metaDataContexts.getDatabaseMap(), metaDataContexts.getGlobalRuleMetaData().getRules()).build();

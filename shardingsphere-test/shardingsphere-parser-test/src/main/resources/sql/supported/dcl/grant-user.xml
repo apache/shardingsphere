@@ -18,7 +18,7 @@
 
 <sql-cases>
     <sql-case id="grant_user_without_hostname" value="GRANT SELECT, UPDATE, INSERT, DELETE ON t_order to user_dev" db-types="Oracle,PostgreSQL,openGauss,SQLServer" />
-    <sql-case id="grant_user_with_grant" value="GRANT SELECT, UPDATE, INSERT, DELETE ON t_order to user_dev with GRANT option" db-types="Oracle,PostgreSQL,openGauss,SQLServer"/>
+    <sql-case id="grant_user_with_grant" value="GRANT SELECT, UPDATE, INSERT, DELETE ON t_order to user_dev with GRANT option" db-types="Oracle,PostgreSQL,openGauss,SQLServer" />
     <sql-case id="grant_role" value="GRANT role_dev to user_dev" db-types="Oracle,PostgreSQL,openGauss" />
     <sql-case id="grant_user_with_admin" value="GRANT ADVISOR, ALTER DATABASE to user_dev with admin option" db-types="Oracle" />
     <sql-case id="grant_user_on_db" value="GRANT ALL ON sharding_db.* TO 'user_dev'@'localhost'" db-types="MySQL" />
@@ -114,7 +114,7 @@
     <sql-case id="grant_select_to_users" value="GRANT SELECT (order_id) ON t_order TO user1, user2" db-types="SQLServer" />
     <sql-case id="grant_select_on_table_for_postgresql" value="GRANT SELECT ON TABLE t_order TO role1" db-types="PostgreSQL,openGauss" />
     <sql-case id="grant_select_on_table_for_sqlserver" value="GRANT SELECT ON t_order TO user1" db-types="SQLServer" />
-    <!-- FIXME same with grant_all_on_table_with_owner_for_mysql and grant_all_on_table_with_owner_for_PostgreSQL,openGauss, but parse results are different --> 
+    <!-- FIXME same with grant_all_on_table_with_owner_for_mysql and grant_all_on_table_with_owner_for_PostgreSQL,openGauss, but parse results are different -->
     <sql-case id="grant_all_on_table_with_owner_for_mysql" value="GRANT ALL PRIVILEGES ON ds_0.* TO user1" db-types="MySQL" />
     <sql-case id="grant_all_on_table_with_owner_for_postgresql" value="GRANT ALL PRIVILEGES ON ds_0.* TO user1" db-types="PostgreSQL,openGauss" />
     <!-- FIXME end of fixme -->

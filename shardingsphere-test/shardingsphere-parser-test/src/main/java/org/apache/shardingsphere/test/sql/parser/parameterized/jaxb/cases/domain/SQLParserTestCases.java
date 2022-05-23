@@ -123,6 +123,10 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterTextSearchStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterTriggerStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterViewStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterPackageStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreatePFileStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateSPFileStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropPackageStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AnalyzeStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AssociateStatisticsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AuditStatementTestCase;
@@ -1341,6 +1345,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "create-spfile")
     private final List<CreateSPFileStatementTestCase> createSPFileStatementTestCases = new LinkedList<>();
     
+    @XmlElement(name = "create-pfile")
+    private final List<CreatePFileStatementTestCase> createPFileStatementTestCases = new LinkedList<>();
+    
     @XmlElement(name = "cursor")
     private final List<CursorStatementTestCase> cursorTestCases = new LinkedList<>();
     
@@ -1678,6 +1685,7 @@ public final class SQLParserTestCases {
         putAll(alterAttributeDimensionTestCases, result);
         putAll(createContextStatementTestCases, result);
         putAll(createSPFileStatementTestCases, result);
+        putAll(createPFileStatementTestCases, result);
         putAll(cursorTestCases, result);
         return result;
     }

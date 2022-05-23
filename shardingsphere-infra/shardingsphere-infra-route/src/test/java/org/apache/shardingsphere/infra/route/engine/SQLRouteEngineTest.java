@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContex
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -30,11 +29,9 @@ import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.route.fixture.rule.RouteFailureRuleFixture;
 import org.apache.shardingsphere.infra.route.fixture.rule.RouteRuleFixture;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -42,19 +39,15 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class SQLRouteEngineTest {
-    
-    @Mock
-    private ConfigurationProperties props;
     
     @Test
     public void assertRouteSuccess() {
         LogicSQL logicSQL = new LogicSQL(mock(CommonSQLStatementContext.class), "SELECT 1", Collections.emptyList());
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.singleton(new RouteRuleFixture()));
         ShardingSphereDatabase database = new ShardingSphereDatabase("logic_schema",
-                mock(DatabaseType.class), mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS), ruleMetaData, new ShardingSphereDatabaseMetaData(Collections.emptyMap()));
-        SQLRouteEngine sqlRouteEngine = new SQLRouteEngine(Collections.singleton(new RouteRuleFixture()), props);
+                mock(DatabaseType.class), mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS), ruleMetaData, Collections.emptyMap());
+        SQLRouteEngine sqlRouteEngine = new SQLRouteEngine(Collections.singleton(new RouteRuleFixture()), new ConfigurationProperties(new Properties()));
         RouteContext actual = sqlRouteEngine.route(logicSQL, database);
         assertThat(actual.getRouteUnits().size(), is(1));
         RouteUnit routeUnit = actual.getRouteUnits().iterator().next();
@@ -68,7 +61,7 @@ public final class SQLRouteEngineTest {
         LogicSQL logicSQL = new LogicSQL(mock(CommonSQLStatementContext.class), "SELECT 1", Collections.emptyList());
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.singleton(new RouteRuleFixture()));
         ShardingSphereDatabase database = new ShardingSphereDatabase("logic_schema",
-                mock(DatabaseType.class), mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS), ruleMetaData, new ShardingSphereDatabaseMetaData(Collections.emptyMap()));
-        new SQLRouteEngine(Collections.singleton(new RouteFailureRuleFixture()), props).route(logicSQL, database);
+                mock(DatabaseType.class), mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS), ruleMetaData, Collections.emptyMap());
+        new SQLRouteEngine(Collections.singleton(new RouteFailureRuleFixture()), new ConfigurationProperties(new Properties())).route(logicSQL, database);
     }
 }

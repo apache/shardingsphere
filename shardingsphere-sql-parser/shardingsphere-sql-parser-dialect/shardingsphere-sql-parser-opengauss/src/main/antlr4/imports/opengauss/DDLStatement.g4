@@ -724,6 +724,10 @@ alterCollationClause
     | SET SCHEMA schemaName
     ;
 
+alterSynonym
+    : ALTER SYNONYM synonymName OWNER TO owner
+    ;
+
 alterConversion
     : ALTER CONVERSION anyName alterConversionClause
     ;
@@ -832,6 +836,10 @@ alterExtension
     : ALTER EXTENSION name alterExtensionClauses
     ;
 
+createSynonym
+    : CREATE (OR REPLACE)? SYNONYM synonymName FOR objectName
+    ;
+    
 alterExtensionClauses
     : UPDATE alterExtensionOptList
     | (ADD | DROP) ACCESS METHOD name
@@ -1707,6 +1715,10 @@ dropRule
 
 dropSequence
     : DROP SEQUENCE existClause? qualifiedNameList dropBehavior?
+    ;
+
+dropSynonym
+    : DROP SYNONYM existClause? synonymName dropBehavior?
     ;
 
 dropServer

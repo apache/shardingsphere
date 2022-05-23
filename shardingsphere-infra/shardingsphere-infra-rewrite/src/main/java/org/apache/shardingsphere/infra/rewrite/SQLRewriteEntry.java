@@ -66,15 +66,15 @@ public final class SQLRewriteEntry {
     public SQLRewriteResult rewrite(final String sql, final List<Object> parameters, final SQLStatementContext<?> sqlStatementContext, final RouteContext routeContext) {
         SQLRewriteContext sqlRewriteContext = createSQLRewriteContext(sql, parameters, sqlStatementContext, routeContext);
         SQLTranslatorRule rule = database.getRuleMetaData().findSingleRule(SQLTranslatorRule.class).orElse(new SQLTranslatorRule(new SQLTranslatorRuleConfiguration()));
-        DatabaseType frontendDatabaseType = database.getProtocolType();
-        DatabaseType backendDatabaseType = database.getResource().getDatabaseType();
+        DatabaseType protocolType = database.getProtocolType();
+        DatabaseType storageType = database.getResource().getDatabaseType();
         return routeContext.getRouteUnits().isEmpty()
-                ? new GenericSQLRewriteEngine(rule, frontendDatabaseType, backendDatabaseType).rewrite(sqlRewriteContext)
-                : new RouteSQLRewriteEngine(rule, frontendDatabaseType, backendDatabaseType).rewrite(sqlRewriteContext, routeContext);
+                ? new GenericSQLRewriteEngine(rule, protocolType, storageType).rewrite(sqlRewriteContext)
+                : new RouteSQLRewriteEngine(rule, protocolType, storageType).rewrite(sqlRewriteContext, routeContext);
     }
     
     private SQLRewriteContext createSQLRewriteContext(final String sql, final List<Object> parameters, final SQLStatementContext<?> sqlStatementContext, final RouteContext routeContext) {
-        SQLRewriteContext result = new SQLRewriteContext(database.getName(), database.getDatabaseMetaData().getSchemas(), sqlStatementContext, sql, parameters);
+        SQLRewriteContext result = new SQLRewriteContext(database.getName(), database.getSchemas(), sqlStatementContext, sql, parameters);
         decorate(decorators, result, routeContext);
         result.generateSQLTokens();
         return result;

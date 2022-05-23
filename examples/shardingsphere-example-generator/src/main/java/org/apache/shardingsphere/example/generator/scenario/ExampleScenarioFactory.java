@@ -19,6 +19,7 @@ package org.apache.shardingsphere.example.generator.scenario;
 
 import org.apache.shardingsphere.example.generator.scenario.feature.FeatureExampleScenario;
 import org.apache.shardingsphere.example.generator.scenario.framework.FrameworkExampleScenario;
+import org.apache.shardingsphere.example.generator.scenario.transaction.TransactionExampleScenario;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
@@ -39,14 +40,18 @@ public final class ExampleScenarioFactory {
     
     private final FrameworkExampleScenario frameworkScenario;
     
+    private final TransactionExampleScenario transactionScenario;
+    
     static {
         ShardingSphereServiceLoader.register(FeatureExampleScenario.class);
         ShardingSphereServiceLoader.register(FrameworkExampleScenario.class);
+        ShardingSphereServiceLoader.register(TransactionExampleScenario.class);
     }
     
-    public ExampleScenarioFactory(final String feature, final String framework) {
+    public ExampleScenarioFactory(final String feature, final String framework, final String transaction) {
         featureScenarios = getFeatureScenarios(feature);
         frameworkScenario = getFrameworkScenario(framework);
+        transactionScenario = getTransactionScenario(transaction);
     }
     
     private Collection<FeatureExampleScenario> getFeatureScenarios(final String feature) {
@@ -56,6 +61,10 @@ public final class ExampleScenarioFactory {
     
     private FrameworkExampleScenario getFrameworkScenario(final String framework) {
         return TypedSPIRegistry.getRegisteredService(FrameworkExampleScenario.class, framework);
+    }
+    
+    private TransactionExampleScenario getTransactionScenario(final String transaction) {
+        return TypedSPIRegistry.getRegisteredService(TransactionExampleScenario.class, transaction);
     }
     
     /**
@@ -87,6 +96,7 @@ public final class ExampleScenarioFactory {
             result.putAll(each.getResourceTemplateMap());
         }
         result.putAll(frameworkScenario.getResourceTemplateMap());
+        result.putAll(transactionScenario.getResourceTemplateMap());
         result.put("resources/logback.ftl", "logback.xml");
         return result;
     }

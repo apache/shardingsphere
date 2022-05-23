@@ -176,9 +176,9 @@ public final class RuleAlteredJobPreparer {
     private IngestPosition<?> getIncrementalPosition(final RuleAlteredJobContext jobContext, final TaskConfiguration taskConfig,
                                                      final PipelineDataSourceManager dataSourceManager) throws SQLException {
         if (null != jobContext.getInitProgress()) {
-            Optional<IngestPosition<?>> positionOptional = jobContext.getInitProgress().getIncrementalPosition(taskConfig.getDumperConfig().getDataSourceName());
-            if (positionOptional.isPresent()) {
-                return positionOptional.get();
+            Optional<IngestPosition<?>> position = jobContext.getInitProgress().getIncrementalPosition(taskConfig.getDumperConfig().getDataSourceName());
+            if (position.isPresent()) {
+                return position.get();
             }
         }
         String databaseType = taskConfig.getJobConfig().getSourceDatabaseType();

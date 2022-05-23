@@ -116,6 +116,9 @@ execute
     | alterExtension
     | dropExtension
     | dropTextSearch
+    | createSynonym
+    | alterSynonym
+    | dropSynonym
     | cursor
     ) SEMI_? EOF
     ;

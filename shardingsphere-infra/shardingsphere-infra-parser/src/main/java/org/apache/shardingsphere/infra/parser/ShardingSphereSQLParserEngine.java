@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.parser;
 
-import com.google.common.util.concurrent.UncheckedExecutionException;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.apache.shardingsphere.distsql.parser.engine.api.DistSQLStatementParserEngine;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
@@ -56,7 +55,7 @@ public final class ShardingSphereSQLParserEngine {
     public SQLStatement parse(final String sql, final boolean useCache) {
         try {
             return sqlStatementParserEngine.parse(sql, useCache);
-        } catch (final SQLParsingException | ParseCancellationException | UncheckedExecutionException originalEx) {
+        } catch (final SQLParsingException | ParseCancellationException originalEx) {
             try {
                 String trimSQL = SQLUtil.trimComment(sql);
                 return distSQLStatementParserEngine.parse(trimSQL);

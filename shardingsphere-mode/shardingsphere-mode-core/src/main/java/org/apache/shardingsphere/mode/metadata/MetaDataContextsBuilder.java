@@ -55,35 +55,35 @@ public final class MetaDataContextsBuilder {
      * @return meta data contexts
      */
     public MetaDataContexts build(final MetaDataPersistService metaDataPersistService) throws SQLException {
-        DatabaseType frontendDatabaseType = DatabaseTypeEngine.getFrontendDatabaseType(databaseConfigMap, props);
-        DatabaseType backendDatabaseType = DatabaseTypeEngine.getBackendDatabaseType(databaseConfigMap);
-        Map<String, ShardingSphereDatabase> databaseMap = getDatabaseMap(frontendDatabaseType, backendDatabaseType);
+        DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(databaseConfigMap, props);
+        DatabaseType storageType = DatabaseTypeEngine.getStorageType(databaseConfigMap);
+        Map<String, ShardingSphereDatabase> databaseMap = getDatabaseMap(protocolType, storageType);
         ShardingSphereRuleMetaData globalMetaData = new ShardingSphereRuleMetaData(globalRuleConfigs, GlobalRulesBuilder.buildRules(globalRuleConfigs, databaseMap));
         return new MetaDataContexts(metaDataPersistService, databaseMap, globalMetaData, OptimizerContextFactory.create(databaseMap, globalMetaData), props);
     }
     
-    private Map<String, ShardingSphereDatabase> getDatabaseMap(final DatabaseType frontendDatabaseType, final DatabaseType backendDatabaseType) throws SQLException {
-        Map<String, ShardingSphereDatabase> result = new HashMap<>(databaseConfigMap.size() + frontendDatabaseType.getSystemDatabaseSchemaMap().size(), 1);
-        result.putAll(getGenericDatabaseMap(frontendDatabaseType, backendDatabaseType));
-        result.putAll(getSystemDatabaseMap(frontendDatabaseType));
+    private Map<String, ShardingSphereDatabase> getDatabaseMap(final DatabaseType protocolType, final DatabaseType storageType) throws SQLException {
+        Map<String, ShardingSphereDatabase> result = new HashMap<>(databaseConfigMap.size() + protocolType.getSystemDatabaseSchemaMap().size(), 1);
+        result.putAll(getGenericDatabaseMap(protocolType, storageType));
+        result.putAll(getSystemDatabaseMap(protocolType));
         return result;
     }
     
-    private Map<String, ShardingSphereDatabase> getGenericDatabaseMap(final DatabaseType frontendDatabaseType, final DatabaseType backendDatabaseType) throws SQLException {
+    private Map<String, ShardingSphereDatabase> getGenericDatabaseMap(final DatabaseType protocolType, final DatabaseType storageType) throws SQLException {
         Map<String, ShardingSphereDatabase> result = new HashMap<>(databaseConfigMap.size(), 1);
         for (Entry<String, DatabaseConfiguration> entry : databaseConfigMap.entrySet()) {
             String databaseName = entry.getKey();
-            if (!frontendDatabaseType.getSystemSchemas().contains(databaseName)) {
-                result.put(databaseName, ShardingSphereDatabase.create(databaseName, frontendDatabaseType, backendDatabaseType, entry.getValue(), props));
+            if (!protocolType.getSystemSchemas().contains(databaseName)) {
+                result.put(databaseName, ShardingSphereDatabase.create(databaseName, protocolType, storageType, entry.getValue(), props));
             }
         }
         return result;
     }
     
-    private Map<String, ShardingSphereDatabase> getSystemDatabaseMap(final DatabaseType frontendDatabaseType) throws SQLException {
-        Map<String, ShardingSphereDatabase> result = new HashMap<>(frontendDatabaseType.getSystemDatabaseSchemaMap().size(), 1);
-        for (String each : frontendDatabaseType.getSystemDatabaseSchemaMap().keySet()) {
-            result.put(each, ShardingSphereDatabase.create(each, frontendDatabaseType));
+    private Map<String, ShardingSphereDatabase> getSystemDatabaseMap(final DatabaseType protocolType) throws SQLException {
+        Map<String, ShardingSphereDatabase> result = new HashMap<>(protocolType.getSystemDatabaseSchemaMap().size(), 1);
+        for (String each : protocolType.getSystemDatabaseSchemaMap().keySet()) {
+            result.put(each, ShardingSphereDatabase.create(each, protocolType));
         }
         return result;
     }

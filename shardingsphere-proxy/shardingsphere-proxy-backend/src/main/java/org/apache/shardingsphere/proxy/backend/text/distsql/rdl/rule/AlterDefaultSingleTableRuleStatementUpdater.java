@@ -38,7 +38,7 @@ public final class AlterDefaultSingleTableRuleStatementUpdater implements RuleDe
                                   final AlterDefaultSingleTableRuleStatement sqlStatement, final SingleTableRuleConfiguration currentRuleConfig) throws DistSQLException {
         String databaseName = database.getName();
         checkConfigurationExist(databaseName, currentRuleConfig);
-        checkResourceExist(databaseName, database, sqlStatement);
+        checkResourceExist(database, sqlStatement);
         checkDefaultResourceExist(databaseName, currentRuleConfig);
     }
     
@@ -46,10 +46,10 @@ public final class AlterDefaultSingleTableRuleStatementUpdater implements RuleDe
         DistSQLException.predictionThrow(null != currentRuleConfig, () -> new RequiredRuleMissedException(databaseName, "single table"));
     }
     
-    private void checkResourceExist(final String databaseName, final ShardingSphereDatabase database, final AlterDefaultSingleTableRuleStatement sqlStatement) throws DistSQLException {
+    private void checkResourceExist(final ShardingSphereDatabase database, final AlterDefaultSingleTableRuleStatement sqlStatement) throws DistSQLException {
         Set<String> resourceNames = database.getResource().getDataSources().keySet();
         DistSQLException.predictionThrow(resourceNames.contains(sqlStatement.getDefaultResource()), () -> new RequiredResourceMissedException(
-                databaseName, Collections.singleton(sqlStatement.getDefaultResource())));
+                database.getName(), Collections.singleton(sqlStatement.getDefaultResource())));
     }
     
     private void checkDefaultResourceExist(final String databaseName, final SingleTableRuleConfiguration currentRuleConfig) throws DistSQLException {

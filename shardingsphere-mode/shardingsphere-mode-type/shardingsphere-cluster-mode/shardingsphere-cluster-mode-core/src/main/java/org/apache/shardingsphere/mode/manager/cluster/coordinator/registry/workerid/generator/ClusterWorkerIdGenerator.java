@@ -24,6 +24,8 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.worke
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
+import java.util.Optional;
+
 /**
  * Worker id generator for cluster mode.
  */
@@ -42,7 +44,7 @@ public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
     }
     
     private Long reGenerate() {
-        Long result = Long.valueOf(repository.getSequentialId(WorkerIdNode.getWorkerIdGeneratorPath(instanceDefinition.getInstanceId().getId()), ""));
+        Long result = Long.valueOf(Optional.ofNullable(repository.getSequentialId(WorkerIdNode.getWorkerIdGeneratorPath(instanceDefinition.getInstanceId().getId()), "")).orElse("0"));
         metaDataPersistService.getComputeNodePersistService().persistInstanceWorkerId(instanceDefinition.getInstanceId().getId(), result);
         return result;
     }
