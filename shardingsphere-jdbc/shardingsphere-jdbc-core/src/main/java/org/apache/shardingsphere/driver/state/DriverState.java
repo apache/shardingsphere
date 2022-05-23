@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.driver.state;
 
-import org.apache.shardingsphere.infra.metadata.resource.CachedDatabaseMetaData;
+import org.apache.shardingsphere.driver.jdbc.context.JDBCContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.spi.type.typed.TypedSPI;
@@ -35,8 +35,8 @@ public interface DriverState extends TypedSPI {
      *
      * @param databaseName database name
      * @param contextManager context manager
-     * @param cachedDatabaseMetaData cached database meta data
+     * @param jdbcContext JDBC context
      * @return connection
      */
-    Connection getConnection(String databaseName, ContextManager contextManager, CachedDatabaseMetaData cachedDatabaseMetaData);
+    Connection getConnection(String databaseName, ContextManager contextManager, JDBCContext jdbcContext);
 }
