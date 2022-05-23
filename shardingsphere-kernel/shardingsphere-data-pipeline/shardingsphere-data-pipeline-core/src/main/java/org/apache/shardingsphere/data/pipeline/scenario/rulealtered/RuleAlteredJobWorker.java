@@ -171,9 +171,9 @@ public final class RuleAlteredJobWorker {
             log.warn("There is uncompleted job with the same database name, please handle it first, current job will be ignored");
             return;
         }
-        Optional<RuleAlteredJobConfiguration> jobConfigOptional = createJobConfig(event);
-        if (jobConfigOptional.isPresent()) {
-            RuleAlteredJobAPIFactory.getInstance().start(jobConfigOptional.get());
+        Optional<RuleAlteredJobConfiguration> jobConfig = createJobConfig(event);
+        if (jobConfig.isPresent()) {
+            RuleAlteredJobAPIFactory.getInstance().start(jobConfig.get());
         } else {
             log.info("Switch rule configuration immediately.");
             ScalingTaskFinishedEvent taskFinishedEvent = new ScalingTaskFinishedEvent(event.getDatabaseName(), event.getActiveVersion(), event.getNewVersion());

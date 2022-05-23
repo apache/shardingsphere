@@ -65,7 +65,7 @@ public final class DropReadwriteSplittingRuleStatementUpdaterTest {
     
     @Test
     public void assertCheckSQLStatementWithIfExists() throws RuleDefinitionViolationException {
-        when(database.getRuleMetaData().findRuleConfiguration(ResourceRequiredRuleConfiguration.class)).thenReturn(Collections.emptyList());
+        when(database.getRuleMetaData().findRuleConfigurations(ResourceRequiredRuleConfiguration.class)).thenReturn(Collections.emptyList());
         updater.checkSQLStatement(database, new DropReadwriteSplittingRuleStatement(true, Collections.singleton("readwrite_ds")),
                 new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), Collections.emptyMap()));
         updater.checkSQLStatement(database, new DropReadwriteSplittingRuleStatement(true, Collections.singleton("readwrite_ds")), null);
@@ -73,7 +73,7 @@ public final class DropReadwriteSplittingRuleStatementUpdaterTest {
     
     @Test(expected = RuleInUsedException.class)
     public void assertCheckSQLStatementWithInUsed() throws RuleDefinitionViolationException {
-        when(database.getRuleMetaData().findRuleConfiguration(any()))
+        when(database.getRuleMetaData().findRuleConfigurations(any()))
                 .thenReturn(Collections.singletonList((ResourceRequiredRuleConfiguration) () -> Collections.singleton("readwrite_ds")));
         updater.checkSQLStatement(database, createSQLStatement(), createCurrentRuleConfiguration());
     }

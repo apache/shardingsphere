@@ -375,6 +375,10 @@ ROUTINE
     : R O U T I N E
     ;
 
+SYNONYM
+    : S Y N O N Y M
+    ;
+
 RULE
     : R U L E
     ;

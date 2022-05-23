@@ -17,39 +17,39 @@
   -->
 
 <sql-parser-test-cases>
-    <set-parameter sql-case-id="set_parameter_equal" >
-        <parameter-assign value="'value'" >
+    <set-parameter sql-case-id="set_parameter_equal">
+        <parameter-assign value="'value'">
             <parameter name="configuration_parameter" />
         </parameter-assign>
     </set-parameter>
-    <set-parameter sql-case-id="set_parameter_equal_number" >
-        <parameter-assign value="3" >
+    <set-parameter sql-case-id="set_parameter_equal_number">
+        <parameter-assign value="3">
             <parameter name="extra_float_digits" />
         </parameter-assign>
     </set-parameter>
-    <set-parameter sql-case-id="set_parameter_equal_session_mysql" >
-        <parameter-assign value="'value'" >
-            <parameter name="configuration_parameter" scope="SESSION"/>
+    <set-parameter sql-case-id="set_parameter_equal_session_mysql">
+        <parameter-assign value="'value'">
+            <parameter name="configuration_parameter" scope="SESSION" />
         </parameter-assign>
     </set-parameter>
-    <set-parameter sql-case-id="set_parameter_to" >
-        <parameter-assign value="'value'" >
+    <set-parameter sql-case-id="set_parameter_to">
+        <parameter-assign value="'value'">
             <parameter name="configuration_parameter" />
         </parameter-assign>
     </set-parameter>
-    <set-parameter sql-case-id="set_parameter_for_session_scope" >
-        <parameter-assign value="'value'" >
-            <parameter name="configuration_parameter" scope="SESSION"/>
+    <set-parameter sql-case-id="set_parameter_for_session_scope">
+        <parameter-assign value="'value'">
+            <parameter name="configuration_parameter" scope="SESSION" />
         </parameter-assign>
     </set-parameter>
-    <set-parameter sql-case-id="set_parameter_for_local_scope" >
-        <parameter-assign value="'value'" >
-            <parameter name="configuration_parameter" scope="LOCAL"/>
+    <set-parameter sql-case-id="set_parameter_for_local_scope">
+        <parameter-assign value="'value'">
+            <parameter name="configuration_parameter" scope="LOCAL" />
         </parameter-assign>
     </set-parameter>
-    <set-parameter sql-case-id="set_parameter_for_default_scope" >
-        <parameter-assign value="DEFAULT" >
-            <parameter name="configuration_parameter"/>
+    <set-parameter sql-case-id="set_parameter_for_default_scope">
+        <parameter-assign value="DEFAULT">
+            <parameter name="configuration_parameter" />
         </parameter-assign>
     </set-parameter>
     <set-parameter sql-case-id="set_timezone_with_zero_value" />
@@ -60,41 +60,41 @@
     <set-parameter sql-case-id="set_timezone_for_local_scope" />
     <set-parameter sql-case-id="set_timezone_for_session_scope" />
     <set-parameter sql-case-id="set_timezone_for_local_scope_with_double_value" />
-    <set-parameter sql-case-id="set_parameter_equal_boolean" >
-        <parameter-assign value="true" >
+    <set-parameter sql-case-id="set_parameter_equal_boolean">
+        <parameter-assign value="true">
             <parameter name="extra_float_digits" />
         </parameter-assign>
     </set-parameter>
-    <set-parameter sql-case-id="set_parameter_equal_list" >
-        <parameter-assign value="1,2,3" >
+    <set-parameter sql-case-id="set_parameter_equal_list">
+        <parameter-assign value="1,2,3">
             <parameter name="extra_float_digits" />
         </parameter-assign>
     </set-parameter>
-    <set-parameter sql-case-id="set_parameter_equal_number_with_signal" >
-        <parameter-assign value="-10.5" >
+    <set-parameter sql-case-id="set_parameter_equal_number_with_signal">
+        <parameter-assign value="-10.5">
             <parameter name="extra_float_digits" />
         </parameter-assign>
     </set-parameter>
-    <set-parameter sql-case-id="set_names" >
-        <parameter-assign value="'utf8'" >
+    <set-parameter sql-case-id="set_names">
+        <parameter-assign value="'utf8'">
             <parameter name="charset" />
         </parameter-assign>
     </set-parameter>
     <set-resource-group sql-case-id="set_resource_group">
         <group name="rg" />
     </set-resource-group>
-    <set-parameter sql-case-id="set_charset_mysql" >
-        <parameter-assign value="'utf8'" >
+    <set-parameter sql-case-id="set_charset_mysql">
+        <parameter-assign value="'utf8'">
             <parameter name="charset" />
         </parameter-assign>
     </set-parameter>
-    <set-parameter sql-case-id="set_charset_postgresql" >
-        <parameter-assign value="'UTF8'" >
+    <set-parameter sql-case-id="set_charset_postgresql">
+        <parameter-assign value="'UTF8'">
             <parameter name="client_encoding" />
         </parameter-assign>
     </set-parameter>
-    <set-parameter sql-case-id="set_client_encoding" >
-        <parameter-assign value="'UTF8'" >
+    <set-parameter sql-case-id="set_client_encoding">
+        <parameter-assign value="'UTF8'">
             <parameter name="CLIENT_ENCODING" />
         </parameter-assign>
     </set-parameter>

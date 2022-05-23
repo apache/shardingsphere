@@ -88,7 +88,7 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
     
     private ReadwriteSplittingRuleConfiguration checkReadwriteSplittingRule(final ContextManager contextManager, final String databaseName) {
         Optional<ReadwriteSplittingRuleConfiguration> result = contextManager.getMetaDataContexts().getDatabaseMetaData(databaseName)
-                .getRuleMetaData().findRuleConfiguration(ReadwriteSplittingRuleConfiguration.class).stream().findAny();
+                .getRuleMetaData().findRuleConfigurations(ReadwriteSplittingRuleConfiguration.class).stream().findAny();
         if (!result.isPresent()) {
             throw new UnsupportedOperationException("The current schema has no read_write splitting rules");
         }

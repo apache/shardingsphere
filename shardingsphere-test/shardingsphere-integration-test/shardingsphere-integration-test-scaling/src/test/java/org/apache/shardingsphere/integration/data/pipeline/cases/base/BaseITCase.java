@@ -225,7 +225,10 @@ public abstract class BaseITCase {
             increaseTaskThread.join(60 * 1000L);
         }
         TimeUnit.SECONDS.sleep(2);
-        String jobId = String.valueOf(getJdbcTemplate().queryForMap("SHOW SCALING LIST").get("id"));
+        List<Map<String, Object>> scalingListMap = getJdbcTemplate().queryForList("SHOW SCALING LIST");
+        assertThat(scalingListMap.size(), is(1));
+        Object jobId = scalingListMap.get(0).get("id");
+        log.info("jobId: {}", jobId);
         Map<String, String> actualStatusMap = new HashMap<>(2, 1);
         for (int i = 0; i < 100; i++) {
             List<Map<String, Object>> showScalingStatusResMap = jdbcTemplate.queryForList(String.format("SHOW SCALING STATUS %s", jobId));

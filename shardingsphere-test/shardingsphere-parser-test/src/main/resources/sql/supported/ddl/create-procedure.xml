@@ -30,6 +30,6 @@
         AS
             SELECT FirstName, LastName, JobTitle, Department
             FROM HumanResources.vEmployeeDepartment
-            WHERE FirstName = @FirstName AND LastName = @LastName;" db-types="SQLServer"/>
+            WHERE FirstName = @FirstName AND LastName = @LastName;" db-types="SQLServer" />
     <sql-case id="create_procedure_declare_without_at" value="CREATE PROCEDURE proc (ofs INT, count INT) BEGIN DECLARE i INT DEFAULT ofs; WHILE i &lt; count DO SELECT i AS i; IF LOWER(CHAR(i USING utf8) COLLATE utf8_tolower_ci) != LOWER(CHAR(i USING utf8mb4) COLLATE utf8mb4_0900_as_ci) THEN SELECT i AS &apos;found funny character&apos;; END IF; SET i = i + 1; END WHILE; END" db-types="MySQL" />
 </sql-cases>
