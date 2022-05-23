@@ -116,5 +116,6 @@ execute
     | alterExtension
     | dropExtension
     | dropTextSearch
+    | cursor
     ) SEMI_? EOF
     ;

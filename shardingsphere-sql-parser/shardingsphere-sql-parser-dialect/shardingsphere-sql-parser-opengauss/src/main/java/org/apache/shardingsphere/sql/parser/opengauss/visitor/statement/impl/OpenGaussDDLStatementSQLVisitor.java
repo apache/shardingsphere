@@ -67,6 +67,8 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Cre
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CreateTextSearchContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CreateTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CreateViewContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CursorContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CursorNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DeallocateContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DeclareContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropColumnSpecificationContext;
@@ -114,6 +116,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.al
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.DropConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.ModifyConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.ValidateConstraintDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.cursor.CursorNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.RenameTableDefinitionSegment;
@@ -164,6 +167,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateTextSearchStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateTypeStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateViewStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCursorStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDeallocateStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDeclareStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropConversionStatement;
@@ -841,5 +845,18 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
         Optional<NameSegment> databaseName = nameSegmentIterator.hasNext() ? Optional.of(nameSegmentIterator.next()) : Optional.empty();
         databaseName.ifPresent(optional -> statement.getTable().getOwner()
                 .ifPresent(owner -> owner.setOwner(new OwnerSegment(optional.getStartIndex(), optional.getStopIndex(), optional.getIdentifier()))));
+    }
+    
+    @Override
+    public ASTNode visitCursor(final CursorContext ctx) {
+        OpenGaussCursorStatement result = new OpenGaussCursorStatement();
+        result.setCursorName((CursorNameSegment) visit(ctx.cursorName()));
+        result.setSelect((SelectStatement) visit(ctx.select()));
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitCursorName(final CursorNameContext ctx) {
+        return new CursorNameSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ((IdentifierValue) visit(ctx.name())));
     }
 }
