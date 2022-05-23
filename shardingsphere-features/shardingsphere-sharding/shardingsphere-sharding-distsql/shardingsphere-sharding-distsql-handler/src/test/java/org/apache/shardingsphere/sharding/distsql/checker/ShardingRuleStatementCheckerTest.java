@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.distsql.checker;
 
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
@@ -38,6 +39,7 @@ import org.apache.shardingsphere.sharding.distsql.parser.segment.AutoTableRuleSe
 import org.apache.shardingsphere.sharding.distsql.parser.segment.KeyGenerateStrategySegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.ShardingStrategySegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.TableRuleSegment;
+import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -69,7 +71,7 @@ public final class ShardingRuleStatementCheckerTest {
     
     private final ShardingRuleConfiguration shardingRuleConfig = createShardingRuleConfiguration();
     
-    private final ShardingSphereResource shardingSphereResource = new ShardingSphereResource(createDataSource(), null, null);
+    private final ShardingSphereResource shardingSphereResource = new ShardingSphereResource(mock(DatabaseType.class), createDataSource());
     
     @Before
     public void before() {
@@ -216,8 +218,8 @@ public final class ShardingRuleStatementCheckerTest {
     
     private static Map<String, DataSource> createDataSource() {
         Map<String, DataSource> result = new HashMap<>(2, 1);
-        result.put("ds_0", mock(DataSource.class));
-        result.put("ds_1", mock(DataSource.class));
+        result.put("ds_0", new MockedDataSource());
+        result.put("ds_1", new MockedDataSource());
         return result;
     }
     

@@ -97,7 +97,7 @@ public final class YamlProxyConfigurationSwapperTest {
     }
     
     private Optional<AuthorityRuleConfiguration> findAuthorityRuleConfiguration(final Collection<RuleConfiguration> globalRuleConfigs) {
-        return globalRuleConfigs.stream().filter(each -> each instanceof AuthorityRuleConfiguration).findFirst().map(each -> ((AuthorityRuleConfiguration) each));
+        return globalRuleConfigs.stream().filter(each -> each instanceof AuthorityRuleConfiguration).findFirst().map(each -> (AuthorityRuleConfiguration) each);
     }
     
     private void assertProxyConfigurationProps(final ProxyConfiguration proxyConfig) {
