@@ -1711,6 +1711,10 @@ dropSequence
     : DROP SEQUENCE existClause? qualifiedNameList dropBehavior?
     ;
 
+dropSynonym
+    : DROP SYNONYM existClause? synonymName dropBehavior?
+    ;
+
 dropServer
     : DROP SERVER existClause? qualifiedNameList dropBehavior?
     ;
