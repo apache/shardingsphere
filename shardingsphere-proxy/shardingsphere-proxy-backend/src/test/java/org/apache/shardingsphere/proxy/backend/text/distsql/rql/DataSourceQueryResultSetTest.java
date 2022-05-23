@@ -18,11 +18,9 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.rql;
 
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.resource.DataSourceQueryResultSet;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
@@ -49,9 +47,7 @@ public final class DataSourceQueryResultSetTest {
     
     @Before
     public void before() {
-        DatabaseType databaseType = new MySQLDatabaseType();
-        DataSourcesMetaData dataSourcesMetaData = new DataSourcesMetaData(databaseType, Collections.singletonMap("foo_ds", createDataSource()));
-        ShardingSphereResource resource = new ShardingSphereResource(Collections.singletonMap("foo_ds", createDataSource()), dataSourcesMetaData, databaseType);
+        ShardingSphereResource resource = new ShardingSphereResource(new MySQLDatabaseType(), Collections.singletonMap("foo_ds", createDataSource()));
         when(database.getResource()).thenReturn(resource);
     }
     

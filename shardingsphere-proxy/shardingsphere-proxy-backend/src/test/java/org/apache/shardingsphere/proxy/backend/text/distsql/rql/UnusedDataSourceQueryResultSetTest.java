@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.resource.UnusedDataSourceQueryResultSet;
@@ -60,8 +59,7 @@ public final class UnusedDataSourceQueryResultSetTest {
     @Before
     public void before() {
         DatabaseType databaseType = new MySQLDatabaseType();
-        DataSourcesMetaData dataSourcesMetaData = new DataSourcesMetaData(databaseType, createDataSources());
-        ShardingSphereResource resource = new ShardingSphereResource(createDataSources(), dataSourcesMetaData, databaseType);
+        ShardingSphereResource resource = new ShardingSphereResource(databaseType, createDataSources());
         ShardingSphereRuleMetaData metaData = new ShardingSphereRuleMetaData(null, Collections.singleton(createShardingRule()));
         when(database.getResource()).thenReturn(resource);
         when(database.getRuleMetaData()).thenReturn(metaData);

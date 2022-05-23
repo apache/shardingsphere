@@ -95,8 +95,7 @@ public final class OpenGaussWalDumper extends AbstractIncrementalDumper<WalPosit
             if (null != stream) {
                 try {
                     stream.close();
-                } catch (final SQLException ex) {
-                    log.error("Close PGReplicationStream failed", ex);
+                } catch (final SQLException ignored) {
                 }
             }
         }

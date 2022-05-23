@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDa
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
-import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -100,8 +99,7 @@ public final class ShardingSphereDatabase {
     
     private static ShardingSphereResource createResource(final DatabaseType protocolType, final Map<String, DataSource> dataSourceMap) {
         DatabaseType databaseType = dataSourceMap.isEmpty() ? protocolType : DatabaseTypeEngine.getDatabaseType(dataSourceMap.values());
-        DataSourcesMetaData dataSourcesMetaData = new DataSourcesMetaData(databaseType, dataSourceMap);
-        return new ShardingSphereResource(dataSourceMap, dataSourcesMetaData, databaseType);
+        return new ShardingSphereResource(databaseType, dataSourceMap);
     }
     
     /**

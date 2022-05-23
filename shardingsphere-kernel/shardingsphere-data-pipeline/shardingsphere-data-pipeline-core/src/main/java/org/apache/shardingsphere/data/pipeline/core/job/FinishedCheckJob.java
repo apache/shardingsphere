@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.core.job;
 
-import io.vertx.core.impl.ConcurrentHashSet;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPI;
 import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPIFactory;
@@ -37,13 +36,14 @@ import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 @Slf4j
 public final class FinishedCheckJob implements SimpleJob {
     
     private final RuleAlteredJobAPI ruleAlteredJobAPI = RuleAlteredJobAPIFactory.getInstance();
     
-    private final Set<String> onCheckJobIds = new ConcurrentHashSet<>();
+    private final Set<String> onCheckJobIds = new ConcurrentSkipListSet<>();
     
     // TODO only one proxy node could do data consistency check in proxy cluster
     @Override

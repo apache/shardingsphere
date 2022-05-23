@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rql;
 
-import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesUsedResourceStatement;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
@@ -36,6 +36,7 @@ import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceCo
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
+import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -137,25 +138,22 @@ public final class RulesUsedResourceQueryResultSetTest {
     
     private void init(final RuleConfiguration ruleConfig) {
         ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class);
-        when(ruleMetaData.getConfigurations()).thenReturn(Collections.singletonList(ruleConfig));
+        when(ruleMetaData.getConfigurations()).thenReturn(Collections.singleton(ruleConfig));
         when(database.getRuleMetaData()).thenReturn(ruleMetaData);
-        when(database.getResource()).thenReturn(createResource());
-    }
-    
-    private ShardingSphereResource createResource() {
-        return new ShardingSphereResource(Collections.singletonMap("ds_0", new HikariDataSource()), null, null);
+        ShardingSphereResource resource = new ShardingSphereResource(mock(DatabaseType.class), Collections.singletonMap("ds_0", new MockedDataSource()));
+        when(database.getResource()).thenReturn(resource);
     }
     
     private RuleConfiguration mockShardingTableRule() {
         ShardingRuleConfiguration result = mock(ShardingRuleConfiguration.class);
-        when(result.getTables()).thenReturn(Collections.singletonList(new ShardingTableRuleConfiguration("sharding_table")));
-        when(result.getAutoTables()).thenReturn(Collections.singletonList(new ShardingAutoTableRuleConfiguration("sharding_auto_table")));
+        when(result.getTables()).thenReturn(Collections.singleton(new ShardingTableRuleConfiguration("sharding_table")));
+        when(result.getAutoTables()).thenReturn(Collections.singleton(new ShardingAutoTableRuleConfiguration("sharding_auto_table")));
         return result;
     }
     
     private RuleConfiguration mockReadwriteSplittingRule() {
         ReadwriteSplittingRuleConfiguration result = mock(ReadwriteSplittingRuleConfiguration.class);
-        when(result.getDataSources()).thenReturn(Collections.singletonList(new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_splitting_source", "", createProperties(), "")));
+        when(result.getDataSources()).thenReturn(Collections.singleton(new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_splitting_source", "", createProperties(), "")));
         return result;
     }
     
@@ -168,13 +166,13 @@ public final class RulesUsedResourceQueryResultSetTest {
     
     private RuleConfiguration mockDBDiscoveryRule() {
         DatabaseDiscoveryRuleConfiguration result = mock(DatabaseDiscoveryRuleConfiguration.class);
-        when(result.getDataSources()).thenReturn(Collections.singletonList(new DatabaseDiscoveryDataSourceRuleConfiguration("db_discovery_group_name", Arrays.asList("ds_0", "ds_1"), "", "")));
+        when(result.getDataSources()).thenReturn(Collections.singleton(new DatabaseDiscoveryDataSourceRuleConfiguration("db_discovery_group_name", Arrays.asList("ds_0", "ds_1"), "", "")));
         return result;
     }
     
     private RuleConfiguration mockEncryptRule() {
         EncryptRuleConfiguration result = mock(EncryptRuleConfiguration.class);
-        when(result.getTables()).thenReturn(Collections.singletonList(new EncryptTableRuleConfiguration("encrypt_table", Collections.emptyList(), false)));
+        when(result.getTables()).thenReturn(Collections.singleton(new EncryptTableRuleConfiguration("encrypt_table", Collections.emptyList(), false)));
         return result;
     }
     

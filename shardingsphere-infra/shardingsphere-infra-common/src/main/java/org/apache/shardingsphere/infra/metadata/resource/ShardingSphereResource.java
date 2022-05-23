@@ -17,13 +17,17 @@
 
 package org.apache.shardingsphere.infra.metadata.resource;
 
+import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
+import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 
 import javax.sql.DataSource;
 import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -31,15 +35,25 @@ import java.util.stream.Collectors;
 /**
  * ShardingSphere resource.
  */
-@RequiredArgsConstructor
 @Getter
 public final class ShardingSphereResource {
     
+    private final DatabaseType databaseType;
+    
     private final Map<String, DataSource> dataSources;
     
-    private final DataSourcesMetaData dataSourcesMetaData;
+    @Getter(AccessLevel.NONE)
+    private final Map<String, DataSourceMetaData> dataSourceMetaDataMap;
     
-    private final DatabaseType databaseType;
+    public ShardingSphereResource(final DatabaseType databaseType, final Map<String, DataSource> dataSources) {
+        this.databaseType = databaseType;
+        this.dataSources = dataSources;
+        dataSourceMetaDataMap = new LinkedHashMap<>(dataSources.size(), 1);
+        for (Entry<String, DataSource> entry : dataSources.entrySet()) {
+            Map<String, Object> standardProps = DataSourcePropertiesCreator.create(entry.getValue()).getConnectionPropertySynonyms().getStandardProperties();
+            dataSourceMetaDataMap.put(entry.getKey(), databaseType.getDataSourceMetaData(standardProps.get("url").toString(), standardProps.get("username").toString()));
+        }
+    }
     
     /**
      * Get all instance data sources.
@@ -47,7 +61,36 @@ public final class ShardingSphereResource {
      * @return all instance data sources
      */
     public Collection<DataSource> getAllInstanceDataSources() {
-        return dataSources.entrySet().stream().filter(entry -> dataSourcesMetaData.getAllInstanceDataSourceNames().contains(entry.getKey())).map(Entry::getValue).collect(Collectors.toSet());
+        return dataSources.entrySet().stream().filter(entry -> getAllInstanceDataSourceNames().contains(entry.getKey())).map(Entry::getValue).collect(Collectors.toSet());
+    }
+    
+    /**
+     * Get all instance data source names.
+     *
+     * @return instance data source names
+     */
+    public Collection<String> getAllInstanceDataSourceNames() {
+        Collection<String> result = new LinkedList<>();
+        for (Entry<String, DataSourceMetaData> entry : dataSourceMetaDataMap.entrySet()) {
+            if (!isExisted(entry.getKey(), result)) {
+                result.add(entry.getKey());
+            }
+        }
+        return result;
+    }
+    
+    private boolean isExisted(final String dataSourceName, final Collection<String> existedDataSourceNames) {
+        return existedDataSourceNames.stream().anyMatch(each -> dataSourceMetaDataMap.get(dataSourceName).isInSameDatabaseInstance(dataSourceMetaDataMap.get(each)));
+    }
+    
+    /**
+     * Get data source meta data.
+     *
+     * @param dataSourceName data source name
+     * @return data source meta data
+     */
+    public DataSourceMetaData getDataSourceMetaData(final String dataSourceName) {
+        return dataSourceMetaDataMap.get(dataSourceName);
     }
     
     /**

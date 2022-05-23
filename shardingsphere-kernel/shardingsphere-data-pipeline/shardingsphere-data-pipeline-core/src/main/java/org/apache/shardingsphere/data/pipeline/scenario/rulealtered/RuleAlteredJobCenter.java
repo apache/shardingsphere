@@ -15,30 +15,42 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.user;
+package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
-import java.util.Collection;
-import java.util.Optional;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * ShardingSphere users.
+ * Rule altered job center.
  */
-@RequiredArgsConstructor
-@Getter
-public final class ShardingSphereUsers {
+@Slf4j
+public final class RuleAlteredJobCenter {
     
-    private final Collection<ShardingSphereUser> users;
+    private static final Map<String, RuleAlteredJob> JOB_MAP = new ConcurrentHashMap<>();
     
     /**
-     * Find user.
+     * Add job.
      *
-     * @param grantee grantee
-     * @return found user
+     * @param jobId job id
+     * @param job job
      */
-    public Optional<ShardingSphereUser> findUser(final Grantee grantee) {
-        return users.stream().filter(each -> each.getGrantee().equals(grantee)).findFirst();
+    public static void addJob(final String jobId, final RuleAlteredJob job) {
+        JOB_MAP.put(jobId, job);
+    }
+    
+    /**
+     * Stop job.
+     *
+     * @param jobId job id
+     */
+    public static void stop(final String jobId) {
+        RuleAlteredJob job = JOB_MAP.get(jobId);
+        if (null == job) {
+            log.info("job is null, ignore, jobId={}", jobId);
+            return;
+        }
+        job.stop();
     }
 }

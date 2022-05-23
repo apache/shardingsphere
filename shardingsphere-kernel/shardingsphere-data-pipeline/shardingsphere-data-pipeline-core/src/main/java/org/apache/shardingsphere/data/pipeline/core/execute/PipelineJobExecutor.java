@@ -26,6 +26,7 @@ import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
 import org.apache.shardingsphere.data.pipeline.core.lock.PipelineSimpleLock;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJob;
+import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobCenter;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobPreparer;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobProgressDetector;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobSchedulerCenter;
@@ -75,7 +76,7 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
         boolean isDisabled = jobConfigPOJO.isDisabled();
         if (isDeleted || isDisabled) {
             log.info("jobId={}, deleted={}, disabled={}", jobConfigPOJO.getJobName(), isDeleted, isDisabled);
-            RuleAlteredJobSchedulerCenter.stop(jobConfigPOJO.getJobName());
+            RuleAlteredJobCenter.stop(jobConfigPOJO.getJobName());
             // TODO refactor: dispatch to different job types
             RuleAlteredJobConfiguration jobConfig = RuleAlteredJobConfigurationSwapper.swapToObject(jobConfigPOJO.getJobParameter());
             if (isDeleted) {
@@ -105,7 +106,9 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
         String databaseName = RuleAlteredJobConfigurationSwapper.swapToObject(jobConfigPOJO.getJobParameter()).getDatabaseName();
         if (PipelineSimpleLock.getInstance().tryLock(databaseName, 3000)) {
             log.info("{} added to executing jobs success", jobConfigPOJO.getJobName());
-            new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(), new RuleAlteredJob(), jobConfigPOJO.toJobConfiguration()).execute();
+            RuleAlteredJob job = new RuleAlteredJob();
+            RuleAlteredJobCenter.addJob(jobConfigPOJO.getJobName(), job);
+            new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(), job, jobConfigPOJO.toJobConfiguration()).execute();
         } else {
             log.info("tryLock failed, databaseName={}", databaseName);
         }
