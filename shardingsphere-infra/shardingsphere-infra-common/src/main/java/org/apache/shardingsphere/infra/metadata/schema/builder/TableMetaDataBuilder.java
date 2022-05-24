@@ -93,7 +93,7 @@ public final class TableMetaDataBuilder {
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     private static Map<String, SchemaMetaData> decorate(final Map<String, SchemaMetaData> schemaMetaDataMap, final SchemaBuilderMaterials materials) throws SQLException {
-        Map<String, SchemaMetaData> result = new LinkedHashMap<>(getFrontendSchemaMetaDataMap(schemaMetaDataMap, materials));
+        Map<String, SchemaMetaData> result = new LinkedHashMap<>(convertToFrontendSchemaMetaDataMap(schemaMetaDataMap, materials));
         for (Entry<ShardingSphereRule, RuleBasedSchemaMetaDataBuilder> entry : RuleBasedSchemaMetaDataBuilderFactory.getInstances(materials.getRules()).entrySet()) {
             if (!(entry.getKey() instanceof TableContainedRule)) {
                 continue;
@@ -103,7 +103,7 @@ public final class TableMetaDataBuilder {
         return result;
     }
     
-    private static Map<String, SchemaMetaData> getFrontendSchemaMetaDataMap(final Map<String, SchemaMetaData> schemaMetaDataMap, final SchemaBuilderMaterials materials) {
+    private static Map<String, SchemaMetaData> convertToFrontendSchemaMetaDataMap(final Map<String, SchemaMetaData> schemaMetaDataMap, final SchemaBuilderMaterials materials) {
         DatabaseType protocolType = materials.getProtocolType();
         DatabaseType storageType = materials.getStorageType();
         if (protocolType.equals(storageType)) {
