@@ -38,6 +38,7 @@ import org.apache.shardingsphere.sharding.distsql.parser.segment.AutoTableRuleSe
 import org.apache.shardingsphere.sharding.distsql.parser.segment.KeyGenerateStrategySegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.ShardingStrategySegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.TableRuleSegment;
+import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -55,10 +56,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public final class ShardingRuleStatementCheckerTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
@@ -69,7 +69,7 @@ public final class ShardingRuleStatementCheckerTest {
     
     private final ShardingRuleConfiguration shardingRuleConfig = createShardingRuleConfiguration();
     
-    private final ShardingSphereResource shardingSphereResource = new ShardingSphereResource(createDataSource(), null, null);
+    private final ShardingSphereResource shardingSphereResource = new ShardingSphereResource(createDataSource());
     
     @Before
     public void before() {
@@ -216,8 +216,8 @@ public final class ShardingRuleStatementCheckerTest {
     
     private static Map<String, DataSource> createDataSource() {
         Map<String, DataSource> result = new HashMap<>(2, 1);
-        result.put("ds_0", mock(DataSource.class));
-        result.put("ds_1", mock(DataSource.class));
+        result.put("ds_0", new MockedDataSource());
+        result.put("ds_1", new MockedDataSource());
         return result;
     }
     
