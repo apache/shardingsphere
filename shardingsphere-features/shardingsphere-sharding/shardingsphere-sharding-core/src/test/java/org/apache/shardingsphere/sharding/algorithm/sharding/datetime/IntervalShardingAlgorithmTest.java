@@ -55,9 +55,9 @@ public final class IntervalShardingAlgorithmTest {
     private final Collection<String> availableTablesForMonthDataSources = new LinkedList<>();
     
     private final Collection<String> availableTablesForDayDataSources = new LinkedList<>();
-
-    private final Collection<String> availableTablesForJDBCDateDataSources = new LinkedList<>();
     
+    private final Collection<String> availableTablesForJDBCDateDataSources = new LinkedList<>();
+        
     private final Collection<String> availableTablesForJDBCTimeDataSources = new LinkedList<>();
     
     private final Collection<String> availableTablesForDayWithMillisecondDataSources = new LinkedList<>();
@@ -69,9 +69,9 @@ public final class IntervalShardingAlgorithmTest {
     private IntervalShardingAlgorithm shardingAlgorithmByDay;
     
     private IntervalShardingAlgorithm shardingAlgorithmByJDBCDate;
-    
+        
     private IntervalShardingAlgorithm shardingAlgorithmByJDBCTime;
-    
+        
     private IntervalShardingAlgorithm shardingAlgorithmByDayWithMillisecond;
     
     @Before
@@ -166,7 +166,7 @@ public final class IntervalShardingAlgorithmTest {
         result.setProperty("datetime-interval-unit", "DAYS");
         return result;
     }
-
+    
     private void initShardingStrategyByJDBCDate() {
         int stepAmount = 2;
         shardingAlgorithmByJDBCDate = (IntervalShardingAlgorithm) ShardingAlgorithmFactory.newInstance(
@@ -177,7 +177,7 @@ public final class IntervalShardingAlgorithmTest {
             }
         }
     }
-
+    
     private Properties createJDBCDateProperties(final int stepAmount) {
         Properties result = new Properties();
         result.setProperty("datetime-pattern", "yyyy-MM-dd");
@@ -187,7 +187,7 @@ public final class IntervalShardingAlgorithmTest {
         result.setProperty("datetime-interval-amount", Integer.toString(stepAmount));
         return result;
     }
-
+    
     private void initShardingStrategyByJDBCTime() {
         int stepAmount = 2;
         shardingAlgorithmByJDBCTime = (IntervalShardingAlgorithm) ShardingAlgorithmFactory.newInstance(
@@ -196,7 +196,7 @@ public final class IntervalShardingAlgorithmTest {
             availableTablesForJDBCTimeDataSources.add(String.format("t_order_%02d%02d", i, 0));
         }
     }
-
+    
     private Properties createJDBCTimeProperties(final int stepAmount) {
         Properties result = new Properties();
         result.setProperty("datetime-pattern", "HH:mm:ss.SSS");
@@ -331,7 +331,7 @@ public final class IntervalShardingAlgorithmTest {
                         Range.closed(simpleDateFormat.parse("2021-06-15 02:25:27.000"), simpleDateFormat.parse("2021-07-31 02:25:27.000"))));
         assertThat(actualAsDate.size(), is(24));
     }
-
+    
     @Test
     public void assertDateInJDBCType() {
         Collection<String> actualAsLocalDateTime = shardingAlgorithmByJDBCDate.doSharding(availableTablesForJDBCDateDataSources,
@@ -339,7 +339,7 @@ public final class IntervalShardingAlgorithmTest {
                         Range.closed(LocalDate.of(2021, 6, 15), LocalDate.of(2021, 7, 31))));
         assertThat(actualAsLocalDateTime.size(), is(24));
     }
-
+    
     @Test
     public void assertTimeInJDBCType() {
         Collection<String> actualAsLocalDate = shardingAlgorithmByJDBCTime.doSharding(availableTablesForJDBCTimeDataSources,
