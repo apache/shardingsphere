@@ -398,7 +398,7 @@ public final class ContextManager implements AutoCloseable {
      */
     public void reloadMetaData(final String databaseName, final String schemaName) {
         try {
-            Map<String, ShardingSphereSchema> schemas = loadActualSchema(databaseName, schemaName);
+            Map<String, ShardingSphereSchema> schemas = loadActualSchema(databaseName);
             alterSchemas(databaseName, schemas);
             for (ShardingSphereSchema each : schemas.values()) {
                 metaDataContexts.getPersistService().ifPresent(optional -> optional.getSchemaMetaDataService().persistTables(databaseName, schemaName, each));
@@ -455,12 +455,12 @@ public final class ContextManager implements AutoCloseable {
         }
     }
     
-    private Map<String, ShardingSphereSchema> loadActualSchema(final String databaseName, final String schemaName) throws SQLException {
+    private Map<String, ShardingSphereSchema> loadActualSchema(final String databaseName) throws SQLException {
         ShardingSphereDatabase database = metaDataContexts.getDatabaseMetaData(databaseName);
         Map<String, DataSource> dataSourceMap = database.getResource().getDataSources();
         Collection<ShardingSphereRule> rules = metaDataContexts.getDatabaseMap().get(databaseName).getRuleMetaData().getRules();
         DatabaseType databaseType = DatabaseTypeEngine.getDatabaseType(dataSourceMap.values());
-        return SchemaLoader.load(schemaName, database.getProtocolType(), databaseType, dataSourceMap, rules, metaDataContexts.getProps());
+        return SchemaLoader.load(databaseName, database.getProtocolType(), databaseType, dataSourceMap, rules, metaDataContexts.getProps());
     }
     
     private Collection<DataSource> getPendingClosedDataSources(final String databaseName, final Map<String, DataSourceProperties> dataSourcePropsMap) {

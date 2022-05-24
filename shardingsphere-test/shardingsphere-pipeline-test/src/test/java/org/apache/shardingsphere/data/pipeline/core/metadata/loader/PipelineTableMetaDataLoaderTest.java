@@ -22,13 +22,12 @@ import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColum
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineIndexMetaData;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineTableMetaData;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
+import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -64,42 +63,54 @@ public final class PipelineTableMetaDataLoaderTest {
     
     private PipelineDataSourceWrapper dataSource;
     
-    @Mock
-    private Connection connection;
-    
-    @Mock
-    private DatabaseMetaData databaseMetaData;
-    
-    @Mock
-    private ResultSet primaryKeyResultSet;
-    
-    @Mock
-    private ResultSet columnMetaDataResultSet;
-    
-    @Mock
-    private ResultSet indexInfoResultSet;
-    
     @Before
     public void setUp() throws SQLException {
-        DataSource rawDataSource = mock(DataSource.class);
-        dataSource = new PipelineDataSourceWrapper(rawDataSource, new H2DatabaseType());
-        when(rawDataSource.getConnection()).thenReturn(connection);
-        when(connection.getCatalog()).thenReturn(TEST_CATALOG);
-        when(connection.getMetaData()).thenReturn(databaseMetaData);
-        when(databaseMetaData.getColumns(TEST_CATALOG, null, TEST_TABLE, "%")).thenReturn(columnMetaDataResultSet);
-        when(databaseMetaData.getPrimaryKeys(TEST_CATALOG, null, TEST_TABLE)).thenReturn(primaryKeyResultSet);
-        when(primaryKeyResultSet.next()).thenReturn(true, false);
-        when(primaryKeyResultSet.getString(COLUMN_NAME)).thenReturn("id");
-        when(columnMetaDataResultSet.next()).thenReturn(true, true, true, false);
-        when(columnMetaDataResultSet.getString(TABLE_NAME)).thenReturn(TEST_TABLE);
-        when(columnMetaDataResultSet.getInt(ORDINAL_POSITION)).thenReturn(1, 2, 3);
-        when(columnMetaDataResultSet.getString(COLUMN_NAME)).thenReturn("id", "name", "age");
-        when(columnMetaDataResultSet.getInt(DATA_TYPE)).thenReturn(Types.BIGINT, Types.VARCHAR, Types.INTEGER);
-        when(databaseMetaData.getIndexInfo(TEST_CATALOG, null, TEST_TABLE, true, false)).thenReturn(indexInfoResultSet);
-        when(indexInfoResultSet.next()).thenReturn(true, true, false);
-        when(indexInfoResultSet.getString(INDEX_NAME)).thenReturn(TEST_INDEX);
-        when(indexInfoResultSet.getString(COLUMN_NAME)).thenReturn("name", "id");
-        when(indexInfoResultSet.getShort(ORDINAL_POSITION)).thenReturn((short) 2, (short) 1);
+        dataSource = new PipelineDataSourceWrapper(new MockedDataSource(mockConnection()), new H2DatabaseType());
+    }
+    
+    private Connection mockConnection() throws SQLException {
+        Connection result = mock(Connection.class);
+        when(result.getCatalog()).thenReturn(TEST_CATALOG);
+        DatabaseMetaData databaseMetaData = mockDatabaseMetaData();
+        when(result.getMetaData()).thenReturn(databaseMetaData);
+        return result;
+    }
+    
+    private DatabaseMetaData mockDatabaseMetaData() throws SQLException {
+        DatabaseMetaData result = mock(DatabaseMetaData.class);
+        ResultSet columnMetaDataResultSet = mockColumnMetaDataResultSet();
+        when(result.getColumns(TEST_CATALOG, null, TEST_TABLE, "%")).thenReturn(columnMetaDataResultSet);
+        ResultSet primaryKeyResultSet = mockPrimaryKeyResultSet();
+        when(result.getPrimaryKeys(TEST_CATALOG, null, TEST_TABLE)).thenReturn(primaryKeyResultSet);
+        ResultSet indexInfoResultSet = mockIndexInfoResultSet();
+        when(result.getIndexInfo(TEST_CATALOG, null, TEST_TABLE, true, false)).thenReturn(indexInfoResultSet);
+        return result;
+    }
+    
+    private ResultSet mockColumnMetaDataResultSet() throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        when(result.next()).thenReturn(true, true, true, false);
+        when(result.getString(TABLE_NAME)).thenReturn(TEST_TABLE);
+        when(result.getInt(ORDINAL_POSITION)).thenReturn(1, 2, 3);
+        when(result.getString(COLUMN_NAME)).thenReturn("id", "name", "age");
+        when(result.getInt(DATA_TYPE)).thenReturn(Types.BIGINT, Types.VARCHAR, Types.INTEGER);
+        return result;
+    }
+    
+    private ResultSet mockPrimaryKeyResultSet() throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        when(result.next()).thenReturn(true, false);
+        when(result.getString(COLUMN_NAME)).thenReturn("id");
+        return result;
+    }
+    
+    private ResultSet mockIndexInfoResultSet() throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        when(result.next()).thenReturn(true, true, false);
+        when(result.getString(INDEX_NAME)).thenReturn(TEST_INDEX);
+        when(result.getString(COLUMN_NAME)).thenReturn("name", "id");
+        when(result.getShort(ORDINAL_POSITION)).thenReturn((short) 2, (short) 1);
+        return result;
     }
     
     @Test

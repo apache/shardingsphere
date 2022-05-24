@@ -83,7 +83,7 @@ public final class DataSourceQueryResultSet implements DistSQLResultSet {
     @Override
     public Collection<Object> getRowData() {
         String dataSourceName = dataSourceNames.next();
-        DataSourceMetaData metaData = resource.getDataSourcesMetaData().getDataSourceMetaData(dataSourceName);
+        DataSourceMetaData metaData = resource.getDataSourceMetaData(dataSourceName);
         Collection<Object> result = new LinkedList<>();
         result.add(dataSourceName);
         result.add(resource.getDatabaseType().getType());
