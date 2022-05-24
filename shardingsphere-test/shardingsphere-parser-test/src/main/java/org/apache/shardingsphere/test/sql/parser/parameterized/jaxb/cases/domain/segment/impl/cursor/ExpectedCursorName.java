@@ -15,26 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.resource;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.cursor;
 
-import org.apache.shardingsphere.test.mock.MockedDataSource;
-import org.junit.Test;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedIdentifierSQLSegment;
 
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.Collections;
-
-import static org.junit.Assert.assertTrue;
-
-public final class ShardingSphereResourceTest {
-    
-    @Test
-    public void assertClose() throws SQLException, IOException, InterruptedException {
-        MockedDataSource dataSource = new MockedDataSource();
-        new ShardingSphereResource(Collections.singletonMap("foo_ds", dataSource)).close(dataSource);
-        while (null == dataSource.getClosed() || !dataSource.getClosed()) {
-            Thread.sleep(10L);
-        }
-        assertTrue(dataSource.getClosed());
-    }
+/**
+ * Expected cursor name.
+ */
+@Getter
+@Setter
+public final class ExpectedCursorName extends AbstractExpectedIdentifierSQLSegment {
 }

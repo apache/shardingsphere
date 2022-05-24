@@ -109,7 +109,7 @@ public final class ShardingRouteEngineFactory {
             return new ShardingDatabaseBroadcastRoutingEngine();
         }
         if (sqlStatement instanceof CreateTablespaceStatement || sqlStatement instanceof AlterTablespaceStatement || sqlStatement instanceof DropTablespaceStatement) {
-            return new ShardingInstanceBroadcastRoutingEngine(database.getResource().getDataSourcesMetaData());
+            return new ShardingInstanceBroadcastRoutingEngine(database.getResource());
         }
         Collection<String> tableNames = sqlStatementContext instanceof TableAvailable
                 ? ((TableAvailable) sqlStatementContext).getAllTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toSet())
@@ -131,7 +131,7 @@ public final class ShardingRouteEngineFactory {
             return new ShardingDatabaseBroadcastRoutingEngine();
         }
         if (isResourceGroupStatement(sqlStatement)) {
-            return new ShardingInstanceBroadcastRoutingEngine(database.getResource().getDataSourcesMetaData());
+            return new ShardingInstanceBroadcastRoutingEngine(database.getResource());
         }
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         Collection<String> shardingRuleTableNames = shardingRule.getShardingRuleTableNames(tableNames);
@@ -163,7 +163,7 @@ public final class ShardingRouteEngineFactory {
                     ? new ShardingTableBroadcastRoutingEngine(database, sqlStatementContext, shardingRuleTableNames)
                     : new ShardingIgnoreRoutingEngine();
         } else {
-            return new ShardingInstanceBroadcastRoutingEngine(database.getResource().getDataSourcesMetaData());
+            return new ShardingInstanceBroadcastRoutingEngine(database.getResource());
         }
     }
     

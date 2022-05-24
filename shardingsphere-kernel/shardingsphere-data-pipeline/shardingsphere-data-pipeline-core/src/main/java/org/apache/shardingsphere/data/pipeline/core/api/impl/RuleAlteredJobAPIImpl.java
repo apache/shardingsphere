@@ -38,6 +38,7 @@ import org.apache.shardingsphere.data.pipeline.core.exception.PipelineVerifyFail
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJob;
+import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobCenter;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobProgressDetector;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobSchedulerCenter;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobWorker;
@@ -343,7 +344,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         for (int each : repositoryAPI.getShardingItems(jobId)) {
             repositoryAPI.updateShardingJobStatus(jobId, each, JobStatus.FINISHED);
         }
-        RuleAlteredJobSchedulerCenter.stop(jobId);
+        RuleAlteredJobCenter.stop(jobId);
         stop(jobId);
     }
     

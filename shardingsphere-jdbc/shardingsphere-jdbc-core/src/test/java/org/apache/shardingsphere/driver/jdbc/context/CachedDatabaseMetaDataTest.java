@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.resource;
+package org.apache.shardingsphere.driver.jdbc.context;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
