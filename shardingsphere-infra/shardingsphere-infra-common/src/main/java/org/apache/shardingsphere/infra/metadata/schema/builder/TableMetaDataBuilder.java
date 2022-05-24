@@ -52,7 +52,7 @@ public final class TableMetaDataBuilder {
     public static Map<String, SchemaMetaData> load(final Collection<String> tableNames, final SchemaBuilderMaterials materials) throws SQLException {
         Map<String, SchemaMetaData> result = loadSchemasWithTableContainedRules(tableNames, materials);
         if (!materials.getProtocolType().equals(materials.getStorageType())) {
-            result = translateSchema(result, materials);
+            result = translate(result, materials);
         }
         return decorate(result, materials);
     }
@@ -85,7 +85,7 @@ public final class TableMetaDataBuilder {
         }
     }
     
-    private static Map<String, SchemaMetaData> translateSchema(final Map<String, SchemaMetaData> schemaMetaDataMap, final SchemaBuilderMaterials materials) {
+    private static Map<String, SchemaMetaData> translate(final Map<String, SchemaMetaData> schemaMetaDataMap, final SchemaBuilderMaterials materials) {
         Map<String, SchemaMetaData> result = new LinkedHashMap<>();
         Map<String, TableMetaData> tableMetaDataMap = Optional.ofNullable(schemaMetaDataMap.get(
                 DatabaseTypeEngine.getDefaultSchemaName(materials.getStorageType(), materials.getDefaultSchemaName()))).map(SchemaMetaData::getTables).orElseGet(Collections::emptyMap);
