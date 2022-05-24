@@ -24,18 +24,14 @@ import org.apache.shardingsphere.infra.metadata.schema.fixture.rule.CommonFixtur
 import org.apache.shardingsphere.infra.metadata.schema.fixture.rule.DataNodeContainedFixtureRule;
 import org.apache.shardingsphere.infra.metadata.schema.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
 
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -47,21 +43,17 @@ public final class SchemaBuilderTest {
     @Test
     public void assertBuildOfAllShardingTables() throws SQLException {
         DatabaseType databaseType = mock(DatabaseType.class);
-        Collection<ShardingSphereRule> rules = Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule());
-        Collection<String> tableNames = rules.stream().filter(each -> each instanceof TableContainedRule)
-                .flatMap(each -> ((TableContainedRule) each).getTables().stream()).collect(Collectors.toSet());
-        Map<String, SchemaMetaData> actual = SchemaMetaDataBuilder.load(tableNames, new SchemaBuilderMaterials(
-                databaseType, databaseType, Collections.singletonMap("logic_db", new MockedDataSource()), rules, new ConfigurationProperties(new Properties()), "sharding_db"));
+        SchemaBuilderMaterials materials = new SchemaBuilderMaterials(databaseType, databaseType, Collections.singletonMap("logic_db", new MockedDataSource()),
+                Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule()), new ConfigurationProperties(new Properties()), "sharding_db");
+        Map<String, SchemaMetaData> actual = SchemaMetaDataBuilder.load(new DataNodeContainedFixtureRule().getTables(), materials);
         assertThat(actual.size(), is(1));
         ShardingSphereSchema schema = new ShardingSphereSchema(actual.values().iterator().next().getTables());
-        assertThat(schema.getTables().keySet().size(), is(2));
-        assertSchemaOfShardingTables(schema.getTables().values());
+        assertTables(schema.getTables());
     }
     
-    private void assertSchemaOfShardingTables(final Collection<TableMetaData> actual) {
+    private void assertTables(final Map<String, TableMetaData> actual) {
         assertThat(actual.size(), is(2));
-        Map<String, TableMetaData> tableMetaDataMap = actual.stream().collect(Collectors.toMap(TableMetaData::getName, value -> value));
-        assertTrue(tableMetaDataMap.get("data_node_routed_table1").getColumns().isEmpty());
-        assertTrue(tableMetaDataMap.get("data_node_routed_table2").getColumns().isEmpty());
+        assertTrue(actual.get("data_node_routed_table1").getColumns().isEmpty());
+        assertTrue(actual.get("data_node_routed_table2").getColumns().isEmpty());
     }
 }
