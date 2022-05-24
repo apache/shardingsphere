@@ -38,6 +38,7 @@ import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
+import org.apache.shardingsphere.infra.metadata.schema.builder.SystemSchemaBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.loader.SchemaLoader;
 import org.apache.shardingsphere.infra.metadata.schema.model.SchemaMetaData;
@@ -460,7 +461,9 @@ public final class ContextManager implements AutoCloseable {
         Map<String, DataSource> dataSourceMap = database.getResource().getDataSources();
         Collection<ShardingSphereRule> rules = metaDataContexts.getDatabaseMap().get(databaseName).getRuleMetaData().getRules();
         DatabaseType databaseType = DatabaseTypeEngine.getDatabaseType(dataSourceMap.values());
-        return SchemaLoader.load(databaseName, database.getProtocolType(), databaseType, dataSourceMap, rules, metaDataContexts.getProps());
+        Map<String, ShardingSphereSchema> result = SchemaLoader.load(databaseName, database.getProtocolType(), databaseType, dataSourceMap, rules, metaDataContexts.getProps());
+        result.putAll(SystemSchemaBuilder.build(databaseName, database.getProtocolType()));
+        return result;
     }
     
     private Collection<DataSource> getPendingClosedDataSources(final String databaseName, final Map<String, DataSourceProperties> dataSourcePropsMap) {
