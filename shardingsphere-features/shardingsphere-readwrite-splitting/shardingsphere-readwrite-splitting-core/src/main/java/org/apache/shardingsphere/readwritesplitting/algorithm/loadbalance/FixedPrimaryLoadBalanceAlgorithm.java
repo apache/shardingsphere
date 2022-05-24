@@ -26,7 +26,7 @@ import java.util.Properties;
 /**
  * Fixed-master load-balance algorithm.
  */
-public final class FixedMasterLoadBalanceAlgorithm implements ReplicaLoadBalanceAlgorithm {
+public final class FixedPrimaryLoadBalanceAlgorithm implements ReplicaLoadBalanceAlgorithm {
     
     @Getter
     private Properties props;
@@ -43,6 +43,6 @@ public final class FixedMasterLoadBalanceAlgorithm implements ReplicaLoadBalance
     
     @Override
     public String getType() {
-        return "FIXED_MASTER";
+        return "FIXED_PRIMARY";
     }
 }
