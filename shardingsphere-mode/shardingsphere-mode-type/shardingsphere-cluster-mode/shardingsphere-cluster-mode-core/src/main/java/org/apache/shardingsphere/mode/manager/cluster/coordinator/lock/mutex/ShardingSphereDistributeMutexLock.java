@@ -70,7 +70,7 @@ public final class ShardingSphereDistributeMutexLock implements ShardingSphereLo
         }
         try {
             log.debug("Distribute mutex lock acquire sequenced success, lock name: {}", lockName);
-            return getInterMutexLock(lockName).tryLock(timeoutMillis);
+            return lockHolder.getOrCreateInterMutexLock(lockNodeService.generateLocksName(lockName)).tryLock(timeoutMillis);
         } finally {
             sequenced.unlock();
             log.debug("Distribute mutex lock release sequenced success, lock name: {}", lockName);
@@ -99,8 +99,8 @@ public final class ShardingSphereDistributeMutexLock implements ShardingSphereLo
     @Subscribe
     public synchronized void locked(final MutexLockedEvent event) {
         String lockName = event.getLockedName();
-        InterMutexLock interMutexLock = getInterMutexLock(lockName);
         String lockedInstanceId = lockHolder.getCurrentInstanceId();
+        InterMutexLock interMutexLock = lockHolder.getOrCreateInterMutexLock(lockNodeService.generateLocksName(lockName));
         interMutexLock.ackLock(lockNodeService.generateAckLockName(lockName, lockedInstanceId), lockedInstanceId);
     }
     
