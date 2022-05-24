@@ -68,10 +68,9 @@ public final class SchemaBuilderTest {
     }
     
     private void assertSchemaOfShardingTables(final Collection<TableMetaData> actual) {
+        assertThat(actual.size(), is(2));
         Map<String, TableMetaData> tableMetaDataMap = actual.stream().collect(Collectors.toMap(TableMetaData::getName, value -> value));
-        assertTrue(tableMetaDataMap.containsKey("data_node_routed_table1"));
         assertTrue(tableMetaDataMap.get("data_node_routed_table1").getColumns().isEmpty());
-        assertTrue(tableMetaDataMap.containsKey("data_node_routed_table2"));
         assertTrue(tableMetaDataMap.get("data_node_routed_table2").getColumns().isEmpty());
     }
 }
