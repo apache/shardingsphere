@@ -47,8 +47,7 @@ public final class SchemaBuilderTest {
                 Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule()), new ConfigurationProperties(new Properties()), "sharding_db");
         Map<String, SchemaMetaData> actual = SchemaMetaDataBuilder.load(new DataNodeContainedFixtureRule().getTables(), materials);
         assertThat(actual.size(), is(1));
-        ShardingSphereSchema schema = new ShardingSphereSchema(actual.values().iterator().next().getTables());
-        assertTables(schema.getTables());
+        assertTables(new ShardingSphereSchema(actual.values().iterator().next().getTables()).getTables());
     }
     
     private void assertTables(final Map<String, TableMetaData> actual) {
