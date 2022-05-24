@@ -35,21 +35,21 @@ public final class ShardingSphereDatabaseTest {
     
     @Test
     public void assertIsComplete() {
-        ShardingSphereResource resource = new ShardingSphereResource(mock(DatabaseType.class), Collections.singletonMap("ds", new MockedDataSource()));
+        ShardingSphereResource resource = new ShardingSphereResource(Collections.singletonMap("ds", new MockedDataSource()));
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.singleton(mock(RuleConfiguration.class)), Collections.singleton(mock(ShardingSphereRule.class)));
         assertTrue(new ShardingSphereDatabase("foo_db", mock(DatabaseType.class), resource, ruleMetaData, Collections.emptyMap()).isComplete());
     }
     
     @Test
     public void assertIsNotCompleteWithoutRule() {
-        ShardingSphereResource resource = new ShardingSphereResource(mock(DatabaseType.class), Collections.singletonMap("ds", new MockedDataSource()));
+        ShardingSphereResource resource = new ShardingSphereResource(Collections.singletonMap("ds", new MockedDataSource()));
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList());
         assertFalse(new ShardingSphereDatabase("foo_db", mock(DatabaseType.class), resource, ruleMetaData, Collections.emptyMap()).isComplete());
     }
     
     @Test
     public void assertIsNotCompleteWithoutDataSource() {
-        ShardingSphereResource resource = new ShardingSphereResource(mock(DatabaseType.class), Collections.emptyMap());
+        ShardingSphereResource resource = new ShardingSphereResource(Collections.emptyMap());
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.singleton(mock(RuleConfiguration.class)), Collections.singleton(mock(ShardingSphereRule.class)));
         assertFalse(new ShardingSphereDatabase("foo_db", mock(DatabaseType.class), resource, ruleMetaData, Collections.emptyMap()).isComplete());
     }

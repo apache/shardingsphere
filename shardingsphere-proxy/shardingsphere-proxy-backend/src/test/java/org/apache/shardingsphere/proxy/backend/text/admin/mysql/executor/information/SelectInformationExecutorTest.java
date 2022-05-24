@@ -105,17 +105,18 @@ public final class SelectInformationExecutorTest extends ProxyContextRestorer {
     private ShardingSphereDatabase getDatabase() throws SQLException {
         ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class);
         when(ruleMetaData.getRules()).thenReturn(Collections.singletonList(mock(AuthorityRule.class, RETURNS_DEEP_STUBS)));
-        return new ShardingSphereDatabase("sharding_db", new MySQLDatabaseType(), new ShardingSphereResource(new MySQLDatabaseType(), mockDatasourceMap()), ruleMetaData, Collections.emptyMap());
+        return new ShardingSphereDatabase("sharding_db", new MySQLDatabaseType(), new ShardingSphereResource(mockDatasourceMap()), ruleMetaData, Collections.emptyMap());
     }
     
     private ShardingSphereDatabase getEmptyDatabase(final String schemaName) {
         ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class);
         when(ruleMetaData.getRules()).thenReturn(Collections.singletonList(mock(AuthorityRule.class, RETURNS_DEEP_STUBS)));
-        return new ShardingSphereDatabase(schemaName, new MySQLDatabaseType(), new ShardingSphereResource(new MySQLDatabaseType(), Collections.emptyMap()), ruleMetaData, Collections.emptyMap());
+        return new ShardingSphereDatabase(schemaName, new MySQLDatabaseType(), new ShardingSphereResource(Collections.emptyMap()), ruleMetaData, Collections.emptyMap());
     }
     
     private Map<String, DataSource> mockDatasourceMap() throws SQLException {
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
+        when(connection.getMetaData().getURL()).thenReturn("jdbc:mysql://localhost:3306/foo_ds");
         when(connection.prepareStatement(any(String.class)).executeQuery()).thenReturn(RESULT_SET);
         return Collections.singletonMap("ds_0", new MockedDataSource(connection));
     }

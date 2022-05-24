@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 
@@ -38,16 +39,16 @@ import java.util.stream.Collectors;
 @Getter
 public final class ShardingSphereResource {
     
-    private final DatabaseType databaseType;
-    
     private final Map<String, DataSource> dataSources;
+    
+    private final DatabaseType databaseType;
     
     @Getter(AccessLevel.NONE)
     private final Map<String, DataSourceMetaData> dataSourceMetaDataMap;
     
-    public ShardingSphereResource(final DatabaseType databaseType, final Map<String, DataSource> dataSources) {
-        this.databaseType = databaseType;
+    public ShardingSphereResource(final Map<String, DataSource> dataSources) {
         this.dataSources = dataSources;
+        this.databaseType = dataSources.isEmpty() ? null : DatabaseTypeEngine.getDatabaseType(dataSources.values());
         dataSourceMetaDataMap = new LinkedHashMap<>(dataSources.size(), 1);
         for (Entry<String, DataSource> entry : dataSources.entrySet()) {
             Map<String, Object> standardProps = DataSourcePropertiesCreator.create(entry.getValue()).getConnectionPropertySynonyms().getStandardProperties();

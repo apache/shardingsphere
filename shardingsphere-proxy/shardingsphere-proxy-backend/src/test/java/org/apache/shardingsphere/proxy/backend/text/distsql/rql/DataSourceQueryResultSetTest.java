@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.rql;
 
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
@@ -39,7 +38,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public final class DataSourceQueryResultSetTest {
     
     @Mock
@@ -47,7 +46,7 @@ public final class DataSourceQueryResultSetTest {
     
     @Before
     public void before() {
-        ShardingSphereResource resource = new ShardingSphereResource(new MySQLDatabaseType(), Collections.singletonMap("foo_ds", createDataSource()));
+        ShardingSphereResource resource = new ShardingSphereResource(Collections.singletonMap("foo_ds", createDataSource()));
         when(database.getResource()).thenReturn(resource);
     }
     

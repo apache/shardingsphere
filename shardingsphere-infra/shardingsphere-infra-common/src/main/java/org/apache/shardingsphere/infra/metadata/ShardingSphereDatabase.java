@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -92,14 +91,13 @@ public final class ShardingSphereDatabase {
     
     private static ShardingSphereDatabase create(final String name, final DatabaseType protocolType, final DatabaseConfiguration databaseConfig,
                                                  final Collection<ShardingSphereRule> rules, final Map<String, ShardingSphereSchema> schemas) {
-        ShardingSphereResource resource = createResource(protocolType, databaseConfig.getDataSources());
+        ShardingSphereResource resource = createResource(databaseConfig.getDataSources());
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(databaseConfig.getRuleConfigurations(), rules);
         return new ShardingSphereDatabase(name, protocolType, resource, ruleMetaData, schemas);
     }
     
-    private static ShardingSphereResource createResource(final DatabaseType protocolType, final Map<String, DataSource> dataSourceMap) {
-        DatabaseType databaseType = dataSourceMap.isEmpty() ? protocolType : DatabaseTypeEngine.getDatabaseType(dataSourceMap.values());
-        return new ShardingSphereResource(databaseType, dataSourceMap);
+    private static ShardingSphereResource createResource(final Map<String, DataSource> dataSourceMap) {
+        return new ShardingSphereResource(dataSourceMap);
     }
     
     /**

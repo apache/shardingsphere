@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sharding.distsql.checker;
 
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
@@ -57,10 +56,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public final class ShardingRuleStatementCheckerTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
@@ -71,7 +69,7 @@ public final class ShardingRuleStatementCheckerTest {
     
     private final ShardingRuleConfiguration shardingRuleConfig = createShardingRuleConfiguration();
     
-    private final ShardingSphereResource shardingSphereResource = new ShardingSphereResource(mock(DatabaseType.class), createDataSource());
+    private final ShardingSphereResource shardingSphereResource = new ShardingSphereResource(createDataSource());
     
     @Before
     public void before() {
