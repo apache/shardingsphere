@@ -255,7 +255,7 @@ public final class ContextManagerTest {
         contextManager.reloadMetaData("foo_db", "foo_schema");
         verify(schemaMetaDataPersistService, times(1)).persistTables(eq("foo_db"), eq("foo_schema"), any(ShardingSphereSchema.class));
         contextManager.reloadMetaData("foo_db", "foo_schema", "foo_table");
-        assertNotNull(contextManager.getMetaDataContexts().getDatabaseMetaData("foo_db").getSchemas().get("foo_schema"));
+        assertNotNull(contextManager.getMetaDataContexts().getDatabaseMetaData("foo_db").getSchemas().get("foo_db"));
         assertTrue(contextManager.getMetaDataContexts().getDatabaseMetaData("foo_db").getResource().getDataSources().containsKey("foo_ds"));
     }
     
