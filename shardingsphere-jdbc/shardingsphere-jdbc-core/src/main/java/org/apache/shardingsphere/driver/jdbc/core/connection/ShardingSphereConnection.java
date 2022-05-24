@@ -19,10 +19,10 @@ package org.apache.shardingsphere.driver.jdbc.core.connection;
 
 import lombok.Getter;
 import org.apache.shardingsphere.driver.jdbc.adapter.AbstractConnectionAdapter;
+import org.apache.shardingsphere.driver.jdbc.context.JDBCContext;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement;
-import org.apache.shardingsphere.infra.metadata.resource.CachedDatabaseMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.traffic.context.TrafficContextHolder;
 import org.apache.shardingsphere.transaction.TransactionHolder;
@@ -46,7 +46,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     private final ContextManager contextManager;
     
     @Getter
-    private final CachedDatabaseMetaData cachedDatabaseMetaData;
+    private final JDBCContext jdbcContext;
     
     @Getter
     private final ConnectionManager connectionManager;
@@ -59,10 +59,10 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     
     private volatile boolean closed;
     
-    public ShardingSphereConnection(final String databaseName, final ContextManager contextManager, final CachedDatabaseMetaData cachedDatabaseMetaData) {
+    public ShardingSphereConnection(final String databaseName, final ContextManager contextManager, final JDBCContext jdbcContext) {
         this.databaseName = databaseName;
         this.contextManager = contextManager;
-        this.cachedDatabaseMetaData = cachedDatabaseMetaData;
+        this.jdbcContext = jdbcContext;
         connectionManager = new ConnectionManager(databaseName, contextManager);
     }
     

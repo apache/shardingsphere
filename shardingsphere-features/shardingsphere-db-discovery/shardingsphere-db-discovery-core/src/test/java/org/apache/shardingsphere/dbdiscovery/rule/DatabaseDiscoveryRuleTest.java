@@ -22,6 +22,7 @@ import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDa
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHeartBeatConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
+import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -36,11 +37,10 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
 
 public final class DatabaseDiscoveryRuleTest {
     
-    private final Map<String, DataSource> dataSourceMap = Collections.singletonMap("primary", mock(DataSource.class));
+    private final Map<String, DataSource> dataSourceMap = Collections.singletonMap("primary", new MockedDataSource());
     
     @Test
     public void assertFindDataSourceRule() {
