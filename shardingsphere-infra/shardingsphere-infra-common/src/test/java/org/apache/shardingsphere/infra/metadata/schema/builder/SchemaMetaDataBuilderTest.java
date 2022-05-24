@@ -37,7 +37,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class TableMetaDataBuilderTest {
+public final class SchemaMetaDataBuilderTest {
     
     @Mock
     private DatabaseType databaseType;
@@ -47,14 +47,14 @@ public final class TableMetaDataBuilderTest {
     
     @Test
     public void assertLoadWithExistedTableName() throws SQLException {
-        assertFalse(TableMetaDataBuilder.load(Collections.singletonList("data_node_routed_table1"), new SchemaBuilderMaterials(
+        assertFalse(SchemaMetaDataBuilder.load(Collections.singletonList("data_node_routed_table1"), new SchemaBuilderMaterials(
                 databaseType, databaseType, Collections.singletonMap("logic_db", dataSource), Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule()),
                 new ConfigurationProperties(new Properties()), "sharding_db")).isEmpty());
     }
     
     @Test
     public void assertLoadWithNotExistedTableName() throws SQLException {
-        assertTrue(TableMetaDataBuilder.load(Collections.singletonList("invalid_table"), new SchemaBuilderMaterials(
+        assertTrue(SchemaMetaDataBuilder.load(Collections.singletonList("invalid_table"), new SchemaBuilderMaterials(
                 databaseType, databaseType, Collections.singletonMap("logic_db", dataSource), Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule()),
                 new ConfigurationProperties(new Properties()), "sharding_db")).isEmpty());
     }

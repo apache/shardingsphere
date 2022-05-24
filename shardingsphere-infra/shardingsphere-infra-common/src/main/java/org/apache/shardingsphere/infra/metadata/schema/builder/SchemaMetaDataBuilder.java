@@ -36,10 +36,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Table meta data builder.
+ * Schema meta data builder.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class TableMetaDataBuilder {
+public final class SchemaMetaDataBuilder {
     
     /**
      * Load table metadata.

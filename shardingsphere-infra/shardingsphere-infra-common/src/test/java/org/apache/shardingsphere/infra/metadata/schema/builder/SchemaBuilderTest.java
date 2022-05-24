@@ -38,6 +38,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -53,16 +54,13 @@ public final class SchemaBuilderTest {
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private DataSource dataSource;
     
-    @Mock
-    private ConfigurationProperties props;
-    
     @Test
     public void assertBuildOfAllShardingTables() throws SQLException {
         Collection<ShardingSphereRule> rules = Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule());
         Collection<String> tableNames = rules.stream().filter(each -> each instanceof TableContainedRule)
                 .flatMap(each -> ((TableContainedRule) each).getTables().stream()).collect(Collectors.toSet());
-        Map<String, SchemaMetaData> actual = TableMetaDataBuilder.load(tableNames,
-                new SchemaBuilderMaterials(databaseType, databaseType, Collections.singletonMap("logic_db", dataSource), rules, props, "sharding_db"));
+        Map<String, SchemaMetaData> actual = SchemaMetaDataBuilder.load(tableNames,
+                new SchemaBuilderMaterials(databaseType, databaseType, Collections.singletonMap("logic_db", dataSource), rules, new ConfigurationProperties(new Properties()), "sharding_db"));
         assertThat(actual.size(), is(1));
         ShardingSphereSchema schema = new ShardingSphereSchema(actual.values().iterator().next().getTables());
         assertThat(schema.getTables().keySet().size(), is(2));
