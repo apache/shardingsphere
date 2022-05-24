@@ -1276,15 +1276,11 @@ aliasClause
     | colId
     ;
 
-directoryname
+directoryName
     : name
     ;
 
 pathString
-    : stringLiterals
-    ;
-
-stringLiterals
     : STRING_
     ;
 

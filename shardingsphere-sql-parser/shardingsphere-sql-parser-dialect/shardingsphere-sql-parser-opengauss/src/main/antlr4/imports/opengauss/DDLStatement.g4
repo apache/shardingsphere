@@ -1953,7 +1953,7 @@ privilegeType
     ;
 
 createDirectory
-    : CREATE (OR REPLACE)? DIRECTORY directoryname AS pathString
+    : CREATE (OR REPLACE)? DIRECTORY directoryName AS pathString
     ;
 
 alterSchema
