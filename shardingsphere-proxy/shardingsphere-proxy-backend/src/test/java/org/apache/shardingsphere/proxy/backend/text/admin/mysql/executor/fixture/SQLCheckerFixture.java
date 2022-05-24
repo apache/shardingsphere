@@ -29,13 +29,13 @@ import java.util.Map;
 import java.util.function.BiPredicate;
 
 /**
- * Authority checker fixture.
+ * SQL checker fixture.
  */
-public final class AuthorityCheckerFixture implements SQLChecker<AuthorityRule> {
+public final class SQLCheckerFixture implements SQLChecker<AuthorityRule> {
     
     @Override
     public boolean check(final String databaseName, final Grantee grantee, final AuthorityRule authorityRule) {
-        return !"test".equals(databaseName);
+        return "sharding_db".equals(databaseName);
     }
     
     @Override

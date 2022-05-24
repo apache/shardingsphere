@@ -138,7 +138,7 @@ public final class SelectInformationExecutorTest extends ProxyContextRestorer {
         mockResultSet(mockResultSetMap);
         Map<String, ShardingSphereDatabase> databaseMap = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getDatabaseMap();
         databaseMap.put("sharding_db", getDatabase());
-        databaseMap.put("test", getEmptyDatabase("test"));
+        databaseMap.put("database_without_authority", getEmptyDatabase("database_without_authority"));
         SelectInformationSchemataExecutor selectSchemataExecutor = new SelectInformationSchemataExecutor((SelectStatement) sqlStatement, sql);
         selectSchemataExecutor.execute(connectionSession);
         assertThat(selectSchemataExecutor.getQueryResultMetaData().getColumnCount(), is(mockResultSetMap.size()));
@@ -148,11 +148,11 @@ public final class SelectInformationExecutorTest extends ProxyContextRestorer {
             if ("sharding_db".equals(selectSchemataExecutor.getMergedResult().getValue(1, String.class))) {
                 assertThat(selectSchemataExecutor.getMergedResult().getValue(2, String.class), is("utf8mb4"));
                 assertThat(selectSchemataExecutor.getMergedResult().getValue(3, String.class), is("utf8mb4_0900_ai_ci"));
-            } else if ("test".equals(selectSchemataExecutor.getMergedResult().getValue(1, String.class))) {
+            } else if ("database_without_authority".equals(selectSchemataExecutor.getMergedResult().getValue(1, String.class))) {
                 assertThat(selectSchemataExecutor.getMergedResult().getValue(2, String.class), is(""));
                 assertThat(selectSchemataExecutor.getMergedResult().getValue(3, String.class), is(""));
             } else {
-                fail("expected : `sharding_db` or `test`");
+                fail("expected : `sharding_db` or `database_without_authority`");
             }
         }
         assertThat(count, is(1));
