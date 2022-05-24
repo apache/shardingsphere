@@ -112,6 +112,4 @@ public final class DialectDDLGeneratorFactoryTest {
 		};
 		when(actual).thenReturn(excepted);
 	}
-
-
 }
