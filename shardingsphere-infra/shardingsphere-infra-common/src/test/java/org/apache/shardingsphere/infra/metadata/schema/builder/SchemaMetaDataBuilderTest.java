@@ -19,21 +19,26 @@ package org.apache.shardingsphere.infra.metadata.schema.builder;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.fixture.rule.CommonFixtureRule;
 import org.apache.shardingsphere.infra.metadata.schema.fixture.rule.DataNodeContainedFixtureRule;
+import org.apache.shardingsphere.infra.metadata.schema.model.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -42,21 +47,32 @@ public final class SchemaMetaDataBuilderTest {
     @Mock
     private DatabaseType databaseType;
     
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private DataSource dataSource;
-    
     @Test
     public void assertLoadWithExistedTableName() throws SQLException {
-        assertFalse(SchemaMetaDataBuilder.load(Collections.singletonList("data_node_routed_table1"), new SchemaBuilderMaterials(
-                databaseType, databaseType, Collections.singletonMap("logic_db", dataSource), Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule()),
-                new ConfigurationProperties(new Properties()), "sharding_db")).isEmpty());
+        SchemaBuilderMaterials materials = new SchemaBuilderMaterials(databaseType, databaseType, Collections.singletonMap("logic_db", new MockedDataSource()),
+                Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule()), new ConfigurationProperties(new Properties()), "sharding_db");
+        assertFalse(SchemaMetaDataBuilder.load(Collections.singletonList("data_node_routed_table1"), materials).isEmpty());
     }
     
     @Test
     public void assertLoadWithNotExistedTableName() throws SQLException {
-        assertTrue(SchemaMetaDataBuilder.load(Collections.singletonList("invalid_table"), new SchemaBuilderMaterials(
-                databaseType, databaseType, Collections.singletonMap("logic_db", dataSource), Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule()),
-                new ConfigurationProperties(new Properties()), "sharding_db")).isEmpty());
+        SchemaBuilderMaterials materials = new SchemaBuilderMaterials(databaseType, databaseType, Collections.singletonMap("logic_db", new MockedDataSource()), 
+                Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule()), new ConfigurationProperties(new Properties()), "sharding_db");
+        assertTrue(SchemaMetaDataBuilder.load(Collections.singletonList("invalid_table"), materials).isEmpty());
     }
     
+    @Test
+    public void assertLoadAllTables() throws SQLException {
+        SchemaBuilderMaterials materials = new SchemaBuilderMaterials(databaseType, databaseType, Collections.singletonMap("logic_db", new MockedDataSource()),
+                Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule()), new ConfigurationProperties(new Properties()), "sharding_db");
+        Map<String, SchemaMetaData> actual = SchemaMetaDataBuilder.load(new DataNodeContainedFixtureRule().getTables(), materials);
+        assertThat(actual.size(), is(1));
+        assertTables(new ShardingSphereSchema(actual.values().iterator().next().getTables()).getTables());
+    }
+    
+    private void assertTables(final Map<String, TableMetaData> actual) {
+        assertThat(actual.size(), is(2));
+        assertTrue(actual.get("data_node_routed_table1").getColumns().isEmpty());
+        assertTrue(actual.get("data_node_routed_table2").getColumns().isEmpty());
+    }
 }
