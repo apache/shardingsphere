@@ -44,25 +44,25 @@
             <groupId>org.jboss.narayana.jta</groupId>
             <artifactId>jta</artifactId>
             <version>${narayana.version}</version>
-            <!--            <scope>provided</scope>-->
+                        <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.jboss.narayana.jts</groupId>
             <artifactId>narayana-jts-integration</artifactId>
             <version>${narayana.version}</version>
-            <!--            <scope>provided</scope>-->
+                        <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.jboss</groupId>
             <artifactId>jboss-transaction-spi</artifactId>
             <version>${jboss-transaction-spi.version}</version>
-            <!--            <scope>provided</scope>-->
+                        <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.jboss.logging</groupId>
             <artifactId>jboss-logging</artifactId>
             <version>${jboss-logging.version}</version>
-            <!--            <scope>provided</scope>-->
+                        <scope>provided</scope>
         </dependency>
         
         <dependency>
