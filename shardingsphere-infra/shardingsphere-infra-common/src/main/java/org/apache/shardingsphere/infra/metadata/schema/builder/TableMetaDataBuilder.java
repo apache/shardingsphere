@@ -61,7 +61,7 @@ public final class TableMetaDataBuilder {
             Map<String, SchemaMetaData> schemaMetaDataMap = entry.getValue().load(needLoadTables, (TableContainedRule) entry.getKey(), materials);
             mergeSchemaMetaDataMap(result, schemaMetaDataMap.values());
         }
-        return decorate(result, materials);
+        return decorate(translateSchema(result, materials), materials);
     }
     
     private static Collection<String> getNeedLoadTables(final Collection<String> tableNames, final Collection<SchemaMetaData> schemaMetaDataList, final TableContainedRule rule) {
@@ -90,19 +90,7 @@ public final class TableMetaDataBuilder {
         }
     }
     
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    private static Map<String, SchemaMetaData> decorate(final Map<String, SchemaMetaData> schemaMetaDataMap, final SchemaBuilderMaterials materials) throws SQLException {
-        Map<String, SchemaMetaData> result = new LinkedHashMap<>(convertToFrontendSchemaMetaDataMap(schemaMetaDataMap, materials));
-        for (Entry<ShardingSphereRule, RuleBasedSchemaMetaDataBuilder> entry : RuleBasedSchemaMetaDataBuilderFactory.getInstances(materials.getRules()).entrySet()) {
-            if (!(entry.getKey() instanceof TableContainedRule)) {
-                continue;
-            }
-            result.putAll(entry.getValue().decorate(result, (TableContainedRule) entry.getKey(), materials));
-        }
-        return result;
-    }
-    
-    private static Map<String, SchemaMetaData> convertToFrontendSchemaMetaDataMap(final Map<String, SchemaMetaData> schemaMetaDataMap, final SchemaBuilderMaterials materials) {
+    private static Map<String, SchemaMetaData> translateSchema(final Map<String, SchemaMetaData> schemaMetaDataMap, final SchemaBuilderMaterials materials) {
         DatabaseType protocolType = materials.getProtocolType();
         DatabaseType storageType = materials.getStorageType();
         if (protocolType.equals(storageType)) {
@@ -113,6 +101,18 @@ public final class TableMetaDataBuilder {
                 DatabaseTypeEngine.getDefaultSchemaName(storageType, materials.getDefaultSchemaName()))).map(SchemaMetaData::getTables).orElseGet(Collections::emptyMap);
         String frontendSchemaName = DatabaseTypeEngine.getDefaultSchemaName(protocolType, materials.getDefaultSchemaName());
         result.put(frontendSchemaName, new SchemaMetaData(frontendSchemaName, tableMetaDataMap));
+        return result;
+    }
+    
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private static Map<String, SchemaMetaData> decorate(final Map<String, SchemaMetaData> schemaMetaDataMap, final SchemaBuilderMaterials materials) throws SQLException {
+        Map<String, SchemaMetaData> result = new LinkedHashMap<>(schemaMetaDataMap);
+        for (Entry<ShardingSphereRule, RuleBasedSchemaMetaDataBuilder> entry : RuleBasedSchemaMetaDataBuilderFactory.getInstances(materials.getRules()).entrySet()) {
+            if (!(entry.getKey() instanceof TableContainedRule)) {
+                continue;
+            }
+            result.putAll(entry.getValue().decorate(result, (TableContainedRule) entry.getKey(), materials));
+        }
         return result;
     }
 }
