@@ -63,14 +63,14 @@ public final class TableMetaDataBuilder {
         for (Entry<ShardingSphereRule, RuleBasedSchemaMetaDataBuilder> entry : RuleBasedSchemaMetaDataBuilderFactory.getInstances(materials.getRules()).entrySet()) {
             ShardingSphereRule rule = entry.getKey();
             if (rule instanceof TableContainedRule) {
-                Collection<String> needLoadTables = getNeedLoadTables(tableNames, result.values(), (TableContainedRule) rule);
-                mergeSchemaMetaDataMap(result, entry.getValue().load(needLoadTables, (TableContainedRule) rule, materials).values());
+                Collection<String> loadingTables = filterLoadingTables(tableNames, (TableContainedRule) rule, result.values());
+                mergeSchemaMetaDataMap(result, entry.getValue().load(loadingTables, (TableContainedRule) rule, materials).values());
             }
         }
         return result;
     }
     
-    private static Collection<String> getNeedLoadTables(final Collection<String> tableNames, final Collection<SchemaMetaData> schemaMetaDataList, final TableContainedRule rule) {
+    private static Collection<String> filterLoadingTables(final Collection<String> tableNames, final TableContainedRule rule, final Collection<SchemaMetaData> schemaMetaDataList) {
         return tableNames.stream().filter(each -> rule.getTables().contains(each) && !isSchemaContainsTable(schemaMetaDataList, each)).collect(Collectors.toList());
     }
     
