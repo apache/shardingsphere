@@ -52,10 +52,7 @@ public final class EncryptSchemaMetaDataBuilder implements RuleBasedSchemaMetaDa
             return Collections.emptyMap();
         }
         Collection<TableMetaDataLoaderMaterial> tableMetaDataLoaderMaterials = TableMetaDataUtil.getTableMetaDataLoadMaterial(needLoadTables, materials, false);
-        if (tableMetaDataLoaderMaterials.isEmpty()) {
-            return Collections.emptyMap();
-        }
-        return SchemaMetaDataLoaderEngine.load(tableMetaDataLoaderMaterials, materials.getStorageType());
+        return tableMetaDataLoaderMaterials.isEmpty() ? Collections.emptyMap() : SchemaMetaDataLoaderEngine.load(tableMetaDataLoaderMaterials, materials.getStorageType());
     }
     
     @Override
