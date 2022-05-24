@@ -53,9 +53,10 @@ public final class TableMetaDataBuilder {
     public static Map<String, SchemaMetaData> load(final Collection<String> tableNames, final SchemaBuilderMaterials materials) throws SQLException {
         Map<String, SchemaMetaData> result = new LinkedHashMap<>();
         for (Entry<ShardingSphereRule, RuleBasedSchemaMetaDataBuilder> entry : RuleBasedSchemaMetaDataBuilderFactory.getInstances(materials.getRules()).entrySet()) {
-            if (entry.getKey() instanceof TableContainedRule) {
-                Collection<String> needLoadTables = getNeedLoadTables(tableNames, result.values(), (TableContainedRule) entry.getKey());
-                Map<String, SchemaMetaData> schemaMetaDataMap = entry.getValue().load(needLoadTables, (TableContainedRule) entry.getKey(), materials);
+            ShardingSphereRule rule = entry.getKey();
+            if (rule instanceof TableContainedRule) {
+                Collection<String> needLoadTables = getNeedLoadTables(tableNames, result.values(), (TableContainedRule) rule);
+                Map<String, SchemaMetaData> schemaMetaDataMap = entry.getValue().load(needLoadTables, (TableContainedRule) rule, materials);
                 mergeSchemaMetaDataMap(result, schemaMetaDataMap.values());
             }
         }
