@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 public final class SchemaMetaDataBuilder {
     
     /**
-     * Load table metadata.
+     * Load table meta data.
      *
      * @param tableNames table names
      * @param materials schema builder materials
