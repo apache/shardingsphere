@@ -49,9 +49,11 @@ public final class RuleAlteredJobContext {
     
     private final int shardingItem;
     
-    private JobStatus status = JobStatus.RUNNING;
+    private volatile boolean stopping;
     
-    private JobProgress initProgress;
+    private volatile JobStatus status = JobStatus.RUNNING;
+    
+    private volatile JobProgress initProgress;
     
     private final TaskConfiguration taskConfig;
     
@@ -81,12 +83,11 @@ public final class RuleAlteredJobContext {
         }
     };
     
-    private RuleAlteredJobPreparer jobPreparer;
+    private volatile RuleAlteredJobPreparer jobPreparer;
     
     public RuleAlteredJobContext(final RuleAlteredJobConfiguration jobConfig, final int jobShardingItem) {
         ruleAlteredContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
         this.jobConfig = jobConfig;
-        jobConfig.buildHandleConfig();
         jobId = jobConfig.getJobId();
         this.shardingItem = jobShardingItem;
         taskConfig = RuleAlteredJobWorker.buildTaskConfig(jobConfig, jobShardingItem, ruleAlteredContext.getOnRuleAlteredActionConfig());

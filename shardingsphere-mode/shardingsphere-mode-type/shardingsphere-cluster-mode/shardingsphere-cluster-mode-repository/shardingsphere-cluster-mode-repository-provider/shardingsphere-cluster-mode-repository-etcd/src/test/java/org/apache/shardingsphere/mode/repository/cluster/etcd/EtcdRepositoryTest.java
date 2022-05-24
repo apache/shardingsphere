@@ -39,8 +39,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.internal.util.reflection.FieldSetter;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.plugins.MemberAccessor;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -103,12 +104,14 @@ public final class EtcdRepositoryTest {
     @SneakyThrows(ReflectiveOperationException.class)
     private void setClient() {
         mockClient();
-        FieldSetter.setField(repository, repository.getClass().getDeclaredField("client"), client);
+        MemberAccessor accessor = Plugins.getMemberAccessor();
+        accessor.set(repository.getClass().getDeclaredField("client"), repository, client);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void setProperties() {
-        FieldSetter.setField(repository, repository.getClass().getDeclaredField("etcdProps"), new EtcdProperties(new Properties()));
+        MemberAccessor accessor = Plugins.getMemberAccessor();
+        accessor.set(repository.getClass().getDeclaredField("etcdProps"), repository, new EtcdProperties(new Properties()));
     }
     
     @SuppressWarnings("unchecked")
@@ -264,7 +267,7 @@ public final class EtcdRepositoryTest {
         }
     }
     
-    @SneakyThrows({NoSuchFieldException.class, SecurityException.class})
+    @SneakyThrows({NoSuchFieldException.class, SecurityException.class, IllegalAccessException.class})
     private WatchResponse buildWatchResponse(final WatchEvent.EventType eventType) {
         WatchResponse result = new WatchResponse(mock(io.etcd.jetcd.api.WatchResponse.class), ByteSequence.EMPTY);
         List<WatchEvent> events = new LinkedList<>();
@@ -273,7 +276,8 @@ public final class EtcdRepositoryTest {
                 .setValue(ByteString.copyFromUtf8("value1")).build();
         KeyValue keyValue = new KeyValue(keyValue1, ByteSequence.EMPTY);
         events.add(new WatchEvent(keyValue, mock(KeyValue.class), eventType));
-        FieldSetter.setField(result, result.getClass().getDeclaredField("events"), events);
+        MemberAccessor accessor = Plugins.getMemberAccessor();
+        accessor.set(result.getClass().getDeclaredField("events"), result, events);
         return result;
     }
 }

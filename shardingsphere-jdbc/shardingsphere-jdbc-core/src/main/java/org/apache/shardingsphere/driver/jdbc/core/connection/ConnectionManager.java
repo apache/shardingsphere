@@ -84,7 +84,7 @@ public final class ConnectionManager implements ExecutorJDBCConnectionManager, A
     
     private Map<String, DataSource> getTrafficDataSourceMap(final String schema, final ContextManager contextManager) {
         Optional<TrafficRule> trafficRule = contextManager.getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(TrafficRule.class);
-        Optional<MetaDataPersistService> metaDataPersistService = contextManager.getMetaDataContexts().getMetaDataPersistService();
+        Optional<MetaDataPersistService> metaDataPersistService = contextManager.getMetaDataContexts().getPersistService();
         if (!trafficRule.isPresent() || trafficRule.get().getStrategyRules().isEmpty() || !metaDataPersistService.isPresent()) {
             return Collections.emptyMap();
         }

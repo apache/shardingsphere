@@ -48,7 +48,7 @@ public final class CreateTrafficRuleHandler extends UpdatableRALBackendHandler<C
     @Override
     protected void update(final ContextManager contextManager, final CreateTrafficRuleStatement sqlStatement) throws DistSQLException {
         Optional<TrafficRuleConfiguration> trafficRuleConfig = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData()
-                .findRuleConfiguration(TrafficRuleConfiguration.class).stream().findAny();
+                .findRuleConfigurations(TrafficRuleConfiguration.class).stream().findAny();
         if (trafficRuleConfig.isPresent()) {
             checkTrafficRuleConfiguration(sqlStatement, trafficRuleConfig.get());
         }
@@ -83,7 +83,7 @@ public final class CreateTrafficRuleHandler extends UpdatableRALBackendHandler<C
         } else {
             setUpCurrentRuleConfiguration(toBeCreatedRuleConfig, currentRuleConfig);
         }
-        Optional<MetaDataPersistService> metaDataPersistService = metaDataContexts.getMetaDataPersistService();
+        Optional<MetaDataPersistService> metaDataPersistService = metaDataContexts.getPersistService();
         metaDataPersistService.ifPresent(optional -> optional.getGlobalRuleService().persist(globalRuleConfigs, true));
     }
     

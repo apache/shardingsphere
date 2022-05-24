@@ -25,22 +25,21 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
-import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrlAppender;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.cases.command.CommonSQLCommand;
 import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.integration.data.pipeline.env.enums.ITEnvTypeEnum;
-import org.apache.shardingsphere.integration.data.pipeline.framework.ITWatcher;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.BaseComposedContainer;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.DockerComposedContainer;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.NativeComposedContainer;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.database.DockerDatabaseContainer;
+import org.apache.shardingsphere.integration.data.pipeline.framework.helper.ScalingCaseHelper;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
 import org.apache.shardingsphere.integration.data.pipeline.util.DatabaseTypeUtil;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
 import org.junit.After;
-import org.junit.Rule;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
@@ -68,19 +67,15 @@ import static org.junit.Assert.assertTrue;
 @Getter(AccessLevel.PROTECTED)
 public abstract class BaseITCase {
     
-    protected static final String ADD_RESOURCE_TEMPLATE = "ADD RESOURCE %s (URL='%s',USER=%s,PASSWORD=%s)";
-    
     protected static final JdbcUrlAppender JDBC_URL_APPENDER = new JdbcUrlAppender();
     
     private static final IntegrationTestEnvironment ENV = IntegrationTestEnvironment.getInstance();
     
-    @Rule
-    @Getter(AccessLevel.NONE)
-    public ITWatcher watcher = new ITWatcher();
-    
     private final BaseComposedContainer composedContainer;
     
     private final CommonSQLCommand commonSQLCommand;
+    
+    private final DatabaseType databaseType;
     
     private JdbcTemplate jdbcTemplate;
     
@@ -88,6 +83,7 @@ public abstract class BaseITCase {
     private Thread increaseTaskThread;
     
     public BaseITCase(final ScalingParameterized parameterized) {
+        databaseType = parameterized.getDatabaseType();
         if (ENV.getItEnvType() == ITEnvTypeEnum.DOCKER) {
             composedContainer = new DockerComposedContainer(parameterized.getDatabaseType(), parameterized.getDockerImageName());
         } else {
@@ -101,15 +97,13 @@ public abstract class BaseITCase {
     @SneakyThrows
     protected void createProxyDatabase(final DatabaseType databaseType) {
         JdbcUrlAppender jdbcUrlAppender = new JdbcUrlAppender();
-        Properties queryProps = createQueryProperties();
+        Properties queryProps = ScalingCaseHelper.getQueryPropertiesByDatabaseType(databaseType);
         String defaultDatabaseName = DatabaseTypeUtil.isPostgreSQL(databaseType) ? "postgres" : "";
         try (Connection connection = DriverManager.getConnection(jdbcUrlAppender.appendQueryProperties(composedContainer.getProxyJdbcUrl(defaultDatabaseName), queryProps), "root", "root")) {
             connection.createStatement().execute("CREATE DATABASE sharding_db");
         }
         jdbcTemplate = new JdbcTemplate(getProxyDataSource("sharding_db"));
     }
-    
-    protected abstract Properties createQueryProperties();
     
     private DataSource getProxyDataSource(final String databaseName) {
         HikariDataSource result = new HikariDataSource();
@@ -122,17 +116,55 @@ public abstract class BaseITCase {
         return result;
     }
     
-    protected void addResource(final Connection connection) throws SQLException {
-        addResource(connection, "root", "root");
+    protected boolean waitShardingAlgorithmEffect(final int maxWaitTimes) throws InterruptedException {
+        long startTime = System.currentTimeMillis();
+        int waitTimes = 0;
+        do {
+            List<Map<String, Object>> result = jdbcTemplate.queryForList("SHOW SHARDING ALGORITHMS");
+            if (result.size() >= 3) {
+                log.info("waitShardingAlgorithmEffect time consume: {}", System.currentTimeMillis() - startTime);
+                return true;
+            }
+            TimeUnit.SECONDS.sleep(2);
+            waitTimes++;
+        } while (waitTimes <= maxWaitTimes);
+        return false;
     }
     
-    protected void addResource(final Connection connection, final String username, final String password) throws SQLException {
-        Properties queryProps = createQueryProperties();
-        connection.createStatement().execute(String.format(ADD_RESOURCE_TEMPLATE, "ds_0", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_0"), queryProps), username, password));
-        connection.createStatement().execute(String.format(ADD_RESOURCE_TEMPLATE, "ds_1", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_1"), queryProps), username, password));
-        connection.createStatement().execute(String.format(ADD_RESOURCE_TEMPLATE, "ds_2", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_2"), queryProps), username, password));
-        connection.createStatement().execute(String.format(ADD_RESOURCE_TEMPLATE, "ds_3", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_3"), queryProps), username, password));
-        connection.createStatement().execute(String.format(ADD_RESOURCE_TEMPLATE, "ds_4", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_4"), queryProps), username, password));
+    @SneakyThrows
+    protected void addSourceResource() {
+        Properties queryProps = ScalingCaseHelper.getQueryPropertiesByDatabaseType(databaseType);
+        // TODO if mysql can append database firstly, they can be combined
+        if (databaseType instanceof MySQLDatabaseType) {
+            try (Connection connection = DriverManager.getConnection(JDBC_URL_APPENDER.appendQueryProperties(getComposedContainer().getProxyJdbcUrl(""), queryProps), "root", "root")) {
+                connection.createStatement().execute("USE sharding_db");
+                addSourceResource0(connection);
+            }
+        } else {
+            try (Connection connection = DriverManager.getConnection(JDBC_URL_APPENDER.appendQueryProperties(getComposedContainer().getProxyJdbcUrl("sharding_db"), queryProps), "root", "root")) {
+                addSourceResource0(connection);
+            }
+        }
+    }
+    
+    private void addSourceResource0(final Connection connection) throws SQLException {
+        Properties queryProps = ScalingCaseHelper.getQueryPropertiesByDatabaseType(databaseType);
+        String addSourceResource = commonSQLCommand.getSourceAddResourceTemplate().replace("${user}", ScalingCaseHelper.getUsername(databaseType))
+                .replace("${password}", ScalingCaseHelper.getPassword(databaseType))
+                .replace("${ds0}", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_0"), queryProps))
+                .replace("${ds1}", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_1"), queryProps));
+        connection.createStatement().execute(addSourceResource);
+    }
+    
+    @SneakyThrows
+    protected void addTargetResource() {
+        Properties queryProps = ScalingCaseHelper.getQueryPropertiesByDatabaseType(databaseType);
+        String addTargetResource = commonSQLCommand.getTargetAddResourceTemplate().replace("${user}", ScalingCaseHelper.getUsername(databaseType))
+                .replace("${password}", ScalingCaseHelper.getPassword(databaseType))
+                .replace("${ds2}", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_2"), queryProps))
+                .replace("${ds3}", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_3"), queryProps))
+                .replace("${ds4}", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_4"), queryProps));
+        getJdbcTemplate().execute(addTargetResource);
     }
     
     private String getActualJdbcUrlTemplate(final String databaseName) {
@@ -144,9 +176,11 @@ public abstract class BaseITCase {
         }
     }
     
-    protected void initShardingAlgorithm() {
+    protected void initShardingAlgorithm() throws InterruptedException {
         jdbcTemplate.execute(getCommonSQLCommand().getCreateDatabaseShardingAlgorithm());
+        TimeUnit.SECONDS.sleep(2);
         jdbcTemplate.execute(getCommonSQLCommand().getCreateOrderShardingAlgorithm());
+        TimeUnit.SECONDS.sleep(2);
         jdbcTemplate.execute(getCommonSQLCommand().getCreateOrderItemShardingAlgorithm());
     }
     
@@ -170,6 +204,11 @@ public abstract class BaseITCase {
         jdbcTemplate.execute(String.format("CREATE SCHEMA %s", schemaName));
     }
     
+    protected void startIncrementTask(final BaseIncrementTask baseIncrementTask) {
+        setIncreaseTaskThread(new Thread(baseIncrementTask));
+        getIncreaseTaskThread().start();
+    }
+    
     protected void assertOriginalSourceSuccess() {
         List<Map<String, Object>> previewResults = getJdbcTemplate().queryForList("PREVIEW SELECT COUNT(1) FROM t_order");
         Set<Object> originalSources = previewResults.stream().map(each -> each.get("data_source_name")).collect(Collectors.toSet());
@@ -179,13 +218,19 @@ public abstract class BaseITCase {
     /**
      * Check data match consistency.
      *
-     * @param jdbcTemplate jdbc template
-     * @param jobId job id
      * @throws InterruptedException interrupted exception
      */
-    protected void assertCheckMatchConsistencySuccess(final JdbcTemplate jdbcTemplate, final String jobId) throws InterruptedException {
+    protected void assertCheckMatchConsistencySuccess() throws InterruptedException {
+        if (null != increaseTaskThread) {
+            increaseTaskThread.join(60 * 1000L);
+        }
+        TimeUnit.SECONDS.sleep(2);
+        List<Map<String, Object>> scalingListMap = getJdbcTemplate().queryForList("SHOW SCALING LIST");
+        assertThat(scalingListMap.size(), is(1));
+        Object jobId = scalingListMap.get(0).get("id");
+        log.info("jobId: {}", jobId);
         Map<String, String> actualStatusMap = new HashMap<>(2, 1);
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 15; i++) {
             List<Map<String, Object>> showScalingStatusResMap = jdbcTemplate.queryForList(String.format("SHOW SCALING STATUS %s", jobId));
             log.info("actualStatusMap: {}", actualStatusMap);
             boolean finished = true;
@@ -209,22 +254,20 @@ public abstract class BaseITCase {
         assertThat(actualStatusMap.values().stream().filter(StringUtils::isNotBlank).collect(Collectors.toSet()).size(), is(1));
         jdbcTemplate.execute(String.format("STOP SCALING SOURCE WRITING %s", jobId));
         List<Map<String, Object>> checkScalingResults = jdbcTemplate.queryForList(String.format("CHECK SCALING %s BY TYPE (NAME=DATA_MATCH)", jobId));
+        log.info("checkScalingResults: {}", checkScalingResults);
         for (Map<String, Object> entry : checkScalingResults) {
             assertTrue(Boolean.parseBoolean(entry.get("records_content_matched").toString()));
         }
         jdbcTemplate.execute(String.format("APPLY SCALING %s", jobId));
         // TODO make sure the scaling job was applied
-        ThreadUtil.sleep(2000);
+        TimeUnit.SECONDS.sleep(2);
         List<Map<String, Object>> previewResults = jdbcTemplate.queryForList("PREVIEW SELECT COUNT(1) FROM t_order");
-        Set<Object> originalSources = previewResults.stream().map(each -> each.get("data_source_name")).collect(Collectors.toSet());
-        assertThat(originalSources, is(new HashSet<>(Arrays.asList("ds_2", "ds_3", "ds_4"))));
+        Set<Object> targetSources = previewResults.stream().map(each -> each.get("data_source_name")).collect(Collectors.toSet());
+        assertThat(targetSources, is(new HashSet<>(Arrays.asList("ds_2", "ds_3", "ds_4"))));
     }
     
     @After
     public void stopContainer() {
-        if (composedContainer instanceof DockerComposedContainer) {
-            log.info(((DockerComposedContainer) composedContainer).getProxyContainer().getLogs());
-        }
         composedContainer.stop();
     }
 }

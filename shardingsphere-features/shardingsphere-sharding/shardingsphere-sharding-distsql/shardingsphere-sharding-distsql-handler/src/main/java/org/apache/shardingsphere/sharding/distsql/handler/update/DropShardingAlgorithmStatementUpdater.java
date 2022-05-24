@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.AlgorithmInUsedExc
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredAlgorithmMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingAlgorithmStatement;
@@ -37,12 +37,12 @@ import java.util.stream.Collectors;
 public final class DropShardingAlgorithmStatementUpdater implements RuleDefinitionDropUpdater<DropShardingAlgorithmStatement, ShardingRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final DropShardingAlgorithmStatement sqlStatement,
-                                  final ShardingRuleConfiguration currentRuleConfig) throws RuleDefinitionViolationException {
+    public void checkSQLStatement(final ShardingSphereDatabase database,
+                                  final DropShardingAlgorithmStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws RuleDefinitionViolationException {
         if (null == currentRuleConfig && sqlStatement.isContainsExistClause()) {
             return;
         }
-        String databaseName = shardingSphereMetaData.getDatabaseName();
+        String databaseName = database.getName();
         checkCurrentRuleConfiguration(databaseName, currentRuleConfig);
         checkToBeDroppedShardingAlgorithms(databaseName, sqlStatement, currentRuleConfig);
         checkShardingAlgorithmsInUsed(databaseName, sqlStatement, currentRuleConfig);

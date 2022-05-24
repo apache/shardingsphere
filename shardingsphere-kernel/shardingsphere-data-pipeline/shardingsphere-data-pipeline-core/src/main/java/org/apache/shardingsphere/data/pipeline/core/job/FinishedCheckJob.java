@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.data.pipeline.core.job;
 
-import io.vertx.core.impl.ConcurrentHashSet;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPI;
+import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.yaml.RuleAlteredJobConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.api.detect.RuleAlteredJobAlmostCompletedParameter;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
@@ -32,18 +32,18 @@ import org.apache.shardingsphere.data.pipeline.spi.lock.RowBasedJobLock;
 import org.apache.shardingsphere.data.pipeline.spi.lock.RuleBasedJobLock;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
-import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 @Slf4j
 public final class FinishedCheckJob implements SimpleJob {
     
     private final RuleAlteredJobAPI ruleAlteredJobAPI = RuleAlteredJobAPIFactory.getInstance();
     
-    private final Set<String> onCheckJobIds = new ConcurrentHashSet<>();
+    private final Set<String> onCheckJobIds = new ConcurrentSkipListSet<>();
     
     // TODO only one proxy node could do data consistency check in proxy cluster
     @Override
@@ -64,7 +64,7 @@ public final class FinishedCheckJob implements SimpleJob {
             onCheckJobIds.add(jobId);
             try {
                 // TODO refactor: dispatch to different job types
-                RuleAlteredJobConfiguration jobConfig = YamlEngine.unmarshal(jobInfo.getJobParameter(), RuleAlteredJobConfiguration.class, true);
+                RuleAlteredJobConfiguration jobConfig = RuleAlteredJobConfigurationSwapper.swapToObject(jobInfo.getJobParameter());
                 RuleAlteredContext ruleAlteredContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
                 if (null == ruleAlteredContext.getCompletionDetectAlgorithm()) {
                     log.info("completionDetector not configured, auto switch will not be enabled. You could query job progress and switch config manually with DistSQL.");

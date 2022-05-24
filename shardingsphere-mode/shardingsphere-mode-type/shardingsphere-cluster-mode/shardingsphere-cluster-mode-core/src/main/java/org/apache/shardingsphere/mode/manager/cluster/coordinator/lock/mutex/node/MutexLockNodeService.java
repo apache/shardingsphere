@@ -17,27 +17,21 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.node;
 
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.global.AbstractGlobalLockNodeService;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.AbstractDistributeLockNodeService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeType;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeUtil;
 
 /**
  * Mutex lock node service.
  */
-public final class MutexLockNodeService extends AbstractGlobalLockNodeService {
+public final class MutexLockNodeService extends AbstractDistributeLockNodeService {
     
     @Override
     public String getSequenceNodePath() {
-        return PATH_DELIMITER + LOCK_ROOT + PATH_DELIMITER + LOCK_SCOPE_GLOBAL + PATH_DELIMITER + getLockLevel() + PATH_DELIMITER + "sequence";
+        return PATH_DELIMITER + LOCK_ROOT + PATH_DELIMITER + getLockTypeName() + PATH_DELIMITER + "sequence";
     }
     
     @Override
-    public String generateAckLockName(final String lockName, final String lockedInstanceId) {
-        return getLocksNodePath() + "/" + lockName + "/" + "ack" + "/" + LockNodeUtil.generateAckLockedName(lockName, lockedInstanceId);
-    }
-    
-    @Override
-    protected String getLockLevel() {
+    protected String getLockTypeName() {
         return "mutex";
     }
     

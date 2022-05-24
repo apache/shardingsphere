@@ -17,14 +17,16 @@
 
 package org.apache.shardingsphere.spring.namespace;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
-import org.apache.shardingsphere.readwritesplitting.strategy.type.StaticReadwriteSplittingStrategy;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
+import org.apache.shardingsphere.readwritesplitting.strategy.type.StaticReadwriteSplittingStrategy;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.spring.transaction.TransactionTypeScanner;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
@@ -33,6 +35,7 @@ import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
 import javax.annotation.Resource;
 import javax.sql.DataSource;
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
@@ -49,9 +52,16 @@ public abstract class AbstractSpringNamespaceTest extends AbstractJUnit4SpringCo
     
     @Test
     public void assertShardingSphereDataSource() {
-        assertDataSources(dataSource.getContextManager().getMetaDataContexts().getMetaData(DefaultDatabase.LOGIC_NAME).getResource().getDataSources());
-        assertSchemaRules(dataSource.getContextManager().getMetaDataContexts().getMetaData(DefaultDatabase.LOGIC_NAME).getRuleMetaData().getRules());
-        assertGlobalRules(dataSource.getContextManager().getMetaDataContexts().getGlobalRuleMetaData().getRules());
+        assertDataSources(getContextManager(dataSource).getMetaDataContexts().getDatabaseMetaData(DefaultDatabase.LOGIC_NAME).getResource().getDataSources());
+        assertSchemaRules(getContextManager(dataSource).getMetaDataContexts().getDatabaseMetaData(DefaultDatabase.LOGIC_NAME).getRuleMetaData().getRules());
+        assertGlobalRules(getContextManager(dataSource).getMetaDataContexts().getGlobalRuleMetaData().getRules());
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private ContextManager getContextManager(final ShardingSphereDataSource dataSource) {
+        Field field = ShardingSphereDataSource.class.getDeclaredField("contextManager");
+        field.setAccessible(true);
+        return (ContextManager) field.get(dataSource);
     }
     
     private void assertDataSources(final Map<String, DataSource> actual) {
@@ -117,7 +127,6 @@ public abstract class AbstractSpringNamespaceTest extends AbstractJUnit4SpringCo
     private void assertCacheOption(final CacheOption cacheOption) {
         assertThat(cacheOption.getInitialCapacity(), is(1024));
         assertThat(cacheOption.getMaximumSize(), is(1024L));
-        assertThat(cacheOption.getConcurrencyLevel(), is(4));
     }
     
     @Test

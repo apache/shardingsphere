@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex;
 
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockRegistryService;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.TimeoutMilliseconds;
 
 import java.util.concurrent.TimeUnit;
@@ -26,13 +26,10 @@ import java.util.concurrent.locks.Lock;
 /**
  * Inter mutex reentrant lock.
  */
+@RequiredArgsConstructor
 public final class InterReentrantMutexLock implements MutexLock {
     
     private final Lock internalLock;
-    
-    public InterReentrantMutexLock(final String lockName, final LockRegistryService lockRegistryService) {
-        this.internalLock = lockRegistryService.getInternalLock(lockName);
-    }
     
     @Override
     public boolean tryLock() {

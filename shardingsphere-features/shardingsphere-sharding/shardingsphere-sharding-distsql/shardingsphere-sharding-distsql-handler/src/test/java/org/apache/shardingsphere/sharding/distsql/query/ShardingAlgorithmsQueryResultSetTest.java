@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.distsql.query;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.query.ShardingAlgorithmsQueryResultSet;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingAlgorithmsStatement;
@@ -40,10 +40,10 @@ public final class ShardingAlgorithmsQueryResultSetTest {
     
     @Test
     public void assertGetRowData() {
-        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        when(metaData.getRuleMetaData().getConfigurations()).thenReturn(Collections.singleton(createRuleConfiguration()));
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.singleton(createRuleConfiguration()));
         ShardingAlgorithmsQueryResultSet resultSet = new ShardingAlgorithmsQueryResultSet();
-        resultSet.init(metaData, mock(ShowShardingAlgorithmsStatement.class));
+        resultSet.init(database, mock(ShowShardingAlgorithmsStatement.class));
         List<Object> actual = new ArrayList<>(resultSet.getRowData());
         assertThat(actual.size(), is(3));
         assertThat(actual.get(0), is("database_inline"));

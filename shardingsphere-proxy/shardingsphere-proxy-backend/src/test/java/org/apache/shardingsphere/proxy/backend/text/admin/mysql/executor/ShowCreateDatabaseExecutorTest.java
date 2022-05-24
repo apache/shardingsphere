@@ -19,9 +19,8 @@ package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -29,11 +28,11 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateDatabaseStatement;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
@@ -45,28 +44,26 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowCreateDatabaseExecutorTest {
+public final class ShowCreateDatabaseExecutorTest extends ProxyContextRestorer {
     
     private static final String DATABASE_PATTERN = "db_%s";
     
     @Before
-    public void setUp() throws NoSuchFieldException, IllegalAccessException {
-        Map<String, ShardingSphereMetaData> metaDataMap = getMetaDataMap();
-        Field contextManagerField = ProxyContext.getInstance().getClass().getDeclaredField("contextManager");
-        contextManagerField.setAccessible(true);
-        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
-                metaDataMap, mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
+    public void setUp() {
+        Map<String, ShardingSphereDatabase> databaseMap = getDatabaseMap();
+        MetaDataContexts metaDataContexts = new MetaDataContexts(
+                mock(MetaDataPersistService.class), databaseMap, mock(ShardingSphereRuleMetaData.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        contextManagerField.set(ProxyContext.getInstance(), contextManager);
+        ProxyContext.init(contextManager);
     }
     
-    private Map<String, ShardingSphereMetaData> getMetaDataMap() {
-        Map<String, ShardingSphereMetaData> result = new HashMap<>(10, 1);
+    private Map<String, ShardingSphereDatabase> getDatabaseMap() {
+        Map<String, ShardingSphereDatabase> result = new HashMap<>(10, 1);
         for (int i = 0; i < 10; i++) {
-            ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-            when(metaData.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
-            result.put(String.format(DATABASE_PATTERN, i), metaData);
+            ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+            when(database.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+            result.put(String.format(DATABASE_PATTERN, i), database);
         }
         return result;
     }

@@ -27,6 +27,10 @@
     <artifactId>shardingsphere-transaction-base-seata-at</artifactId>
     <name>${project.artifactId}</name>
     
+    <properties>
+        <seata.version>1.4.2</seata.version>
+    </properties>
+    
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
@@ -44,6 +48,7 @@
         <dependency>
             <groupId>io.seata</groupId>
             <artifactId>seata-all</artifactId>
+            <version>${seata.version}</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

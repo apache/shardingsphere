@@ -69,7 +69,6 @@ public final class HikariDataSourcePoolMetaData implements DataSourcePoolMetaDat
     
     private static void buildTransientFieldNames() {
         TRANSIENT_FIELD_NAMES.add("running");
-        TRANSIENT_FIELD_NAMES.add("poolName");
         TRANSIENT_FIELD_NAMES.add("closed");
     }
     

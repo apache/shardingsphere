@@ -22,7 +22,7 @@ import org.apache.shardingsphere.authority.model.AuthorityRegistry;
 import org.apache.shardingsphere.authority.provider.schema.builder.SchemaPrivilegeBuilder;
 import org.apache.shardingsphere.authority.registry.UserPrivilegeMapAuthorityRegistry;
 import org.apache.shardingsphere.authority.spi.AuthorityProviderAlgorithm;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 
 import java.util.Collection;
@@ -46,7 +46,7 @@ public final class SchemaPermittedPrivilegesProviderAlgorithm implements Authori
     }
     
     @Override
-    public AuthorityRegistry buildAuthorityRegistry(final Map<String, ShardingSphereMetaData> metaDataMap, final Collection<ShardingSphereUser> users) {
+    public AuthorityRegistry buildAuthorityRegistry(final Map<String, ShardingSphereDatabase> databaseMap, final Collection<ShardingSphereUser> users) {
         return new UserPrivilegeMapAuthorityRegistry(SchemaPrivilegeBuilder.build(users, props));
     }
     

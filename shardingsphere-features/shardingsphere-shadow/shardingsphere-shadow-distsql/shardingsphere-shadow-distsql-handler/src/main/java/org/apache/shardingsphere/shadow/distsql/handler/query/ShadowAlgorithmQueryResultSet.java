@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shadow.distsql.handler.query;
 
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.properties.PropertiesConverter;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.ShowShadowAlgorithmsStatement;
@@ -52,8 +52,8 @@ public final class ShadowAlgorithmQueryResultSet implements DistSQLResultSet {
     private String defaultAlgorithm;
     
     @Override
-    public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
-        Optional<ShadowRuleConfiguration> rule = metaData.getRuleMetaData().getConfigurations()
+    public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
+        Optional<ShadowRuleConfiguration> rule = database.getRuleMetaData().getConfigurations()
                 .stream().filter(each -> each instanceof ShadowRuleConfiguration).map(each -> (ShadowRuleConfiguration) each).findAny();
         rule.ifPresent(optional -> {
             data = optional.getShadowAlgorithms().entrySet().iterator();

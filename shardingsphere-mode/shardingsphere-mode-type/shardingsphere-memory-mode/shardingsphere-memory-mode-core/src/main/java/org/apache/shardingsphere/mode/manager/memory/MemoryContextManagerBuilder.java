@@ -17,11 +17,8 @@
 
 package org.apache.shardingsphere.mode.manager.memory;
 
-import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.rule.identifier.type.InstanceAwareRule;
@@ -39,7 +36,6 @@ import org.apache.shardingsphere.transaction.spi.TransactionConfigurationFileGen
 import org.apache.shardingsphere.transaction.spi.TransactionConfigurationFileGeneratorFactory;
 
 import java.sql.SQLException;
-import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
@@ -49,19 +45,12 @@ public final class MemoryContextManagerBuilder implements ContextManagerBuilder 
     
     @Override
     public ContextManager build(final ContextManagerBuilderParameter parameter) throws SQLException {
-        MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(parameter.getGlobalRuleConfigs(), parameter.getProps());
-        DatabaseType frontendDatabaseType = DatabaseTypeEngine.getFrontendDatabaseType(parameter.getDatabaseConfigs(), new ConfigurationProperties(parameter.getProps()));
-        DatabaseType backendDatabaseType = DatabaseTypeEngine.getBackendDatabaseType(parameter.getDatabaseConfigs());
-        for (Entry<String, ? extends DatabaseConfiguration> entry : parameter.getDatabaseConfigs().entrySet()) {
-            metaDataContextsBuilder.addDatabase(entry.getKey(), frontendDatabaseType, backendDatabaseType, entry.getValue(), parameter.getProps());
-        }
-        metaDataContextsBuilder.addSystemDatabases(frontendDatabaseType);
-        MetaDataContexts metaDataContexts = metaDataContextsBuilder.build(null);
+        MetaDataContexts metaDataContexts = new MetaDataContextsBuilder(
+                parameter.getDatabaseConfigs(), parameter.getGlobalRuleConfigs(), new ConfigurationProperties(parameter.getProps())).build(null);
         InstanceContext instanceContext = buildInstanceContext(parameter);
         generateTransactionConfigurationFile(instanceContext, metaDataContexts);
-        TransactionContexts transactionContexts = new TransactionContextsBuilder(metaDataContexts.getMetaDataMap(), metaDataContexts.getGlobalRuleMetaData().getRules()).build();
-        ContextManager result = new ContextManager();
-        result.init(metaDataContexts, transactionContexts, buildInstanceContext(parameter));
+        TransactionContexts transactionContexts = new TransactionContextsBuilder(metaDataContexts.getDatabaseMap(), metaDataContexts.getGlobalRuleMetaData().getRules()).build();
+        ContextManager result = new ContextManager(metaDataContexts, transactionContexts, buildInstanceContext(parameter));
         setInstanceContext(result);
         return result;
     }
@@ -82,7 +71,7 @@ public final class MemoryContextManagerBuilder implements ContextManagerBuilder 
     }
     
     private void setInstanceContext(final ContextManager contextManager) {
-        contextManager.getMetaDataContexts().getMetaDataMap().forEach((key, value) -> value.getRuleMetaData().getRules().stream().filter(each -> each instanceof InstanceAwareRule)
+        contextManager.getMetaDataContexts().getDatabaseMap().forEach((key, value) -> value.getRuleMetaData().getRules().stream().filter(each -> each instanceof InstanceAwareRule)
                 .forEach(each -> ((InstanceAwareRule) each).setInstanceContext(contextManager.getInstanceContext())));
     }
     

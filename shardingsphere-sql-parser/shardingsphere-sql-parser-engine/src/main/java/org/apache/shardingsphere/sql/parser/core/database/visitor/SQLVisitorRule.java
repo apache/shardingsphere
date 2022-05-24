@@ -508,7 +508,15 @@ public enum SQLVisitorRule {
     
     ALTER_ATTRIBUTE_DIMENSION("AlterAttributeDimension", SQLStatementType.DDL),
     
-    CREATE_CONTEXT("CreateContext", SQLStatementType.DDL);
+    CREATE_CONTEXT("CreateContext", SQLStatementType.DDL),
+    
+    CREATE_SPFILE("CreateSPFile", SQLStatementType.DDL),
+    
+    CREATE_PFILE("CreatePFile", SQLStatementType.DDL),
+    
+    CURSOR("Cursor", SQLStatementType.DDL),
+    
+    CHECKPOINT("Checkpoint", SQLStatementType.DML);
     
     private final String name;
     

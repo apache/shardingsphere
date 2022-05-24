@@ -27,7 +27,6 @@ import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAltere
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
-import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.job.JobOperationType;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
@@ -39,7 +38,7 @@ import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorit
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -80,8 +79,8 @@ public final class DataConsistencyChecker {
     public DataConsistencyChecker(final RuleAlteredJobConfiguration jobConfig) {
         this.jobConfig = jobConfig;
         logicTableNames = jobConfig.splitLogicTableNames();
-        ShardingSphereMetaData metaData = PipelineContext.getContextManager().getMetaDataContexts().getMetaData(jobConfig.getDatabaseName());
-        tableNameSchemaNameMapping = new TableNameSchemaNameMapping(TableNameSchemaNameMapping.convert(metaData.getSchemas()));
+        ShardingSphereDatabase database = PipelineContext.getContextManager().getMetaDataContexts().getDatabaseMetaData(jobConfig.getDatabaseName());
+        tableNameSchemaNameMapping = new TableNameSchemaNameMapping(TableNameSchemaNameMapping.convert(database.getSchemas()));
     }
     
     /**
@@ -155,8 +154,10 @@ public final class DataConsistencyChecker {
     }
     
     private Map<String, DataConsistencyContentCheckResult> checkData(final DataConsistencyCalculateAlgorithm calculator) {
-        PipelineDataSourceConfiguration sourceDataSourceConfig = getPipelineDataSourceConfiguration(calculator, jobConfig.getSource());
-        PipelineDataSourceConfiguration targetDataSourceConfig = getPipelineDataSourceConfiguration(calculator, jobConfig.getTarget());
+        decoratePipelineDataSourceConfiguration(calculator, jobConfig.getSource());
+        PipelineDataSourceConfiguration sourceDataSourceConfig = jobConfig.getSource();
+        decoratePipelineDataSourceConfiguration(calculator, jobConfig.getTarget());
+        PipelineDataSourceConfiguration targetDataSourceConfig = jobConfig.getTarget();
         ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("job-" + getJobIdDigest(jobConfig.getJobId()) + "-data-check-%d");
         ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 2, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(2), threadFactory);
         JobRateLimitAlgorithm inputRateLimitAlgorithm = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig).getInputRateLimitAlgorithm();
@@ -202,11 +203,9 @@ public final class DataConsistencyChecker {
         return result;
     }
     
-    private PipelineDataSourceConfiguration getPipelineDataSourceConfiguration(final DataConsistencyCalculateAlgorithm calculator, final YamlPipelineDataSourceConfiguration dataSourceConfig) {
-        PipelineDataSourceConfiguration result = PipelineDataSourceConfigurationFactory.newInstance(dataSourceConfig.getType(), dataSourceConfig.getParameter());
-        checkDatabaseTypeSupported(calculator.getSupportedDatabaseTypes(), result.getDatabaseType().getType());
-        addMySQLDataSourceConfig(result);
-        return result;
+    private void decoratePipelineDataSourceConfiguration(final DataConsistencyCalculateAlgorithm calculator, final PipelineDataSourceConfiguration dataSourceConfig) {
+        checkDatabaseTypeSupported(calculator.getSupportedDatabaseTypes(), dataSourceConfig.getDatabaseType().getType());
+        addMySQLDataSourceConfig(dataSourceConfig);
     }
     
     private void checkDatabaseTypeSupported(final Collection<String> supportedDatabaseTypes, final String databaseType) {
@@ -226,12 +225,12 @@ public final class DataConsistencyChecker {
     private TableMetaData getTableMetaData(final String databaseName, final String logicTableName) {
         ContextManager contextManager = PipelineContext.getContextManager();
         Preconditions.checkNotNull(contextManager, "ContextManager null");
-        ShardingSphereMetaData metaData = contextManager.getMetaDataContexts().getMetaData(databaseName);
-        if (null == metaData) {
+        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getDatabaseMetaData(databaseName);
+        if (null == database) {
             throw new RuntimeException("Can not get meta data by database name " + databaseName);
         }
         String schemaName = tableNameSchemaNameMapping.getSchemaName(logicTableName);
-        ShardingSphereSchema schema = metaData.getSchemaByName(schemaName);
+        ShardingSphereSchema schema = database.getSchemas().get(schemaName);
         if (null == schema) {
             throw new RuntimeException("Can not get schema by schema name " + schemaName + ", logicTableName=" + logicTableName);
         }

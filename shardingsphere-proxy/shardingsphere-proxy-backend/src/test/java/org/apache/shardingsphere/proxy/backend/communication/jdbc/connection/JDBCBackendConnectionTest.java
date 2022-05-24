@@ -21,10 +21,9 @@ import com.google.common.collect.Multimap;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -36,6 +35,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.BackendConnectionException;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
+import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -76,7 +76,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class JDBCBackendConnectionTest {
+public final class JDBCBackendConnectionTest extends ProxyContextRestorer {
     
     private static final String SCHEMA_PATTERN = "schema_%s";
     
@@ -101,26 +101,24 @@ public final class JDBCBackendConnectionTest {
         when(connectionSession.getStatementManager()).thenReturn(backendStatement);
     }
     
-    private void setContextManager() throws ReflectiveOperationException {
-        Field contextManagerField = ProxyContext.getInstance().getClass().getDeclaredField("contextManager");
-        contextManagerField.setAccessible(true);
+    private void setContextManager() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), createMetaDataMap(),
-                mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
+        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), createDatabaseMap(),
+                mock(ShardingSphereRuleMetaData.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         TransactionContexts transactionContexts = createTransactionContexts();
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         when(contextManager.getTransactionContexts()).thenReturn(transactionContexts);
-        contextManagerField.set(ProxyContext.getInstance(), contextManager);
+        ProxyContext.init(contextManager);
     }
     
-    private Map<String, ShardingSphereMetaData> createMetaDataMap() {
-        Map<String, ShardingSphereMetaData> result = new HashMap<>(10, 1);
+    private Map<String, ShardingSphereDatabase> createDatabaseMap() {
+        Map<String, ShardingSphereDatabase> result = new HashMap<>(10, 1);
         for (int i = 0; i < 10; i++) {
             String name = String.format(SCHEMA_PATTERN, i);
-            ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-            when(metaData.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
-            result.put(name, metaData);
+            ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+            when(database.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+            result.put(name, database);
         }
         return result;
     }

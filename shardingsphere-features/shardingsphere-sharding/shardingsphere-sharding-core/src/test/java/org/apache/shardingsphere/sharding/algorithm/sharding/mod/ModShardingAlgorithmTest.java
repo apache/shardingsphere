@@ -91,6 +91,22 @@ public final class ModShardingAlgorithmTest {
         assertThat(actual.size(), is(16));
     }
     
+    @Test(expected = IllegalArgumentException.class)
+    public void assertRangeDoShardingWithWrongArgumentForStartOffset() {
+        Properties properties = createZeroPaddingProperties();
+        properties.setProperty("start-offset", "-1");
+        ModShardingAlgorithm algorithm = (ModShardingAlgorithm) ShardingAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("MOD", properties));
+        assertThat(algorithm.doSharding(createAvailableIncludeZeroTargetNames(), new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, "12345678910111213141516")), is("t_order_07"));
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void assertRangeDoShardingWithWrongArgumentForStopOffset() {
+        Properties properties = createZeroPaddingProperties();
+        properties.setProperty("stop-offset", "-1");
+        ModShardingAlgorithm algorithm = (ModShardingAlgorithm) ShardingAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("MOD", properties));
+        assertThat(algorithm.doSharding(createAvailableIncludeZeroTargetNames(), new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, "12345678910111213141516")), is("t_order_07"));
+    }
+    
     private Properties createZeroPaddingProperties() {
         Properties result = new Properties();
         result.setProperty("sharding-count", "16");

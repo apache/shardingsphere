@@ -21,7 +21,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ExportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
@@ -30,6 +30,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandler.HandlerParameter;
+import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
@@ -55,18 +56,18 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ExportDatabaseConfigurationHandlerTest {
+public final class ExportDatabaseConfigurationHandlerTest extends ProxyContextRestorer {
     
     @Before
     public void init() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getAllDatabaseNames()).thenReturn(Collections.singletonList("sharding_db"));
-        ShardingSphereMetaData shardingSphereMetaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        when(shardingSphereMetaData.getSchemaByName("sharding_db")).thenReturn(new ShardingSphereSchema(createTableMap()));
-        when(shardingSphereMetaData.getResource().getDataSources()).thenReturn(createDataSourceMap());
-        when(shardingSphereMetaData.getRuleMetaData().getConfigurations()).thenReturn(Collections.singletonList(createShardingRuleConfiguration()));
-        when(contextManager.getMetaDataContexts().getMetaData("sharding_db")).thenReturn(shardingSphereMetaData);
-        ProxyContext.getInstance().init(contextManager);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getSchemas().get("sharding_db")).thenReturn(new ShardingSphereSchema(createTableMap()));
+        when(database.getResource().getDataSources()).thenReturn(createDataSourceMap());
+        when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.singletonList(createShardingRuleConfiguration()));
+        when(contextManager.getMetaDataContexts().getDatabaseMetaData("sharding_db")).thenReturn(database);
+        ProxyContext.init(contextManager);
     }
     
     @Test

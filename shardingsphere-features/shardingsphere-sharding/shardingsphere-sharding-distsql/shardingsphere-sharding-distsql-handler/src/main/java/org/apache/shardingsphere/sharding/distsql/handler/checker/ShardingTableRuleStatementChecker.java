@@ -24,10 +24,11 @@ import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredAlgorithmMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.expr.InlineExpressionParser;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
@@ -43,6 +44,7 @@ import org.apache.shardingsphere.sharding.factory.ShardingAlgorithmFactory;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -63,50 +65,50 @@ public final class ShardingTableRuleStatementChecker {
     /**
      * Check create sharing table rule statement.
      *
-     * @param shardingSphereMetaData ShardingSphere meta data
+     * @param database database
      * @param rules rules
      * @param currentRuleConfig current rule configuration
      * @throws DistSQLException definition violation exception
      */
-    public static void checkCreation(final ShardingSphereMetaData shardingSphereMetaData, final Collection<AbstractTableRuleSegment> rules,
-                                     final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        check(shardingSphereMetaData, rules, currentRuleConfig, true);
+    public static void checkCreation(final ShardingSphereDatabase database,
+                                     final Collection<AbstractTableRuleSegment> rules, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
+        check(database, rules, currentRuleConfig, true);
     }
     
     /**
      * Check alter sharing table rule statement.
      *
-     * @param shardingSphereMetaData ShardingSphere meta data
+     * @param database database
      * @param rules rules
      * @param currentRuleConfig current rule configuration
      * @throws DistSQLException definition violation exception
      */
-    public static void checkAlteration(final ShardingSphereMetaData shardingSphereMetaData, final Collection<AbstractTableRuleSegment> rules,
-                                       final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        check(shardingSphereMetaData, rules, currentRuleConfig, false);
+    public static void checkAlteration(final ShardingSphereDatabase database,
+                                       final Collection<AbstractTableRuleSegment> rules, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
+        check(database, rules, currentRuleConfig, false);
     }
     
-    private static void check(final ShardingSphereMetaData shardingSphereMetaData, final Collection<AbstractTableRuleSegment> rules,
-                              final ShardingRuleConfiguration currentRuleConfig, final boolean isCreate) throws DistSQLException {
-        String databaseName = shardingSphereMetaData.getDatabaseName();
+    private static void check(final ShardingSphereDatabase database,
+                              final Collection<AbstractTableRuleSegment> rules, final ShardingRuleConfiguration currentRuleConfig, final boolean isCreate) throws DistSQLException {
+        String databaseName = database.getName();
         checkShardingTables(databaseName, rules, currentRuleConfig, isCreate);
-        checkResources(databaseName, rules, shardingSphereMetaData);
+        checkResources(databaseName, rules, database);
         checkKeyGenerators(rules, currentRuleConfig);
         Map<String, List<AbstractTableRuleSegment>> groupedTableRule = groupingByClassType(rules);
         checkAutoTableRule(groupedTableRule.getOrDefault(AutoTableRuleSegment.class.getSimpleName(), Collections.emptyList()));
         checkTableRule(databaseName, currentRuleConfig, groupedTableRule.getOrDefault(TableRuleSegment.class.getSimpleName(), Collections.emptyList()));
     }
     
-    private static void checkResources(final String databaseName, final Collection<AbstractTableRuleSegment> rules, final ShardingSphereMetaData shardingSphereMetaData) throws DistSQLException {
+    private static void checkResources(final String databaseName, final Collection<AbstractTableRuleSegment> rules, final ShardingSphereDatabase database) throws DistSQLException {
         Collection<String> requiredResource = getRequiredResources(rules);
-        Collection<String> notExistedResources = shardingSphereMetaData.getResource().getNotExistedResources(requiredResource);
-        Collection<String> logicResources = getLogicResources(shardingSphereMetaData);
+        Collection<String> notExistedResources = database.getResource().getNotExistedResources(requiredResource);
+        Collection<String> logicResources = getLogicResources(database);
         notExistedResources.removeIf(logicResources::contains);
         DistSQLException.predictionThrow(notExistedResources.isEmpty(), () -> new RequiredResourceMissedException(databaseName, notExistedResources));
     }
     
-    private static Collection<String> getLogicResources(final ShardingSphereMetaData shardingSphereMetaData) {
-        return shardingSphereMetaData.getRuleMetaData().getRules().stream().filter(each -> each instanceof DataSourceContainedRule)
+    private static Collection<String> getLogicResources(final ShardingSphereDatabase database) {
+        return database.getRuleMetaData().getRules().stream().filter(each -> each instanceof DataSourceContainedRule)
                 .map(each -> ((DataSourceContainedRule) each).getDataSourceMapper().keySet()).flatMap(Collection::stream).collect(Collectors.toCollection(LinkedHashSet::new));
     }
     
@@ -232,5 +234,62 @@ public final class ShardingTableRuleStatementChecker {
     
     private static Map<String, List<AbstractTableRuleSegment>> groupingByClassType(final Collection<AbstractTableRuleSegment> rules) {
         return rules.stream().collect(Collectors.groupingBy(each -> each.getClass().getSimpleName()));
+    }
+    
+    /**
+     * Check binding table rules.
+     *
+     * @param currentRuleConfig current rule configuration
+     * @param toBeAlteredRuleConfig to be altered rule configuration
+     * @throws DistSQLException definition violation exception
+     */
+    public static void checkBindingTableRules(final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeAlteredRuleConfig) throws DistSQLException {
+        if (null == currentRuleConfig || currentRuleConfig.getBindingTableGroups().isEmpty()) {
+            return;
+        }
+        Collection<String> bindingTables = getCurrentBindingTables(currentRuleConfig);
+        if (bindingTables.size() <= 1) {
+            return;
+        }
+        Collection<String> toBeAlteredLogicTableNames = getAlteredLogicalTableNames(toBeAlteredRuleConfig);
+        Collection<String> toBeAlteredBindingTableNames = toBeAlteredLogicTableNames.stream().filter(each -> bindingTables.contains(each)).collect(Collectors.toSet());
+        if (toBeAlteredBindingTableNames.isEmpty()) {
+            return;
+        }
+        Map<String, String> currentBindingTableType = getBindingTablesType(bindingTables, currentRuleConfig);
+        Map<String, String> toBeAlteredBindingTableType = getBindingTablesType(toBeAlteredBindingTableNames, toBeAlteredRuleConfig);
+        Collection<String> invalidToBeAlteredBindingTableNames = toBeAlteredBindingTableNames.stream()
+                .filter(each -> !currentBindingTableType.get(each).equalsIgnoreCase(toBeAlteredBindingTableType.get(each))).collect(Collectors.toSet());
+        DistSQLException.predictionThrow(invalidToBeAlteredBindingTableNames.isEmpty(),
+                () -> new InvalidRuleConfigurationException("sharding table", invalidToBeAlteredBindingTableNames, Collections.singleton("invalid binding table configuration")));
+        // TODO check actualDataNodes
+        // TODO check algorithm-expression
+    }
+    
+    private static Collection<String> getCurrentBindingTables(final ShardingRuleConfiguration currentRuleConfig) {
+        Collection<String> result = new LinkedHashSet<>();
+        currentRuleConfig.getBindingTableGroups().forEach(each -> result.addAll(Splitter.on(",").trimResults().splitToList(each)));
+        return result;
+    }
+    
+    private static Collection<String> getAlteredLogicalTableNames(final ShardingRuleConfiguration toBeAlteredRuleConfig) {
+        Collection<String> result = toBeAlteredRuleConfig.getTables().stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toList());
+        result.addAll(toBeAlteredRuleConfig.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getLogicTable).collect(Collectors.toList()));
+        return result;
+    }
+    
+    private static Map<String, String> getBindingTablesType(final Collection<String> toBeAlteredBindingTableNames, final ShardingRuleConfiguration currentRuleConfig) {
+        Map<String, String> result = new HashMap<>(toBeAlteredBindingTableNames.size(), 1);
+        currentRuleConfig.getTables().forEach(each -> {
+            if (toBeAlteredBindingTableNames.contains(each.getLogicTable())) {
+                result.put(each.getLogicTable(), "tables");
+            }
+        });
+        currentRuleConfig.getAutoTables().forEach(each -> {
+            if (toBeAlteredBindingTableNames.contains(each.getLogicTable())) {
+                result.put(each.getLogicTable(), "autoTables");
+            }
+        });
+        return result;
     }
 }

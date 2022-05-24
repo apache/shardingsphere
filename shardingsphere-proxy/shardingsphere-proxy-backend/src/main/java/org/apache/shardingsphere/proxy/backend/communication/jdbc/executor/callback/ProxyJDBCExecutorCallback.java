@@ -81,7 +81,7 @@ public abstract class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<Exe
     protected abstract boolean execute(String sql, Statement statement, boolean isReturnGeneratedKeys) throws SQLException;
     
     private QueryResult createQueryResult(final ResultSet resultSet, final ConnectionMode connectionMode) throws SQLException {
-        return ConnectionMode.MEMORY_STRICTLY == connectionMode ? new JDBCStreamQueryResult(resultSet) : new JDBCMemoryQueryResult(resultSet);
+        return ConnectionMode.MEMORY_STRICTLY == connectionMode ? new JDBCStreamQueryResult(resultSet) : new JDBCMemoryQueryResult(resultSet, getDatabaseType());
     }
     
     private long getGeneratedKey(final Statement statement) throws SQLException {
@@ -102,10 +102,10 @@ public abstract class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<Exe
     
     @Override
     protected final Optional<ExecuteResult> getSaneResult(final SQLStatement sqlStatement) {
-        return SaneQueryResultEngineFactory.getInstance(getFrontendDatabaseType()).getSaneQueryResult(sqlStatement);
+        return SaneQueryResultEngineFactory.getInstance(getProtocolTypeType()).getSaneQueryResult(sqlStatement);
     }
     
-    private DatabaseType getFrontendDatabaseType() {
+    private DatabaseType getProtocolTypeType() {
         Optional<DatabaseType> configuredDatabaseType = findConfiguredDatabaseType();
         if (configuredDatabaseType.isPresent()) {
             return configuredDatabaseType.get();
@@ -114,7 +114,7 @@ public abstract class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<Exe
             return DatabaseTypeEngine.getTrunkDatabaseType("MySQL");
         }
         String schemaName = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getAllDatabaseNames().iterator().next();
-        return ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(schemaName).getResource().getDatabaseType();
+        return ProxyContext.getInstance().getContextManager().getMetaDataContexts().getDatabaseMetaData(schemaName).getResource().getDatabaseType();
     }
     
     private static Optional<DatabaseType> findConfiguredDatabaseType() {

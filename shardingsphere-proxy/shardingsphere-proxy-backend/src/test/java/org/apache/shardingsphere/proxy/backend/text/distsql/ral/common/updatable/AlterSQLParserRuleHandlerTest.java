@@ -24,9 +24,8 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -40,24 +39,21 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
-public final class AlterSQLParserRuleHandlerTest {
+public final class AlterSQLParserRuleHandlerTest extends ProxyContextRestorer {
     
     @Test
     public void assertExecuteWithoutCurrentRuleConfiguration() throws SQLException {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(SQLParserRuleConfiguration.class)).thenReturn(Collections.emptyList());
+        when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findRuleConfigurations(SQLParserRuleConfiguration.class)).thenReturn(Collections.emptyList());
         when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().getConfigurations()).thenReturn(new LinkedList<>());
-        ProxyContext.getInstance().init(contextManager);
-        new AlterSQLParserRuleHandler().initStatement(getSQLStatement()).execute();
+        ProxyContext.init(contextManager);
+        new AlterSQLParserRuleHandler().initStatement(createSQLStatement()).execute();
         SQLParserRuleConfiguration actual = (SQLParserRuleConfiguration) contextManager.getMetaDataContexts().getGlobalRuleMetaData().getConfigurations().iterator().next();
         assertTrue(actual.isSqlCommentParseEnabled());
         assertThat(actual.getSqlStatementCache().getInitialCapacity(), is(1000));
         assertThat(actual.getSqlStatementCache().getMaximumSize(), is(1000L));
-        assertThat(actual.getSqlStatementCache().getConcurrencyLevel(), is(3));
         assertThat(actual.getParseTreeCache().getInitialCapacity(), is(64));
         assertThat(actual.getParseTreeCache().getMaximumSize(), is(512L));
-        assertThat(actual.getParseTreeCache().getConcurrencyLevel(), is(3));
     }
     
     @Test
@@ -65,29 +61,23 @@ public final class AlterSQLParserRuleHandlerTest {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         SQLParserRuleConfiguration sqlParserRuleConfig = new DefaultSQLParserRuleConfigurationBuilder().build();
         Collection<RuleConfiguration> globalRuleConfigs = new LinkedList<>(Collections.singleton(sqlParserRuleConfig));
-        when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(SQLParserRuleConfiguration.class)).thenReturn(Collections.singleton(sqlParserRuleConfig));
+        when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findRuleConfigurations(SQLParserRuleConfiguration.class)).thenReturn(Collections.singleton(sqlParserRuleConfig));
         when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().getConfigurations()).thenReturn(globalRuleConfigs);
-        ProxyContext.getInstance().init(contextManager);
-        new AlterSQLParserRuleHandler().initStatement(getSQLStatement()).execute();
+        ProxyContext.init(contextManager);
+        new AlterSQLParserRuleHandler().initStatement(createSQLStatement()).execute();
         SQLParserRuleConfiguration actual = (SQLParserRuleConfiguration) contextManager.getMetaDataContexts().getGlobalRuleMetaData().getConfigurations().iterator().next();
         assertTrue(actual.isSqlCommentParseEnabled());
         assertThat(actual.getSqlStatementCache().getInitialCapacity(), is(1000));
         assertThat(actual.getSqlStatementCache().getMaximumSize(), is(1000L));
-        assertThat(actual.getSqlStatementCache().getConcurrencyLevel(), is(3));
         assertThat(actual.getParseTreeCache().getInitialCapacity(), is(64));
         assertThat(actual.getParseTreeCache().getMaximumSize(), is(512L));
-        assertThat(actual.getParseTreeCache().getConcurrencyLevel(), is(3));
     }
     
-    private AlterSQLParserRuleStatement getSQLStatement() {
+    private AlterSQLParserRuleStatement createSQLStatement() {
         AlterSQLParserRuleStatement result = new AlterSQLParserRuleStatement();
-        result.setSqlCommentParseEnable(Boolean.TRUE);
-        result.setSqlStatementCache(getCacheOption(1000, 1000L, 3));
-        result.setParseTreeCache(getCacheOption(64, 512L, 3));
+        result.setSqlCommentParseEnable(true);
+        result.setSqlStatementCache(new CacheOptionSegment(1000, 1000L));
+        result.setParseTreeCache(new CacheOptionSegment(64, 512L));
         return result;
-    }
-    
-    private CacheOptionSegment getCacheOption(final Integer initialCapacity, final Long maximumSize, final Integer concurrencyLevel) {
-        return new CacheOptionSegment(initialCapacity, maximumSize, concurrencyLevel);
     }
 }

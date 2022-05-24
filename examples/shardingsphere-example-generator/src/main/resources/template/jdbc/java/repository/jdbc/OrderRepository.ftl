@@ -110,10 +110,12 @@ public final class OrderRepository {
         String sql = "INSERT INTO t_order (user_id, order_type, address_id, status) VALUES (?, ?, ?, ?)";
     <#if transaction?contains("xa")>
         TransactionTypeHolder.set(TransactionType.XA);
+    <#elseif transaction?contains("base")>
+        TransactionTypeHolder.set(TransactionType.BASE);
     </#if>
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-        <#if transaction?contains("xa")>
+        <#if transaction!="local">
             connection.setAutoCommit(false);
         </#if>
             preparedStatement.setInt(1, order.getUserId());
@@ -126,10 +128,10 @@ public final class OrderRepository {
                     order.setOrderId(resultSet.getLong(1));
                 }
             }
-        <#if transaction?contains("xa")>
+        <#if transaction!="local">
             connection.commit();
         </#if>
-        }<#if transaction?contains("xa")> finally {
+        }<#if transaction!="local"> finally {
             TransactionTypeHolder.clear();
         }
         </#if>

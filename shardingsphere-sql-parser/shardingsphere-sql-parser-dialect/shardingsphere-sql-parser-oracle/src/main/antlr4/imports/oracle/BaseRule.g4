@@ -1265,3 +1265,11 @@ attributeDimensionName
 sequenceName
     : identifier
     ;
+    
+spfileName
+    : STRING_
+    ;
+
+pfileName
+    : STRING_
+    ;

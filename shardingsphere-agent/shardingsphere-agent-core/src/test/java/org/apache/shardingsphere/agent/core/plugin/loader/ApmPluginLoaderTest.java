@@ -28,8 +28,9 @@ import org.apache.shardingsphere.agent.core.plugin.ApmPluginLoader;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.internal.util.reflection.FieldReader;
-import org.mockito.internal.util.reflection.FieldSetter;
+import org.mockito.plugins.MemberAccessor;
 
 import java.util.Collections;
 import java.util.Map;
@@ -51,7 +52,7 @@ public final class ApmPluginLoaderTest {
     
     @BeforeClass
     @SuppressWarnings("unchecked")
-    public static void setup() throws NoSuchFieldException {
+    public static void setup() throws NoSuchFieldException, IllegalAccessException {
         FieldReader objectPoolReader = new FieldReader(LOADER, LOADER.getClass().getDeclaredField("objectPool"));
         Map<String, Object> objectPool = (Map<String, Object>) objectPoolReader.read();
         objectPool.put(MockConstructorAdvice.class.getTypeName(), new MockConstructorAdvice());
@@ -68,7 +69,8 @@ public final class ApmPluginLoaderTest {
                 .implement(MockConstructorAdvice.class.getTypeName())
                 .build()
                 .install();
-        FieldSetter.setField(LOADER, LOADER.getClass().getDeclaredField("interceptorPointMap"), Collections.singletonMap(interceptorPoint.getClassNameOfTarget(), interceptorPoint));
+        MemberAccessor accessor = Plugins.getMemberAccessor();
+        accessor.set(LOADER.getClass().getDeclaredField("interceptorPointMap"), LOADER, Collections.singletonMap(interceptorPoint.getClassNameOfTarget(), interceptorPoint));
     }
     
     @Test
