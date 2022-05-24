@@ -15,30 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.user;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.cursor;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-
-import java.util.Collection;
-import java.util.Optional;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 /**
- * ShardingSphere users.
+ * Cursor name segment.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShardingSphereUsers {
+@ToString
+public final class CursorNameSegment implements SQLSegment {
     
-    private final Collection<ShardingSphereUser> users;
+    private final int startIndex;
     
-    /**
-     * Find user.
-     *
-     * @param grantee grantee
-     * @return found user
-     */
-    public Optional<ShardingSphereUser> findUser(final Grantee grantee) {
-        return users.stream().filter(each -> each.getGrantee().equals(grantee)).findFirst();
-    }
+    private final int stopIndex;
+    
+    private final IdentifierValue identifier;
 }

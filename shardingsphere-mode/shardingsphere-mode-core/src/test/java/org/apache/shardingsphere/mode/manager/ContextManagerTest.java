@@ -30,7 +30,6 @@ import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationD
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationSchemaMetaData;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -86,7 +85,7 @@ public final class ContextManagerTest {
     
     @Test
     public void assertGetDataSourceMap() {
-        ShardingSphereResource resource = new ShardingSphereResource(Collections.singletonMap("foo_ds", new MockedDataSource()), mock(DataSourcesMetaData.class), mock(DatabaseType.class));
+        ShardingSphereResource resource = new ShardingSphereResource(Collections.singletonMap("foo_ds", new MockedDataSource()));
         when(metaDataContexts.getDatabaseMetaData(DefaultDatabase.LOGIC_NAME)).thenReturn(
                 new ShardingSphereDatabase("foo_db", mock(DatabaseType.class), resource, mock(ShardingSphereRuleMetaData.class), Collections.emptyMap()));
         assertThat(contextManager.getDataSourceMap(DefaultDatabase.LOGIC_NAME).size(), is(1));
@@ -256,7 +255,7 @@ public final class ContextManagerTest {
         contextManager.reloadMetaData("foo_db", "foo_schema");
         verify(schemaMetaDataPersistService, times(1)).persistTables(eq("foo_db"), eq("foo_schema"), any(ShardingSphereSchema.class));
         contextManager.reloadMetaData("foo_db", "foo_schema", "foo_table");
-        assertNotNull(contextManager.getMetaDataContexts().getDatabaseMetaData("foo_db").getSchemas().get("foo_schema"));
+        assertNotNull(contextManager.getMetaDataContexts().getDatabaseMetaData("foo_db").getSchemas().get("foo_db"));
         assertTrue(contextManager.getMetaDataContexts().getDatabaseMetaData("foo_db").getResource().getDataSources().containsKey("foo_ds"));
     }
     

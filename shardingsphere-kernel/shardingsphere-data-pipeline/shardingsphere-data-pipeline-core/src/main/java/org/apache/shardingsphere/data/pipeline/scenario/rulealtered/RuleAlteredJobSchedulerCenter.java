@@ -72,7 +72,7 @@ public final class RuleAlteredJobSchedulerCenter {
      *
      * @param jobId job id
      */
-    public static void stop(final String jobId) {
+    static void stop(final String jobId) {
         log.info("remove and stop {}", jobId);
         Map<Integer, RuleAlteredJobScheduler> schedulerMap = JOB_SCHEDULER_MAP.get(jobId);
         if (null == schedulerMap) {

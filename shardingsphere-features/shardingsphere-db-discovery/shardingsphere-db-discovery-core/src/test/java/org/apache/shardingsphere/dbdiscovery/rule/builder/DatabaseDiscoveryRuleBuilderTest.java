@@ -25,15 +25,14 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmC
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilder;
 import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilderFactory;
+import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
 
-import javax.sql.DataSource;
 import java.util.Collections;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
 
 public final class DatabaseDiscoveryRuleBuilderTest {
     
@@ -45,7 +44,7 @@ public final class DatabaseDiscoveryRuleBuilderTest {
                 Collections.singletonMap("ha_heartbeat", new DatabaseDiscoveryHeartBeatConfiguration(new Properties())),
                 Collections.singletonMap("CORE.FIXTURE", new ShardingSphereAlgorithmConfiguration("CORE.FIXTURE", new Properties())));
         SchemaRuleBuilder builder = SchemaRuleBuilderFactory.getInstanceMap(Collections.singletonList(config)).get(config);
-        assertThat(builder.build(config, "test_schema", Collections.singletonMap("name", mock(DataSource.class)), Collections.emptyList(), new ConfigurationProperties(new Properties())),
+        assertThat(builder.build(config, "test_schema", Collections.singletonMap("name", new MockedDataSource()), Collections.emptyList(), new ConfigurationProperties(new Properties())),
                 instanceOf(DatabaseDiscoveryRule.class));
     }
 }
