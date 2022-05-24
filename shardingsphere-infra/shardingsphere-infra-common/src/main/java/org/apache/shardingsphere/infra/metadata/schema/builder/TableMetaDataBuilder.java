@@ -56,8 +56,7 @@ public final class TableMetaDataBuilder {
             ShardingSphereRule rule = entry.getKey();
             if (rule instanceof TableContainedRule) {
                 Collection<String> needLoadTables = getNeedLoadTables(tableNames, result.values(), (TableContainedRule) rule);
-                Map<String, SchemaMetaData> schemaMetaDataMap = entry.getValue().load(needLoadTables, (TableContainedRule) rule, materials);
-                mergeSchemaMetaDataMap(result, schemaMetaDataMap.values());
+                mergeSchemaMetaDataMap(result, entry.getValue().load(needLoadTables, (TableContainedRule) rule, materials).values());
             }
         }
         if (!materials.getProtocolType().equals(materials.getStorageType())) {
