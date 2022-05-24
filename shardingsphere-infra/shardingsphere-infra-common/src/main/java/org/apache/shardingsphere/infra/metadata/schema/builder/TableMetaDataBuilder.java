@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.metadata.schema.builder;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedSchemaMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.model.SchemaMetaData;
@@ -61,7 +60,10 @@ public final class TableMetaDataBuilder {
             Map<String, SchemaMetaData> schemaMetaDataMap = entry.getValue().load(needLoadTables, (TableContainedRule) entry.getKey(), materials);
             mergeSchemaMetaDataMap(result, schemaMetaDataMap.values());
         }
-        return decorate(translateSchema(result, materials), materials);
+        if (!materials.getProtocolType().equals(materials.getStorageType())) {
+            result = translateSchema(result, materials);
+        }
+        return decorate(result, materials);
     }
     
     private static Collection<String> getNeedLoadTables(final Collection<String> tableNames, final Collection<SchemaMetaData> schemaMetaDataList, final TableContainedRule rule) {
@@ -91,15 +93,10 @@ public final class TableMetaDataBuilder {
     }
     
     private static Map<String, SchemaMetaData> translateSchema(final Map<String, SchemaMetaData> schemaMetaDataMap, final SchemaBuilderMaterials materials) {
-        DatabaseType protocolType = materials.getProtocolType();
-        DatabaseType storageType = materials.getStorageType();
-        if (protocolType.equals(storageType)) {
-            return schemaMetaDataMap;
-        }
         Map<String, SchemaMetaData> result = new LinkedHashMap<>();
         Map<String, TableMetaData> tableMetaDataMap = Optional.ofNullable(schemaMetaDataMap.get(
-                DatabaseTypeEngine.getDefaultSchemaName(storageType, materials.getDefaultSchemaName()))).map(SchemaMetaData::getTables).orElseGet(Collections::emptyMap);
-        String frontendSchemaName = DatabaseTypeEngine.getDefaultSchemaName(protocolType, materials.getDefaultSchemaName());
+                DatabaseTypeEngine.getDefaultSchemaName(materials.getStorageType(), materials.getDefaultSchemaName()))).map(SchemaMetaData::getTables).orElseGet(Collections::emptyMap);
+        String frontendSchemaName = DatabaseTypeEngine.getDefaultSchemaName(materials.getProtocolType(), materials.getDefaultSchemaName());
         result.put(frontendSchemaName, new SchemaMetaData(frontendSchemaName, tableMetaDataMap));
         return result;
     }
