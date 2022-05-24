@@ -44,13 +44,21 @@ public final class TableMetaDataBuilder {
     /**
      * Load table metadata.
      *
-     * @param tableNames table name collection
+     * @param tableNames table names
      * @param materials schema builder materials
      * @return table meta data map
      * @throws SQLException SQL exception
      */
-    @SuppressWarnings({"unchecked", "rawtypes"})
     public static Map<String, SchemaMetaData> load(final Collection<String> tableNames, final SchemaBuilderMaterials materials) throws SQLException {
+        Map<String, SchemaMetaData> result = loadForTableContainedRules(tableNames, materials);
+        if (!materials.getProtocolType().equals(materials.getStorageType())) {
+            result = translateSchema(result, materials);
+        }
+        return decorate(result, materials);
+    }
+    
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private static Map<String, SchemaMetaData> loadForTableContainedRules(final Collection<String> tableNames, final SchemaBuilderMaterials materials) throws SQLException {
         Map<String, SchemaMetaData> result = new LinkedHashMap<>();
         for (Entry<ShardingSphereRule, RuleBasedSchemaMetaDataBuilder> entry : RuleBasedSchemaMetaDataBuilderFactory.getInstances(materials.getRules()).entrySet()) {
             ShardingSphereRule rule = entry.getKey();
@@ -59,10 +67,7 @@ public final class TableMetaDataBuilder {
                 mergeSchemaMetaDataMap(result, entry.getValue().load(needLoadTables, (TableContainedRule) rule, materials).values());
             }
         }
-        if (!materials.getProtocolType().equals(materials.getStorageType())) {
-            result = translateSchema(result, materials);
-        }
-        return decorate(result, materials);
+        return result;
     }
     
     private static Collection<String> getNeedLoadTables(final Collection<String> tableNames, final Collection<SchemaMetaData> schemaMetaDataList, final TableContainedRule rule) {
