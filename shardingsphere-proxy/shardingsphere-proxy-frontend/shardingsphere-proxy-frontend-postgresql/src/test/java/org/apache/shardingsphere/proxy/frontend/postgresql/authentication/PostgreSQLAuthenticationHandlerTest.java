@@ -75,8 +75,6 @@ public final class PostgreSQLAuthenticationHandlerTest {
     
     private PostgreSQLPasswordMessagePacket passwordMessagePacket;
     
-    private final PostgreSQLAuthenticationHandler authenticationHandler = new PostgreSQLAuthenticationHandler();
-    
     @Before
     public void init() {
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(createByteBuf(16, 128), StandardCharsets.UTF_8);
@@ -89,28 +87,28 @@ public final class PostgreSQLAuthenticationHandlerTest {
     @Test
     public void assertLoginWithPassword() {
         initProxyContext(new ShardingSphereUser(username, password, "%"));
-        PostgreSQLLoginResult postgreSQLLoginResult = authenticationHandler.login(username, database, md5Salt.getBytes(StandardCharsets.UTF_8), passwordMessagePacket);
+        PostgreSQLLoginResult postgreSQLLoginResult = new PostgreSQLAuthenticationHandler().login(username, database, md5Salt.getBytes(StandardCharsets.UTF_8), passwordMessagePacket);
         assertThat(postgreSQLLoginResult.getErrorCode(), is(PostgreSQLErrorCode.SUCCESSFUL_COMPLETION));
     }
     
     @Test
     public void assertLoginWithAbsentUser() {
         initProxyContext(new ShardingSphereUser("username", password, "%"));
-        PostgreSQLLoginResult postgreSQLLoginResult = authenticationHandler.login(username, database, md5Salt.getBytes(StandardCharsets.UTF_8), passwordMessagePacket);
+        PostgreSQLLoginResult postgreSQLLoginResult = new PostgreSQLAuthenticationHandler().login(username, database, md5Salt.getBytes(StandardCharsets.UTF_8), passwordMessagePacket);
         assertThat(postgreSQLLoginResult.getErrorCode(), is(PostgreSQLErrorCode.INVALID_AUTHORIZATION_SPECIFICATION));
     }
     
     @Test
     public void assertLoginWithIncorrectPassword() {
         initProxyContext(new ShardingSphereUser(username, "password", "%"));
-        PostgreSQLLoginResult postgreSQLLoginResult = authenticationHandler.login(username, database, md5Salt.getBytes(StandardCharsets.UTF_8), passwordMessagePacket);
+        PostgreSQLLoginResult postgreSQLLoginResult = new PostgreSQLAuthenticationHandler().login(username, database, md5Salt.getBytes(StandardCharsets.UTF_8), passwordMessagePacket);
         assertThat(postgreSQLLoginResult.getErrorCode(), is(PostgreSQLErrorCode.INVALID_PASSWORD));
     }
     
     @Test
     public void assertLoginWithoutPassword() {
         initProxyContext(new ShardingSphereUser(username, null, "%"));
-        PostgreSQLLoginResult postgreSQLLoginResult = authenticationHandler.login(username, database, md5Salt.getBytes(StandardCharsets.UTF_8), passwordMessagePacket);
+        PostgreSQLLoginResult postgreSQLLoginResult = new PostgreSQLAuthenticationHandler().login(username, database, md5Salt.getBytes(StandardCharsets.UTF_8), passwordMessagePacket);
         assertThat(postgreSQLLoginResult.getErrorCode(), is(PostgreSQLErrorCode.INVALID_PASSWORD));
     }
     
@@ -118,13 +116,13 @@ public final class PostgreSQLAuthenticationHandlerTest {
     public void assertLoginWithNonExistDatabase() {
         initProxyContext(new ShardingSphereUser(username, password, "%"));
         String database = "non_exist_database";
-        PostgreSQLLoginResult postgreSQLLoginResult = authenticationHandler.login(username, database, md5Salt.getBytes(StandardCharsets.UTF_8), passwordMessagePacket);
+        PostgreSQLLoginResult postgreSQLLoginResult = new PostgreSQLAuthenticationHandler().login(username, database, md5Salt.getBytes(StandardCharsets.UTF_8), passwordMessagePacket);
         assertThat(postgreSQLLoginResult.getErrorCode(), is(PostgreSQLErrorCode.INVALID_CATALOG_NAME));
     }
     
     @Test
     public void assertGetAuthenticator() {
-        PostgreSQLAuthenticator authenticator = authenticationHandler.getAuthenticator(username, "");
+        PostgreSQLAuthenticator authenticator = new PostgreSQLAuthenticationHandler().getAuthenticator(username, "");
         assertThat(authenticator, instanceOf(PostgreSQLMD5PasswordAuthenticator.class));
         assertThat(authenticator.getAuthenticationMethodName(), is(PostgreSQLAuthenticationMethod.MD5.getMethodName()));
     }
