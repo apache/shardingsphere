@@ -18,7 +18,9 @@
 package org.apache.shardingsphere.db.protocol.mysql.codec;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.CompositeByteBuf;
 import io.netty.buffer.Unpooled;
+import io.netty.buffer.UnpooledByteBufAllocator;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.AttributeKey;
 import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
@@ -33,6 +35,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -102,15 +105,23 @@ public final class MySQLPacketCodecEngineTest {
     }
     
     @Test
-    public void assertDecodeMaxLengthPacket() {
-        byte[] packetData = new byte[(1 << 24) + 4];
-        packetData[0] = packetData[1] = packetData[2] = (byte) 0xff;
-        packetData[3] = (byte) 0;
-        ByteBuf input = Unpooled.wrappedBuffer(packetData);
+    public void assertDecodePacketMoreThan16MB() {
+        MySQLPacketCodecEngine engine = new MySQLPacketCodecEngine();
+        when(context.alloc().compositeBuffer(2)).thenReturn(new CompositeByteBuf(UnpooledByteBufAllocator.DEFAULT, false, 2));
         List<Object> actual = new ArrayList<>(1);
-        new MySQLPacketCodecEngine().decode(null, input, actual);
+        for (ByteBuf each : preparePacketMoreThan16MB()) {
+            engine.decode(context, each, actual);
+        }
         assertThat(actual.size(), is(1));
         assertThat(((ByteBuf) actual.get(0)).readableBytes(), is(1 << 24));
+    }
+    
+    private List<ByteBuf> preparePacketMoreThan16MB() {
+        byte[] firstPacketData = new byte[4 + (1 << 24) - 1];
+        firstPacketData[0] = firstPacketData[1] = firstPacketData[2] = (byte) 0xff;
+        firstPacketData[3] = (byte) 0;
+        byte[] secondPacketData = new byte[]{0x00, 0x00, 0x00, 0x01};
+        return Arrays.asList(Unpooled.wrappedBuffer(firstPacketData), Unpooled.wrappedBuffer(secondPacketData));
     }
     
     @Test
