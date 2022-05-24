@@ -35,7 +35,7 @@ public final class SQLCheckerFixture implements SQLChecker<AuthorityRule> {
     
     @Override
     public boolean check(final String databaseName, final Grantee grantee, final AuthorityRule authorityRule) {
-        return "sharding_db".equals(databaseName);
+        return "sharding_db".equals(databaseName) || "empty_db".equals(databaseName);
     }
     
     @Override
