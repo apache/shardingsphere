@@ -35,11 +35,8 @@ import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
-import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -60,15 +57,12 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class SelectTableExecutorTest extends ProxyContextRestorer {
     
     private static final ResultSet RESULT_SET = mock(HikariProxyResultSet.class);
     
     @Before
     public void setUp() throws IllegalAccessException, NoSuchFieldException, SQLException {
-        Field contextManagerField = ProxyContext.getInstance().getClass().getDeclaredField("contextManager");
-        contextManagerField.setAccessible(true);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), new HashMap<>(), mock(ShardingSphereRuleMetaData.class),
                 mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
@@ -76,26 +70,14 @@ public final class SelectTableExecutorTest extends ProxyContextRestorer {
         ProxyContext.init(contextManager);
     }
     
-    private void mockResultSet(final Map<String, String> mockMap, final Boolean... values) throws SQLException {
-        ResultSetMetaData metaData = mock(ResultSetMetaData.class);
-        List<String> keys = new ArrayList<>(mockMap.keySet());
-        for (int i = 0; i < keys.size(); i++) {
-            when(metaData.getColumnName(i + 1)).thenReturn(keys.get(i));
-            when(metaData.getColumnLabel(i + 1)).thenReturn(keys.get(i));
-            when(RESULT_SET.getString(i + 1)).thenReturn(mockMap.get(keys.get(i)));
-        }
-        when(RESULT_SET.next()).thenReturn(true, false);
-        when(metaData.getColumnCount()).thenReturn(mockMap.size());
-        when(RESULT_SET.getMetaData()).thenReturn(metaData);
-    }
-    
     private ShardingSphereDatabase getDatabaseMetaData() throws SQLException {
-        return new ShardingSphereDatabase("sharding_db", new PostgreSQLDatabaseType(), new ShardingSphereResource(new PostgreSQLDatabaseType(), mockDatasourceMap()),
+        return new ShardingSphereDatabase("sharding_db", new PostgreSQLDatabaseType(), new ShardingSphereResource(mockDatasourceMap()),
                 mock(ShardingSphereRuleMetaData.class), Collections.singletonMap("public", new ShardingSphereSchema(Collections.singletonMap("t_order", mock(TableMetaData.class)))));
     }
     
     private Map<String, DataSource> mockDatasourceMap() throws SQLException {
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
+        when(connection.getMetaData().getURL()).thenReturn("jdbc:mysql://localhost:3306/foo_ds");
         when(connection.prepareStatement(any(String.class)).executeQuery()).thenReturn(RESULT_SET);
         return Collections.singletonMap("ds_0", new MockedDataSource(connection));
     }
@@ -107,9 +89,9 @@ public final class SelectTableExecutorTest extends ProxyContextRestorer {
         mockResultSetMap.put("tablename", "t_order_1");
         mockResultSetMap.put("c.oid", "0000");
         mockResultSetMap.put("schemaname", "public");
-        mockResultSet(mockResultSetMap, true, false);
+        mockResultSet(mockResultSetMap);
         Map<String, ShardingSphereDatabase> databaseMap = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getDatabaseMap();
-        databaseMap.put("sharding_db", getDatabaseMetaData());
+        databaseMap.put("public", getDatabaseMetaData());
         SelectTableExecutor selectSchemataExecutor = new SelectTableExecutor(sql);
         selectSchemataExecutor.execute(mock(ConnectionSession.class));
         assertThat(selectSchemataExecutor.getQueryResultMetaData().getColumnCount(), is(mockResultSetMap.size()));
@@ -124,5 +106,18 @@ public final class SelectTableExecutorTest extends ProxyContextRestorer {
             }
         }
         assertThat(count, is(1));
+    }
+    
+    private void mockResultSet(final Map<String, String> mockMap) throws SQLException {
+        ResultSetMetaData metaData = mock(ResultSetMetaData.class);
+        List<String> keys = new ArrayList<>(mockMap.keySet());
+        for (int i = 0; i < keys.size(); i++) {
+            when(metaData.getColumnName(i + 1)).thenReturn(keys.get(i));
+            when(metaData.getColumnLabel(i + 1)).thenReturn(keys.get(i));
+            when(RESULT_SET.getString(i + 1)).thenReturn(mockMap.get(keys.get(i)));
+        }
+        when(RESULT_SET.next()).thenReturn(true, false);
+        when(metaData.getColumnCount()).thenReturn(mockMap.size());
+        when(RESULT_SET.getMetaData()).thenReturn(metaData);
     }
 }

@@ -31,7 +31,6 @@ import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacket
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
@@ -74,15 +73,13 @@ public final class PostgreSQLAuthenticationHandlerTest {
     
     private final String md5Salt = "md5test";
     
-    private PostgreSQLPacketPayload payload;
-    
     private PostgreSQLPasswordMessagePacket passwordMessagePacket;
     
     private final PostgreSQLAuthenticationHandler authenticationHandler = new PostgreSQLAuthenticationHandler();
     
     @Before
     public void init() {
-        payload = new PostgreSQLPacketPayload(createByteBuf(16, 128), StandardCharsets.UTF_8);
+        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(createByteBuf(16, 128), StandardCharsets.UTF_8);
         String md5Digest = md5Encode(username, password, md5Salt.getBytes(StandardCharsets.UTF_8));
         payload.writeInt4(4 + md5Digest.length() + 1);
         payload.writeStringNul(md5Digest);
@@ -156,7 +153,7 @@ public final class PostgreSQLAuthenticationHandlerTest {
         for (int i = 0; i < 10; i++) {
             ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
             ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-            when(database.getResource()).thenReturn(new ShardingSphereResource(new MySQLDatabaseType(), Collections.emptyMap()));
+            when(database.getResource()).thenReturn(new ShardingSphereResource(Collections.emptyMap()));
             when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()));
             when(database.getSchemas().get(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
             when(schema.getTables()).thenReturn(Collections.emptyMap());

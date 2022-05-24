@@ -96,18 +96,19 @@ public final class SelectDatabaseExecutorTest extends ProxyContextRestorer {
     
     private ShardingSphereDatabase getDatabase() throws SQLException {
         return new ShardingSphereDatabase("sharding_db", new PostgreSQLDatabaseType(),
-                new ShardingSphereResource(new PostgreSQLDatabaseType(), mockDatasourceMap()), mock(ShardingSphereRuleMetaData.class), Collections.emptyMap());
+                new ShardingSphereResource(mockDatasourceMap()), mock(ShardingSphereRuleMetaData.class), Collections.emptyMap());
     }
     
     private ShardingSphereDatabase getEmptyDatabaseMetaData(final String schemaName) {
         ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class);
         when(ruleMetaData.getRules()).thenReturn(Collections.emptyList());
         return new ShardingSphereDatabase(
-                schemaName, new PostgreSQLDatabaseType(), new ShardingSphereResource(new PostgreSQLDatabaseType(), Collections.emptyMap()), ruleMetaData, Collections.emptyMap());
+                schemaName, new PostgreSQLDatabaseType(), new ShardingSphereResource(Collections.emptyMap()), ruleMetaData, Collections.emptyMap());
     }
     
     private Map<String, DataSource> mockDatasourceMap() throws SQLException {
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
+        when(connection.getMetaData().getURL()).thenReturn("jdbc:mysql://localhost:3306/foo_ds");
         when(connection.prepareStatement(any(String.class)).executeQuery()).thenReturn(RESULT_SET);
         return Collections.singletonMap("ds_0", new MockedDataSource(connection));
     }
