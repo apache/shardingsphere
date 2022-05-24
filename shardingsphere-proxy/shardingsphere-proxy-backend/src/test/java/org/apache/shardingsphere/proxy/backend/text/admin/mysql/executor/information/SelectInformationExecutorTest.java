@@ -99,11 +99,8 @@ public final class SelectInformationExecutorTest extends ProxyContextRestorer {
             if ("sharding_db".equals(executor.getMergedResult().getValue(1, String.class))) {
                 assertThat(executor.getMergedResult().getValue(2, String.class), is("utf8mb4"));
                 assertThat(executor.getMergedResult().getValue(3, String.class), is("utf8mb4_0900_ai_ci"));
-            } else if ("database_without_authority".equals(executor.getMergedResult().getValue(1, String.class))) {
-                assertThat(executor.getMergedResult().getValue(2, String.class), is(""));
-                assertThat(executor.getMergedResult().getValue(3, String.class), is(""));
             } else {
-                fail("expected : `sharding_db` or `database_without_authority`");
+                fail("expected : `sharding_db`");
             }
         }
         assertThat(count, is(1));
