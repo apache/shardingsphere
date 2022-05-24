@@ -1276,6 +1276,18 @@ aliasClause
     | colId
     ;
 
+directoryname
+    : name
+    ;
+
+pathString
+    : stringLiterals
+    ;
+
+stringLiterals
+    : STRING_
+    ;
+
 nameList
     : name | nameList COMMA_ name
     ;

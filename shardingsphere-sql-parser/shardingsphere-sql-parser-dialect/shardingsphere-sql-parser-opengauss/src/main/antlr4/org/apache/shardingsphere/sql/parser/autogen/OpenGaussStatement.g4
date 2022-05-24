@@ -120,5 +120,6 @@ execute
     | alterSynonym
     | dropSynonym
     | cursor
+    | createDirectory
     ) SEMI_? EOF
     ;
