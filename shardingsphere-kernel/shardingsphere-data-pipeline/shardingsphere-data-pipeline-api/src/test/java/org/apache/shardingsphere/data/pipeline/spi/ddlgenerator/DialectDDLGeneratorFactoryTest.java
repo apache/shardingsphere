@@ -1,5 +1,6 @@
 package org.apache.shardingsphere.data.pipeline.spi.ddlgenerator;
 
+import org.apache.shardingsphere.data.pipeline.spi.fixture.DialectDDLGeneratorFixTrue;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
@@ -12,7 +13,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import javax.sql.DataSource;
 import java.io.PrintWriter;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Logger;
@@ -45,10 +45,6 @@ public final class DialectDDLGeneratorFactoryTest {
 	private Logger parentLogger;
 
 	private static final String DEFAULT_SCHEMA = "public";
-
-	private static final String SHOW_CREATE_SQL = "SHOW CREATE TABLE %s";
-
-	private static final String COLUMN_LABEL = "create table";
 
 
 	@Before
@@ -97,19 +93,7 @@ public final class DialectDDLGeneratorFactoryTest {
 	}
 
 	private void assertNewInstance(final DialectDDLGenerator actual) {
-		DialectDDLGenerator excepted = new DialectDDLGenerator() {
-			@Override
-			public String generateDDLSQL(String tableName, String schemaName, DataSource dataSource) throws SQLException {
-				try (
-						Statement statement = dataSource.getConnection().createStatement();
-						ResultSet resultSet = statement.executeQuery(String.format(SHOW_CREATE_SQL, tableName))) {
-					if (resultSet.next()) {
-						return resultSet.getString(COLUMN_LABEL);
-					}
-				}
-				throw new ShardingSphereException("Failed to get ddl sql for table %s", tableName);
-			}
-		};
+		DialectDDLGenerator excepted = new DialectDDLGeneratorFixTrue();
 		when(actual).thenReturn(excepted);
 	}
 }
