@@ -16,9 +16,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Logger;
+
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -65,7 +66,7 @@ public final class DialectDDLGeneratorFactoryTest {
 	public void assertFindInstanceWithDialectDDLGenerator() throws SQLException {
 		boolean thrown = false;
 
-		if (DialectDDLSQLGeneratorFactory.findInstance(new MySQLDatabaseType()).isPresent()){
+		if (DialectDDLSQLGeneratorFactory.findInstance(new MySQLDatabaseType()).isPresent()) {
 			assertThat(DialectDDLSQLGeneratorFactory.findInstance(new MySQLDatabaseType()).get(), is(DialectDDLGenerator.class));
 
 		}
@@ -81,14 +82,14 @@ public final class DialectDDLGeneratorFactoryTest {
 		try (
 				Connection connection = dataSource.getConnection();
 				Statement statement = connection.createStatement()) {
-				if (DialectDDLSQLGeneratorFactory.findInstance(databaseType).isPresent()) {
-					dialectDDLGenerator = DialectDDLSQLGeneratorFactory.findInstance(databaseType).get();
-				}
-				assertNewInstance(dialectDDLGenerator);
-				String sql = DialectDDLSQLGeneratorFactory.findInstance(databaseType).orElseThrow(() -> new ShardingSphereException("Failed to get dialect ddl sql generator"))
-						.generateDDLSQL("tableA", DEFAULT_SCHEMA, dataSource);
-				statement.execute(sql);
-		}catch (Exception ex){
+			if (DialectDDLSQLGeneratorFactory.findInstance(databaseType).isPresent()) {
+				dialectDDLGenerator = DialectDDLSQLGeneratorFactory.findInstance(databaseType).get();
+			}
+			assertNewInstance(dialectDDLGenerator);
+			String sql = DialectDDLSQLGeneratorFactory.findInstance(databaseType).orElseThrow(() -> new ShardingSphereException("Failed to get dialect ddl sql generator"))
+					.generateDDLSQL("tableA", DEFAULT_SCHEMA, dataSource);
+			statement.execute(sql);
+		} catch (Exception ex) {
 			thrown = true;
 		}
 
