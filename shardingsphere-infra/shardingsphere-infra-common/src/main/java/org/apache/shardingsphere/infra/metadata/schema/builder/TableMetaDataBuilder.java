@@ -77,12 +77,7 @@ public final class TableMetaDataBuilder {
     }
     
     private static boolean isSchemaContainsTable(final Collection<SchemaMetaData> schemaMetaDataList, final String tableName) {
-        for (SchemaMetaData each : schemaMetaDataList) {
-            if (each.getTables().containsKey(tableName)) {
-                return true;
-            }
-        }
-        return false;
+        return schemaMetaDataList.stream().anyMatch(each -> each.getTables().containsKey(tableName));
     }
     
     private static void mergeSchemaMetaDataMap(final Map<String, SchemaMetaData> schemaMetaDataMap, final Collection<SchemaMetaData> addedSchemaMetaDataList) {
