@@ -27,14 +27,19 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingVal
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.OffsetDateTime;
+import java.time.OffsetTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.chrono.JapaneseDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAccessor;
+import java.time.temporal.TemporalQueries;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -66,9 +71,9 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
     
     private int dateTimePatternLength;
     
-    private LocalDateTime dateTimeLower;
+    private TemporalAccessor dateTimeLower;
     
-    private LocalDateTime dateTimeUpper;
+    private TemporalAccessor dateTimeUpper;
     
     private DateTimeFormatter tableSuffixPattern;
     
@@ -94,18 +99,18 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
         return props.getProperty(DATE_TIME_PATTERN_KEY);
     }
     
-    private LocalDateTime getDateTimeLower(final Properties props, final String dateTimePattern) {
+    private TemporalAccessor getDateTimeLower(final Properties props, final String dateTimePattern) {
         Preconditions.checkArgument(props.containsKey(DATE_TIME_LOWER_KEY), "%s can not be null.", DATE_TIME_LOWER_KEY);
         return getDateTime(DATE_TIME_LOWER_KEY, props.getProperty(DATE_TIME_LOWER_KEY), dateTimePattern);
     }
     
-    private LocalDateTime getDateTimeUpper(final Properties props, final String dateTimePattern) {
+    private TemporalAccessor getDateTimeUpper(final Properties props, final String dateTimePattern) {
         return props.containsKey(DATE_TIME_UPPER_KEY) ? getDateTime(DATE_TIME_UPPER_KEY, props.getProperty(DATE_TIME_UPPER_KEY), dateTimePattern) : LocalDateTime.now();
     }
     
-    private LocalDateTime getDateTime(final String dateTimeKey, final String dateTimeValue, final String dateTimePattern) {
+    private TemporalAccessor getDateTime(final String dateTimeKey, final String dateTimeValue, final String dateTimePattern) {
         try {
-            return LocalDateTime.parse(dateTimeValue, dateTimeFormatter);
+            return dateTimeFormatter.parse(dateTimeValue);
         } catch (final DateTimeParseException ex) {
             throw new ShardingSphereConfigurationException("Invalid %s, datetime pattern should be `%s`, value is `%s`", dateTimeKey, dateTimePattern, dateTimeValue);
         }
@@ -135,19 +140,53 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
         return doSharding(availableTargetNames, shardingValue.getValueRange());
     }
     
+    @SuppressWarnings("DuplicatedCode")
     private Collection<String> doSharding(final Collection<String> availableTargetNames, final Range<Comparable<?>> range) {
         Set<String> result = new HashSet<>();
-        LocalDateTime calculateTime = dateTimeLower;
-        while (!calculateTime.isAfter(dateTimeUpper)) {
-            if (hasIntersection(Range.closedOpen(calculateTime, calculateTime.plus(stepAmount, stepUnit)), range)) {
-                result.addAll(getMatchedTables(calculateTime, availableTargetNames));
+        TemporalAccessor calculateTime = dateTimeLower;
+        if (null != calculateTime.query(TemporalQueries.localDate()) && null != calculateTime.query(TemporalQueries.localTime())){
+            LocalDateTime calculateTimeAsTimeStamp = LocalDateTime.of(calculateTime.query(TemporalQueries.localDate()), calculateTime.query(TemporalQueries.localTime()));
+            LocalDateTime dateTimeLower = LocalDateTime.of(this.dateTimeLower.query(TemporalQueries.localDate()), this.dateTimeLower.query(TemporalQueries.localTime()));
+            LocalDateTime dateTimeUpper = LocalDateTime.of(this.dateTimeUpper.query(TemporalQueries.localDate()), this.dateTimeUpper.query(TemporalQueries.localTime()));
+            while (!calculateTimeAsTimeStamp.isAfter(dateTimeUpper)) {
+                boolean flag = hasIntersection(Range.closedOpen(calculateTimeAsTimeStamp, calculateTimeAsTimeStamp.plus(stepAmount, stepUnit)), range, dateTimeLower,dateTimeUpper);
+                if (flag) {
+                    result.addAll(getMatchedTables(calculateTimeAsTimeStamp, availableTargetNames));
+                }
+                calculateTimeAsTimeStamp = calculateTimeAsTimeStamp.plus(stepAmount, stepUnit);
             }
-            calculateTime = calculateTime.plus(stepAmount, stepUnit);
+            return result;
         }
-        return result;
+        if (null != calculateTime.query(TemporalQueries.localDate()) && null == calculateTime.query(TemporalQueries.localTime())){
+            LocalDate calculateTimeAsDate = calculateTime.query(TemporalQueries.localDate());
+            LocalDate dateTimeLower = this.dateTimeLower.query(TemporalQueries.localDate());
+            LocalDate dateTimeUpper = this.dateTimeUpper.query(TemporalQueries.localDate());
+            while (!calculateTimeAsDate.isAfter(dateTimeUpper)) {
+                boolean flag = hasIntersection(Range.closedOpen(calculateTimeAsDate, calculateTimeAsDate.plus(stepAmount, stepUnit)), range, dateTimeLower,dateTimeUpper);
+                if (flag) {
+                    result.addAll(getMatchedTables(calculateTimeAsDate, availableTargetNames));
+                }
+                calculateTimeAsDate = calculateTimeAsDate.plus(stepAmount, stepUnit);
+            }
+            return result;
+        }
+        if (null == calculateTime.query(TemporalQueries.localDate()) && null != calculateTime.query(TemporalQueries.localTime())){
+            LocalTime calculateTimeAsTime = calculateTime.query(TemporalQueries.localTime());
+            LocalTime dateTimeLower = this.dateTimeLower.query(TemporalQueries.localTime());
+            LocalTime dateTimeUpper = this.dateTimeUpper.query(TemporalQueries.localTime());
+            while (!calculateTimeAsTime.isAfter(dateTimeUpper)) {
+                boolean flag = hasIntersection(Range.closedOpen(calculateTimeAsTime, calculateTimeAsTime.plus(stepAmount, stepUnit)), range, dateTimeLower,dateTimeUpper);
+                if (flag) {
+                    result.addAll(getMatchedTables(calculateTimeAsTime, availableTargetNames));
+                }
+                calculateTimeAsTime = calculateTimeAsTime.plus(stepAmount, stepUnit);
+            }
+            return result;
+        }
+        return new HashSet<>();
     }
     
-    private boolean hasIntersection(final Range<LocalDateTime> calculateRange, final Range<Comparable<?>> range) {
+    private boolean hasIntersection(final Range<LocalDateTime> calculateRange, final Range<Comparable<?>> range, LocalDateTime dateTimeLower, LocalDateTime dateTimeUpper) {
         LocalDateTime lower = range.hasLowerBound() ? parseLocalDateTime(range.lowerEndpoint()) : dateTimeLower;
         LocalDateTime upper = range.hasUpperBound() ? parseLocalDateTime(range.upperEndpoint()) : dateTimeUpper;
         BoundType lowerBoundType = range.hasLowerBound() ? range.lowerBoundType() : BoundType.CLOSED;
@@ -155,13 +194,39 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
         Range<LocalDateTime> dateTimeRange = Range.range(lower, lowerBoundType, upper, upperBoundType);
         return calculateRange.isConnected(dateTimeRange) && !calculateRange.intersection(dateTimeRange).isEmpty();
     }
+
+    private boolean hasIntersection(final Range<LocalDate> calculateRange, final Range<Comparable<?>> range, LocalDate dateTimeLower, LocalDate dateTimeUpper) {
+        LocalDate lower = range.hasLowerBound() ? parseLocalDate(range.lowerEndpoint()) : dateTimeLower;
+        LocalDate upper = range.hasUpperBound() ? parseLocalDate(range.upperEndpoint()) : dateTimeUpper;
+        BoundType lowerBoundType = range.hasLowerBound() ? range.lowerBoundType() : BoundType.CLOSED;
+        BoundType upperBoundType = range.hasUpperBound() ? range.upperBoundType() : BoundType.CLOSED;
+        Range<LocalDate> dateTimeRange = Range.range(lower, lowerBoundType, upper, upperBoundType);
+        return calculateRange.isConnected(dateTimeRange) && !calculateRange.intersection(dateTimeRange).isEmpty();
+    }
+
+    private boolean hasIntersection(final Range<LocalTime> calculateRange, final Range<Comparable<?>> range, LocalTime dateTimeLower, LocalTime dateTimeUpper) {
+        LocalTime lower = range.hasLowerBound() ? parseLocalTime(range.lowerEndpoint()) : dateTimeLower;
+        LocalTime upper = range.hasUpperBound() ? parseLocalTime(range.upperEndpoint()) : dateTimeUpper;
+        BoundType lowerBoundType = range.hasLowerBound() ? range.lowerBoundType() : BoundType.CLOSED;
+        BoundType upperBoundType = range.hasUpperBound() ? range.upperBoundType() : BoundType.CLOSED;
+        Range<LocalTime> dateTimeRange = Range.range(lower, lowerBoundType, upper, upperBoundType);
+        return calculateRange.isConnected(dateTimeRange) && !calculateRange.intersection(dateTimeRange).isEmpty();
+    }
     
     private LocalDateTime parseLocalDateTime(final Comparable<?> endpoint) {
         return LocalDateTime.parse(getDateTimeText(endpoint).substring(0, dateTimePatternLength), dateTimeFormatter);
     }
     
+    private LocalDate parseLocalDate(final Comparable<?> endpoint) {
+        return LocalDate.parse(getDateTimeText(endpoint).substring(0, dateTimePatternLength), dateTimeFormatter);
+    }
+
+    private LocalTime parseLocalTime(final Comparable<?> endpoint) {
+        return LocalTime.parse(getDateTimeText(endpoint).substring(0, dateTimePatternLength), dateTimeFormatter);
+    }
+
     private String getDateTimeText(final Comparable<?> endpoint) {
-        if (endpoint instanceof LocalDateTime || endpoint instanceof ZonedDateTime || endpoint instanceof OffsetDateTime) {
+        if (endpoint instanceof LocalDateTime || endpoint instanceof ZonedDateTime || endpoint instanceof OffsetDateTime || endpoint instanceof LocalTime || endpoint instanceof OffsetTime || endpoint instanceof JapaneseDate) {
             return dateTimeFormatter.format((TemporalAccessor) endpoint);
         }
         if (endpoint instanceof Instant) {
@@ -173,8 +238,19 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
         return endpoint.toString();
     }
     
-    private Collection<String> getMatchedTables(final LocalDateTime dateTime, final Collection<String> availableTargetNames) {
-        String tableSuffix = dateTime.format(tableSuffixPattern);
+    private Collection<String> getMatchedTables(final TemporalAccessor dateTime, final Collection<String> availableTargetNames) {
+        LocalDate viewAsLocalDate = dateTime.query(TemporalQueries.localDate());
+        LocalTime viewAsLocalTime = dateTime.query(TemporalQueries.localTime());
+        String tableSuffix;
+        if (null == viewAsLocalTime) {
+            tableSuffix = viewAsLocalDate.format(tableSuffixPattern);
+            return availableTargetNames.parallelStream().filter(each -> each.endsWith(tableSuffix)).collect(Collectors.toSet());
+        }
+        if ( null == viewAsLocalDate) {
+            tableSuffix = viewAsLocalTime.format(tableSuffixPattern);
+            return availableTargetNames.parallelStream().filter(each -> each.endsWith(tableSuffix)).collect(Collectors.toSet());
+        }
+        tableSuffix = LocalDateTime.of(viewAsLocalDate, viewAsLocalTime).format(tableSuffixPattern);
         return availableTargetNames.parallelStream().filter(each -> each.endsWith(tableSuffix)).collect(Collectors.toSet());
     }
     
