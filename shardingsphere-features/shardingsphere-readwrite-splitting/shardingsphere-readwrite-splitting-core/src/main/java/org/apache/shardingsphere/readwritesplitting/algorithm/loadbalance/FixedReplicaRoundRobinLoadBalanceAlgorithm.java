@@ -19,6 +19,7 @@ package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
 
 import lombok.Getter;
 import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
+import org.apache.shardingsphere.transaction.TransactionHolder;
 
 import java.util.List;
 import java.util.Properties;
@@ -29,7 +30,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public final class FixedReplicaRoundRobinLoadBalanceAlgorithm implements ReplicaLoadBalanceAlgorithm {
     
-    private static final ThreadLocal<String> REPLICA_ROUTE_HOLDER = new ThreadLocal<>();
+//    private static final ThreadLocal<String> REPLICA_ROUTE_HOLDER = new ThreadLocal<>();
     
     private final AtomicInteger count = new AtomicInteger(0);
     
@@ -43,14 +44,14 @@ public final class FixedReplicaRoundRobinLoadBalanceAlgorithm implements Replica
     
     @Override
     public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames) {
-        if (null == REPLICA_ROUTE_HOLDER.get()) {
-            REPLICA_ROUTE_HOLDER.set(readDataSourceNames.get(Math.abs(count.getAndIncrement()) % readDataSourceNames.size()));
+        if (null == TransactionHolder.getReadWriteSplitRoutedReplica()) {
+            TransactionHolder.setReadWriteSplitRoutedReplica(readDataSourceNames.get(Math.abs(count.getAndIncrement()) % readDataSourceNames.size()));
         }
-        return REPLICA_ROUTE_HOLDER.get();
+        return TransactionHolder.getReadWriteSplitRoutedReplica();
     }
     
     @Override
     public String getType() {
-        return "SELECT_TO_ONE_SLAVE_ROUND_ROBIN";
+        return "FIXED_REPLICA_ROUND_ROBIN";
     }
 }

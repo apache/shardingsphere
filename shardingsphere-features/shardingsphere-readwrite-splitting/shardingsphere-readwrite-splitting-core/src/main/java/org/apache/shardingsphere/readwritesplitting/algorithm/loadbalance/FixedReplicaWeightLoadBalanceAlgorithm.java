@@ -19,6 +19,7 @@ package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
 
 import lombok.Getter;
 import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
+import org.apache.shardingsphere.transaction.TransactionHolder;
 
 import java.util.Arrays;
 import java.util.List;
@@ -36,8 +37,6 @@ public final class FixedReplicaWeightLoadBalanceAlgorithm implements ReplicaLoad
     
     private static final ConcurrentHashMap<String, double[]> WEIGHT_MAP = new ConcurrentHashMap<>();
     
-    private static final ThreadLocal<String> REPLICA_ROUTE_HOLDER = new ThreadLocal<>();
-    
     private Properties props;
     
     @Override
@@ -47,13 +46,12 @@ public final class FixedReplicaWeightLoadBalanceAlgorithm implements ReplicaLoad
     
     @Override
     public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames) {
-        if (null != REPLICA_ROUTE_HOLDER.get()) {
-            return REPLICA_ROUTE_HOLDER.get();
-        }
         double[] weight = WEIGHT_MAP.containsKey(name) ? WEIGHT_MAP.get(name) : initWeight(readDataSourceNames);
         WEIGHT_MAP.putIfAbsent(name, weight);
-        REPLICA_ROUTE_HOLDER.set(getDataSourceName(readDataSourceNames, weight));
-        return REPLICA_ROUTE_HOLDER.get();
+        if (null == TransactionHolder.getReadWriteSplitRoutedReplica()) {
+            TransactionHolder.setReadWriteSplitRoutedReplica(getDataSourceName(readDataSourceNames, weight));
+        }
+        return TransactionHolder.getReadWriteSplitRoutedReplica();
     }
     
     private String getDataSourceName(final List<String> readDataSourceNames, final double[] weight) {
