@@ -102,7 +102,7 @@ public final class ProxySQLExecutor {
     private boolean isExecuteDDLInPostgreSQLOpenGaussTransaction(final SQLStatement sqlStatement) {
         // TODO implement DDL statement commit/rollback in PostgreSQL/openGauss transaction
         boolean isPostgreSQLOpenGaussStatement = sqlStatement instanceof PostgreSQLStatement || sqlStatement instanceof OpenGaussStatement;
-        return sqlStatement instanceof DDLStatement && !(sqlStatement instanceof OpenGaussCursorStatement) && isPostgreSQLOpenGaussStatement 
+        return sqlStatement instanceof DDLStatement && !(sqlStatement instanceof OpenGaussCursorStatement) && isPostgreSQLOpenGaussStatement
                 && backendConnection.getConnectionSession().getTransactionStatus().isInTransaction();
     }
     

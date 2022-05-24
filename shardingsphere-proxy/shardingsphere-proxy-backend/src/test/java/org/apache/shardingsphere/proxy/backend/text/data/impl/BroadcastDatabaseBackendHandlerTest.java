@@ -72,14 +72,12 @@ public final class BroadcastDatabaseBackendHandlerTest {
     private DatabaseCommunicationEngine databaseCommunicationEngine;
     
     @Before
-    public void setUp() throws IllegalAccessException, NoSuchFieldException {
-        Field contextManagerField = ProxyContext.getInstance().getClass().getDeclaredField("contextManager");
-        contextManagerField.setAccessible(true);
+    public void setUp() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = new MetaDataContexts(
                 mock(MetaDataPersistService.class), getDatabaseMap(), mock(ShardingSphereRuleMetaData.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        contextManagerField.set(ProxyContext.getInstance(), contextManager);
+        ProxyContext.init(contextManager);
         when(connectionSession.getDatabaseName()).thenReturn(String.format(DATABASE_PATTERN, 0));
     }
     

@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml;
 
-package org.apache.shardingsphere.infra.metadata.rule;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
-
-public class ShardingSphereRuleConfiguration implements SchemaRuleConfiguration {
-
+/**
+ * Checkpoint statement test case.
+ */
+public final class CheckpointStatementTestCase extends SQLParserTestCase {
 }

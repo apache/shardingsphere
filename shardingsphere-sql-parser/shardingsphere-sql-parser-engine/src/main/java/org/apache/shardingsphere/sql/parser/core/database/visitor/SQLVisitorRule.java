@@ -514,7 +514,9 @@ public enum SQLVisitorRule {
     
     CREATE_PFILE("CreatePFile", SQLStatementType.DDL),
     
-    CURSOR("Cursor", SQLStatementType.DDL);
+    CURSOR("Cursor", SQLStatementType.DDL),
+    
+    CHECKPOINT("Checkpoint", SQLStatementType.DML);
     
     private final String name;
     

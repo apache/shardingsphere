@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
+package org.apache.shardingsphere.sql.parser.sql.common.statement.dml;
 
-package org.apache.shardingsphere.infra.metadata.rule;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
-import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
-
-public class ShardingSphereRuleConfiguration implements SchemaRuleConfiguration {
-
+/**
+ * Checkpoint statement.
+ */
+public abstract class CheckpointStatement extends AbstractSQLStatement implements DMLStatement {
 }
