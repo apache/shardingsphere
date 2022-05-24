@@ -30,8 +30,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public final class FixedReplicaRoundRobinLoadBalanceAlgorithm implements ReplicaLoadBalanceAlgorithm {
     
-//    private static final ThreadLocal<String> REPLICA_ROUTE_HOLDER = new ThreadLocal<>();
-    
     private final AtomicInteger count = new AtomicInteger(0);
     
     @Getter
