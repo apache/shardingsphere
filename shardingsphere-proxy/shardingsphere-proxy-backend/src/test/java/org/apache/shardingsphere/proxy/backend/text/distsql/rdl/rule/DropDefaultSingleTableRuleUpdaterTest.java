@@ -21,6 +21,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropDefaultSi
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
+import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,38 +29,33 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import javax.sql.DataSource;
 import java.util.Collections;
 
 import static org.junit.Assert.assertFalse;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class DropDefaultSingleTableRuleUpdaterTest {
     
+    private final DropDefaultSingleTableRuleStatementUpdater updater = new DropDefaultSingleTableRuleStatementUpdater();
+    
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
-    
-    private final DropDefaultSingleTableRuleStatementUpdater updater = new DropDefaultSingleTableRuleStatementUpdater();
     
     @Before
     public void setUp() throws Exception {
         when(database.getName()).thenReturn("sharding_db");
-        when(database.getResource().getDataSources()).thenReturn(Collections.singletonMap("ds_0", mock(DataSource.class)));
+        when(database.getResource().getDataSources()).thenReturn(Collections.singletonMap("ds_0", new MockedDataSource()));
     }
     
     @Test(expected = RequiredRuleMissedException.class)
     public void assertCheckWithoutConfig() throws Exception {
-        DropDefaultSingleTableRuleStatement statement = new DropDefaultSingleTableRuleStatement();
-        updater.checkSQLStatement(database, statement, null);
+        updater.checkSQLStatement(database, new DropDefaultSingleTableRuleStatement(), null);
     }
     
     @Test(expected = RequiredRuleMissedException.class)
     public void assertCheckWithoutResource() throws Exception {
-        DropDefaultSingleTableRuleStatement statement = new DropDefaultSingleTableRuleStatement();
-        SingleTableRuleConfiguration currentConfig = new SingleTableRuleConfiguration();
-        updater.checkSQLStatement(database, statement, currentConfig);
+        updater.checkSQLStatement(database, new DropDefaultSingleTableRuleStatement(), new SingleTableRuleConfiguration());
     }
     
     @Test
@@ -72,10 +68,9 @@ public final class DropDefaultSingleTableRuleUpdaterTest {
     
     @Test
     public void assertUpdate() {
-        DropDefaultSingleTableRuleStatement statement = new DropDefaultSingleTableRuleStatement();
         SingleTableRuleConfiguration currentConfig = new SingleTableRuleConfiguration();
         currentConfig.setDefaultDataSource("default");
-        updater.updateCurrentRuleConfiguration(statement, currentConfig);
+        updater.updateCurrentRuleConfiguration(new DropDefaultSingleTableRuleStatement(), currentConfig);
         assertFalse(currentConfig.getDefaultDataSource().isPresent());
     }
 }
