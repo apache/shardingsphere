@@ -50,7 +50,7 @@ public final class TableMetaDataBuilder {
      * @throws SQLException SQL exception
      */
     public static Map<String, SchemaMetaData> load(final Collection<String> tableNames, final SchemaBuilderMaterials materials) throws SQLException {
-        Map<String, SchemaMetaData> result = loadForTableContainedRules(tableNames, materials);
+        Map<String, SchemaMetaData> result = loadSchemaWithTableContainedRules(tableNames, materials);
         if (!materials.getProtocolType().equals(materials.getStorageType())) {
             result = translateSchema(result, materials);
         }
@@ -58,7 +58,7 @@ public final class TableMetaDataBuilder {
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private static Map<String, SchemaMetaData> loadForTableContainedRules(final Collection<String> tableNames, final SchemaBuilderMaterials materials) throws SQLException {
+    private static Map<String, SchemaMetaData> loadSchemaWithTableContainedRules(final Collection<String> tableNames, final SchemaBuilderMaterials materials) throws SQLException {
         Map<String, SchemaMetaData> result = new LinkedHashMap<>();
         for (Entry<ShardingSphereRule, RuleBasedSchemaMetaDataBuilder> entry : RuleBasedSchemaMetaDataBuilderFactory.getInstances(materials.getRules()).entrySet()) {
             ShardingSphereRule rule = entry.getKey();
