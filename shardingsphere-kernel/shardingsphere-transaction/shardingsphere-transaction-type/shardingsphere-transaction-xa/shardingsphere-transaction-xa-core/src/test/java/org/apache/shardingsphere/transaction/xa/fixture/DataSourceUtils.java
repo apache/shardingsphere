@@ -85,6 +85,8 @@ public final class DataSourceUtils {
                 return String.format("jdbc:sqlserver://localhost:1433;DatabaseName=%s", databaseName);
             case "H2":
                 return String.format("jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL", databaseName);
+            case "TEST":
+                return String.format("jdbc:xxx://xxxx/%s", databaseName);
             default:
                 throw new UnsupportedOperationException(databaseType.getType());
         }
