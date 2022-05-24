@@ -70,8 +70,8 @@ public final class TableMetaDataBuilder {
         return result;
     }
     
-    private static Collection<String> filterLoadingTables(final Collection<String> tableNames, final TableContainedRule rule, final Collection<SchemaMetaData> schemaMetaDataList) {
-        return tableNames.stream().filter(each -> rule.getTables().contains(each) && !isSchemaContainsTable(schemaMetaDataList, each)).collect(Collectors.toList());
+    private static Collection<String> filterLoadingTables(final Collection<String> tableNames, final TableContainedRule rule, final Collection<SchemaMetaData> loadedSchemaMetaDataList) {
+        return tableNames.stream().filter(each -> rule.getTables().contains(each) && !isSchemaContainsTable(loadedSchemaMetaDataList, each)).collect(Collectors.toList());
     }
     
     private static boolean isSchemaContainsTable(final Collection<SchemaMetaData> schemaMetaDataList, final String tableName) {
