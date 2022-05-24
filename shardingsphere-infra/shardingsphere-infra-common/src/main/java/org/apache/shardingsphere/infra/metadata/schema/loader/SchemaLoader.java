@@ -43,7 +43,7 @@ public final class SchemaLoader {
     /**
      * Load schema.
      *
-     * @param defaultSchemaName default schema name
+     * @param databaseName database name
      * @param protocolType protocol type
      * @param storageType storage type
      * @param dataSourceMap data source map
@@ -52,8 +52,9 @@ public final class SchemaLoader {
      * @return loaded schema
      * @throws SQLException SQL exception
      */
-    public static Map<String, ShardingSphereSchema> load(final String defaultSchemaName, final DatabaseType protocolType, final DatabaseType storageType, final Map<String, DataSource> dataSourceMap,
+    public static Map<String, ShardingSphereSchema> load(final String databaseName, final DatabaseType protocolType, final DatabaseType storageType, final Map<String, DataSource> dataSourceMap,
                                                          final Collection<ShardingSphereRule> rules, final ConfigurationProperties props) throws SQLException {
+        String defaultSchemaName = protocolType.getDefaultSchema(databaseName);
         Map<String, SchemaMetaData> schemaMetaDataMap = TableMetaDataBuilder.load(
                 getAllTableNames(rules), new SchemaBuilderMaterials(protocolType, storageType, dataSourceMap, rules, props, defaultSchemaName));
         if (schemaMetaDataMap.isEmpty()) {
