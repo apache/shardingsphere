@@ -64,8 +64,7 @@ public final class TableMetaDataBuilder {
         return decorate(result, materials);
     }
     
-    private static Collection<String> getNeedLoadTables(final Collection<String> tableNames, final Collection<SchemaMetaData> schemaMetaDataList,
-                                                        final TableContainedRule rule) {
+    private static Collection<String> getNeedLoadTables(final Collection<String> tableNames, final Collection<SchemaMetaData> schemaMetaDataList, final TableContainedRule rule) {
         Collection<String> result = new LinkedList<>();
         for (String each : tableNames) {
             if (rule.getTables().contains(each) && !isSchemaContainsTable(schemaMetaDataList, each)) {
