@@ -30,10 +30,10 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Table meta data builder.
@@ -67,13 +67,7 @@ public final class TableMetaDataBuilder {
     }
     
     private static Collection<String> getNeedLoadTables(final Collection<String> tableNames, final Collection<SchemaMetaData> schemaMetaDataList, final TableContainedRule rule) {
-        Collection<String> result = new LinkedList<>();
-        for (String each : tableNames) {
-            if (rule.getTables().contains(each) && !isSchemaContainsTable(schemaMetaDataList, each)) {
-                result.add(each);
-            }
-        }
-        return result;
+        return tableNames.stream().filter(each -> rule.getTables().contains(each) && !isSchemaContainsTable(schemaMetaDataList, each)).collect(Collectors.toList());
     }
     
     private static boolean isSchemaContainsTable(final Collection<SchemaMetaData> schemaMetaDataList, final String tableName) {
