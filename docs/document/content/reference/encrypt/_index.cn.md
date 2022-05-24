@@ -209,7 +209,7 @@ Apache ShardingSphere 提供了两种加密算法用于数据加密，这两种�
 在用户进行 `INSERT`，`DELETE`，`UPDATE` 时，ShardingSphere会按照用户配置，对SQL进行解析、改写、路由，并调用 `encrypt()` 将数据加密后存储到数据库， 
 而在 `SELECT` 时，则调用 `decrypt()` 方法将从数据库中取出的加密数据进行逆向解密，最终将原始数据返回给用户。
 
-当前，Apache ShardingSphere 针对这种类型的加密解决方案提供了三种具体实现类，分别是 MD5（不可逆），AES（可逆），RC4（可逆），用户只需配置即可使用这三种内置的方案。
+当前，Apache ShardingSphere 针对这种类型的加密解决方案提供了五种具体实现类，分别是 MD5（不可逆），AES（可逆），RC4（可逆），SM3（不可逆），SM4（可逆）用户只需配置即可使用这五种内置的方案。
 
 ### QueryAssistedEncryptAlgorithm
 
