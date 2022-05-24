@@ -34,6 +34,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.data.DatabaseBackendHandler;
+import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.junit.Before;
 import org.junit.Test;
@@ -57,7 +58,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class UnicastDatabaseBackendHandlerTest {
+public final class UnicastDatabaseBackendHandlerTest extends ProxyContextRestorer {
     
     private static final String EXECUTE_SQL = "SELECT 1 FROM user WHERE id = 1";
     
@@ -75,14 +76,12 @@ public final class UnicastDatabaseBackendHandlerTest {
     private DatabaseCommunicationEngine databaseCommunicationEngine;
     
     @Before
-    public void setUp() throws IllegalAccessException, NoSuchFieldException {
-        Field contextManagerField = ProxyContext.getInstance().getClass().getDeclaredField("contextManager");
-        contextManagerField.setAccessible(true);
+    public void setUp() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = new MetaDataContexts(
                 mock(MetaDataPersistService.class), getDatabaseMap(), mock(ShardingSphereRuleMetaData.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        contextManagerField.set(ProxyContext.getInstance(), contextManager);
+        ProxyContext.init(contextManager);
         when(connectionSession.getDefaultDatabaseName()).thenReturn(String.format(DATABASE_PATTERN, 0));
         mockDatabaseCommunicationEngine(new UpdateResponseHeader(mock(SQLStatement.class)));
         unicastDatabaseBackendHandler = new UnicastDatabaseBackendHandler(mock(SQLStatementContext.class), EXECUTE_SQL, connectionSession);
