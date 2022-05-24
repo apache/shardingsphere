@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.database.type.dialect;
 
 import org.apache.shardingsphere.infra.database.metadata.dialect.PostgreSQLDataSourceMetaData;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.SchemaSupportedDatabaseType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CommitStatement;
@@ -37,7 +37,7 @@ import java.util.Optional;
 /**
  * Database type of PostgreSQL.
  */
-public final class PostgreSQLDatabaseType implements DatabaseType {
+public final class PostgreSQLDatabaseType implements SchemaSupportedDatabaseType {
     
     private static final Map<String, Collection<String>> SYSTEM_DATABASE_SCHEMA_MAP = new HashMap<>();
     
@@ -90,7 +90,7 @@ public final class PostgreSQLDatabaseType implements DatabaseType {
     }
     
     @Override
-    public String getDefaultSchema(final String databaseName) {
+    public String getDefaultSchema() {
         return "public";
     }
     

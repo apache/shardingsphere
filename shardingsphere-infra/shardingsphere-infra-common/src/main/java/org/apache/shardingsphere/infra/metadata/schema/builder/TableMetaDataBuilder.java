@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.metadata.schema.builder;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedSchemaMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
@@ -110,8 +111,8 @@ public final class TableMetaDataBuilder {
         }
         Map<String, SchemaMetaData> result = new LinkedHashMap<>();
         Map<String, TableMetaData> tableMetaDataMap = Optional.ofNullable(schemaMetaDataMap.get(
-                storageType.getDefaultSchema(materials.getDefaultSchemaName()))).map(SchemaMetaData::getTables).orElseGet(Collections::emptyMap);
-        String frontendSchemaName = protocolType.getDefaultSchema(materials.getDefaultSchemaName());
+                DatabaseTypeEngine.getDefaultSchemaName(storageType, materials.getDefaultSchemaName()))).map(SchemaMetaData::getTables).orElseGet(Collections::emptyMap);
+        String frontendSchemaName = DatabaseTypeEngine.getDefaultSchemaName(protocolType, materials.getDefaultSchemaName());
         result.put(frontendSchemaName, new SchemaMetaData(frontendSchemaName, tableMetaDataMap));
         return result;
     }

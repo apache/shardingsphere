@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.Projecti
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 
 import java.util.Collections;
@@ -80,7 +81,7 @@ public final class EncryptAlgorithmMetaData {
             return Optional.empty();
         }
         TablesContext tablesContext = selectStatementContext.getTablesContext();
-        String schemaName = tablesContext.getSchemaName().orElse(selectStatementContext.getDatabaseType().getDefaultSchema(database.getName()));
+        String schemaName = tablesContext.getSchemaName().orElse(DatabaseTypeEngine.getDefaultSchemaName(selectStatementContext.getDatabaseType(), database.getName()));
         Map<String, String> expressionTableNames = tablesContext.findTableNamesByColumnProjection(
                 Collections.singletonList(columnProjection.get()), database.getSchemas().get(schemaName));
         Optional<String> tableName = findTableName(columnProjection.get(), expressionTableNames);

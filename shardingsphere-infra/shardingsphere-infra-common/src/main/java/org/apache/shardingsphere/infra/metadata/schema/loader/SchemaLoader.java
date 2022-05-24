@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.metadata.schema.loader;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataBuilder;
@@ -54,7 +55,7 @@ public final class SchemaLoader {
      */
     public static Map<String, ShardingSphereSchema> load(final String databaseName, final DatabaseType protocolType, final DatabaseType storageType, final Map<String, DataSource> dataSourceMap,
                                                          final Collection<ShardingSphereRule> rules, final ConfigurationProperties props) throws SQLException {
-        String defaultSchemaName = protocolType.getDefaultSchema(databaseName);
+        String defaultSchemaName = DatabaseTypeEngine.getDefaultSchemaName(protocolType, databaseName);
         Map<String, SchemaMetaData> schemaMetaDataMap = TableMetaDataBuilder.load(
                 getAllTableNames(rules), new SchemaBuilderMaterials(protocolType, storageType, dataSourceMap, rules, props, defaultSchemaName));
         if (schemaMetaDataMap.isEmpty()) {

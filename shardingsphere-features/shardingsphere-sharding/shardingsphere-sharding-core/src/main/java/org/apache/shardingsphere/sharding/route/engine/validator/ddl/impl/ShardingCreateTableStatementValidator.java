@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -40,9 +41,9 @@ public final class ShardingCreateTableStatementValidator extends ShardingDDLStat
     public void preValidate(final ShardingRule shardingRule,
                             final SQLStatementContext<CreateTableStatement> sqlStatementContext, final List<Object> parameters, final ShardingSphereDatabase database) {
         if (!CreateTableStatementHandler.containsNotExistClause(sqlStatementContext.getSqlStatement())) {
-            String defaultSchema = sqlStatementContext.getDatabaseType().getDefaultSchema(database.getName());
+            String defaultSchemaName = DatabaseTypeEngine.getDefaultSchemaName(sqlStatementContext.getDatabaseType(), database.getName());
             ShardingSphereSchema schema = sqlStatementContext.getTablesContext().getSchemaName()
-                    .map(optional -> database.getSchemas().get(optional)).orElseGet(() -> database.getSchemas().get(defaultSchema));
+                    .map(optional -> database.getSchemas().get(optional)).orElseGet(() -> database.getSchemas().get(defaultSchemaName));
             validateTableNotExist(schema, Collections.singletonList(sqlStatementContext.getSqlStatement().getTable()));
         }
     }
