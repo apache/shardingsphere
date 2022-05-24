@@ -135,4 +135,15 @@ public final class DatabaseTypeEngine {
     public static String getTrunkDatabaseTypeName(final DatabaseType databaseType) {
         return databaseType instanceof BranchDatabaseType ? ((BranchDatabaseType) databaseType).getTrunkDatabaseType().getType() : databaseType.getType();
     }
+    
+    /**
+     * Get default schema name.
+     * 
+     * @param databaseType database type
+     * @param databaseName database name
+     * @return default schema name
+     */
+    public static String getDefaultSchemaName(final DatabaseType databaseType, final String databaseName) {
+        return databaseType instanceof SchemaSupportedDatabaseType ? ((SchemaSupportedDatabaseType) databaseType).getDefaultSchema() : databaseName;
+    }
 }

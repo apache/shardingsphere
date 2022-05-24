@@ -21,6 +21,7 @@ import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -88,7 +89,7 @@ public class IndexMetaDataUtil {
      */
     public static Collection<QualifiedTable> getTableNames(final ShardingSphereDatabase database, final DatabaseType type, final Collection<IndexSegment> indexes) {
         Collection<QualifiedTable> result = new LinkedList<>();
-        String schemaName = type.getDefaultSchema(database.getName());
+        String schemaName = DatabaseTypeEngine.getDefaultSchemaName(type, database.getName());
         for (IndexSegment each : indexes) {
             String actualSchemaName = each.getOwner().map(optional -> optional.getIdentifier().getValue()).orElse(schemaName);
             findLogicTableNameFromMetaData(database.getSchemas().get(actualSchemaName),
