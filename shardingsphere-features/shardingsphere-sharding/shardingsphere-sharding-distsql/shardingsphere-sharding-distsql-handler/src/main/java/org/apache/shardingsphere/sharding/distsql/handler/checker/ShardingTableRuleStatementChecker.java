@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissed
 import org.apache.shardingsphere.infra.expr.InlineExpressionParser;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.BindingTableCheckedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.CheckableRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
@@ -277,8 +277,8 @@ public final class ShardingTableRuleStatementChecker {
         Collection<String> dataSourceNames = toBeCheckedRuleConfig.getRequiredResource();
         dataSourceNames.addAll(toBeAlteredRuleConfig.getRequiredResource());
         for (ShardingSphereRule each : database.getRuleMetaData().getRules()) {
-            if (each instanceof BindingTableCheckedRule) {
-                DistSQLException.predictionThrow(((BindingTableCheckedRule) each).isValidBindingTableConfig(toBeCheckedRuleConfig, dataSourceNames),
+            if (each instanceof CheckableRule) {
+                DistSQLException.predictionThrow(((CheckableRule) each).check(toBeCheckedRuleConfig, dataSourceNames),
                         () -> new InvalidRuleConfigurationException("sharding table", toBeAlteredLogicTableNames, Collections.singleton("invalid binding table configuration")));
             }
         }

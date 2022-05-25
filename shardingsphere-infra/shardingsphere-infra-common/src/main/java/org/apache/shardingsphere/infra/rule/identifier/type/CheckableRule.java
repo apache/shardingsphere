@@ -23,16 +23,16 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import java.util.Collection;
 
 /**
- * ShardingSphere rule which check binding table.
+ * Checkable ShardingSphere rule.
  */
-public interface BindingTableCheckedRule extends ShardingSphereRule {
+public interface CheckableRule extends ShardingSphereRule {
     
     /**
-     * Check binding table config.
+     * Check rule configuration.
      *
      * @param ruleConfig rule configuration
      * @param dataSourceNames data source names
      * @return is valid
      */
-    boolean isValidBindingTableConfig(RuleConfiguration ruleConfig, Collection<String> dataSourceNames);
+    boolean check(RuleConfiguration ruleConfig, Collection<String> dataSourceNames);
 }
