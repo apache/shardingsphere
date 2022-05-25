@@ -21,7 +21,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContextFactory;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -61,14 +61,14 @@ public class CustomizedFilterableExecutorTest {
         Map<String, ShardingSphereSchema> schemas = new HashMap<>(2, 1);
         String databaseName = "database_name";
         schemas.put(databaseName, new ShardingSphereSchema(tableMetaDataMap));
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(schemaName, mockResource(), null, schemas);
+        ShardingSphereDatabase metaData = new ShardingSphereDatabase(schemaName, new H2DatabaseType(), mockResource(), null, schemas);
         OptimizerContext optimizerContext = OptimizerContextFactory.create(Collections.singletonMap(schemaName, metaData), createGlobalRuleMetaData());
         executor = new CustomizedFilterableExecutor(databaseName, schemaName, optimizerContext);
     }
     
     private ShardingSphereRuleMetaData createGlobalRuleMetaData() {
         Collection<ShardingSphereRule> rules = new LinkedList<>();
-        CacheOption cacheOption = new CacheOption(128, 1024L, 4);
+        CacheOption cacheOption = new CacheOption(128, 1024L);
         rules.add(new SQLParserRule(new SQLParserRuleConfiguration(false, cacheOption, cacheOption)));
         return new ShardingSphereRuleMetaData(Collections.emptyList(), rules);
     }
