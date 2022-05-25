@@ -15,24 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.loader;
+package org.apache.shardingsphere.infra.metadata.rule;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
 
-import javax.sql.DataSource;
-import java.util.Collection;
+public class ShardingSphereRuleConfiguration implements SchemaRuleConfiguration {
 
-/**
- * TableMetaData loader material.
- */
-@RequiredArgsConstructor
-@Getter
-public final class TableMetaDataLoaderMaterial {
-    
-    private final Collection<String> actualTableNames;
-    
-    private final DataSource dataSource;
-    
-    private final String defaultSchemaName;
 }

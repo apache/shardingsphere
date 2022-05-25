@@ -47,6 +47,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Alt
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterTextSearchParserContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterTextSearchTemplateContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterViewContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CloseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.ColumnConstraintContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.ColumnDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CommentContext;
@@ -90,12 +91,14 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Dro
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropTablespaceContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropViewContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.FetchContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.IndexElemContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.IndexNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.IndexNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.IndexParamsContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.ModifyColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.ModifyConstraintSpecificationContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.MoveContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.NameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.NameListContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.PrepareContext;
@@ -155,6 +158,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussAlterTablespaceStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussAlterTextSearchStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussAlterViewStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCloseStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCommentStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateConversionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateDatabaseStatement;
@@ -191,6 +195,8 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropTablespaceStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropViewStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussFetchStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussMoveStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussPrepareStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussTruncateStatement;
 
@@ -886,5 +892,28 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
     @Override
     public ASTNode visitCursorName(final CursorNameContext ctx) {
         return new CursorNameSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (IdentifierValue) visit(ctx.name()));
+    }
+    
+    @Override
+    public ASTNode visitClose(final CloseContext ctx) {
+        OpenGaussCloseStatement result = new OpenGaussCloseStatement();
+        if (null != ctx.cursorName()) {
+            result.setCursorName((CursorNameSegment) visit(ctx.cursorName()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitMove(final MoveContext ctx) {
+        OpenGaussMoveStatement result = new OpenGaussMoveStatement();
+        result.setCursorName((CursorNameSegment) visit(ctx.cursorName()));
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitFetch(final FetchContext ctx) {
+        OpenGaussFetchStatement result = new OpenGaussFetchStatement();
+        result.setCursorName((CursorNameSegment) visit(ctx.cursorName()));
+        return result;
     }
 }
