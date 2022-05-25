@@ -60,7 +60,7 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<G
     
     @Override
     public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
-        String instanceId = ComputeNode.getInstanceIdByAttributes(event.getKey());
+        String instanceId = ComputeNode.getInstanceIdByComputeNode(event.getKey());
         if (!Strings.isNullOrEmpty(instanceId)) {
             if (event.getKey().equals(ComputeNode.getInstanceStatusNodePath(instanceId))) {
                 Collection<String> status = Strings.isNullOrEmpty(event.getValue()) ? new ArrayList<>() : YamlEngine.unmarshal(event.getValue(), Collection.class);
