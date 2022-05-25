@@ -37,7 +37,7 @@ public abstract class UnsupportedSQLParserParameterizedTest {
     
     private static final SQLCasesLoader SQL_CASES_LOADER = UnsupportedSQLCasesRegistry.getInstance().getSqlCasesLoader();
     
-    private final String sqlCaseId;
+    private final String sqlCaseId;  
     
     private final String databaseType;
     

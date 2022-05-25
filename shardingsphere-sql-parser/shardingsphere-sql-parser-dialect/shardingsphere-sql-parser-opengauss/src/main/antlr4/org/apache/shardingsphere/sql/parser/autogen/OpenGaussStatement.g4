@@ -82,7 +82,6 @@ execute
     | dropSchema
     | createType
     | createTextSearch
-    | declare
     | dropDatabase
     | dropFunction
     | dropProcedure
@@ -119,6 +118,10 @@ execute
     | createSynonym
     | alterSynonym
     | dropSynonym
+    | declare
     | cursor
+    | close
+    | move
+    | fetch
     ) SEMI_? EOF
     ;

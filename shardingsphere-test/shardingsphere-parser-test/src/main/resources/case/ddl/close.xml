@@ -17,15 +17,8 @@
   -->
 
 <sql-parser-test-cases>
-    <cursor sql-case-id="create_cursor">
-        <cursor-name name="t_order_cursor" start-index="7" stop-index="20" />
-        <select>
-            <from>
-                <simple-table name="t_order" start-index="50" stop-index="56" />
-            </from>
-            <projections start-index="43" stop-index="43">
-                <shorthand-projection start-index="43" stop-index="43" />
-            </projections>
-        </select>
-    </cursor>
+    <close sql-case-id="close_cursor">
+        <cursor-name name="t_order_cursor" start-index="6" stop-index="19" />
+    </close>
+    <close sql-case-id="close_all_cursor" />
 </sql-parser-test-cases>
