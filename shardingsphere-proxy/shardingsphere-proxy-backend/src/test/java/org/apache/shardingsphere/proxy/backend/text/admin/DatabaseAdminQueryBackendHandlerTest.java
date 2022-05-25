@@ -65,7 +65,7 @@ public final class DatabaseAdminQueryBackendHandlerTest extends ProxyContextRest
     @SneakyThrows
     @Before
     public void before() {
-        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), 
+        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
                 new ShardingSphereMetaData(getDatabaseMap(), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())), mock(OptimizerContext.class));
         ContextManager contextManager = new ContextManager(metaDataContexts, mock(TransactionContexts.class), mock(InstanceContext.class));
         ProxyContext.init(contextManager);

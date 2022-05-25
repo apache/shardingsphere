@@ -130,7 +130,7 @@ public final class MySQLAuthenticationEngineTest extends ProxyContextRestorer {
     }
     
     @Test
-    public void assertAuthWithLoginFail() throws NoSuchFieldException, IllegalAccessException {
+    public void assertAuthWithLoginFail() {
         setConnectionPhase(MySQLConnectionPhase.AUTH_PHASE_FAST_PATH);
         ChannelHandlerContext context = getContext();
         setMetaDataContexts();
@@ -140,7 +140,7 @@ public final class MySQLAuthenticationEngineTest extends ProxyContextRestorer {
     }
     
     @Test
-    public void assertAuthWithAbsentDatabase() throws NoSuchFieldException, IllegalAccessException {
+    public void assertAuthWithAbsentDatabase() {
         ChannelHandlerContext context = getContext();
         setMetaDataContexts();
         setConnectionPhase(MySQLConnectionPhase.AUTH_PHASE_FAST_PATH);
@@ -149,7 +149,7 @@ public final class MySQLAuthenticationEngineTest extends ProxyContextRestorer {
     }
     
     @Test
-    public void assertAuth() throws NoSuchFieldException, IllegalAccessException {
+    public void assertAuth() {
         setConnectionPhase(MySQLConnectionPhase.AUTH_PHASE_FAST_PATH);
         ChannelHandlerContext context = getContext();
         when(authenticationHandler.login(anyString(), any(), any(), anyString())).thenReturn(Optional.empty());
@@ -162,7 +162,8 @@ public final class MySQLAuthenticationEngineTest extends ProxyContextRestorer {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
                 new ShardingSphereMetaData(Collections.singletonMap("sharding_db", mock(ShardingSphereDatabase.class)), mock(ShardingSphereRuleMetaData.class),
-                        new ConfigurationProperties(new Properties())), mock(OptimizerContext.class));
+                        new ConfigurationProperties(new Properties())),
+                mock(OptimizerContext.class));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
     }

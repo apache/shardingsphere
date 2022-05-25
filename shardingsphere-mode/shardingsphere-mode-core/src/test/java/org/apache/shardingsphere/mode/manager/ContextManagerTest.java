@@ -39,6 +39,7 @@ import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.SchemaMetaDataPersistService;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
+import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -76,12 +77,13 @@ public final class ContextManagerTest {
         metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
         when(metaDataContexts.getMetaData().getProps().getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE)).thenReturn(1);
         when(metaDataContexts.getMetaData().getGlobalRuleMetaData().getRules()).thenReturn(Collections.emptyList());
-        when(metaDataContexts.getOptimizerContext().getFederationMetaData().getDatabases()).thenReturn(new LinkedHashMap<>());
+        when(metaDataContexts.getMetaData().getGlobalRuleMetaData().findSingleRule(TransactionRule.class)).thenReturn(Optional.of(mock(TransactionRule.class)));
         when(metaDataContexts.getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         when(metaDataContexts.getDatabaseMetaData("foo_db").getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
         when(metaDataContexts.getDatabaseMetaData("foo_db").getProtocolType()).thenReturn(new MySQLDatabaseType());
         when(metaDataContexts.getDatabaseMetaData("foo_db").getSchemas()).thenReturn(Collections.singletonMap("foo_db", new ShardingSphereSchema()));
         when(metaDataContexts.getDatabaseMetaData("foo_db").getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()));
+        when(metaDataContexts.getOptimizerContext().getFederationMetaData().getDatabases()).thenReturn(new LinkedHashMap<>());
         contextManager = new ContextManager(metaDataContexts, mock(TransactionContexts.class), mock(InstanceContext.class));
     }
     

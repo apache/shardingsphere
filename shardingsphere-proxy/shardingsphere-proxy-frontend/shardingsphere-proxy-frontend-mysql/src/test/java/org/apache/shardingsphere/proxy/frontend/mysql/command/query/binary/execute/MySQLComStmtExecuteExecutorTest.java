@@ -81,7 +81,7 @@ public final class MySQLComStmtExecuteExecutorTest extends ProxyContextRestorer 
     public void setUp() {
         ShardingSphereDatabase database = mockDatabase();
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
-                new ShardingSphereMetaData(Collections.singletonMap("logic_db", database), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())), 
+                new ShardingSphereMetaData(Collections.singletonMap("logic_db", database), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())),
                 mock(OptimizerContext.class, RETURNS_DEEP_STUBS));
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);

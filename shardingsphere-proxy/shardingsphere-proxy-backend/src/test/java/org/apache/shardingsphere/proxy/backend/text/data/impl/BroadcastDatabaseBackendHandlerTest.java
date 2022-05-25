@@ -75,7 +75,7 @@ public final class BroadcastDatabaseBackendHandlerTest {
     @Before
     public void setUp() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), 
+        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
                 new ShardingSphereMetaData(getDatabaseMap(), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())), mock(OptimizerContext.class));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);

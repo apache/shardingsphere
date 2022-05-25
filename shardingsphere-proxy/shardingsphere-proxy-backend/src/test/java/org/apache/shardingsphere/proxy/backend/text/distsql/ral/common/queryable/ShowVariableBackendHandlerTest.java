@@ -116,7 +116,7 @@ public final class ShowVariableBackendHandlerTest extends ProxyContextRestorer {
         connectionSession.setCurrentDatabase("db");
         ContextManager contextManager = mock(ContextManager.class);
         ProxyContext.init(contextManager);
-        MetaDataContexts metaDataContexts = mock(MetaDataContexts.class);
+        MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         Properties props = new Properties();
         props.put("sql-show", Boolean.TRUE.toString());
@@ -137,7 +137,7 @@ public final class ShowVariableBackendHandlerTest extends ProxyContextRestorer {
         connectionSession.setCurrentDatabase("db");
         ContextManager contextManager = mock(ContextManager.class);
         ProxyContext.init(contextManager);
-        MetaDataContexts metaDataContexts = mock(MetaDataContexts.class);
+        MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         when(metaDataContexts.getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         ShowVariableHandler backendHandler = new ShowVariableHandler()

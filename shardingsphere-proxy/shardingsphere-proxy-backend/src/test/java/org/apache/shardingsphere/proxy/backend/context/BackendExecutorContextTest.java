@@ -37,7 +37,7 @@ public final class BackendExecutorContextTest extends ProxyContextRestorer {
     
     @Before
     public void setUp() {
-        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), mock(ShardingSphereMetaData.class), mock(OptimizerContext.class));
+        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData(), mock(OptimizerContext.class));
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         when(contextManager.getTransactionContexts()).thenReturn(new TransactionContexts());
