@@ -130,7 +130,7 @@ public final class PreviewDistSQLBackendHandler extends QueryableRALBackendHandl
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine(isReturnGeneratedKeys, metaDataContexts);
         FederationContext context = new FederationContext(true, logicSQL, metaDataContexts.getDatabaseMap());
         DatabaseType databaseType = metaDataContexts.getDatabaseMetaData(getDatabaseName()).getResource().getDatabaseType();
-        String schemaName = logicSQL.getSqlStatementContext().getTablesContext().getSchemaName().orElse(databaseType.getDefaultSchema(databaseName));
+        String schemaName = logicSQL.getSqlStatementContext().getTablesContext().getSchemaName().orElse(DatabaseTypeEngine.getDefaultSchemaName(databaseType, databaseName));
         FederationExecutor executor = FederationExecutorFactory.newInstance(databaseName, schemaName, metaDataContexts.getOptimizerContext(),
                 metaDataContexts.getProps(), new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), false));
         executor.executeQuery(prepareEngine, createPreviewFederationCallback(sqlStatement, databaseType), context);

@@ -48,12 +48,21 @@ public final class ShardingSphereResource {
     
     public ShardingSphereResource(final Map<String, DataSource> dataSources) {
         this.dataSources = dataSources;
-        this.databaseType = dataSources.isEmpty() ? null : DatabaseTypeEngine.getDatabaseType(dataSources.values());
-        dataSourceMetaDataMap = new LinkedHashMap<>(dataSources.size(), 1);
+        databaseType = getDatabaseType(dataSources);
+        dataSourceMetaDataMap = createDataSourceMetaDataMap(dataSources);
+    }
+    
+    private DatabaseType getDatabaseType(final Map<String, DataSource> dataSources) {
+        return dataSources.isEmpty() ? null : DatabaseTypeEngine.getDatabaseType(dataSources.values());
+    }
+    
+    private Map<String, DataSourceMetaData> createDataSourceMetaDataMap(final Map<String, DataSource> dataSources) {
+        Map<String, DataSourceMetaData> result = new LinkedHashMap<>(dataSources.size(), 1);
         for (Entry<String, DataSource> entry : dataSources.entrySet()) {
             Map<String, Object> standardProps = DataSourcePropertiesCreator.create(entry.getValue()).getConnectionPropertySynonyms().getStandardProperties();
-            dataSourceMetaDataMap.put(entry.getKey(), databaseType.getDataSourceMetaData(standardProps.get("url").toString(), standardProps.get("username").toString()));
+            result.put(entry.getKey(), databaseType.getDataSourceMetaData(standardProps.get("url").toString(), standardProps.get("username").toString()));
         }
+        return result;
     }
     
     /**

@@ -50,4 +50,9 @@ public final class MemoryMutexLock extends ReentrantLock {
             lockState.compareAndSet(LockState.LOCKED, LockState.UNLOCKED);
         }
     }
+    
+    @Override
+    public boolean isLocked() {
+        return LockState.LOCKED == lockState.get();
+    }
 }
