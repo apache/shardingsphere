@@ -17,32 +17,24 @@
 
 package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
 
-import lombok.Getter;
-import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
+import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
 
-/**
- * Fixed primary load-balance algorithm.
- */
-public final class FixedPrimaryLoadBalanceAlgorithm implements ReadQueryLoadBalanceAlgorithm {
+import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.is;
+
+public final class FixedPrimaryLoadBalanceAlgorithmTest {
     
-    @Getter
-    private Properties props;
+    private final FixedPrimaryLoadBalanceAlgorithm fixedPrimaryLoadBalanceAlgorithm = new FixedPrimaryLoadBalanceAlgorithm();
     
-    @Override
-    public void init(final Properties props) {
-        this.props = props;
-    }
-    
-    @Override
-    public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames) {
-        return writeDataSourceName;
-    }
-    
-    @Override
-    public String getType() {
-        return "FIXED_PRIMARY";
+    @Test
+    public void assertGetDataSource() {
+        String writeDataSourceName = "test_write_ds";
+        String readDataSourceName1 = "test_replica_ds_1";
+        String readDataSourceName2 = "test_replica_ds_2";
+        List<String> readDataSourceNames = Arrays.asList(readDataSourceName1, readDataSourceName2);
+        assertThat(fixedPrimaryLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), is(writeDataSourceName));
     }
 }

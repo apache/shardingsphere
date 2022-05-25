@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
 
 import lombok.Getter;
-import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
+import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
 import org.apache.shardingsphere.transaction.TransactionHolder;
 
 import java.util.List;
@@ -26,10 +26,10 @@ import java.util.Properties;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * Fixed-replica-random load-balance algorithm.
+ * Fixed replica random load-balance algorithm.
  */
 @Getter
-public final class FixedReplicaRandomLoadBalanceAlgorithm implements ReplicaLoadBalanceAlgorithm {
+public final class FixedReplicaRandomLoadBalanceAlgorithm implements ReadQueryLoadBalanceAlgorithm {
     
     private Properties props = new Properties();
     

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
 
 import lombok.Getter;
 import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
-import org.apache.shardingsphere.transaction.TransactionHolder;
 
 import java.util.Arrays;
 import java.util.List;
@@ -28,10 +27,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * Weight replica load-balance algorithm.
+ * Transaction weight replica load-balance algorithm.
  */
 @Getter
-public final class WeightReplicaLoadBalanceAlgorithm implements ReadQueryLoadBalanceAlgorithm {
+public final class TransactionWeightReplicaLoadBalanceAlgorithm implements ReadQueryLoadBalanceAlgorithm {
     
     private static final double ACCURACY_THRESHOLD = 0.0001;
     
@@ -46,9 +45,6 @@ public final class WeightReplicaLoadBalanceAlgorithm implements ReadQueryLoadBal
     
     @Override
     public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames) {
-        if (TransactionHolder.isTransaction()) {
-            return writeDataSourceName;
-        }
         double[] weight = WEIGHT_MAP.containsKey(name) ? WEIGHT_MAP.get(name) : initWeight(readDataSourceNames);
         WEIGHT_MAP.putIfAbsent(name, weight);
         return getDataSourceName(readDataSourceNames, weight);
@@ -122,6 +118,6 @@ public final class WeightReplicaLoadBalanceAlgorithm implements ReadQueryLoadBal
     
     @Override
     public String getType() {
-        return "WEIGHT";
+        return "TRANSACTION_WEIGHT";
     }
 }

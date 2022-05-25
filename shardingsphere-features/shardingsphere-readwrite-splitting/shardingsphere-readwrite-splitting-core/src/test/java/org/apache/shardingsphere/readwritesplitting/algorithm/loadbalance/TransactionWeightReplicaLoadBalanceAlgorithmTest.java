@@ -34,22 +34,25 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
-public final class WeightReplicaLoadBalanceAlgorithmTest {
+public final class TransactionWeightReplicaLoadBalanceAlgorithmTest {
     
     @SuppressWarnings("rawtypes")
     @Before
     @After
     public void reset() throws NoSuchFieldException, IllegalAccessException {
-        Field accuracyThresholdField = WeightReplicaLoadBalanceAlgorithm.class.getDeclaredField("WEIGHT_MAP");
+        Field accuracyThresholdField = TransactionWeightReplicaLoadBalanceAlgorithm.class.getDeclaredField("WEIGHT_MAP");
         accuracyThresholdField.setAccessible(true);
-        ((Map) accuracyThresholdField.get(WeightReplicaLoadBalanceAlgorithm.class)).clear();
+        ((Map) accuracyThresholdField.get(TransactionWeightReplicaLoadBalanceAlgorithm.class)).clear();
     }
     
     @Test
     public void assertGetSingleReadDataSource() {
-        WeightReplicaLoadBalanceAlgorithm weightReplicaLoadBalanceAlgorithm = createReplicaLoadBalanceAlgorithm(createSingleDataSourceProperties());
-        assertThat(weightReplicaLoadBalanceAlgorithm.getDataSource("ds", "test_write_ds", Collections.singletonList("test_read_ds_1")), is("test_read_ds_1"));
+        TransactionWeightReplicaLoadBalanceAlgorithm transactionWeightReplicaLoadBalanceAlgorithm = createReplicaLoadBalanceAlgorithm(createSingleDataSourceProperties());
+        TransactionHolder.setInTransaction();
+        assertThat(transactionWeightReplicaLoadBalanceAlgorithm.getDataSource("ds", "test_write_ds", Collections.singletonList("test_read_ds_1")), is("test_read_ds_1"));
+        TransactionHolder.clear();
     }
     
     private Properties createSingleDataSourceProperties() {
@@ -60,14 +63,17 @@ public final class WeightReplicaLoadBalanceAlgorithmTest {
     
     @Test
     public void assertGetMultipleReadDataSources() {
-        WeightReplicaLoadBalanceAlgorithm weightReplicaLoadBalanceAlgorithm = createReplicaLoadBalanceAlgorithm(createMultipleDataSourcesProperties());
+        TransactionWeightReplicaLoadBalanceAlgorithm transactionWeightReplicaLoadBalanceAlgorithm = createReplicaLoadBalanceAlgorithm(createMultipleDataSourcesProperties());
         String writeDataSourceName = "test_write_ds";
         String readDataSourceName1 = "test_read_ds_1";
         String readDataSourceName2 = "test_read_ds_2";
         List<String> readDataSourceNames = Arrays.asList(readDataSourceName1, readDataSourceName2);
-        assertThat(weightReplicaLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), notNullValue());
-        assertThat(weightReplicaLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), notNullValue());
-        assertThat(weightReplicaLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), notNullValue());
+        TransactionHolder.setInTransaction();
+        assertTrue(readDataSourceNames.contains(transactionWeightReplicaLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames)));
+        assertThat(transactionWeightReplicaLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), notNullValue());
+        assertThat(transactionWeightReplicaLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), notNullValue());
+        assertThat(transactionWeightReplicaLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), notNullValue());
+        TransactionHolder.clear();
     }
     
     private Properties createMultipleDataSourcesProperties() {
@@ -77,19 +83,7 @@ public final class WeightReplicaLoadBalanceAlgorithmTest {
         return result;
     }
     
-    private WeightReplicaLoadBalanceAlgorithm createReplicaLoadBalanceAlgorithm(final Properties props) {
-        return (WeightReplicaLoadBalanceAlgorithm) ReplicaLoadBalanceAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("WEIGHT", props));
-    }
-    
-    @Test
-    public void assertGetReadDataSourceInTransaction() {
-        WeightReplicaLoadBalanceAlgorithm weightReplicaLoadBalanceAlgorithm = createReplicaLoadBalanceAlgorithm(createMultipleDataSourcesProperties());
-        String writeDataSourceName = "test_write_ds";
-        String readDataSourceName1 = "test_read_ds_1";
-        String readDataSourceName2 = "test_read_ds_2";
-        List<String> readDataSourceNames = Arrays.asList(readDataSourceName1, readDataSourceName2);
-        TransactionHolder.setInTransaction();
-        assertThat(weightReplicaLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), is(writeDataSourceName));
-        TransactionHolder.clear();
+    private TransactionWeightReplicaLoadBalanceAlgorithm createReplicaLoadBalanceAlgorithm(final Properties props) {
+        return (TransactionWeightReplicaLoadBalanceAlgorithm) ReplicaLoadBalanceAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("TRANSACTION_WEIGHT", props));
     }
 }
