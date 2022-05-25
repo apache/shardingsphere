@@ -75,7 +75,7 @@ public final class DropDatabaseBackendHandler implements TextProtocolBackendHand
         if (null != database && null != database.getRuleMetaData()) {
             result.addAll(database.getRuleMetaData().getRules());
         }
-        result.addAll(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData().getRules());
+        result.addAll(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules());
         return result;
     }
 }

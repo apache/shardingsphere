@@ -173,12 +173,12 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         this.sql = sql;
         statements = new ArrayList<>();
         parameterSets = new ArrayList<>();
-        Optional<SQLParserRule> sqlParserRule = metaDataContexts.getGlobalRuleMetaData().findSingleRule(SQLParserRule.class);
+        Optional<SQLParserRule> sqlParserRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().findSingleRule(SQLParserRule.class);
         Preconditions.checkState(sqlParserRule.isPresent());
         ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(
                 metaDataContexts.getDatabaseMetaData(connection.getDatabaseName()).getResource().getDatabaseType()), sqlParserRule.get().toParserConfiguration());
         sqlStatement = sqlParserEngine.parse(sql, true);
-        sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getDatabaseMap(), sqlStatement, connection.getDatabaseName());
+        sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getMetaData().getDatabaseMap(), sqlStatement, connection.getDatabaseName());
         parameterMetaData = new ShardingSphereParameterMetaData(sqlStatement);
         statementOption = returnGeneratedKeys ? new StatementOption(true) : new StatementOption(resultSetType, resultSetConcurrency, resultSetHoldability);
         executor = new DriverExecutor(connection);
@@ -186,7 +186,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         batchPreparedStatementExecutor = new BatchPreparedStatementExecutor(metaDataContexts, jdbcExecutor, connection.getDatabaseName());
         kernelProcessor = new KernelProcessor();
         statementsCacheable = isStatementsCacheable(metaDataContexts.getDatabaseMetaData(connection.getDatabaseName()).getRuleMetaData().getConfigurations());
-        trafficRule = metaDataContexts.getGlobalRuleMetaData().findSingleRule(TrafficRule.class).orElse(null);
+        trafficRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().findSingleRule(TrafficRule.class).orElse(null);
         statementManager = new StatementManager();
     }
     
@@ -283,12 +283,12 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     private ResultSet executeFederationQuery(final LogicSQL logicSQL) throws SQLException {
         PreparedStatementExecuteQueryCallback callback = new PreparedStatementExecuteQueryCallback(metaDataContexts.getDatabaseMetaData(connection.getDatabaseName()).getResource().getDatabaseType(),
                 sqlStatement, SQLExecutorExceptionHandler.isExceptionThrown());
-        FederationContext context = new FederationContext(false, logicSQL, metaDataContexts.getDatabaseMap());
+        FederationContext context = new FederationContext(false, logicSQL, metaDataContexts.getMetaData().getDatabaseMap());
         return executor.getFederationExecutor().executeQuery(createDriverExecutionPrepareEngine(), callback, context);
     }
     
     private DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> createDriverExecutionPrepareEngine() {
-        int maxConnectionsSizePerQuery = metaDataContexts.getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
+        int maxConnectionsSizePerQuery = metaDataContexts.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         return new DriverExecutionPrepareEngine<>(JDBCDriverType.PREPARED_STATEMENT, maxConnectionsSizePerQuery, connection.getConnectionManager(), statementManager,
                 statementOption, metaDataContexts.getDatabaseMetaData(connection.getDatabaseName()).getRuleMetaData().getRules());
     }
@@ -394,7 +394,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     }
     
     private ExecutionGroupContext<RawSQLExecutionUnit> createRawExecutionGroupContext() throws SQLException {
-        int maxConnectionsSizePerQuery = metaDataContexts.getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
+        int maxConnectionsSizePerQuery = metaDataContexts.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         return new RawExecutionPrepareEngine(maxConnectionsSizePerQuery, metaDataContexts.getDatabaseMetaData(connection.getDatabaseName()).getRuleMetaData().getRules())
                 .prepare(executionContext.getRouteContext(), executionContext.getExecutionUnits());
     }
@@ -467,8 +467,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private ExecutionContext createExecutionContext(final LogicSQL logicSQL) {
         SQLCheckEngine.check(logicSQL.getSqlStatementContext().getSqlStatement(), logicSQL.getParameters(),
-                metaDataContexts.getDatabaseMetaData(connection.getDatabaseName()).getRuleMetaData().getRules(), connection.getDatabaseName(), metaDataContexts.getDatabaseMap(), null);
-        ExecutionContext result = kernelProcessor.generateExecutionContext(logicSQL, metaDataContexts.getDatabaseMetaData(connection.getDatabaseName()), metaDataContexts.getProps());
+                metaDataContexts.getDatabaseMetaData(connection.getDatabaseName()).getRuleMetaData().getRules(), connection.getDatabaseName(), metaDataContexts.getMetaData().getDatabaseMap(), null);
+        ExecutionContext result = kernelProcessor.generateExecutionContext(logicSQL, metaDataContexts.getDatabaseMetaData(connection.getDatabaseName()), metaDataContexts.getMetaData().getProps());
         findGeneratedKey(result).ifPresent(generatedKey -> generatedValues.addAll(generatedKey.getGeneratedValues()));
         return result;
     }
@@ -484,7 +484,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     private MergedResult mergeQuery(final List<QueryResult> queryResults) throws SQLException {
         ShardingSphereDatabase database = metaDataContexts.getDatabaseMetaData(connection.getDatabaseName());
         MergeEngine mergeEngine = new MergeEngine(connection.getDatabaseName(),
-                database.getResource().getDatabaseType(), database, metaDataContexts.getProps(), database.getRuleMetaData().getRules());
+                database.getResource().getDatabaseType(), database, metaDataContexts.getMetaData().getProps(), database.getRuleMetaData().getRules());
         return mergeEngine.merge(queryResults, executionContext.getSqlStatementContext());
     }
     
@@ -568,7 +568,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private void initBatchPreparedStatementExecutor() throws SQLException {
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = new DriverExecutionPrepareEngine<>(
-                JDBCDriverType.PREPARED_STATEMENT, metaDataContexts.getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY),
+                JDBCDriverType.PREPARED_STATEMENT, metaDataContexts.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY),
                 connection.getConnectionManager(), statementManager, statementOption, metaDataContexts.getDatabaseMetaData(connection.getDatabaseName()).getRuleMetaData().getRules());
         List<ExecutionUnit> executionUnits = new ArrayList<>(batchPreparedStatementExecutor.getBatchExecutionUnits().size());
         for (BatchExecutionUnit each : batchPreparedStatementExecutor.getBatchExecutionUnits()) {

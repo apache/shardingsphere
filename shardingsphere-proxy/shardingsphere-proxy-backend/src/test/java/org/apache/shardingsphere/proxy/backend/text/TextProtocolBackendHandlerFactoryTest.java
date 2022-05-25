@@ -87,14 +87,15 @@ public final class TextProtocolBackendHandlerFactoryTest extends ProxyContextRes
         mockGlobalRuleMetaData(metaDataContexts);
         ShardingSphereDatabase database = mockDatabase();
         when(metaDataContexts.getAllDatabaseNames().contains("db")).thenReturn(true);
-        when(metaDataContexts.getDatabaseMap().get("db")).thenReturn(database);
+        when(metaDataContexts.getMetaData().getDatabaseMap().get("db")).thenReturn(database);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        when(metaDataContexts.getProps()).thenReturn(new ConfigurationProperties(new Properties()));
+        when(metaDataContexts.getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         TransactionContexts transactionContexts = mockTransactionContexts();
         when(contextManager.getTransactionContexts()).thenReturn(transactionContexts);
         CacheOption cacheOption = new CacheOption(1024, 1024);
-        when(metaDataContexts.getGlobalRuleMetaData().findSingleRule(SQLParserRule.class)).thenReturn(Optional.of(new SQLParserRule(new SQLParserRuleConfiguration(true, cacheOption, cacheOption))));
+        when(metaDataContexts.getMetaData().getGlobalRuleMetaData()
+                .findSingleRule(SQLParserRule.class)).thenReturn(Optional.of(new SQLParserRule(new SQLParserRuleConfiguration(true, cacheOption, cacheOption))));
         ProxyContext.init(contextManager);
     }
     
@@ -108,7 +109,7 @@ public final class TextProtocolBackendHandlerFactoryTest extends ProxyContextRes
     private void mockGlobalRuleMetaData(final MetaDataContexts metaDataContexts) {
         ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
         when(globalRuleMetaData.getRules()).thenReturn(Collections.emptyList());
-        when(metaDataContexts.getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
+        when(metaDataContexts.getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
     }
     
     private TransactionContexts mockTransactionContexts() {

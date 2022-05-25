@@ -91,7 +91,7 @@ public final class JDBCDatabaseCommunicationEngine extends DatabaseCommunication
         DatabaseType databaseType = logicSQL.getSqlStatementContext().getDatabaseType();
         String schemaName = logicSQL.getSqlStatementContext().getTablesContext().getSchemaName().orElse(DatabaseTypeEngine.getDefaultSchemaName(databaseType, databaseName));
         federationExecutor = FederationExecutorFactory.newInstance(databaseName, schemaName, metaDataContexts.getOptimizerContext(),
-                metaDataContexts.getProps(), new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), backendConnection.isSerialExecute()));
+                metaDataContexts.getMetaData().getProps(), new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), backendConnection.isSerialExecute()));
     }
     
     /**
@@ -122,7 +122,7 @@ public final class JDBCDatabaseCommunicationEngine extends DatabaseCommunication
     public ResponseHeader execute() {
         LogicSQL logicSQL = getLogicSQL();
         ExecutionContext executionContext = getKernelProcessor().generateExecutionContext(
-                logicSQL, getDatabase(), ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps());
+                logicSQL, getDatabase(), ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps());
         // TODO move federation route logic to binder
         SQLStatementContext<?> sqlStatementContext = logicSQL.getSqlStatementContext();
         String defaultDatabaseName = backendConnection.getConnectionSession().getDatabaseName();
@@ -152,12 +152,12 @@ public final class JDBCDatabaseCommunicationEngine extends DatabaseCommunication
                 logicSQL.getSqlStatementContext().getSqlStatement(), this, isReturnGeneratedKeys, SQLExecutorExceptionHandler.isExceptionThrown(), true);
         backendConnection.setFederationExecutor(federationExecutor);
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine(isReturnGeneratedKeys, metaDataContexts);
-        FederationContext context = new FederationContext(false, logicSQL, metaDataContexts.getDatabaseMap());
+        FederationContext context = new FederationContext(false, logicSQL, metaDataContexts.getMetaData().getDatabaseMap());
         return federationExecutor.executeQuery(prepareEngine, callback, context);
     }
     
     private DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> createDriverExecutionPrepareEngine(final boolean isReturnGeneratedKeys, final MetaDataContexts metaData) {
-        int maxConnectionsSizePerQuery = metaData.getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
+        int maxConnectionsSizePerQuery = metaData.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         JDBCBackendStatement statementManager = (JDBCBackendStatement) backendConnection.getConnectionSession().getStatementManager();
         return new DriverExecutionPrepareEngine<>(getDriverType(), maxConnectionsSizePerQuery, backendConnection, statementManager,
                 new StatementOption(isReturnGeneratedKeys), metaData.getDatabaseMetaData(backendConnection.getConnectionSession().getDatabaseName()).getRuleMetaData().getRules());

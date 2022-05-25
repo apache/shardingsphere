@@ -41,7 +41,7 @@ public final class AlterTransactionRuleHandler extends UpdatableRALBackendHandle
     @Override
     protected void update(final ContextManager contextManager, final AlterTransactionRuleStatement sqlStatement) {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        ShardingSphereRuleMetaData globalRuleMetaData = metaDataContexts.getGlobalRuleMetaData();
+        ShardingSphereRuleMetaData globalRuleMetaData = metaDataContexts.getMetaData().getGlobalRuleMetaData();
         Collection<ShardingSphereRule> globalRules = globalRuleMetaData.getRules();
         globalRules.removeIf(each -> each instanceof TransactionRule);
         Collection<RuleConfiguration> globalRuleConfigs = new LinkedList<>(globalRuleMetaData.getConfigurations());

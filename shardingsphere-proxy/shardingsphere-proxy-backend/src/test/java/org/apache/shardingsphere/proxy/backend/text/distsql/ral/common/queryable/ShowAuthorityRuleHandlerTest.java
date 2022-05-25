@@ -46,7 +46,7 @@ public final class ShowAuthorityRuleHandlerTest extends ProxyContextRestorer {
     @Test
     public void assertAuthorityRule() throws SQLException {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts().getGlobalRuleMetaData()).thenReturn(getGlobalRuleMetaData());
+        when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(getGlobalRuleMetaData());
         ProxyContext.init(contextManager);
         handler.execute();
         handler.next();

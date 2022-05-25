@@ -120,7 +120,7 @@ public final class JDBCBackendDataSource implements BackendDataSource {
     }
     
     private TransactionRule getTransactionRule() {
-        for (ShardingSphereRule each : ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData().getRules()) {
+        for (ShardingSphereRule each : ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules()) {
             if (each instanceof TransactionRule) {
                 return (TransactionRule) each;
             }

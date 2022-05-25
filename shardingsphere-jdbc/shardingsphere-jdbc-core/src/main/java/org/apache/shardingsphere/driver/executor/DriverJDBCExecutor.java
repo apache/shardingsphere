@@ -59,7 +59,7 @@ public final class DriverJDBCExecutor {
         this.jdbcExecutor = jdbcExecutor;
         metadataRefreshEngine = new MetaDataRefreshEngine(metaDataContexts.getDatabaseMetaData(databaseName),
                 metaDataContexts.getOptimizerContext().getFederationMetaData().getDatabases().get(databaseName),
-                metaDataContexts.getOptimizerContext().getPlannerContexts(), metaDataContexts.getProps());
+                metaDataContexts.getOptimizerContext().getPlannerContexts(), metaDataContexts.getMetaData().getProps());
     }
     
     /**
@@ -74,7 +74,7 @@ public final class DriverJDBCExecutor {
     public List<QueryResult> executeQuery(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext,
                                           final LogicSQL logicSQL, final ExecuteQueryCallback callback) throws SQLException {
         try {
-            ExecuteProcessEngine.initialize(logicSQL, executionGroupContext, metaDataContexts.getProps());
+            ExecuteProcessEngine.initialize(logicSQL, executionGroupContext, metaDataContexts.getMetaData().getProps());
             List<QueryResult> result = jdbcExecutor.execute(executionGroupContext, callback);
             ExecuteProcessEngine.finish(executionGroupContext.getExecutionID());
             return result;
@@ -96,7 +96,7 @@ public final class DriverJDBCExecutor {
     public int executeUpdate(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext,
                              final LogicSQL logicSQL, final Collection<RouteUnit> routeUnits, final JDBCExecutorCallback<Integer> callback) throws SQLException {
         try {
-            ExecuteProcessEngine.initialize(logicSQL, executionGroupContext, metaDataContexts.getProps());
+            ExecuteProcessEngine.initialize(logicSQL, executionGroupContext, metaDataContexts.getMetaData().getProps());
             SQLStatementContext<?> sqlStatementContext = logicSQL.getSqlStatementContext();
             List<Integer> results = doExecute(executionGroupContext, sqlStatementContext, routeUnits, callback);
             int result = isNeedAccumulate(metaDataContexts.getDatabaseMetaData(databaseName).getRuleMetaData().getRules(), sqlStatementContext) ? accumulate(results) : results.get(0);
@@ -137,7 +137,7 @@ public final class DriverJDBCExecutor {
     public boolean execute(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext, final LogicSQL logicSQL,
                            final Collection<RouteUnit> routeUnits, final JDBCExecutorCallback<Boolean> callback) throws SQLException {
         try {
-            ExecuteProcessEngine.initialize(logicSQL, executionGroupContext, metaDataContexts.getProps());
+            ExecuteProcessEngine.initialize(logicSQL, executionGroupContext, metaDataContexts.getMetaData().getProps());
             List<Boolean> results = doExecute(executionGroupContext, logicSQL.getSqlStatementContext(), routeUnits, callback);
             boolean result = null != results && !results.isEmpty() && null != results.get(0) && results.get(0);
             ExecuteProcessEngine.finish(executionGroupContext.getExecutionID());
