@@ -33,16 +33,16 @@ import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContextFactory;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
-import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
-import org.apache.shardingsphere.infra.metadata.schema.builder.SystemSchemaBuilder;
-import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaMetaDataBuilder;
-import org.apache.shardingsphere.infra.metadata.schema.loader.SchemaLoader;
-import org.apache.shardingsphere.infra.metadata.schema.model.SchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.builder.SchemaBuilderMaterials;
+import org.apache.shardingsphere.infra.metadata.database.schema.builder.SystemSchemaBuilder;
+import org.apache.shardingsphere.infra.metadata.database.schema.builder.SchemaMetaDataBuilder;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.SchemaLoader;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.infra.rule.builder.schema.DatabaseRulesBuilder;
@@ -198,8 +198,8 @@ public final class ContextManager implements AutoCloseable {
     }
     
     private void persistMetaData(final MetaDataContexts metaDataContexts) {
-        metaDataContexts.getDatabaseMap().forEach((databaseName, schemas) -> schemas.getSchemas().forEach((schemaName, tables) ->
-                metaDataContexts.getPersistService().ifPresent(optional -> optional.getSchemaMetaDataService().persistMetaData(databaseName, schemaName, tables))));
+        metaDataContexts.getDatabaseMap().forEach((databaseName, schemas) -> schemas.getSchemas()
+                .forEach((schemaName, tables) -> metaDataContexts.getPersistService().ifPresent(optional -> optional.getSchemaMetaDataService().persistMetaData(databaseName, schemaName, tables))));
     }
     
     private void alterTableSchema(final String databaseName, final String schemaName, final TableMetaData changedTableMetaData) {
