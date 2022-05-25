@@ -403,18 +403,6 @@ public final class ContextManager implements AutoCloseable {
         }
     }
     
-    private void deleteMetaData(final String databaseName, final Map<String, ShardingSphereSchema> actualSchemas) {
-        Map<String, ShardingSphereSchema> originalSchemas = metaDataContexts.getDatabaseMetaData(databaseName).getSchemas();
-        if (originalSchemas.isEmpty()) {
-            return;
-        }
-        originalSchemas.forEach((key, value) -> {
-            if (null == actualSchemas.get(key)) {
-                metaDataContexts.getPersistService().ifPresent(optional -> optional.getSchemaMetaDataService().deleteSchema(databaseName, key));
-            }
-        });
-    }
-    
     /**
      * Reload table meta data.
      *
@@ -451,6 +439,18 @@ public final class ContextManager implements AutoCloseable {
         } catch (final SQLException ex) {
             log.error("Reload table:{} meta data of database:{} schema:{} with data source:{} failed", tableName, databaseName, schemaName, dataSourceName, ex);
         }
+    }
+    
+    private void deleteMetaData(final String databaseName, final Map<String, ShardingSphereSchema> actualSchemas) {
+        Map<String, ShardingSphereSchema> originalSchemas = metaDataContexts.getDatabaseMetaData(databaseName).getSchemas();
+        if (originalSchemas.isEmpty()) {
+            return;
+        }
+        originalSchemas.forEach((key, value) -> {
+            if (null == actualSchemas.get(key)) {
+                metaDataContexts.getPersistService().ifPresent(optional -> optional.getSchemaMetaDataService().deleteSchema(databaseName, key));
+            }
+        });
     }
     
     private void loadTableMetaData(final String databaseName, final String schemaName, final String tableName, final SchemaBuilderMaterials materials) throws SQLException {
