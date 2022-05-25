@@ -80,6 +80,8 @@ public final class ContextManagerTest {
         when(metaDataContexts.getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         when(metaDataContexts.getDatabaseMetaData("foo_db").getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
         when(metaDataContexts.getDatabaseMetaData("foo_db").getProtocolType()).thenReturn(new MySQLDatabaseType());
+        when(metaDataContexts.getDatabaseMetaData("foo_db").getSchemas()).thenReturn(Collections.singletonMap("foo_db", new ShardingSphereSchema()));
+        when(metaDataContexts.getDatabaseMetaData("foo_db").getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()));
         contextManager = new ContextManager(metaDataContexts, mock(TransactionContexts.class), mock(InstanceContext.class));
     }
     
@@ -252,8 +254,8 @@ public final class ContextManagerTest {
         MetaDataPersistService metaDataPersistService = mock(MetaDataPersistService.class);
         when(metaDataPersistService.getSchemaMetaDataService()).thenReturn(schemaMetaDataPersistService);
         when(metaDataContexts.getPersistService()).thenReturn(Optional.of(metaDataPersistService));
-        contextManager.reloadMetaData("foo_db", "foo_schema");
-        verify(schemaMetaDataPersistService, times(1)).persistTables(eq("foo_db"), eq("foo_schema"), any(ShardingSphereSchema.class));
+        contextManager.reloadMetaData("foo_db");
+        verify(schemaMetaDataPersistService, times(1)).persistMetaData(eq("foo_db"), eq("foo_db"), any(ShardingSphereSchema.class));
         contextManager.reloadMetaData("foo_db", "foo_schema", "foo_table");
         assertNotNull(contextManager.getMetaDataContexts().getDatabaseMetaData("foo_db").getSchemas().get("foo_db"));
         assertTrue(contextManager.getMetaDataContexts().getDatabaseMetaData("foo_db").getResource().getDataSources().containsKey("foo_ds"));
