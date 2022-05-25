@@ -334,18 +334,18 @@ public final class IntervalShardingAlgorithmTest {
     
     @Test
     public void assertDateInJDBCType() {
-        Collection<String> actualAsLocalDateTime = shardingAlgorithmByJDBCDate.doSharding(availableTablesForJDBCDateDataSources,
+        Collection<String> actualAsLocalDate = shardingAlgorithmByJDBCDate.doSharding(availableTablesForJDBCDateDataSources,
                 new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO,
                         Range.closed(LocalDate.of(2021, 6, 15), LocalDate.of(2021, 7, 31))));
-        assertThat(actualAsLocalDateTime.size(), is(24));
+        assertThat(actualAsLocalDate.size(), is(24));
     }
     
     @Test
     public void assertTimeInJDBCType() {
-        Collection<String> actualAsLocalDate = shardingAlgorithmByJDBCTime.doSharding(availableTablesForJDBCTimeDataSources,
+        Collection<String> actualAsLocalTime = shardingAlgorithmByJDBCTime.doSharding(availableTablesForJDBCTimeDataSources,
                 new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO,
                         Range.closed(LocalTime.of(2, 25, 27), LocalTime.of(12, 25, 27))));
-        assertThat(actualAsLocalDate.size(), is(6));
+        assertThat(actualAsLocalTime.size(), is(6));
         Collection<String> actualAsOffsetTime = shardingAlgorithmByJDBCTime.doSharding(availableTablesForJDBCTimeDataSources,
                 new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO,
                         Range.closed(OffsetTime.of(2, 25, 27, 0, OffsetDateTime.now().getOffset()),

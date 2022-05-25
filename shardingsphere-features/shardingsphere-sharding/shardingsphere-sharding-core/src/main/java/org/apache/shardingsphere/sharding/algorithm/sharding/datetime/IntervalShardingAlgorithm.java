@@ -146,15 +146,14 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
         TemporalAccessor calculateTime = dateTimeLower;
         LocalDate queryToLocalDate = calculateTime.query(TemporalQueries.localDate());
         LocalTime queryToLocalTime = calculateTime.query(TemporalQueries.localTime());
-        LocalDate dateTimeLowerAsLocalDate = this.dateTimeLower.query(TemporalQueries.localDate());
-        LocalTime dateTimeLowerAsLocalTime = this.dateTimeLower.query(TemporalQueries.localTime());
-        LocalDate dateTimeUpperAsLocalDate = this.dateTimeUpper.query(TemporalQueries.localDate());
-        LocalTime dateTimeUpperAsLocalTime = this.dateTimeUpper.query(TemporalQueries.localTime());
+        LocalDate dateTimeLowerAsLocalDate = dateTimeLower.query(TemporalQueries.localDate());
+        LocalTime dateTimeLowerAsLocalTime = dateTimeLower.query(TemporalQueries.localTime());
+        LocalDate dateTimeUpperAsLocalDate = dateTimeUpper.query(TemporalQueries.localDate());
+        LocalTime dateTimeUpperAsLocalTime = dateTimeUpper.query(TemporalQueries.localTime());
         if (null == queryToLocalTime) {
             LocalDate calculateTimeAsView = calculateTime.query(TemporalQueries.localDate());
             while (!calculateTimeAsView.isAfter(dateTimeUpperAsLocalDate)) {
-                boolean flag = hasIntersection(Range.closedOpen(calculateTimeAsView, calculateTimeAsView.plus(stepAmount, stepUnit)), range, dateTimeLowerAsLocalDate, dateTimeUpperAsLocalDate);
-                if (flag) {
+                if (hasIntersection(Range.closedOpen(calculateTimeAsView, calculateTimeAsView.plus(stepAmount, stepUnit)), range, dateTimeLowerAsLocalDate, dateTimeUpperAsLocalDate)) {
                     result.addAll(getMatchedTables(calculateTimeAsView, availableTargetNames));
                 }
                 calculateTimeAsView = calculateTimeAsView.plus(stepAmount, stepUnit);
@@ -164,8 +163,7 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
         if (null == queryToLocalDate) {
             LocalTime calculateTimeAsView = calculateTime.query(TemporalQueries.localTime());
             while (!calculateTimeAsView.isAfter(dateTimeUpperAsLocalTime)) {
-                boolean flag = hasIntersection(Range.closedOpen(calculateTimeAsView, calculateTimeAsView.plus(stepAmount, stepUnit)), range, dateTimeLowerAsLocalTime, dateTimeUpperAsLocalTime);
-                if (flag) {
+                if (hasIntersection(Range.closedOpen(calculateTimeAsView, calculateTimeAsView.plus(stepAmount, stepUnit)), range, dateTimeLowerAsLocalTime, dateTimeUpperAsLocalTime)) {
                     result.addAll(getMatchedTables(calculateTimeAsView, availableTargetNames));
                 }
                 calculateTimeAsView = calculateTimeAsView.plus(stepAmount, stepUnit);
@@ -173,11 +171,10 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
             return result;
         }
         LocalDateTime calculateTimeAsView = LocalDateTime.of(calculateTime.query(TemporalQueries.localDate()), calculateTime.query(TemporalQueries.localTime()));
-        LocalDateTime dateTimeLower = LocalDateTime.of(dateTimeLowerAsLocalDate, dateTimeLowerAsLocalTime);
-        LocalDateTime dateTimeUpper = LocalDateTime.of(dateTimeUpperAsLocalDate, dateTimeUpperAsLocalTime);
-        while (!calculateTimeAsView.isAfter(dateTimeUpper)) {
-            boolean flag = hasIntersection(Range.closedOpen(calculateTimeAsView, calculateTimeAsView.plus(stepAmount, stepUnit)), range, dateTimeLower, dateTimeUpper);
-            if (flag) {
+        LocalDateTime dateTimeLowerAsLocalDateTime = LocalDateTime.of(dateTimeLowerAsLocalDate, dateTimeLowerAsLocalTime);
+        LocalDateTime dateTimeUpperAsLocalDateTime = LocalDateTime.of(dateTimeUpperAsLocalDate, dateTimeUpperAsLocalTime);
+        while (!calculateTimeAsView.isAfter(dateTimeUpperAsLocalDateTime)) {
+            if (hasIntersection(Range.closedOpen(calculateTimeAsView, calculateTimeAsView.plus(stepAmount, stepUnit)), range, dateTimeLowerAsLocalDateTime, dateTimeUpperAsLocalDateTime)) {
                 result.addAll(getMatchedTables(calculateTimeAsView, availableTargetNames));
             }
             calculateTimeAsView = calculateTimeAsView.plus(stepAmount, stepUnit);
