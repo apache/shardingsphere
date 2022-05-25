@@ -179,7 +179,7 @@ public final class ClusterContextManagerCoordinatorTest {
     }
     
     @Test
-    public void assertSchemaDelete() {
+    public void assertDataBaseDelete() {
         coordinator.renew(new DatabaseDeletedEvent("db"));
         assertNull(contextManager.getMetaDataContexts().getDatabaseMetaData("db"));
     }
