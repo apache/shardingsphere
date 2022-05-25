@@ -194,10 +194,9 @@ public final class ClusterContextManagerCoordinatorTest {
     
     @Test
     public void assertSchemaAdd() {
-        when(contextManager.getMetaDataContexts().getDatabaseMetaData("db").getSchemas().get("schema_1")).thenReturn(null);
-        SchemaAddedEvent event = new SchemaAddedEvent("db", "schema_1");
-        coordinator.renew(event);
-        verify(contextManager.getMetaDataContexts().getDatabaseMetaData("db").getSchemas(), times(1)).put(argThat(argument -> argument.equals("schema_1")), any(ShardingSphereSchema.class));
+        when(contextManager.getMetaDataContexts().getDatabaseMetaData("db").getSchemas().get("foo_schema")).thenReturn(null);
+        coordinator.renew(new SchemaAddedEvent("db", "foo_schema"));
+        verify(contextManager.getMetaDataContexts().getDatabaseMetaData("db").getSchemas()).put(argThat(argument -> argument.equals("foo_schema")), any(ShardingSphereSchema.class));
     }
     
     @Test
