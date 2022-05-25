@@ -25,7 +25,7 @@ import java.util.List;
 /**
  * Replica load-balance algorithm.
  */
-public interface ReplicaLoadBalanceAlgorithm extends ShardingSphereAlgorithm, RequiredSPI {
+public interface ReadQueryLoadBalanceAlgorithm extends ShardingSphereAlgorithm, RequiredSPI {
     
     /**
      * Get data source.

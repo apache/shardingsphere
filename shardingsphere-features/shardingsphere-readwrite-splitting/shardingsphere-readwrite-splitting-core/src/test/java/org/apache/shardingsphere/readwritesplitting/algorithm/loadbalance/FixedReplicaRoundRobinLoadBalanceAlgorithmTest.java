@@ -23,31 +23,26 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class RandomReplicaLoadBalanceAlgorithmTest {
+public final class FixedReplicaRoundRobinLoadBalanceAlgorithmTest {
     
-    private final RandomReplicaLoadBalanceAlgorithm randomReplicaLoadBalanceAlgorithm = new RandomReplicaLoadBalanceAlgorithm();
+    private final FixedReplicaRoundRobinLoadBalanceAlgorithm fixedReplicaRoundRobinLoadBalanceAlgorithm = new FixedReplicaRoundRobinLoadBalanceAlgorithm();
     
     @Test
-    public void assertGetDataSourceInTransaction() {
+    public void assertGetDataSource() {
         String writeDataSourceName = "test_write_ds";
         String readDataSourceName1 = "test_replica_ds_1";
         String readDataSourceName2 = "test_replica_ds_2";
         List<String> readDataSourceNames = Arrays.asList(readDataSourceName1, readDataSourceName2);
         TransactionHolder.setInTransaction();
-        assertTrue(writeDataSourceName.contains(randomReplicaLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames)));
+        String routeDatasource = fixedReplicaRoundRobinLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames);
+        assertTrue(readDataSourceNames.contains(fixedReplicaRoundRobinLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames)));
+        assertThat(fixedReplicaRoundRobinLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), is(routeDatasource));
+        assertThat(fixedReplicaRoundRobinLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), is(routeDatasource));
+        assertThat(fixedReplicaRoundRobinLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), is(routeDatasource));
         TransactionHolder.clear();
-    }
-    
-    @Test
-    public void assertGetDataSourceNotInTransaction() {
-        String writeDataSourceName = "test_write_ds";
-        String readDataSourceName1 = "test_replica_ds_1";
-        String readDataSourceName2 = "test_replica_ds_2";
-        List<String> readDataSourceNames = Arrays.asList(readDataSourceName1, readDataSourceName2);
-        assertTrue(readDataSourceNames.contains(randomReplicaLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames)));
-        assertTrue(readDataSourceNames.contains(randomReplicaLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames)));
-        assertTrue(readDataSourceNames.contains(randomReplicaLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames)));
     }
 }

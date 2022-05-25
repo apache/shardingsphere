@@ -26,7 +26,6 @@ import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataS
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
-import org.apache.shardingsphere.transaction.TransactionHolder;
 
 /**
  * Data source router for readwrite-splitting.
@@ -44,16 +43,13 @@ public final class ReadwriteSplittingDataSourceRouter {
      */
     public String route(final SQLStatementContext<?> sqlStatementContext) {
         if (isPrimaryRoute(sqlStatementContext)) {
-            return rule.getReadwriteSplittingStrategy().getWriteDataSource();
-        }
-        if (1 == rule.getReadDataSourceNames().size()) {
-            return rule.getReadDataSourceNames().get(0);
+            return rule.getWriteDataSource();
         }
         return rule.getLoadBalancer().getDataSource(rule.getName(), rule.getWriteDataSource(), rule.getReadDataSourceNames());
     }
     
     private boolean isPrimaryRoute(final SQLStatementContext<?> sqlStatementContext) {
-        return isWriteRouteStatement(sqlStatementContext) || isHintWriteRouteOnly(sqlStatementContext) || TransactionHolder.isTransaction();
+        return isWriteRouteStatement(sqlStatementContext) || isHintWriteRouteOnly(sqlStatementContext);
     }
     
     private boolean isWriteRouteStatement(final SQLStatementContext<?> sqlStatementContext) {

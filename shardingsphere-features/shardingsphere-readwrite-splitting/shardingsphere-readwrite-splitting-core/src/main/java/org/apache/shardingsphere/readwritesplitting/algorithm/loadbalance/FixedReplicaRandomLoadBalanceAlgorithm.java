@@ -26,10 +26,10 @@ import java.util.Properties;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * Random replica load-balance algorithm.
+ * Fixed replica random load-balance algorithm.
  */
 @Getter
-public final class RandomReplicaLoadBalanceAlgorithm implements ReadQueryLoadBalanceAlgorithm {
+public final class FixedReplicaRandomLoadBalanceAlgorithm implements ReadQueryLoadBalanceAlgorithm {
     
     private Properties props = new Properties();
     
@@ -40,14 +40,14 @@ public final class RandomReplicaLoadBalanceAlgorithm implements ReadQueryLoadBal
     
     @Override
     public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames) {
-        if (TransactionHolder.isTransaction()) {
-            return writeDataSourceName;
+        if (null == TransactionHolder.getReadWriteSplitRoutedReplica()) {
+            TransactionHolder.setReadWriteSplitRoutedReplica(readDataSourceNames.get(ThreadLocalRandom.current().nextInt(readDataSourceNames.size())));
         }
-        return readDataSourceNames.get(ThreadLocalRandom.current().nextInt(readDataSourceNames.size()));
+        return TransactionHolder.getReadWriteSplitRoutedReplica();
     }
     
     @Override
     public String getType() {
-        return "RANDOM";
+        return "FIXED_REPLICA_RANDOM";
     }
 }

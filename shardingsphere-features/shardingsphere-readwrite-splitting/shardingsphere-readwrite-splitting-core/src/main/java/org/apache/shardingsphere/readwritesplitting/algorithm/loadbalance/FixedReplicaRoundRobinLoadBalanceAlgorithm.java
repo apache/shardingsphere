@@ -23,15 +23,17 @@ import org.apache.shardingsphere.transaction.TransactionHolder;
 
 import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Random replica load-balance algorithm.
+ * Fixed replica round-robin load-balance algorithm.
  */
-@Getter
-public final class RandomReplicaLoadBalanceAlgorithm implements ReadQueryLoadBalanceAlgorithm {
+public final class FixedReplicaRoundRobinLoadBalanceAlgorithm implements ReadQueryLoadBalanceAlgorithm {
     
-    private Properties props = new Properties();
+    private final AtomicInteger count = new AtomicInteger(0);
+    
+    @Getter
+    private Properties props;
     
     @Override
     public void init(final Properties props) {
@@ -40,14 +42,14 @@ public final class RandomReplicaLoadBalanceAlgorithm implements ReadQueryLoadBal
     
     @Override
     public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames) {
-        if (TransactionHolder.isTransaction()) {
-            return writeDataSourceName;
+        if (null == TransactionHolder.getReadWriteSplitRoutedReplica()) {
+            TransactionHolder.setReadWriteSplitRoutedReplica(readDataSourceNames.get(Math.abs(count.getAndIncrement()) % readDataSourceNames.size()));
         }
-        return readDataSourceNames.get(ThreadLocalRandom.current().nextInt(readDataSourceNames.size()));
+        return TransactionHolder.getReadWriteSplitRoutedReplica();
     }
     
     @Override
     public String getType() {
-        return "RANDOM";
+        return "FIXED_REPLICA_ROUND_ROBIN";
     }
 }
