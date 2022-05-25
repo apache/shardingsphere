@@ -1,9 +1,7 @@
 package org.apache.shardingsphere.data.pipeline.spi.ddlgenerator;
 
-import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.logging.Logger;
 import javax.sql.DataSource;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
@@ -18,9 +16,6 @@ import static org.junit.Assert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import static org.mockito.ArgumentMatchers.any;
-
 import org.mockito.Mock;
 
 import static org.mockito.Mockito.when;
@@ -34,29 +29,17 @@ public final class DialectDDLGeneratorFactoryTest {
 
     private static final String CLIENT_PASSWORD = "password";
 
-    private static final int LOGIN_TIMEOUT = 15;
-
     @Mock(extraInterfaces = AutoCloseable.class)
     private DataSource dataSource;
 
     @Mock
     private Connection connection;
 
-    @Mock
-    private PrintWriter printWriter;
-
-    @Mock
-    private Logger parentLogger;
-
     @Before
     public void setUp() throws SQLException {
 
         when(dataSource.getConnection()).thenReturn(connection);
         when(dataSource.getConnection(CLIENT_USERNAME, CLIENT_PASSWORD)).thenReturn(connection);
-        when(dataSource.getLogWriter()).thenReturn(printWriter);
-        when(dataSource.getLoginTimeout()).thenReturn(LOGIN_TIMEOUT);
-        when(dataSource.isWrapperFor(any())).thenReturn(Boolean.TRUE);
-        when(dataSource.getParentLogger()).thenReturn(parentLogger);
     }
 
     @Test
