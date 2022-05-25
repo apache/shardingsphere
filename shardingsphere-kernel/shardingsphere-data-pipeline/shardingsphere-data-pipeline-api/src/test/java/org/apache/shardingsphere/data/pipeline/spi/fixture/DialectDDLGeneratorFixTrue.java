@@ -9,7 +9,6 @@ public class DialectDDLGeneratorFixTrue implements DialectDDLGenerator {
 
     @Override
     public String generateDDLSQL(final String tableName, final String schemaName, final DataSource dataSource) throws SQLException {
-
         StringBuilder sb = new StringBuilder();
         sb.append(String.format(SHOW_CREATE_SQL, tableName));
         return sb.toString();
