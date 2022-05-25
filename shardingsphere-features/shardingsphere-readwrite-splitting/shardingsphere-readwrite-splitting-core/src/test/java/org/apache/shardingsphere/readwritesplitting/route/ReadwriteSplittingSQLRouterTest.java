@@ -216,9 +216,10 @@ public final class ReadwriteSplittingSQLRouterTest {
     @Test
     public void assertSqlHintRouteWriteOnly() {
         SelectStatement statement = mock(SelectStatement.class);
-        CommonSQLStatementContext<SelectStatement> sqlStatementContext = mock(SelectStatementContext.class);
+        SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getSqlStatement()).thenReturn(statement);
         when(sqlStatementContext.isHintWriteRouteOnly()).thenReturn(true);
+        when(sqlStatementContext.getProjectionsContext().isContainsLastInsertIdProjection()).thenReturn(false);
         LogicSQL logicSQL = new LogicSQL(sqlStatementContext, "", Collections.emptyList());
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.singleton(rule));
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME,
