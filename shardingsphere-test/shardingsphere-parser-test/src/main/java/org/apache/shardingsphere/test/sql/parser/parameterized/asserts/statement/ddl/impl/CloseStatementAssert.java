@@ -51,7 +51,7 @@ public final class CloseStatementAssert {
             IdentifierValueAssert.assertIs(assertContext, actual.getCursorName().getIdentifier(), expected.getCursorName(), "Close");
             SQLSegmentAssert.assertIs(assertContext, actual.getCursorName(), expected.getCursorName());
         } else {
-            assertNull(assertContext.getText("Actual cursor name should not exist."), actual.getCursorName());               
+            assertNull(assertContext.getText("Actual cursor name should not exist."), actual.getCursorName());
         }
     }
 }
