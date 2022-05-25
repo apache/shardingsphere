@@ -84,8 +84,8 @@ public final class SchemaMetaDataRegistrySubscriberTest {
         ShardingSphereSchema schema = new ShardingSphereSchema(Collections.singletonMap("t_order", new TableMetaData()));
         AlterSchemaEvent event = new AlterSchemaEvent("foo_db", "foo_schema", "new_foo_schema", schema);
         schemaMetaDataRegistrySubscriber.alterSchema(event);
+        verify(persistService).persistMetaData("foo_db", "new_foo_schema", schema);
         verify(persistService).deleteSchema("foo_db", "foo_schema");
-        verify(persistService).persistTables("foo_db", "new_foo_schema", schema);
     }
     
     @Test
@@ -93,7 +93,7 @@ public final class SchemaMetaDataRegistrySubscriberTest {
         ShardingSphereSchema schema = new ShardingSphereSchema();
         AlterSchemaEvent event = new AlterSchemaEvent("foo_db", "foo_schema", "new_foo_schema", schema);
         schemaMetaDataRegistrySubscriber.alterSchema(event);
+        verify(persistService).persistMetaData("foo_db", "new_foo_schema", schema);
         verify(persistService).deleteSchema("foo_db", "foo_schema");
-        verify(persistService).persistSchema("foo_db", "new_foo_schema");
     }
 }

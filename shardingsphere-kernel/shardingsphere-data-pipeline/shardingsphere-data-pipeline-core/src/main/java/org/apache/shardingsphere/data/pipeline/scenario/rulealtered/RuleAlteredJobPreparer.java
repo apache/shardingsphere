@@ -78,10 +78,19 @@ public final class RuleAlteredJobPreparer {
         // TODO Initialize source and target data source after tasks initialization, since dumper and importer constructor might call appendJDBCQueryProperties.
         // But InventoryTaskSplitter need to check target tables. It need to do some refactoring for appendJDBCQueryProperties vocations.
         checkSourceDataSource(jobContext);
+        if (jobContext.isStopping()) {
+            throw new PipelineJobPrepareFailedException("Job stopping, jobId=" + jobContext.getJobId());
+        }
         prepareAndCheckTargetWithLock(jobContext);
+        if (jobContext.isStopping()) {
+            throw new PipelineJobPrepareFailedException("Job stopping, jobId=" + jobContext.getJobId());
+        }
         // TODO check metadata
         try {
             initIncrementalTasks(jobContext);
+            if (jobContext.isStopping()) {
+                throw new PipelineJobPrepareFailedException("Job stopping, jobId=" + jobContext.getJobId());
+            }
             initInventoryTasks(jobContext);
             log.info("prepare, jobId={}, shardingItem={}, inventoryTasks={}, incrementalTasks={}",
                     jobContext.getJobId(), jobContext.getShardingItem(), jobContext.getInventoryTasks(), jobContext.getIncrementalTasks());

@@ -59,9 +59,8 @@ public class TableMetaDataUtil {
                 addOneActualTableDataNode(materials, dataSourceTableGroups, dataNodes, each);
             }
         }
-        return dataSourceTableGroups.entrySet().stream().map(entry -> new TableMetaDataLoaderMaterial(entry.getValue(), materials.getDataSourceMap().get(entry.getKey().contains(".")
-                ? entry.getKey().split("\\.")[0]
-                : entry.getKey()), materials.getDefaultSchemaName())).collect(Collectors.toList());
+        return dataSourceTableGroups.entrySet().stream().map(entry -> new TableMetaDataLoaderMaterial(entry.getValue(),
+                materials.getDataSourceMap().get(entry.getKey().contains(".") ? entry.getKey().split("\\.")[0] : entry.getKey()), materials.getDefaultSchemaName())).collect(Collectors.toList());
     }
     
     private static void checkDataSourceTypeIncludeInstanceAndSetDatabaseTableMap(final DatabaseType databaseType, final DataNodes dataNodes, final String tableName) {

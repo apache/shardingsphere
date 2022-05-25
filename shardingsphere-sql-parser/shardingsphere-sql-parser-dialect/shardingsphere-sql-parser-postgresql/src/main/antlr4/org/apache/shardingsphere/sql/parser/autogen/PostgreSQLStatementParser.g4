@@ -144,5 +144,6 @@ execute
     | dropOperatorFamily
     | dropAccessMethod
     | dropServer
+    | checkpoint
     ) SEMI_? EOF
     ;

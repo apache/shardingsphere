@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock;
 
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeUtil;
-
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -40,7 +38,7 @@ public abstract class AbstractDistributeLockNodeService implements LockNodeServi
     
     @Override
     public String generateAckLockName(final String lockName, final String lockedInstanceId) {
-        return getLocksNodePath() + "/" + lockName + "/" + LOCKED_ACK_NODE + "/" + LockNodeUtil.generateAckLockedName(lockName, lockedInstanceId);
+        return getLocksNodePath() + "/" + lockName + "/" + LOCKED_ACK_NODE + "/" + lockedInstanceId;
     }
     
     @Override
@@ -54,7 +52,7 @@ public abstract class AbstractDistributeLockNodeService implements LockNodeServi
     public Optional<String> parseLocksAckNodePath(final String nodePath) {
         Pattern pattern = Pattern.compile(getLocksNodePath() + "/" + "(.+)/ack/(.+)$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(nodePath);
-        return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
+        return matcher.find() ? Optional.of(matcher.group(1) + "#@#" + matcher.group(2)) : Optional.empty();
     }
     
     protected abstract String getLockTypeName();

@@ -27,7 +27,8 @@ import static org.junit.Assert.assertTrue;
 
 public final class ShardingSphereRuleMetaDataTest {
     
-    private final ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.singleton(new ShardingSphereRuleFixture()));
+    private final ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(
+            Collections.singleton(new ShardingSphereRuleConfigurationFixture()), Collections.singleton(new ShardingSphereRuleFixture()));
     
     @Test
     public void assertFindRules() {
@@ -37,5 +38,15 @@ public final class ShardingSphereRuleMetaDataTest {
     @Test
     public void assertFindSingleRule() {
         assertTrue(ruleMetaData.findSingleRule(ShardingSphereRuleFixture.class).isPresent());
+    }
+    
+    @Test
+    public void assertFindRuleConfigurations() {
+        assertThat(ruleMetaData.findRuleConfigurations(ShardingSphereRuleConfigurationFixture.class).size(), is(1));
+    }
+    
+    @Test
+    public void assertFindSingleRuleConfiguration() {
+        assertTrue(ruleMetaData.findSingleRuleConfiguration(ShardingSphereRuleConfigurationFixture.class).isPresent());
     }
 }

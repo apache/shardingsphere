@@ -49,6 +49,8 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
 import java.sql.SQLException;
@@ -231,9 +233,14 @@ public abstract class DatabaseCommunicationEngine<T> {
     }
     
     private void lockedWrite(final SQLStatement sqlStatement) {
-        if (sqlStatement instanceof SelectStatement) {
-            return;
+        if (sqlStatement instanceof DMLStatement) {
+            if (sqlStatement instanceof SelectStatement) {
+                return;
+            }
+            throw new DatabaseLockedException(backendConnection.getConnectionSession().getDatabaseName());
         }
-        throw new DatabaseLockedException(backendConnection.getConnectionSession().getDatabaseName());
+        if (sqlStatement instanceof DDLStatement) {
+            throw new DatabaseLockedException(backendConnection.getConnectionSession().getDatabaseName());
+        }
     }
 }

@@ -38,6 +38,7 @@ import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobExecuti
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineVerifyFailedException;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJob;
+import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobCenter;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobProgressDetector;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobSchedulerCenter;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobWorker;
@@ -47,7 +48,6 @@ import org.apache.shardingsphere.elasticjob.lite.lifecycle.domain.JobBriefInfo;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.lock.LockContext;
-import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingTaskFinishedEvent;
 import org.apache.shardingsphere.scaling.core.job.environment.ScalingEnvironmentManager;
@@ -164,8 +164,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     private void verifySourceWritingStopped(final RuleAlteredJobConfiguration jobConfig) {
         LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
         String databaseName = jobConfig.getDatabaseName();
-        ShardingSphereLock lock = lockContext.getMutexLock();
-        if (null == lock || !lock.isLocked(databaseName)) {
+        if (!lockContext.isLocked(databaseName)) {
             throw new PipelineVerifyFailedException("Source writing is not stopped. You could run `STOP SCALING SOURCE WRITING {jobId}` to stop it.");
         }
     }
@@ -186,16 +185,15 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     @Override
     public void stopClusterWriteDB(final String databaseName, final String jobId) {
         LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
-        ShardingSphereLock lock = lockContext.getMutexLock();
-        if (lock.isLocked(databaseName)) {
+        if (lockContext.isLocked(databaseName)) {
             log.info("stopClusterWriteDB, already stopped");
             return;
         }
-        boolean tryLockSuccess = lock.tryLock(databaseName);
-        log.info("stopClusterWriteDB, tryLockSuccess={}", tryLockSuccess);
-        if (!tryLockSuccess) {
-            throw new RuntimeException("Stop source writing failed");
+        if (lockContext.lockWrite(databaseName)) {
+            log.info("stopClusterWriteDB, tryLockSuccess=true");
+            return;
         }
+        throw new RuntimeException("Stop source writing failed");
     }
     
     @Override
@@ -212,18 +210,12 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     @Override
     public void restoreClusterWriteDB(final String databaseName, final String jobId) {
         LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
-        ShardingSphereLock lock = lockContext.getMutexLock();
-        if (null == lock) {
-            log.info("restoreClusterWriteDB, lock is null");
+        if (lockContext.isLocked(databaseName)) {
+            log.info("restoreClusterWriteDB, before releaseLock, databaseName={}, jobId={}", databaseName, jobId);
+            lockContext.releaseLockWrite(databaseName);
             return;
         }
-        boolean isLocked = lock.isLocked(databaseName);
-        if (!isLocked) {
-            log.info("restoreClusterWriteDB, isLocked false, databaseName={}", databaseName);
-            return;
-        }
-        log.info("restoreClusterWriteDB, before releaseLock, databaseName={}, jobId={}", databaseName, jobId);
-        lock.releaseLock(databaseName);
+        log.info("restoreClusterWriteDB, isLocked false, databaseName={}", databaseName);
     }
     
     @Override
@@ -343,7 +335,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         for (int each : repositoryAPI.getShardingItems(jobId)) {
             repositoryAPI.updateShardingJobStatus(jobId, each, JobStatus.FINISHED);
         }
-        RuleAlteredJobSchedulerCenter.stop(jobId);
+        RuleAlteredJobCenter.stop(jobId);
         stop(jobId);
     }
     
