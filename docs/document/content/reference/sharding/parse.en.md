@@ -76,38 +76,41 @@ demo:
 
 ```
 /**
- * databaseType type:String values: MySQL, Oracle, PostgreSQL, SQL92, SQLServer, openGauss 
- * sql type:String SQL to be parsed
+ * sql type:String SQL to be parsed: MySQL, Oracle, PostgreSQL, SQL92, SQLServer, openGauss
  * useCache type:boolean whether use cache
- * @return parse context
+ * @return parseASTNode
  */
-ParseContext parseContext = new SQLParserEngine(databaseType).parse(sql, useCache)
+CacheOption cacheOption = new CacheOption(128, 1024L);
+SQLParserEngine parserEngine = new SQLParserEngine(sql, cacheOption);
+ParseASTNode parseASTNode = parserEngine.parse(sql, useCache);
 ```
 
 - GET SQLStatement
 
 ```
 /**
- * databaseType type:String values: MySQL, Oracle, PostgreSQL, SQL92, SQLServer, openGauss 
+ * sql type:String values: MySQL, Oracle, PostgreSQL, SQL92, SQLServer, openGauss 
  * useCache type:boolean whether use cache
  * @return SQLStatement
- */
-ParseContext parseContext = new SQLParserEngine(databaseType).parse(sql, useCache); 
-SQLVisitorEngine sqlVisitorEngine = new SQLVisitorEngine(databaseType, "STATEMENT");
-SQLStatement sqlStatement = sqlVisitorEngine.visit(parseContext);
+ */ 
+CacheOption cacheOption = new CacheOption(128, 1024L);
+SQLParserEngine parserEngine = new SQLParserEngine(sql, cacheOption);
+ParseASTNode parseASTNode = parserEngine.parse(sql, useCache);
+SQLVisitorEngine sqlVisitorEngine = new SQLVisitorEngine(sql, "STATEMENT", useCache, new Properties());
+SQLStatement sqlStatement = sqlVisitorEngine.visit(parseASTNode);
 ```
 
 - SQL Format
 
 ```
 /**
- * databaseType type:String values MySQL
+ * sql type:String values MySQL
  * useCache type:boolean whether use cache
  * @return String 
  */
-ParseContext parseContext = new SQLParserEngine(databaseType).parse(sql, useCache);
-SQLVisitorEngine sqlVisitorEngine = new SQLVisitorEngine(databaseType, "FORMAT", new Properties());
-String formatedSql = sqlVisitorEngine.visit(parseContext);
+ParseASTNode parseASTNode = parserEngine.parse(sql, useCache);
+SQLVisitorEngine sqlVisitorEngine = new SQLVisitorEngine(sql, "STATEMENT", useCache, new Properties());
+SQLStatement sqlStatement = sqlVisitorEngine.visit(parseASTNode);
 ```
 
 example：
