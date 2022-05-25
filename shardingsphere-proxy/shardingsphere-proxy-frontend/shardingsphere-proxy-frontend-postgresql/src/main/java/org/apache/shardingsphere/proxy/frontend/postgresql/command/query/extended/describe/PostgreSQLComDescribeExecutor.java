@@ -32,6 +32,7 @@ import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
@@ -130,7 +131,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         String logicTableName = insertStatement.getTable().getTableName().getIdentifier().getValue();
         ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(databaseName);
         String schemaName = insertStatement.getTable().getOwner().map(optional -> optional.getIdentifier()
-                .getValue()).orElseGet(() -> database.getResource().getDatabaseType().getDefaultSchema(databaseName));
+                .getValue()).orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(database.getResource().getDatabaseType(), databaseName));
         TableMetaData tableMetaData = database.getSchemas().get(schemaName).get(logicTableName);
         Map<String, ColumnMetaData> columnMetaData = tableMetaData.getColumns();
         Map<String, ColumnMetaData> caseInsensitiveColumnMetaData = null;
