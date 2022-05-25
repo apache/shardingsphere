@@ -48,9 +48,4 @@ public final class TransactionRoundRobinReplicaLoadBalanceAlgorithm implements R
     public String getType() {
         return "TRANSACTION_ROUND_ROBIN";
     }
-    
-    @Override
-    public boolean isDefault() {
-        return true;
-    }
 }
