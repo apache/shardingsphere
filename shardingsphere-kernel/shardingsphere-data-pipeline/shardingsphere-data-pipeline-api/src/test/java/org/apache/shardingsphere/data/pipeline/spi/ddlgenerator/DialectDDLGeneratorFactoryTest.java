@@ -3,16 +3,18 @@ package org.apache.shardingsphere.data.pipeline.spi.ddlgenerator;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.logging.Logger;
 import javax.sql.DataSource;
-import org.apache.shardingsphere.data.pipeline.spi.fixture.DialectDDLGeneratorFixTrue;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,8 +35,6 @@ public final class DialectDDLGeneratorFactoryTest {
     private static final String CLIENT_PASSWORD = "password";
 
     private static final int LOGIN_TIMEOUT = 15;
-
-    private static final String DEFAULT_SCHEMA = "public";
 
     @Mock(extraInterfaces = AutoCloseable.class)
     private DataSource dataSource;
@@ -68,33 +68,16 @@ public final class DialectDDLGeneratorFactoryTest {
 
         }
 
-        DatabaseType databaseType = new MySQLDatabaseType();
-        DialectDDLGenerator dialectDDLGenerator = new DialectDDLGenerator() {
-            @Override
-            public String generateDDLSQL(final String tableName, final String schemaName, final DataSource dataSource) throws SQLException {
-                return null;
-            }
-        };
+        DatabaseType databaseType = DatabaseTypeFactory.getInstance("MySQL");
 
-        try (
-                Connection connection = dataSource.getConnection();
-                Statement statement = connection.createStatement()) {
-            if (DialectDDLSQLGeneratorFactory.findInstance(databaseType).isPresent()) {
-                dialectDDLGenerator = DialectDDLSQLGeneratorFactory.findInstance(databaseType).get();
-            }
-            assertNewInstance(dialectDDLGenerator);
+        try {
             String sql = DialectDDLSQLGeneratorFactory.findInstance(databaseType).orElseThrow(() -> new ShardingSphereException("Failed to get dialect ddl sql generator"))
-                    .generateDDLSQL("tableA", DEFAULT_SCHEMA, dataSource);
-            statement.execute(sql);
+                    .generateDDLSQL("tableA", "", dataSource);
+            assertEquals(sql, "SHOW CREATE TABLE tableA");
         } catch (SQLException ex) {
             thrown = true;
         }
 
-        assertTrue(thrown);
-    }
-
-    private void assertNewInstance(final DialectDDLGenerator actual) {
-        DialectDDLGenerator excepted = new DialectDDLGeneratorFixTrue();
-        when(actual).thenReturn(excepted);
+        assertFalse(thrown);
     }
 }
