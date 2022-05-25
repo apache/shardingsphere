@@ -1952,6 +1952,10 @@ privilegeType
     | ALL PRIVILEGES?
     ;
 
+createDirectory
+    : CREATE (OR REPLACE)? DIRECTORY directoryName AS pathString
+    ;
+
 alterSchema
     : ALTER SCHEMA name (RENAME TO name | OWNER TO roleSpec)
     ;

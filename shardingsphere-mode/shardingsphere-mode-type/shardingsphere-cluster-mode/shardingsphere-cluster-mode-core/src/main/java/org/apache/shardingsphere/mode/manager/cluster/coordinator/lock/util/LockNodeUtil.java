@@ -49,17 +49,6 @@ public final class LockNodeUtil {
     }
     
     /**
-     * Generate ack locked name.
-     *
-     * @param lockName lock name
-     * @param instanceId instance id
-     * @return ack locked name
-     */
-    public static String generateAckLockedName(final String lockName, final String instanceId) {
-        return lockName + LOCK_NAME_DELIMITER + instanceId;
-    }
-    
-    /**
      * Parse ack locked name.
      *
      * @param ackLockedName ack locked name
@@ -67,15 +56,5 @@ public final class LockNodeUtil {
      */
     public static String[] parseAckLockName(final String ackLockedName) {
         return ackLockedName.trim().split(LOCK_NAME_DELIMITER);
-    }
-    
-    /**
-     * Parse locked ack node path key.
-     *
-     * @param pathKey path key
-     * @return locked instance
-     */
-    public static String parseAckLockedNodePathKey(final String pathKey) {
-        return parseAckLockName(pathKey)[1];
     }
 }

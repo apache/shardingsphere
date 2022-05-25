@@ -38,7 +38,8 @@ import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
-import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataBuilder;
+import org.apache.shardingsphere.infra.metadata.schema.builder.SystemSchemaBuilder;
+import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.loader.SchemaLoader;
 import org.apache.shardingsphere.infra.metadata.schema.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
@@ -447,7 +448,7 @@ public final class ContextManager implements AutoCloseable {
     }
     
     private void loadTableMetaData(final String databaseName, final String schemaName, final String tableName, final SchemaBuilderMaterials materials) throws SQLException {
-        SchemaMetaData schemaMetaData = TableMetaDataBuilder.load(Collections.singletonList(tableName), materials).getOrDefault(schemaName, new SchemaMetaData("", Collections.emptyMap()));
+        SchemaMetaData schemaMetaData = SchemaMetaDataBuilder.load(Collections.singletonList(tableName), materials).getOrDefault(schemaName, new SchemaMetaData("", Collections.emptyMap()));
         if (schemaMetaData.getTables().containsKey(tableName)) {
             metaDataContexts.getDatabaseMetaData(databaseName).getSchemas().get(schemaName).put(tableName, schemaMetaData.getTables().get(tableName));
             metaDataContexts.getPersistService().ifPresent(optional -> optional.getSchemaMetaDataService()
@@ -460,7 +461,9 @@ public final class ContextManager implements AutoCloseable {
         Map<String, DataSource> dataSourceMap = database.getResource().getDataSources();
         Collection<ShardingSphereRule> rules = metaDataContexts.getDatabaseMap().get(databaseName).getRuleMetaData().getRules();
         DatabaseType databaseType = DatabaseTypeEngine.getDatabaseType(dataSourceMap.values());
-        return SchemaLoader.load(databaseName, database.getProtocolType(), databaseType, dataSourceMap, rules, metaDataContexts.getProps());
+        Map<String, ShardingSphereSchema> result = SchemaLoader.load(databaseName, database.getProtocolType(), databaseType, dataSourceMap, rules, metaDataContexts.getProps());
+        result.putAll(SystemSchemaBuilder.build(databaseName, database.getProtocolType()));
+        return result;
     }
     
     private Collection<DataSource> getPendingClosedDataSources(final String databaseName, final Map<String, DataSourceProperties> dataSourcePropsMap) {

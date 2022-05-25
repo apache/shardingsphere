@@ -520,7 +520,9 @@ public enum SQLVisitorRule {
     
     MOVE("Move", SQLStatementType.DDL),
     
-    FETCH("Fetch", SQLStatementType.DDL);
+    FETCH("Fetch", SQLStatementType.DDL),
+    
+    CHECKPOINT("Checkpoint", SQLStatementType.DML);
     
     private final String name;
     

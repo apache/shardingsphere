@@ -78,7 +78,7 @@ public final class DatabaseLockChangedWatcherTest {
     
     @Test
     public void assertLocksAckCreateGovernanceEvent() {
-        String eventKey = "/lock/database/locks/sharding_db/ack/sharding_db#@#127.0.0.1@3307";
+        String eventKey = "/lock/database/locks/sharding_db/ack/127.0.0.1@3307";
         DataChangedEvent addDataChangedEvent = new DataChangedEvent(eventKey, "127.0.0.1@3307", DataChangedEvent.Type.ADDED);
         Optional<GovernanceEvent> addGovernanceEvent = watcher.createGovernanceEvent(addDataChangedEvent);
         assertTrue(addGovernanceEvent.isPresent());

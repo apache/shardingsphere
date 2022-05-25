@@ -20,7 +20,6 @@ package org.apache.shardingsphere.proxy.frontend.opengauss.authentication;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
 import io.netty.buffer.UnpooledHeapByteBuf;
-import lombok.SneakyThrows;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
@@ -41,12 +40,12 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.frontend.opengauss.ProxyContextRestorer;
 import org.apache.shardingsphere.proxy.frontend.opengauss.authentication.fixture.OpenGaussAuthenticationAlgorithm;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.PostgreSQLLoginResult;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
@@ -59,7 +58,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class OpenGaussAuthenticationHandlerTest {
+public final class OpenGaussAuthenticationHandlerTest extends ProxyContextRestorer {
     
     private static final String SCHEMA_PATTERN = "schema_%s";
     
@@ -115,14 +114,11 @@ public final class OpenGaussAuthenticationHandlerTest {
         assertThat(postgreSQLLoginResult.getErrorCode(), is(PostgreSQLErrorCode.INVALID_CATALOG_NAME));
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
     private void initProxyContext(final ShardingSphereUser user) {
-        Field contextManagerField = ProxyContext.getInstance().getClass().getDeclaredField("contextManager");
-        contextManagerField.setAccessible(true);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = getMetaDataContexts(user);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        contextManagerField.set(ProxyContext.getInstance(), contextManager);
+        ProxyContext.init(contextManager);
     }
     
     private MetaDataContexts getMetaDataContexts(final ShardingSphereUser user) {

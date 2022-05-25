@@ -123,5 +123,6 @@ execute
     | close
     | move
     | fetch
+    | createDirectory
     ) SEMI_? EOF
     ;

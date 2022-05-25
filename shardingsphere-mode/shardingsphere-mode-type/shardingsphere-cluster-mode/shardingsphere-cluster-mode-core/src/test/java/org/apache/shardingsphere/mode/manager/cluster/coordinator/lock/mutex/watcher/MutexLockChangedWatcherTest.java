@@ -78,7 +78,7 @@ public final class MutexLockChangedWatcherTest {
     
     @Test
     public void assertLocksAckCreateGovernanceEvent() {
-        String eventKey = "/lock/mutex/locks/lockName/ack/lockName#@#127.0.0.1@3307";
+        String eventKey = "/lock/mutex/locks/lockName/ack/127.0.0.1@3307";
         DataChangedEvent addDataChangedEvent = new DataChangedEvent(eventKey, "127.0.0.1@3307", DataChangedEvent.Type.ADDED);
         Optional<GovernanceEvent> addGovernanceEvent = watcher.createGovernanceEvent(addDataChangedEvent);
         assertTrue(addGovernanceEvent.isPresent());
