@@ -76,7 +76,7 @@ public final class SchemaMetaDataLoaderEngine {
         String defaultSchemaName = null;
         for (TableMetaDataLoaderMaterial each : materials) {
             defaultSchemaName = each.getDefaultSchemaName();
-            for (String tableName : each.getTableNames()) {
+            for (String tableName : each.getActualTableNames()) {
                 TableMetaDataLoader.load(each.getDataSource(), tableName, databaseType).ifPresent(optional -> result.put(tableName, optional));
             }
         }
@@ -87,7 +87,7 @@ public final class SchemaMetaDataLoaderEngine {
         Map<String, SchemaMetaData> result = new LinkedHashMap<>();
         Collection<Future<Collection<SchemaMetaData>>> futures = new LinkedList<>();
         for (TableMetaDataLoaderMaterial each : materials) {
-            futures.add(EXECUTOR_SERVICE.submit(() -> loader.load(each.getDataSource(), each.getTableNames(), each.getDefaultSchemaName())));
+            futures.add(EXECUTOR_SERVICE.submit(() -> loader.load(each.getDataSource(), each.getActualTableNames(), each.getDefaultSchemaName())));
         }
         try {
             for (Future<Collection<SchemaMetaData>> each : futures) {

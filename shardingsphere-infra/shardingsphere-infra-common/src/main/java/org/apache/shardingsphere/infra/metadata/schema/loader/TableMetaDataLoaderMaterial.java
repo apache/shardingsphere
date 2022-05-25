@@ -30,7 +30,7 @@ import java.util.Collection;
 @Getter
 public final class TableMetaDataLoaderMaterial {
     
-    private final Collection<String> tableNames;
+    private final Collection<String> actualTableNames;
     
     private final DataSource dataSource;
     
