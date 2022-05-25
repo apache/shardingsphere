@@ -21,6 +21,7 @@ import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
@@ -73,8 +74,8 @@ public final class SelectInformationExecutorTest extends ProxyContextRestorer {
     @Before
     public void setUp() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        MetaDataContexts metaDataContexts = new MetaDataContexts(
-                mock(MetaDataPersistService.class), new HashMap<>(), mock(ShardingSphereRuleMetaData.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
+        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
+                new ShardingSphereMetaData(new HashMap<>(), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())), mock(OptimizerContext.class));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
         when(connectionSession.getGrantee()).thenReturn(new Grantee("root", "127.0.0.1"));
@@ -86,7 +87,7 @@ public final class SelectInformationExecutorTest extends ProxyContextRestorer {
         expectedResultSetMap.put("SCHEMA_NAME", "foo_ds");
         expectedResultSetMap.put("DEFAULT_CHARACTER_SET_NAME", "utf8mb4_0900_ai_ci");
         expectedResultSetMap.put("DEFAULT_COLLATION_NAME", "utf8mb4");
-        Map<String, ShardingSphereDatabase> databaseMap = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getDatabaseMap();
+        Map<String, ShardingSphereDatabase> databaseMap = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabaseMap();
         databaseMap.put("sharding_db", createDatabase(expectedResultSetMap));
         databaseMap.put("database_without_authority", createEmptyDatabase("database_without_authority"));
         String sql = "SELECT SCHEMA_NAME, DEFAULT_CHARACTER_SET_NAME, DEFAULT_COLLATION_NAME FROM information_schema.SCHEMATA";
@@ -108,7 +109,7 @@ public final class SelectInformationExecutorTest extends ProxyContextRestorer {
     
     @Test
     public void assertSelectSchemataInSchemaWithoutDataSourceExecute() throws SQLException {
-        Map<String, ShardingSphereDatabase> databaseMap = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getDatabaseMap();
+        Map<String, ShardingSphereDatabase> databaseMap = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabaseMap();
         databaseMap.put("empty_db", createEmptyDatabase("empty_db"));
         String sql = "SELECT SCHEMA_NAME, DEFAULT_CHARACTER_SET_NAME, DEFAULT_COLLATION_NAME, DEFAULT_ENCRYPTION FROM information_schema.SCHEMATA";
         SelectInformationSchemataExecutor executor = new SelectInformationSchemataExecutor((SelectStatement) new ShardingSphereSQLParserEngine("MySQL", parserConfig).parse(sql, false), sql);
@@ -135,7 +136,7 @@ public final class SelectInformationExecutorTest extends ProxyContextRestorer {
         Map<String, String> expectedResultSetMap = new HashMap<>();
         expectedResultSetMap.put("sn", "foo_ds");
         expectedResultSetMap.put("DEFAULT_CHARACTER_SET_NAME", "utf8mb4");
-        Map<String, ShardingSphereDatabase> databaseMap = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getDatabaseMap();
+        Map<String, ShardingSphereDatabase> databaseMap = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabaseMap();
         databaseMap.put("foo_ds", createDatabase(expectedResultSetMap));
         databaseMap.put("empty_db", createEmptyDatabase("empty_db"));
         String sql = "SELECT SCHEMA_NAME AS sn, DEFAULT_CHARACTER_SET_NAME FROM information_schema.SCHEMATA";
@@ -147,7 +148,7 @@ public final class SelectInformationExecutorTest extends ProxyContextRestorer {
     
     @Test
     public void assertDefaultExecute() throws SQLException {
-        Map<String, ShardingSphereDatabase> databaseMap = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getDatabaseMap();
+        Map<String, ShardingSphereDatabase> databaseMap = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabaseMap();
         databaseMap.put("sharding_db", createDatabase(Collections.singletonMap("support_ndb", "0")));
         String sql = "SELECT COUNT(*) AS support_ndb FROM information_schema.ENGINES WHERE Engine = 'ndbcluster'";
         DefaultDatabaseMetadataExecutor executor = new DefaultDatabaseMetadataExecutor(sql);

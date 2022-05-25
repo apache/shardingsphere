@@ -109,7 +109,8 @@ public final class MySQLMultiStatementsHandler implements TextProtocolBackendHan
     private ShardingSphereSQLParserEngine getSQLParserEngine() {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         return new ShardingSphereSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(metaDataContexts.getDatabaseMetaData(connectionSession.getDatabaseName()).getProtocolType()),
-                metaDataContexts.getGlobalRuleMetaData().findSingleRule(SQLParserRule.class).orElseThrow(() -> new IllegalStateException("SQLParserRule not found")).toParserConfiguration());
+                metaDataContexts
+                        .getMetaData().getGlobalRuleMetaData().findSingleRule(SQLParserRule.class).orElseThrow(() -> new IllegalStateException("SQLParserRule not found")).toParserConfiguration());
     }
     
     private List<String> extractMultiStatements(final Pattern pattern, final String sql) {
@@ -119,22 +120,22 @@ public final class MySQLMultiStatementsHandler implements TextProtocolBackendHan
     
     private LogicSQL createLogicSQL(final String sql, final SQLStatement sqlStatement) {
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(
-                metaDataContexts.getDatabaseMap(), Collections.emptyList(), sqlStatement, connectionSession.getDatabaseName());
+                metaDataContexts.getMetaData().getDatabaseMap(), Collections.emptyList(), sqlStatement, connectionSession.getDatabaseName());
         return new LogicSQL(sqlStatementContext, sql, Collections.emptyList());
     }
     
     private ExecutionContext createExecutionContext(final LogicSQL logicSQL) {
         SQLCheckEngine.check(logicSQL.getSqlStatementContext().getSqlStatement(), logicSQL.getParameters(),
                 metaDataContexts.getDatabaseMetaData(connectionSession.getDatabaseName()).getRuleMetaData().getRules(),
-                connectionSession.getDatabaseName(), metaDataContexts.getDatabaseMap(), null);
-        return kernelProcessor.generateExecutionContext(logicSQL, metaDataContexts.getDatabaseMetaData(connectionSession.getDatabaseName()), metaDataContexts.getProps());
+                connectionSession.getDatabaseName(), metaDataContexts.getMetaData().getDatabaseMap(), null);
+        return kernelProcessor.generateExecutionContext(logicSQL, metaDataContexts.getDatabaseMetaData(connectionSession.getDatabaseName()), metaDataContexts.getMetaData().getProps());
     }
     
     @Override
     public ResponseHeader execute() throws SQLException {
         Collection<ShardingSphereRule> rules = metaDataContexts.getDatabaseMetaData(connectionSession.getDatabaseName()).getRuleMetaData().getRules();
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = new DriverExecutionPrepareEngine<>(
-                JDBCDriverType.STATEMENT, metaDataContexts.getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY),
+                JDBCDriverType.STATEMENT, metaDataContexts.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY),
                 (JDBCBackendConnection) connectionSession.getBackendConnection(), (JDBCBackendStatement) connectionSession.getStatementManager(), new StatementOption(false), rules);
         ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = prepareEngine.prepare(anyExecutionContext.getRouteContext(), samplingExecutionUnit());
         for (ExecutionGroup<JDBCExecutionUnit> eachGroup : executionGroupContext.getInputGroups()) {

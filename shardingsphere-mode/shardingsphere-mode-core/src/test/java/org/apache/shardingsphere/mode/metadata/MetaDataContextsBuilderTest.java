@@ -60,8 +60,8 @@ public final class MetaDataContextsBuilderTest {
                 Collections.singletonMap("logic_db", databaseConfig), Collections.singleton(authorityRuleConfig), new ConfigurationProperties(props)).build(mock(MetaDataPersistService.class));
         assertRules(actual);
         assertTrue(actual.getDatabaseMetaData("logic_db").getResource().getDataSources().isEmpty());
-        assertThat(actual.getProps().getProps().size(), is(1));
-        assertThat(actual.getProps().getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE), is(1));
+        assertThat(actual.getMetaData().getProps().getProps().size(), is(1));
+        assertThat(actual.getMetaData().getProps().getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE), is(1));
     }
     
     private void assertRules(final MetaDataContexts actual) {
@@ -74,25 +74,25 @@ public final class MetaDataContextsBuilderTest {
     public void assertBuildWithoutGlobalRuleConfigurations() throws SQLException {
         MetaDataContexts actual = new MetaDataContextsBuilder(
                 Collections.emptyMap(), Collections.emptyList(), new ConfigurationProperties(new Properties())).build(mock(MetaDataPersistService.class));
-        assertThat(actual.getGlobalRuleMetaData().getRules().size(), is(4));
-        assertThat(actual.getGlobalRuleMetaData().getRules().stream().filter(each -> each instanceof AuthorityRule).count(), is(1L));
-        assertThat(actual.getGlobalRuleMetaData().getRules().stream().filter(each -> each instanceof TransactionRule).count(), is(1L));
-        assertThat(actual.getGlobalRuleMetaData().getRules().stream().filter(each -> each instanceof SQLParserRule).count(), is(1L));
-        assertThat(actual.getGlobalRuleMetaData().getRules().stream().filter(each -> each instanceof SQLTranslatorRule).count(), is(1L));
+        assertThat(actual.getMetaData().getGlobalRuleMetaData().getRules().size(), is(4));
+        assertThat(actual.getMetaData().getGlobalRuleMetaData().getRules().stream().filter(each -> each instanceof AuthorityRule).count(), is(1L));
+        assertThat(actual.getMetaData().getGlobalRuleMetaData().getRules().stream().filter(each -> each instanceof TransactionRule).count(), is(1L));
+        assertThat(actual.getMetaData().getGlobalRuleMetaData().getRules().stream().filter(each -> each instanceof SQLParserRule).count(), is(1L));
+        assertThat(actual.getMetaData().getGlobalRuleMetaData().getRules().stream().filter(each -> each instanceof SQLTranslatorRule).count(), is(1L));
     }
     
     @Test
     public void assertBuildWithEmptyRuleConfigurations() throws SQLException {
         MetaDataContexts actual = new MetaDataContextsBuilder(
                 Collections.emptyMap(), Collections.emptyList(), new ConfigurationProperties(new Properties())).build(mock(MetaDataPersistService.class));
-        assertThat(actual.getDatabaseMap().size(), is(4));
-        assertTrue(actual.getDatabaseMap().containsKey("information_schema"));
-        assertTrue(actual.getDatabaseMap().containsKey("performance_schema"));
-        assertTrue(actual.getDatabaseMap().containsKey("mysql"));
-        assertTrue(actual.getDatabaseMap().containsKey("sys"));
-        assertThat(actual.getDatabaseMap().get("information_schema").getRuleMetaData().getRules(), instanceOf(LinkedList.class));
-        assertThat(actual.getDatabaseMap().get("performance_schema").getRuleMetaData().getRules(), instanceOf(LinkedList.class));
-        assertThat(actual.getDatabaseMap().get("mysql").getRuleMetaData().getRules(), instanceOf(LinkedList.class));
-        assertThat(actual.getDatabaseMap().get("sys").getRuleMetaData().getRules(), instanceOf(LinkedList.class));
+        assertThat(actual.getMetaData().getDatabaseMap().size(), is(4));
+        assertTrue(actual.getMetaData().getDatabaseMap().containsKey("information_schema"));
+        assertTrue(actual.getMetaData().getDatabaseMap().containsKey("performance_schema"));
+        assertTrue(actual.getMetaData().getDatabaseMap().containsKey("mysql"));
+        assertTrue(actual.getMetaData().getDatabaseMap().containsKey("sys"));
+        assertThat(actual.getMetaData().getDatabaseMap().get("information_schema").getRuleMetaData().getRules(), instanceOf(LinkedList.class));
+        assertThat(actual.getMetaData().getDatabaseMap().get("performance_schema").getRuleMetaData().getRules(), instanceOf(LinkedList.class));
+        assertThat(actual.getMetaData().getDatabaseMap().get("mysql").getRuleMetaData().getRules(), instanceOf(LinkedList.class));
+        assertThat(actual.getMetaData().getDatabaseMap().get("sys").getRuleMetaData().getRules(), instanceOf(LinkedList.class));
     }
 }

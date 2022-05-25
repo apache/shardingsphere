@@ -56,7 +56,7 @@ public final class ShowVariableBackendHandlerTest extends ProxyContextRestorer {
     @Before
     public void setup() {
         ProxyContext.init(mock(ContextManager.class, RETURNS_DEEP_STUBS));
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.PROXY_BACKEND_DRIVER_TYPE)).thenReturn("JDBC");
+        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.PROXY_BACKEND_DRIVER_TYPE)).thenReturn("JDBC");
         connectionSession = new ConnectionSession(mock(MySQLDatabaseType.class), TransactionType.LOCAL, new DefaultAttributeMap());
     }
     
@@ -116,11 +116,11 @@ public final class ShowVariableBackendHandlerTest extends ProxyContextRestorer {
         connectionSession.setCurrentDatabase("db");
         ContextManager contextManager = mock(ContextManager.class);
         ProxyContext.init(contextManager);
-        MetaDataContexts metaDataContexts = mock(MetaDataContexts.class);
+        MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         Properties props = new Properties();
         props.put("sql-show", Boolean.TRUE.toString());
-        when(metaDataContexts.getProps()).thenReturn(new ConfigurationProperties(props));
+        when(metaDataContexts.getMetaData().getProps()).thenReturn(new ConfigurationProperties(props));
         ShowVariableHandler backendHandler = new ShowVariableHandler()
                 .init(new HandlerParameter<>(new ShowVariableStatement("SQL_SHOW"), new MySQLDatabaseType(), connectionSession));
         ResponseHeader actual = backendHandler.execute();
@@ -137,9 +137,9 @@ public final class ShowVariableBackendHandlerTest extends ProxyContextRestorer {
         connectionSession.setCurrentDatabase("db");
         ContextManager contextManager = mock(ContextManager.class);
         ProxyContext.init(contextManager);
-        MetaDataContexts metaDataContexts = mock(MetaDataContexts.class);
+        MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        when(metaDataContexts.getProps()).thenReturn(new ConfigurationProperties(new Properties()));
+        when(metaDataContexts.getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         ShowVariableHandler backendHandler = new ShowVariableHandler()
                 .init(new HandlerParameter<>(new ShowVariableStatement(), new MySQLDatabaseType(), connectionSession));
         ResponseHeader actual = backendHandler.execute();

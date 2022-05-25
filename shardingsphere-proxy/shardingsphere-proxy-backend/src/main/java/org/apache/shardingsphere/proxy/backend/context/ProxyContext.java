@@ -116,7 +116,7 @@ public final class ProxyContext {
         if (!Strings.isNullOrEmpty(databaseName) && databaseExists(databaseName)) {
             result.addAll(contextManager.getMetaDataContexts().getDatabaseMetaData(databaseName).getRuleMetaData().getRules());
         }
-        result.addAll(contextManager.getMetaDataContexts().getGlobalRuleMetaData().getRules());
+        result.addAll(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules());
         return result;
     }
 }

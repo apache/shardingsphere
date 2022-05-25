@@ -58,7 +58,7 @@ public final class ParseDistSQLBackendHandlerTest extends ProxyContextRestorer {
     @Before
     public void setUp() throws SQLException {
         ProxyContext.init(contextManager);
-        when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(SQLParserRule.class)).thenReturn(Optional.of(sqlParserRule));
+        when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(SQLParserRule.class)).thenReturn(Optional.of(sqlParserRule));
     }
     
     @Test

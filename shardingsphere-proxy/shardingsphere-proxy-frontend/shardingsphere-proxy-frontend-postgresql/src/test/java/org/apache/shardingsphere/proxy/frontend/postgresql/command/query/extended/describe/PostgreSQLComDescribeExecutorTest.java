@@ -108,7 +108,7 @@ public final class PostgreSQLComDescribeExecutorTest extends ProxyContextRestore
     @Before
     public void setup() {
         ProxyContext.init(mockContextManager);
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
+        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
         when(connectionSession.getDatabaseName()).thenReturn(DATABASE_NAME);
         when(mockContextManager.getMetaDataContexts().getAllDatabaseNames().contains(DATABASE_NAME)).thenReturn(true);
         when(mockContextManager.getMetaDataContexts().getDatabaseMetaData(any(String.class)).getRuleMetaData().findSingleRule(SQLTranslatorRule.class))

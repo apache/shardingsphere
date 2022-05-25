@@ -76,7 +76,7 @@ public final class SetVariableHandler extends UpdatableRALBackendHandler<SetVari
         ContextManager contextManager = ProxyContext.getInstance().getContextManager();
         MetaDataContexts metaDataContexts = contextManager.getMetaDataContexts();
         Optional<MetaDataPersistService> metaDataPersistService = metaDataContexts.getPersistService();
-        Properties props = new Properties(metaDataContexts.getProps().getProps());
+        Properties props = new Properties(metaDataContexts.getMetaData().getProps().getProps());
         props.put(propertyKey.getKey(), getValue(propertyKey, value));
         contextManager.alterProperties(props);
         if (metaDataPersistService.isPresent() && null != metaDataPersistService.get().getPropsService()) {

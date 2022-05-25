@@ -90,7 +90,7 @@ public final class JDBCPortalTest extends ProxyContextRestorer {
     @Before
     public void setup() throws SQLException {
         ProxyContext.init(mockContextManager);
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
+        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
         when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
         prepareJDBCPortal();
     }

@@ -40,14 +40,14 @@ public final class AlterSQLParserRuleHandler extends UpdatableRALBackendHandler<
     protected void update(final ContextManager contextManager, final AlterSQLParserRuleStatement sqlStatement) {
         Optional<SQLParserRuleConfiguration> currentConfig = findCurrentConfiguration();
         SQLParserRuleConfiguration toBeAlteredRuleConfig = createSQLParserRuleConfiguration(currentConfig.orElseGet(() -> new DefaultSQLParserRuleConfigurationBuilder().build()));
-        Collection<RuleConfiguration> globalRuleConfigs = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData().getConfigurations();
+        Collection<RuleConfiguration> globalRuleConfigs = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations();
         globalRuleConfigs.removeIf(each -> each instanceof SQLParserRuleConfiguration);
         globalRuleConfigs.add(toBeAlteredRuleConfig);
         persistNewRuleConfigurations(globalRuleConfigs);
     }
     
     private Optional<SQLParserRuleConfiguration> findCurrentConfiguration() {
-        return ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData().findRuleConfigurations(SQLParserRuleConfiguration.class).stream().findAny();
+        return ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findRuleConfigurations(SQLParserRuleConfiguration.class).stream().findAny();
     }
     
     private SQLParserRuleConfiguration createSQLParserRuleConfiguration(final SQLParserRuleConfiguration currentConfig) {

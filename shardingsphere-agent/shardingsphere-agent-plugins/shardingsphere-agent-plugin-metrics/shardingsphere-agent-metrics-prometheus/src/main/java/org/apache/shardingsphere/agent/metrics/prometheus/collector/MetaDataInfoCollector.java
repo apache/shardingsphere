@@ -65,13 +65,13 @@ public final class MetaDataInfoCollector extends Collector {
     
     private void collectProxy(final GaugeMetricFamily metricFamily) {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        metricFamily.addMetric(Collections.singletonList(LOGIC_DB_COUNT), metaDataContexts.getDatabaseMap().size());
+        metricFamily.addMetric(Collections.singletonList(LOGIC_DB_COUNT), metaDataContexts.getMetaData().getDatabaseMap().size());
         metricFamily.addMetric(Collections.singletonList(ACTUAL_DB_COUNT), getDatabaseNames(metaDataContexts).size());
     }
     
     private Collection<String> getDatabaseNames(final MetaDataContexts metaDataContexts) {
         Collection<String> result = new HashSet<>();
-        for (ShardingSphereDatabase each : metaDataContexts.getDatabaseMap().values()) {
+        for (ShardingSphereDatabase each : metaDataContexts.getMetaData().getDatabaseMap().values()) {
             result.addAll(getDatabaseNames(each));
         }
         return result;
