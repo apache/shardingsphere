@@ -56,6 +56,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.confi
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.version.SchemaVersionChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.DatabaseAddedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.DatabaseDeletedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaAddedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.ShowProcessListManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.lock.ShowProcessListSimpleLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.InstanceOfflineEvent;
@@ -189,6 +190,14 @@ public final class ClusterContextManagerCoordinatorTest {
         props.setProperty(ConfigurationPropertyKey.SQL_SHOW.getKey(), Boolean.TRUE.toString());
         coordinator.renew(new PropertiesChangedEvent(props));
         assertThat(contextManager.getMetaDataContexts().getProps().getProps().getProperty(ConfigurationPropertyKey.SQL_SHOW.getKey()), is(Boolean.TRUE.toString()));
+    }
+    
+    @Test
+    public void assertSchemaAdd() {
+        when(contextManager.getMetaDataContexts().getDatabaseMetaData("db").getSchemas().get("schema_1")).thenReturn(null);
+        SchemaAddedEvent event = new SchemaAddedEvent("db", "schema_1");
+        coordinator.renew(event);
+        verify(contextManager.getMetaDataContexts().getDatabaseMetaData("db").getSchemas(), times(1)).put(argThat(argument -> argument.equals("schema_1")), any(ShardingSphereSchema.class));
     }
     
     @Test
