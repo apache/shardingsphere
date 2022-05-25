@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.federation.optimizer.metadata;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

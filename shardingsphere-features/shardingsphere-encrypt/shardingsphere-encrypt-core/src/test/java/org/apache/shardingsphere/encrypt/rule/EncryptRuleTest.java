@@ -26,7 +26,7 @@ import org.apache.shardingsphere.encrypt.fixture.CoreSchemaMetaDataAwareEncryptA
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.ShardingSphereSchema;
 import org.junit.Test;
 
 import java.util.Arrays;

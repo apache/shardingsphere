@@ -19,10 +19,10 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.meta
 
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.metadata.schema.event.AddSchemaEvent;
-import org.apache.shardingsphere.infra.metadata.schema.event.AlterSchemaEvent;
-import org.apache.shardingsphere.infra.metadata.schema.event.DropSchemaEvent;
-import org.apache.shardingsphere.infra.metadata.schema.event.SchemaAlteredEvent;
+import org.apache.shardingsphere.infra.metadata.database.schema.event.AddSchemaEvent;
+import org.apache.shardingsphere.infra.metadata.database.schema.event.AlterSchemaEvent;
+import org.apache.shardingsphere.infra.metadata.database.schema.event.DropSchemaEvent;
+import org.apache.shardingsphere.infra.metadata.database.schema.event.SchemaAlteredEvent;
 import org.apache.shardingsphere.mode.metadata.persist.service.SchemaMetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 

@@ -21,13 +21,12 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContextFactory;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
-import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.TableMetaData;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
@@ -36,19 +35,14 @@ import org.junit.Test;
 
 import java.sql.Types;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class CustomizedFilterableExecutorTest {
-    
-    private static final String SELECT_WHERE_SINGLE_FIELD =
-            "SELECT user_id FROM t_user_info WHERE user_id = 12";
     
     private CustomizedFilterableExecutor executor;
     
@@ -58,19 +52,16 @@ public class CustomizedFilterableExecutorTest {
         tableMetaDataMap.put("t_order_federate", createOrderTableMetaData());
         tableMetaDataMap.put("t_user_info", createUserInfoTableMetaData());
         String schemaName = "federate_jdbc";
-        Map<String, ShardingSphereSchema> schemas = new HashMap<>(2, 1);
         String databaseName = "database_name";
-        schemas.put(databaseName, new ShardingSphereSchema(tableMetaDataMap));
+        Map<String, ShardingSphereSchema> schemas = Collections.singletonMap(databaseName, new ShardingSphereSchema(tableMetaDataMap));
         ShardingSphereDatabase metaData = new ShardingSphereDatabase(schemaName, new H2DatabaseType(), mockResource(), null, schemas);
         OptimizerContext optimizerContext = OptimizerContextFactory.create(Collections.singletonMap(schemaName, metaData), createGlobalRuleMetaData());
         executor = new CustomizedFilterableExecutor(databaseName, schemaName, optimizerContext);
     }
     
     private ShardingSphereRuleMetaData createGlobalRuleMetaData() {
-        Collection<ShardingSphereRule> rules = new LinkedList<>();
         CacheOption cacheOption = new CacheOption(128, 1024L);
-        rules.add(new SQLParserRule(new SQLParserRuleConfiguration(false, cacheOption, cacheOption)));
-        return new ShardingSphereRuleMetaData(Collections.emptyList(), rules);
+        return new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.singleton(new SQLParserRule(new SQLParserRuleConfiguration(false, cacheOption, cacheOption))));
     }
     
     private ShardingSphereResource mockResource() {
