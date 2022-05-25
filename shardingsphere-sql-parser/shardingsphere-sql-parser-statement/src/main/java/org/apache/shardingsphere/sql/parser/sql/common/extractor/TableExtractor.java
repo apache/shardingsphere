@@ -46,6 +46,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Tab
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
@@ -336,5 +337,16 @@ public final class TableExtractor {
         } else if (sqlStatement instanceof DeleteStatement) {
             extractTablesFromDelete((DeleteStatement) sqlStatement);
         }
+    }
+    
+    /**
+     * Extract table that should be rewrite from create view statement.
+     * 
+     * @param createViewStatement create view statement
+     */
+    public void extractTablesFromCreateViewStatement(final CreateViewStatement createViewStatement) {
+        tableContext.add(createViewStatement.getView());
+        rewriteTables.add(createViewStatement.getView());
+        createViewStatement.getSelect().ifPresent(this::extractTablesFromSelect);
     }
 }

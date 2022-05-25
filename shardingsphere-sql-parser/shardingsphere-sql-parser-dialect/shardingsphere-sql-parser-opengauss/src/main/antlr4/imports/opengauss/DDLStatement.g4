@@ -1778,7 +1778,7 @@ listen
     ;
 
 move
-    : MOVE fetchArgs
+    : MOVE (direction (FROM | IN)?)? cursorName
     ;
 
 prepare
@@ -1952,10 +1952,35 @@ privilegeType
     | ALL PRIVILEGES?
     ;
 
+createDirectory
+    : CREATE (OR REPLACE)? DIRECTORY directoryName AS pathString
+    ;
+
 alterSchema
     : ALTER SCHEMA name (RENAME TO name | OWNER TO roleSpec)
     ;
 
 dropSchema
     : DROP SCHEMA existClause? nameList dropBehavior?
+    ;
+
+fetch
+    : FETCH (direction (FROM | IN))? cursorName
+    ;
+
+direction
+    : NEXT
+    | PRIOR
+    | FIRST
+    | LAST
+    | ABSOLUTE signedIconst
+    | RELATIVE signedIconst
+    | signedIconst
+    | ALL
+    | FORWARD
+    | FORWARD signedIconst
+    | FORWARD ALL
+    | BACKWARD
+    | BACKWARD signedIconst
+    | BACKWARD ALL
     ;

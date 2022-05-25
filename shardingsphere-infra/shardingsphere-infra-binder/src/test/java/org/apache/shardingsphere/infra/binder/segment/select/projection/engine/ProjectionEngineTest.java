@@ -89,7 +89,6 @@ public final class ProjectionEngineTest {
     public void assertCreateProjectionWhenProjectionSegmentInstanceOfShorthandProjectionSegmentAndDuplicateTableSegment() {
         SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
         when(schema.getAllColumnNames("t_order")).thenReturn(Arrays.asList("order_id", "content"));
-        when(databaseType.getDefaultSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(DefaultDatabase.LOGIC_NAME);
         Optional<Projection> actual = new ProjectionEngine(DefaultDatabase.LOGIC_NAME,
                 Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema), databaseType).createProjection(table, new ShorthandProjectionSegment(0, 0));
         assertTrue(actual.isPresent());

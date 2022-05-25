@@ -963,6 +963,10 @@ DICTIONARY
     : D I C T I O N A R Y
     ;
 
+DIRECTORY
+    : D I R E C T O R Y
+    ;
+
 EXPRESSION
     : E X P R E S S I O N
     ;

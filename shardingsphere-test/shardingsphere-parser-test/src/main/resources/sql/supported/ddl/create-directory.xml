@@ -17,6 +17,6 @@
   -->
 
 <sql-cases>
-    <sql-case id="create_directory" value="CREATE DIRECTORY admin AS '/disk1/oracle/admin';" db-types="Oracle" />
-    <sql-case id="create_directory_with_replace" value="CREATE OR REPLACE DIRECTORY bfile_dir AS '/usr/bin/bfile_dir';" db-types="Oracle" />
+    <sql-case id="create_directory" value="CREATE DIRECTORY admin AS '/disk1/oracle/admin';" db-types="Oracle,openGauss" />
+    <sql-case id="create_directory_with_replace" value="CREATE OR REPLACE DIRECTORY bfile_dir AS '/usr/bin/bfile_dir';" db-types="Oracle,openGauss" />
 </sql-cases>
