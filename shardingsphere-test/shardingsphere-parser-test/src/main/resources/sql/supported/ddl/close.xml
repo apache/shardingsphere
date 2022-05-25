@@ -16,16 +16,7 @@
   ~ limitations under the License.
   -->
 
-<sql-parser-test-cases>
-    <cursor sql-case-id="create_cursor">
-        <cursor-name name="t_order_cursor" start-index="7" stop-index="20" />
-        <select>
-            <from>
-                <simple-table name="t_order" start-index="50" stop-index="56" />
-            </from>
-            <projections start-index="43" stop-index="43">
-                <shorthand-projection start-index="43" stop-index="43" />
-            </projections>
-        </select>
-    </cursor>
-</sql-parser-test-cases>
+<sql-cases>
+    <sql-case id="close_cursor" value="CLOSE t_order_cursor;" db-types="openGauss" />
+    <sql-case id="close_all_cursor" value="CLOSE ALL;" db-types="openGauss" />
+</sql-cases>
