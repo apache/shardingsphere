@@ -1,6 +1,5 @@
 package org.apache.shardingsphere.data.pipeline.spi.ddlgenerator;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import javax.sql.DataSource;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -13,37 +12,20 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-
-import static org.mockito.Mockito.when;
 
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class DialectDDLGeneratorFactoryTest {
 
-    private static final String CLIENT_USERNAME = "username";
-
-    private static final String CLIENT_PASSWORD = "password";
-
     @Mock(extraInterfaces = AutoCloseable.class)
     private DataSource dataSource;
 
-    @Mock
-    private Connection connection;
-
-    @Before
-    public void setUp() throws SQLException {
-
-        when(dataSource.getConnection()).thenReturn(connection);
-        when(dataSource.getConnection(CLIENT_USERNAME, CLIENT_PASSWORD)).thenReturn(connection);
-    }
-
     @Test
-    public void assertFindInstanceWithDialectDDLGenerator() throws SQLException {
+    public void assertFindInstanceWithDialectDDLGenerator() {
         boolean thrown = false;
 
         if (DialectDDLSQLGeneratorFactory.findInstance(new MySQLDatabaseType()).isPresent()) {
