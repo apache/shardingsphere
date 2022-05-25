@@ -15,24 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.loader;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.cursor.ExpectedCursorName;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-import javax.sql.DataSource;
-import java.util.Collection;
+import javax.xml.bind.annotation.XmlElement;
 
 /**
- * TableMetaData loader material.
+ * Fetch statement test case.
  */
-@RequiredArgsConstructor
 @Getter
-public final class TableMetaDataLoaderMaterial {
+@Setter
+public final class FetchStatementTestCase extends SQLParserTestCase {
     
-    private final Collection<String> actualTableNames;
-    
-    private final DataSource dataSource;
-    
-    private final String defaultSchemaName;
+    @XmlElement(name = "cursor-name")
+    private ExpectedCursorName cursorName;
 }

@@ -15,24 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.loader;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-import javax.sql.DataSource;
-import java.util.Collection;
+import lombok.Setter;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.cursor.CursorNameSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 
 /**
- * TableMetaData loader material.
+ * OpenGauss close statement.
  */
-@RequiredArgsConstructor
 @Getter
-public final class TableMetaDataLoaderMaterial {
+@Setter
+@ToString
+public final class OpenGaussCloseStatement extends AbstractSQLStatement implements DDLStatement, OpenGaussStatement {
     
-    private final Collection<String> actualTableNames;
-    
-    private final DataSource dataSource;
-    
-    private final String defaultSchemaName;
+    private CursorNameSegment cursorName;
 }

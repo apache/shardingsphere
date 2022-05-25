@@ -56,7 +56,7 @@ public final class SchemaMetaDataBuilderTest {
     
     @Test
     public void assertLoadWithNotExistedTableName() throws SQLException {
-        SchemaBuilderMaterials materials = new SchemaBuilderMaterials(databaseType, databaseType, Collections.singletonMap("logic_db", new MockedDataSource()), 
+        SchemaBuilderMaterials materials = new SchemaBuilderMaterials(databaseType, databaseType, Collections.singletonMap("logic_db", new MockedDataSource()),
                 Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule()), new ConfigurationProperties(new Properties()), "sharding_db");
         assertTrue(SchemaMetaDataBuilder.load(Collections.singletonList("invalid_table"), materials).isEmpty());
     }

@@ -54,10 +54,10 @@ public final class TableMetaDataUtilTest {
         Iterator<TableMetaDataLoaderMaterial> iterator = actual.iterator();
         TableMetaDataLoaderMaterial firstMaterial = iterator.next();
         assertThat(firstMaterial.getDefaultSchemaName(), is("sharding_db"));
-        assertThat(firstMaterial.getTableNames(), is(Collections.singletonList("t_order_0")));
+        assertThat(firstMaterial.getActualTableNames(), is(Collections.singletonList("t_order_0")));
         TableMetaDataLoaderMaterial secondMaterial = iterator.next();
         assertThat(secondMaterial.getDefaultSchemaName(), is("sharding_db"));
-        assertThat(secondMaterial.getTableNames(), is(Collections.singletonList("t_order_1")));
+        assertThat(secondMaterial.getActualTableNames(), is(Collections.singletonList("t_order_1")));
     }
     
     @Test
@@ -71,7 +71,7 @@ public final class TableMetaDataUtilTest {
         Iterator<TableMetaDataLoaderMaterial> iterator = actual.iterator();
         TableMetaDataLoaderMaterial firstMaterial = iterator.next();
         assertThat(firstMaterial.getDefaultSchemaName(), is("sharding_db"));
-        assertThat(firstMaterial.getTableNames(), is(Collections.singletonList("t_order_0")));
+        assertThat(firstMaterial.getActualTableNames(), is(Collections.singletonList("t_order_0")));
     }
     
     @Test
@@ -85,7 +85,7 @@ public final class TableMetaDataUtilTest {
         Iterator<TableMetaDataLoaderMaterial> iterator = actual.iterator();
         TableMetaDataLoaderMaterial firstMaterial = iterator.next();
         assertThat(firstMaterial.getDefaultSchemaName(), is("public"));
-        assertThat(firstMaterial.getTableNames(), is(Collections.singletonList("t_single")));
+        assertThat(firstMaterial.getActualTableNames(), is(Collections.singletonList("t_single")));
     }
     
     private Collection<DataNode> mockShardingDataNodes() {
