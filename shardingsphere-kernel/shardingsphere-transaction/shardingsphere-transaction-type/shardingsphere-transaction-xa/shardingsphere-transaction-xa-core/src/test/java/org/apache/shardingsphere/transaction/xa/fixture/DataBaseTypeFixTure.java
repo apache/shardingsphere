@@ -10,38 +10,38 @@ import java.util.Optional;
 
 public class DataBaseTypeFixTure implements DatabaseType {
 
-	@Override
-	public QuoteCharacter getQuoteCharacter() {
-		return null;
-	}
+    @Override
+    public QuoteCharacter getQuoteCharacter() {
+        return null;
+    }
 
-	@Override
-	public Collection<String> getJdbcUrlPrefixes() {
-		return null;
-	}
+    @Override
+    public Collection<String> getJdbcUrlPrefixes() {
+        return null;
+    }
 
-	@Override
-	public DataSourceMetaData getDataSourceMetaData(String url, String username) {
-		return null;
-	}
+    @Override
+    public DataSourceMetaData getDataSourceMetaData(final String url, final String username) {
+        return null;
+    }
 
-	@Override
-	public Optional<String> getDataSourceClassName() {
-		return Optional.empty();
-	}
+    @Override
+    public Optional<String> getDataSourceClassName() {
+        return Optional.empty();
+    }
 
-	@Override
-	public Map<String, Collection<String>> getSystemDatabaseSchemaMap() {
-		return null;
-	}
+    @Override
+    public Map<String, Collection<String>> getSystemDatabaseSchemaMap() {
+        return null;
+    }
 
-	@Override
-	public Collection<String> getSystemSchemas() {
-		return null;
-	}
+    @Override
+    public Collection<String> getSystemSchemas() {
+        return null;
+    }
 
-	@Override
-	public String getType() {
-		return "TEST";
-	}
+    @Override
+    public String getType() {
+        return "TEST";
+    }
 }

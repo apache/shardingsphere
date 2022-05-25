@@ -7,8 +7,8 @@ import java.util.Collection;
 
 public class XADataSourceDefinitionFixTure implements XADataSourceDefinition {
 
-	@Override
-	public Collection<String> getXADriverClassName() {
-		return Arrays.asList("com.mysql.jdbc.jdbc2.optional.MysqlXADataSource", "com.mysql.cj.jdbc.MysqlXADataSource");
-	}
+    @Override
+    public Collection<String> getXADriverClassName() {
+        return Arrays.asList("com.mysql.jdbc.jdbc2.optional.MysqlXADataSource", "com.mysql.cj.jdbc.MysqlXADataSource");
+    }
 }

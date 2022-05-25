@@ -42,7 +42,6 @@ public final class XAConnectionWrapperFactoryTest {
 
     private final DatabaseType databaseType = new DataBaseTypeFixTure();
 
-
     @Test
     public void assertGetInstance() throws SQLException {
         XAConnectionWrapper xaConnectionWrapperFixTrue = new XAConnectionWrapperFixTure();
