@@ -31,21 +31,10 @@ public final class LockNodeUtilTest {
     }
     
     @Test
-    public void assertGenerateAckLockedName() {
-        assertThat(LockNodeUtil.generateAckLockedName("sharding_db", "127.0.0.1@3307"), is("sharding_db#@#127.0.0.1@3307"));
-    }
-    
-    @Test
     public void assertParseAckLockName() {
         String[] lockName = LockNodeUtil.parseAckLockName("sharding_db#@#127.0.0.1@3307");
         assertThat(lockName.length, is(2));
         assertThat(lockName[0], is("sharding_db"));
         assertThat(lockName[1], is("127.0.0.1@3307"));
-    }
-    
-    @Test
-    public void assertParseAckLockedNodePathKey() {
-        String pathKey = "sharding_db#@#127.0.0.1@3307";
-        assertThat(LockNodeUtil.parseAckLockedNodePathKey(pathKey), is("127.0.0.1@3307"));
     }
 }

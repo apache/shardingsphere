@@ -40,6 +40,7 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResultBuilder;
+import org.apache.shardingsphere.proxy.frontend.mysql.ProxyContextRestorer;
 import org.apache.shardingsphere.proxy.frontend.mysql.authentication.authenticator.MySQLNativePasswordAuthenticator;
 import org.junit.Before;
 import org.junit.Test;
@@ -62,7 +63,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public final class MySQLAuthenticationEngineTest {
+public final class MySQLAuthenticationEngineTest extends ProxyContextRestorer {
     
     private final MySQLAuthenticationHandler authenticationHandler = mock(MySQLAuthenticationHandler.class);
     
@@ -156,14 +157,12 @@ public final class MySQLAuthenticationEngineTest {
         verify(context).writeAndFlush(any(MySQLOKPacket.class));
     }
     
-    private void setMetaDataContexts() throws NoSuchFieldException, IllegalAccessException {
-        Field contextManagerField = ProxyContext.getInstance().getClass().getDeclaredField("contextManager");
-        contextManagerField.setAccessible(true);
+    private void setMetaDataContexts() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), Collections.singletonMap("sharding_db", mock(ShardingSphereDatabase.class)),
                 mock(ShardingSphereRuleMetaData.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        contextManagerField.set(ProxyContext.getInstance(), contextManager);
+        ProxyContext.init(contextManager);
     }
     
     private MySQLPacketPayload getPayload(final String username, final String database, final byte[] authResponse) {

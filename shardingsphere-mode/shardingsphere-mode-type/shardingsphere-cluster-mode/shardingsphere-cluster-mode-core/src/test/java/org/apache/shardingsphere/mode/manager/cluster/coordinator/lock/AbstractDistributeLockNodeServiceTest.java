@@ -45,7 +45,7 @@ public final class AbstractDistributeLockNodeServiceTest {
     @Test
     public void assertGenerateAckLockName() {
         String globalLockedAckNodePath = SERVICE.generateAckLockName("locksName", "127.0.0.1@3307");
-        assertThat(globalLockedAckNodePath, is("/lock/mutex/locks/locksName/ack/locksName#@#127.0.0.1@3307"));
+        assertThat(globalLockedAckNodePath, is("/lock/mutex/locks/locksName/ack/127.0.0.1@3307"));
     }
     
     @Test
@@ -58,7 +58,7 @@ public final class AbstractDistributeLockNodeServiceTest {
     
     @Test
     public void assertParseLocksAckNodePath() {
-        String nodePath = "/lock/mutex/locks/sharding_db/ack/sharding_db#@#127.0.0.1@3307";
+        String nodePath = "/lock/mutex/locks/sharding_db/ack/127.0.0.1@3307";
         Optional<String> locksAckNodePath = SERVICE.parseLocksAckNodePath(nodePath);
         assertTrue(locksAckNodePath.isPresent());
         assertThat(locksAckNodePath.get(), is("sharding_db#@#127.0.0.1@3307"));
