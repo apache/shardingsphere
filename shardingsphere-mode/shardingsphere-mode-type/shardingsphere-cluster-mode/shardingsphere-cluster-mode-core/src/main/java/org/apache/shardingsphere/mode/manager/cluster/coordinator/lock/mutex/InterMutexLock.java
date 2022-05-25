@@ -40,6 +40,8 @@ public final class InterMutexLock implements MutexLock, LockAckAble {
     
     private final String lockName;
     
+    private final MutexLock sequence;
+    
     private final LockRegistryService lockService;
     
     private final ComputeNodeInstance currentInstance;
@@ -59,7 +61,18 @@ public final class InterMutexLock implements MutexLock, LockAckAble {
     
     @Override
     public boolean tryLock(final long timeoutMillis) {
-        return innerTryLock(lockName, Math.max(timeoutMillis, TimeoutMilliseconds.MIN_TRY_LOCK));
+        if (!sequence.tryLock(TimeoutMilliseconds.DEFAULT_REGISTRY)) {
+            log.debug("Inter mutex sequence lock acquire sequenced failed, lock name: {}", lockName);
+            return false;
+        }
+        try {
+            long timeoutMilliseconds = Math.max(timeoutMillis, TimeoutMilliseconds.MIN_TRY_LOCK);
+            log.debug("Inter mutex sequence lock acquire sequenced success, lock name: {}, timeout milliseconds: {}ms", lockName, timeoutMilliseconds);
+            return innerTryLock(lockName, timeoutMilliseconds);
+        } finally {
+            sequence.unlock();
+            log.debug("Inter mutex sequence lock release sequenced success, database name: {}", lockName);
+        }
     }
     
     private boolean innerTryLock(final String lockName, final long timeout) {
