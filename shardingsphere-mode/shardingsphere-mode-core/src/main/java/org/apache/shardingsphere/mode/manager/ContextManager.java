@@ -395,7 +395,7 @@ public final class ContextManager implements AutoCloseable {
     public void reloadMetaData(final String databaseName) {
         try {
             Map<String, ShardingSphereSchema> schemas = loadActualSchema(databaseName);
-            deleteMetaData(databaseName, schemas);
+            deleteSchemas(databaseName, schemas);
             alterSchemas(databaseName, schemas);
             persistMetaData(metaDataContexts);
         } catch (final SQLException ex) {
@@ -441,7 +441,7 @@ public final class ContextManager implements AutoCloseable {
         }
     }
     
-    private void deleteMetaData(final String databaseName, final Map<String, ShardingSphereSchema> actualSchemas) {
+    private void deleteSchemas(final String databaseName, final Map<String, ShardingSphereSchema> actualSchemas) {
         Map<String, ShardingSphereSchema> originalSchemas = metaDataContexts.getDatabaseMetaData(databaseName).getSchemas();
         if (originalSchemas.isEmpty()) {
             return;
