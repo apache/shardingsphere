@@ -88,7 +88,7 @@ public final class SelectInformationExecutorTest extends ProxyContextRestorer {
         expectedResultSetMap.put("DEFAULT_COLLATION_NAME", "utf8mb4");
         Map<String, ShardingSphereDatabase> databaseMap = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getDatabaseMap();
         databaseMap.put("sharding_db", createDatabase(expectedResultSetMap));
-        databaseMap.put("test", createEmptyDatabase("test"));
+        databaseMap.put("database_without_authority", createEmptyDatabase("database_without_authority"));
         String sql = "SELECT SCHEMA_NAME, DEFAULT_CHARACTER_SET_NAME, DEFAULT_COLLATION_NAME FROM information_schema.SCHEMATA";
         SelectInformationSchemataExecutor executor = new SelectInformationSchemataExecutor((SelectStatement) new ShardingSphereSQLParserEngine("MySQL", parserConfig).parse(sql, false), sql);
         executor.execute(connectionSession);
@@ -99,11 +99,8 @@ public final class SelectInformationExecutorTest extends ProxyContextRestorer {
             if ("sharding_db".equals(executor.getMergedResult().getValue(1, String.class))) {
                 assertThat(executor.getMergedResult().getValue(2, String.class), is("utf8mb4"));
                 assertThat(executor.getMergedResult().getValue(3, String.class), is("utf8mb4_0900_ai_ci"));
-            } else if ("test".equals(executor.getMergedResult().getValue(1, String.class))) {
-                assertThat(executor.getMergedResult().getValue(2, String.class), is(""));
-                assertThat(executor.getMergedResult().getValue(3, String.class), is(""));
             } else {
-                fail("expected : `sharding_db` or `test`");
+                fail("expected : `sharding_db`");
             }
         }
         assertThat(count, is(1));
