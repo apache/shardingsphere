@@ -135,10 +135,10 @@ public final class ImportDatabaseConfigurationHandlerTest extends ProxyContextRe
         validatorField.setAccessible(true);
         validatorField.set(importDatabaseConfigurationHandler, validator);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts().getAllDatabaseNames()).thenReturn(Collections.singletonList(feature));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getSchemas().get(DefaultDatabase.LOGIC_NAME)).thenReturn(new ShardingSphereSchema(createTableMap()));
         when(database.getResource().getDataSources()).thenReturn(createDataSourceMap());
+        when(contextManager.getMetaDataContexts().getMetaData().getDatabases()).thenReturn(Collections.singletonMap(feature, database));
         when(contextManager.getMetaDataContexts().getDatabase(feature)).thenReturn(database);
         ProxyContext.init(contextManager);
     }

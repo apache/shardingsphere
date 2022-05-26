@@ -51,9 +51,9 @@ public final class ShowTableMetadataHandlerTest extends ProxyContextRestorer {
     @Test
     public void assertExecutor() throws SQLException {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts().getAllDatabaseNames()).thenReturn(Collections.singletonList("db_name"));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getSchemas().get("db_name")).thenReturn(new ShardingSphereSchema(createTableMap()));
+        when(contextManager.getMetaDataContexts().getMetaData().getDatabases()).thenReturn(Collections.singletonMap("db_name", database));
         when(contextManager.getMetaDataContexts().getDatabase("db_name")).thenReturn(database);
         ProxyContext.init(contextManager);
         ConnectionSession connectionSession = mock(ConnectionSession.class, RETURNS_DEEP_STUBS);
