@@ -28,7 +28,7 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Getter
-public final class SchemaMetaDataLoaderMaterials {
+public final class TableMetaDataLoaderMaterials {
     
     private final Collection<String> actualTableNames;
     
