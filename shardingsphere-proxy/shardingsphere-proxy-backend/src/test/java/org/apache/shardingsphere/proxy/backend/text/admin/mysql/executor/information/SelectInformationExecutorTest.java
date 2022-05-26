@@ -26,8 +26,6 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
-import org.apache.shardingsphere.infra.parser.ParserConfiguration;
-import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
@@ -66,7 +64,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class SelectInformationExecutorTest extends ProxyContextRestorer {
     
-    private final ParserConfiguration parserConfig = new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build()).toParserConfiguration();
+    private final SQLParserRule sqlParserRule = new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build());
     
     @Mock
     private ConnectionSession connectionSession;
@@ -91,7 +89,7 @@ public final class SelectInformationExecutorTest extends ProxyContextRestorer {
         databaseMap.put("sharding_db", createDatabase(expectedResultSetMap));
         databaseMap.put("database_without_authority", createEmptyDatabase("database_without_authority"));
         String sql = "SELECT SCHEMA_NAME, DEFAULT_CHARACTER_SET_NAME, DEFAULT_COLLATION_NAME FROM information_schema.SCHEMATA";
-        SelectInformationSchemataExecutor executor = new SelectInformationSchemataExecutor((SelectStatement) new ShardingSphereSQLParserEngine("MySQL", parserConfig).parse(sql, false), sql);
+        SelectInformationSchemataExecutor executor = new SelectInformationSchemataExecutor((SelectStatement) sqlParserRule.getSQLParserEngine("MySQL").parse(sql, false), sql);
         executor.execute(connectionSession);
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(expectedResultSetMap.size()));
         int count = 0;
@@ -112,7 +110,7 @@ public final class SelectInformationExecutorTest extends ProxyContextRestorer {
         Map<String, ShardingSphereDatabase> databaseMap = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases();
         databaseMap.put("empty_db", createEmptyDatabase("empty_db"));
         String sql = "SELECT SCHEMA_NAME, DEFAULT_CHARACTER_SET_NAME, DEFAULT_COLLATION_NAME, DEFAULT_ENCRYPTION FROM information_schema.SCHEMATA";
-        SelectInformationSchemataExecutor executor = new SelectInformationSchemataExecutor((SelectStatement) new ShardingSphereSQLParserEngine("MySQL", parserConfig).parse(sql, false), sql);
+        SelectInformationSchemataExecutor executor = new SelectInformationSchemataExecutor((SelectStatement) sqlParserRule.getSQLParserEngine("MySQL").parse(sql, false), sql);
         executor.execute(connectionSession);
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(4));
         while (executor.getMergedResult().next()) {
@@ -126,7 +124,7 @@ public final class SelectInformationExecutorTest extends ProxyContextRestorer {
     @Test
     public void assertSelectSchemataInNoSchemaExecute() throws SQLException {
         String sql = "SELECT SCHEMA_NAME, DEFAULT_CHARACTER_SET_NAME, DEFAULT_COLLATION_NAME, DEFAULT_ENCRYPTION FROM information_schema.SCHEMATA";
-        SelectInformationSchemataExecutor executor = new SelectInformationSchemataExecutor((SelectStatement) new ShardingSphereSQLParserEngine("MySQL", parserConfig).parse(sql, false), sql);
+        SelectInformationSchemataExecutor executor = new SelectInformationSchemataExecutor((SelectStatement) sqlParserRule.getSQLParserEngine("MySQL").parse(sql, false), sql);
         executor.execute(connectionSession);
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(0));
     }
