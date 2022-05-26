@@ -97,7 +97,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     }
     
     private Properties getTransactionProperties(final MetaDataContexts metaDataContexts) {
-        Optional<String> databaseName = metaDataContexts.getAllDatabaseNames().stream().findFirst();
+        Optional<String> databaseName = metaDataContexts.getMetaData().getDatabases().keySet().stream().findFirst();
         Optional<TransactionRule> transactionRule =
                 metaDataContexts.getMetaData().getGlobalRuleMetaData().getRules().stream().filter(each -> each instanceof TransactionRule).map(each -> (TransactionRule) each).findFirst();
         Optional<TransactionConfigurationFileGenerator> fileGenerator = transactionRule.isPresent()

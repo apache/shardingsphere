@@ -205,7 +205,7 @@ public final class ClusterContextManagerCoordinatorTest {
         TableMetaData changedTableMetaData = new TableMetaData("t_order", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
         SchemaChangedEvent event = new SchemaChangedEvent("db", "db", changedTableMetaData, null);
         coordinator.renew(event);
-        assertTrue(contextManager.getMetaDataContexts().getAllDatabaseNames().contains("db"));
+        assertTrue(contextManager.getMetaDataContexts().getMetaData().getDatabases().containsKey("db"));
         verify(contextManager.getMetaDataContexts().getDatabase("db").getSchemas().get("db")).put("t_order", event.getChangedTableMetaData());
     }
     
