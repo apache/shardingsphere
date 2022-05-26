@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema.fixture.loader;
 
-import org.apache.shardingsphere.infra.metadata.database.schema.builder.SchemaBuilderMaterials;
+import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.spi.RuleBasedSchemaMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.database.schema.fixture.rule.DataNodeContainedFixtureRule;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
@@ -32,7 +32,7 @@ import java.util.Map;
 public final class DataNodeContainedFixtureRuleBasedSchemaMetaDataBuilder implements RuleBasedSchemaMetaDataBuilder<DataNodeContainedFixtureRule> {
     
     @Override
-    public Map<String, SchemaMetaData> load(final Collection<String> tableNames, final DataNodeContainedFixtureRule rule, final SchemaBuilderMaterials materials) throws SQLException {
+    public Map<String, SchemaMetaData> load(final Collection<String> tableNames, final DataNodeContainedFixtureRule rule, final GenericSchemaBuilderMaterials materials) throws SQLException {
         if (!tableNames.isEmpty() && (tableNames.contains("data_node_routed_table1") || tableNames.contains("data_node_routed_table2"))) {
             Map<String, TableMetaData> tableMetaDataMap = new LinkedHashMap<>();
             for (String tableName : tableNames) {
@@ -45,7 +45,7 @@ public final class DataNodeContainedFixtureRuleBasedSchemaMetaDataBuilder implem
     
     @Override
     public Map<String, SchemaMetaData> decorate(final Map<String, SchemaMetaData> schemaMetaDataMap,
-                                                final DataNodeContainedFixtureRule rule, final SchemaBuilderMaterials materials) throws SQLException {
+                                                final DataNodeContainedFixtureRule rule, final GenericSchemaBuilderMaterials materials) throws SQLException {
         return schemaMetaDataMap;
     }
     

@@ -55,7 +55,7 @@ public final class GenericSchemaBuilder {
                                                           final Collection<ShardingSphereRule> rules, final ConfigurationProperties props) throws SQLException {
         String defaultSchemaName = DatabaseTypeEngine.getDefaultSchemaName(protocolType, databaseName);
         Map<String, SchemaMetaData> schemaMetaDataMap = SchemaMetaDataBuilder.load(
-                getAllTableNames(rules), new SchemaBuilderMaterials(protocolType, storageType, dataSourceMap, rules, props, defaultSchemaName));
+                getAllTableNames(rules), new GenericSchemaBuilderMaterials(protocolType, storageType, dataSourceMap, rules, props, defaultSchemaName));
         if (schemaMetaDataMap.isEmpty()) {
             return Collections.singletonMap(defaultSchemaName, new ShardingSphereSchema());
         }
