@@ -20,7 +20,10 @@ package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor;
 import io.netty.util.DefaultAttributeMap;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,9 +34,10 @@ import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
-public final class ShowProcessListExecutorTest {
+public final class ShowProcessListExecutorTest extends ProxyContextRestorer {
     
     private ShowProcessListExecutor showProcessListExecutor;
     
@@ -41,6 +45,7 @@ public final class ShowProcessListExecutorTest {
     public void setUp() throws NoSuchFieldException, IllegalAccessException {
         showProcessListExecutor = new ShowProcessListExecutor();
         setupBatchProcessContexts();
+        ProxyContext.init(mock(ContextManager.class, RETURNS_DEEP_STUBS));
     }
     
     private void setupBatchProcessContexts() throws NoSuchFieldException, IllegalAccessException {

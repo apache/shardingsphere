@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
 
+import org.apache.shardingsphere.transaction.TransactionHolder;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -37,5 +38,17 @@ public final class RoundRobinReplicaLoadBalanceAlgorithmTest {
         assertThat(roundRobinReplicaLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), is(readDataSourceName1));
         assertThat(roundRobinReplicaLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), is(readDataSourceName2));
         assertThat(roundRobinReplicaLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), is(readDataSourceName1));
+    }
+    
+    @Test
+    public void assertGetDataSourceInTransaction() {
+        String writeDataSourceName = "test_write_ds";
+        String readDataSourceName1 = "test_read_ds_1";
+        String readDataSourceName2 = "test_read_ds_2";
+        RoundRobinReplicaLoadBalanceAlgorithm roundRobinReplicaLoadBalanceAlgorithm = new RoundRobinReplicaLoadBalanceAlgorithm();
+        List<String> readDataSourceNames = Arrays.asList(readDataSourceName1, readDataSourceName2);
+        TransactionHolder.setInTransaction();
+        assertThat(roundRobinReplicaLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), is(writeDataSourceName));
+        TransactionHolder.clear();
     }
 }

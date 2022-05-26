@@ -38,6 +38,8 @@ import java.util.Optional;
 @ToString
 public final class ProjectionsContext {
     
+    private static final String LAST_INSERT_ID_FUNCTION_EXPRESSION = "LAST_INSERT_ID()";
+    
     private final int startIndex;
     
     private final int stopIndex;
@@ -50,6 +52,8 @@ public final class ProjectionsContext {
     
     private final List<Projection> expandProjections;
     
+    private final boolean containsLastInsertIdProjection;
+    
     public ProjectionsContext(final int startIndex, final int stopIndex, final boolean distinctRow, final Collection<Projection> projections) {
         this.startIndex = startIndex;
         this.stopIndex = stopIndex;
@@ -57,6 +61,7 @@ public final class ProjectionsContext {
         this.projections = projections;
         aggregationDistinctProjections = createAggregationDistinctProjections();
         expandProjections = expandProjections();
+        containsLastInsertIdProjection = isContainsLastInsertIdProjection(projections);
     }
     
     private Collection<AggregationDistinctProjection> createAggregationDistinctProjections() {
@@ -144,5 +149,14 @@ public final class ProjectionsContext {
             }
         }
         return result;
+    }
+    
+    private boolean isContainsLastInsertIdProjection(final Collection<Projection> projections) {
+        for (Projection each : projections) {
+            if (LAST_INSERT_ID_FUNCTION_EXPRESSION.equalsIgnoreCase(SQLUtil.getExactlyExpression(each.getExpression()))) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.db.protocol.mysql.codec;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.CompositeByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.apache.shardingsphere.db.protocol.codec.DatabasePacketCodecEngine;
@@ -27,6 +28,8 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 
 import java.nio.charset.Charset;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -34,9 +37,13 @@ import java.util.List;
  */
 public final class MySQLPacketCodecEngine implements DatabasePacketCodecEngine<MySQLPacket> {
     
+    private static final int MAX_PACKET_LENGTH = 0xFFFFFF;
+    
     private static final int PAYLOAD_LENGTH = 3;
     
     private static final int SEQUENCE_LENGTH = 1;
+    
+    private final List<ByteBuf> pendingMessages = new LinkedList<>();
     
     @Override
     public boolean isValidHeader(final int readableBytes) {
@@ -45,13 +52,34 @@ public final class MySQLPacketCodecEngine implements DatabasePacketCodecEngine<M
     
     @Override
     public void decode(final ChannelHandlerContext context, final ByteBuf in, final List<Object> out) {
-        int payloadLength = in.markReaderIndex().readMediumLE();
+        int payloadLength = in.markReaderIndex().readUnsignedMediumLE();
         int remainPayloadLength = SEQUENCE_LENGTH + payloadLength;
         if (in.readableBytes() < remainPayloadLength) {
             in.resetReaderIndex();
             return;
         }
-        out.add(in.readRetainedSlice(SEQUENCE_LENGTH + payloadLength));
+        ByteBuf message = in.readRetainedSlice(SEQUENCE_LENGTH + payloadLength);
+        if (MAX_PACKET_LENGTH == payloadLength) {
+            pendingMessages.add(message);
+        } else if (pendingMessages.isEmpty()) {
+            out.add(message);
+        } else {
+            aggregateMessages(context, message, out);
+        }
+    }
+    
+    private void aggregateMessages(final ChannelHandlerContext context, final ByteBuf lastMessage, final List<Object> out) {
+        CompositeByteBuf result = context.alloc().compositeBuffer(pendingMessages.size() + 1);
+        Iterator<ByteBuf> pendingMessagesIterator = pendingMessages.iterator();
+        result.addComponent(true, pendingMessagesIterator.next());
+        while (pendingMessagesIterator.hasNext()) {
+            result.addComponent(true, pendingMessagesIterator.next().skipBytes(1));
+        }
+        if (lastMessage.readableBytes() > 1) {
+            result.addComponent(true, lastMessage.skipBytes(1));
+        }
+        out.add(result);
+        pendingMessages.clear();
     }
     
     @Override

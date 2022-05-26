@@ -30,8 +30,8 @@ import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.QueryAssistedEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.loader.common.DataTypeLoader;
+import org.apache.shardingsphere.infra.metadata.database.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.common.DataTypeLoader;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
 import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
@@ -285,13 +285,14 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
     }
     
     /**
-     * Judge whether table is support QueryWithCipherColumn or not.
+     * Judge whether column is support QueryWithCipherColumn or not.
      *
-     * @param tableName table name
-     * @return whether table is support QueryWithCipherColumn or not
+     * @param logicTable logic table name
+     * @param logicColumn logic column name
+     * @return whether column is support QueryWithCipherColumn or not
      */
-    public boolean isQueryWithCipherColumn(final String tableName) {
-        return findEncryptTable(tableName).flatMap(EncryptTable::getQueryWithCipherColumn).orElse(queryWithCipherColumn);
+    public boolean isQueryWithCipherColumn(final String logicTable, final String logicColumn) {
+        return findEncryptTable(logicTable).flatMap(encryptTable -> encryptTable.getQueryWithCipherColumn(logicColumn)).orElse(queryWithCipherColumn);
     }
     
     private Optional<String> findOriginColumnName(final String logicTable, final String logicColumn) {

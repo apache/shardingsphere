@@ -35,7 +35,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.update.Update
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
 import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -49,6 +49,8 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
 import java.sql.SQLException;
@@ -93,7 +95,7 @@ public abstract class DatabaseCommunicationEngine<T> {
         metadataRefreshEngine = new MetaDataRefreshEngine(database,
                 ProxyContext.getInstance().getContextManager().getMetaDataContexts().getOptimizerContext().getFederationMetaData().getDatabases().get(databaseName),
                 ProxyContext.getInstance().getContextManager().getMetaDataContexts().getOptimizerContext().getPlannerContexts(),
-                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps());
+                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps());
     }
     
     /**
@@ -156,7 +158,7 @@ public abstract class DatabaseCommunicationEngine<T> {
     protected MergedResult mergeQuery(final SQLStatementContext<?> sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
         DatabaseType databaseType = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getDatabaseMetaData(database.getName()).getResource().getDatabaseType();
         MergeEngine mergeEngine = new MergeEngine(DefaultDatabase.LOGIC_NAME,
-                databaseType, database, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps(), database.getRuleMetaData().getRules());
+                databaseType, database, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps(), database.getRuleMetaData().getRules());
         return mergeEngine.merge(queryResults, sqlStatementContext);
     }
     
@@ -231,9 +233,14 @@ public abstract class DatabaseCommunicationEngine<T> {
     }
     
     private void lockedWrite(final SQLStatement sqlStatement) {
-        if (sqlStatement instanceof SelectStatement) {
-            return;
+        if (sqlStatement instanceof DMLStatement) {
+            if (sqlStatement instanceof SelectStatement) {
+                return;
+            }
+            throw new DatabaseLockedException(backendConnection.getConnectionSession().getDatabaseName());
         }
-        throw new DatabaseLockedException(backendConnection.getConnectionSession().getDatabaseName());
+        if (sqlStatement instanceof DDLStatement) {
+            throw new DatabaseLockedException(backendConnection.getConnectionSession().getDatabaseName());
+        }
     }
 }

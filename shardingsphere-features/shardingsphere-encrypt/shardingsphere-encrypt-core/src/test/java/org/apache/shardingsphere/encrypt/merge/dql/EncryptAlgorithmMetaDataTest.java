@@ -29,8 +29,8 @@ import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementConte
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.ShardingSphereSchema;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -137,8 +137,8 @@ public final class EncryptAlgorithmMetaDataTest {
     
     @Test
     public void assertIsQueryWithCipherColumn() {
-        when(encryptRule.isQueryWithCipherColumn("t_order")).thenReturn(true);
+        when(encryptRule.isQueryWithCipherColumn("t_order", "id")).thenReturn(true);
         EncryptAlgorithmMetaData encryptAlgorithmMetaData = new EncryptAlgorithmMetaData(DefaultDatabase.LOGIC_NAME, database, encryptRule, selectStatementContext);
-        assertTrue(encryptAlgorithmMetaData.isQueryWithCipherColumn("t_order"));
+        assertTrue(encryptAlgorithmMetaData.isQueryWithCipherColumn("t_order", "id"));
     }
 }

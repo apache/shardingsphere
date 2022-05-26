@@ -19,9 +19,10 @@ package org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDLStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -41,9 +42,9 @@ public final class ShardingAlterIndexStatementValidator extends ShardingDDLState
     public void preValidate(final ShardingRule shardingRule,
                             final SQLStatementContext<AlterIndexStatement> sqlStatementContext, final List<Object> parameters, final ShardingSphereDatabase database) {
         Optional<IndexSegment> index = sqlStatementContext.getSqlStatement().getIndex();
-        String defaultSchema = sqlStatementContext.getDatabaseType().getDefaultSchema(database.getName());
+        String defaultSchemaName = DatabaseTypeEngine.getDefaultSchemaName(sqlStatementContext.getDatabaseType(), database.getName());
         ShardingSphereSchema schema = index.flatMap(optional -> optional.getOwner()
-                .map(owner -> database.getSchemas().get(owner.getIdentifier().getValue()))).orElseGet(() -> database.getSchemas().get(defaultSchema));
+                .map(owner -> database.getSchemas().get(owner.getIdentifier().getValue()))).orElseGet(() -> database.getSchemas().get(defaultSchemaName));
         if (index.isPresent() && !isSchemaContainsIndex(schema, index.get())) {
             throw new ShardingSphereException("Index '%s' does not exist.", index.get().getIndexName().getIdentifier().getValue());
         }

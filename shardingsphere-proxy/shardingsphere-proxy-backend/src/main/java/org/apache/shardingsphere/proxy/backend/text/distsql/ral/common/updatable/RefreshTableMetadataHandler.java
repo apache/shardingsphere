@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatabl
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.RefreshTableMetadataStatement;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -44,7 +45,7 @@ public final class RefreshTableMetadataHandler extends UpdatableRALBackendHandle
     @Override
     protected void update(final ContextManager contextManager, final RefreshTableMetadataStatement sqlStatement) throws DistSQLException {
         String databaseName = getDatabaseName();
-        String schemaName = connectionSession.getDatabaseType().getDefaultSchema(databaseName);
+        String schemaName = DatabaseTypeEngine.getDefaultSchemaName(connectionSession.getDatabaseType(), databaseName);
         if (sqlStatement.getResourceName().isPresent()) {
             contextManager.reloadMetaData(databaseName, schemaName, sqlStatement.getTableName().get(), sqlStatement.getResourceName().get());
             return;
@@ -53,7 +54,7 @@ public final class RefreshTableMetadataHandler extends UpdatableRALBackendHandle
             contextManager.reloadMetaData(databaseName, schemaName, sqlStatement.getTableName().get());
             return;
         }
-        contextManager.reloadMetaData(databaseName, schemaName);
+        contextManager.reloadMetaData(databaseName);
     }
     
     private String getDatabaseName() {

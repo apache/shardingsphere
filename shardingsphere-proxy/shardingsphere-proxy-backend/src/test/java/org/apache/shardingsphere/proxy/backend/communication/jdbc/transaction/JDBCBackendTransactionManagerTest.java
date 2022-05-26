@@ -23,6 +23,7 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDB
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
+import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -43,7 +44,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class JDBCBackendTransactionManagerTest {
+public final class JDBCBackendTransactionManagerTest extends ProxyContextRestorer {
     
     @Mock
     private ConnectionSession connectionSession;
@@ -70,14 +71,11 @@ public final class JDBCBackendTransactionManagerTest {
         when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
     private void setTransactionContexts() {
-        Field contextManagerField = ProxyContext.getInstance().getClass().getDeclaredField("contextManager");
-        contextManagerField.setAccessible(true);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         TransactionContexts transactionContexts = mockTransactionContexts();
         when(contextManager.getTransactionContexts()).thenReturn(transactionContexts);
-        contextManagerField.set(ProxyContext.getInstance(), contextManager);
+        ProxyContext.init(contextManager);
     }
     
     private TransactionContexts mockTransactionContexts() {
