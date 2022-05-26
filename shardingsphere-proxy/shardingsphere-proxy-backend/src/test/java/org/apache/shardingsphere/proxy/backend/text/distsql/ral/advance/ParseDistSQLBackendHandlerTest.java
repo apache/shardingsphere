@@ -20,7 +20,6 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.advance;
 import com.google.gson.Gson;
 import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.ParseStatement;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
@@ -58,7 +57,7 @@ public final class ParseDistSQLBackendHandlerTest extends ProxyContextRestorer {
     @Before
     public void setUp() throws SQLException {
         ProxyContext.init(contextManager);
-        when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(SQLParserRule.class)).thenReturn(Optional.of(sqlParserRule));
+        when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(SQLParserRule.class)).thenReturn(Optional.of(sqlParserRule));
     }
     
     @Test
@@ -68,7 +67,7 @@ public final class ParseDistSQLBackendHandlerTest extends ProxyContextRestorer {
         ParseDistSQLBackendHandler parseDistSQLBackendHandler = new ParseDistSQLBackendHandler().init(new HandlerParameter<>(parseStatement, new MySQLDatabaseType(), mock(ConnectionSession.class)));
         parseDistSQLBackendHandler.execute();
         parseDistSQLBackendHandler.next();
-        SQLStatement statement = new ShardingSphereSQLParserEngine("MySQL", sqlParserRule.toParserConfiguration()).parse(sql, false);
+        SQLStatement statement = sqlParserRule.getSQLParserEngine("MySQL").parse(sql, false);
         assertThat(new LinkedList<>(parseDistSQLBackendHandler.getRowData()).getFirst(), is("MySQLSelectStatement"));
         assertThat(new LinkedList<>(parseDistSQLBackendHandler.getRowData()).getLast(), is(new Gson().toJson(statement)));
     }

@@ -22,8 +22,8 @@ import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -81,14 +81,14 @@ public final class CountInstanceRulesTest extends ProxyContextRestorer {
         when(database1.getRuleMetaData()).thenReturn(ruleMetaData);
         when(database2.getRuleMetaData()).thenReturn(ruleMetaData);
         when(contextManager.getMetaDataContexts().getAllDatabaseNames()).thenReturn(Arrays.asList("db_1", "db_2"));
-        when(contextManager.getMetaDataContexts().getDatabaseMetaData("db_1")).thenReturn(database1);
-        when(contextManager.getMetaDataContexts().getDatabaseMetaData("db_2")).thenReturn(database2);
+        when(contextManager.getMetaDataContexts().getDatabase("db_1")).thenReturn(database1);
+        when(contextManager.getMetaDataContexts().getDatabase("db_2")).thenReturn(database2);
         ProxyContext.init(contextManager);
     }
     
     private SingleTableRule mockSingleTableRule() {
         SingleTableRule result = mock(SingleTableRule.class);
-        when(result.export(ExportableConstants.EXPORTABLE_KEY_SINGLE_TABLES)).thenReturn(java.util.Optional.of(Arrays.asList("single_table_1", "single_table_2")));
+        when(result.export(ExportableConstants.EXPORT_SINGLE_TABLES)).thenReturn(java.util.Optional.of(Arrays.asList("single_table_1", "single_table_2")));
         return result;
     }
     

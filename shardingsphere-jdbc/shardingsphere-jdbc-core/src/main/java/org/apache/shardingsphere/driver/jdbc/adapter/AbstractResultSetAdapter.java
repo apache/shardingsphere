@@ -26,7 +26,7 @@ import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePrepar
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationResultSet;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -62,14 +62,14 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
     
     @Override
     public final ResultSetMetaData getMetaData() throws SQLException {
-        return new ShardingSphereResultSetMetaData(resultSets.get(0).getMetaData(), getDatabaseMetaData(), executionContext.getSqlStatementContext());
+        return new ShardingSphereResultSetMetaData(resultSets.get(0).getMetaData(), getDatabase(), executionContext.getSqlStatementContext());
     }
     
-    private ShardingSphereDatabase getDatabaseMetaData() {
+    private ShardingSphereDatabase getDatabase() {
         ShardingSphereConnection connection = statement instanceof ShardingSpherePreparedStatement
                 ? ((ShardingSpherePreparedStatement) statement).getConnection()
                 : ((ShardingSphereStatement) statement).getConnection();
-        return connection.getContextManager().getMetaDataContexts().getDatabaseMetaData(connection.getDatabaseName());
+        return connection.getContextManager().getMetaDataContexts().getDatabase(connection.getDatabaseName());
     }
     
     @Override

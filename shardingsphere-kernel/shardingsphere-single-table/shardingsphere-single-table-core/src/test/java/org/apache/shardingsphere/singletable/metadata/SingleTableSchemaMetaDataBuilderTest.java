@@ -20,12 +20,12 @@ package org.apache.shardingsphere.singletable.metadata;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.schema.builder.RuleBasedSchemaMetaDataBuilderFactory;
-import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
-import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.SchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.builder.spi.RuleBasedSchemaMetaDataBuilderFactory;
+import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterials;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
@@ -116,7 +116,7 @@ public final class SingleTableSchemaMetaDataBuilderTest {
         Collection<ShardingSphereRule> rules = Collections.singletonList(singleTableRule);
         SingleTableSchemaMetaDataBuilder builder = (SingleTableSchemaMetaDataBuilder) RuleBasedSchemaMetaDataBuilderFactory.getInstances(rules).get(singleTableRule);
         Map<String, SchemaMetaData> actual = builder.load(Collections.singleton("tbl"), singleTableRule,
-                new SchemaBuilderMaterials(databaseType, databaseType, Collections.singletonMap("ds", dataSource), rules, new ConfigurationProperties(new Properties()), "sharding_db"));
+                new GenericSchemaBuilderMaterials(databaseType, databaseType, Collections.singletonMap("ds", dataSource), rules, new ConfigurationProperties(new Properties()), "sharding_db"));
         assertFalse(actual.isEmpty());
         assertTrue(actual.containsKey("sharding_db"));
         assertTrue(actual.get("sharding_db").getTables().containsKey("tbl"));
@@ -133,7 +133,7 @@ public final class SingleTableSchemaMetaDataBuilderTest {
         Collection<ShardingSphereRule> rules = Collections.singletonList(singleTableRule);
         final SingleTableSchemaMetaDataBuilder builder = (SingleTableSchemaMetaDataBuilder) RuleBasedSchemaMetaDataBuilderFactory.getInstances(rules).get(singleTableRule);
         Map<String, SchemaMetaData> actual = builder.load(Collections.singleton("tbl"), singleTableRule,
-                new SchemaBuilderMaterials(databaseType, databaseType, Collections.singletonMap("ds", dataSource), rules, new ConfigurationProperties(new Properties()), "sharding_db"));
+                new GenericSchemaBuilderMaterials(databaseType, databaseType, Collections.singletonMap("ds", dataSource), rules, new ConfigurationProperties(new Properties()), "sharding_db"));
         assertFalse(actual.isEmpty());
         assertTrue(actual.containsKey("sharding_db"));
         TableMetaData actualTableMetaData = actual.get("sharding_db").getTables().get("tbl");
@@ -142,7 +142,7 @@ public final class SingleTableSchemaMetaDataBuilderTest {
         assertThat(actualTableMetaData.getColumns().get(actualColumnNames.get(0)), is(new ColumnMetaData("id", 4, true, false, false)));
         assertThat(actualTableMetaData.getColumns().get(actualColumnNames.get(1)), is(new ColumnMetaData("name", 12, false, false, false)));
         assertThat(actualTableMetaData.getColumns().get(actualColumnNames.get(2)), is(new ColumnMetaData("doc", -1, false, false, false)));
-        TableMetaData tableMetaData = builder.decorate(actual, singleTableRule, mock(SchemaBuilderMaterials.class)).get("sharding_db").getTables().get("tbl");
+        TableMetaData tableMetaData = builder.decorate(actual, singleTableRule, mock(GenericSchemaBuilderMaterials.class)).get("sharding_db").getTables().get("tbl");
         actualColumnNames = new ArrayList<>(tableMetaData.getColumns().keySet());
         assertThat(tableMetaData.getColumns().get(actualColumnNames.get(0)), is(new ColumnMetaData("id", 4, true, false, false)));
         assertThat(tableMetaData.getColumns().get(actualColumnNames.get(1)), is(new ColumnMetaData("name", 12, false, false, false)));

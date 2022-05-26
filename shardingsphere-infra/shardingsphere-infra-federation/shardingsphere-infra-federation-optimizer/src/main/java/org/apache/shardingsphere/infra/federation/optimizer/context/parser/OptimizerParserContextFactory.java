@@ -21,8 +21,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.calcite.config.CalciteConnectionProperty;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.federation.optimizer.context.parser.dialect.OptimizerSQLDialectBuilderFactory;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -45,7 +45,7 @@ public final class OptimizerParserContextFactory {
     public static Map<String, OptimizerParserContext> create(final Map<String, ShardingSphereDatabase> databaseMap) {
         Map<String, OptimizerParserContext> result = new HashMap<>();
         for (Entry<String, ShardingSphereDatabase> entry : databaseMap.entrySet()) {
-            DatabaseType databaseType = entry.getValue().getResource().getDatabaseType();
+            DatabaseType databaseType = entry.getValue().getProtocolType();
             result.put(entry.getKey(), new OptimizerParserContext(databaseType, createSQLDialectProperties(databaseType)));
         }
         return result;

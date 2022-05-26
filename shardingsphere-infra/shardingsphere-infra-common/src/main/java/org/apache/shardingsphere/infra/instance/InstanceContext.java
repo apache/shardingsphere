@@ -104,12 +104,18 @@ public final class InstanceContext {
     /**
      * Update instance XA recovery id.
      *
+     * @param instanceId instance id
      * @param xaRecoveryId XA recovery id
+     * @return true if current instance updated, else false                    
      */
-    public void updateXaRecoveryId(final String xaRecoveryId) {
-        if (!Objects.equals(xaRecoveryId, instance.getXaRecoveryId())) {
+    public boolean updateXaRecoveryId(final String instanceId, final String xaRecoveryId) {
+        if (instanceId.equals(instance.getCurrentInstanceId()) && !Objects.equals(xaRecoveryId, instance.getXaRecoveryId())) {
             instance.setXaRecoveryId(xaRecoveryId);
+            computeNodeInstances.stream().filter(each -> each.getInstanceDefinition().getInstanceId().getId().equals(instanceId)).forEach(each -> each.setXaRecoveryId(xaRecoveryId));
+            return true;
         }
+        computeNodeInstances.stream().filter(each -> each.getInstanceDefinition().getInstanceId().getId().equals(instanceId)).forEach(each -> each.setXaRecoveryId(xaRecoveryId));
+        return false;
     }
     
     /**

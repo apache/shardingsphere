@@ -19,12 +19,15 @@ package org.apache.shardingsphere.dbdiscovery.distsql.handler.update;
 
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
+import org.apache.shardingsphere.dbdiscovery.distsql.handler.fixture.ReadwriteSplittingRuleExportableFixture;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.DropDatabaseDiscoveryRuleStatement;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.distsql.exception.rule.RuleInUsedException;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.rule.identifier.type.ExportableRule;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -62,6 +65,15 @@ public final class DropDatabaseDiscoveryRuleStatementUpdaterTest {
     @Test(expected = RequiredRuleMissedException.class)
     public void assertCheckSQLStatementWithoutToBeDroppedRules() throws DistSQLException {
         updater.checkSQLStatement(database, createSQLStatement(), new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap()));
+    }
+    
+    @Test(expected = RuleInUsedException.class)
+    public void assertCheckSQLStatementWithRuleInUsed() throws DistSQLException {
+        when(database.getRuleMetaData()).thenReturn(mock(ShardingSphereRuleMetaData.class, RETURNS_DEEP_STUBS));
+        when(database.getRuleMetaData().findRules(ExportableRule.class)).thenReturn(Collections.singleton(new ReadwriteSplittingRuleExportableFixture()));
+        DatabaseDiscoveryDataSourceRuleConfiguration configuration = new DatabaseDiscoveryDataSourceRuleConfiguration("ha_group", null, null, null);
+        updater.checkSQLStatement(database, createSQLStatement(),
+                new DatabaseDiscoveryRuleConfiguration(Collections.singletonList(configuration), Collections.emptyMap(), Collections.emptyMap()));
     }
     
     @Test

@@ -50,7 +50,7 @@ public class ShowTrafficRulesHandlerTest extends ProxyContextRestorer {
         showTrafficRuleStatement.setRuleName("rule_name_1");
         ShowTrafficRulesHandler handler = new ShowTrafficRulesHandler().initStatement(showTrafficRuleStatement);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findRuleConfigurations(any())).thenReturn(createTrafficRule());
+        when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findRuleConfigurations(any())).thenReturn(createTrafficRule());
         ProxyContext.init(contextManager);
         handler.execute();
         handler.next();

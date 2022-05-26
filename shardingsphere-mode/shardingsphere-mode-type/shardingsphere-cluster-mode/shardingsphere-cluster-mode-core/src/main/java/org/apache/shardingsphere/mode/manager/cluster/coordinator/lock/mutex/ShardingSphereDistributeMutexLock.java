@@ -40,13 +40,10 @@ public final class ShardingSphereDistributeMutexLock implements ShardingSphereLo
     
     private final LockNodeService lockNodeService = LockNodeServiceFactory.getInstance().getLockNodeService(LockNodeType.MUTEX);
     
-    private final MutexLock sequenced;
-    
     private final ShardingSphereInterMutexLockHolder lockHolder;
     
     public ShardingSphereDistributeMutexLock(final ShardingSphereInterMutexLockHolder lockHolder) {
         this.lockHolder = lockHolder;
-        this.sequenced = lockHolder.getInterReentrantMutexLock(lockNodeService.getSequenceNodePath());
         ShardingSphereEventBus.getInstance().register(this);
         syncMutexLockStatus();
     }
@@ -66,17 +63,7 @@ public final class ShardingSphereDistributeMutexLock implements ShardingSphereLo
     }
     
     private boolean innerTryLock(final String lockName, final long timeoutMillis) {
-        if (!sequenced.tryLock(TimeoutMilliseconds.DEFAULT_REGISTRY)) {
-            log.debug("Distribute mutex lock acquire sequenced failed, lock name: {}", lockName);
-            return false;
-        }
-        try {
-            log.debug("Distribute mutex lock acquire sequenced success, lock name: {}", lockName);
-            return lockHolder.getOrCreateInterMutexLock(lockNodeService.generateLocksName(lockName)).tryLock(timeoutMillis);
-        } finally {
-            sequenced.unlock();
-            log.debug("Distribute mutex lock release sequenced success, lock name: {}", lockName);
-        }
+        return lockHolder.getOrCreateInterMutexLock(lockNodeService.generateLocksName(lockName)).tryLock(timeoutMillis);
     }
     
     private Optional<InterMutexLock> getInterMutexLock(final String lockName) {

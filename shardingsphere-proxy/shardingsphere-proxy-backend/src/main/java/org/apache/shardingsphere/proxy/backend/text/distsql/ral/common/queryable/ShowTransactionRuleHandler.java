@@ -52,7 +52,7 @@ public final class ShowTransactionRuleHandler extends QueryableRALBackendHandler
     @Override
     protected Collection<List<Object>> getRows(final ContextManager contextManager) {
         Optional<TransactionRuleConfiguration> ruleConfig = ProxyContext.getInstance().getContextManager()
-                .getMetaDataContexts().getGlobalRuleMetaData().findRuleConfigurations(TransactionRuleConfiguration.class).stream().findAny();
+                .getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findRuleConfigurations(TransactionRuleConfiguration.class).stream().findAny();
         if (!ruleConfig.isPresent()) {
             return Collections.emptyList();
         }

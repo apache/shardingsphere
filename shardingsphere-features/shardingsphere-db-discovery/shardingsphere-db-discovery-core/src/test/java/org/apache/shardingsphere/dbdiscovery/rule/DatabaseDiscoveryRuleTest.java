@@ -77,7 +77,7 @@ public final class DatabaseDiscoveryRuleTest {
     @Test
     public void assertGetExportedMethods() {
         DatabaseDiscoveryRule databaseDiscoveryRule = createRule();
-        assertThat(databaseDiscoveryRule.getExportedMethods().get(ExportableConstants.EXPORTABLE_KEY_PRIMARY_DATA_SOURCE).get(), is(Collections.singletonMap("test_pr", "primary")));
+        assertThat(databaseDiscoveryRule.getExportedMethods().get(ExportableConstants.EXPORT_DB_DISCOVERY_PRIMARY_DATA_SOURCES).get(), is(Collections.singletonMap("test_pr", "primary")));
     }
     
     private DatabaseDiscoveryRule createRule() {
