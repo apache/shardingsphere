@@ -40,7 +40,6 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -74,7 +73,6 @@ public final class DropDatabaseBackendHandlerTest extends ProxyContextRestorer {
         databases.put("other_db", database);
         when(metaDataContexts.getMetaData().getDatabases()).thenReturn(databases);
         when(metaDataContexts.getMetaData().getGlobalRuleMetaData().getRules()).thenReturn(Collections.emptyList());
-        when(metaDataContexts.getDatabase(any()).getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
     }
     
     @Test(expected = DBDropNotExistsException.class)

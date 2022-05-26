@@ -66,7 +66,6 @@ public final class ExportDatabaseConfigurationHandlerTest extends ProxyContextRe
         when(database.getResource().getDataSources()).thenReturn(createDataSourceMap());
         when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.singletonList(createShardingRuleConfiguration()));
         when(contextManager.getMetaDataContexts().getMetaData().getDatabases()).thenReturn(Collections.singletonMap("sharding_db", database));
-        when(contextManager.getMetaDataContexts().getDatabase("sharding_db")).thenReturn(database);
         ProxyContext.init(contextManager);
     }
     

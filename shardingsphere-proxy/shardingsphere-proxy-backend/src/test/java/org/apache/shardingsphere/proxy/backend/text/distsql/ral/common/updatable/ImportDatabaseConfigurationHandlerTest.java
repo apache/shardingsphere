@@ -103,7 +103,7 @@ public final class ImportDatabaseConfigurationHandlerTest extends ProxyContextRe
         shardingRuleConfigurationImportCheckerField.setAccessible(true);
         shardingRuleConfigurationImportCheckerField.set(importDatabaseConfigurationHandler, shardingRuleConfigurationImportChecker);
         assertNotNull(ProxyContext.getInstance().getContextManager().getDataSourceMap(sharding));
-        assertNotNull(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getDatabase(sharding).getRuleMetaData().getConfigurations());
+        assertNotNull(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases().get(sharding).getRuleMetaData().getConfigurations());
         assertThat(importDatabaseConfigurationHandler.execute(), instanceOf(UpdateResponseHeader.class));
     }
     
@@ -114,7 +114,7 @@ public final class ImportDatabaseConfigurationHandlerTest extends ProxyContextRe
         readwriteSplittingRuleConfigurationImportCheckerField.setAccessible(true);
         readwriteSplittingRuleConfigurationImportCheckerField.set(importDatabaseConfigurationHandler, readwriteSplittingRuleConfigurationImportChecker);
         assertNotNull(ProxyContext.getInstance().getContextManager().getDataSourceMap(readwriteSplitting));
-        assertNotNull(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getDatabase(readwriteSplitting).getRuleMetaData().getConfigurations());
+        assertNotNull(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases().get(readwriteSplitting).getRuleMetaData().getConfigurations());
         assertThat(importDatabaseConfigurationHandler.execute(), instanceOf(UpdateResponseHeader.class));
     }
     
@@ -125,7 +125,7 @@ public final class ImportDatabaseConfigurationHandlerTest extends ProxyContextRe
         databaseDiscoveryRuleConfigurationImportCheckerField.setAccessible(true);
         databaseDiscoveryRuleConfigurationImportCheckerField.set(importDatabaseConfigurationHandler, databaseDiscoveryRuleConfigurationImportChecker);
         assertNotNull(ProxyContext.getInstance().getContextManager().getDataSourceMap(databaseDiscovery));
-        assertNotNull(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getDatabase(databaseDiscovery).getRuleMetaData().getConfigurations());
+        assertNotNull(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases().get(databaseDiscovery).getRuleMetaData().getConfigurations());
         assertThat(importDatabaseConfigurationHandler.execute(), instanceOf(UpdateResponseHeader.class));
     }
     
@@ -139,7 +139,6 @@ public final class ImportDatabaseConfigurationHandlerTest extends ProxyContextRe
         when(database.getSchemas().get(DefaultDatabase.LOGIC_NAME)).thenReturn(new ShardingSphereSchema(createTableMap()));
         when(database.getResource().getDataSources()).thenReturn(createDataSourceMap());
         when(contextManager.getMetaDataContexts().getMetaData().getDatabases()).thenReturn(Collections.singletonMap(feature, database));
-        when(contextManager.getMetaDataContexts().getDatabase(feature)).thenReturn(database);
         ProxyContext.init(contextManager);
     }
     

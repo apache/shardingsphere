@@ -74,7 +74,7 @@ public final class ShardingSphereDatabaseMetaDataTest {
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereConnection shardingSphereConnection;
     
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private MetaDataContexts metaDataContexts;
     
     private final Map<String, DataSource> dataSourceMap = new HashMap<>();
@@ -93,7 +93,7 @@ public final class ShardingSphereDatabaseMetaDataTest {
         when(shardingSphereConnection.getContextManager().getDataSourceMap(DefaultDatabase.LOGIC_NAME)).thenReturn(dataSourceMap);
         when(shardingSphereConnection.getDatabaseName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(metaDataContexts.getDatabase(shardingSphereConnection.getDatabaseName())).thenReturn(database);
+        when(metaDataContexts.getMetaData().getDatabases().get(shardingSphereConnection.getDatabaseName())).thenReturn(database);
         CachedDatabaseMetaData cachedDatabaseMetaData = new CachedDatabaseMetaData(databaseMetaData);
         when(shardingSphereConnection.getJdbcContext().getCachedDatabaseMetaData()).thenReturn(cachedDatabaseMetaData);
         ShardingRule shardingRule = mockShardingRule();
