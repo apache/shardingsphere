@@ -45,8 +45,10 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -80,7 +82,10 @@ public final class CountInstanceRulesTest extends ProxyContextRestorer {
         when(ruleMetaData.getConfigurations()).thenReturn(ruleConfigs);
         when(database1.getRuleMetaData()).thenReturn(ruleMetaData);
         when(database2.getRuleMetaData()).thenReturn(ruleMetaData);
-        when(contextManager.getMetaDataContexts().getAllDatabaseNames()).thenReturn(Arrays.asList("db_1", "db_2"));
+        Map<String, ShardingSphereDatabase> databases = new HashMap<>(2, 1);
+        databases.put("db_1", database1);
+        databases.put("db_2", database2);
+        when(contextManager.getMetaDataContexts().getMetaData().getDatabases()).thenReturn(databases);
         when(contextManager.getMetaDataContexts().getDatabase("db_1")).thenReturn(database1);
         when(contextManager.getMetaDataContexts().getDatabase("db_2")).thenReturn(database2);
         ProxyContext.init(contextManager);
@@ -88,7 +93,7 @@ public final class CountInstanceRulesTest extends ProxyContextRestorer {
     
     private SingleTableRule mockSingleTableRule() {
         SingleTableRule result = mock(SingleTableRule.class);
-        when(result.export(ExportableConstants.EXPORTABLE_KEY_SINGLE_TABLES)).thenReturn(java.util.Optional.of(Arrays.asList("single_table_1", "single_table_2")));
+        when(result.export(ExportableConstants.EXPORT_SINGLE_TABLES)).thenReturn(java.util.Optional.of(Arrays.asList("single_table_1", "single_table_2")));
         return result;
     }
     

@@ -31,7 +31,7 @@
         TYPE(NAME=INLINE,PROPERTIES("algorithm-expression"="t_order_item_${order_id % 2}")))
     </create-order-item-sharding-algorithm>
     
-    <create-all-sharding-table-rule>
+    <create-order-with-item-sharding-table-rule>
         CREATE SHARDING TABLE RULE t_order (
         DATANODES("ds_${0..1}.t_order_${0..1}"),
         DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
@@ -43,7 +43,7 @@
         TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=t_order_item_inline),
         KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME=snowflake))
         )
-    </create-all-sharding-table-rule>
+    </create-order-with-item-sharding-table-rule>
     
     <create-order-sharding-table-rule>
         CREATE SHARDING TABLE RULE t_order (

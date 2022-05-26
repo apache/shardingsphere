@@ -15,21 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement.available;
+package org.apache.shardingsphere.infra.distsql.constant;
 
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
-
-import java.util.Optional;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * From schema available.
+ * Exportable item constants.
  */
-public interface FromSchemaAvailable {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public class ExportableItemConstants {
     
-    /**
-     * Get schema.
-     * 
-     * @return schema segment
-     */
-    Optional<SchemaSegment> getSchema();
+    public static final String AUTO_AWARE_DATA_SOURCE_NAME = "auto_aware_data_source_name";
+    
+    public static final String PRIMARY_DATA_SOURCE_NAME = "primary_data_source_name";
+    
+    public static final String REPLICA_DATA_SOURCE_NAMES = "replica_data_source_names";
 }

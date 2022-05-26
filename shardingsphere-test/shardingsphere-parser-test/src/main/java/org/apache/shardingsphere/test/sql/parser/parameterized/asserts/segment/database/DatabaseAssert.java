@@ -15,30 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.distsql;
+package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.database;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.value.IdentifierValueAssert;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.schema.ExpectedSchema;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.schema.ExpectedDatabase;
 
 /**
- * Schema assert.
+ * Database assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SchemaAssert {
+public final class DatabaseAssert {
     
     /**
-     * Assert schema is correct with expected parser result.
+     * Assert actual database segment is correct with expected database.
      *
      * @param assertContext assert context
-     * @param actual actual schema
-     * @param expected expected schema test case
+     * @param actual actual database segment
+     * @param expected expected database
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final SchemaSegment actual, final ExpectedSchema expected) {
-        IdentifierValueAssert.assertIs(assertContext, actual.getIdentifier(), expected, "schema");
+    public static void assertIs(final SQLCaseAssertContext assertContext, final DatabaseSegment actual, final ExpectedDatabase expected) {
+        IdentifierValueAssert.assertIs(assertContext, actual.getIdentifier(), expected, "Database");
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
 }

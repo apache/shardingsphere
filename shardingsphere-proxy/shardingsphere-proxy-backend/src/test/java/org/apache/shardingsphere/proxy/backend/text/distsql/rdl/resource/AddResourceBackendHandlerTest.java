@@ -88,7 +88,7 @@ public final class AddResourceBackendHandlerTest extends ProxyContextRestorer {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
-        when(metaDataContexts.getAllDatabaseNames()).thenReturn(Collections.singleton("test_db"));
+        when(metaDataContexts.getMetaData().getDatabases()).thenReturn(Collections.singletonMap("test_db", database));
         when(metaDataContexts.getDatabase("test_db")).thenReturn(database);
         when(database.getResource()).thenReturn(resource);
         when(resource.getDataSources()).thenReturn(Collections.emptyMap());
@@ -101,7 +101,7 @@ public final class AddResourceBackendHandlerTest extends ProxyContextRestorer {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
-        when(metaDataContexts.getAllDatabaseNames()).thenReturn(Collections.singleton("test_db"));
+        when(metaDataContexts.getMetaData().getDatabases()).thenReturn(Collections.singletonMap("test_db", database));
         when(metaDataContexts.getDatabase("test_db")).thenReturn(database);
         when(database.getResource()).thenReturn(resource);
         when(resource.getDataSources()).thenReturn(Collections.emptyMap());

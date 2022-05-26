@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rql;
 
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.CountSchemaRulesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.CountDatabaseRulesStatement;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
@@ -74,7 +74,7 @@ public final class SchemaRulesCountResultSetTest {
     
     private SingleTableRule mockSingleTableRule() {
         SingleTableRule result = mock(SingleTableRule.class);
-        when(result.export(ExportableConstants.EXPORTABLE_KEY_SINGLE_TABLES)).thenReturn(java.util.Optional.of(Arrays.asList("single_table_1", "single_table_2")));
+        when(result.export(ExportableConstants.EXPORT_SINGLE_TABLES)).thenReturn(java.util.Optional.of(Arrays.asList("single_table_1", "single_table_2")));
         return result;
     }
     
@@ -102,7 +102,7 @@ public final class SchemaRulesCountResultSetTest {
     @Test
     public void assertGetRowData() {
         DistSQLResultSet resultSet = new SchemaRulesCountResultSet();
-        resultSet.init(database, mock(CountSchemaRulesStatement.class));
+        resultSet.init(database, mock(CountDatabaseRulesStatement.class));
         Collection<Object> actual = resultSet.getRowData();
         assertThat(actual.size(), is(2));
         Iterator<Object> rowData = actual.iterator();
@@ -149,7 +149,7 @@ public final class SchemaRulesCountResultSetTest {
     public void assertGetRowDataWithoutConfiguration() {
         DistSQLResultSet resultSet = new SchemaRulesCountResultSet();
         when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
-        resultSet.init(database, mock(CountSchemaRulesStatement.class));
+        resultSet.init(database, mock(CountDatabaseRulesStatement.class));
         Collection<Object> actual = resultSet.getRowData();
         assertThat(actual.size(), is(2));
         Iterator<Object> rowData = actual.iterator();

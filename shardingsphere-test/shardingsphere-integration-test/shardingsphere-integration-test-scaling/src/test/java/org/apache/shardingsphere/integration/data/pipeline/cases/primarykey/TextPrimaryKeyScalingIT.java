@@ -73,9 +73,8 @@ public class TextPrimaryKeyScalingIT extends BaseExtraSQLITCase {
         createOrderSharingTableRule();
         createOrderTable();
         batchInsertOrder();
-        assertOriginalSourceSuccess();
         addTargetResource();
-        getJdbcTemplate().execute(getCommonSQLCommand().getAutoAlterOrderShardingTableRule());
+        executeWithLog(getCommonSQLCommand().getAutoAlterOrderShardingTableRule());
         assertCheckMatchConsistencySuccess();
     }
     

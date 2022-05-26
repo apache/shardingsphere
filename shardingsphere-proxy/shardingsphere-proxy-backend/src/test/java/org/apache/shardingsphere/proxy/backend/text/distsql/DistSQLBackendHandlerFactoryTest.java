@@ -271,7 +271,7 @@ public final class DistSQLBackendHandlerFactoryTest extends ProxyContextRestorer
     
     private MetaDataContexts mockMetaDataContexts() {
         MetaDataContexts result = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
-        when(result.getAllDatabaseNames()).thenReturn(Collections.singletonList("db"));
+        when(result.getMetaData().getDatabases()).thenReturn(Collections.singletonMap("db", mock(ShardingSphereDatabase.class)));
         when(result.getDatabase("db").getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
         when(result.getDatabase("db").getResource().getDataSources()).thenReturn(Collections.emptyMap());
         when(result.getDatabase("db").getResource().getNotExistedResources(any())).thenReturn(Collections.emptyList());

@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.builder;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.fixture.rule.CommonFixtureRule;
 import org.apache.shardingsphere.infra.metadata.database.schema.fixture.rule.DataNodeContainedFixtureRule;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
@@ -49,23 +49,23 @@ public final class SchemaMetaDataBuilderTest {
     
     @Test
     public void assertLoadWithExistedTableName() throws SQLException {
-        GenericSchemaBuilderMaterials materials = new GenericSchemaBuilderMaterials(databaseType, databaseType, Collections.singletonMap("logic_db", new MockedDataSource()),
-                Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule()), new ConfigurationProperties(new Properties()), "sharding_db");
-        assertFalse(SchemaMetaDataBuilder.load(Collections.singletonList("data_node_routed_table1"), materials).isEmpty());
+        GenericSchemaBuilderMaterials materials = new GenericSchemaBuilderMaterials(databaseType, databaseType, Collections.singletonMap(DefaultDatabase.LOGIC_NAME, new MockedDataSource()),
+                Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule()), new ConfigurationProperties(new Properties()), DefaultDatabase.LOGIC_NAME);
+        assertFalse(GenericSchemaBuilder.build(Collections.singletonList("data_node_routed_table1"), materials).get(DefaultDatabase.LOGIC_NAME).getTables().isEmpty());
     }
     
     @Test
     public void assertLoadWithNotExistedTableName() throws SQLException {
-        GenericSchemaBuilderMaterials materials = new GenericSchemaBuilderMaterials(databaseType, databaseType, Collections.singletonMap("logic_db", new MockedDataSource()),
-                Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule()), new ConfigurationProperties(new Properties()), "sharding_db");
-        assertTrue(SchemaMetaDataBuilder.load(Collections.singletonList("invalid_table"), materials).isEmpty());
+        GenericSchemaBuilderMaterials materials = new GenericSchemaBuilderMaterials(databaseType, databaseType, Collections.singletonMap(DefaultDatabase.LOGIC_NAME, new MockedDataSource()),
+                Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule()), new ConfigurationProperties(new Properties()), DefaultDatabase.LOGIC_NAME);
+        assertTrue(GenericSchemaBuilder.build(Collections.singletonList("invalid_table"), materials).get(DefaultDatabase.LOGIC_NAME).getTables().isEmpty());
     }
     
     @Test
     public void assertLoadAllTables() throws SQLException {
-        GenericSchemaBuilderMaterials materials = new GenericSchemaBuilderMaterials(databaseType, databaseType, Collections.singletonMap("logic_db", new MockedDataSource()),
-                Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule()), new ConfigurationProperties(new Properties()), "sharding_db");
-        Map<String, SchemaMetaData> actual = SchemaMetaDataBuilder.load(new DataNodeContainedFixtureRule().getTables(), materials);
+        GenericSchemaBuilderMaterials materials = new GenericSchemaBuilderMaterials(databaseType, databaseType, Collections.singletonMap(DefaultDatabase.LOGIC_NAME, new MockedDataSource()),
+                Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule()), new ConfigurationProperties(new Properties()), DefaultDatabase.LOGIC_NAME);
+        Map<String, ShardingSphereSchema> actual = GenericSchemaBuilder.build(new DataNodeContainedFixtureRule().getTables(), materials);
         assertThat(actual.size(), is(1));
         assertTables(new ShardingSphereSchema(actual.values().iterator().next().getTables()).getTables());
     }

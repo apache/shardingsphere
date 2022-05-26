@@ -19,33 +19,33 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.CountSchemaRulesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.CountDatabaseRulesStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.schema.SchemaAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.database.DatabaseAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.CountSchemaRulesStatementTestCase;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Count schema rules statement assert.
+ * Count database rules statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class CountSchemaRulesStatementAssert {
+public final class CountDatabaseRulesStatementAssert {
     
     /**
-     * Assert count schema rules statement is correct with expected parser result.
+     * Assert count database rules statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual count schema rules statement
-     * @param expected expected count schema rules statement test case
+     * @param actual actual count database rules statement
+     * @param expected expected count database rules statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final CountSchemaRulesStatement actual, final CountSchemaRulesStatementTestCase expected) {
-        if (null != expected.getSchema()) {
-            assertTrue(assertContext.getText("Actual schema should exist."), actual.getSchema().isPresent());
-            SchemaAssert.assertIs(assertContext, actual.getSchema().get(), expected.getSchema());
+    public static void assertIs(final SQLCaseAssertContext assertContext, final CountDatabaseRulesStatement actual, final CountSchemaRulesStatementTestCase expected) {
+        if (null != expected.getDatabase()) {
+            assertTrue(assertContext.getText("Actual database should exist."), actual.getDatabase().isPresent());
+            DatabaseAssert.assertIs(assertContext, actual.getDatabase().get(), expected.getDatabase());
         } else {
-            assertFalse(assertContext.getText("Actual schema should not exist."), actual.getSchema().isPresent());
+            assertFalse(assertContext.getText("Actual database should not exist."), actual.getDatabase().isPresent());
         }
     }
 }

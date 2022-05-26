@@ -37,7 +37,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class SchemaMetaDataLoaderTest {
+public final class SchemaTableNamesLoaderTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private DataSource dataSource;
@@ -59,7 +59,7 @@ public final class SchemaMetaDataLoaderTest {
     
     @Test
     public void assertLoadSchemaTableNames() throws SQLException {
-        assertThat(SchemaMetaDataLoader.loadSchemaTableNames(DefaultDatabase.LOGIC_NAME,
+        assertThat(SchemaTableNamesLoader.loadSchemaTableNames(DefaultDatabase.LOGIC_NAME,
                 new PostgreSQLDatabaseType(), dataSource), is(Collections.singletonMap("public", Collections.singletonList("tbl"))));
     }
 }

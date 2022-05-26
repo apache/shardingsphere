@@ -15,24 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.rql.show;
+package org.apache.shardingsphere.readwritesplitting.distsql.handler.fixture;
 
-import lombok.Getter;
-import org.apache.shardingsphere.distsql.parser.subject.DistSQLSubjectTypeEnum;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
+import org.apache.shardingsphere.infra.rule.identifier.type.ExportableRule;
 
-/**
- * Count schema rules statement.
- */
-@Getter
-public final class CountSchemaRulesStatement extends ShowRulesStatement {
+import java.util.Collections;
+import java.util.Map;
+import java.util.function.Supplier;
+
+public final class DatabaseDiscoveryRuleExportableFixture implements ExportableRule {
     
-    public CountSchemaRulesStatement(final SchemaSegment schema) {
-        super(schema);
+    @Override
+    public String getType() {
+        return null;
     }
     
     @Override
-    public DistSQLSubjectTypeEnum getSubjectType() {
-        return DistSQLSubjectTypeEnum.DEFAULT;
+    public Map<String, Supplier<Object>> getExportedMethods() {
+        return Collections.singletonMap(ExportableConstants.EXPORT_DB_DISCOVERY_PRIMARY_DATA_SOURCES, this::exportedMethod);
+    }
+    
+    private Map<String, String> exportedMethod() {
+        return Collections.singletonMap("ms_group", "ds_0");
     }
 }

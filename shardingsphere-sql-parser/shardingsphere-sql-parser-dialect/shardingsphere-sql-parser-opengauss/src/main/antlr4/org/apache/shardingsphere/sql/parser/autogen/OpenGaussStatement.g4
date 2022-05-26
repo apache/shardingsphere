@@ -125,5 +125,6 @@ execute
     | fetch
     | createDirectory
     | alterDirectory
+    | dropDirectory
     ) SEMI_? EOF
     ;

@@ -15,16 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.schema;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedIdentifierSQLSegment;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDirectoryStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 
 /**
- * Expected schema.
+ * OpenGauss drop directory statement.
  */
-@Getter
-@Setter
-public final class ExpectedSchema extends AbstractExpectedIdentifierSQLSegment {
+@ToString
+public final class OpenGaussDropDirectoryStatement extends DropDirectoryStatement implements OpenGaussStatement {
 }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shadow.distsql.parser.statement;
 import lombok.Getter;
 import org.apache.shardingsphere.distsql.parser.subject.impl.ShadowSubjectSupplier;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 
 /**
  * Show shadow algorithms statement.
@@ -28,7 +28,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSeg
 @Getter
 public final class ShowShadowAlgorithmsStatement extends ShowRulesStatement implements ShadowSubjectSupplier {
     
-    public ShowShadowAlgorithmsStatement(final SchemaSegment schema) {
-        super(schema);
+    public ShowShadowAlgorithmsStatement(final DatabaseSegment database) {
+        super(database);
     }
 }

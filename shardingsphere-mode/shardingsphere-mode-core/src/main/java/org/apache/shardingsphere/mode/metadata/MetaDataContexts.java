@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Optional;
@@ -55,15 +54,6 @@ public final class MetaDataContexts implements AutoCloseable {
      */
     public Optional<MetaDataPersistService> getPersistService() {
         return Optional.ofNullable(persistService);
-    }
-    
-    /**
-     * Get all database names.
-     *
-     * @return all database names
-     */
-    public Collection<String> getAllDatabaseNames() {
-        return metaData.getDatabases().keySet();
     }
     
     /**
