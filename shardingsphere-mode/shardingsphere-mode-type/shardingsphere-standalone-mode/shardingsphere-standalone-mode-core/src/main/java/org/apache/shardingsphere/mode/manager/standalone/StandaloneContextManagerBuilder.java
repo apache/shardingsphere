@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.infra.rule.identifier.type.InstanceAwareRule;
@@ -56,7 +57,7 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
         MetaDataPersistService metaDataPersistService = new MetaDataPersistService(StandalonePersistRepositoryFactory.getInstance(parameter.getModeConfig().getRepository()));
         persistConfigurations(metaDataPersistService, parameter);
         MetaDataContexts metaDataContexts = createMetaDataContextsBuilder(metaDataPersistService, parameter).build(metaDataPersistService);
-        return createContextManager(metaDataPersistService, parameter, metaDataContexts);
+        return createContextManager(parameter, metaDataContexts);
     }
     
     private void persistConfigurations(final MetaDataPersistService metaDataPersistService, final ContextManagerBuilderParameter parameter) {
@@ -89,9 +90,9 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
         return new DataSourceProvidedDatabaseConfiguration(dataSources, databaseRuleConfigs);
     }
     
-    private ContextManager createContextManager(final MetaDataPersistService metaDataPersistService, final ContextManagerBuilderParameter parameter, final MetaDataContexts metaDataContexts) {
-        InstanceContext instanceContext = new InstanceContext(metaDataPersistService.getComputeNodePersistService().loadComputeNodeInstance(parameter.getInstanceDefinition()),
-                new StandaloneWorkerIdGenerator(), parameter.getModeConfig(), new StandaloneLockContext());
+    private ContextManager createContextManager(final ContextManagerBuilderParameter parameter, final MetaDataContexts metaDataContexts) {
+        InstanceContext instanceContext = new InstanceContext(new ComputeNodeInstance(parameter.getInstanceDefinition()), new StandaloneWorkerIdGenerator(), parameter.getModeConfig(),
+                new StandaloneLockContext());
         generateTransactionConfigurationFile(instanceContext, metaDataContexts);
         TransactionContexts transactionContexts = new TransactionContextsBuilder(
                 metaDataContexts.getMetaData().getDatabases(), metaDataContexts.getMetaData().getGlobalRuleMetaData().getRules()).build();
