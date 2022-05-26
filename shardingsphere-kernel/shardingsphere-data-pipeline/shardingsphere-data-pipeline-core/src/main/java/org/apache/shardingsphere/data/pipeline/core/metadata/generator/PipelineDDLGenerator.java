@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.metadata.generator;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
@@ -60,6 +61,7 @@ import java.util.TreeMap;
  * Pipeline ddl generator.
  */
 @RequiredArgsConstructor
+@Slf4j
 public final class PipelineDDLGenerator {
     
     private static final String DELIMITER = ";";
@@ -80,6 +82,8 @@ public final class PipelineDDLGenerator {
     @SneakyThrows
     public String generateLogicDDLSQL(final DatabaseType databaseType, final String databaseName, final String schemaName, final String tableName) {
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getDatabaseMetaData(databaseName);
+        log.info("generateLogicDDLSQL, databaseType={}, databaseName={}, schemaName={}, tableName={}, dataSourceNames={}",
+                databaseType.getType(), databaseName, schemaName, tableName, database.getResource().getDataSources().keySet());
         String sql = generateActualDDLSQL(databaseType, schemaName, tableName, database);
         StringBuilder result = new StringBuilder();
         for (String each : sql.split(DELIMITER)) {
