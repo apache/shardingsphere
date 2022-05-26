@@ -63,17 +63,17 @@ public final class MetaDataContexts implements AutoCloseable {
      * @return all database names
      */
     public Collection<String> getAllDatabaseNames() {
-        return metaData.getAllDatabaseNames();
+        return metaData.getDatabases().keySet();
     }
     
     /**
-     * Get database meta data.
+     * Get database.
      *
      * @param databaseName database name
-     * @return database meta data
+     * @return database
      */
-    public ShardingSphereDatabase getDatabaseMetaData(final String databaseName) {
-        return metaData.getDatabase(databaseName);
+    public ShardingSphereDatabase getDatabase(final String databaseName) {
+        return metaData.getDatabases().get(databaseName);
     }
     
     @Override

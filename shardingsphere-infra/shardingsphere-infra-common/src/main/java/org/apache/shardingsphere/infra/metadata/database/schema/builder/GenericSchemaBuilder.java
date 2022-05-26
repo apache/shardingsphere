@@ -15,15 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.schema.loader;
+package org.apache.shardingsphere.infra.metadata.database.schema.builder;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.metadata.database.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.database.schema.builder.SchemaBuilderMaterials;
-import org.apache.shardingsphere.infra.metadata.database.schema.builder.SchemaMetaDataBuilder;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 
@@ -37,12 +35,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
- * Schema loader.
+ * Generic schema builder.
  */
-public final class SchemaLoader {
+public final class GenericSchemaBuilder {
     
     /**
-     * Load schema.
+     * Build generic schema.
      *
      * @param databaseName database name
      * @param protocolType protocol type
@@ -50,11 +48,11 @@ public final class SchemaLoader {
      * @param dataSourceMap data source map
      * @param rules rules
      * @param props configuration properties
-     * @return loaded schema
+     * @return generic schema map
      * @throws SQLException SQL exception
      */
-    public static Map<String, ShardingSphereSchema> load(final String databaseName, final DatabaseType protocolType, final DatabaseType storageType, final Map<String, DataSource> dataSourceMap,
-                                                         final Collection<ShardingSphereRule> rules, final ConfigurationProperties props) throws SQLException {
+    public static Map<String, ShardingSphereSchema> build(final String databaseName, final DatabaseType protocolType, final DatabaseType storageType, final Map<String, DataSource> dataSourceMap,
+                                                          final Collection<ShardingSphereRule> rules, final ConfigurationProperties props) throws SQLException {
         String defaultSchemaName = DatabaseTypeEngine.getDefaultSchemaName(protocolType, databaseName);
         Map<String, SchemaMetaData> schemaMetaDataMap = SchemaMetaDataBuilder.load(
                 getAllTableNames(rules), new SchemaBuilderMaterials(protocolType, storageType, dataSourceMap, rules, props, defaultSchemaName));

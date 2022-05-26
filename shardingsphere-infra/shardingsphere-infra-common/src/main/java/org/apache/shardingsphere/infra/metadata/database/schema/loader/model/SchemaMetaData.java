@@ -15,23 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.schema.model;
+package org.apache.shardingsphere.infra.metadata.database.schema.loader.model;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
+import java.util.Map;
+
 /**
- * Constraint meta data.
+ * Schema meta data.
  */
 @RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
 @ToString
-public final class ConstraintMetaData {
+public final class SchemaMetaData {
     
     private final String name;
     
-    private final String referencedTableName;
+    private final Map<String, TableMetaData> tables;
 }

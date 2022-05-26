@@ -148,8 +148,8 @@ public final class DatabaseOperateBackendHandlerFactoryTest extends ProxyContext
     
     private MetaDataContexts mockMetaDataContexts() {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        when(metaDataContexts.getDatabaseMetaData("db").getResource().getDataSources()).thenReturn(Collections.emptyMap());
-        when(metaDataContexts.getDatabaseMetaData("db").getResource().getNotExistedResources(any())).thenReturn(Collections.emptyList());
+        when(metaDataContexts.getDatabase("db").getResource().getDataSources()).thenReturn(Collections.emptyMap());
+        when(metaDataContexts.getDatabase("db").getResource().getNotExistedResources(any())).thenReturn(Collections.emptyList());
         return metaDataContexts;
     }
     

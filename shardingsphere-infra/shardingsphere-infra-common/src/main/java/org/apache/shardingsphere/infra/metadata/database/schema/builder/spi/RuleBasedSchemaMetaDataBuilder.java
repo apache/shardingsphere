@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.builder.spi;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.SchemaBuilderMaterials;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.spi.type.ordered.OrderedSPI;

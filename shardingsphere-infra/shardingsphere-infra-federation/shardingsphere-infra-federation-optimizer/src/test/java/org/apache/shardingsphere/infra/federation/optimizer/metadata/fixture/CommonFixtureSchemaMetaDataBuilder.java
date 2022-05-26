@@ -19,8 +19,8 @@ package org.apache.shardingsphere.infra.federation.optimizer.metadata.fixture;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.spi.RuleBasedSchemaMetaDataBuilder;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.SchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
 
 import java.sql.SQLException;
 import java.util.Collection;

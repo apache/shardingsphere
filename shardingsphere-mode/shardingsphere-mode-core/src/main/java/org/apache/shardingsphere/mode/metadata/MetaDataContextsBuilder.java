@@ -75,7 +75,7 @@ public final class MetaDataContextsBuilder {
         Map<String, ShardingSphereDatabase> result = new HashMap<>(databaseConfigMap.size(), 1);
         for (Entry<String, DatabaseConfiguration> entry : databaseConfigMap.entrySet()) {
             String databaseName = entry.getKey();
-            if (!protocolType.getSystemSchemas().contains(databaseName)) {
+            if (!entry.getValue().getDataSources().isEmpty() || !protocolType.getSystemSchemas().contains(databaseName)) {
                 result.put(databaseName, ShardingSphereDatabase.create(databaseName, protocolType, storageType, entry.getValue(), props));
             }
         }
@@ -85,7 +85,9 @@ public final class MetaDataContextsBuilder {
     private Map<String, ShardingSphereDatabase> getSystemDatabaseMap(final DatabaseType protocolType) throws SQLException {
         Map<String, ShardingSphereDatabase> result = new HashMap<>(protocolType.getSystemDatabaseSchemaMap().size(), 1);
         for (String each : protocolType.getSystemDatabaseSchemaMap().keySet()) {
-            result.put(each, ShardingSphereDatabase.create(each, protocolType));
+            if (!databaseConfigMap.containsKey(each)) {
+                result.put(each, ShardingSphereDatabase.create(each, protocolType));
+            }
         }
         return result;
     }
