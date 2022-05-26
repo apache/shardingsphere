@@ -26,13 +26,21 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingV
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
 
-import java.time.*;
+import java.time.ZoneId;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAccessor;
 import java.time.temporal.TemporalQueries;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Properties;
+import java.util.Set;
+import java.util.Date;
 import java.util.stream.Collectors;
 
 /**
@@ -127,7 +135,7 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Comparable<?>> shardingValue) {
         return doSharding(availableTargetNames, shardingValue.getValueRange());
     }
-
+    
     private Collection<String> doSharding(final Collection<String> availableTargetNames, final Range<Comparable<?>> range) {
         TemporalAccessor calculateTime = dateTimeLower;
         LocalDate queryToLocalDate = calculateTime.query(TemporalQueries.localDate());
@@ -140,8 +148,8 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
         }
         return doShardingInLocalDateTime(availableTargetNames, range, calculateTime);
     }
-
-    private Collection<String> doShardingInLocalDateTime(Collection<String> availableTargetNames, Range<Comparable<?>> range, TemporalAccessor calculateTime) {
+    
+    private Collection<String> doShardingInLocalDateTime(final Collection<String> availableTargetNames, final Range<Comparable<?>> range, final TemporalAccessor calculateTime) {
         Set<String> result = new HashSet<>();
         LocalDateTime calculateTimeAsView = LocalDateTime.from(calculateTime);
         LocalDateTime dateTimeUpperAsLocalDateTime = LocalDateTime.from(dateTimeUpper);
@@ -154,8 +162,8 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
         }
         return result;
     }
-
-    private Collection<String> doShardingInLocalTime(Collection<String> availableTargetNames, Range<Comparable<?>> range, TemporalAccessor calculateTime) {
+    
+    private Collection<String> doShardingInLocalTime(final Collection<String> availableTargetNames, final Range<Comparable<?>> range, final TemporalAccessor calculateTime) {
         Set<String> result = new HashSet<>();
         LocalTime dateTimeUpperAsLocalTime = dateTimeUpper.query(TemporalQueries.localTime());
         LocalTime dateTimeLowerAsLocalTime = dateTimeLower.query(TemporalQueries.localTime());
@@ -168,8 +176,8 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
         }
         return result;
     }
-
-    private Collection<String> doShardingInLocalDate(Collection<String> availableTargetNames, Range<Comparable<?>> range, TemporalAccessor calculateTime) {
+    
+    private Collection<String> doShardingInLocalDate(final Collection<String> availableTargetNames, final Range<Comparable<?>> range, final TemporalAccessor calculateTime) {
         Set<String> result = new HashSet<>();
         LocalDate dateTimeUpperAsLocalDate = dateTimeUpper.query(TemporalQueries.localDate());
         LocalDate dateTimeLowerAsLocalDate = dateTimeLower.query(TemporalQueries.localDate());
@@ -182,7 +190,7 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
         }
         return result;
     }
-
+    
     private boolean hasIntersection(final Range<LocalDateTime> calculateRange, final Range<Comparable<?>> range, final LocalDateTime dateTimeLower, final LocalDateTime dateTimeUpper) {
         LocalDateTime lower = range.hasLowerBound() ? parseLocalDateTime(range.lowerEndpoint()) : dateTimeLower;
         LocalDateTime upper = range.hasUpperBound() ? parseLocalDateTime(range.upperEndpoint()) : dateTimeUpper;
