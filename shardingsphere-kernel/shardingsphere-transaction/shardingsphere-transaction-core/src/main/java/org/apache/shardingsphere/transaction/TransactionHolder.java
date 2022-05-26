@@ -30,6 +30,8 @@ public final class TransactionHolder {
     
     private static final ThreadLocal<Boolean> TRANSACTION = ThreadLocal.withInitial(() -> false);
     
+    private static final ThreadLocal<String> READ_WRITE_SPLIT_REPLICA_ROUTE_HOLDER = new ThreadLocal<>();
+    
     /**
      * Judge is transaction in current thread.
      * 
@@ -47,9 +49,28 @@ public final class TransactionHolder {
     }
     
     /**
+     * Get read write split routed replica.
+     *
+     * @return routed replica.
+     */
+    public static String getReadWriteSplitRoutedReplica() {
+        return READ_WRITE_SPLIT_REPLICA_ROUTE_HOLDER.get();
+    }
+    
+    /**
+     * Set read write split routed replica.
+     *
+     * @param replica routed replica.
+     */
+    public static void setReadWriteSplitRoutedReplica(final String replica) {
+        READ_WRITE_SPLIT_REPLICA_ROUTE_HOLDER.set(replica);
+    }
+    
+    /**
      * Clear transaction.
      */
     public static void clear() {
         TRANSACTION.remove();
+        READ_WRITE_SPLIT_REPLICA_ROUTE_HOLDER.remove();
     }
 }

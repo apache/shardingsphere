@@ -53,7 +53,7 @@ public final class UseDatabaseExecutor implements DatabaseAdminExecutor {
         Collection<ShardingSphereRule> result = new LinkedList<>();
         Optional.ofNullable(
                 ProxyContext.getInstance().getContextManager().getMetaDataContexts().getDatabaseMetaData(schemaName)).ifPresent(optional -> result.addAll(optional.getRuleMetaData().getRules()));
-        result.addAll(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData().getRules());
+        result.addAll(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules());
         return result;
     }
 }

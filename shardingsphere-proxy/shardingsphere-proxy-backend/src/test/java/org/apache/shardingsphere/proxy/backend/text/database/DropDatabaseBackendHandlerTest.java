@@ -66,7 +66,7 @@ public final class DropDatabaseBackendHandlerTest extends ProxyContextRestorer {
         ProxyContext.init(contextManager);
         handler = new DropDatabaseBackendHandler(sqlStatement, connectionSession);
         when(metaDataContexts.getAllDatabaseNames()).thenReturn(Arrays.asList("test_db", "other_db"));
-        when(metaDataContexts.getGlobalRuleMetaData().getRules()).thenReturn(Collections.emptyList());
+        when(metaDataContexts.getMetaData().getGlobalRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         when(metaDataContexts.getDatabaseMetaData(any()).getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
     }
     
