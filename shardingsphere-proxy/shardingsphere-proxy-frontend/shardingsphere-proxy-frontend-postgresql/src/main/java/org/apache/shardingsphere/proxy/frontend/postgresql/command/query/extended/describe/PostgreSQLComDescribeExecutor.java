@@ -197,7 +197,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         String databaseName = connectionSession.getDatabaseName();
         SQLStatementContext<?> sqlStatementContext =
-                SQLStatementContextFactory.newInstance(metaDataContexts.getMetaData().getDatabaseMap(), preparedStatement.getSqlStatement(), databaseName);
+                SQLStatementContextFactory.newInstance(metaDataContexts.getMetaData().getDatabases(), preparedStatement.getSqlStatement(), databaseName);
         LogicSQL logicSQL = new LogicSQL(sqlStatementContext, preparedStatement.getSql(), Collections.emptyList());
         ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(databaseName);
         ExecutionContext executionContext = new KernelProcessor().generateExecutionContext(logicSQL, database, metaDataContexts.getMetaData().getProps());

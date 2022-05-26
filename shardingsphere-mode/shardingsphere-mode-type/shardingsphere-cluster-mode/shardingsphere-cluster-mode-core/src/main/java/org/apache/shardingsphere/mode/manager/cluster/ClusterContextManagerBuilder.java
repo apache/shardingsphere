@@ -106,7 +106,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         if (!databaseName.isPresent() || !fileGenerator.isPresent()) {
             return transactionRule.isPresent() ? transactionRule.get().getProps() : new Properties();
         }
-        ShardingSphereDatabase database = metaDataContexts.getDatabaseMetaData(databaseName.get());
+        ShardingSphereDatabase database = metaDataContexts.getDatabase(databaseName.get());
         Properties result = fileGenerator.get().getTransactionProps(transactionRule.get().getProps(),
                 new DataSourceProvidedDatabaseConfiguration(database.getResource().getDataSources(), database.getRuleMetaData().getConfigurations()), getType());
         Optional<TransactionRuleConfiguration> transactionRuleConfig = metaDataContexts.getMetaData().getGlobalRuleMetaData().findSingleRuleConfiguration(TransactionRuleConfiguration.class);
@@ -143,7 +143,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     }
     
     private void persistMetaData(final MetaDataContexts metaDataContexts) {
-        metaDataContexts.getMetaData().getDatabaseMap().forEach((databaseName, schemas) -> schemas.getSchemas()
+        metaDataContexts.getMetaData().getDatabases().forEach((databaseName, schemas) -> schemas.getSchemas()
                 .forEach((schemaName, tables) -> metaDataContexts.getPersistService().ifPresent(optional -> optional.getSchemaMetaDataService().persistMetaData(databaseName, schemaName, tables))));
     }
     
@@ -157,7 +157,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         repository.watchSessionConnection(instanceContext);
         generateTransactionConfigurationFile(instanceContext, metaDataContexts, transactionProps);
         TransactionContexts transactionContexts = new TransactionContextsBuilder(
-                metaDataContexts.getMetaData().getDatabaseMap(), metaDataContexts.getMetaData().getGlobalRuleMetaData().getRules()).build();
+                metaDataContexts.getMetaData().getDatabases(), metaDataContexts.getMetaData().getGlobalRuleMetaData().getRules()).build();
         return new ContextManager(metaDataContexts, transactionContexts, instanceContext);
     }
     

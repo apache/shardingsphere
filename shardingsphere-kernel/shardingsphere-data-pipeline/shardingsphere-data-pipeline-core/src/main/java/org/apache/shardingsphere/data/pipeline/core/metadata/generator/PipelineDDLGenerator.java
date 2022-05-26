@@ -79,7 +79,7 @@ public final class PipelineDDLGenerator {
      */
     @SneakyThrows
     public String generateLogicDDLSQL(final DatabaseType databaseType, final String databaseName, final String schemaName, final String tableName) {
-        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getDatabaseMetaData(databaseName);
+        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getDatabase(databaseName);
         String sql = generateActualDDLSQL(databaseType, schemaName, tableName, database);
         StringBuilder result = new StringBuilder();
         for (String each : sql.split(DELIMITER)) {
@@ -213,7 +213,7 @@ public final class PipelineDDLGenerator {
         Optional<SQLParserRule> sqlParserRule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(SQLParserRule.class);
         Preconditions.checkState(sqlParserRule.isPresent());
         SQLStatement sqlStatement = new ShardingSphereSQLParserEngine(databaseType.getType(), sqlParserRule.get().toParserConfiguration()).parse(sql, false);
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(contextManager.getMetaDataContexts().getMetaData().getDatabaseMap(),
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(contextManager.getMetaDataContexts().getMetaData().getDatabases(),
                 sqlStatement, databaseName);
         return new LogicSQL(sqlStatementContext, sql, Collections.emptyList());
     }

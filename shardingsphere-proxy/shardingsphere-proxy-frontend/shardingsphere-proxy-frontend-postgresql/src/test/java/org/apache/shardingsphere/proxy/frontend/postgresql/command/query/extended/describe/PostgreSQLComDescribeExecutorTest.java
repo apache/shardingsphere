@@ -111,7 +111,7 @@ public final class PostgreSQLComDescribeExecutorTest extends ProxyContextRestore
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
         when(connectionSession.getDatabaseName()).thenReturn(DATABASE_NAME);
         when(mockContextManager.getMetaDataContexts().getAllDatabaseNames().contains(DATABASE_NAME)).thenReturn(true);
-        when(mockContextManager.getMetaDataContexts().getDatabaseMetaData(any(String.class)).getRuleMetaData().findSingleRule(SQLTranslatorRule.class))
+        when(mockContextManager.getMetaDataContexts().getDatabase(any(String.class)).getRuleMetaData().findSingleRule(SQLTranslatorRule.class))
                 .thenReturn(Optional.of(new SQLTranslatorRule(new SQLTranslatorRuleConfiguration())));
         prepareTableMetaData();
     }
@@ -123,8 +123,8 @@ public final class PostgreSQLComDescribeExecutorTest extends ProxyContextRestore
                 new ColumnMetaData("c", Types.CHAR, true, false, false),
                 new ColumnMetaData("pad", Types.CHAR, true, false, false));
         TableMetaData tableMetaData = new TableMetaData(TABLE_NAME, columnMetaData, Collections.emptyList(), Collections.emptyList());
-        when(mockContextManager.getMetaDataContexts().getDatabaseMetaData(DATABASE_NAME).getSchemas().get("public").get(TABLE_NAME)).thenReturn(tableMetaData);
-        when(mockContextManager.getMetaDataContexts().getDatabaseMetaData(DATABASE_NAME).getResource().getDatabaseType()).thenReturn(new PostgreSQLDatabaseType());
+        when(mockContextManager.getMetaDataContexts().getDatabase(DATABASE_NAME).getSchemas().get("public").get(TABLE_NAME)).thenReturn(tableMetaData);
+        when(mockContextManager.getMetaDataContexts().getDatabase(DATABASE_NAME).getResource().getDatabaseType()).thenReturn(new PostgreSQLDatabaseType());
     }
     
     @Test
