@@ -36,7 +36,7 @@ import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfi
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.junit.Before;
 import org.junit.Test;
@@ -131,7 +131,7 @@ public final class ExportDatabaseConfigurationHandlerTest extends ProxyContextRe
     }
     
     private ExportDatabaseConfigurationStatement createSQLStatement() {
-        return new ExportDatabaseConfigurationStatement(new SchemaSegment(0, 0, new IdentifierValue("sharding_db")), null);
+        return new ExportDatabaseConfigurationStatement(new DatabaseSegment(0, 0, new IdentifierValue("sharding_db")), null);
     }
     
     private HandlerParameter<ExportDatabaseConfigurationStatement> createParameter(final ExportDatabaseConfigurationStatement statement, final ConnectionSession connectionSession) {

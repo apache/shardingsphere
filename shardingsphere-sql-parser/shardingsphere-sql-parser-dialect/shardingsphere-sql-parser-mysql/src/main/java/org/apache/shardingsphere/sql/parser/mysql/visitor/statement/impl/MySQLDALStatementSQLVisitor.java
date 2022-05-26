@@ -131,7 +131,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.Expressi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
@@ -244,7 +244,7 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     @Override
     public ASTNode visitShowCreateDatabase(final ShowCreateDatabaseContext ctx) {
         MySQLShowCreateDatabaseStatement result = new MySQLShowCreateDatabaseStatement();
-        result.setSchemaName(((SchemaSegment) visit(ctx.schemaName())).getIdentifier().getValue());
+        result.setDatabaseName(((DatabaseSegment) visit(ctx.schemaName())).getIdentifier().getValue());
         return result;
     }
     
@@ -560,7 +560,7 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     @Override
     public ASTNode visitUse(final UseContext ctx) {
         MySQLUseStatement result = new MySQLUseStatement();
-        result.setSchema(((SchemaSegment) visit(ctx.schemaName())).getIdentifier().getValue());
+        result.setSchema(((DatabaseSegment) visit(ctx.schemaName())).getIdentifier().getValue());
         return result;
     }
     
@@ -1025,7 +1025,7 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     
     @Override
     public ASTNode visitFromSchema(final FromSchemaContext ctx) {
-        return new FromSchemaSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (SchemaSegment) visit(ctx.schemaName()));
+        return new FromSchemaSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (DatabaseSegment) visit(ctx.schemaName()));
     }
     
     @Override

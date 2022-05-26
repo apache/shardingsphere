@@ -51,7 +51,7 @@ import org.apache.shardingsphere.shadow.distsql.parser.statement.ShowShadowRules
 import org.apache.shardingsphere.shadow.distsql.parser.statement.ShowShadowTableRulesStatement;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Collection;
@@ -86,7 +86,7 @@ public final class ShadowDistSQLStatementVisitor extends ShadowDistSQLStatementB
     
     @Override
     public ASTNode visitShowShadowAlgorithms(final ShowShadowAlgorithmsContext ctx) {
-        return new ShowShadowAlgorithmsStatement(null != ctx.schemaName() ? (SchemaSegment) visit(ctx.schemaName()) : null);
+        return new ShowShadowAlgorithmsStatement(null != ctx.schemaName() ? (DatabaseSegment) visit(ctx.schemaName()) : null);
     }
     
     @Override
@@ -139,13 +139,13 @@ public final class ShadowDistSQLStatementVisitor extends ShadowDistSQLStatementB
     @Override
     public ASTNode visitShowShadowRules(final ShowShadowRulesContext ctx) {
         String ruleName = null == ctx.shadowRule() ? null : getIdentifierValue(ctx.shadowRule().ruleName());
-        SchemaSegment schemaSegment = null == ctx.schemaName() ? null : (SchemaSegment) visit(ctx.schemaName());
-        return new ShowShadowRulesStatement(ruleName, null == ctx.schemaName() ? null : schemaSegment);
+        DatabaseSegment databaseSegment = null == ctx.schemaName() ? null : (DatabaseSegment) visit(ctx.schemaName());
+        return new ShowShadowRulesStatement(ruleName, null == ctx.schemaName() ? null : databaseSegment);
     }
     
     @Override
     public ASTNode visitShowShadowTableRules(final ShowShadowTableRulesContext ctx) {
-        return new ShowShadowTableRulesStatement(null != ctx.schemaName() ? (SchemaSegment) visit(ctx.schemaName()) : null);
+        return new ShowShadowTableRulesStatement(null != ctx.schemaName() ? (DatabaseSegment) visit(ctx.schemaName()) : null);
     }
     
     private String getIdentifierValue(final ParserRuleContext ctx) {
@@ -165,6 +165,6 @@ public final class ShadowDistSQLStatementVisitor extends ShadowDistSQLStatementB
     
     @Override
     public ASTNode visitSchemaName(final SchemaNameContext ctx) {
-        return new SchemaSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), new IdentifierValue(ctx.getText()));
+        return new DatabaseSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), new IdentifierValue(ctx.getText()));
     }
 }

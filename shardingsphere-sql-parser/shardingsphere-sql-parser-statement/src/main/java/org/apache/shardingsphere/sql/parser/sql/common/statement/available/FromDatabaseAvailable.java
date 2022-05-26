@@ -15,24 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.rql.show;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.available;
 
-import lombok.Getter;
-import org.apache.shardingsphere.distsql.parser.subject.DistSQLSubjectTypeEnum;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
+
+import java.util.Optional;
 
 /**
- * Count schema rules statement.
+ * From schema available.
  */
-@Getter
-public final class CountSchemaRulesStatement extends ShowRulesStatement {
+public interface FromDatabaseAvailable {
     
-    public CountSchemaRulesStatement(final SchemaSegment schema) {
-        super(schema);
-    }
-    
-    @Override
-    public DistSQLSubjectTypeEnum getSubjectType() {
-        return DistSQLSubjectTypeEnum.DEFAULT;
-    }
+    /**
+     * Get schema.
+     * 
+     * @return schema segment
+     */
+    Optional<DatabaseSegment> getDatabase();
 }

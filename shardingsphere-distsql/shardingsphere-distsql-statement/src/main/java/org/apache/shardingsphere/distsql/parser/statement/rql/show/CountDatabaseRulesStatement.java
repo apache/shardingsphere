@@ -15,23 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.generic;
+package org.apache.shardingsphere.distsql.parser.statement.rql.show;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
+import org.apache.shardingsphere.distsql.parser.subject.DistSQLSubjectTypeEnum;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 
 /**
- * Schema segment.
+ * Count database rules statement.
  */
-@RequiredArgsConstructor
 @Getter
-public final class SchemaSegment implements SQLSegment {
+public final class CountDatabaseRulesStatement extends ShowRulesStatement {
     
-    private final int startIndex;
+    public CountDatabaseRulesStatement(final DatabaseSegment database) {
+        super(database);
+    }
     
-    private final int stopIndex;
-    
-    private final IdentifierValue identifier;
+    @Override
+    public DistSQLSubjectTypeEnum getSubjectType() {
+        return DistSQLSubjectTypeEnum.DEFAULT;
+    }
 }
