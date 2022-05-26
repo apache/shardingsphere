@@ -156,13 +156,9 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
 
     private Collection<String> doShardingInLocalDateTime(Collection<String> availableTargetNames, Range<Comparable<?>> range, TemporalAccessor calculateTime) {
         Set<String> result = new HashSet<>();
-        LocalDate dateTimeUpperAsLocalDate = dateTimeUpper.query(TemporalQueries.localDate());
-        LocalDate dateTimeLowerAsLocalDate = dateTimeLower.query(TemporalQueries.localDate());
-        LocalTime dateTimeUpperAsLocalTime = dateTimeUpper.query(TemporalQueries.localTime());
-        LocalTime dateTimeLowerAsLocalTime = dateTimeLower.query(TemporalQueries.localTime());
-        LocalDateTime calculateTimeAsView = LocalDateTime.of(calculateTime.query(TemporalQueries.localDate()), calculateTime.query(TemporalQueries.localTime()));
-        LocalDateTime dateTimeUpperAsLocalDateTime = LocalDateTime.of(dateTimeUpperAsLocalDate, dateTimeUpperAsLocalTime);
-        LocalDateTime dateTimeLowerAsLocalDateTime = LocalDateTime.of(dateTimeLowerAsLocalDate, dateTimeLowerAsLocalTime);
+        LocalDateTime calculateTimeAsView = LocalDateTime.from(calculateTime);
+        LocalDateTime dateTimeUpperAsLocalDateTime = LocalDateTime.from(dateTimeUpper);
+        LocalDateTime dateTimeLowerAsLocalDateTime = LocalDateTime.from(dateTimeLower);
         while (!calculateTimeAsView.isAfter(dateTimeUpperAsLocalDateTime)) {
             if (hasIntersection(Range.closedOpen(calculateTimeAsView, calculateTimeAsView.plus(stepAmount, stepUnit)), range, dateTimeLowerAsLocalDateTime, dateTimeUpperAsLocalDateTime)) {
                 result.addAll(getMatchedTables(calculateTimeAsView, availableTargetNames));
@@ -264,7 +260,7 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
             tableSuffix = localTime.format(tableSuffixPattern);
             return availableTargetNames.parallelStream().filter(each -> each.endsWith(tableSuffix)).collect(Collectors.toSet());
         }
-        tableSuffix = LocalDateTime.of(localDate, localTime).format(tableSuffixPattern);
+        tableSuffix = LocalDateTime.from(dateTime).format(tableSuffixPattern);
         return availableTargetNames.parallelStream().filter(each -> each.endsWith(tableSuffix)).collect(Collectors.toSet());
     }
     
