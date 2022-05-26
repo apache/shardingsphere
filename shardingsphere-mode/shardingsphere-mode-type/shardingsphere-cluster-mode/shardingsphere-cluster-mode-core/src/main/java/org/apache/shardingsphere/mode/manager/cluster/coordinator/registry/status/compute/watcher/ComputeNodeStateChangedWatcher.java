@@ -19,16 +19,15 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.stat
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
-import org.apache.shardingsphere.infra.instance.definition.InstanceType;
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.InstanceOfflineEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.InstanceOnlineEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ShowProcessListTriggerEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ShowProcessListTriggerEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ShowProcessListUnitCompleteEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.StateEvent;
-import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.WorkerIdEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.XaRecoveryIdEvent;
 import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
@@ -87,16 +86,15 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<G
             return Optional.empty();
         }
         if (Type.ADDED == event.getType()) {
-            return Optional.of(new ShowProcessListTriggerEvent(
-                    new InstanceDefinition(InstanceType.PROXY.name().equalsIgnoreCase(matcher.group(1)) ? InstanceType.PROXY : InstanceType.JDBC, matcher.group(2)), matcher.group(3)));
+            return Optional.of(new ShowProcessListTriggerEvent(matcher.group(1), matcher.group(2)));
         } else if (Type.DELETED == event.getType()) {
-            return Optional.of(new ShowProcessListUnitCompleteEvent(matcher.group(3)));
+            return Optional.of(new ShowProcessListUnitCompleteEvent(matcher.group(2)));
         }
         return Optional.empty();
     }
     
     private static Matcher getShowProcessTriggerMatcher(final DataChangedEvent event) {
-        Pattern pattern = Pattern.compile(ComputeNode.getProcessTriggerNodePatch() + "/" + "(proxy|jdbc)" + "/([0-9.@]+)" + "/([\\S]+)$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(ComputeNode.getProcessTriggerNodePatch() + "/([0-9.@]+):([\\S]+)$", Pattern.CASE_INSENSITIVE);
         return pattern.matcher(event.getKey());
     }
     
