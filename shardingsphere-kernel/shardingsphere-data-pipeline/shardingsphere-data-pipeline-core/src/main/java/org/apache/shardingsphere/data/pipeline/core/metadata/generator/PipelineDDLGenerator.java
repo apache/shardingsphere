@@ -21,6 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.spi.ddlgenerator.DialectDDLSQLGeneratorFactory;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
@@ -36,7 +37,6 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.data.pipeline.spi.ddlgenerator.DialectDDLSQLGeneratorFactory;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtil;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
@@ -53,6 +53,7 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.TreeMap;
@@ -81,7 +82,7 @@ public final class PipelineDDLGenerator {
      */
     @SneakyThrows
     public String generateLogicDDLSQL(final DatabaseType databaseType, final String databaseName, final String schemaName, final String tableName) {
-        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getDatabaseMetaData(databaseName);
+        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getDatabase(databaseName);
         log.info("generateLogicDDLSQL, databaseType={}, databaseName={}, schemaName={}, tableName={}, dataSourceNames={}",
                 databaseType.getType(), databaseName, schemaName, tableName, database.getResource().getDataSources().keySet());
         String sql = generateActualDDLSQL(databaseType, schemaName, tableName, database);
@@ -196,7 +197,7 @@ public final class PipelineDDLGenerator {
     private String doDecorateActualTable(final Map<SQLSegment, String> replaceMap, final String sql) {
         StringBuilder result = new StringBuilder();
         int lastStopIndex = 0;
-        for (Map.Entry<SQLSegment, String> entry : replaceMap.entrySet()) {
+        for (Entry<SQLSegment, String> entry : replaceMap.entrySet()) {
             result.append(sql, lastStopIndex, entry.getKey().getStartIndex());
             result.append(entry.getValue());
             lastStopIndex = entry.getKey().getStopIndex() + 1;
@@ -217,8 +218,7 @@ public final class PipelineDDLGenerator {
         Optional<SQLParserRule> sqlParserRule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(SQLParserRule.class);
         Preconditions.checkState(sqlParserRule.isPresent());
         SQLStatement sqlStatement = new ShardingSphereSQLParserEngine(databaseType.getType(), sqlParserRule.get().toParserConfiguration()).parse(sql, false);
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(contextManager.getMetaDataContexts().getMetaData().getDatabaseMap(),
-                sqlStatement, databaseName);
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(contextManager.getMetaDataContexts().getMetaData().getDatabases(), sqlStatement, databaseName);
         return new LogicSQL(sqlStatementContext, sql, Collections.emptyList());
     }
     

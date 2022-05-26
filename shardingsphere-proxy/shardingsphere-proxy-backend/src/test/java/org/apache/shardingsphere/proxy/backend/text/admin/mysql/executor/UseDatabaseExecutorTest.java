@@ -86,7 +86,7 @@ public final class UseDatabaseExecutorTest extends ProxyContextRestorer {
         when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getRuleMetaData().getRules()).thenReturn(new LinkedList<>());
-        when(contextManager.getMetaDataContexts().getDatabaseMetaData(any())).thenReturn(database);
+        when(contextManager.getMetaDataContexts().getDatabase(any())).thenReturn(database);
         ProxyContext.init(contextManager);
         UseDatabaseExecutor useSchemaBackendHandler = new UseDatabaseExecutor(useStatement);
         useSchemaBackendHandler.execute(connectionSession);

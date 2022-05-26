@@ -99,11 +99,11 @@ public final class PreviewDistSQLBackendHandler extends QueryableRALBackendHandl
     protected Collection<List<Object>> getRows(final ContextManager contextManager) throws SQLException {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         String databaseName = getDatabaseName();
-        String databaseType = DatabaseTypeEngine.getTrunkDatabaseTypeName(metaDataContexts.getDatabaseMetaData(databaseName).getProtocolType());
+        String databaseType = DatabaseTypeEngine.getTrunkDatabaseTypeName(metaDataContexts.getDatabase(databaseName).getProtocolType());
         Optional<SQLParserRule> sqlParserRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().findSingleRule(SQLParserRule.class);
         Preconditions.checkState(sqlParserRule.isPresent());
         SQLStatement previewedStatement = new ShardingSphereSQLParserEngine(databaseType, sqlParserRule.get().toParserConfiguration()).parse(sqlStatement.getSql(), false);
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getMetaData().getDatabaseMap(), previewedStatement, databaseName);
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getMetaData().getDatabases(), previewedStatement, databaseName);
         // TODO optimize SQLStatementDatabaseHolder
         if (sqlStatementContext instanceof TableAvailable) {
             ((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName().ifPresent(SQLStatementDatabaseHolder::set);
@@ -128,8 +128,8 @@ public final class PreviewDistSQLBackendHandler extends QueryableRALBackendHandl
         SQLStatement sqlStatement = logicSQL.getSqlStatementContext().getSqlStatement();
         boolean isReturnGeneratedKeys = sqlStatement instanceof MySQLInsertStatement;
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine(isReturnGeneratedKeys, metaDataContexts);
-        FederationContext context = new FederationContext(true, logicSQL, metaDataContexts.getMetaData().getDatabaseMap());
-        DatabaseType databaseType = metaDataContexts.getDatabaseMetaData(getDatabaseName()).getResource().getDatabaseType();
+        FederationContext context = new FederationContext(true, logicSQL, metaDataContexts.getMetaData().getDatabases());
+        DatabaseType databaseType = metaDataContexts.getDatabase(getDatabaseName()).getResource().getDatabaseType();
         String schemaName = logicSQL.getSqlStatementContext().getTablesContext().getSchemaName().orElse(DatabaseTypeEngine.getDefaultSchemaName(databaseType, databaseName));
         FederationExecutor executor = FederationExecutorFactory.newInstance(databaseName, schemaName, metaDataContexts.getOptimizerContext(),
                 metaDataContexts.getMetaData().getProps(), new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), false));
@@ -156,7 +156,7 @@ public final class PreviewDistSQLBackendHandler extends QueryableRALBackendHandl
         int maxConnectionsSizePerQuery = metaDataContexts.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         return new DriverExecutionPrepareEngine<>(JDBCDriverType.STATEMENT, maxConnectionsSizePerQuery, (JDBCBackendConnection) connectionSession.getBackendConnection(),
                 (JDBCBackendStatement) connectionSession.getStatementManager(), new StatementOption(isReturnGeneratedKeys),
-                metaDataContexts.getDatabaseMetaData(getDatabaseName()).getRuleMetaData().getRules());
+                metaDataContexts.getDatabase(getDatabaseName()).getRuleMetaData().getRules());
     }
     
     private String getDatabaseName() {

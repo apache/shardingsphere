@@ -179,7 +179,7 @@ public final class ClusterContextManagerCoordinator {
     @Subscribe
     public synchronized void renew(final DisabledStateChangedEvent event) {
         QualifiedDatabase qualifiedDatabase = event.getQualifiedSchema();
-        contextManager.getMetaDataContexts().getMetaData().getDatabaseMap().get(qualifiedDatabase.getDatabaseName()).getRuleMetaData().getRules()
+        contextManager.getMetaDataContexts().getMetaData().getDatabases().get(qualifiedDatabase.getDatabaseName()).getRuleMetaData().getRules()
                 .stream().filter(each -> each instanceof StatusContainedRule)
                 .forEach(each -> ((StatusContainedRule) each).updateStatus(new DataSourceNameDisabledEvent(qualifiedDatabase, event.isDisabled())));
     }
@@ -192,7 +192,7 @@ public final class ClusterContextManagerCoordinator {
     @Subscribe
     public synchronized void renew(final PrimaryStateChangedEvent event) {
         QualifiedDatabase qualifiedDatabase = event.getQualifiedDatabase();
-        contextManager.getMetaDataContexts().getMetaData().getDatabaseMap().get(qualifiedDatabase.getDatabaseName()).getRuleMetaData().getRules()
+        contextManager.getMetaDataContexts().getMetaData().getDatabases().get(qualifiedDatabase.getDatabaseName()).getRuleMetaData().getRules()
                 .stream()
                 .filter(each -> each instanceof StatusContainedRule)
                 .forEach(each -> ((StatusContainedRule) each)
@@ -319,7 +319,7 @@ public final class ClusterContextManagerCoordinator {
     }
     
     private void buildSpecialRules() {
-        contextManager.getMetaDataContexts().getMetaData().getDatabaseMap().forEach((key, value) -> value.getRuleMetaData().getRules().forEach(each -> {
+        contextManager.getMetaDataContexts().getMetaData().getDatabases().forEach((key, value) -> value.getRuleMetaData().getRules().forEach(each -> {
             if (each instanceof StatusContainedRule) {
                 disableDataSources((StatusContainedRule) each);
             }

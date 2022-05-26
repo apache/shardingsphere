@@ -102,7 +102,7 @@ public final class TextProtocolBackendHandlerFactory {
             return DistSQLBackendHandlerFactory.newInstance(databaseType, (DistSQLStatement) sqlStatement, connectionSession);
         }
         handleAutoCommit(sqlStatement, connectionSession);
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabaseMap(),
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases(),
                 sqlStatement, connectionSession.getDefaultDatabaseName());
         Optional<TextProtocolBackendHandler> backendHandler = DatabaseAdminBackendHandlerFactory.newInstance(databaseType, sqlStatementContext, connectionSession, sql);
         if (backendHandler.isPresent()) {
@@ -124,7 +124,7 @@ public final class TextProtocolBackendHandlerFactory {
                 ? sqlStatementContext.getTablesContext().getDatabaseName().get()
                 : connectionSession.getDatabaseName();
         SQLCheckEngine.check(sqlStatement, Collections.emptyList(),
-                getRules(databaseName), databaseName, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabaseMap(), connectionSession.getGrantee());
+                getRules(databaseName), databaseName, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases(), connectionSession.getGrantee());
         if (sqlStatement instanceof TCLStatement) {
             return TransactionBackendHandlerFactory.newInstance((SQLStatementContext<TCLStatement>) sqlStatementContext, sql, connectionSession);
         }
@@ -136,7 +136,7 @@ public final class TextProtocolBackendHandlerFactory {
         String databaseName = connectionSession.getDatabaseName();
         return Strings.isNullOrEmpty(databaseName) || !ProxyContext.getInstance().databaseExists(databaseName)
                 ? defaultDatabaseType
-                : ProxyContext.getInstance().getContextManager().getMetaDataContexts().getDatabaseMetaData(databaseName).getProtocolType();
+                : ProxyContext.getInstance().getContextManager().getMetaDataContexts().getDatabase(databaseName).getProtocolType();
     }
     
     private static void handleAutoCommit(final SQLStatement sqlStatement, final ConnectionSession connectionSession) throws SQLException {
@@ -167,7 +167,7 @@ public final class TextProtocolBackendHandlerFactory {
             return contexts.getMetaData().getGlobalRuleMetaData().getRules();
         }
         Collection<ShardingSphereRule> result;
-        result = new LinkedList<>(contexts.getDatabaseMetaData(databaseName).getRuleMetaData().getRules());
+        result = new LinkedList<>(contexts.getDatabase(databaseName).getRuleMetaData().getRules());
         result.addAll(contexts.getMetaData().getGlobalRuleMetaData().getRules());
         return result;
     }

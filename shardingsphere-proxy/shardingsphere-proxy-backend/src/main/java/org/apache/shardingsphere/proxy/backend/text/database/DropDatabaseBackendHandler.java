@@ -71,7 +71,7 @@ public final class DropDatabaseBackendHandler implements TextProtocolBackendHand
     
     private static Collection<ShardingSphereRule> getRules(final String schemaName) {
         Collection<ShardingSphereRule> result = new LinkedList<>();
-        ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getDatabaseMetaData(schemaName);
+        ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getDatabase(schemaName);
         if (null != database && null != database.getRuleMetaData()) {
             result.addAll(database.getRuleMetaData().getRules());
         }

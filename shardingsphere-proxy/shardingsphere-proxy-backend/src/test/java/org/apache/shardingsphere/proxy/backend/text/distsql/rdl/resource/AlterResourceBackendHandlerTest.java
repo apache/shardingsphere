@@ -96,7 +96,7 @@ public final class AlterResourceBackendHandlerTest extends ProxyContextRestorer 
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
         when(metaDataContexts.getAllDatabaseNames()).thenReturn(Collections.singleton("test_db"));
-        when(metaDataContexts.getDatabaseMetaData("test_db")).thenReturn(database);
+        when(metaDataContexts.getDatabase("test_db")).thenReturn(database);
         when(database.getResource()).thenReturn(resource);
         when(resource.getDataSources()).thenReturn(Collections.singletonMap("ds_0", mockHikariDataSource("ds_0")));
         assertThat(alterResourceBackendHandler.execute("test_db", createAlterResourceStatement("ds_0")), instanceOf(UpdateResponseHeader.class));
@@ -113,7 +113,7 @@ public final class AlterResourceBackendHandlerTest extends ProxyContextRestorer 
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
         when(metaDataContexts.getAllDatabaseNames()).thenReturn(Collections.singleton("test_db"));
-        when(metaDataContexts.getDatabaseMetaData("test_db")).thenReturn(database);
+        when(metaDataContexts.getDatabase("test_db")).thenReturn(database);
         when(database.getResource()).thenReturn(resource);
         when(resource.getDataSources()).thenReturn(Collections.singletonMap("ds_0", dataSource));
         alterResourceBackendHandler.execute("test_db", createAlterResourceStatement("not_existed"));
@@ -125,7 +125,7 @@ public final class AlterResourceBackendHandlerTest extends ProxyContextRestorer 
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
         when(metaDataContexts.getAllDatabaseNames()).thenReturn(Collections.singleton("test_db"));
-        when(metaDataContexts.getDatabaseMetaData("test_db")).thenReturn(database);
+        when(metaDataContexts.getDatabase("test_db")).thenReturn(database);
         when(database.getResource()).thenReturn(resource);
         when(resource.getDataSources()).thenReturn(Collections.singletonMap("ds_0", mockHikariDataSource("ds_1")));
         ResponseHeader responseHeader = alterResourceBackendHandler.execute("test_db", createAlterResourceStatement("ds_0"));
