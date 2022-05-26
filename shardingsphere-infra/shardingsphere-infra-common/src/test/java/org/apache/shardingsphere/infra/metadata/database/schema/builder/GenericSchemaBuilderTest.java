@@ -42,7 +42,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class SchemaMetaDataBuilderTest {
+public final class GenericSchemaBuilderTest {
     
     @Mock
     private DatabaseType databaseType;
