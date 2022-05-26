@@ -106,13 +106,23 @@ public final class ComputeNode {
     }
     
     /**
+     * Get xa recovery id node path.
+     * 
+     * @return xa recovery id node path
+     */
+    public static String getXaRecoveryIdNodePath() {
+        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, XA_RECOVERY_ID_NODE);
+    }
+    
+    /**
      * Get compute node xa recovery id path.
      *
+     * @param xaRecoveryId recovery id
      * @param instanceId instance id
      * @return path of compute node xa recovery id
      */
-    public static String getInstanceXaRecoveryIdNodePath(final String instanceId) {
-        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, XA_RECOVERY_ID_NODE, instanceId);
+    public static String getInstanceXaRecoveryIdNodePath(final String xaRecoveryId, final String instanceId) {
+        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, XA_RECOVERY_ID_NODE, xaRecoveryId, instanceId);
     }
     
     /**
@@ -141,7 +151,7 @@ public final class ComputeNode {
      * @return instance id
      */
     public static String getInstanceIdByComputeNode(final String computeNodePath) {
-        Pattern pattern = Pattern.compile(getComputeNodePath() + "(/status|/worker_id|/labels|/xa_recovery_id)" + "/([\\S]+)$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getComputeNodePath() + "(/status|/worker_id|/labels)" + "/([\\S]+)$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(computeNodePath);
         return matcher.find() ? matcher.group(2) : "";
     }
