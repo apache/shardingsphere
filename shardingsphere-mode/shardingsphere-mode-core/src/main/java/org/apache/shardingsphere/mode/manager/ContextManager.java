@@ -39,7 +39,7 @@ import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphere
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilder;
-import org.apache.shardingsphere.infra.metadata.database.schema.builder.SchemaBuilderMaterials;
+import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.SchemaMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.SystemSchemaBuilder;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
@@ -413,7 +413,7 @@ public final class ContextManager implements AutoCloseable {
      */
     public void reloadMetaData(final String databaseName, final String schemaName, final String tableName) {
         try {
-            SchemaBuilderMaterials materials = new SchemaBuilderMaterials(metaDataContexts.getDatabase(databaseName).getProtocolType(),
+            GenericSchemaBuilderMaterials materials = new GenericSchemaBuilderMaterials(metaDataContexts.getDatabase(databaseName).getProtocolType(),
                     metaDataContexts.getDatabase(databaseName).getResource().getDatabaseType(), metaDataContexts.getDatabase(databaseName).getResource().getDataSources(),
                     metaDataContexts.getDatabase(databaseName).getRuleMetaData().getRules(), metaDataContexts.getMetaData().getProps(), schemaName);
             loadTableMetaData(databaseName, schemaName, tableName, materials);
@@ -432,7 +432,7 @@ public final class ContextManager implements AutoCloseable {
      */
     public void reloadMetaData(final String databaseName, final String schemaName, final String tableName, final String dataSourceName) {
         try {
-            SchemaBuilderMaterials materials = new SchemaBuilderMaterials(metaDataContexts.getDatabase(databaseName).getProtocolType(),
+            GenericSchemaBuilderMaterials materials = new GenericSchemaBuilderMaterials(metaDataContexts.getDatabase(databaseName).getProtocolType(),
                     metaDataContexts.getDatabase(databaseName).getResource().getDatabaseType(), Collections.singletonMap(dataSourceName,
                             metaDataContexts.getDatabase(databaseName).getResource().getDataSources().get(dataSourceName)),
                     metaDataContexts.getDatabase(databaseName).getRuleMetaData().getRules(), metaDataContexts.getMetaData().getProps(), schemaName);
@@ -454,7 +454,7 @@ public final class ContextManager implements AutoCloseable {
         });
     }
     
-    private void loadTableMetaData(final String databaseName, final String schemaName, final String tableName, final SchemaBuilderMaterials materials) throws SQLException {
+    private void loadTableMetaData(final String databaseName, final String schemaName, final String tableName, final GenericSchemaBuilderMaterials materials) throws SQLException {
         SchemaMetaData schemaMetaData = SchemaMetaDataBuilder.load(Collections.singletonList(tableName), materials).getOrDefault(schemaName, new SchemaMetaData("", Collections.emptyMap()));
         if (schemaMetaData.getTables().containsKey(tableName)) {
             metaDataContexts.getDatabase(databaseName).getSchemas().get(schemaName).put(tableName, schemaMetaData.getTables().get(tableName));
