@@ -57,6 +57,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.confi
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.DatabaseAddedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.DatabaseDeletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaAddedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaDeletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.ShowProcessListManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.lock.ShowProcessListSimpleLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.InstanceOfflineEvent;
@@ -197,6 +198,12 @@ public final class ClusterContextManagerCoordinatorTest {
         when(contextManager.getMetaDataContexts().getDatabaseMetaData("db").getSchemas().get("foo_schema")).thenReturn(null);
         coordinator.renew(new SchemaAddedEvent("db", "foo_schema"));
         verify(contextManager.getMetaDataContexts().getDatabaseMetaData("db").getSchemas()).put(argThat(argument -> argument.equals("foo_schema")), any(ShardingSphereSchema.class));
+    }
+    
+    @Test
+    public void assertSchemaDelete() {
+        coordinator.renew(new SchemaDeletedEvent("db", "foo_schema"));
+        verify(contextManager.getMetaDataContexts().getDatabaseMetaData("db").getSchemas()).remove("foo_schema");
     }
     
     @Test
