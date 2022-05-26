@@ -128,6 +128,10 @@ dropDatabase
     : DROP DATABASE existClause? name
     ;
 
+dropDirectory
+    : DROP DIRECTORY existClause? directoryName
+    ;
+
 createDatabaseSpecification
     :  createdbOptName EQ_? (signedIconst | booleanOrString | DEFAULT)
     ;
