@@ -244,6 +244,7 @@ public abstract class BaseITCase {
      * @throws InterruptedException interrupted exception
      */
     protected void assertCheckMatchConsistencySuccess() throws InterruptedException {
+        assertBeforeApplyScalingMetadataCorrectly();
         if (null != increaseTaskThread) {
             increaseTaskThread.join(60 * 1000L);
         }
