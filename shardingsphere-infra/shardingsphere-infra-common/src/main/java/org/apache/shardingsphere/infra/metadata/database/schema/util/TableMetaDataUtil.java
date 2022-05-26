@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.datanode.DataNodes;
 import org.apache.shardingsphere.infra.datasource.registry.GlobalDataSourceRegistry;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterials;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.TableMetaDataLoaderMaterials;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.TableMetaDataLoaderMaterial;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -48,8 +48,8 @@ public class TableMetaDataUtil {
      * @param checkMetaDataEnable config CHECK_TABLE_METADATA_ENABLED
      * @return TableMetaDataLoadMaterials
      */
-    public static Collection<TableMetaDataLoaderMaterials> getTableMetaDataLoadMaterial(final Collection<String> tableNames,
-                                                                                        final GenericSchemaBuilderMaterials materials, final boolean checkMetaDataEnable) {
+    public static Collection<TableMetaDataLoaderMaterial> getTableMetaDataLoadMaterial(final Collection<String> tableNames,
+                                                                                       final GenericSchemaBuilderMaterials materials, final boolean checkMetaDataEnable) {
         Map<String, Collection<String>> dataSourceTableGroups = new LinkedHashMap<>();
         DataNodes dataNodes = new DataNodes(materials.getRules());
         for (String each : tableNames) {
@@ -60,7 +60,7 @@ public class TableMetaDataUtil {
                 addOneActualTableDataNode(materials, dataSourceTableGroups, dataNodes, each);
             }
         }
-        return dataSourceTableGroups.entrySet().stream().map(entry -> new TableMetaDataLoaderMaterials(entry.getValue(),
+        return dataSourceTableGroups.entrySet().stream().map(entry -> new TableMetaDataLoaderMaterial(entry.getValue(),
                 materials.getDataSourceMap().get(entry.getKey().contains(".") ? entry.getKey().split("\\.")[0] : entry.getKey()), materials.getDefaultSchemaName())).collect(Collectors.toList());
     }
     
