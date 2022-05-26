@@ -33,8 +33,9 @@ import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.OffsetTime;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.time.chrono.ChronoLocalDate;
+import java.time.chrono.ChronoLocalDateTime;
+import java.time.chrono.ChronoZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
@@ -220,9 +221,9 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
     private LocalTime parseLocalTime(final Comparable<?> endpoint) {
         return LocalTime.parse(getDateTimeText(endpoint).substring(0, dateTimePatternLength), dateTimeFormatter);
     }
-    
+
     private String getDateTimeText(final Comparable<?> endpoint) {
-        if (endpoint instanceof LocalDateTime || endpoint instanceof ZonedDateTime
+        if (endpoint instanceof ChronoLocalDateTime || endpoint instanceof ChronoZonedDateTime
                 || endpoint instanceof OffsetDateTime || endpoint instanceof ChronoLocalDate
                 || endpoint instanceof LocalTime || endpoint instanceof OffsetTime) {
             return dateTimeFormatter.format((TemporalAccessor) endpoint);
