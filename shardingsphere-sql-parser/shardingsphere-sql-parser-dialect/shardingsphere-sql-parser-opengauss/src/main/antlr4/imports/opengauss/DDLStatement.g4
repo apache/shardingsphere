@@ -728,6 +728,10 @@ alterSynonym
     : ALTER SYNONYM synonymName OWNER TO owner
     ;
 
+alterDirectory
+    : ALTER DIRECTORY directoryName OWNER TO owner
+    ;
+
 alterConversion
     : ALTER CONVERSION anyName alterConversionClause
     ;
