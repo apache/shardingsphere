@@ -26,26 +26,21 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingV
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
 
+import java.time.ZoneId;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.OffsetDateTime;
-import java.time.OffsetTime;
-import java.time.ZoneId;
-import java.time.chrono.ChronoLocalDate;
-import java.time.chrono.ChronoLocalDateTime;
-import java.time.chrono.ChronoZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAccessor;
 import java.time.temporal.TemporalQueries;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
+import java.util.Date;
 import java.util.stream.Collectors;
 
 /**
@@ -141,41 +136,54 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
         return doSharding(availableTargetNames, shardingValue.getValueRange());
     }
     
-    @SuppressWarnings("DuplicatedCode")
     private Collection<String> doSharding(final Collection<String> availableTargetNames, final Range<Comparable<?>> range) {
-        Set<String> result = new HashSet<>();
         TemporalAccessor calculateTime = dateTimeLower;
         LocalDate queryToLocalDate = calculateTime.query(TemporalQueries.localDate());
         LocalTime queryToLocalTime = calculateTime.query(TemporalQueries.localTime());
-        LocalDate dateTimeUpperAsLocalDate = dateTimeUpper.query(TemporalQueries.localDate());
-        LocalDate dateTimeLowerAsLocalDate = dateTimeLower.query(TemporalQueries.localDate());
         if (null == queryToLocalTime) {
-            LocalDate calculateTimeAsView = calculateTime.query(TemporalQueries.localDate());
-            while (!calculateTimeAsView.isAfter(dateTimeUpperAsLocalDate)) {
-                if (hasIntersection(Range.closedOpen(calculateTimeAsView, calculateTimeAsView.plus(stepAmount, stepUnit)), range, dateTimeLowerAsLocalDate, dateTimeUpperAsLocalDate)) {
-                    result.addAll(getMatchedTables(calculateTimeAsView, availableTargetNames));
-                }
-                calculateTimeAsView = calculateTimeAsView.plus(stepAmount, stepUnit);
-            }
-            return result;
+            return doShardingInLocalDate(availableTargetNames, range, calculateTime);
         }
-        LocalTime dateTimeUpperAsLocalTime = dateTimeUpper.query(TemporalQueries.localTime());
-        LocalTime dateTimeLowerAsLocalTime = dateTimeLower.query(TemporalQueries.localTime());
         if (null == queryToLocalDate) {
-            LocalTime calculateTimeAsView = calculateTime.query(TemporalQueries.localTime());
-            while (!calculateTimeAsView.isAfter(dateTimeUpperAsLocalTime)) {
-                if (hasIntersection(Range.closedOpen(calculateTimeAsView, calculateTimeAsView.plus(stepAmount, stepUnit)), range, dateTimeLowerAsLocalTime, dateTimeUpperAsLocalTime)) {
-                    result.addAll(getMatchedTables(calculateTimeAsView, availableTargetNames));
-                }
-                calculateTimeAsView = calculateTimeAsView.plus(stepAmount, stepUnit);
-            }
-            return result;
+            return doShardingInLocalTime(availableTargetNames, range, calculateTime);
         }
+        return doShardingInLocalDateTime(availableTargetNames, range, calculateTime);
+    }
+    
+    private Collection<String> doShardingInLocalDateTime(final Collection<String> availableTargetNames, final Range<Comparable<?>> range, final TemporalAccessor calculateTime) {
+        Set<String> result = new HashSet<>();
         LocalDateTime calculateTimeAsView = LocalDateTime.from(calculateTime);
         LocalDateTime dateTimeUpperAsLocalDateTime = LocalDateTime.from(dateTimeUpper);
         LocalDateTime dateTimeLowerAsLocalDateTime = LocalDateTime.from(dateTimeLower);
         while (!calculateTimeAsView.isAfter(dateTimeUpperAsLocalDateTime)) {
             if (hasIntersection(Range.closedOpen(calculateTimeAsView, calculateTimeAsView.plus(stepAmount, stepUnit)), range, dateTimeLowerAsLocalDateTime, dateTimeUpperAsLocalDateTime)) {
+                result.addAll(getMatchedTables(calculateTimeAsView, availableTargetNames));
+            }
+            calculateTimeAsView = calculateTimeAsView.plus(stepAmount, stepUnit);
+        }
+        return result;
+    }
+    
+    private Collection<String> doShardingInLocalTime(final Collection<String> availableTargetNames, final Range<Comparable<?>> range, final TemporalAccessor calculateTime) {
+        Set<String> result = new HashSet<>();
+        LocalTime dateTimeUpperAsLocalTime = dateTimeUpper.query(TemporalQueries.localTime());
+        LocalTime dateTimeLowerAsLocalTime = dateTimeLower.query(TemporalQueries.localTime());
+        LocalTime calculateTimeAsView = calculateTime.query(TemporalQueries.localTime());
+        while (!calculateTimeAsView.isAfter(dateTimeUpperAsLocalTime)) {
+            if (hasIntersection(Range.closedOpen(calculateTimeAsView, calculateTimeAsView.plus(stepAmount, stepUnit)), range, dateTimeLowerAsLocalTime, dateTimeUpperAsLocalTime)) {
+                result.addAll(getMatchedTables(calculateTimeAsView, availableTargetNames));
+            }
+            calculateTimeAsView = calculateTimeAsView.plus(stepAmount, stepUnit);
+        }
+        return result;
+    }
+    
+    private Collection<String> doShardingInLocalDate(final Collection<String> availableTargetNames, final Range<Comparable<?>> range, final TemporalAccessor calculateTime) {
+        Set<String> result = new HashSet<>();
+        LocalDate dateTimeUpperAsLocalDate = dateTimeUpper.query(TemporalQueries.localDate());
+        LocalDate dateTimeLowerAsLocalDate = dateTimeLower.query(TemporalQueries.localDate());
+        LocalDate calculateTimeAsView = calculateTime.query(TemporalQueries.localDate());
+        while (!calculateTimeAsView.isAfter(dateTimeUpperAsLocalDate)) {
+            if (hasIntersection(Range.closedOpen(calculateTimeAsView, calculateTimeAsView.plus(stepAmount, stepUnit)), range, dateTimeLowerAsLocalDate, dateTimeUpperAsLocalDate)) {
                 result.addAll(getMatchedTables(calculateTimeAsView, availableTargetNames));
             }
             calculateTimeAsView = calculateTimeAsView.plus(stepAmount, stepUnit);
@@ -223,13 +231,11 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
     }
     
     private String getDateTimeText(final Comparable<?> endpoint) {
-        if (endpoint instanceof ChronoLocalDateTime || endpoint instanceof ChronoZonedDateTime
-                || endpoint instanceof OffsetDateTime || endpoint instanceof ChronoLocalDate
-                || endpoint instanceof LocalTime || endpoint instanceof OffsetTime) {
-            return dateTimeFormatter.format((TemporalAccessor) endpoint);
-        }
         if (endpoint instanceof Instant) {
             return dateTimeFormatter.withZone(ZoneId.systemDefault()).format((Instant) endpoint);
+        }
+        if (endpoint instanceof TemporalAccessor) {
+            return dateTimeFormatter.format((TemporalAccessor) endpoint);
         }
         if (endpoint instanceof Date) {
             return dateTimeFormatter.format(((Date) endpoint).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
@@ -238,15 +244,15 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
     }
     
     private Collection<String> getMatchedTables(final TemporalAccessor dateTime, final Collection<String> availableTargetNames) {
-        LocalDate viewAsLocalDate = dateTime.query(TemporalQueries.localDate());
-        LocalTime viewAsLocalTime = dateTime.query(TemporalQueries.localTime());
+        LocalDate localDate = dateTime.query(TemporalQueries.localDate());
+        LocalTime localTime = dateTime.query(TemporalQueries.localTime());
         String tableSuffix;
-        if (null == viewAsLocalTime) {
-            tableSuffix = viewAsLocalDate.format(tableSuffixPattern);
+        if (null == localTime) {
+            tableSuffix = localDate.format(tableSuffixPattern);
             return availableTargetNames.parallelStream().filter(each -> each.endsWith(tableSuffix)).collect(Collectors.toSet());
         }
-        if (null == viewAsLocalDate) {
-            tableSuffix = viewAsLocalTime.format(tableSuffixPattern);
+        if (null == localDate) {
+            tableSuffix = localTime.format(tableSuffixPattern);
             return availableTargetNames.parallelStream().filter(each -> each.endsWith(tableSuffix)).collect(Collectors.toSet());
         }
         tableSuffix = LocalDateTime.from(dateTime).format(tableSuffixPattern);
