@@ -82,7 +82,6 @@ public final class PostgreSQLGeneralScalingIT extends BaseExtraSQLITCase {
         getJdbcTemplate().batchUpdate(getExtraSQLCommand().getFullInsertOrder(), dataPair.getLeft());
         getJdbcTemplate().batchUpdate(getExtraSQLCommand().getFullInsertOrderItem(), dataPair.getRight());
         startIncrementTask(new PostgreSQLIncrementTask(getJdbcTemplate(), new SnowflakeKeyGenerateAlgorithm(), "test", true));
-        assertOriginalSourceSuccess();
         addTargetResource();
         getJdbcTemplate().execute(getCommonSQLCommand().getAutoAlterOrderWithItemShardingTableRule());
         assertCheckMatchConsistencySuccess();

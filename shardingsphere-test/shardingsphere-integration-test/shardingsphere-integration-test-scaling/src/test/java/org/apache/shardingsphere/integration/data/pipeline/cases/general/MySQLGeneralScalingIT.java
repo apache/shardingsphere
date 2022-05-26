@@ -78,11 +78,8 @@ public final class MySQLGeneralScalingIT extends BaseExtraSQLITCase {
         getJdbcTemplate().batchUpdate(getExtraSQLCommand().getFullInsertOrder(), dataPair.getLeft());
         getJdbcTemplate().batchUpdate(getExtraSQLCommand().getFullInsertOrderItem(), dataPair.getRight());
         startIncrementTask(new MySQLIncrementTask(getJdbcTemplate(), keyGenerateAlgorithm, true));
-        assertOriginalSourceSuccess();
         addTargetResource();
-        String autoAlterOrderWithItemShardingTableRule = getCommonSQLCommand().getAutoAlterOrderWithItemShardingTableRule();
-        log.info("jdbcTemplate execute:{}", autoAlterOrderWithItemShardingTableRule);
-        getJdbcTemplate().execute(autoAlterOrderWithItemShardingTableRule);
+        executeWithLog(getCommonSQLCommand().getAutoAlterOrderWithItemShardingTableRule());
         assertCheckMatchConsistencySuccess();
     }
 }

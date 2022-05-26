@@ -151,7 +151,7 @@ public abstract class BaseITCase {
                 addSourceResource0(connection);
             }
         }
-        List<Map<String, Object>> resources = getJdbcTemplate().queryForList("SHOW SCHEMA RESOURCES from sharding_db");
+        List<Map<String, Object>> resources = queryForListWithLog("SHOW SCHEMA RESOURCES from sharding_db");
         log.info("addSourceResource: {}", resources);
         assertThat(resources.size(), is(2));
     }
@@ -162,7 +162,6 @@ public abstract class BaseITCase {
                 .replace("${password}", ScalingCaseHelper.getPassword(databaseType))
                 .replace("${ds0}", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_0"), queryProps))
                 .replace("${ds1}", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_1"), queryProps));
-        log.info("jdbcTemplate execute: {}", addSourceResource);
         connection.createStatement().execute(addSourceResource);
     }
     
@@ -174,9 +173,8 @@ public abstract class BaseITCase {
                 .replace("${ds2}", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_2"), queryProps))
                 .replace("${ds3}", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_3"), queryProps))
                 .replace("${ds4}", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_4"), queryProps));
-        log.info("jdbcTemplate execute: {}", addTargetResource);
-        getJdbcTemplate().execute(addTargetResource);
-        List<Map<String, Object>> resources = getJdbcTemplate().queryForList("SHOW SCHEMA RESOURCES from sharding_db");
+        executeWithLog(addTargetResource);
+        List<Map<String, Object>> resources = queryForListWithLog("SHOW SCHEMA RESOURCES from sharding_db");
         log.info("addSourceResource: {}", resources);
         assertThat(resources.size(), is(5));
     }
@@ -191,45 +189,41 @@ public abstract class BaseITCase {
     }
     
     protected void initShardingAlgorithm() throws InterruptedException {
-        String databaseShardingAlgorithm = getCommonSQLCommand().getCreateDatabaseShardingAlgorithm();
-        log.info("jdbcTemplate execute: {}", databaseShardingAlgorithm);
-        jdbcTemplate.execute(databaseShardingAlgorithm);
+        executeWithLog(getCommonSQLCommand().getCreateDatabaseShardingAlgorithm());
         TimeUnit.SECONDS.sleep(2);
-        String orderShardingAlgorithm = getCommonSQLCommand().getCreateOrderShardingAlgorithm();
-        log.info("jdbcTemplate execute: {}", orderShardingAlgorithm);
-        jdbcTemplate.execute(orderShardingAlgorithm);
+        executeWithLog(getCommonSQLCommand().getCreateOrderShardingAlgorithm());
         TimeUnit.SECONDS.sleep(2);
-        String orderItemShardingAlgorithm = getCommonSQLCommand().getCreateOrderItemShardingAlgorithm();
-        log.info("jdbcTemplate execute: {}", orderItemShardingAlgorithm);
-        jdbcTemplate.execute(orderItemShardingAlgorithm);
+        executeWithLog(getCommonSQLCommand().getCreateOrderItemShardingAlgorithm());
     }
     
     protected void createAllSharingTableRule() {
-        String createOrderWithItemSharingTableRule = commonSQLCommand.getCreateOrderWithItemSharingTableRule();
-        log.info("jdbcTemplate execute: {}", createOrderWithItemSharingTableRule);
-        jdbcTemplate.execute(createOrderWithItemSharingTableRule);
+        executeWithLog(commonSQLCommand.getCreateOrderWithItemSharingTableRule());
     }
     
     protected void createOrderSharingTableRule() {
-        String orderShardingTableRule = commonSQLCommand.getCreateOrderShardingTableRule();
-        log.info("jdbcTemplate execute: {}", orderShardingTableRule);
-        jdbcTemplate.execute(orderShardingTableRule);
+        executeWithLog(commonSQLCommand.getCreateOrderShardingTableRule());
     }
     
     protected void bindingShardingRule() {
-        jdbcTemplate.execute("CREATE SHARDING BINDING TABLE RULES (t_order,t_order_item)");
+        executeWithLog("CREATE SHARDING BINDING TABLE RULES (t_order,t_order_item)");
     }
     
     protected void createScalingRule() {
-        String scalingRule = "CREATE SHARDING SCALING RULE scaling_manual (INPUT(SHARDING_SIZE=1000), DATA_CONSISTENCY_CHECKER(TYPE(NAME=DATA_MATCH)))";
-        log.info("jdbcTemplate execute: {}", scalingRule);
-        jdbcTemplate.execute(scalingRule);
+        executeWithLog("CREATE SHARDING SCALING RULE scaling_manual (INPUT(SHARDING_SIZE=1000), DATA_CONSISTENCY_CHECKER(TYPE(NAME=DATA_MATCH)))");
     }
     
     protected void createSchema(final String schemaName) {
-        String createSchema = String.format("CREATE SCHEMA %s", schemaName);
-        log.info("jdbcTemplate execute: {}", createSchema);
-        jdbcTemplate.execute(createSchema);
+        executeWithLog(String.format("CREATE SCHEMA %s", schemaName));
+    }
+    
+    protected void executeWithLog(final String sql) {
+        log.info("jdbcTemplate execute:{}", sql);
+        jdbcTemplate.execute(sql);
+    }
+    
+    protected List<Map<String, Object>> queryForListWithLog(final String sql) {
+        log.info("jdbcTemplate queryForMap:{}", sql);
+        return jdbcTemplate.queryForList(sql);
     }
     
     protected void startIncrementTask(final BaseIncrementTask baseIncrementTask) {
@@ -237,12 +231,11 @@ public abstract class BaseITCase {
         getIncreaseTaskThread().start();
     }
     
-    protected void assertOriginalSourceSuccess() {
-        String previewSql = "PREVIEW SELECT COUNT(1) FROM t_order";
-        log.info("jdbcTemplate execute: {}", previewSql);
-        List<Map<String, Object>> previewResults = getJdbcTemplate().queryForList(previewSql);
-        Set<Object> originalSources = previewResults.stream().map(each -> each.get("data_source_name")).collect(Collectors.toSet());
-        assertThat(originalSources, is(new HashSet<>(Arrays.asList("ds_0", "ds_1"))));
+    protected void assertBeforeApplyScalingMetadataCorrectly() {
+        List<Map<String, Object>> previewResults = queryForListWithLog("PREVIEW SELECT COUNT(1) FROM t_order");
+        Set<Object> actualSources = previewResults.stream().map(each -> each.get("actual_sql")).collect(Collectors.toSet());
+        assertThat(actualSources, is(new HashSet<>(Arrays.asList("SELECT COUNT(1) FROM t_order_0 UNION ALL SELECT COUNT(1) FROM t_order_1",
+                "SELECT COUNT(1) FROM t_order_0 UNION ALL SELECT COUNT(1) FROM t_order_1"))));
     }
     
     /**
@@ -255,16 +248,15 @@ public abstract class BaseITCase {
             increaseTaskThread.join(60 * 1000L);
         }
         TimeUnit.SECONDS.sleep(2);
-        List<Map<String, Object>> scalingListMap = getJdbcTemplate().queryForList("SHOW SCALING LIST");
+        List<Map<String, Object>> scalingListMap = queryForListWithLog("SHOW SCALING LIST");
         assertThat(scalingListMap.size(), is(1));
         Object jobId = scalingListMap.get(0).get("id");
         log.info("jobId: {}", jobId);
         Map<String, String> actualStatusMap = new HashMap<>(2, 1);
         String showScalingStatus = String.format("SHOW SCALING STATUS %s", jobId);
         for (int i = 0; i < 15; i++) {
-            log.info("jdbcTemplate execute: {}", showScalingStatus);
-            List<Map<String, Object>> showScalingStatusResMap = jdbcTemplate.queryForList(showScalingStatus);
-            log.info("actualStatusMap: {}", actualStatusMap);
+            List<Map<String, Object>> showScalingStatusResMap = queryForListWithLog(showScalingStatus);
+            log.info("{}: {}", showScalingStatus, showScalingStatusResMap);
             boolean finished = true;
             for (Map<String, Object> entry : showScalingStatusResMap) {
                 String status = entry.get("status").toString();
@@ -281,20 +273,24 @@ public abstract class BaseITCase {
             if (finished) {
                 break;
             }
+            assertBeforeApplyScalingMetadataCorrectly();
             TimeUnit.SECONDS.sleep(2);
         }
         assertThat(actualStatusMap.values().stream().filter(StringUtils::isNotBlank).collect(Collectors.toSet()).size(), is(1));
-        jdbcTemplate.execute(String.format("STOP SCALING SOURCE WRITING %s", jobId));
-        List<Map<String, Object>> checkScalingResults = jdbcTemplate.queryForList(String.format("CHECK SCALING %s BY TYPE (NAME=DATA_MATCH)", jobId));
+        executeWithLog(String.format("STOP SCALING SOURCE WRITING %s", jobId));
+        assertBeforeApplyScalingMetadataCorrectly();
+        List<Map<String, Object>> checkScalingResults = queryForListWithLog(String.format("CHECK SCALING %s BY TYPE (NAME=DATA_MATCH)", jobId));
         log.info("checkScalingResults: {}", checkScalingResults);
         for (Map<String, Object> entry : checkScalingResults) {
             assertTrue(Boolean.parseBoolean(entry.get("records_content_matched").toString()));
         }
-        jdbcTemplate.execute(String.format("APPLY SCALING %s", jobId));
+        assertBeforeApplyScalingMetadataCorrectly();
+        executeWithLog(String.format("APPLY SCALING %s", jobId));
         // TODO make sure the scaling job was applied
         TimeUnit.SECONDS.sleep(2);
-        List<Map<String, Object>> previewResults = jdbcTemplate.queryForList("PREVIEW SELECT COUNT(1) FROM t_order");
-        Set<Object> targetSources = previewResults.stream().map(each -> each.get("data_source_name")).collect(Collectors.toSet());
-        assertThat(targetSources, is(new HashSet<>(Arrays.asList("ds_2", "ds_3", "ds_4"))));
+        List<Map<String, Object>> previewResults = queryForListWithLog("PREVIEW SELECT COUNT(1) FROM t_order");
+        Set<Object> targetSources = previewResults.stream().map(each -> each.get("actual_sql")).collect(Collectors.toSet());
+        assertThat(targetSources, is(new HashSet<>(Arrays.asList("SELECT COUNT(1) FROM t_order_0 UNION ALL SELECT COUNT(1) FROM t_order_3", 
+                "SELECT COUNT(1) FROM t_order_1 UNION ALL SELECT COUNT(1) FROM t_order_4", "SELECT COUNT(1) FROM t_order_2 UNION ALL SELECT COUNT(1) FROM t_order_5"))));
     }
 }
