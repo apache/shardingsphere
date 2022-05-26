@@ -23,28 +23,15 @@ import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.spi.type.ordered.OrderedSPI;
 
-import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Map;
 
 /**
- * Rule based schema meta data builder.
+ * Rule based schema meta data decorator.
  * 
  * @param <T> type of ShardingSphere rule
  */
 @SingletonSPI
-public interface RuleBasedSchemaMetaDataBuilder<T extends TableContainedRule> extends OrderedSPI<T> {
-    
-    /**
-     * Load schema meta data.
-     *
-     * @param tableNames tables name
-     * @param rule ShardingSphere rule
-     * @param materials SchemaBuilderMaterials materials
-     * @return schema meta data map
-     * @throws SQLException SQL exception
-     */
-    Map<String, SchemaMetaData> load(Collection<String> tableNames, T rule, GenericSchemaBuilderMaterials materials) throws SQLException;
+public interface RuleBasedSchemaMetaDataDecorator<T extends TableContainedRule> extends OrderedSPI<T> {
     
     /**
      * Decorate schema meta data.
@@ -53,7 +40,6 @@ public interface RuleBasedSchemaMetaDataBuilder<T extends TableContainedRule> ex
      * @param rule ShardingSphere rule
      * @param materials SchemaBuilderMaterials materials
      * @return schema meta data map
-     * @throws SQLException SQL exception
      */
-    Map<String, SchemaMetaData> decorate(Map<String, SchemaMetaData> schemaMetaDataMap, T rule, GenericSchemaBuilderMaterials materials) throws SQLException;
+    Map<String, SchemaMetaData> decorate(Map<String, SchemaMetaData> schemaMetaDataMap, T rule, GenericSchemaBuilderMaterials materials);
 }

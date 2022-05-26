@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.singletable.metadata.SingleTableSchemaMetaDataBuilder
+org.apache.shardingsphere.singletable.metadata.SingleTableSchemaMetaDataDecorator
