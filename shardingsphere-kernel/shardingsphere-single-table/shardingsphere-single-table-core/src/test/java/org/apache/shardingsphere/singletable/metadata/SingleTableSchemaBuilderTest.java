@@ -21,10 +21,10 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.database.schema.builder.SchemaBuilderMaterials;
+import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.SchemaMetaDataBuilder;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.SchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
@@ -74,7 +74,7 @@ public final class SingleTableSchemaBuilderTest {
         when(dataSource.getConnection()).thenReturn(connection);
         Collection<ShardingSphereRule> rules = Collections.singletonList(mockSingleTableRuleLoad(connection));
         mockSQLLoad(connection);
-        Map<String, SchemaMetaData> actual = SchemaMetaDataBuilder.load(Arrays.asList(singleTableNames), new SchemaBuilderMaterials(
+        Map<String, SchemaMetaData> actual = SchemaMetaDataBuilder.load(Arrays.asList(singleTableNames), new GenericSchemaBuilderMaterials(
                 databaseType, databaseType, Collections.singletonMap(DefaultDatabase.LOGIC_NAME, dataSource), rules, new ConfigurationProperties(new Properties()), DefaultDatabase.LOGIC_NAME));
         assertThat(actual.size(), is(1));
         assertThat(actual.values().iterator().next().getTables().size(), is(2));

@@ -32,7 +32,7 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 @Getter
-public final class SchemaBuilderMaterials {
+public final class GenericSchemaBuilderMaterials {
     
     private final DatabaseType protocolType;
     

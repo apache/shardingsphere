@@ -167,7 +167,7 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
     }
     
     private ColumnProjection generatePredicateSubqueryProjection(final String tableName, final ColumnProjection column) {
-        boolean queryWithCipherColumn = encryptRule.isQueryWithCipherColumn(tableName);
+        boolean queryWithCipherColumn = encryptRule.isQueryWithCipherColumn(tableName, column.getName());
         if (!queryWithCipherColumn) {
             Optional<String> plainColumn = encryptRule.findPlainColumn(tableName, column.getName());
             if (plainColumn.isPresent()) {
@@ -205,7 +205,7 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
     }
     
     private String getEncryptColumnName(final String tableName, final String logicEncryptColumnName) {
-        boolean queryWithCipherColumn = encryptRule.isQueryWithCipherColumn(tableName);
+        boolean queryWithCipherColumn = encryptRule.isQueryWithCipherColumn(tableName, logicEncryptColumnName);
         if (!queryWithCipherColumn) {
             return encryptRule.findPlainColumn(tableName, logicEncryptColumnName).orElseGet(() -> encryptRule.getCipherColumn(tableName, logicEncryptColumnName));
         }

@@ -27,8 +27,6 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.context.refresher.MetaDataRefreshEngine;
-import org.apache.shardingsphere.infra.database.DefaultDatabase;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
@@ -156,9 +154,7 @@ public abstract class DatabaseCommunicationEngine<T> {
     }
     
     protected MergedResult mergeQuery(final SQLStatementContext<?> sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
-        DatabaseType databaseType = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getDatabaseMetaData(database.getName()).getResource().getDatabaseType();
-        MergeEngine mergeEngine = new MergeEngine(DefaultDatabase.LOGIC_NAME,
-                databaseType, database, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps(), database.getRuleMetaData().getRules());
+        MergeEngine mergeEngine = new MergeEngine(database, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps());
         return mergeEngine.merge(queryResults, sqlStatementContext);
     }
     

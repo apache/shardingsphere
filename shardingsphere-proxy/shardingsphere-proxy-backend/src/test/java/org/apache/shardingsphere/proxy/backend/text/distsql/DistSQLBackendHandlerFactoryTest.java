@@ -272,9 +272,9 @@ public final class DistSQLBackendHandlerFactoryTest extends ProxyContextRestorer
     private MetaDataContexts mockMetaDataContexts() {
         MetaDataContexts result = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
         when(result.getAllDatabaseNames()).thenReturn(Collections.singletonList("db"));
-        when(result.getDatabaseMetaData("db").getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
-        when(result.getDatabaseMetaData("db").getResource().getDataSources()).thenReturn(Collections.emptyMap());
-        when(result.getDatabaseMetaData("db").getResource().getNotExistedResources(any())).thenReturn(Collections.emptyList());
+        when(result.getDatabase("db").getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        when(result.getDatabase("db").getResource().getDataSources()).thenReturn(Collections.emptyMap());
+        when(result.getDatabase("db").getResource().getNotExistedResources(any())).thenReturn(Collections.emptyList());
         return result;
     }
     
@@ -283,7 +283,7 @@ public final class DistSQLBackendHandlerFactoryTest extends ProxyContextRestorer
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("db");
         ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class);
-        when(metaDataContexts.getDatabaseMetaData("db")).thenReturn(database);
+        when(metaDataContexts.getDatabase("db")).thenReturn(database);
         when(database.getRuleMetaData()).thenReturn(ruleMetaData);
         when(database.getResource()).thenReturn(mock(ShardingSphereResource.class));
         when(ruleMetaData.getConfigurations()).thenReturn(Collections.singletonList(mock(ShadowRuleConfiguration.class)));

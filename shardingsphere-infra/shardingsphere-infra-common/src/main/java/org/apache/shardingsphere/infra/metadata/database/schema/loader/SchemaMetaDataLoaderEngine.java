@@ -26,8 +26,8 @@ import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.common.TableMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.spi.DialectSchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.spi.DialectSchemaMetaDataLoaderFactory;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.SchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
 
 import java.sql.SQLException;
 import java.util.Collection;

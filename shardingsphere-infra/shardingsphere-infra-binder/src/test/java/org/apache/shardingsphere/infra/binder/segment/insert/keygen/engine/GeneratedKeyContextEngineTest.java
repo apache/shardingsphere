@@ -19,8 +19,8 @@ package org.apache.shardingsphere.infra.binder.segment.insert.keygen.engine;
 
 import org.apache.shardingsphere.infra.binder.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.InsertColumnsSegment;

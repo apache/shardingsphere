@@ -75,7 +75,7 @@ public final class EncryptMergedResultTest {
         when(mergedResult.getValue(1, String.class)).thenReturn("VALUE");
         EncryptContext encryptContext = EncryptContextBuilder.build(DefaultDatabase.LOGIC_NAME, DefaultDatabase.LOGIC_NAME, "t_encrypt", "order_id", mock(EncryptRule.class));
         when(metaData.findEncryptContext(1)).thenReturn(Optional.of(encryptContext));
-        when(metaData.isQueryWithCipherColumn("t_encrypt")).thenReturn(true);
+        when(metaData.isQueryWithCipherColumn("t_encrypt", "order_id")).thenReturn(true);
         when(metaData.findEncryptor("t_encrypt", "order_id")).thenReturn(Optional.empty());
         assertThat(new EncryptMergedResult(metaData, mergedResult).getValue(1, String.class), is("VALUE"));
     }
@@ -88,7 +88,7 @@ public final class EncryptMergedResultTest {
         EncryptContext encryptContext = EncryptContextBuilder.build(DefaultDatabase.LOGIC_NAME, DefaultDatabase.LOGIC_NAME, "t_encrypt", "order_id", mock(EncryptRule.class));
         when(encryptAlgorithm.decrypt("VALUE", encryptContext)).thenReturn("ORIGINAL_VALUE");
         when(metaData.findEncryptContext(1)).thenReturn(Optional.of(encryptContext));
-        when(metaData.isQueryWithCipherColumn("t_encrypt")).thenReturn(true);
+        when(metaData.isQueryWithCipherColumn("t_encrypt", "order_id")).thenReturn(true);
         when(metaData.findEncryptor("t_encrypt", "order_id")).thenReturn(Optional.of(encryptAlgorithm));
         assertThat(new EncryptMergedResult(metaData, mergedResult).getValue(1, String.class), is("ORIGINAL_VALUE"));
     }
@@ -99,7 +99,7 @@ public final class EncryptMergedResultTest {
         EncryptAlgorithm<String, String> encryptAlgorithm = mock(EncryptAlgorithm.class);
         EncryptContext encryptContext = EncryptContextBuilder.build(DefaultDatabase.LOGIC_NAME, DefaultDatabase.LOGIC_NAME, "t_encrypt", "order_id", mock(EncryptRule.class));
         when(metaData.findEncryptContext(1)).thenReturn(Optional.of(encryptContext));
-        when(metaData.isQueryWithCipherColumn("t_encrypt")).thenReturn(true);
+        when(metaData.isQueryWithCipherColumn("t_encrypt", "order_id")).thenReturn(true);
         when(metaData.findEncryptor("t_encrypt", "order_id")).thenReturn(Optional.of(encryptAlgorithm));
         assertNull(new EncryptMergedResult(metaData, mergedResult).getValue(1, String.class));
     }

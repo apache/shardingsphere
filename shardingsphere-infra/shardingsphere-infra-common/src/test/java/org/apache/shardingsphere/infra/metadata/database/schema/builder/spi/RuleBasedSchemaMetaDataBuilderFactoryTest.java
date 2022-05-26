@@ -15,21 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.schema.model;
+package org.apache.shardingsphere.infra.metadata.database.schema.builder.spi;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import org.apache.shardingsphere.infra.metadata.database.schema.fixture.loader.CommonFixtureSchemaMetaDataBuilder;
+import org.apache.shardingsphere.infra.metadata.database.schema.fixture.rule.CommonFixtureRule;
+import org.junit.Test;
 
-/**
- * Index meta data.
- */
-@RequiredArgsConstructor
-@Getter
-@EqualsAndHashCode
-@ToString
-public final class IndexMetaData {
+import java.util.Collections;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
+
+public final class RuleBasedSchemaMetaDataBuilderFactoryTest {
     
-    private final String name;
+    @Test
+    public void assertGetInstances() {
+        CommonFixtureRule rule = new CommonFixtureRule();
+        assertThat(RuleBasedSchemaMetaDataBuilderFactory.getInstances(Collections.singleton(rule)).get(rule), instanceOf(CommonFixtureSchemaMetaDataBuilder.class));
+    }
 }

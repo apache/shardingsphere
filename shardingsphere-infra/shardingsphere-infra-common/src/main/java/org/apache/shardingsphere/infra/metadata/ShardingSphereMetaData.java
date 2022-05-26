@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -36,7 +35,7 @@ import java.util.Properties;
 @Getter
 public final class ShardingSphereMetaData {
     
-    private final Map<String, ShardingSphereDatabase> databaseMap;
+    private final Map<String, ShardingSphereDatabase> databases;
     
     private final ShardingSphereRuleMetaData globalRuleMetaData;
     
@@ -44,24 +43,5 @@ public final class ShardingSphereMetaData {
     
     public ShardingSphereMetaData() {
         this(new LinkedHashMap<>(), new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()), new ConfigurationProperties(new Properties()));
-    }
-    
-    /**
-     * Get all database names.
-     *
-     * @return all database names
-     */
-    public Collection<String> getAllDatabaseNames() {
-        return databaseMap.keySet();
-    }
-    
-    /**
-     * Get database.
-     *
-     * @param databaseName database name
-     * @return database
-     */
-    public ShardingSphereDatabase getDatabase(final String databaseName) {
-        return databaseMap.get(databaseName);
     }
 }

@@ -40,6 +40,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Alt
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterSchemaContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterSequenceContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterSynonymContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterDirectoryContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterTableActionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterTablespaceContext;
@@ -154,6 +155,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussAlterSchemaStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussAlterSequenceStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussAlterSynonymStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussAlterDirectoryStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussAlterTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussAlterTablespaceStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussAlterTextSearchStatement;
@@ -776,6 +778,11 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
     @Override
     public ASTNode visitAlterSynonym(final AlterSynonymContext ctx) {
         return new OpenGaussAlterSynonymStatement();
+    }
+    
+    @Override
+    public ASTNode visitAlterDirectory(final AlterDirectoryContext ctx) {
+        return new OpenGaussAlterDirectoryStatement();
     }
     
     @Override

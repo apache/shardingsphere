@@ -23,6 +23,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.statu
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.ComputeNodeStatus;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.WorkerIdEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.XaRecoveryIdEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 import org.junit.Test;
@@ -90,5 +91,14 @@ public final class ComputeNodeStateChangedWatcherTest {
         assertTrue(actual.isPresent());
         assertThat(((LabelsEvent) actual.get()).getLabels(), is(Arrays.asList("label_1", "label_2")));
         assertThat(((LabelsEvent) actual.get()).getInstanceId(), is("127.0.0.1@3307"));
+    }
+    
+    @Test
+    public void assertCreateXaRecoveryIdEvent() {
+        Optional<GovernanceEvent> actual = new ComputeNodeStateChangedWatcher()
+                .createGovernanceEvent(new DataChangedEvent("/nodes/compute_nodes/xa_recovery_id/127.0.0.1@3307/127.0.0.1@3307", "", Type.ADDED));
+        assertTrue(actual.isPresent());
+        assertThat(((XaRecoveryIdEvent) actual.get()).getInstanceId(), is("127.0.0.1@3307"));
+        assertThat(((XaRecoveryIdEvent) actual.get()).getXaRecoveryId(), is("127.0.0.1@3307"));
     }
 }
