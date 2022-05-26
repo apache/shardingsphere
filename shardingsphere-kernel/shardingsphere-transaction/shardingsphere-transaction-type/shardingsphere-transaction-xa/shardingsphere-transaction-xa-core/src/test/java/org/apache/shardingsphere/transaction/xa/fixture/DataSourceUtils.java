@@ -31,13 +31,13 @@ import javax.sql.DataSource;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DataSourceUtils {
-
+    
     /**
      * Build data source.
      *
      * @param dataSourceClass data source
-     * @param databaseType    database type
-     * @param databaseName    database name
+     * @param databaseType database type
+     * @param databaseName database name
      * @return built data source
      */
     public static DataSource build(final Class<? extends DataSource> dataSourceClass, final DatabaseType databaseType, final String databaseName) {
@@ -49,7 +49,7 @@ public final class DataSourceUtils {
         }
         throw new UnsupportedOperationException(dataSourceClass.getName());
     }
-
+    
     private static HikariDataSource createHikariDataSource(final DatabaseType databaseType, final String databaseName) {
         HikariDataSource result = new HikariDataSource();
         result.setJdbcUrl(getURL(databaseType, databaseName));
@@ -61,14 +61,14 @@ public final class DataSourceUtils {
         result.setIdleTimeout(40 * 1000L);
         return result;
     }
-
+    
     private static AtomikosDataSourceBean createAtomikosDataSourceBean(final DatabaseType databaseType, final DataSource dataSource, final String databaseName) {
         AtomikosDataSourceBean result = new AtomikosDataSourceBean();
         result.setUniqueResourceName(databaseName);
         result.setXaDataSource(XADataSourceFactory.build(databaseType, dataSource));
         return result;
     }
-
+    
     private static String getURL(final DatabaseType databaseType, final String databaseName) {
         switch (databaseType.getType()) {
             case "MySQL":
