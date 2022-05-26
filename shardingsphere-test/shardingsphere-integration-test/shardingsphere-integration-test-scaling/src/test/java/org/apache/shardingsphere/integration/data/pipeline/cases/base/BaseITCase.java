@@ -153,7 +153,6 @@ public abstract class BaseITCase {
             }
         }
         List<Map<String, Object>> resources = queryForListWithLog("SHOW SCHEMA RESOURCES from sharding_db");
-        log.info("addSourceResource: {}", resources);
         assertThat(resources.size(), is(2));
     }
     
@@ -176,7 +175,6 @@ public abstract class BaseITCase {
                 .replace("${ds4}", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_4"), queryProps));
         executeWithLog(addTargetResource);
         List<Map<String, Object>> resources = queryForListWithLog("SHOW SCHEMA RESOURCES from sharding_db");
-        log.info("addSourceResource: {}", resources);
         assertThat(resources.size(), is(5));
     }
     
@@ -235,6 +233,7 @@ public abstract class BaseITCase {
     protected void assertBeforeApplyScalingMetadataCorrectly() {
         List<Map<String, Object>> previewResults = queryForListWithLog("PREVIEW SELECT COUNT(1) FROM t_order");
         Set<Object> actualSources = previewResults.stream().map(each -> each.get("actual_sql")).collect(Collectors.toSet());
+        assertThat(previewResults.stream().map(each -> each.get("data_source_name")).collect(Collectors.toSet()), is(new HashSet<>(Arrays.asList("ds_0", "ds_1"))));
         assertThat(actualSources, is(new HashSet<>(Collections.singletonList("SELECT COUNT(1) FROM t_order_0 UNION ALL SELECT COUNT(1) FROM t_order_1"))));
     }
     
@@ -248,7 +247,7 @@ public abstract class BaseITCase {
         if (null != increaseTaskThread) {
             increaseTaskThread.join(60 * 1000L);
         }
-        TimeUnit.SECONDS.sleep(2);
+        TimeUnit.SECONDS.sleep(4);
         List<Map<String, Object>> scalingListMap = queryForListWithLog("SHOW SCALING LIST");
         assertThat(scalingListMap.size(), is(1));
         Object jobId = scalingListMap.get(0).get("id");
@@ -291,6 +290,7 @@ public abstract class BaseITCase {
         TimeUnit.SECONDS.sleep(2);
         List<Map<String, Object>> previewResults = queryForListWithLog("PREVIEW SELECT COUNT(1) FROM t_order");
         Set<Object> targetSources = previewResults.stream().map(each -> each.get("actual_sql")).collect(Collectors.toSet());
+        assertThat(previewResults.stream().map(each -> each.get("data_source_name")).collect(Collectors.toSet()), is(new HashSet<>(Arrays.asList("ds_2", "ds_3", "ds_4"))));
         assertThat(targetSources, is(new HashSet<>(Arrays.asList("SELECT COUNT(1) FROM t_order_0 UNION ALL SELECT COUNT(1) FROM t_order_3", 
                 "SELECT COUNT(1) FROM t_order_1 UNION ALL SELECT COUNT(1) FROM t_order_4", "SELECT COUNT(1) FROM t_order_2 UNION ALL SELECT COUNT(1) FROM t_order_5"))));
     }
