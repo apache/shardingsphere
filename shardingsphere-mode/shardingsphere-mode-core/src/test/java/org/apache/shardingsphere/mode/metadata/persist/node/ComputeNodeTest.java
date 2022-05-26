@@ -48,10 +48,10 @@ public final class ComputeNodeTest {
     
     @Test
     public void assertGetProcessTriggerInstanceIdNodePath() {
-        assertThat(ComputeNode.getProcessTriggerInstanceIdNodePath("127.0.0.1@3307", InstanceType.PROXY, "foo_process_id"),
-                is("/nodes/compute_nodes/process_trigger/proxy/127.0.0.1@3307/foo_process_id"));
-        assertThat(ComputeNode.getProcessTriggerInstanceIdNodePath("127.0.0.1@3307", InstanceType.JDBC, "foo_process_id"),
-                is("/nodes/compute_nodes/process_trigger/jdbc/127.0.0.1@3307/foo_process_id"));
+        assertThat(ComputeNode.getProcessTriggerInstanceIdNodePath("127.0.0.1@3307", "foo_process_id"),
+                is("/nodes/compute_nodes/process_trigger/127.0.0.1@3307:foo_process_id"));
+        assertThat(ComputeNode.getProcessTriggerInstanceIdNodePath("127.0.0.1@3307", "foo_process_id"),
+                is("/nodes/compute_nodes/process_trigger/127.0.0.1@3307:foo_process_id"));
     }
     
     @Test
@@ -78,7 +78,12 @@ public final class ComputeNodeTest {
     
     @Test
     public void assertGetInstanceXaRecoveryIdNodePath() {
-        assertThat(ComputeNode.getInstanceXaRecoveryIdNodePath("127.0.0.1@3307"), is("/nodes/compute_nodes/xa_recovery_id/127.0.0.1@3307"));
+        assertThat(ComputeNode.getInstanceXaRecoveryIdNodePath("127.0.0.1@3307", "127.0.0.1@3307"), is("/nodes/compute_nodes/xa_recovery_id/127.0.0.1@3307/127.0.0.1@3307"));
+    }
+    
+    @Test
+    public void assertGetXaRecoveryIdNodePath() {
+        assertThat(ComputeNode.getXaRecoveryIdNodePath(), is("/nodes/compute_nodes/xa_recovery_id"));
     }
     
     @Test

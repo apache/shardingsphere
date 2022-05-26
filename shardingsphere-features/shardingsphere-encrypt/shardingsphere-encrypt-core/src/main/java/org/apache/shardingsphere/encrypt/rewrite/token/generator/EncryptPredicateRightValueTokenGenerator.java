@@ -73,7 +73,7 @@ public final class EncryptPredicateRightValueTokenGenerator implements Collectio
     private SQLToken generateSQLToken(final String schemaName, final EncryptCondition encryptCondition) {
         List<Object> originalValues = encryptCondition.getValues(parameters);
         int startIndex = encryptCondition.getStartIndex();
-        boolean queryWithCipherColumn = encryptRule.isQueryWithCipherColumn(encryptCondition.getTableName());
+        boolean queryWithCipherColumn = encryptRule.isQueryWithCipherColumn(encryptCondition.getTableName(), encryptCondition.getColumnName());
         return queryWithCipherColumn ? generateSQLTokenForQueryWithCipherColumn(schemaName, encryptCondition, originalValues, startIndex)
                 : generateSQLTokenForQueryWithoutCipherColumn(schemaName, encryptCondition, originalValues, startIndex);
     }

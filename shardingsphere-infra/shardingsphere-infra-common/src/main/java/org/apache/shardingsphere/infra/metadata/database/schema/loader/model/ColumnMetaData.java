@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.schema.model;
+package org.apache.shardingsphere.infra.metadata.database.schema.loader.model;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -23,15 +23,21 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 /**
- * Constraint meta data.
+ * Column meta data.
  */
 @RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
 @ToString
-public final class ConstraintMetaData {
+public final class ColumnMetaData {
     
     private final String name;
     
-    private final String referencedTableName;
+    private final int dataType;
+    
+    private final boolean primaryKey;
+    
+    private final boolean generated;
+    
+    private final boolean caseSensitive;
 }

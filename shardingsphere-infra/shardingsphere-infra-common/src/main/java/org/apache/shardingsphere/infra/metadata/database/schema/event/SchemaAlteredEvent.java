@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.event;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
 
 import java.util.ArrayList;
 import java.util.Collection;

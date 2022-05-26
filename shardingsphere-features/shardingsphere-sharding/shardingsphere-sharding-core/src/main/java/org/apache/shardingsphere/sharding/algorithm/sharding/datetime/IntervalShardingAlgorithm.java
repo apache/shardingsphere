@@ -33,8 +33,9 @@ import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.OffsetTime;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.time.chrono.ChronoLocalDate;
+import java.time.chrono.ChronoLocalDateTime;
+import java.time.chrono.ChronoZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
@@ -170,9 +171,9 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
             }
             return result;
         }
-        LocalDateTime calculateTimeAsView = LocalDateTime.from(calculateTime);
-        LocalDateTime dateTimeUpperAsLocalDateTime = LocalDateTime.from(dateTimeUpper);
-        LocalDateTime dateTimeLowerAsLocalDateTime = LocalDateTime.from(dateTimeLower);
+        LocalDateTime calculateTimeAsView = LocalDateTime.of(calculateTime.query(TemporalQueries.localDate()), calculateTime.query(TemporalQueries.localTime()));
+        LocalDateTime dateTimeUpperAsLocalDateTime = LocalDateTime.of(dateTimeUpperAsLocalDate, dateTimeUpperAsLocalTime);
+        LocalDateTime dateTimeLowerAsLocalDateTime = LocalDateTime.of(dateTimeLowerAsLocalDate, dateTimeLowerAsLocalTime);
         while (!calculateTimeAsView.isAfter(dateTimeUpperAsLocalDateTime)) {
             if (hasIntersection(Range.closedOpen(calculateTimeAsView, calculateTimeAsView.plus(stepAmount, stepUnit)), range, dateTimeLowerAsLocalDateTime, dateTimeUpperAsLocalDateTime)) {
                 result.addAll(getMatchedTables(calculateTimeAsView, availableTargetNames));
@@ -222,7 +223,7 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
     }
     
     private String getDateTimeText(final Comparable<?> endpoint) {
-        if (endpoint instanceof LocalDateTime || endpoint instanceof ZonedDateTime
+        if (endpoint instanceof ChronoLocalDateTime || endpoint instanceof ChronoZonedDateTime
                 || endpoint instanceof OffsetDateTime || endpoint instanceof ChronoLocalDate
                 || endpoint instanceof LocalTime || endpoint instanceof OffsetTime) {
             return dateTimeFormatter.format((TemporalAccessor) endpoint);
@@ -248,7 +249,7 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
             tableSuffix = viewAsLocalTime.format(tableSuffixPattern);
             return availableTargetNames.parallelStream().filter(each -> each.endsWith(tableSuffix)).collect(Collectors.toSet());
         }
-        tableSuffix = LocalDateTime.from(dateTime).format(tableSuffixPattern);
+        tableSuffix = LocalDateTime.of(viewAsLocalDate, viewAsLocalTime).format(tableSuffixPattern);
         return availableTargetNames.parallelStream().filter(each -> each.endsWith(tableSuffix)).collect(Collectors.toSet());
     }
     

@@ -15,29 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.schema.model;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterDirectoryStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 
 /**
- * Column meta data.
+ * OpenGauss alter directory statement.
  */
-@RequiredArgsConstructor
-@Getter
-@EqualsAndHashCode
 @ToString
-public final class ColumnMetaData {
-    
-    private final String name;
-    
-    private final int dataType;
-    
-    private final boolean primaryKey;
-    
-    private final boolean generated;
-    
-    private final boolean caseSensitive;
+public final class OpenGaussAlterDirectoryStatement extends AlterDirectoryStatement implements OpenGaussStatement {
 }

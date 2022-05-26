@@ -87,7 +87,7 @@ public final class TextProtocolBackendHandlerFactoryTest extends ProxyContextRes
         mockGlobalRuleMetaData(metaDataContexts);
         ShardingSphereDatabase database = mockDatabase();
         when(metaDataContexts.getAllDatabaseNames().contains("db")).thenReturn(true);
-        when(metaDataContexts.getMetaData().getDatabaseMap().get("db")).thenReturn(database);
+        when(metaDataContexts.getMetaData().getDatabases().get("db")).thenReturn(database);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         when(metaDataContexts.getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));

@@ -93,7 +93,7 @@ public final class ShardingSphereDatabaseMetaDataTest {
         when(shardingSphereConnection.getContextManager().getDataSourceMap(DefaultDatabase.LOGIC_NAME)).thenReturn(dataSourceMap);
         when(shardingSphereConnection.getDatabaseName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(metaDataContexts.getDatabaseMetaData(shardingSphereConnection.getDatabaseName())).thenReturn(database);
+        when(metaDataContexts.getDatabase(shardingSphereConnection.getDatabaseName())).thenReturn(database);
         CachedDatabaseMetaData cachedDatabaseMetaData = new CachedDatabaseMetaData(databaseMetaData);
         when(shardingSphereConnection.getJdbcContext().getCachedDatabaseMetaData()).thenReturn(cachedDatabaseMetaData);
         ShardingRule shardingRule = mockShardingRule();
