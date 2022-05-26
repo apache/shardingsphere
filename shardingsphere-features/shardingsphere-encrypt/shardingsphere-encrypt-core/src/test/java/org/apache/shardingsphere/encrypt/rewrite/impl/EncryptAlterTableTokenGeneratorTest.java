@@ -89,7 +89,8 @@ public final class EncryptAlterTableTokenGeneratorTest {
         EncryptColumnDataType cipherDataType = new EncryptColumnDataType("varchar(200) not null default ''", dataTypes);
         EncryptColumnDataType assistedQueryDataType = new EncryptColumnDataType("varchar(200) not null", dataTypes);
         EncryptColumnDataType plainDataType = new EncryptColumnDataType("int(20) unsigned not null default 0", dataTypes);
-        return new EncryptColumn(logicDataType, "cipher_certificate_number", cipherDataType, "assisted_certificate_number", assistedQueryDataType, "certificate_number_plain", plainDataType, "test");
+        return new EncryptColumn(logicDataType, "cipher_certificate_number", cipherDataType, "assisted_certificate_number", assistedQueryDataType, "certificate_number_plain", plainDataType,
+                "test", null);
     }
     
     private EncryptColumn mockNewEncryptColumn() {
@@ -101,7 +102,7 @@ public final class EncryptAlterTableTokenGeneratorTest {
         EncryptColumnDataType assistedQueryDataType = new EncryptColumnDataType("varchar(200) not null", dataTypes);
         EncryptColumnDataType plainDataType = new EncryptColumnDataType("int(20) unsigned not null default 0", dataTypes);
         return new EncryptColumn(logicDataType, "cipher_certificate_number_new", cipherDataType,
-                "assisted_certificate_number_new", assistedQueryDataType, "certificate_number_new_plain", plainDataType, "test");
+                "assisted_certificate_number_new", assistedQueryDataType, "certificate_number_new_plain", plainDataType, "test", null);
     }
     
     @Test

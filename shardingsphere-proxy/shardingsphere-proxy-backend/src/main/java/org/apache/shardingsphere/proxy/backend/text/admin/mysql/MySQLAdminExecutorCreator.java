@@ -162,7 +162,7 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
         if (!hasDatabases() || !hasResources()) {
             return new NoResourceShowExecutor(sqlStatement);
         }
-        String driverType = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.PROXY_BACKEND_DRIVER_TYPE);
+        String driverType = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.PROXY_BACKEND_DRIVER_TYPE);
         if (isNotUseSchema) {
             return "ExperimentalVertx".equals(driverType) ? null : new UnicastResourceShowExecutor(sqlStatement, sql);
         }

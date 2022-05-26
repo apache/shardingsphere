@@ -39,7 +39,7 @@ public final class ConnectionLimitContextTest extends ProxyContextRestorer {
     
     @Test
     public void assertConnectionsLimited() {
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_MAX_CONNECTIONS)).thenReturn(2);
+        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_MAX_CONNECTIONS)).thenReturn(2);
         assertTrue(ConnectionLimitContext.getInstance().connectionAllowed());
         assertTrue(ConnectionLimitContext.getInstance().connectionAllowed());
         assertFalse(ConnectionLimitContext.getInstance().connectionAllowed());
@@ -53,7 +53,7 @@ public final class ConnectionLimitContextTest extends ProxyContextRestorer {
     
     @Test
     public void assertConnectionsUnlimited() {
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_MAX_CONNECTIONS)).thenReturn(0);
+        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_MAX_CONNECTIONS)).thenReturn(0);
         assertFalse(ConnectionLimitContext.getInstance().limitsMaxConnections());
     }
 }

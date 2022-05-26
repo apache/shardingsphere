@@ -30,6 +30,7 @@ import org.apache.shardingsphere.mode.persist.PersistRepository;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -86,7 +87,8 @@ public final class ComputeNodePersistService {
      * @param xaRecoveryId xa recovery id
      */
     public void persistInstanceXaRecoveryId(final String instanceId, final String xaRecoveryId) {
-        repository.persist(ComputeNode.getInstanceXaRecoveryIdNodePath(instanceId), xaRecoveryId);
+        loadXaRecoveryId(instanceId).ifPresent(each -> repository.delete(ComputeNode.getInstanceXaRecoveryIdNodePath(each, instanceId)));
+        repository.persist(ComputeNode.getInstanceXaRecoveryIdNodePath(xaRecoveryId, instanceId), "");
     }
     
     /**
@@ -136,7 +138,13 @@ public final class ComputeNodePersistService {
      * @return xa recovery id
      */
     public Optional<String> loadXaRecoveryId(final String instanceId) {
-        return Optional.ofNullable(repository.get(ComputeNode.getInstanceXaRecoveryIdNodePath(instanceId)));
+        List<String> xaRecoveryIds = repository.getChildrenKeys(ComputeNode.getXaRecoveryIdNodePath());
+        for (String xaRecoveryId : xaRecoveryIds) {
+            if (repository.getChildrenKeys(String.join("/", ComputeNode.getXaRecoveryIdNodePath(), xaRecoveryId)).contains(instanceId)) {
+                return Optional.of(xaRecoveryId);
+            }
+        }
+        return Optional.empty();
     }
     
     /**

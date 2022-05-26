@@ -21,7 +21,7 @@ import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -66,11 +66,11 @@ public final class ProxyContext {
     /**
      * Check database exists.
      *
-     * @param databaseName database name
+     * @param name database name
      * @return database exists or not
      */
-    public boolean databaseExists(final String databaseName) {
-        return contextManager.getMetaDataContexts().getAllDatabaseNames().contains(databaseName);
+    public boolean databaseExists(final String name) {
+        return contextManager.getMetaDataContexts().getMetaData().getDatabases().containsKey(name);
     }
     
     /**
@@ -80,10 +80,10 @@ public final class ProxyContext {
      * @return got database
      */
     public ShardingSphereDatabase getDatabase(final String name) {
-        if (Strings.isNullOrEmpty(name) || !contextManager.getMetaDataContexts().getAllDatabaseNames().contains(name)) {
+        if (Strings.isNullOrEmpty(name) || !contextManager.getMetaDataContexts().getMetaData().getDatabases().containsKey(name)) {
             throw new NoDatabaseSelectedException();
         }
-        return contextManager.getMetaDataContexts().getDatabaseMetaData(name);
+        return contextManager.getMetaDataContexts().getDatabase(name);
     }
     
     /**
@@ -92,7 +92,7 @@ public final class ProxyContext {
      * @return all database names
      */
     public Collection<String> getAllDatabaseNames() {
-        return contextManager.getMetaDataContexts().getAllDatabaseNames();
+        return contextManager.getMetaDataContexts().getMetaData().getDatabases().keySet();
     }
     
     /**
@@ -114,9 +114,9 @@ public final class ProxyContext {
     public Collection<ShardingSphereRule> getRules(final String databaseName) {
         Collection<ShardingSphereRule> result = new LinkedList<>();
         if (!Strings.isNullOrEmpty(databaseName) && databaseExists(databaseName)) {
-            result.addAll(contextManager.getMetaDataContexts().getDatabaseMetaData(databaseName).getRuleMetaData().getRules());
+            result.addAll(contextManager.getMetaDataContexts().getDatabase(databaseName).getRuleMetaData().getRules());
         }
-        result.addAll(contextManager.getMetaDataContexts().getGlobalRuleMetaData().getRules());
+        result.addAll(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules());
         return result;
     }
 }
