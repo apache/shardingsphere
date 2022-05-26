@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockRegistryService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.MutexLockRegistryService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcherFactory;
@@ -70,10 +70,12 @@ public final class RegistryCenter {
     /**
      * Online instance.
      * 
-     * @param instanceDefinition instance definition
+     * @param computeNodeInstance compute node instance
      */
-    public void onlineInstance(final InstanceDefinition instanceDefinition) {
-        computeNodeStatusService.registerOnline(instanceDefinition);
+    public void onlineInstance(final ComputeNodeInstance computeNodeInstance) {
+        computeNodeStatusService.registerOnline(computeNodeInstance.getInstanceDefinition());
+        computeNodeStatusService.persistInstanceLabels(computeNodeInstance.getCurrentInstanceId(), computeNodeInstance.getLabels());
+        computeNodeStatusService.persistInstanceXaRecoveryId(computeNodeInstance.getCurrentInstanceId(), computeNodeInstance.getXaRecoveryId());
         listenerFactory.watchListeners();
     }
 }
