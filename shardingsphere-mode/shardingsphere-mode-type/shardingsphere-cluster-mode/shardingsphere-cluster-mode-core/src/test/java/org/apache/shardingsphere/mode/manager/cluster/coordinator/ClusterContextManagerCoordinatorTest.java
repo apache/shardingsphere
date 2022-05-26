@@ -374,14 +374,14 @@ public final class ClusterContextManagerCoordinatorTest {
     
     @Test
     public void assertTriggerShowProcessList() throws NoSuchFieldException, IllegalAccessException {
-        InstanceDefinition instanceDefinition = contextManager.getInstanceContext().getInstance().getInstanceDefinition();
+        String instanceId = contextManager.getInstanceContext().getInstance().getInstanceDefinition().getInstanceId().getId();
         ShowProcessListManager.getInstance().putProcessContext("foo_execution_id", new YamlExecuteProcessContext(mock(ExecuteProcessContext.class)));
         String showProcessListId = "foo_process_id";
-        coordinator.triggerShowProcessList(new ShowProcessListTriggerEvent(instanceDefinition, showProcessListId));
+        coordinator.triggerShowProcessList(new ShowProcessListTriggerEvent(instanceId, showProcessListId));
         ClusterPersistRepository repository = ReflectionUtil.getFieldValue(coordinator, "registryCenter", RegistryCenter.class).getRepository();
-        verify(repository).persist("/execution_nodes/foo_process_id/proxy_" + instanceDefinition.getInstanceId().getId(),
+        verify(repository).persist("/execution_nodes/foo_process_id/" + instanceId,
                 "contexts:" + System.lineSeparator() + "- startTimeMillis: 0" + System.lineSeparator());
-        verify(repository).delete("/nodes/compute_nodes/process_trigger/proxy/" + instanceDefinition.getInstanceId().getId() + "/foo_process_id");
+        verify(repository).delete("/nodes/compute_nodes/process_trigger/" + instanceId + ":foo_process_id");
     }
     
     private void lockAndAwaitDefaultTime(final ShowProcessListSimpleLock lock) {
