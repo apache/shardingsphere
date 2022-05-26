@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domai
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Alter directory statement test case .
+ * Alter directory statement test case.
  */
 public final class AlterDirectoryStatementTestCase extends SQLParserTestCase {
 }
