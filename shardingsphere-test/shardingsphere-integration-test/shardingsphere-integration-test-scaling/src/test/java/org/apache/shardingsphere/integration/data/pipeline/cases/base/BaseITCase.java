@@ -49,6 +49,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -234,8 +235,7 @@ public abstract class BaseITCase {
     protected void assertBeforeApplyScalingMetadataCorrectly() {
         List<Map<String, Object>> previewResults = queryForListWithLog("PREVIEW SELECT COUNT(1) FROM t_order");
         Set<Object> actualSources = previewResults.stream().map(each -> each.get("actual_sql")).collect(Collectors.toSet());
-        assertThat(actualSources, is(new HashSet<>(Arrays.asList("SELECT COUNT(1) FROM t_order_0 UNION ALL SELECT COUNT(1) FROM t_order_1",
-                "SELECT COUNT(1) FROM t_order_0 UNION ALL SELECT COUNT(1) FROM t_order_1"))));
+        assertThat(actualSources, is(new HashSet<>(Collections.singletonList("SELECT COUNT(1) FROM t_order_0 UNION ALL SELECT COUNT(1) FROM t_order_1"))));
     }
     
     /**
