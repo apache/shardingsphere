@@ -74,7 +74,7 @@ public final class ShardingSphereDatabaseMetaDataTest {
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereConnection shardingSphereConnection;
     
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private MetaDataContexts metaDataContexts;
     
     private final Map<String, DataSource> dataSourceMap = new HashMap<>();
