@@ -59,13 +59,13 @@ public final class MetaDataContextsBuilderTest {
         MetaDataContexts actual = new MetaDataContextsBuilder(
                 Collections.singletonMap("logic_db", databaseConfig), Collections.singleton(authorityRuleConfig), new ConfigurationProperties(props)).build(mock(MetaDataPersistService.class));
         assertRules(actual);
-        assertTrue(actual.getDatabase("logic_db").getResource().getDataSources().isEmpty());
+        assertTrue(actual.getMetaData().getDatabases().get("logic_db").getResource().getDataSources().isEmpty());
         assertThat(actual.getMetaData().getProps().getProps().size(), is(1));
         assertThat(actual.getMetaData().getProps().getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE), is(1));
     }
     
     private void assertRules(final MetaDataContexts actual) {
-        Collection<ShardingSphereRule> rules = actual.getDatabase("logic_db").getRuleMetaData().getRules();
+        Collection<ShardingSphereRule> rules = actual.getMetaData().getDatabases().get("logic_db").getRuleMetaData().getRules();
         assertThat(rules.size(), is(1));
         assertThat(rules.iterator().next(), instanceOf(FixtureRule.class));
     }

@@ -54,7 +54,6 @@ public final class ShowTableMetadataHandlerTest extends ProxyContextRestorer {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getSchemas().get("db_name")).thenReturn(new ShardingSphereSchema(createTableMap()));
         when(contextManager.getMetaDataContexts().getMetaData().getDatabases()).thenReturn(Collections.singletonMap("db_name", database));
-        when(contextManager.getMetaDataContexts().getDatabase("db_name")).thenReturn(database);
         ProxyContext.init(contextManager);
         ConnectionSession connectionSession = mock(ConnectionSession.class, RETURNS_DEEP_STUBS);
         when(connectionSession.getDatabaseName()).thenReturn("db_name");
