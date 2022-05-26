@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.metadata.database.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.SchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
@@ -54,7 +55,7 @@ public final class GenericSchemaBuilder {
     public static Map<String, ShardingSphereSchema> build(final String databaseName, final DatabaseType protocolType, final DatabaseType storageType, final Map<String, DataSource> dataSourceMap,
                                                           final Collection<ShardingSphereRule> rules, final ConfigurationProperties props) throws SQLException {
         String defaultSchemaName = DatabaseTypeEngine.getDefaultSchemaName(protocolType, databaseName);
-        Map<String, SchemaMetaData> schemaMetaDataMap = SchemaMetaDataBuilder.load(
+        Map<String, SchemaMetaData> schemaMetaDataMap = SchemaMetaDataLoader.load(
                 getAllTableNames(rules), new GenericSchemaBuilderMaterials(protocolType, storageType, dataSourceMap, rules, props, defaultSchemaName));
         if (schemaMetaDataMap.isEmpty()) {
             return Collections.singletonMap(defaultSchemaName, new ShardingSphereSchema());

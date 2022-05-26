@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.federation.optimizer.context.planner.Opti
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterials;
-import org.apache.shardingsphere.infra.metadata.database.schema.builder.SchemaMetaDataBuilder;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.SchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.database.schema.event.SchemaAlteredEvent;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
@@ -77,7 +77,7 @@ public final class RenameTableStatementSchemaRefresher implements MetaDataRefres
         }
         GenericSchemaBuilderMaterials materials = new GenericSchemaBuilderMaterials(database.getProtocolType(),
                 database.getResource().getDatabaseType(), database.getResource().getDataSources(), database.getRuleMetaData().getRules(), props, schemaName);
-        Map<String, SchemaMetaData> metaDataMap = SchemaMetaDataBuilder.load(Collections.singletonList(tableName), materials);
+        Map<String, SchemaMetaData> metaDataMap = SchemaMetaDataLoader.load(Collections.singletonList(tableName), materials);
         Optional<TableMetaData> actualTableMetaData = Optional.ofNullable(metaDataMap.get(schemaName)).map(optional -> optional.getTables().get(tableName));
         actualTableMetaData.ifPresent(optional -> {
             database.getSchemas().get(schemaName).put(tableName, optional);

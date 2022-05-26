@@ -15,47 +15,51 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.schema.loader.common;
+package org.apache.shardingsphere.infra.metadata.database.schema.loader.jdbc;
 
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.sql.Connection;
+import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class IndexMetaDataLoaderTest {
+public final class SchemaTableNamesLoaderTest {
     
-    @Test
-    public void assertLoad() throws SQLException {
-        Collection<IndexMetaData> actual = IndexMetaDataLoader.load(mockConnection(), "tbl");
-        assertThat(actual.size(), is(1));
-        IndexMetaData indexMetaData = actual.iterator().next();
-        assertThat(indexMetaData.getName(), is("my_index"));
-    }
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private DataSource dataSource;
     
-    private Connection mockConnection() throws SQLException {
-        Connection result = mock(Connection.class, RETURNS_DEEP_STUBS);
+    @Before
+    public void setUp() throws SQLException {
         ResultSet resultSet = mockResultSet();
-        when(result.getMetaData().getIndexInfo("catalog", null, "tbl", false, false)).thenReturn(resultSet);
-        when(result.getCatalog()).thenReturn("catalog");
-        return result;
+        when(dataSource.getConnection().getMetaData().getTables("catalog", "public", null, new String[]{"TABLE", "VIEW"})).thenReturn(resultSet);
+        when(dataSource.getConnection().getCatalog()).thenReturn("catalog");
+        when(dataSource.getConnection().getSchema()).thenReturn("public");
     }
     
     private ResultSet mockResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
-        when(result.next()).thenReturn(true, true, false);
-        when(result.getString("INDEX_NAME")).thenReturn("my_index");
+        when(result.next()).thenReturn(true, true, true, false);
+        when(result.getString("TABLE_NAME")).thenReturn("tbl", "$tbl", "/tbl");
         return result;
+    }
+    
+    @Test
+    public void assertLoadSchemaTableNames() throws SQLException {
+        assertThat(SchemaTableNamesLoader.loadSchemaTableNames(DefaultDatabase.LOGIC_NAME,
+                new PostgreSQLDatabaseType(), dataSource), is(Collections.singletonMap("public", Collections.singletonList("tbl"))));
     }
 }

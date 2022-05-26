@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.schema.builder;
+package org.apache.shardingsphere.infra.metadata.database.schema.loader;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.spi.RuleBasedSchemaMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.spi.RuleBasedSchemaMetaDataBuilderFactory;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
@@ -37,10 +38,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Schema meta data builder.
+ * Schema meta data loader.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SchemaMetaDataBuilder {
+public final class SchemaMetaDataLoader {
     
     /**
      * Load table meta data.

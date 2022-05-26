@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.fixture.rule.CommonFixtureRule;
 import org.apache.shardingsphere.infra.metadata.database.schema.fixture.rule.DataNodeContainedFixtureRule;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.SchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
@@ -51,21 +52,21 @@ public final class SchemaMetaDataBuilderTest {
     public void assertLoadWithExistedTableName() throws SQLException {
         GenericSchemaBuilderMaterials materials = new GenericSchemaBuilderMaterials(databaseType, databaseType, Collections.singletonMap("logic_db", new MockedDataSource()),
                 Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule()), new ConfigurationProperties(new Properties()), "sharding_db");
-        assertFalse(SchemaMetaDataBuilder.load(Collections.singletonList("data_node_routed_table1"), materials).isEmpty());
+        assertFalse(SchemaMetaDataLoader.load(Collections.singletonList("data_node_routed_table1"), materials).isEmpty());
     }
     
     @Test
     public void assertLoadWithNotExistedTableName() throws SQLException {
         GenericSchemaBuilderMaterials materials = new GenericSchemaBuilderMaterials(databaseType, databaseType, Collections.singletonMap("logic_db", new MockedDataSource()),
                 Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule()), new ConfigurationProperties(new Properties()), "sharding_db");
-        assertTrue(SchemaMetaDataBuilder.load(Collections.singletonList("invalid_table"), materials).isEmpty());
+        assertTrue(SchemaMetaDataLoader.load(Collections.singletonList("invalid_table"), materials).isEmpty());
     }
     
     @Test
     public void assertLoadAllTables() throws SQLException {
         GenericSchemaBuilderMaterials materials = new GenericSchemaBuilderMaterials(databaseType, databaseType, Collections.singletonMap("logic_db", new MockedDataSource()),
                 Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule()), new ConfigurationProperties(new Properties()), "sharding_db");
-        Map<String, SchemaMetaData> actual = SchemaMetaDataBuilder.load(new DataNodeContainedFixtureRule().getTables(), materials);
+        Map<String, SchemaMetaData> actual = SchemaMetaDataLoader.load(new DataNodeContainedFixtureRule().getTables(), materials);
         assertThat(actual.size(), is(1));
         assertTables(new ShardingSphereSchema(actual.values().iterator().next().getTables()).getTables());
     }

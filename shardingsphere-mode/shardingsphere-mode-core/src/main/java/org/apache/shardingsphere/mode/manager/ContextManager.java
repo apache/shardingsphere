@@ -40,7 +40,7 @@ import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRule
 import org.apache.shardingsphere.infra.metadata.database.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilder;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterials;
-import org.apache.shardingsphere.infra.metadata.database.schema.builder.SchemaMetaDataBuilder;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.SchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.SystemSchemaBuilder;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
@@ -455,7 +455,7 @@ public final class ContextManager implements AutoCloseable {
     }
     
     private void loadTableMetaData(final String databaseName, final String schemaName, final String tableName, final GenericSchemaBuilderMaterials materials) throws SQLException {
-        SchemaMetaData schemaMetaData = SchemaMetaDataBuilder.load(Collections.singletonList(tableName), materials).getOrDefault(schemaName, new SchemaMetaData("", Collections.emptyMap()));
+        SchemaMetaData schemaMetaData = SchemaMetaDataLoader.load(Collections.singletonList(tableName), materials).getOrDefault(schemaName, new SchemaMetaData("", Collections.emptyMap()));
         if (schemaMetaData.getTables().containsKey(tableName)) {
             metaDataContexts.getDatabase(databaseName).getSchemas().get(schemaName).put(tableName, schemaMetaData.getTables().get(tableName));
             metaDataContexts.getPersistService().ifPresent(optional -> optional.getSchemaMetaDataService()

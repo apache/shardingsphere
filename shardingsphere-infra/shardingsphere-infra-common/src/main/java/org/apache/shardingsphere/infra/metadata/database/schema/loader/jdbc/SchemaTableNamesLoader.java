@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.schema.loader.common;
+package org.apache.shardingsphere.infra.metadata.database.schema.loader.jdbc;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -35,10 +35,10 @@ import java.util.LinkedList;
 import java.util.Map;
 
 /**
- * Schema meta data loader.
+ * Schema table names loader.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SchemaMetaDataLoader {
+public final class SchemaTableNamesLoader {
     
     private static final String TABLE_TYPE = "TABLE";
     
