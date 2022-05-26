@@ -21,7 +21,7 @@ import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -83,7 +83,7 @@ public final class ProxyContext {
         if (Strings.isNullOrEmpty(name) || !contextManager.getMetaDataContexts().getAllDatabaseNames().contains(name)) {
             throw new NoDatabaseSelectedException();
         }
-        return contextManager.getMetaDataContexts().getDatabaseMetaData(name);
+        return contextManager.getMetaDataContexts().getDatabase(name);
     }
     
     /**
@@ -114,9 +114,9 @@ public final class ProxyContext {
     public Collection<ShardingSphereRule> getRules(final String databaseName) {
         Collection<ShardingSphereRule> result = new LinkedList<>();
         if (!Strings.isNullOrEmpty(databaseName) && databaseExists(databaseName)) {
-            result.addAll(contextManager.getMetaDataContexts().getDatabaseMetaData(databaseName).getRuleMetaData().getRules());
+            result.addAll(contextManager.getMetaDataContexts().getDatabase(databaseName).getRuleMetaData().getRules());
         }
-        result.addAll(contextManager.getMetaDataContexts().getGlobalRuleMetaData().getRules());
+        result.addAll(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules());
         return result;
     }
 }

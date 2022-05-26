@@ -20,8 +20,8 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryabl
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.exception.DatabaseNotExistedException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.schema.QualifiedDatabase;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.type.ExportableRule;
 import org.apache.shardingsphere.mode.metadata.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.mode.metadata.storage.StorageNodeStatus;
@@ -76,7 +76,7 @@ public final class ShowReadwriteSplittingReadResourcesHandler extends QueryableR
     protected Collection<List<Object>> getRows(final ContextManager contextManager) {
         String databaseName = getDatabaseName();
         MetaDataContexts metaDataContexts = contextManager.getMetaDataContexts();
-        ShardingSphereDatabase database = metaDataContexts.getDatabaseMetaData(databaseName);
+        ShardingSphereDatabase database = metaDataContexts.getDatabase(databaseName);
         Collection<String> allReadResources = getAllReadResources(database);
         Map<String, StorageNodeDataSource> persistentReadResources = getPersistentReadResources(databaseName, metaDataContexts.getPersistService().orElse(null));
         return buildRows(allReadResources, persistentReadResources);

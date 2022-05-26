@@ -100,9 +100,9 @@ public final class PostgreSQLComParseExecutorTest extends ProxyContextRestorer {
         when(parsePacket.getStatementId()).thenReturn(statementId);
         when(parsePacket.readParameterTypes()).thenReturn(Collections.singletonList(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4));
         when(connectionSession.getDatabaseName()).thenReturn("db");
-        when(mockedContextManager.getMetaDataContexts().getDatabaseMetaData("db").getResource().getDatabaseType()).thenReturn(new PostgreSQLDatabaseType());
-        when(mockedContextManager.getMetaDataContexts().getDatabaseMetaData("db").getProtocolType()).thenReturn(new PostgreSQLDatabaseType());
-        when(mockedContextManager.getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(SQLParserRule.class)).thenReturn(Optional.of(sqlParserRule));
+        when(mockedContextManager.getMetaDataContexts().getDatabase("db").getResource().getDatabaseType()).thenReturn(new PostgreSQLDatabaseType());
+        when(mockedContextManager.getMetaDataContexts().getDatabase("db").getProtocolType()).thenReturn(new PostgreSQLDatabaseType());
+        when(mockedContextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(SQLParserRule.class)).thenReturn(Optional.of(sqlParserRule));
         Collection<DatabasePacket<?>> actualPackets = executor.execute();
         assertThat(actualPackets.size(), is(1));
         assertThat(actualPackets.iterator().next(), is(PostgreSQLParseCompletePacket.getInstance()));

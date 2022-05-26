@@ -114,11 +114,12 @@ public abstract class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<Exe
             return DatabaseTypeEngine.getTrunkDatabaseType("MySQL");
         }
         String schemaName = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getAllDatabaseNames().iterator().next();
-        return ProxyContext.getInstance().getContextManager().getMetaDataContexts().getDatabaseMetaData(schemaName).getResource().getDatabaseType();
+        return ProxyContext.getInstance().getContextManager().getMetaDataContexts().getDatabase(schemaName).getResource().getDatabaseType();
     }
     
     private static Optional<DatabaseType> findConfiguredDatabaseType() {
-        String configuredDatabaseType = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE);
+        String configuredDatabaseType = ProxyContext.getInstance()
+                .getContextManager().getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE);
         return configuredDatabaseType.isEmpty() ? Optional.empty() : Optional.of(DatabaseTypeEngine.getTrunkDatabaseType(configuredDatabaseType));
     }
 }

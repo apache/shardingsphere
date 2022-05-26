@@ -20,12 +20,12 @@ package org.apache.shardingsphere.infra.federation.optimizer;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContextFactory;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
-import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
 import org.apache.shardingsphere.infra.parser.ParserConfiguration;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -52,48 +52,38 @@ import static org.mockito.Mockito.when;
 
 public final class ShardingSphereOptimizerTest {
     
-    private static final String SELECT_CROSS_JOIN_CONDITION =
-            "SELECT t_order_federate.order_id, t_order_federate.user_id, t_user_info.user_id "
-                    + "FROM t_order_federate JOIN t_user_info ON t_order_federate.user_id = t_user_info.user_id "
-                    + "WHERE t_user_info.user_id = 13";
+    private static final String SELECT_CROSS_JOIN_CONDITION = "SELECT t_order_federate.order_id, t_order_federate.user_id, t_user_info.user_id "
+            + "FROM t_order_federate JOIN t_user_info ON t_order_federate.user_id = t_user_info.user_id "
+            + "WHERE t_user_info.user_id = 13";
     
-    private static final String SELECT_WHERE_ALL_FIELDS =
-            "SELECT user_id, information FROM t_user_info WHERE user_id = 12";
+    private static final String SELECT_WHERE_ALL_FIELDS = "SELECT user_id, information FROM t_user_info WHERE user_id = 12";
     
-    private static final String SELECT_WHERE_SINGLE_FIELD =
-            "SELECT user_id FROM t_user_info WHERE user_id = 12";
+    private static final String SELECT_WHERE_SINGLE_FIELD = "SELECT user_id FROM t_user_info WHERE user_id = 12";
     
-    private static final String SELECT_CROSS_WHERE =
-            "SELECT t_order_federate.order_id, t_order_federate.user_id, t_user_info.user_id "
-                    + "FROM t_order_federate , t_user_info "
-                    + "WHERE t_order_federate.user_id = t_user_info.user_id";
+    private static final String SELECT_CROSS_WHERE = "SELECT t_order_federate.order_id, t_order_federate.user_id, t_user_info.user_id "
+            + "FROM t_order_federate , t_user_info "
+            + "WHERE t_order_federate.user_id = t_user_info.user_id";
     
-    private static final String SELECT_CROSS_JOIN =
-            "SELECT t_order_federate.order_id, t_order_federate.user_id, t_user_info.user_id "
-                    + "FROM t_order_federate JOIN t_user_info "
-                    + "ON t_order_federate.user_id = t_user_info.user_id";
+    private static final String SELECT_CROSS_JOIN = "SELECT t_order_federate.order_id, t_order_federate.user_id, t_user_info.user_id "
+            + "FROM t_order_federate JOIN t_user_info "
+            + "ON t_order_federate.user_id = t_user_info.user_id";
     
-    private static final String SELECT_CROSS_WHERE_CONDITION =
-            "SELECT t_order_federate.order_id, t_order_federate.user_id, t_user_info.user_id "
-                    + "FROM t_order_federate ,t_user_info "
-                    + "WHERE t_order_federate.user_id = t_user_info.user_id AND t_user_info.user_id = 13";
+    private static final String SELECT_CROSS_WHERE_CONDITION = "SELECT t_order_federate.order_id, t_order_federate.user_id, t_user_info.user_id "
+            + "FROM t_order_federate ,t_user_info "
+            + "WHERE t_order_federate.user_id = t_user_info.user_id AND t_user_info.user_id = 13";
     
-    private static final String SELECT_SUBQUERY_FROM =
-            "SELECT user.user_id, user.information "
-                    + "FROM (SELECT * FROM t_user_info WHERE user_id > 1) as user ";
+    private static final String SELECT_SUBQUERY_FROM = "SELECT user.user_id, user.information "
+            + "FROM (SELECT * FROM t_user_info WHERE user_id > 1) as user ";
     
-    private static final String SELECT_SUBQUERY_WHERE_EXIST =
-            "SELECT t_order_federate.order_id, t_order_federate.user_id FROM t_order_federate "
-                    + "WHERE EXISTS (SELECT * FROM t_user_info WHERE t_order_federate.user_id = t_user_info.user_id)";
+    private static final String SELECT_SUBQUERY_WHERE_EXIST = "SELECT t_order_federate.order_id, t_order_federate.user_id FROM t_order_federate "
+            + "WHERE EXISTS (SELECT * FROM t_user_info WHERE t_order_federate.user_id = t_user_info.user_id)";
     
-    private static final String SELECT_SUBQUERY_WHERE_IN =
-            "SELECT t_order_federate.order_id, t_order_federate.user_id FROM t_order_federate "
-                    + "WHERE t_order_federate.user_id IN (SELECT t_user_info.user_id FROM t_user_info)";
+    private static final String SELECT_SUBQUERY_WHERE_IN = "SELECT t_order_federate.order_id, t_order_federate.user_id FROM t_order_federate "
+            + "WHERE t_order_federate.user_id IN (SELECT t_user_info.user_id FROM t_user_info)";
     
-    private static final String SELECT_SUBQUERY_WHERE_BETWEEN =
-            "SELECT t_order_federate.order_id, t_order_federate.user_id FROM t_order_federate "
-                    + "WHERE user_id BETWEEN (SELECT user_id FROM t_user_info WHERE information = 'before') "
-                    + "AND (SELECT user_id FROM t_user_info WHERE information = 'after')";
+    private static final String SELECT_SUBQUERY_WHERE_BETWEEN = "SELECT t_order_federate.order_id, t_order_federate.user_id FROM t_order_federate "
+            + "WHERE user_id BETWEEN (SELECT user_id FROM t_user_info WHERE information = 'before') "
+            + "AND (SELECT user_id FROM t_user_info WHERE information = 'after')";
     
     private final String databaseName = "sharding_db";
     

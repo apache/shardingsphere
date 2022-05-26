@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.Col
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
 import java.util.Collections;
 import java.util.List;
@@ -60,13 +60,14 @@ public final class EncryptAlgorithmMetaData {
     }
     
     /**
-     * Judge whether table is support QueryWithCipherColumn or not.
+     * Judge whether column is support QueryWithCipherColumn or not.
      *
      * @param tableName table name
-     * @return whether table is support QueryWithCipherColumn or not
+     * @param columnName column name
+     * @return whether column is support QueryWithCipherColumn or not
      */
-    public boolean isQueryWithCipherColumn(final String tableName) {
-        return encryptRule.isQueryWithCipherColumn(tableName);
+    public boolean isQueryWithCipherColumn(final String tableName, final String columnName) {
+        return encryptRule.isQueryWithCipherColumn(tableName, columnName);
     }
     
     /**

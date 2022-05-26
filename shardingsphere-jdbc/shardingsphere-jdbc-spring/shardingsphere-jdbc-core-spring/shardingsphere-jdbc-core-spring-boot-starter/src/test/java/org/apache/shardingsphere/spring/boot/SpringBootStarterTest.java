@@ -73,7 +73,7 @@ public class SpringBootStarterTest {
     
     @Test
     public void assertDataSources() {
-        Map<String, DataSource> dataSources = getContextManager(dataSource).getMetaDataContexts().getDatabaseMetaData("foo_db").getResource().getDataSources();
+        Map<String, DataSource> dataSources = getContextManager(dataSource).getMetaDataContexts().getDatabase("foo_db").getResource().getDataSources();
         assertThat(dataSources.size(), is(2));
         assertTrue(dataSources.containsKey("ds0"));
         assertTrue(dataSources.containsKey("ds1"));
@@ -81,7 +81,7 @@ public class SpringBootStarterTest {
     
     @Test
     public void assertRules() {
-        Collection<ShardingSphereRule> rules = getContextManager(dataSource).getMetaDataContexts().getDatabaseMetaData("foo_db").getRuleMetaData().getRules();
+        Collection<ShardingSphereRule> rules = getContextManager(dataSource).getMetaDataContexts().getDatabase("foo_db").getRuleMetaData().getRules();
         assertThat(rules.size(), is(5));
         for (ShardingSphereRule each : rules) {
             if (each instanceof ShardingRule) {
@@ -206,7 +206,7 @@ public class SpringBootStarterTest {
     
     @Test
     public void assertProperties() {
-        assertTrue(getContextManager(dataSource).getMetaDataContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
-        assertThat(getContextManager(dataSource).getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE), is(10));
+        assertTrue(getContextManager(dataSource).getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
+        assertThat(getContextManager(dataSource).getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE), is(10));
     }
 }

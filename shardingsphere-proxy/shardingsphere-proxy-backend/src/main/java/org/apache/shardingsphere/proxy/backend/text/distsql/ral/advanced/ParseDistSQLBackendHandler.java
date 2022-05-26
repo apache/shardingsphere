@@ -64,7 +64,7 @@ public final class ParseDistSQLBackendHandler extends QueryableRALBackendHandler
     
     @Override
     protected Collection<List<Object>> getRows(final ContextManager contextManager) {
-        Optional<SQLParserRule> sqlParserRule = contextManager.getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(SQLParserRule.class);
+        Optional<SQLParserRule> sqlParserRule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(SQLParserRule.class);
         Preconditions.checkState(sqlParserRule.isPresent());
         SQLStatement parsedSqlStatement;
         try {
@@ -80,6 +80,6 @@ public final class ParseDistSQLBackendHandler extends QueryableRALBackendHandler
         String databaseName = connectionSession.getDatabaseName();
         return Strings.isNullOrEmpty(databaseName) || !ProxyContext.getInstance().databaseExists(databaseName)
                 ? defaultDatabaseType
-                : ProxyContext.getInstance().getContextManager().getMetaDataContexts().getDatabaseMetaData(databaseName).getResource().getDatabaseType();
+                : ProxyContext.getInstance().getContextManager().getMetaDataContexts().getDatabase(databaseName).getResource().getDatabaseType();
     }
 }

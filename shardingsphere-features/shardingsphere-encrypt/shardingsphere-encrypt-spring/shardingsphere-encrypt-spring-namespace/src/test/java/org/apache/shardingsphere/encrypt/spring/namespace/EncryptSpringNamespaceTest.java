@@ -35,6 +35,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 @ContextConfiguration(locations = "classpath:META-INF/spring/encrypt-application-context.xml")
 public final class EncryptSpringNamespaceTest extends AbstractJUnit4SpringContextTests {
@@ -86,6 +87,7 @@ public final class EncryptSpringNamespaceTest extends AbstractJUnit4SpringContex
         assertThat(columnRuleConfig.getLogicColumn(), is("pwd"));
         assertThat(columnRuleConfig.getCipherColumn(), is("pwd_cipher"));
         assertThat(columnRuleConfig.getEncryptorName(), is("aesEncryptor"));
+        assertTrue(columnRuleConfig.getQueryWithCipherColumn());
     }
     
     private void assertEncryptColumn2(final EncryptColumnRuleConfiguration columnRuleConfig) {
@@ -94,5 +96,6 @@ public final class EncryptSpringNamespaceTest extends AbstractJUnit4SpringContex
         assertThat(columnRuleConfig.getAssistedQueryColumn(), is("credit_card_assisted_query"));
         assertThat(columnRuleConfig.getPlainColumn(), is("credit_card_plain"));
         assertThat(columnRuleConfig.getEncryptorName(), is("md5Encryptor"));
+        assertFalse(columnRuleConfig.getQueryWithCipherColumn());
     }
 }

@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.Col
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.SubstitutableColumnNameToken;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
@@ -70,7 +70,7 @@ public final class EncryptProjectionTokenGeneratorTest {
         when(result.findPlainColumn("doctor1", "mobile")).thenReturn(Optional.of("Mobile"));
         when(result.findEncryptTable("doctor")).thenReturn(Optional.of(encryptTable1));
         when(result.findEncryptTable("doctor1")).thenReturn(Optional.of(encryptTable2));
-        EncryptColumn column = new EncryptColumn(null, "mobile", null, null, null, "mobile", null, null);
+        EncryptColumn column = new EncryptColumn(null, "mobile", null, null, null, "mobile", null, null, null);
         when(result.findEncryptColumn("doctor", "mobile")).thenReturn(Optional.of(column));
         return result;
     }

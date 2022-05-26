@@ -73,7 +73,7 @@ public abstract class AbstractBaseExecutorTest {
         when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
         when(result.getTransactionContexts()).thenReturn(transactionContexts);
         when(result.getDataSourceMap(DefaultDatabase.LOGIC_NAME)).thenReturn(mockDataSourceMap());
-        when(result.getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(TransactionRule.class)).thenReturn(Optional.empty());
+        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(TransactionRule.class)).thenReturn(Optional.empty());
         return result;
     }
     
@@ -87,9 +87,9 @@ public abstract class AbstractBaseExecutorTest {
     
     private MetaDataContexts mockMetaDataContexts() {
         MetaDataContexts result = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
-        when(result.getDatabaseMetaData(DefaultDatabase.LOGIC_NAME).getResource().getDatabaseType()).thenReturn(DatabaseTypeFactory.getInstance("H2"));
+        when(result.getDatabase(DefaultDatabase.LOGIC_NAME).getResource().getDatabaseType()).thenReturn(DatabaseTypeFactory.getInstance("H2"));
         ShardingRule shardingRule = mockShardingRule();
-        when(result.getDatabaseMetaData(DefaultDatabase.LOGIC_NAME).getRuleMetaData().getRules()).thenReturn(Collections.singletonList(shardingRule));
+        when(result.getDatabase(DefaultDatabase.LOGIC_NAME).getRuleMetaData().getRules()).thenReturn(Collections.singletonList(shardingRule));
         return result;
     }
     
