@@ -2359,3 +2359,27 @@ createSPFile
 createPFile
     : CREATE PFILE (EQ_ pfileName)? FROM (SPFILE (EQ_ spfileName)? (AS COPY)? | MEMORY)
     ;
+
+createControlFile
+    : CREATE CONTROLFILE REUSE? SET? DATABASE databaseName logfileForControlClause?
+    ( RESETLOGS | NORESETLOGS) (DATAFILE fileSpecifications)?
+    ( MAXLOGFILES INTEGER_
+    | MAXLOGMEMBERS INTEGER_
+    | MAXLOGHISTORY INTEGER_
+    | MAXDATAFILES INTEGER_
+    | MAXINSTANCES INTEGER_
+    | ARCHIVELOG
+    | NOARCHIVELOG
+    | FORCE LOGGING
+    | SET STANDBY NOLOGGING FOR (DATA AVAILABILITY | LOAD PERFORMANCE)
+    )*
+    characterSetClause?
+    ;
+
+logfileForControlClause
+    : LOGFILE (GROUP INTEGER_)? fileSpecification (COMMA_ (GROUP INTEGER_)? fileSpecification)+
+    ;
+
+characterSetClause
+    : CHARACTER SET characterSetName
+    ;
