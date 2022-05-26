@@ -21,8 +21,6 @@
 name: Continuous Integration
 
 on:
-  workflow_run:
-    workflows: [Run Tests]
   push:
     branches: [ master, dev ]
     paths:
