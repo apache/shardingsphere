@@ -248,8 +248,7 @@ public final class ClusterContextManagerCoordinator {
      */
     @Subscribe
     public synchronized void renew(final XaRecoveryIdEvent event) {
-        if (contextManager.getInstanceContext().getInstance().getInstanceDefinition().getInstanceId().getId().equals(event.getInstanceId())) {
-            contextManager.getInstanceContext().updateXaRecoveryId(event.getXaRecoveryId());
+        if (contextManager.getInstanceContext().updateXaRecoveryId(event.getInstanceId(), event.getXaRecoveryId())) {
             contextManager.renewAllTransactionContext();
         }
     }

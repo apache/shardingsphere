@@ -87,6 +87,7 @@ public final class ComputeNodePersistService {
      * @param xaRecoveryId xa recovery id
      */
     public void persistInstanceXaRecoveryId(final String instanceId, final String xaRecoveryId) {
+        loadXaRecoveryId(instanceId).ifPresent(each -> repository.delete(ComputeNode.getInstanceXaRecoveryIdNodePath(each, instanceId)));
         repository.persist(ComputeNode.getInstanceXaRecoveryIdNodePath(xaRecoveryId, instanceId), "");
     }
     
