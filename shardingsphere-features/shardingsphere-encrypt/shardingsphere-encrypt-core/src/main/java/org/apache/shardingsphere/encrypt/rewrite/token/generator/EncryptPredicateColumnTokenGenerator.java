@@ -73,7 +73,7 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
             }
             int startIndex = each.getOwner().isPresent() ? each.getOwner().get().getStopIndex() + 2 : each.getStartIndex();
             int stopIndex = each.getStopIndex();
-            boolean queryWithCipherColumn = encryptRule.isQueryWithCipherColumn(tableName);
+            boolean queryWithCipherColumn = encryptRule.isQueryWithCipherColumn(tableName, each.getIdentifier().getValue());
             if (!queryWithCipherColumn) {
                 Optional<String> plainColumn = encryptTable.get().findPlainColumn(each.getIdentifier().getValue());
                 if (plainColumn.isPresent()) {
