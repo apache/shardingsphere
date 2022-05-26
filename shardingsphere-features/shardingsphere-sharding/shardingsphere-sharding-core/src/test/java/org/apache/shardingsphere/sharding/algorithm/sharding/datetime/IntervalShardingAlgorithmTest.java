@@ -57,7 +57,7 @@ public final class IntervalShardingAlgorithmTest {
     private final Collection<String> availableTablesForDayDataSources = new LinkedList<>();
     
     private final Collection<String> availableTablesForJDBCDateDataSources = new LinkedList<>();
-        
+    
     private final Collection<String> availableTablesForJDBCTimeDataSources = new LinkedList<>();
     
     private final Collection<String> availableTablesForDayWithMillisecondDataSources = new LinkedList<>();
@@ -69,9 +69,9 @@ public final class IntervalShardingAlgorithmTest {
     private IntervalShardingAlgorithm shardingAlgorithmByDay;
     
     private IntervalShardingAlgorithm shardingAlgorithmByJDBCDate;
-        
+    
     private IntervalShardingAlgorithm shardingAlgorithmByJDBCTime;
-        
+    
     private IntervalShardingAlgorithm shardingAlgorithmByDayWithMillisecond;
     
     @Before

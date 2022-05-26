@@ -25,8 +25,8 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleExcep
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.rule.identifier.type.ExportableRule;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;

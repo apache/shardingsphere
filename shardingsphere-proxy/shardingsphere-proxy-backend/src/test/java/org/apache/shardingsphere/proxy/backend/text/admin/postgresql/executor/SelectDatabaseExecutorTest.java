@@ -20,9 +20,10 @@ package org.apache.shardingsphere.proxy.backend.text.admin.postgresql.executor;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
-import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.parser.ParserConfiguration;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -63,8 +64,8 @@ public final class SelectDatabaseExecutorTest extends ProxyContextRestorer {
     @Before
     public void setUp() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        MetaDataContexts metaDataContexts = new MetaDataContexts(
-                mock(MetaDataPersistService.class), new HashMap<>(), mock(ShardingSphereRuleMetaData.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
+        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
+                new ShardingSphereMetaData(new HashMap<>(), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())), mock(OptimizerContext.class));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
     }
@@ -96,13 +97,13 @@ public final class SelectDatabaseExecutorTest extends ProxyContextRestorer {
     }
     
     private void addShardingDatabase() throws SQLException {
-        Map<String, ShardingSphereDatabase> databaseMap = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getDatabaseMap();
+        Map<String, ShardingSphereDatabase> databaseMap = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabaseMap();
         databaseMap.put("sharding_db", new ShardingSphereDatabase("sharding_db", new PostgreSQLDatabaseType(),
                 new ShardingSphereResource(Collections.singletonMap("foo_ds", new MockedDataSource(mockConnection()))), mock(ShardingSphereRuleMetaData.class), Collections.emptyMap()));
     }
     
     private void addEmptyDatabase() {
-        Map<String, ShardingSphereDatabase> databaseMap = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getDatabaseMap();
+        Map<String, ShardingSphereDatabase> databaseMap = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabaseMap();
         databaseMap.put("empty_db", new ShardingSphereDatabase("empty_db", new PostgreSQLDatabaseType(),
                 new ShardingSphereResource(Collections.emptyMap()), new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()), Collections.emptyMap()));
     }

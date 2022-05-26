@@ -29,8 +29,9 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthPlu
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -136,8 +137,8 @@ public final class MySQLAuthenticationHandlerTest extends ProxyContextRestorer {
     }
     
     private MetaDataContexts getMetaDataContexts(final ShardingSphereUser user, final boolean isNeedSuper) throws NoSuchFieldException, IllegalAccessException {
-        return new MetaDataContexts(
-                mock(MetaDataPersistService.class), getDatabaseMap(), buildGlobalRuleMetaData(user, isNeedSuper), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
+        return new MetaDataContexts(mock(MetaDataPersistService.class),
+                new ShardingSphereMetaData(getDatabaseMap(), buildGlobalRuleMetaData(user, isNeedSuper), new ConfigurationProperties(new Properties())), mock(OptimizerContext.class));
     }
     
     private Map<String, ShardingSphereDatabase> getDatabaseMap() {

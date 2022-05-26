@@ -69,7 +69,8 @@ public final class ShardingSphereInterMutexLockHolder {
     }
     
     private InterMutexLock createInterMutexLock(final String locksName) {
-        return new InterMutexLock(locksName, mutexLockRegistryService, currentInstance, computeNodeInstances);
+        InterReentrantMutexLock interReentrantMutexLock = getInterReentrantMutexLock(locksName + "/sequence");
+        return new InterMutexLock(locksName, interReentrantMutexLock, mutexLockRegistryService, currentInstance, computeNodeInstances);
     }
     
     /**

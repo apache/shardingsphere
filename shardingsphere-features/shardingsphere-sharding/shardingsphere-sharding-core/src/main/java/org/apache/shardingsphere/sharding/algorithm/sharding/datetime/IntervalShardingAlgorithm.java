@@ -220,7 +220,7 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
     private LocalTime parseLocalTime(final Comparable<?> endpoint) {
         return LocalTime.parse(getDateTimeText(endpoint).substring(0, dateTimePatternLength), dateTimeFormatter);
     }
-
+    
     private String getDateTimeText(final Comparable<?> endpoint) {
         if (endpoint instanceof LocalDateTime || endpoint instanceof ZonedDateTime
                 || endpoint instanceof OffsetDateTime || endpoint instanceof LocalTime

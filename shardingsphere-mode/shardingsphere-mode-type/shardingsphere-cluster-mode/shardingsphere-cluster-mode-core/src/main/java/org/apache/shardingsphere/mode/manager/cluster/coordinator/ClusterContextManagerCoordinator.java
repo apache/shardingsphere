@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.BatchYaml
 import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessContext;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
-import org.apache.shardingsphere.infra.metadata.schema.QualifiedDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.type.InstanceAwareRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.StatusContainedRule;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
@@ -180,7 +180,7 @@ public final class ClusterContextManagerCoordinator {
     @Subscribe
     public synchronized void renew(final DisabledStateChangedEvent event) {
         QualifiedDatabase qualifiedDatabase = event.getQualifiedSchema();
-        contextManager.getMetaDataContexts().getDatabaseMap().get(qualifiedDatabase.getDatabaseName()).getRuleMetaData().getRules()
+        contextManager.getMetaDataContexts().getMetaData().getDatabaseMap().get(qualifiedDatabase.getDatabaseName()).getRuleMetaData().getRules()
                 .stream().filter(each -> each instanceof StatusContainedRule)
                 .forEach(each -> ((StatusContainedRule) each).updateStatus(new DataSourceNameDisabledEvent(qualifiedDatabase, event.isDisabled())));
     }
@@ -193,7 +193,7 @@ public final class ClusterContextManagerCoordinator {
     @Subscribe
     public synchronized void renew(final PrimaryStateChangedEvent event) {
         QualifiedDatabase qualifiedDatabase = event.getQualifiedDatabase();
-        contextManager.getMetaDataContexts().getDatabaseMap().get(qualifiedDatabase.getDatabaseName()).getRuleMetaData().getRules()
+        contextManager.getMetaDataContexts().getMetaData().getDatabaseMap().get(qualifiedDatabase.getDatabaseName()).getRuleMetaData().getRules()
                 .stream()
                 .filter(each -> each instanceof StatusContainedRule)
                 .forEach(each -> ((StatusContainedRule) each)
@@ -323,7 +323,7 @@ public final class ClusterContextManagerCoordinator {
     }
     
     private void buildSpecialRules() {
-        contextManager.getMetaDataContexts().getDatabaseMap().forEach((key, value) -> value.getRuleMetaData().getRules().forEach(each -> {
+        contextManager.getMetaDataContexts().getMetaData().getDatabaseMap().forEach((key, value) -> value.getRuleMetaData().getRules().forEach(each -> {
             if (each instanceof StatusContainedRule) {
                 disableDataSources((StatusContainedRule) each);
             }

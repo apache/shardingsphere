@@ -35,8 +35,6 @@ public final class ComputeNode {
     
     private static final String ONLINE_NODE = "online";
     
-    private static final String ATTRIBUTES_NODE = "attributes";
-    
     private static final String LABELS_NODE = "labels";
     
     private static final String PROCESS_TRIGGER = "process_trigger";
@@ -105,7 +103,7 @@ public final class ComputeNode {
      * @return path of compute node instance labels
      */
     public static String getInstanceLabelsNodePath(final String instanceId) {
-        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, ATTRIBUTES_NODE, instanceId, LABELS_NODE);
+        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, LABELS_NODE, instanceId);
     }
     
     /**
@@ -115,16 +113,7 @@ public final class ComputeNode {
      * @return path of compute node xa recovery id
      */
     public static String getInstanceXaRecoveryIdNodePath(final String instanceId) {
-        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, ATTRIBUTES_NODE, instanceId, XA_RECOVERY_ID_NODE);
-    }
-    
-    /**
-     * Get attributes node path.
-     * 
-     * @return attributes node path
-     */
-    public static String getAttributesNodePath() {
-        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, ATTRIBUTES_NODE);
+        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, XA_RECOVERY_ID_NODE, instanceId);
     }
     
     /**
@@ -143,19 +132,19 @@ public final class ComputeNode {
      * @return worker id path
      */
     public static String getInstanceWorkerIdNodePath(final String instanceId) {
-        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, ATTRIBUTES_NODE, instanceId, WORKER_ID);
+        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, WORKER_ID, instanceId);
     }
     
     /**
-     * Get instance id by status path.
+     * Get instance id by compute node path.
      * 
-     * @param attributesPath attributes path
+     * @param computeNodePath compute node path
      * @return instance id
      */
-    public static String getInstanceIdByAttributes(final String attributesPath) {
-        Pattern pattern = Pattern.compile(getAttributesNodePath() + "/([\\S]+)" + "(/status|/worker_id|/labels|/xa_recovery_id)$", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(attributesPath);
-        return matcher.find() ? matcher.group(1) : "";
+    public static String getInstanceIdByComputeNode(final String computeNodePath) {
+        Pattern pattern = Pattern.compile(getComputeNodePath() + "(/status|/worker_id|/labels|/xa_recovery_id)" + "/([\\S]+)$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(computeNodePath);
+        return matcher.find() ? matcher.group(2) : "";
     }
     
     /**
@@ -165,7 +154,7 @@ public final class ComputeNode {
      * @return instance status node path
      */
     public static String getInstanceStatusNodePath(final String instanceId) {
-        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, ATTRIBUTES_NODE, instanceId, STATUS_NODE);
+        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, STATUS_NODE, instanceId);
     }
     
     /**

@@ -38,7 +38,7 @@ public final class OKDriverStateTest {
     @Test
     public void assertGetConnection() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(TransactionRule.class)).thenReturn(Optional.empty());
+        when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(TransactionRule.class)).thenReturn(Optional.empty());
         Connection actual = new OKDriverState().getConnection(DefaultDatabase.LOGIC_NAME, contextManager, mock(JDBCContext.class));
         assertThat(actual, instanceOf(ShardingSphereConnection.class));
     }

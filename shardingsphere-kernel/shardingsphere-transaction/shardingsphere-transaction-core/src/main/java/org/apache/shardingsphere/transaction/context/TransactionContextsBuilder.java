@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.transaction.context;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;

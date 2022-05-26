@@ -17,16 +17,16 @@
 
 package org.apache.shardingsphere.singletable.metadata;
 
-import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
-import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedSchemaMetaDataBuilder;
-import org.apache.shardingsphere.infra.metadata.schema.loader.SchemaMetaDataLoaderEngine;
-import org.apache.shardingsphere.infra.metadata.schema.loader.TableMetaDataLoaderMaterial;
-import org.apache.shardingsphere.infra.metadata.schema.model.ConstraintMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.SchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.util.IndexMetaDataUtil;
-import org.apache.shardingsphere.infra.metadata.schema.util.TableMetaDataUtil;
+import org.apache.shardingsphere.infra.metadata.database.schema.builder.SchemaBuilderMaterials;
+import org.apache.shardingsphere.infra.metadata.database.schema.builder.spi.RuleBasedSchemaMetaDataBuilder;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.SchemaMetaDataLoaderEngine;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.TableMetaDataLoaderMaterial;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ConstraintMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.IndexMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtil;
+import org.apache.shardingsphere.infra.metadata.database.schema.util.TableMetaDataUtil;
 import org.apache.shardingsphere.singletable.constant.SingleTableOrder;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 

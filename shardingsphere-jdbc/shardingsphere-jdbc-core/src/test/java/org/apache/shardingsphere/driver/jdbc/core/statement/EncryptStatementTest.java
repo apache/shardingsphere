@@ -58,7 +58,7 @@ public final class EncryptStatementTest extends AbstractShardingSphereDataSource
     
     @Test
     public void assertSQLShow() throws SQLException {
-        assertTrue(getEncryptConnectionWithProps().getContextManager().getMetaDataContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
+        assertTrue(getEncryptConnectionWithProps().getContextManager().getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
     }
     
     @Test

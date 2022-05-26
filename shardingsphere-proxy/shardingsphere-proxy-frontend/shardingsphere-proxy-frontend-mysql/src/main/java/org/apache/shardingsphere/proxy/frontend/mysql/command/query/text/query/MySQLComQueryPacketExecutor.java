@@ -80,9 +80,9 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
             return new EmptyStatement();
         }
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        ShardingSphereSQLParserEngine sqlStatementParserEngine = new ShardingSphereSQLParserEngine(databaseType.getType(),
-                metaDataContexts.getGlobalRuleMetaData().findSingleRule(SQLParserRule.class).orElseThrow(() -> new IllegalStateException("SQLParserRule not found")).toParserConfiguration());
-        return sqlStatementParserEngine.parse(sql, false);
+        ShardingSphereSQLParserEngine engine = new ShardingSphereSQLParserEngine(databaseType.getType(), metaDataContexts
+                .getMetaData().getGlobalRuleMetaData().findSingleRule(SQLParserRule.class).orElseThrow(() -> new IllegalStateException("SQLParserRule not found")).toParserConfiguration());
+        return engine.parse(sql, false);
     }
     
     private boolean areMultiStatements(final ConnectionSession connectionSession, final SQLStatement sqlStatement, final String sql) {

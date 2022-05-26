@@ -19,7 +19,7 @@ package org.apache.shardingsphere.singletable.route.engine;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.schema.QualifiedTable;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterSchemaStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateSchemaStatement;

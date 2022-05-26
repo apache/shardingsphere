@@ -31,7 +31,7 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmCo
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionAlterUpdater;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
 import java.util.Collection;
 import java.util.Collections;

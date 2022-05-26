@@ -52,7 +52,7 @@ public final class ProxyReactiveExecutor {
      */
     public Future<List<ExecuteResult>> execute(final LogicSQL logicSQL, final ExecutionGroupContext<VertxExecutionUnit> executionGroupContext) throws SQLException {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        ExecuteProcessEngine.initialize(logicSQL, executionGroupContext, metaDataContexts.getProps());
+        ExecuteProcessEngine.initialize(logicSQL, executionGroupContext, metaDataContexts.getMetaData().getProps());
         List<Future<ExecuteResult>> futures = vertxExecutor.execute(executionGroupContext, new VertxExecutorCallback());
         return CompositeFuture.all(new ArrayList<>(futures)).compose(compositeFuture -> {
             ExecuteProcessEngine.finish(executionGroupContext.getExecutionID());

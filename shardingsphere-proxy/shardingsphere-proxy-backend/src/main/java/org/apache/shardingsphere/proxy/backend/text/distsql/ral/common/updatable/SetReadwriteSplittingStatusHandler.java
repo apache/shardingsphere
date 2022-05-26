@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.exception.DatabaseNotExistedException;
-import org.apache.shardingsphere.infra.metadata.schema.QualifiedDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.service.StorageNodeStatusService;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;

@@ -83,7 +83,7 @@ public final class ConnectionManager implements ExecutorJDBCConnectionManager, A
     }
     
     private Map<String, DataSource> getTrafficDataSourceMap(final String schema, final ContextManager contextManager) {
-        Optional<TrafficRule> trafficRule = contextManager.getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(TrafficRule.class);
+        Optional<TrafficRule> trafficRule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(TrafficRule.class);
         Optional<MetaDataPersistService> metaDataPersistService = contextManager.getMetaDataContexts().getPersistService();
         if (!trafficRule.isPresent() || trafficRule.get().getStrategyRules().isEmpty() || !metaDataPersistService.isPresent()) {
             return Collections.emptyMap();
@@ -125,7 +125,7 @@ public final class ConnectionManager implements ExecutorJDBCConnectionManager, A
     private ConnectionTransaction createConnectionTransaction(final String databaseName, final ContextManager contextManager) {
         TransactionType type = TransactionTypeHolder.get();
         if (null == type) {
-            Optional<TransactionRule> transactionRule = contextManager.getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(TransactionRule.class);
+            Optional<TransactionRule> transactionRule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(TransactionRule.class);
             return transactionRule.map(optional -> new ConnectionTransaction(databaseName, optional, contextManager.getTransactionContexts()))
                     .orElseGet(() -> new ConnectionTransaction(databaseName, contextManager.getTransactionContexts()));
         }

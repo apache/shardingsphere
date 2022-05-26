@@ -22,7 +22,7 @@ import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
+import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.strategy.ReadwriteSplittingStrategy;
 import org.apache.shardingsphere.readwritesplitting.strategy.ReadwriteSplittingStrategyFactory;
 
@@ -40,14 +40,14 @@ public final class ReadwriteSplittingDataSourceRule {
     
     private final String name;
     
-    private final ReplicaLoadBalanceAlgorithm loadBalancer;
+    private final ReadQueryLoadBalanceAlgorithm loadBalancer;
     
     private final ReadwriteSplittingStrategy readwriteSplittingStrategy;
     
     @Getter(AccessLevel.NONE)
     private final Collection<String> disabledDataSourceNames = new HashSet<>();
     
-    public ReadwriteSplittingDataSourceRule(final ReadwriteSplittingDataSourceRuleConfiguration config, final ReplicaLoadBalanceAlgorithm loadBalancer) {
+    public ReadwriteSplittingDataSourceRule(final ReadwriteSplittingDataSourceRuleConfiguration config, final ReadQueryLoadBalanceAlgorithm loadBalancer) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(config.getName()), "Name is required.");
         name = config.getName();
         this.loadBalancer = loadBalancer;
