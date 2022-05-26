@@ -467,7 +467,7 @@ public final class ContextManager implements AutoCloseable {
         refreshRules(databaseName, database);
         DatabaseType databaseType = DatabaseTypeEngine.getDatabaseType(dataSourceMap.values());
         Map<String, ShardingSphereSchema> result = new ConcurrentHashMap<>();
-        GenericSchemaBuilderMaterials materials = new GenericSchemaBuilderMaterials(database.getProtocolType(), 
+        GenericSchemaBuilderMaterials materials = new GenericSchemaBuilderMaterials(database.getProtocolType(),
                 databaseType, dataSourceMap, database.getRuleMetaData().getRules(), metaDataContexts.getMetaData().getProps(), databaseName);
         result.putAll(GenericSchemaBuilder.build(materials));
         result.putAll(SystemSchemaBuilder.build(databaseName, database.getProtocolType()));
