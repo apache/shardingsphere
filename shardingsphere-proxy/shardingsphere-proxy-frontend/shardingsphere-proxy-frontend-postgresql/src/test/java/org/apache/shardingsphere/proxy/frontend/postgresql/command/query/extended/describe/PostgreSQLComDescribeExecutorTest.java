@@ -109,10 +109,9 @@ public final class PostgreSQLComDescribeExecutorTest extends ProxyContextRestore
         ProxyContext.init(contextManager);
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
         when(connectionSession.getDatabaseName()).thenReturn(DATABASE_NAME);
-        when(contextManager.getMetaDataContexts().getMetaData().getDatabases().containsKey(DATABASE_NAME)).thenReturn(true);
-        when(contextManager.getMetaDataContexts().getMetaData().getDatabases().get(DATABASE_NAME)).thenReturn(mock(ShardingSphereDatabase.class));
-        when(contextManager.getMetaDataContexts().getDatabase(any(String.class)).getRuleMetaData().findSingleRule(SQLTranslatorRule.class))
-                .thenReturn(Optional.of(new SQLTranslatorRule(new SQLTranslatorRuleConfiguration())));
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getRuleMetaData().findSingleRule(SQLTranslatorRule.class)).thenReturn(Optional.of(new SQLTranslatorRule(new SQLTranslatorRuleConfiguration())));
+        when(contextManager.getMetaDataContexts().getMetaData().getDatabases()).thenReturn(Collections.singletonMap(DATABASE_NAME, database));
         prepareTableMetaData();
     }
     
@@ -123,8 +122,8 @@ public final class PostgreSQLComDescribeExecutorTest extends ProxyContextRestore
                 new ColumnMetaData("c", Types.CHAR, true, false, false),
                 new ColumnMetaData("pad", Types.CHAR, true, false, false));
         TableMetaData tableMetaData = new TableMetaData(TABLE_NAME, columnMetaData, Collections.emptyList(), Collections.emptyList());
-        when(contextManager.getMetaDataContexts().getDatabase(DATABASE_NAME).getSchemas().get("public").get(TABLE_NAME)).thenReturn(tableMetaData);
-        when(contextManager.getMetaDataContexts().getDatabase(DATABASE_NAME).getResource().getDatabaseType()).thenReturn(new PostgreSQLDatabaseType());
+        when(contextManager.getMetaDataContexts().getMetaData().getDatabases().get(DATABASE_NAME).getSchemas().get("public").get(TABLE_NAME)).thenReturn(tableMetaData);
+        when(contextManager.getMetaDataContexts().getMetaData().getDatabases().get(DATABASE_NAME).getResource().getDatabaseType()).thenReturn(new PostgreSQLDatabaseType());
     }
     
     @Test

@@ -86,7 +86,7 @@ public final class PostgreSQLBatchedStatementsExecutorTest extends ProxyContextR
         when(contextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE)).thenReturn(1);
         when(contextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY)).thenReturn(1);
         when(contextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
-        when(contextManager.getMetaDataContexts().getDatabase(any(String.class)).getRuleMetaData().findSingleRule(SQLTranslatorRule.class))
+        when(contextManager.getMetaDataContexts().getMetaData().getDatabases().get(any(String.class)).getRuleMetaData().findSingleRule(SQLTranslatorRule.class))
                 .thenReturn(Optional.of(new SQLTranslatorRule(new SQLTranslatorRuleConfiguration())));
     }
     

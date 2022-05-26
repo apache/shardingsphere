@@ -168,6 +168,16 @@ public final class InstanceContext {
     }
     
     /**
+     * Get compute node instance by instance id.
+     * 
+     * @param instanceId instance id
+     * @return compute node instance
+     */
+    public Optional<ComputeNodeInstance> getComputeNodeInstanceById(final String instanceId) {
+        return computeNodeInstances.stream().filter(each -> instanceId.equals(each.getCurrentInstanceId())).findFirst();
+    }
+    
+    /**
      * Init lock context.
      */
     public void initLockContext() {

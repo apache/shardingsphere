@@ -89,7 +89,6 @@ public final class AddResourceBackendHandlerTest extends ProxyContextRestorer {
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
         when(metaDataContexts.getMetaData().getDatabases()).thenReturn(Collections.singletonMap("test_db", database));
-        when(metaDataContexts.getDatabase("test_db")).thenReturn(database);
         when(database.getResource()).thenReturn(resource);
         when(resource.getDataSources()).thenReturn(Collections.emptyMap());
         ResponseHeader responseHeader = addResourceBackendHandler.execute("test_db", createAddResourceStatement());
@@ -102,7 +101,6 @@ public final class AddResourceBackendHandlerTest extends ProxyContextRestorer {
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
         when(metaDataContexts.getMetaData().getDatabases()).thenReturn(Collections.singletonMap("test_db", database));
-        when(metaDataContexts.getDatabase("test_db")).thenReturn(database);
         when(database.getResource()).thenReturn(resource);
         when(resource.getDataSources()).thenReturn(Collections.emptyMap());
         addResourceBackendHandler.execute("test_db", createAlterResourceStatementWithDuplicateResourceNames());
