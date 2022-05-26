@@ -40,9 +40,7 @@ import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRule
 import org.apache.shardingsphere.infra.metadata.database.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilder;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterials;
-import org.apache.shardingsphere.infra.metadata.database.schema.builder.SchemaMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.SystemSchemaBuilder;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
@@ -455,9 +453,9 @@ public final class ContextManager implements AutoCloseable {
     }
     
     private void loadTableMetaData(final String databaseName, final String schemaName, final String tableName, final GenericSchemaBuilderMaterials materials) throws SQLException {
-        SchemaMetaData schemaMetaData = SchemaMetaDataBuilder.load(Collections.singletonList(tableName), materials).getOrDefault(schemaName, new SchemaMetaData("", Collections.emptyMap()));
-        if (schemaMetaData.getTables().containsKey(tableName)) {
-            metaDataContexts.getDatabase(databaseName).getSchemas().get(schemaName).put(tableName, schemaMetaData.getTables().get(tableName));
+        ShardingSphereSchema schema = GenericSchemaBuilder.build(Collections.singletonList(tableName), materials).getOrDefault(schemaName, new ShardingSphereSchema());
+        if (schema.getTables().containsKey(tableName)) {
+            metaDataContexts.getDatabase(databaseName).getSchemas().get(schemaName).put(tableName, schema.getTables().get(tableName));
             metaDataContexts.getPersistService().ifPresent(optional -> optional.getSchemaMetaDataService()
                     .persistMetaData(databaseName, schemaName, metaDataContexts.getDatabase(databaseName).getSchemas().get(schemaName)));
         }
@@ -469,8 +467,9 @@ public final class ContextManager implements AutoCloseable {
         refreshRules(databaseName, database);
         DatabaseType databaseType = DatabaseTypeEngine.getDatabaseType(dataSourceMap.values());
         Map<String, ShardingSphereSchema> result = new ConcurrentHashMap<>();
-        result.putAll(GenericSchemaBuilder.build(databaseName, database.getProtocolType(), databaseType,
-                dataSourceMap, database.getRuleMetaData().getRules(), metaDataContexts.getMetaData().getProps()));
+        GenericSchemaBuilderMaterials materials = new GenericSchemaBuilderMaterials(database.getProtocolType(),
+                databaseType, dataSourceMap, database.getRuleMetaData().getRules(), metaDataContexts.getMetaData().getProps(), databaseName);
+        result.putAll(GenericSchemaBuilder.build(materials));
         result.putAll(SystemSchemaBuilder.build(databaseName, database.getProtocolType()));
         return result;
     }
