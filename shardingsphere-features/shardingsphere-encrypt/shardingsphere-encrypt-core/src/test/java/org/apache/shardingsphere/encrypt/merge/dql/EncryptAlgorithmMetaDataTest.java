@@ -137,8 +137,8 @@ public final class EncryptAlgorithmMetaDataTest {
     
     @Test
     public void assertIsQueryWithCipherColumn() {
-        when(encryptRule.isQueryWithCipherColumn("t_order")).thenReturn(true);
+        when(encryptRule.isQueryWithCipherColumn("t_order", "id")).thenReturn(true);
         EncryptAlgorithmMetaData encryptAlgorithmMetaData = new EncryptAlgorithmMetaData(DefaultDatabase.LOGIC_NAME, database, encryptRule, selectStatementContext);
-        assertTrue(encryptAlgorithmMetaData.isQueryWithCipherColumn("t_order"));
+        assertTrue(encryptAlgorithmMetaData.isQueryWithCipherColumn("t_order", "id"));
     }
 }

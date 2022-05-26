@@ -84,7 +84,7 @@ public final class EncryptOrderByItemTokenGenerator implements CollectionSQLToke
             }
             int startIndex = column.getOwner().isPresent() ? column.getOwner().get().getStopIndex() + 2 : column.getStartIndex();
             int stopIndex = column.getStopIndex();
-            boolean queryWithCipherColumn = encryptRule.isQueryWithCipherColumn(tableName);
+            boolean queryWithCipherColumn = encryptRule.isQueryWithCipherColumn(tableName, column.getIdentifier().getValue());
             if (!queryWithCipherColumn) {
                 Optional<String> plainColumn = encryptTable.get().findPlainColumn(column.getIdentifier().getValue());
                 if (plainColumn.isPresent()) {

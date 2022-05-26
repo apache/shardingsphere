@@ -48,7 +48,7 @@ public final class EncryptTable {
             columns.put(each.getLogicColumn(), new EncryptColumn(getEncryptColumnDataType(each.getLogicDataType(), dataTypes), each.getCipherColumn(),
                     getEncryptColumnDataType(each.getCipherDataType(), dataTypes), each.getAssistedQueryColumn(), getEncryptColumnDataType(each.getAssistedQueryDataType(),
                             dataTypes),
-                    each.getPlainColumn(), getEncryptColumnDataType(each.getPlainDataType(), dataTypes), each.getEncryptorName()));
+                    each.getPlainColumn(), getEncryptColumnDataType(each.getPlainDataType(), dataTypes), each.getEncryptorName(), each.getQueryWithCipherColumn()));
         }
         queryWithCipherColumn = config.getQueryWithCipherColumn();
     }
@@ -180,11 +180,12 @@ public final class EncryptTable {
     
     /**
      * Get query with cipher column.
-     * 
+     *
+     * @param logicColumn logic column
      * @return query with cipher column
      */
-    public Optional<Boolean> getQueryWithCipherColumn() {
-        return Optional.ofNullable(queryWithCipherColumn);
+    public Optional<Boolean> getQueryWithCipherColumn(final String logicColumn) {
+        return Optional.ofNullable(findEncryptColumn(logicColumn).map(EncryptColumn::getQueryWithCipherColumn).orElse(queryWithCipherColumn));
     }
     
     /**
@@ -196,4 +197,5 @@ public final class EncryptTable {
     public Optional<EncryptColumn> findEncryptColumn(final String logicColumn) {
         return Optional.ofNullable(columns.get(logicColumn));
     }
+    
 }
