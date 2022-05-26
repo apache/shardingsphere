@@ -68,14 +68,14 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<G
                 return Optional.of(new WorkerIdEvent(instanceId, Strings.isNullOrEmpty(event.getValue()) ? null : Long.valueOf(event.getValue())));
             } else if (event.getKey().equals(ComputeNode.getInstanceLabelsNodePath(instanceId))) {
                 return Optional.of(new LabelsEvent(instanceId, Strings.isNullOrEmpty(event.getValue()) ? new ArrayList<>() : YamlEngine.unmarshal(event.getValue(), Collection.class)));
-            } else if (event.getKey().equals(ComputeNode.getInstanceXaRecoveryIdNodePath(instanceId))) {
-                return Optional.of(new XaRecoveryIdEvent(instanceId, Strings.isNullOrEmpty(event.getValue()) ? null : event.getValue()));
             }
         } else if (event.getKey().startsWith(ComputeNode.getOnlineInstanceNodePath())) {
             Optional<InstanceDefinition> instanceDefinition = ComputeNode.getInstanceDefinitionByInstanceOnlinePath(event.getKey());
             return instanceDefinition.isPresent() ? createInstanceEvent(instanceDefinition.get(), event.getType()) : Optional.empty();
         } else if (event.getKey().startsWith(ComputeNode.getProcessTriggerNodePatch())) {
             return createShowProcessListTriggerEvent(event);
+        } else if (event.getKey().startsWith(ComputeNode.getXaRecoveryIdNodePath())) {
+            return createXaRecoveryIdEvent(event);
         }
         return Optional.empty();
     }
@@ -103,6 +103,14 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<G
             return Optional.of(new InstanceOnlineEvent(instanceDefinition));
         } else if (Type.DELETED == type) {
             return Optional.of(new InstanceOfflineEvent(instanceDefinition));
+        }
+        return Optional.empty();
+    }
+    
+    private Optional<GovernanceEvent> createXaRecoveryIdEvent(final DataChangedEvent event) {
+        Matcher matcher = Pattern.compile(ComputeNode.getXaRecoveryIdNodePath() + "/([\\S]+)/([\\S]+)$", Pattern.CASE_INSENSITIVE).matcher(event.getKey());
+        if (matcher.find()) {
+            return Optional.of(new XaRecoveryIdEvent(matcher.group(2), matcher.group(1)));
         }
         return Optional.empty();
     }
