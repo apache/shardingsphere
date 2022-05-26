@@ -45,7 +45,6 @@ import org.apache.shardingsphere.infra.federation.executor.FederationContext;
 import org.apache.shardingsphere.infra.federation.executor.FederationExecutor;
 import org.apache.shardingsphere.infra.federation.executor.FederationExecutorFactory;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
@@ -102,7 +101,7 @@ public final class PreviewDistSQLBackendHandler extends QueryableRALBackendHandl
         String databaseType = DatabaseTypeEngine.getTrunkDatabaseTypeName(metaDataContexts.getDatabase(databaseName).getProtocolType());
         Optional<SQLParserRule> sqlParserRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().findSingleRule(SQLParserRule.class);
         Preconditions.checkState(sqlParserRule.isPresent());
-        SQLStatement previewedStatement = new ShardingSphereSQLParserEngine(databaseType, sqlParserRule.get().toParserConfiguration()).parse(sqlStatement.getSql(), false);
+        SQLStatement previewedStatement = sqlParserRule.get().getSQLParserEngine(databaseType).parse(sqlStatement.getSql(), false);
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getMetaData().getDatabases(), previewedStatement, databaseName);
         // TODO optimize SQLStatementDatabaseHolder
         if (sqlStatementContext instanceof TableAvailable) {

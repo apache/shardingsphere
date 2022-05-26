@@ -64,7 +64,6 @@ import org.apache.shardingsphere.infra.federation.executor.FederationContext;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.RawExecutionRule;
@@ -455,9 +454,8 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     private LogicSQL createLogicSQL(final String sql) {
         SQLParserRule sqlParserRule = findSQLParserRule();
-        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(
-                DatabaseTypeEngine.getTrunkDatabaseTypeName(metaDataContexts.getDatabase(connection.getDatabaseName()).getResource().getDatabaseType()), sqlParserRule.toParserConfiguration());
-        SQLStatement sqlStatement = sqlParserEngine.parse(sql, false);
+        SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(
+                DatabaseTypeEngine.getTrunkDatabaseTypeName(metaDataContexts.getDatabase(connection.getDatabaseName()).getResource().getDatabaseType())).parse(sql, false);
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getMetaData().getDatabases(), sqlStatement, connection.getDatabaseName());
         return new LogicSQL(sqlStatementContext, sql, Collections.emptyList());
     }
