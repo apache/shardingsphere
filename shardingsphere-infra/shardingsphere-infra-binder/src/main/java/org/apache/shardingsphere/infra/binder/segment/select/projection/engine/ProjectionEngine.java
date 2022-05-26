@@ -28,7 +28,8 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.Par
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ShorthandProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.SubqueryProjection;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.metadata.database.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationDistinctProjectionSegment;
@@ -155,7 +156,7 @@ public final class ProjectionEngine {
         }
         String tableName = ((SimpleTableSegment) table).getTableName().getIdentifier().getValue();
         String tableAlias = table.getAlias().orElse(tableName);
-        String schemaName = ((SimpleTableSegment) table).getOwner().map(optional -> optional.getIdentifier().getValue()).orElse(databaseType.getDefaultSchema(databaseName));
+        String schemaName = ((SimpleTableSegment) table).getOwner().map(optional -> optional.getIdentifier().getValue()).orElse(DatabaseTypeEngine.getDefaultSchemaName(databaseType, databaseName));
         Collection<ColumnProjection> result = new LinkedList<>();
         if (null == owner) {
             schemas.get(schemaName).getAllColumnNames(tableName).stream().map(each -> new ColumnProjection(tableAlias, each, null)).forEach(result::add);

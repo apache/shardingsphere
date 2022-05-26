@@ -21,12 +21,12 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OracleDatabaseType;
-import org.apache.shardingsphere.infra.metadata.schema.builder.RuleBasedSchemaMetaDataBuilderFactory;
-import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
-import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.SchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.builder.spi.RuleBasedSchemaMetaDataBuilderFactory;
+import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterials;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -251,7 +251,7 @@ public class ShardingSchemaMetaDataBuilderTest {
         Collection<ShardingSphereRule> rules = Collections.singletonList(shardingRule);
         ShardingSchemaMetaDataBuilder loader = (ShardingSchemaMetaDataBuilder) RuleBasedSchemaMetaDataBuilderFactory.getInstances(rules).get(shardingRule);
         Map<String, SchemaMetaData> actual = loader.load(tableNames, shardingRule,
-                new SchemaBuilderMaterials(databaseType, databaseType, Collections.singletonMap("ds", dataSource), rules, props, "sharding_db"));
+                new GenericSchemaBuilderMaterials(databaseType, databaseType, Collections.singletonMap("ds", dataSource), rules, props, "sharding_db"));
         assertResult(actual, "sharding_db");
     }
     
@@ -264,7 +264,7 @@ public class ShardingSchemaMetaDataBuilderTest {
         Collection<ShardingSphereRule> rules = Collections.singletonList(shardingRule);
         ShardingSchemaMetaDataBuilder loader = (ShardingSchemaMetaDataBuilder) RuleBasedSchemaMetaDataBuilderFactory.getInstances(rules).get(shardingRule);
         Map<String, SchemaMetaData> actual = loader.load(tableNames, shardingRule,
-                new SchemaBuilderMaterials(databaseType, databaseType, Collections.singletonMap("ds", dataSource), rules, props, "sharding_db"));
+                new GenericSchemaBuilderMaterials(databaseType, databaseType, Collections.singletonMap("ds", dataSource), rules, props, "sharding_db"));
         assertResult(actual, "sharding_db");
     }
     
@@ -277,7 +277,7 @@ public class ShardingSchemaMetaDataBuilderTest {
         DatabaseType databaseType = mock(OracleDatabaseType.class);
         when(databaseType.getType()).thenReturn("Oracle");
         Map<String, SchemaMetaData> actual = loader.load(Collections.singletonList(TABLE_NAME), shardingRule,
-                new SchemaBuilderMaterials(databaseType, databaseType, Collections.singletonMap("ds", dataSource), rules, props, "sharding_db"));
+                new GenericSchemaBuilderMaterials(databaseType, databaseType, Collections.singletonMap("ds", dataSource), rules, props, "sharding_db"));
         assertThat(actual.get("sharding_db").getTables().keySet().iterator().next(), is("T_ORDER_0"));
         TableMetaData tableMetaData = actual.get("sharding_db").getTables().values().iterator().next();
         List<String> actualColumnNames = new ArrayList<>(tableMetaData.getColumns().keySet());
@@ -307,7 +307,7 @@ public class ShardingSchemaMetaDataBuilderTest {
         ResultSet schemaMetaData = mockSchemaMetaData();
         when(dataSource.getConnection().getMetaData().getSchemas()).thenReturn(schemaMetaData);
         Map<String, SchemaMetaData> actual = loader.load(tableNames, shardingRule,
-                new SchemaBuilderMaterials(databaseType, databaseType, Collections.singletonMap("ds", dataSource), rules, props, "sharding_db"));
+                new GenericSchemaBuilderMaterials(databaseType, databaseType, Collections.singletonMap("ds", dataSource), rules, props, "sharding_db"));
         assertResult(actual, "public");
     }
     
@@ -334,7 +334,7 @@ public class ShardingSchemaMetaDataBuilderTest {
         Collection<ShardingSphereRule> rules = Collections.singletonList(shardingRule);
         ShardingSchemaMetaDataBuilder loader = (ShardingSchemaMetaDataBuilder) RuleBasedSchemaMetaDataBuilderFactory.getInstances(rules).get(shardingRule);
         Map<String, SchemaMetaData> actual = loader.load(tableNames, shardingRule,
-                new SchemaBuilderMaterials(databaseType, databaseType, Collections.singletonMap("ds", dataSource), rules, props, "sharding_db"));
+                new GenericSchemaBuilderMaterials(databaseType, databaseType, Collections.singletonMap("ds", dataSource), rules, props, "sharding_db"));
         assertResult(actual, "sharding_db");
     }
     
@@ -358,7 +358,7 @@ public class ShardingSchemaMetaDataBuilderTest {
         Collection<ShardingSphereRule> rules = Collections.singletonList(shardingRule);
         ShardingSchemaMetaDataBuilder loader = (ShardingSchemaMetaDataBuilder) RuleBasedSchemaMetaDataBuilderFactory.getInstances(rules).get(shardingRule);
         Map<String, SchemaMetaData> actual = loader.load(tableNames, shardingRule,
-                new SchemaBuilderMaterials(databaseType, databaseType, Collections.singletonMap("ds", dataSource), rules, props, "sharding_db"));
+                new GenericSchemaBuilderMaterials(databaseType, databaseType, Collections.singletonMap("ds", dataSource), rules, props, "sharding_db"));
         TableMetaData tableMetaData = actual.get("sharding_db").getTables().values().iterator().next();
         List<String> actualColumnNames = new ArrayList<>(tableMetaData.getColumns().keySet());
         assertThat(tableMetaData.getColumns().get(actualColumnNames.get(0)).getName(), is("id"));
@@ -376,7 +376,7 @@ public class ShardingSchemaMetaDataBuilderTest {
         Collection<ShardingSphereRule> rules = Collections.singletonList(shardingRule);
         ShardingSchemaMetaDataBuilder loader = (ShardingSchemaMetaDataBuilder) RuleBasedSchemaMetaDataBuilderFactory.getInstances(rules).get(shardingRule);
         Map<String, SchemaMetaData> actual = loader.load(tableNames, shardingRule,
-                new SchemaBuilderMaterials(databaseType, databaseType, Collections.singletonMap("ds", dataSource), rules, props, "sharding_db"));
+                new GenericSchemaBuilderMaterials(databaseType, databaseType, Collections.singletonMap("ds", dataSource), rules, props, "sharding_db"));
         TableMetaData tableMetaData = actual.get("sharding_db").getTables().values().iterator().next();
         List<String> actualColumnNames = new ArrayList<>(tableMetaData.getColumns().keySet());
         assertThat(tableMetaData.getColumns().get(actualColumnNames.get(0)).getName(), is("id"));
@@ -391,7 +391,7 @@ public class ShardingSchemaMetaDataBuilderTest {
         Map<String, TableMetaData> tableMetaDataMap = new LinkedHashMap<>();
         tableMetaDataMap.put(TABLE_NAME, createTableMetaData());
         Map<String, ColumnMetaData> columns = builder.decorate(Collections.singletonMap("sharding_db", new SchemaMetaData("sharding_db", tableMetaDataMap)),
-                shardingRule, mock(SchemaBuilderMaterials.class)).get("sharding_db").getTables().get(TABLE_NAME).getColumns();
+                shardingRule, mock(GenericSchemaBuilderMaterials.class)).get("sharding_db").getTables().get(TABLE_NAME).getColumns();
         Iterator<ColumnMetaData> iterator = columns.values().iterator();
         assertTrue(iterator.next().isGenerated());
         assertFalse(iterator.next().isGenerated());

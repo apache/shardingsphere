@@ -23,11 +23,11 @@ import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptColumnDataType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.schema.builder.RuleBasedSchemaMetaDataBuilderFactory;
-import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
-import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.SchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.builder.spi.RuleBasedSchemaMetaDataBuilderFactory;
+import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterials;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
@@ -169,7 +169,7 @@ public final class EncryptSchemaMetaDataBuilderTest {
         EncryptSchemaMetaDataBuilder loader = getEncryptMetaDataBuilder(encryptRule, rules);
         when(databaseType.formatTableNamePattern(TABLE_NAME)).thenReturn(TABLE_NAME);
         Map<String, SchemaMetaData> actual = loader.load(Collections.singleton(TABLE_NAME), encryptRule,
-                new SchemaBuilderMaterials(databaseType, databaseType, Collections.singletonMap("logic_db", dataSource), rules, new ConfigurationProperties(new Properties()), "logic_db"));
+                new GenericSchemaBuilderMaterials(databaseType, databaseType, Collections.singletonMap("logic_db", dataSource), rules, new ConfigurationProperties(new Properties()), "logic_db"));
         TableMetaData tableMetaData = actual.get("logic_db").getTables().values().iterator().next();
         List<String> columnNames = new ArrayList<>(tableMetaData.getColumns().keySet());
         assertThat(tableMetaData.getColumns().get(columnNames.get(0)).getName(), is("id"));
@@ -187,7 +187,7 @@ public final class EncryptSchemaMetaDataBuilderTest {
                           final EncryptRule encryptRule) throws SQLException {
         when(databaseType.getType()).thenReturn("H2");
         Map<String, SchemaMetaData> actual = loader.load(tableNames, encryptRule,
-                new SchemaBuilderMaterials(databaseType, databaseType, Collections.singletonMap("logic_db", dataSource), rules, new ConfigurationProperties(new Properties()), "logic_db"));
+                new GenericSchemaBuilderMaterials(databaseType, databaseType, Collections.singletonMap("logic_db", dataSource), rules, new ConfigurationProperties(new Properties()), "logic_db"));
         assertResult(actual, "logic_db");
     }
     
@@ -202,7 +202,7 @@ public final class EncryptSchemaMetaDataBuilderTest {
                              final EncryptRule encryptRule) throws SQLException {
         when(databaseType.getType()).thenReturn("MySQL");
         Map<String, SchemaMetaData> actual = loader.load(tableNames, encryptRule,
-                new SchemaBuilderMaterials(databaseType, databaseType, Collections.singletonMap("logic_db", dataSource), rules, new ConfigurationProperties(new Properties()), "logic_db"));
+                new GenericSchemaBuilderMaterials(databaseType, databaseType, Collections.singletonMap("logic_db", dataSource), rules, new ConfigurationProperties(new Properties()), "logic_db"));
         assertResult(actual, "logic_db");
     }
     
@@ -217,7 +217,7 @@ public final class EncryptSchemaMetaDataBuilderTest {
                               final EncryptRule encryptRule) throws SQLException {
         when(databaseType.getType()).thenReturn("Oracle");
         Map<String, SchemaMetaData> actual = loader.load(tableNames, encryptRule,
-                new SchemaBuilderMaterials(databaseType, databaseType, Collections.singletonMap("logic_db", dataSource), rules, new ConfigurationProperties(new Properties()), "logic_db"));
+                new GenericSchemaBuilderMaterials(databaseType, databaseType, Collections.singletonMap("logic_db", dataSource), rules, new ConfigurationProperties(new Properties()), "logic_db"));
         assertResult(actual, "logic_db");
     }
     
@@ -236,7 +236,7 @@ public final class EncryptSchemaMetaDataBuilderTest {
         ResultSet schemaMetaData = mockSchemaMetaData();
         when(dataSource.getConnection().getMetaData().getSchemas()).thenReturn(schemaMetaData);
         Map<String, SchemaMetaData> actual = loader.load(tableNames, encryptRule,
-                new SchemaBuilderMaterials(databaseType, databaseType, Collections.singletonMap("logic_db", dataSource), rules, new ConfigurationProperties(new Properties()), "logic_db"));
+                new GenericSchemaBuilderMaterials(databaseType, databaseType, Collections.singletonMap("logic_db", dataSource), rules, new ConfigurationProperties(new Properties()), "logic_db"));
         assertResult(actual, "public");
     }
     
@@ -265,7 +265,7 @@ public final class EncryptSchemaMetaDataBuilderTest {
                                  final EncryptRule encryptRule) throws SQLException {
         when(databaseType.getType()).thenReturn("SQLServer");
         Map<String, SchemaMetaData> actual = loader.load(tableNames, encryptRule,
-                new SchemaBuilderMaterials(databaseType, databaseType, Collections.singletonMap("logic_db", dataSource), rules, new ConfigurationProperties(new Properties()), "logic_db"));
+                new GenericSchemaBuilderMaterials(databaseType, databaseType, Collections.singletonMap("logic_db", dataSource), rules, new ConfigurationProperties(new Properties()), "logic_db"));
         assertResult(actual, "logic_db");
     }
     
@@ -282,7 +282,7 @@ public final class EncryptSchemaMetaDataBuilderTest {
         Collection<ShardingSphereRule> rules = Arrays.asList(createSingleTableRule(), encryptRule);
         EncryptSchemaMetaDataBuilder loader = new EncryptSchemaMetaDataBuilder();
         Map<String, SchemaMetaData> actual = loader.load(Collections.singleton("not_existed_table"), encryptRule,
-                new SchemaBuilderMaterials(databaseType, databaseType, Collections.singletonMap("logic_db", dataSource), rules, new ConfigurationProperties(new Properties()), "logic_db"));
+                new GenericSchemaBuilderMaterials(databaseType, databaseType, Collections.singletonMap("logic_db", dataSource), rules, new ConfigurationProperties(new Properties()), "logic_db"));
         assertTrue(actual.isEmpty());
     }
     
@@ -296,7 +296,7 @@ public final class EncryptSchemaMetaDataBuilderTest {
         Collection<ShardingSphereRule> rules = Arrays.asList(createSingleTableRule(), encryptRule);
         EncryptSchemaMetaDataBuilder loader = getEncryptMetaDataBuilder(encryptRule, rules);
         Map<String, SchemaMetaData> actual = loader.load(Collections.singleton(TABLE_NAME),
-                encryptRule, new SchemaBuilderMaterials(databaseType, databaseType, dataSourceMap, rules, new ConfigurationProperties(new Properties()), "logic_db"));
+                encryptRule, new GenericSchemaBuilderMaterials(databaseType, databaseType, dataSourceMap, rules, new ConfigurationProperties(new Properties()), "logic_db"));
         TableMetaData tableMetaData = actual.get("logic_db").getTables().values().iterator().next();
         List<String> actualColumnNames = new ArrayList<>(tableMetaData.getColumns().keySet());
         assertThat(tableMetaData.getColumns().get(actualColumnNames.get(0)).getName(), is("id"));
@@ -312,7 +312,7 @@ public final class EncryptSchemaMetaDataBuilderTest {
         dataSourceMap.put("logic_db_2", new MockedDataSource());
         EncryptSchemaMetaDataBuilder loader = new EncryptSchemaMetaDataBuilder();
         Map<String, SchemaMetaData> actual = loader.load(Collections.singleton("not_existed_table"),
-                encryptRule, new SchemaBuilderMaterials(databaseType, databaseType, dataSourceMap, rules, new ConfigurationProperties(new Properties()), "logic_db"));
+                encryptRule, new GenericSchemaBuilderMaterials(databaseType, databaseType, dataSourceMap, rules, new ConfigurationProperties(new Properties()), "logic_db"));
         assertTrue(actual.isEmpty());
     }
     
@@ -323,7 +323,7 @@ public final class EncryptSchemaMetaDataBuilderTest {
         Map<String, TableMetaData> tableMetaDataMap = new LinkedHashMap<>();
         tableMetaDataMap.put("t_encrypt", createTableMetaData());
         TableMetaData actual = loader.decorate(Collections.singletonMap("logic_db",
-                new SchemaMetaData("logic_db", tableMetaDataMap)), rule, mock(SchemaBuilderMaterials.class)).get("logic_db").getTables().get("t_encrypt");
+                new SchemaMetaData("logic_db", tableMetaDataMap)), rule, mock(GenericSchemaBuilderMaterials.class)).get("logic_db").getTables().get("t_encrypt");
         assertThat(actual.getColumns().size(), is(2));
         assertTrue(actual.getColumns().containsKey("id"));
         assertTrue(actual.getColumns().containsKey("pwd"));
@@ -335,7 +335,7 @@ public final class EncryptSchemaMetaDataBuilderTest {
         EncryptSchemaMetaDataBuilder loader = getEncryptMetaDataBuilder(rule, Collections.singleton(rule));
         Map<String, TableMetaData> tableMetaDataMap = new LinkedHashMap<>();
         tableMetaDataMap.put("t_encrypt", createTableMetaData());
-        SchemaBuilderMaterials materials = mock(SchemaBuilderMaterials.class, RETURNS_DEEP_STUBS);
+        GenericSchemaBuilderMaterials materials = mock(GenericSchemaBuilderMaterials.class, RETURNS_DEEP_STUBS);
         when(materials.getDataSourceMap().values().stream().findAny()).thenReturn(Optional.of(dataSource));
         TableMetaData actual = loader.decorate(Collections.singletonMap("logic_db", new SchemaMetaData("logic_db", tableMetaDataMap)),
                 rule, materials).get("logic_db").getTables().get("t_encrypt");

@@ -24,6 +24,7 @@ on:
       - '.github/workflows/it-scaling.yml'
       - 'shardingsphere-infra/shardingsphere-infra-common/src/main/**'
       - 'shardingsphere-mode/**/src/main/**'
+      - 'shardingsphere-proxy/**/src/main/**'
       - 'shardingsphere-jdbc/shardingsphere-jdbc-core/src/main/**'
       - '**/*-distsql*/**/src/main/**'
       - 'shardingsphere-kernel/shardingsphere-data-pipeline/**/src/main/**'
@@ -40,6 +41,7 @@ on:
       - '.github/workflows/it-scaling.yml'
       - 'shardingsphere-infra/shardingsphere-infra-common/src/main/**'
       - 'shardingsphere-mode/**/src/main/**'
+      - 'shardingsphere-proxy/**/src/main/**'
       - 'shardingsphere-jdbc/shardingsphere-jdbc-core/src/main/**'
       - '**/*-distsql*/**/src/main/**'
       - 'shardingsphere-kernel/shardingsphere-data-pipeline/**/src/main/**'
@@ -85,7 +87,7 @@ jobs:
       - name: Build Scaling IT image
         run: ./mvnw -B clean install -am -pl shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling -Pit.env.docker -DskipTests
       - name: Run Scaling Integration Test
-        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling/pom.xml -Dit.cluster.env.type=DOCKER -Dit.env.mysql.version=${{ env.mysql_version }} -Dit.env.postgresql.version=${{ env.postgresql_version }} -Dit.env.opengauss.version=${{ env.opengauss_version }}
+        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling/pom.xml -Dit.cluster.env.type=DOCKER -Dit.env.mysql.version=${{ env.mysql_version }} -Dit.env.postgresql.version=${{ env.postgresql_version }}
   
   scaling-daily-it-test:
     if: (github.event_name == 'schedule' && github.repository == 'apache/shardingsphere')
@@ -111,4 +113,4 @@ jobs:
       - name: Build Scaling IT image
         run: ./mvnw -B clean install -am -pl shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling -Pit.env.docker -DskipTests
       - name: Run Scaling Daily Integration Test
-        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling/pom.xml -Dit.cluster.env.type=DOCKER -Dit.env.postgresql.version=${{ env.postgresql_version }} -Dit.env.mysql.version=${{ env.mysql_version }} -Dit.env.opengauss.version=${{ env.opengauss_version }}
+        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling/pom.xml -Dit.cluster.env.type=DOCKER -Dit.env.postgresql.version=${{ env.postgresql_version }} -Dit.env.mysql.version=${{ env.mysql_version }}

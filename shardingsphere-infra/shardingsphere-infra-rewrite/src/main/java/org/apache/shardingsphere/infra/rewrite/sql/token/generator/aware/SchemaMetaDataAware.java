@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware;
 
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.ShardingSphereSchema;
 
 import java.util.Map;
 

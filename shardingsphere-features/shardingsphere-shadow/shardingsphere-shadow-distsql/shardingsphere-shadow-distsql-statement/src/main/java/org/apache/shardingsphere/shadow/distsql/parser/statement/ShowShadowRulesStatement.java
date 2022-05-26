@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shadow.distsql.parser.statement;
 import lombok.Getter;
 import org.apache.shardingsphere.distsql.parser.subject.impl.ShadowSubjectSupplier;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 
 /**
  * Show shadow rules statement.
@@ -30,8 +30,8 @@ public final class ShowShadowRulesStatement extends ShowRulesStatement implement
     
     private final String ruleName;
     
-    public ShowShadowRulesStatement(final String tableName, final SchemaSegment schema) {
-        super(schema);
+    public ShowShadowRulesStatement(final String tableName, final DatabaseSegment database) {
+        super(database);
         this.ruleName = tableName;
     }
 }

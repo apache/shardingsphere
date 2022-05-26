@@ -19,20 +19,15 @@ package org.apache.shardingsphere.mode.metadata;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContextFactory;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Optional;
-import java.util.Properties;
 
 /**
  * Meta data contexts.
@@ -43,17 +38,12 @@ public final class MetaDataContexts implements AutoCloseable {
     
     private final MetaDataPersistService persistService;
     
-    private final Map<String, ShardingSphereDatabase> databaseMap;
-    
-    private final ShardingSphereRuleMetaData globalRuleMetaData;
+    private final ShardingSphereMetaData metaData;
     
     private final OptimizerContext optimizerContext;
     
-    private final ConfigurationProperties props;
-    
     public MetaDataContexts(final MetaDataPersistService persistService) {
-        this(persistService, new LinkedHashMap<>(), new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()),
-                OptimizerContextFactory.create(new HashMap<>(), new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList())), new ConfigurationProperties(new Properties()));
+        this(persistService, new ShardingSphereMetaData(), OptimizerContextFactory.create(new HashMap<>(), new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList())));
     }
     
     /**
@@ -63,25 +53,6 @@ public final class MetaDataContexts implements AutoCloseable {
      */
     public Optional<MetaDataPersistService> getPersistService() {
         return Optional.ofNullable(persistService);
-    }
-    
-    /**
-     * Get all database names.
-     *
-     * @return all database names
-     */
-    public Collection<String> getAllDatabaseNames() {
-        return databaseMap.keySet();
-    }
-    
-    /**
-     * Get database meta data.
-     *
-     * @param databaseName database name
-     * @return database meta data
-     */
-    public ShardingSphereDatabase getDatabaseMetaData(final String databaseName) {
-        return databaseMap.get(databaseName);
     }
     
     @Override

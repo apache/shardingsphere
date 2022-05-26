@@ -24,8 +24,7 @@ import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.BatchYamlExecuteProcessContext;
 import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessContext;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
-import org.apache.shardingsphere.infra.metadata.schema.QualifiedDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.type.InstanceAwareRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.StatusContainedRule;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
@@ -180,7 +179,7 @@ public final class ClusterContextManagerCoordinator {
     @Subscribe
     public synchronized void renew(final DisabledStateChangedEvent event) {
         QualifiedDatabase qualifiedDatabase = event.getQualifiedSchema();
-        contextManager.getMetaDataContexts().getDatabaseMap().get(qualifiedDatabase.getDatabaseName()).getRuleMetaData().getRules()
+        contextManager.getMetaDataContexts().getMetaData().getDatabases().get(qualifiedDatabase.getDatabaseName()).getRuleMetaData().getRules()
                 .stream().filter(each -> each instanceof StatusContainedRule)
                 .forEach(each -> ((StatusContainedRule) each).updateStatus(new DataSourceNameDisabledEvent(qualifiedDatabase, event.isDisabled())));
     }
@@ -193,7 +192,7 @@ public final class ClusterContextManagerCoordinator {
     @Subscribe
     public synchronized void renew(final PrimaryStateChangedEvent event) {
         QualifiedDatabase qualifiedDatabase = event.getQualifiedDatabase();
-        contextManager.getMetaDataContexts().getDatabaseMap().get(qualifiedDatabase.getDatabaseName()).getRuleMetaData().getRules()
+        contextManager.getMetaDataContexts().getMetaData().getDatabases().get(qualifiedDatabase.getDatabaseName()).getRuleMetaData().getRules()
                 .stream()
                 .filter(each -> each instanceof StatusContainedRule)
                 .forEach(each -> ((StatusContainedRule) each)
@@ -239,6 +238,7 @@ public final class ClusterContextManagerCoordinator {
      */
     @Subscribe
     public synchronized void renew(final LabelsEvent event) {
+        // TODO labels may be empty
         contextManager.getInstanceContext().updateLabel(event.getInstanceId(), event.getLabels());
     }
     
@@ -249,8 +249,7 @@ public final class ClusterContextManagerCoordinator {
      */
     @Subscribe
     public synchronized void renew(final XaRecoveryIdEvent event) {
-        if (contextManager.getInstanceContext().getInstance().getInstanceDefinition().getInstanceId().getId().equals(event.getInstanceId())) {
-            contextManager.getInstanceContext().updateXaRecoveryId(event.getXaRecoveryId());
+        if (contextManager.getInstanceContext().updateXaRecoveryId(event.getInstanceId(), event.getXaRecoveryId())) {
             contextManager.renewAllTransactionContext();
         }
     }
@@ -262,7 +261,7 @@ public final class ClusterContextManagerCoordinator {
      */
     @Subscribe
     public synchronized void renew(final InstanceOnlineEvent event) {
-        ComputeNodeInstance instance = metaDataPersistService.getComputeNodePersistService().loadComputeNodeInstance(event.getInstanceDefinition());
+        ComputeNodeInstance instance = new ComputeNodeInstance(event.getInstanceDefinition());
         contextManager.getInstanceContext().addComputeNodeInstance(instance);
     }
     
@@ -273,7 +272,7 @@ public final class ClusterContextManagerCoordinator {
      */
     @Subscribe
     public synchronized void renew(final InstanceOfflineEvent event) {
-        contextManager.getInstanceContext().deleteComputeNodeInstance(metaDataPersistService.getComputeNodePersistService().loadComputeNodeInstance(event.getInstanceDefinition()));
+        contextManager.getInstanceContext().deleteComputeNodeInstance(new ComputeNodeInstance(event.getInstanceDefinition()));
     }
     
     /**
@@ -295,18 +294,15 @@ public final class ClusterContextManagerCoordinator {
      */
     @Subscribe
     public synchronized void triggerShowProcessList(final ShowProcessListTriggerEvent event) {
-        InstanceDefinition instanceDefinition = event.getInstanceDefinition();
-        if (!instanceDefinition.getInstanceId().getId().equals(contextManager.getInstanceContext().getInstance().getInstanceDefinition().getInstanceId().getId())) {
+        if (!event.getInstanceId().equals(contextManager.getInstanceContext().getInstance().getInstanceDefinition().getInstanceId().getId())) {
             return;
         }
         Collection<YamlExecuteProcessContext> processContexts = ShowProcessListManager.getInstance().getAllProcessContext();
         if (!processContexts.isEmpty()) {
-            registryCenter.getRepository().persist(ProcessNode.getShowProcessListInstancePath(event.getShowProcessListId(),
-                    instanceDefinition.getInstanceType().name().toLowerCase() + "_" + instanceDefinition.getInstanceId().getId()),
+            registryCenter.getRepository().persist(ProcessNode.getShowProcessListInstancePath(event.getShowProcessListId(), event.getInstanceId()),
                     YamlEngine.marshal(new BatchYamlExecuteProcessContext(new LinkedList<>(processContexts))));
         }
-        registryCenter.getRepository().delete(ComputeNode
-                .getProcessTriggerInstanceIdNodePath(instanceDefinition.getInstanceId().getId(), instanceDefinition.getInstanceType(), event.getShowProcessListId()));
+        registryCenter.getRepository().delete(ComputeNode.getProcessTriggerInstanceIdNodePath(event.getInstanceId(), event.getShowProcessListId()));
     }
     
     /**
@@ -323,7 +319,7 @@ public final class ClusterContextManagerCoordinator {
     }
     
     private void buildSpecialRules() {
-        contextManager.getMetaDataContexts().getDatabaseMap().forEach((key, value) -> value.getRuleMetaData().getRules().forEach(each -> {
+        contextManager.getMetaDataContexts().getMetaData().getDatabases().forEach((key, value) -> value.getRuleMetaData().getRules().forEach(each -> {
             if (each instanceof StatusContainedRule) {
                 disableDataSources((StatusContainedRule) each);
             }

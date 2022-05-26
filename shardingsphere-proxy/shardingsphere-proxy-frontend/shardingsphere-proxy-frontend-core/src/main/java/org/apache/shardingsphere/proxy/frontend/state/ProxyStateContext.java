@@ -48,7 +48,7 @@ public final class ProxyStateContext {
     }
     
     private static OKProxyState determineOKProxyState() {
-        String backendDriverType = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.PROXY_BACKEND_DRIVER_TYPE);
+        String backendDriverType = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.PROXY_BACKEND_DRIVER_TYPE);
         return OKProxyStateFactory.getInstance(backendDriverType);
     }
     

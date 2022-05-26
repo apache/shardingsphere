@@ -21,18 +21,15 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
+import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.strategy.ReadwriteSplittingStrategy;
 import org.apache.shardingsphere.readwritesplitting.strategy.ReadwriteSplittingStrategyFactory;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -43,14 +40,14 @@ public final class ReadwriteSplittingDataSourceRule {
     
     private final String name;
     
-    private final ReplicaLoadBalanceAlgorithm loadBalancer;
+    private final ReadQueryLoadBalanceAlgorithm loadBalancer;
     
     private final ReadwriteSplittingStrategy readwriteSplittingStrategy;
     
     @Getter(AccessLevel.NONE)
     private final Collection<String> disabledDataSourceNames = new HashSet<>();
     
-    public ReadwriteSplittingDataSourceRule(final ReadwriteSplittingDataSourceRuleConfiguration config, final ReplicaLoadBalanceAlgorithm loadBalancer) {
+    public ReadwriteSplittingDataSourceRule(final ReadwriteSplittingDataSourceRuleConfiguration config, final ReadQueryLoadBalanceAlgorithm loadBalancer) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(config.getName()), "Name is required.");
         name = config.getName();
         this.loadBalancer = loadBalancer;
@@ -87,24 +84,6 @@ public final class ReadwriteSplittingDataSourceRule {
         } else {
             disabledDataSourceNames.remove(dataSourceName);
         }
-    }
-    
-    /**
-     * Get data sources.
-     *
-     * @param removeDisabled whether to remove the disabled resource
-     * @return data sources
-     */
-    public Map<String, String> getDataSources(final boolean removeDisabled) {
-        Map<String, String> result = new LinkedHashMap<>(2, 1);
-        result.put(ExportableConstants.PRIMARY_DATA_SOURCE_NAME, readwriteSplittingStrategy.getWriteDataSource());
-        List<String> readDataSourceNames = readwriteSplittingStrategy.getReadDataSources();
-        if (removeDisabled && !disabledDataSourceNames.isEmpty()) {
-            readDataSourceNames = new LinkedList<>(readDataSourceNames);
-            readDataSourceNames.removeIf(disabledDataSourceNames::contains);
-        }
-        result.put(ExportableConstants.REPLICA_DATA_SOURCE_NAMES, String.join(",", readDataSourceNames));
-        return result;
     }
     
     /**

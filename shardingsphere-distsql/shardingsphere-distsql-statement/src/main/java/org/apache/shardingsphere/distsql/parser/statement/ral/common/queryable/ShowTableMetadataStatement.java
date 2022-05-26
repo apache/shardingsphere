@@ -20,8 +20,8 @@ package org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.available.FromSchemaAvailable;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.available.FromDatabaseAvailable;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -30,15 +30,15 @@ import java.util.Optional;
  * Show table metadata statement.
  */
 @RequiredArgsConstructor
-public final class ShowTableMetadataStatement extends QueryableRALStatement implements FromSchemaAvailable {
+public final class ShowTableMetadataStatement extends QueryableRALStatement implements FromDatabaseAvailable {
     
     @Getter
     private final Collection<String> tableNames;
     
-    private final SchemaSegment schema;
+    private final DatabaseSegment database;
     
     @Override
-    public Optional<SchemaSegment> getSchema() {
-        return Optional.ofNullable(schema);
+    public Optional<DatabaseSegment> getDatabase() {
+        return Optional.ofNullable(database);
     }
 }

@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
-import org.apache.shardingsphere.infra.metadata.schema.QualifiedTable;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -269,6 +269,6 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
     
     @Override
     public Map<String, Supplier<Object>> getExportedMethods() {
-        return Collections.singletonMap(ExportableConstants.EXPORTABLE_KEY_SINGLE_TABLES, tableNames::keySet);
+        return Collections.singletonMap(ExportableConstants.EXPORT_SINGLE_TABLES, tableNames::keySet);
     }
 }

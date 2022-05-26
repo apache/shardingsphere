@@ -60,7 +60,7 @@ public final class ShowTrafficRulesHandler extends QueryableRALBackendHandler<Sh
     @Override
     protected Collection<List<Object>> getRows(final ContextManager contextManager) {
         Optional<TrafficRuleConfiguration> config = ProxyContext.getInstance().getContextManager().getMetaDataContexts()
-                .getGlobalRuleMetaData().findRuleConfigurations(TrafficRuleConfiguration.class).stream().findAny();
+                .getMetaData().getGlobalRuleMetaData().findRuleConfigurations(TrafficRuleConfiguration.class).stream().findAny();
         Collection<List<Object>> result = new LinkedList<>();
         Optional<String> ruleName = Optional.ofNullable(sqlStatement.getRuleName());
         config.ifPresent(optional -> {

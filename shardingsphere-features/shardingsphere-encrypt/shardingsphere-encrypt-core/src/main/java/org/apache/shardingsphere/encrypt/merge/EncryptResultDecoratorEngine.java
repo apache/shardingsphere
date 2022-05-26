@@ -25,11 +25,10 @@ import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.merge.engine.decorator.ResultDecorator;
 import org.apache.shardingsphere.infra.merge.engine.decorator.ResultDecoratorEngine;
 import org.apache.shardingsphere.infra.merge.engine.decorator.impl.TransparentResultDecorator;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 
 /**
@@ -38,10 +37,10 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatemen
 public final class EncryptResultDecoratorEngine implements ResultDecoratorEngine<EncryptRule> {
     
     @Override
-    public ResultDecorator<?> newInstance(final DatabaseType databaseType, final String databaseName, final ShardingSphereDatabase database,
+    public ResultDecorator<?> newInstance(final ShardingSphereDatabase database,
                                           final EncryptRule encryptRule, final ConfigurationProperties props, final SQLStatementContext<?> sqlStatementContext) {
         if (sqlStatementContext instanceof SelectStatementContext) {
-            EncryptAlgorithmMetaData algorithmMetaData = new EncryptAlgorithmMetaData(databaseName, database, encryptRule, (SelectStatementContext) sqlStatementContext);
+            EncryptAlgorithmMetaData algorithmMetaData = new EncryptAlgorithmMetaData(database, encryptRule, (SelectStatementContext) sqlStatementContext);
             return new EncryptDQLResultDecorator(algorithmMetaData);
         }
         if (sqlStatementContext.getSqlStatement() instanceof DALStatement) {
