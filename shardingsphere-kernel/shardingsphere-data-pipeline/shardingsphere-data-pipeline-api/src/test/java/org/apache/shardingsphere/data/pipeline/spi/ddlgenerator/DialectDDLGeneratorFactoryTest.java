@@ -37,10 +37,10 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class DialectDDLGeneratorFactoryTest {
-
+    
     @Mock(extraInterfaces = AutoCloseable.class)
     private DataSource dataSource;
-
+    
     @Test
     public void assertFindInstanceWithDialectDDLGenerator() {
         boolean thrown = false;
