@@ -34,7 +34,7 @@ import java.time.OffsetDateTime;
 import java.time.OffsetTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.chrono.JapaneseDate;
+import java.time.chrono.ChronoLocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
@@ -146,10 +146,8 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
         TemporalAccessor calculateTime = dateTimeLower;
         LocalDate queryToLocalDate = calculateTime.query(TemporalQueries.localDate());
         LocalTime queryToLocalTime = calculateTime.query(TemporalQueries.localTime());
-        LocalDate dateTimeLowerAsLocalDate = dateTimeLower.query(TemporalQueries.localDate());
-        LocalTime dateTimeLowerAsLocalTime = dateTimeLower.query(TemporalQueries.localTime());
         LocalDate dateTimeUpperAsLocalDate = dateTimeUpper.query(TemporalQueries.localDate());
-        LocalTime dateTimeUpperAsLocalTime = dateTimeUpper.query(TemporalQueries.localTime());
+        LocalDate dateTimeLowerAsLocalDate = dateTimeLower.query(TemporalQueries.localDate());
         if (null == queryToLocalTime) {
             LocalDate calculateTimeAsView = calculateTime.query(TemporalQueries.localDate());
             while (!calculateTimeAsView.isAfter(dateTimeUpperAsLocalDate)) {
@@ -160,6 +158,8 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
             }
             return result;
         }
+        LocalTime dateTimeUpperAsLocalTime = dateTimeUpper.query(TemporalQueries.localTime());
+        LocalTime dateTimeLowerAsLocalTime = dateTimeLower.query(TemporalQueries.localTime());
         if (null == queryToLocalDate) {
             LocalTime calculateTimeAsView = calculateTime.query(TemporalQueries.localTime());
             while (!calculateTimeAsView.isAfter(dateTimeUpperAsLocalTime)) {
@@ -171,8 +171,8 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
             return result;
         }
         LocalDateTime calculateTimeAsView = LocalDateTime.of(calculateTime.query(TemporalQueries.localDate()), calculateTime.query(TemporalQueries.localTime()));
-        LocalDateTime dateTimeLowerAsLocalDateTime = LocalDateTime.of(dateTimeLowerAsLocalDate, dateTimeLowerAsLocalTime);
         LocalDateTime dateTimeUpperAsLocalDateTime = LocalDateTime.of(dateTimeUpperAsLocalDate, dateTimeUpperAsLocalTime);
+        LocalDateTime dateTimeLowerAsLocalDateTime = LocalDateTime.of(dateTimeLowerAsLocalDate, dateTimeLowerAsLocalTime);
         while (!calculateTimeAsView.isAfter(dateTimeUpperAsLocalDateTime)) {
             if (hasIntersection(Range.closedOpen(calculateTimeAsView, calculateTimeAsView.plus(stepAmount, stepUnit)), range, dateTimeLowerAsLocalDateTime, dateTimeUpperAsLocalDateTime)) {
                 result.addAll(getMatchedTables(calculateTimeAsView, availableTargetNames));
@@ -223,8 +223,8 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
     
     private String getDateTimeText(final Comparable<?> endpoint) {
         if (endpoint instanceof LocalDateTime || endpoint instanceof ZonedDateTime
-                || endpoint instanceof OffsetDateTime || endpoint instanceof LocalTime
-                || endpoint instanceof OffsetTime || endpoint instanceof JapaneseDate) {
+                || endpoint instanceof OffsetDateTime || endpoint instanceof ChronoLocalDate
+                || endpoint instanceof LocalTime || endpoint instanceof OffsetTime) {
             return dateTimeFormatter.format((TemporalAccessor) endpoint);
         }
         if (endpoint instanceof Instant) {
