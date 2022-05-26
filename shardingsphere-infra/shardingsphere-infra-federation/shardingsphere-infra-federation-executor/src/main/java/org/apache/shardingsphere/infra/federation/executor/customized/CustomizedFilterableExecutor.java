@@ -35,7 +35,6 @@ import org.apache.shardingsphere.infra.federation.optimizer.ShardingSphereOptimi
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.enumerable.EnumerableMergedResult;
-import org.apache.shardingsphere.infra.parser.ParserConfiguration;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -57,8 +56,6 @@ public final class CustomizedFilterableExecutor implements FederationExecutor {
     
     private ResultSet federationResultSet;
     
-    private final ParserConfiguration parserConfiguration = new ParserConfiguration(new CacheOption(1, 1), new CacheOption(1, 1), false);
-    
     public CustomizedFilterableExecutor(final String databaseName, final String schemaName, final OptimizerContext context) {
         this.databaseName = databaseName;
         this.schemaName = schemaName;
@@ -70,7 +67,7 @@ public final class CustomizedFilterableExecutor implements FederationExecutor {
                                   final JDBCExecutorCallback<? extends ExecuteResult> callback, final FederationContext federationContext) throws SQLException {
         String sql = federationContext.getLogicSQL().getSql();
         ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(
-                DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType()), parserConfiguration);
+                DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType()), new CacheOption(1, 1), new CacheOption(1, 1), false);
         SQLStatement sqlStatement = sqlParserEngine.parse(sql, false);
         Enumerable<Object[]> enumerableResult = execute(sqlStatement);
         MergedResult mergedResult = new EnumerableMergedResult(enumerableResult);
