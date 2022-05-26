@@ -50,7 +50,7 @@ public final class SQLParserRule implements GlobalRule {
      */
     public ShardingSphereSQLParserEngine getSQLParserEngine(final String databaseType) {
         return new ShardingSphereSQLParserEngine(databaseType, new ParserConfiguration(sqlStatementCache, parseTreeCache, sqlCommentParseEnabled));
-    } 
+    }
     
     @Override
     public String getType() {
