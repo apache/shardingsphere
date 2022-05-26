@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.parser.rule;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.parser.ParserConfiguration;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
@@ -49,7 +48,7 @@ public final class SQLParserRule implements GlobalRule {
      * @return SQL parser engine
      */
     public ShardingSphereSQLParserEngine getSQLParserEngine(final String databaseType) {
-        return new ShardingSphereSQLParserEngine(databaseType, new ParserConfiguration(sqlStatementCache, parseTreeCache, sqlCommentParseEnabled));
+        return new ShardingSphereSQLParserEngine(databaseType, sqlStatementCache, parseTreeCache, sqlCommentParseEnabled);
     }
     
     @Override

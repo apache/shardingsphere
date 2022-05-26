@@ -48,7 +48,7 @@ public class TableMetaDataUtil {
      * @param checkMetaDataEnable config CHECK_TABLE_METADATA_ENABLED
      * @return TableMetaDataLoadMaterials
      */
-    public static Collection<TableMetaDataLoaderMaterial> getTableMetaDataLoadMaterial(final Collection<String> tableNames, 
+    public static Collection<TableMetaDataLoaderMaterial> getTableMetaDataLoadMaterial(final Collection<String> tableNames,
                                                                                        final GenericSchemaBuilderMaterials materials, final boolean checkMetaDataEnable) {
         Map<String, Collection<String>> dataSourceTableGroups = new LinkedHashMap<>();
         DataNodes dataNodes = new DataNodes(materials.getRules());
@@ -77,7 +77,7 @@ public class TableMetaDataUtil {
         }
     }
     
-    private static void addOneActualTableDataNode(final GenericSchemaBuilderMaterials materials, 
+    private static void addOneActualTableDataNode(final GenericSchemaBuilderMaterials materials,
                                                   final Map<String, Collection<String>> dataSourceTableGroups, final DataNodes dataNodes, final String table) {
         Optional<DataNode> dataNode = dataNodes.getDataNodes(table).stream().filter(each -> isSameDataSourceNameSchemaName(materials, each)).findFirst();
         String dataSourceName = dataNode.map(DataNode::getDataSourceName).orElseGet(() -> materials.getDataSourceMap().keySet().iterator().next());
@@ -93,7 +93,7 @@ public class TableMetaDataUtil {
         return null == dataNode.getSchemaName() || dataNode.getSchemaName().equalsIgnoreCase(materials.getDefaultSchemaName());
     }
     
-    private static void addAllActualTableDataNode(final GenericSchemaBuilderMaterials materials, 
+    private static void addAllActualTableDataNode(final GenericSchemaBuilderMaterials materials,
                                                   final Map<String, Collection<String>> dataSourceTableGroups, final DataNodes dataNodes, final String table) {
         Collection<DataNode> tableDataNodes = dataNodes.getDataNodes(table);
         if (tableDataNodes.isEmpty()) {
