@@ -461,6 +461,14 @@ schemaName
     : identifier
     ;
 
+synonymName
+    : identifier
+    ;
+
+objectName
+    : (owner DOT_)? identifier
+    ;
+    
 tableName
     : (owner DOT_)? name
     ;
@@ -1266,6 +1274,14 @@ aliasClause
     | AS colId
     | colId LP_ nameList RP_
     | colId
+    ;
+
+directoryName
+    : name
+    ;
+
+pathString
+    : STRING_
     ;
 
 nameList

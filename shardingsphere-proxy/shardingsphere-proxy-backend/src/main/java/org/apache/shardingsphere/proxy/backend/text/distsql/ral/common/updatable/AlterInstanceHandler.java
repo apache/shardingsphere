@@ -45,7 +45,7 @@ public final class AlterInstanceHandler extends UpdatableRALBackendHandler<Alter
     }
     
     private void setXaRecoveryId(final ContextManager contextManager, final AlterInstanceStatement sqlStatement) {
-        Optional<MetaDataPersistService> persistService = contextManager.getMetaDataContexts().getMetaDataPersistService();
+        Optional<MetaDataPersistService> persistService = contextManager.getMetaDataContexts().getPersistService();
         if (!persistService.isPresent()) {
             throw new UnsupportedOperationException(String.format("No persistence configuration found, unable to set '%s'", sqlStatement.getKey()));
         }

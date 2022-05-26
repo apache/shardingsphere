@@ -23,9 +23,8 @@ import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContextFactory;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.event.DropSchemaEvent;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.event.DropSchemaEvent;
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropSchemaStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
@@ -35,6 +34,7 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Schema refresher for drop schema statement.
@@ -44,23 +44,22 @@ public final class DropSchemaStatementSchemaRefresher implements MetaDataRefresh
     private static final String TYPE = DropSchemaStatement.class.getName();
     
     @Override
-    public void refresh(final ShardingSphereMetaData metaData, final FederationDatabaseMetaData database, final Map<String, OptimizerPlannerContext> optimizerPlanners,
+    public void refresh(final ShardingSphereDatabase database, final FederationDatabaseMetaData federationDatabaseMetaData, final Map<String, OptimizerPlannerContext> optimizerPlanners,
                         final Collection<String> logicDataSourceNames, final String schemaName, final DropSchemaStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         Collection<String> tobeRemovedTables = new LinkedHashSet<>();
         Collection<String> tobeRemovedSchemas = new LinkedHashSet<>();
         Collection<String> schemaNames = getSchemaNames(sqlStatement);
         for (String each : schemaNames) {
-            ShardingSphereSchema schema = metaData.getSchemas().remove(each);
-            tobeRemovedTables.addAll(schema.getAllTableNames());
+            Optional.ofNullable(database.getSchemas().remove(each)).ifPresent(optional -> tobeRemovedTables.addAll(optional.getAllTableNames()));
             tobeRemovedSchemas.add(each.toLowerCase());
-            database.removeSchemaMetadata(each);
-            optimizerPlanners.put(database.getName(), OptimizerPlannerContextFactory.create(database));
+            federationDatabaseMetaData.removeSchemaMetadata(each);
+            optimizerPlanners.put(federationDatabaseMetaData.getName(), OptimizerPlannerContextFactory.create(federationDatabaseMetaData));
         }
-        Collection<MutableDataNodeRule> rules = metaData.getRuleMetaData().findRules(MutableDataNodeRule.class);
+        Collection<MutableDataNodeRule> rules = database.getRuleMetaData().findRules(MutableDataNodeRule.class);
         for (String each : tobeRemovedTables) {
             removeDataNode(rules, each, tobeRemovedSchemas);
         }
-        ShardingSphereEventBus.getInstance().post(new DropSchemaEvent(metaData.getDatabaseName(), schemaNames));
+        ShardingSphereEventBus.getInstance().post(new DropSchemaEvent(database.getName(), schemaNames));
     }
     
     private Collection<String> getSchemaNames(final DropSchemaStatement sqlStatement) {

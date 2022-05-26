@@ -22,7 +22,6 @@ import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.ParseStatement;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -64,22 +63,21 @@ public final class ParseDistSQLBackendHandler extends QueryableRALBackendHandler
     
     @Override
     protected Collection<List<Object>> getRows(final ContextManager contextManager) {
-        Optional<SQLParserRule> sqlParserRule = contextManager.getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(SQLParserRule.class);
+        Optional<SQLParserRule> sqlParserRule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(SQLParserRule.class);
         Preconditions.checkState(sqlParserRule.isPresent());
         SQLStatement parsedSqlStatement;
         try {
-            parsedSqlStatement = new ShardingSphereSQLParserEngine(
-                    getBackendDatabaseType(databaseType, connectionSession).getType(), sqlParserRule.get().toParserConfiguration()).parse(sqlStatement.getSql(), false);
+            parsedSqlStatement = sqlParserRule.get().getSQLParserEngine(getStorageType(databaseType, connectionSession).getType()).parse(sqlStatement.getSql(), false);
         } catch (SQLParsingException ex) {
             throw new SQLParsingException("You have a syntax error in your parsed statement");
         }
         return Collections.singleton(Arrays.asList(parsedSqlStatement.getClass().getSimpleName(), new Gson().toJson(parsedSqlStatement)));
     }
     
-    private static DatabaseType getBackendDatabaseType(final DatabaseType defaultDatabaseType, final ConnectionSession connectionSession) {
+    private static DatabaseType getStorageType(final DatabaseType defaultDatabaseType, final ConnectionSession connectionSession) {
         String databaseName = connectionSession.getDatabaseName();
         return Strings.isNullOrEmpty(databaseName) || !ProxyContext.getInstance().databaseExists(databaseName)
                 ? defaultDatabaseType
-                : ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(databaseName).getResource().getDatabaseType();
+                : ProxyContext.getInstance().getContextManager().getMetaDataContexts().getDatabase(databaseName).getResource().getDatabaseType();
     }
 }

@@ -22,12 +22,8 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockRegis
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeUtil;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
 
 /**
  * Mutex lock registry service.
@@ -39,24 +35,7 @@ public final class MutexLockRegistryService implements LockRegistryService {
     
     @Override
     public Collection<String> acquireAckLockedInstances(final String ackLockName) {
-        List<String> childrenKeys = repository.getChildrenKeys(ackLockName);
-        if (childrenKeys.isEmpty()) {
-            return new ArrayList<>();
-        }
-        Collection<String> result = new LinkedList<>();
-        for (String each : childrenKeys) {
-            result.add(parseLockedInstance(ackLockName, each));
-        }
-        return result;
-    }
-    
-    private String parseLockedInstance(final String ackLockName, final String key) {
-        return LockNodeUtil.parseAckLockedNodePathKey(key);
-    }
-    
-    @Override
-    public Lock getInternalLock(final String lockName) {
-        return repository.getInternalMutexLock(lockName);
+        return repository.getChildrenKeys(ackLockName);
     }
     
     @Override
@@ -75,7 +54,7 @@ public final class MutexLockRegistryService implements LockRegistryService {
     
     @Override
     public void removeLock(final String lockName) {
-        repository.delete(LockNodeUtil.generateMutexLockReleasedNodePath(lockName));
+        repository.delete(LockNodeUtil.generateLockLeasesNodePath(lockName));
     }
     
     @Override

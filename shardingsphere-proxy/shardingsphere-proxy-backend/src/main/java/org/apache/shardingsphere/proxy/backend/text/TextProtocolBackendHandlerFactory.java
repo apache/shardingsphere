@@ -22,12 +22,13 @@ import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.DistSQLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.check.SQLCheckEngine;
-import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
@@ -87,16 +88,20 @@ public final class TextProtocolBackendHandlerFactory {
             return new SkipBackendHandler(new EmptyStatement());
         }
         SQLStatement sqlStatement = sqlStatementSupplier.get().orElseGet(() -> {
-            Optional<SQLParserRule> sqlParserRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(SQLParserRule.class);
+            Optional<SQLParserRule> sqlParserRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(SQLParserRule.class);
             Preconditions.checkState(sqlParserRule.isPresent());
-            return new ShardingSphereSQLParserEngine(getFrontendDatabaseType(databaseType, connectionSession).getType(), sqlParserRule.get().toParserConfiguration()).parse(sql, false);
+            return sqlParserRule.get().getSQLParserEngine(getProtocolType(databaseType, connectionSession).getType()).parse(sql, false);
         });
         databaseType.handleRollbackOnly(connectionSession.getTransactionStatus().isRollbackOnly(), sqlStatement);
         checkUnsupportedSQLStatement(sqlStatement);
         if (sqlStatement instanceof DistSQLStatement) {
+            if (connectionSession.getTransactionStatus().isInTransaction() && !(sqlStatement instanceof RQLStatement || sqlStatement instanceof QueryableRALStatement)) {
+                throw new UnsupportedOperationException("Non-query dist sql is not supported within a transaction");
+            }
             return DistSQLBackendHandlerFactory.newInstance(databaseType, (DistSQLStatement) sqlStatement, connectionSession);
         }
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap(),
+        handleAutoCommit(sqlStatement, connectionSession);
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases(),
                 sqlStatement, connectionSession.getDefaultDatabaseName());
         Optional<TextProtocolBackendHandler> backendHandler = DatabaseAdminBackendHandlerFactory.newInstance(databaseType, sqlStatementContext, connectionSession, sql);
         if (backendHandler.isPresent()) {
@@ -118,7 +123,7 @@ public final class TextProtocolBackendHandlerFactory {
                 ? sqlStatementContext.getTablesContext().getDatabaseName().get()
                 : connectionSession.getDatabaseName();
         SQLCheckEngine.check(sqlStatement, Collections.emptyList(),
-                getRules(databaseName), databaseName, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap(), connectionSession.getGrantee());
+                getRules(databaseName), databaseName, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases(), connectionSession.getGrantee());
         if (sqlStatement instanceof TCLStatement) {
             return TransactionBackendHandlerFactory.newInstance((SQLStatementContext<TCLStatement>) sqlStatementContext, sql, connectionSession);
         }
@@ -126,11 +131,17 @@ public final class TextProtocolBackendHandlerFactory {
         return backendHandler.orElseGet(() -> DatabaseBackendHandlerFactory.newInstance(sqlStatementContext, sql, connectionSession));
     }
     
-    private static DatabaseType getFrontendDatabaseType(final DatabaseType defaultDatabaseType, final ConnectionSession connectionSession) {
+    private static DatabaseType getProtocolType(final DatabaseType defaultDatabaseType, final ConnectionSession connectionSession) {
         String databaseName = connectionSession.getDatabaseName();
         return Strings.isNullOrEmpty(databaseName) || !ProxyContext.getInstance().databaseExists(databaseName)
                 ? defaultDatabaseType
-                : ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(databaseName).getFrontendDatabaseType();
+                : ProxyContext.getInstance().getContextManager().getMetaDataContexts().getDatabase(databaseName).getProtocolType();
+    }
+    
+    private static void handleAutoCommit(final SQLStatement sqlStatement, final ConnectionSession connectionSession) throws SQLException {
+        if (!(sqlStatement instanceof TCLStatement)) {
+            connectionSession.getBackendConnection().prepareForTaskExecution();
+        }
     }
     
     private static Optional<ExtraTextProtocolBackendHandler> findExtraTextProtocolBackendHandler(final SQLStatement sqlStatement) {
@@ -152,11 +163,11 @@ public final class TextProtocolBackendHandlerFactory {
     private static Collection<ShardingSphereRule> getRules(final String databaseName) {
         MetaDataContexts contexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         if (Strings.isNullOrEmpty(databaseName) || !ProxyContext.getInstance().databaseExists(databaseName)) {
-            return contexts.getGlobalRuleMetaData().getRules();
+            return contexts.getMetaData().getGlobalRuleMetaData().getRules();
         }
         Collection<ShardingSphereRule> result;
-        result = new LinkedList<>(contexts.getMetaData(databaseName).getRuleMetaData().getRules());
-        result.addAll(contexts.getGlobalRuleMetaData().getRules());
+        result = new LinkedList<>(contexts.getDatabase(databaseName).getRuleMetaData().getRules());
+        result.addAll(contexts.getMetaData().getGlobalRuleMetaData().getRules());
         return result;
     }
     

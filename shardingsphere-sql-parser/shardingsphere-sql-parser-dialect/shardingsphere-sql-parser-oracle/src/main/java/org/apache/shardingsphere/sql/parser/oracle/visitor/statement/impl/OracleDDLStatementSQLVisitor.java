@@ -44,12 +44,15 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Create
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateDefinitionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateDimensionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreatePFileContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateSPFileContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropEditionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropOutlineContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterOutlineContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterAnalyticViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterAttributeDimensionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateSequenceContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterSequenceContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateContextContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateTableContext;
@@ -128,12 +131,15 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.Ora
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateDimensionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateFunctionStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreatePFileStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateSPFileStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropEditionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropOutlineStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterOutlineStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterAnalyticViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterAttributeDimensionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateSequenceStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterSequenceStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateContextStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateTableStatement;
@@ -731,7 +737,22 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
     }
     
     @Override
+    public ASTNode visitAlterSequence(final AlterSequenceContext ctx) {
+        return new OracleAlterSequenceStatement();
+    }
+    
+    @Override
     public ASTNode visitCreateContext(final CreateContextContext ctx) {
         return new OracleCreateContextStatement();
+    }
+    
+    @Override
+    public ASTNode visitCreateSPFile(final CreateSPFileContext ctx) {
+        return new OracleCreateSPFileStatement();
+    }
+    
+    @Override
+    public ASTNode visitCreatePFile(final CreatePFileContext ctx) {
+        return new OracleCreatePFileStatement();
     }
 }

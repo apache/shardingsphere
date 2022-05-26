@@ -23,11 +23,11 @@ import org.apache.shardingsphere.infra.context.refresher.MetaDataRefresher;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.event.SchemaAlteredEvent;
-import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.event.SchemaAlteredEvent;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.AlterIndexStatementHandler;
@@ -45,7 +45,7 @@ public final class AlterIndexStatementSchemaRefresher implements MetaDataRefresh
     private static final String TYPE = AlterIndexStatement.class.getName();
     
     @Override
-    public void refresh(final ShardingSphereMetaData metaData, final FederationDatabaseMetaData database, final Map<String, OptimizerPlannerContext> optimizerPlanners,
+    public void refresh(final ShardingSphereDatabase database, final FederationDatabaseMetaData federationDatabaseMetaData, final Map<String, OptimizerPlannerContext> optimizerPlanners,
                         final Collection<String> logicDataSourceNames, final String schemaName, final AlterIndexStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         Optional<IndexSegment> renameIndex = AlterIndexStatementHandler.getRenameIndexSegment(sqlStatement);
         if (!sqlStatement.getIndex().isPresent() || !renameIndex.isPresent()) {
@@ -53,14 +53,14 @@ public final class AlterIndexStatementSchemaRefresher implements MetaDataRefresh
         }
         String actualSchemaName = sqlStatement.getIndex().get().getOwner().map(optional -> optional.getIdentifier().getValue()).orElse(schemaName);
         String indexName = sqlStatement.getIndex().get().getIndexName().getIdentifier().getValue();
-        Optional<String> logicTableName = findLogicTableName(metaData.getSchemaByName(actualSchemaName), indexName);
+        Optional<String> logicTableName = findLogicTableName(database.getSchemas().get(actualSchemaName), indexName);
         if (logicTableName.isPresent()) {
-            TableMetaData tableMetaData = metaData.getSchemaByName(actualSchemaName).get(logicTableName.get());
+            TableMetaData tableMetaData = database.getSchemas().get(actualSchemaName).get(logicTableName.get());
             Preconditions.checkNotNull(tableMetaData, "Can not get the table '%s' metadata!", logicTableName.get());
             tableMetaData.getIndexes().remove(indexName);
             String renameIndexName = renameIndex.get().getIndexName().getIdentifier().getValue();
             tableMetaData.getIndexes().put(renameIndexName, new IndexMetaData(renameIndexName));
-            SchemaAlteredEvent event = new SchemaAlteredEvent(metaData.getDatabaseName(), actualSchemaName);
+            SchemaAlteredEvent event = new SchemaAlteredEvent(database.getName(), actualSchemaName);
             event.getAlteredTables().add(tableMetaData);
             ShardingSphereEventBus.getInstance().post(event);
         }

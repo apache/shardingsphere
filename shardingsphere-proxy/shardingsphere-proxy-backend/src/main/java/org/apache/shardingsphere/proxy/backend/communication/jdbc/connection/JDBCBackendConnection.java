@@ -175,16 +175,12 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
     }
     
     @Override
-    public Void prepareForTaskExecution() throws BackendConnectionException {
+    public Void prepareForTaskExecution() throws SQLException {
         synchronized (this) {
             connectionReferenceCount++;
             if (!connectionSession.isAutoCommit() && !connectionSession.getTransactionStatus().isInTransaction()) {
                 JDBCBackendTransactionManager transactionManager = new JDBCBackendTransactionManager(this);
-                try {
-                    transactionManager.begin();
-                } catch (SQLException ex) {
-                    throw new BackendConnectionException(ex);
-                }
+                transactionManager.begin();
             }
             return null;
         }

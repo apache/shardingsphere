@@ -20,7 +20,7 @@ package org.apache.shardingsphere.singletable.route.engine;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.metadata.schema.QualifiedTable;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -76,7 +76,7 @@ public final class SingleTableStandardRouteEngine implements SingleTableRouteEng
     }
     
     private Map<String, RouteUnit> getDataSourceRouteUnits(final RouteContext newRouteContext) {
-        return newRouteContext.getRouteUnits().stream().collect(Collectors.toMap(each -> each.getDataSourceMapper().getLogicName(), Function.identity(), (oldValue, currentValue) -> oldValue));
+        return newRouteContext.getRouteUnits().stream().collect(Collectors.toMap(each -> each.getDataSourceMapper().getLogicName(), Function.identity()));
     }
     
     private void route0(final RouteContext routeContext, final SingleTableRule rule) {

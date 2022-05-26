@@ -20,7 +20,7 @@ package org.apache.shardingsphere.authority.provider.natived;
 import org.apache.shardingsphere.authority.model.AuthorityRegistry;
 import org.apache.shardingsphere.authority.model.PrivilegeType;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.junit.Test;
@@ -47,8 +47,8 @@ public final class NativeAuthorityProviderAlgorithmTest {
         Collection<ShardingSphereUser> users = new LinkedList<>();
         ShardingSphereUser root = new ShardingSphereUser("root", "", "localhost");
         users.add(root);
-        ShardingSphereMetaData metaData = mockShardingSphereMetaData(users);
-        AuthorityRegistry authorityRegistry = algorithm.buildAuthorityRegistry(Collections.singletonMap("db0", metaData), users);
+        ShardingSphereDatabase database = mockDatabase(users);
+        AuthorityRegistry authorityRegistry = algorithm.buildAuthorityRegistry(Collections.singletonMap("db0", database), users);
         Optional<ShardingSpherePrivileges> privileges = authorityRegistry.findPrivileges(new Grantee("root", "localhost"));
         assertTrue(privileges.isPresent());
         assertPrivilege(privileges.get());
@@ -65,8 +65,8 @@ public final class NativeAuthorityProviderAlgorithmTest {
         assertTrue(privileges.hasPrivileges(expected));
     }
     
-    private ShardingSphereMetaData mockShardingSphereMetaData(final Collection<ShardingSphereUser> users) throws SQLException {
-        ShardingSphereMetaData result = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
+    private ShardingSphereDatabase mockDatabase(final Collection<ShardingSphereUser> users) throws SQLException {
+        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         DataSource dataSource = mockDataSourceForPrivileges(users);
         when(result.getResource().getAllInstanceDataSources()).thenReturn(Collections.singletonList(dataSource));
         when(result.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());

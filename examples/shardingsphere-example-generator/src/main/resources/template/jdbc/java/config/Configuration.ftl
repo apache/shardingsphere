@@ -148,10 +148,14 @@ public final class Configuration {
      <#if transaction!="local">
      
      private TransactionRuleConfiguration createTransactionRuleConfiguration() {
-     <#if transaction=="xa-narayana">
+     <#if transaction=="xa-atomikos">
+        return new TransactionRuleConfiguration("XA", "Atomikos", new Properties());
+     <#elseif transaction=="xa-narayana">
         return new TransactionRuleConfiguration("XA", "Narayana", new Properties());
      <#elseif transaction=="xa-bitronix">
         return new TransactionRuleConfiguration("XA", "Bitronix", new Properties());
+     <#elseif transaction=="base-seata">
+        return new TransactionRuleConfiguration("BASE", "Seata", new Properties());
      </#if>
      }
     </#if>

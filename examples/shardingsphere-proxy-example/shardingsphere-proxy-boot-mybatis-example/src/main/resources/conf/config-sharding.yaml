@@ -22,7 +22,7 @@
 #
 ######################################################################################################
 
-schemaName: sharding_db
+databaseName: sharding_db
 
 dataSources:
   ds_0:

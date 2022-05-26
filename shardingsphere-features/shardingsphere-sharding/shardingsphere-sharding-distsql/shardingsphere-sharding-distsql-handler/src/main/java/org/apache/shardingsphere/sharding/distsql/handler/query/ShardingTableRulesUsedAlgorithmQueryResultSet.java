@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableRulesUsedAlgorithmStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -37,11 +37,11 @@ public final class ShardingTableRulesUsedAlgorithmQueryResultSet implements Dist
     private Iterator<Collection<Object>> data = Collections.emptyIterator();
     
     @Override
-    public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
+    public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
         ShowShardingTableRulesUsedAlgorithmStatement statement = (ShowShardingTableRulesUsedAlgorithmStatement) sqlStatement;
         Collection<Collection<Object>> data = new LinkedList<>();
-        Collection<ShardingRuleConfiguration> shardingTableRules = metaData.getRuleMetaData().findRuleConfiguration(ShardingRuleConfiguration.class);
-        shardingTableRules.forEach(each -> requireResult(statement, metaData.getDatabaseName(), data, each));
+        Collection<ShardingRuleConfiguration> shardingTableRules = database.getRuleMetaData().findRuleConfigurations(ShardingRuleConfiguration.class);
+        shardingTableRules.forEach(each -> requireResult(statement, database.getName(), data, each));
         this.data = data.iterator();
     }
     

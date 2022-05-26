@@ -27,6 +27,10 @@
     <artifactId>shardingsphere-transaction-xa-bitronix</artifactId>
     <name>${project.artifactId}</name>
     
+    <properties>
+        <btm.version>2.1.3</btm.version>
+    </properties>
+    
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
@@ -37,6 +41,8 @@
         <dependency>
             <groupId>org.codehaus.btm</groupId>
             <artifactId>btm</artifactId>
+            <version>${btm.version}</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

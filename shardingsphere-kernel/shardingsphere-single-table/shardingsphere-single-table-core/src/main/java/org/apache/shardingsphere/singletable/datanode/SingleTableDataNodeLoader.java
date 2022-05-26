@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.metadata.schema.loader.common.SchemaMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.common.SchemaTableNamesLoader;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -75,7 +75,7 @@ public final class SingleTableDataNodeLoader {
     
     private static Map<String, Collection<DataNode>> load(final String databaseName, final DatabaseType databaseType, final String dataSourceName,
                                                           final DataSource dataSource, final Collection<String> excludedTables) {
-        Map<String, Collection<String>> schemaTableNames = loadSchemaTableNames(databaseName, databaseType, dataSource);
+        Map<String, Collection<String>> schemaTableNames = loadSchemaTableNames(databaseName, databaseType, dataSource, dataSourceName);
         Map<String, Collection<DataNode>> result = new LinkedHashMap<>();
         for (Entry<String, Collection<String>> entry : schemaTableNames.entrySet()) {
             for (String each : entry.getValue()) {
@@ -102,11 +102,11 @@ public final class SingleTableDataNodeLoader {
         return false;
     }
     
-    private static Map<String, Collection<String>> loadSchemaTableNames(final String databaseName, final DatabaseType databaseType, final DataSource dataSource) {
+    private static Map<String, Collection<String>> loadSchemaTableNames(final String databaseName, final DatabaseType databaseType, final DataSource dataSource, final String dataSourceName) {
         try {
-            return SchemaMetaDataLoader.loadSchemaTableNames(databaseName, databaseType, dataSource);
+            return SchemaTableNamesLoader.loadSchemaTableNames(databaseName, databaseType, dataSource);
         } catch (final SQLException ex) {
-            throw new ShardingSphereConfigurationException("Can not load table: %s", ex.getMessage());
+            throw new ShardingSphereConfigurationException(String.format("Can not load table, databaseName: %s, dataSourceName: %s", databaseName, dataSourceName), ex);
         }
     }
 }

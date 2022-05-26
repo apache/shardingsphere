@@ -24,10 +24,13 @@ import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredAlgorithmMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.expr.InlineExpressionParser;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.CheckableRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
@@ -63,50 +66,50 @@ public final class ShardingTableRuleStatementChecker {
     /**
      * Check create sharing table rule statement.
      *
-     * @param shardingSphereMetaData ShardingSphere meta data
+     * @param database database
      * @param rules rules
      * @param currentRuleConfig current rule configuration
      * @throws DistSQLException definition violation exception
      */
-    public static void checkCreation(final ShardingSphereMetaData shardingSphereMetaData, final Collection<AbstractTableRuleSegment> rules,
-                                     final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        check(shardingSphereMetaData, rules, currentRuleConfig, true);
+    public static void checkCreation(final ShardingSphereDatabase database,
+                                     final Collection<AbstractTableRuleSegment> rules, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
+        check(database, rules, currentRuleConfig, true);
     }
     
     /**
      * Check alter sharing table rule statement.
      *
-     * @param shardingSphereMetaData ShardingSphere meta data
+     * @param database database
      * @param rules rules
      * @param currentRuleConfig current rule configuration
      * @throws DistSQLException definition violation exception
      */
-    public static void checkAlteration(final ShardingSphereMetaData shardingSphereMetaData, final Collection<AbstractTableRuleSegment> rules,
-                                       final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        check(shardingSphereMetaData, rules, currentRuleConfig, false);
+    public static void checkAlteration(final ShardingSphereDatabase database,
+                                       final Collection<AbstractTableRuleSegment> rules, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
+        check(database, rules, currentRuleConfig, false);
     }
     
-    private static void check(final ShardingSphereMetaData shardingSphereMetaData, final Collection<AbstractTableRuleSegment> rules,
-                              final ShardingRuleConfiguration currentRuleConfig, final boolean isCreate) throws DistSQLException {
-        String databaseName = shardingSphereMetaData.getDatabaseName();
+    private static void check(final ShardingSphereDatabase database,
+                              final Collection<AbstractTableRuleSegment> rules, final ShardingRuleConfiguration currentRuleConfig, final boolean isCreate) throws DistSQLException {
+        String databaseName = database.getName();
         checkShardingTables(databaseName, rules, currentRuleConfig, isCreate);
-        checkResources(databaseName, rules, shardingSphereMetaData);
+        checkResources(databaseName, rules, database);
         checkKeyGenerators(rules, currentRuleConfig);
         Map<String, List<AbstractTableRuleSegment>> groupedTableRule = groupingByClassType(rules);
         checkAutoTableRule(groupedTableRule.getOrDefault(AutoTableRuleSegment.class.getSimpleName(), Collections.emptyList()));
         checkTableRule(databaseName, currentRuleConfig, groupedTableRule.getOrDefault(TableRuleSegment.class.getSimpleName(), Collections.emptyList()));
     }
     
-    private static void checkResources(final String databaseName, final Collection<AbstractTableRuleSegment> rules, final ShardingSphereMetaData shardingSphereMetaData) throws DistSQLException {
+    private static void checkResources(final String databaseName, final Collection<AbstractTableRuleSegment> rules, final ShardingSphereDatabase database) throws DistSQLException {
         Collection<String> requiredResource = getRequiredResources(rules);
-        Collection<String> notExistedResources = shardingSphereMetaData.getResource().getNotExistedResources(requiredResource);
-        Collection<String> logicResources = getLogicResources(shardingSphereMetaData);
+        Collection<String> notExistedResources = database.getResource().getNotExistedResources(requiredResource);
+        Collection<String> logicResources = getLogicResources(database);
         notExistedResources.removeIf(logicResources::contains);
         DistSQLException.predictionThrow(notExistedResources.isEmpty(), () -> new RequiredResourceMissedException(databaseName, notExistedResources));
     }
     
-    private static Collection<String> getLogicResources(final ShardingSphereMetaData shardingSphereMetaData) {
-        return shardingSphereMetaData.getRuleMetaData().getRules().stream().filter(each -> each instanceof DataSourceContainedRule)
+    private static Collection<String> getLogicResources(final ShardingSphereDatabase database) {
+        return database.getRuleMetaData().getRules().stream().filter(each -> each instanceof DataSourceContainedRule)
                 .map(each -> ((DataSourceContainedRule) each).getDataSourceMapper().keySet()).flatMap(Collection::stream).collect(Collectors.toCollection(LinkedHashSet::new));
     }
     
@@ -232,5 +235,79 @@ public final class ShardingTableRuleStatementChecker {
     
     private static Map<String, List<AbstractTableRuleSegment>> groupingByClassType(final Collection<AbstractTableRuleSegment> rules) {
         return rules.stream().collect(Collectors.groupingBy(each -> each.getClass().getSimpleName()));
+    }
+    
+    /**
+     * Check binding table rules.
+     *
+     * @param database database
+     * @param currentRuleConfig current rule configuration
+     * @param toBeAlteredRuleConfig to be altered rule configuration
+     * @throws DistSQLException definition violation exception
+     */
+    public static void checkBindingTableRules(final ShardingSphereDatabase database, final ShardingRuleConfiguration currentRuleConfig,
+                                              final ShardingRuleConfiguration toBeAlteredRuleConfig) throws DistSQLException {
+        if (null == currentRuleConfig || currentRuleConfig.getBindingTableGroups().isEmpty()) {
+            return;
+        }
+        Collection<String> bindingTables = getCurrentBindingTables(currentRuleConfig);
+        if (bindingTables.size() <= 1) {
+            return;
+        }
+        Collection<String> toBeAlteredLogicTableNames = getAlteredLogicalTableNames(toBeAlteredRuleConfig);
+        Collection<String> toBeAlteredBindingTableNames = toBeAlteredLogicTableNames.stream().filter(each -> bindingTables.contains(each)).collect(Collectors.toSet());
+        if (toBeAlteredBindingTableNames.isEmpty()) {
+            return;
+        }
+        ShardingRuleConfiguration toBeCheckedRuleConfig = new ShardingRuleConfiguration();
+        toBeCheckedRuleConfig.setTables(currentRuleConfig.getTables());
+        toBeCheckedRuleConfig.setAutoTables(currentRuleConfig.getAutoTables());
+        toBeCheckedRuleConfig.setBindingTableGroups(currentRuleConfig.getBindingTableGroups());
+        toBeCheckedRuleConfig.setBroadcastTables(currentRuleConfig.getBroadcastTables());
+        toBeCheckedRuleConfig.setDefaultTableShardingStrategy(currentRuleConfig.getDefaultTableShardingStrategy());
+        toBeCheckedRuleConfig.setDefaultDatabaseShardingStrategy(currentRuleConfig.getDefaultDatabaseShardingStrategy());
+        toBeCheckedRuleConfig.setDefaultKeyGenerateStrategy(currentRuleConfig.getDefaultKeyGenerateStrategy());
+        toBeCheckedRuleConfig.setDefaultShardingColumn(currentRuleConfig.getDefaultShardingColumn());
+        toBeCheckedRuleConfig.setShardingAlgorithms(currentRuleConfig.getShardingAlgorithms());
+        toBeCheckedRuleConfig.setKeyGenerators(currentRuleConfig.getKeyGenerators());
+        toBeCheckedRuleConfig.setScalingName(currentRuleConfig.getScalingName());
+        toBeCheckedRuleConfig.setScaling(currentRuleConfig.getScaling());
+        removeRuleConfiguration(toBeCheckedRuleConfig, toBeAlteredRuleConfig);
+        addRuleConfiguration(toBeCheckedRuleConfig, toBeAlteredRuleConfig);
+        Collection<String> dataSourceNames = toBeCheckedRuleConfig.getRequiredResource();
+        dataSourceNames.addAll(toBeAlteredRuleConfig.getRequiredResource());
+        for (ShardingSphereRule each : database.getRuleMetaData().getRules()) {
+            if (each instanceof CheckableRule) {
+                DistSQLException.predictionThrow(((CheckableRule) each).check(toBeCheckedRuleConfig, dataSourceNames),
+                        () -> new InvalidRuleConfigurationException("sharding table", toBeAlteredLogicTableNames, Collections.singleton("invalid binding table configuration")));
+            }
+        }
+    }
+    
+    private static void removeRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeAlteredRuleConfig) {
+        Collection<String> toBeAlteredLogicTableNames = getAlteredLogicalTableNames(toBeAlteredRuleConfig);
+        toBeAlteredLogicTableNames.forEach(each -> {
+            currentRuleConfig.getTables().removeIf(table -> table.getLogicTable().equalsIgnoreCase(each));
+            currentRuleConfig.getAutoTables().removeIf(table -> table.getLogicTable().equalsIgnoreCase(each));
+        });
+    }
+    
+    private static void addRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeAlteredRuleConfig) {
+        currentRuleConfig.getTables().addAll(toBeAlteredRuleConfig.getTables());
+        currentRuleConfig.getAutoTables().addAll(toBeAlteredRuleConfig.getAutoTables());
+        currentRuleConfig.getShardingAlgorithms().putAll(toBeAlteredRuleConfig.getShardingAlgorithms());
+        currentRuleConfig.getKeyGenerators().putAll(toBeAlteredRuleConfig.getKeyGenerators());
+    }
+    
+    private static Collection<String> getAlteredLogicalTableNames(final ShardingRuleConfiguration toBeAlteredRuleConfig) {
+        Collection<String> result = toBeAlteredRuleConfig.getTables().stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toList());
+        result.addAll(toBeAlteredRuleConfig.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getLogicTable).collect(Collectors.toList()));
+        return result;
+    }
+    
+    private static Collection<String> getCurrentBindingTables(final ShardingRuleConfiguration currentRuleConfig) {
+        Collection<String> result = new LinkedHashSet<>();
+        currentRuleConfig.getBindingTableGroups().forEach(each -> result.addAll(Splitter.on(",").trimResults().splitToList(each)));
+        return result;
     }
 }

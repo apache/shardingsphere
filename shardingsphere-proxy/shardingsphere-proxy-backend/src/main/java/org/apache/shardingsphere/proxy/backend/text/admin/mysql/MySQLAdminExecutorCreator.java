@@ -159,14 +159,12 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
     
     private DatabaseAdminExecutor mockExecutor(final String schemaName, final SelectStatement sqlStatement, final String sql) {
         boolean isNotUseSchema = !Optional.ofNullable(schemaName).isPresent() && sqlStatement.getFrom() == null;
+        if (!hasDatabases() || !hasResources()) {
+            return new NoResourceShowExecutor(sqlStatement);
+        }
+        String driverType = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.PROXY_BACKEND_DRIVER_TYPE);
         if (isNotUseSchema) {
-            if (!hasDatabases() || !hasResources()) {
-                return new NoResourceShowExecutor(sqlStatement);
-            } else {
-                // TODO Avoid accessing database here, consider using `org.apache.shardingsphere.proxy.backend.text.data.DatabaseBackendHandler`
-                String driverType = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.PROXY_BACKEND_DRIVER_TYPE);
-                return "ExperimentalVertx".equals(driverType) ? null : new UnicastResourceShowExecutor(sqlStatement, sql);
-            }
+            return "ExperimentalVertx".equals(driverType) ? null : new UnicastResourceShowExecutor(sqlStatement, sql);
         }
         return null;
     }
@@ -176,7 +174,7 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
     }
     
     private boolean hasResources() {
-        return ProxyContext.getInstance().getAllDatabaseNames().stream().anyMatch(each -> ProxyContext.getInstance().getMetaData(each).hasDataSource());
+        return ProxyContext.getInstance().getAllDatabaseNames().stream().anyMatch(each -> ProxyContext.getInstance().getDatabase(each).hasDataSource());
     }
     
     private boolean isSetClientEncoding(final SetStatement setStatement) {

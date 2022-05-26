@@ -47,7 +47,7 @@ public final class ComputeNodePersistService {
      * 
      * @param instanceId instance id
      * @param labels collection of label
-     * @param isOverwrite whether overwrite registry center's configuration if existed              
+     * @param isOverwrite whether overwrite registry center's configuration if existed
      */
     public void persistInstanceLabels(final String instanceId, final Collection<String> labels, final boolean isOverwrite) {
         if (null != labels && !labels.isEmpty() && (isOverwrite || !isExisted(instanceId))) {
@@ -87,7 +87,8 @@ public final class ComputeNodePersistService {
      * @param xaRecoveryId xa recovery id
      */
     public void persistInstanceXaRecoveryId(final String instanceId, final String xaRecoveryId) {
-        repository.persist(ComputeNode.getInstanceXaRecoveryIdNodePath(instanceId), xaRecoveryId);
+        loadXaRecoveryId(instanceId).ifPresent(each -> repository.delete(ComputeNode.getInstanceXaRecoveryIdNodePath(each, instanceId)));
+        repository.persist(ComputeNode.getInstanceXaRecoveryIdNodePath(xaRecoveryId, instanceId), "");
     }
     
     /**
@@ -96,6 +97,7 @@ public final class ComputeNodePersistService {
      * @param instanceId instance id
      * @return labels
      */
+    @SuppressWarnings("unchecked")
     public Collection<String> loadInstanceLabels(final String instanceId) {
         String yamlContent = repository.get(ComputeNode.getInstanceLabelsNodePath(instanceId));
         return Strings.isNullOrEmpty(yamlContent) ? new ArrayList<>() : YamlEngine.unmarshal(yamlContent, Collection.class);
@@ -107,6 +109,7 @@ public final class ComputeNodePersistService {
      * @param instanceId instance id
      * @return status
      */
+    @SuppressWarnings("unchecked")
     public Collection<String> loadInstanceStatus(final String instanceId) {
         String yamlContent = repository.get(ComputeNode.getInstanceStatusNodePath(instanceId));
         return Strings.isNullOrEmpty(yamlContent) ? new ArrayList<>() : YamlEngine.unmarshal(yamlContent, Collection.class);
@@ -135,30 +138,13 @@ public final class ComputeNodePersistService {
      * @return xa recovery id
      */
     public Optional<String> loadXaRecoveryId(final String instanceId) {
-        return Optional.ofNullable(repository.get(ComputeNode.getInstanceXaRecoveryIdNodePath(instanceId)));
-    }
-    
-    /**
-     * Load compute node instances by instance type and labels.
-     *
-     * @param instanceType instance type
-     * @param labels collection of contained label
-     * @return compute node instances
-     */
-    public Collection<ComputeNodeInstance> loadComputeNodeInstances(final InstanceType instanceType, final Collection<String> labels) {
-        Collection<String> onlineComputeNodes = repository.getChildrenKeys(ComputeNode.getOnlineNodePath(instanceType));
-        List<ComputeNodeInstance> result = new ArrayList<>(onlineComputeNodes.size());
-        onlineComputeNodes.forEach(each -> {
-            Collection<String> actualLabels = loadInstanceLabels(each);
-            if (actualLabels.stream().anyMatch(labels::contains)) {
-                ComputeNodeInstance instance = new ComputeNodeInstance(new InstanceDefinition(instanceType, each));
-                instance.setLabels(actualLabels);
-                instance.switchState(loadInstanceStatus(each));
-                loadInstanceWorkerId(each).ifPresent(instance::setWorkerId);
-                result.add(instance);
+        List<String> xaRecoveryIds = repository.getChildrenKeys(ComputeNode.getXaRecoveryIdNodePath());
+        for (String xaRecoveryId : xaRecoveryIds) {
+            if (repository.getChildrenKeys(String.join("/", ComputeNode.getXaRecoveryIdNodePath(), xaRecoveryId)).contains(instanceId)) {
+                return Optional.of(xaRecoveryId);
             }
-        });
-        return result;
+        }
+        return Optional.empty();
     }
     
     /**

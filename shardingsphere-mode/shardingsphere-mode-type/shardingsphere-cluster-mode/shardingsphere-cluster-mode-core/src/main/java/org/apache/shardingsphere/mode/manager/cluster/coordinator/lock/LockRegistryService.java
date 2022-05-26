@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock;
 
 import java.util.Collection;
-import java.util.concurrent.locks.Lock;
 
 /**
  * Lock registry service.
@@ -32,14 +31,6 @@ public interface LockRegistryService {
      * @return ack locked instances
      */
     Collection<String> acquireAckLockedInstances(String lockName);
-    
-    /**
-     * Get internal lock.
-     *
-     * @param lockName lock name
-     * @return internal lock
-     */
-    Lock getInternalLock(String lockName);
     
     /**
      * Try lock.

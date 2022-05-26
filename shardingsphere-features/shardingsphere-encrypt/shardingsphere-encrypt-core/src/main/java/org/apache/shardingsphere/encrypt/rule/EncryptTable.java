@@ -19,7 +19,6 @@ package org.apache.shardingsphere.encrypt.rule;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptColumnDataType;
@@ -31,6 +30,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 /**
  * Encrypt table.
@@ -48,7 +48,7 @@ public final class EncryptTable {
             columns.put(each.getLogicColumn(), new EncryptColumn(getEncryptColumnDataType(each.getLogicDataType(), dataTypes), each.getCipherColumn(),
                     getEncryptColumnDataType(each.getCipherDataType(), dataTypes), each.getAssistedQueryColumn(), getEncryptColumnDataType(each.getAssistedQueryDataType(),
                             dataTypes),
-                    each.getPlainColumn(), getEncryptColumnDataType(each.getPlainDataType(), dataTypes), each.getEncryptorName()));
+                    each.getPlainColumn(), getEncryptColumnDataType(each.getPlainDataType(), dataTypes), each.getEncryptorName(), each.getQueryWithCipherColumn()));
         }
         queryWithCipherColumn = config.getQueryWithCipherColumn();
     }
@@ -175,16 +175,17 @@ public final class EncryptTable {
      * @return logic and cipher columns
      */
     public Map<String, String> getLogicAndCipherColumns() {
-        return Maps.transformValues(columns, EncryptColumn::getCipherColumn);
+        return columns.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getCipherColumn()));
     }
     
     /**
      * Get query with cipher column.
-     * 
+     *
+     * @param logicColumn logic column
      * @return query with cipher column
      */
-    public Optional<Boolean> getQueryWithCipherColumn() {
-        return Optional.ofNullable(queryWithCipherColumn);
+    public Optional<Boolean> getQueryWithCipherColumn(final String logicColumn) {
+        return Optional.ofNullable(findEncryptColumn(logicColumn).map(EncryptColumn::getQueryWithCipherColumn).orElse(queryWithCipherColumn));
     }
     
     /**
@@ -196,4 +197,5 @@ public final class EncryptTable {
     public Optional<EncryptColumn> findEncryptColumn(final String logicColumn) {
         return Optional.ofNullable(columns.get(logicColumn));
     }
+    
 }

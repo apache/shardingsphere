@@ -39,15 +39,15 @@ public final class ListExpressionConverter implements SQLSegmentConverter<ListEx
     public Optional<SqlNode> convertToSQLNode(final ListExpression segment) {
         SqlNode left = null;
         for (ExpressionSegment each : segment.getItems()) {
-            Optional<SqlNode> optional = new ExpressionConverter().convertToSQLNode(each);
-            if (!optional.isPresent()) {
+            Optional<SqlNode> sqlNode = new ExpressionConverter().convertToSQLNode(each);
+            if (!sqlNode.isPresent()) {
                 continue;
             }
             if (null == left) {
-                left = optional.get();
+                left = sqlNode.get();
                 continue;
             }
-            left = new SqlBasicCall(SqlStdOperatorTable.OR, new SqlNode[]{left, optional.get()}, SqlParserPos.ZERO);
+            left = new SqlBasicCall(SqlStdOperatorTable.OR, new SqlNode[]{left, sqlNode.get()}, SqlParserPos.ZERO);
         }
         return Optional.ofNullable(left);
     }

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.properties;
 
-import com.google.common.base.Joiner;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 
@@ -56,7 +55,7 @@ public abstract class TypedProperties<E extends Enum<?> & TypedPropertyKey> {
             result.put(each, value);
         }
         if (!errorMessages.isEmpty()) {
-            throw new ShardingSphereConfigurationException(Joiner.on(System.lineSeparator()).join(errorMessages));
+            throw new ShardingSphereConfigurationException(String.join(System.lineSeparator(), errorMessages));
         }
         return result;
     }

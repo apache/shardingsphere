@@ -31,8 +31,8 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleExcep
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredAlgorithmMissedException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -50,16 +50,16 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdater implements RuleDe
     private static final String RULE_TYPE = "Database discovery";
     
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final CreateDatabaseDiscoveryRuleStatement sqlStatement,
-                                  final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String databaseName = shardingSphereMetaData.getDatabaseName();
+    public void checkSQLStatement(final ShardingSphereDatabase database,
+                                  final CreateDatabaseDiscoveryRuleStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
+        String databaseName = database.getName();
         checkDuplicateRuleNames(databaseName, sqlStatement, currentRuleConfig);
-        checkResources(databaseName, sqlStatement, shardingSphereMetaData.getResource());
+        checkResources(databaseName, sqlStatement, database.getResource());
         checkDiscoverTypeAndHeartbeat(databaseName, sqlStatement, currentRuleConfig);
     }
     
-    private void checkDuplicateRuleNames(final String databaseName, final CreateDatabaseDiscoveryRuleStatement sqlStatement,
-                                         final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
+    private void checkDuplicateRuleNames(final String databaseName,
+                                         final CreateDatabaseDiscoveryRuleStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
         if (null == currentRuleConfig) {
             return;
         }
@@ -74,8 +74,7 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdater implements RuleDe
                 .entrySet().stream().filter(entry -> entry.getValue() > 1).map(Entry::getKey).collect(Collectors.toSet());
     }
     
-    private void checkResources(final String databaseName, final CreateDatabaseDiscoveryRuleStatement sqlStatement,
-                                final ShardingSphereResource resource) throws RequiredResourceMissedException {
+    private void checkResources(final String databaseName, final CreateDatabaseDiscoveryRuleStatement sqlStatement, final ShardingSphereResource resource) throws RequiredResourceMissedException {
         Collection<String> resources = new LinkedHashSet<>();
         sqlStatement.getRules().forEach(each -> resources.addAll(each.getDataSources()));
         Collection<String> notExistResources = resource.getNotExistedResources(resources);
@@ -84,8 +83,8 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdater implements RuleDe
         }
     }
     
-    private void checkDiscoverTypeAndHeartbeat(final String databaseName, final CreateDatabaseDiscoveryRuleStatement sqlStatement,
-                                               final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
+    private void checkDiscoverTypeAndHeartbeat(final String databaseName,
+                                               final CreateDatabaseDiscoveryRuleStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
         Map<String, List<AbstractDatabaseDiscoverySegment>> segmentMap = sqlStatement.getRules().stream().collect(Collectors.groupingBy(each -> each.getClass().getSimpleName()));
         Collection<String> invalidInput = segmentMap.getOrDefault(DatabaseDiscoveryDefinitionSegment.class.getSimpleName(), Collections.emptyList()).stream()
                 .map(each -> ((DatabaseDiscoveryDefinitionSegment) each).getDiscoveryType().getName()).distinct()

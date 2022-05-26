@@ -55,11 +55,9 @@
 #    sqlStatementCache:
 #      initialCapacity: 2000
 #      maximumSize: 65535
-#      concurrencyLevel: 4
 #    parseTreeCache:
 #      initialCapacity: 128
 #      maximumSize: 1024
-#      concurrencyLevel: 4
 
 #props:
 #  max-connections-size-per-query: 1
@@ -83,3 +81,4 @@
 #  proxy-backend-driver-type: JDBC
 #  proxy-mysql-default-version: 5.7.22 # In the absence of schema name, the default version will be used.
 #  proxy-default-port: 3307 # Proxy default port.
+#  proxy-netty-backlog: 1024 # Proxy netty backlog.

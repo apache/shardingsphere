@@ -17,106 +17,43 @@
 
 package org.apache.shardingsphere.singletable.route.engine;
 
-import org.apache.shardingsphere.infra.metadata.schema.QualifiedTable;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussAlterSchemaStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateSchemaStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropSchemaStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLAlterSchemaStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLCreateSchemaStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLDropSchemaStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerAlterSchemaStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerCreateSchemaStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerDropSchemaStatement;
-import org.junit.Before;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterSchemaStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateSchemaStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropSchemaStatement;
 import org.junit.Test;
 
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Optional;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 public final class SingleTableRouteEngineFactoryTest {
     
-    private Collection<QualifiedTable> emptySingleTableNames;
-    
-    private Collection<QualifiedTable> nonEmptySingleTableNames;
-    
-    @Before
-    public void setup() {
-        emptySingleTableNames = Collections.emptyList();
-        nonEmptySingleTableNames = Collections.singleton(new QualifiedTable("demo_ds", "t_order"));
+    @Test
+    public void assertNewInstanceWithNotEmptySingleTableNames() {
+        assertTrue(SingleTableRouteEngineFactory.newInstance(Collections.singleton(new QualifiedTable("demo_ds", "t_order")), mock(SQLStatement.class)).isPresent());
     }
     
     @Test
-    public void assertNewInstanceWithCreateSchemaStatementForPostgreSQL() {
-        Optional<SingleTableRouteEngine> actual = SingleTableRouteEngineFactory.newInstance(emptySingleTableNames, new PostgreSQLCreateSchemaStatement());
-        assertTrue(actual.isPresent());
-        actual = SingleTableRouteEngineFactory.newInstance(nonEmptySingleTableNames, new PostgreSQLCreateSchemaStatement());
-        assertTrue(actual.isPresent());
+    public void assertNewInstanceWithEmptySingleTableNameAndCreateSchemaStatement() {
+        assertTrue(SingleTableRouteEngineFactory.newInstance(Collections.emptyList(), mock(CreateSchemaStatement.class)).isPresent());
     }
     
     @Test
-    public void assertNewInstanceWithAlterSchemaStatementForPostgreSQL() {
-        Optional<SingleTableRouteEngine> actual = SingleTableRouteEngineFactory.newInstance(emptySingleTableNames, new PostgreSQLAlterSchemaStatement());
-        assertTrue(actual.isPresent());
-        actual = SingleTableRouteEngineFactory.newInstance(nonEmptySingleTableNames, new PostgreSQLAlterSchemaStatement());
-        assertTrue(actual.isPresent());
+    public void assertNewInstanceWithEmptySingleTableNameAndAlterSchemaStatement() {
+        assertTrue(SingleTableRouteEngineFactory.newInstance(Collections.emptyList(), mock(AlterSchemaStatement.class)).isPresent());
     }
     
     @Test
-    public void assertNewInstanceWithDropSchemaStatementForPostgreSQL() {
-        Optional<SingleTableRouteEngine> actual = SingleTableRouteEngineFactory.newInstance(emptySingleTableNames, new PostgreSQLDropSchemaStatement());
-        assertTrue(actual.isPresent());
-        actual = SingleTableRouteEngineFactory.newInstance(nonEmptySingleTableNames, new PostgreSQLDropSchemaStatement());
-        assertTrue(actual.isPresent());
+    public void assertNewInstanceWithEmptySingleTableNameAndDropSchemaStatement() {
+        assertTrue(SingleTableRouteEngineFactory.newInstance(Collections.emptyList(), mock(DropSchemaStatement.class)).isPresent());
     }
     
     @Test
-    public void assertNewInstanceWithCreateSchemaStatementForSQLServer() {
-        Optional<SingleTableRouteEngine> actual = SingleTableRouteEngineFactory.newInstance(emptySingleTableNames, new SQLServerCreateSchemaStatement());
-        assertTrue(actual.isPresent());
-        actual = SingleTableRouteEngineFactory.newInstance(nonEmptySingleTableNames, new SQLServerCreateSchemaStatement());
-        assertTrue(actual.isPresent());
-    }
-    
-    @Test
-    public void assertNewInstanceWithAlterSchemaStatementForSQLServer() {
-        Optional<SingleTableRouteEngine> actual = SingleTableRouteEngineFactory.newInstance(emptySingleTableNames, new SQLServerAlterSchemaStatement());
-        assertTrue(actual.isPresent());
-        actual = SingleTableRouteEngineFactory.newInstance(nonEmptySingleTableNames, new SQLServerAlterSchemaStatement());
-        assertTrue(actual.isPresent());
-    }
-    
-    @Test
-    public void assertNewInstanceWithDropSchemaStatementForSQLServer() {
-        Optional<SingleTableRouteEngine> actual = SingleTableRouteEngineFactory.newInstance(emptySingleTableNames, new SQLServerDropSchemaStatement());
-        assertTrue(actual.isPresent());
-        actual = SingleTableRouteEngineFactory.newInstance(nonEmptySingleTableNames, new SQLServerDropSchemaStatement());
-        assertTrue(actual.isPresent());
-    }
-    
-    @Test
-    public void assertNewInstanceWithCreateSchemaStatementForOpenGauss() {
-        Optional<SingleTableRouteEngine> actual = SingleTableRouteEngineFactory.newInstance(emptySingleTableNames, new OpenGaussCreateSchemaStatement());
-        assertTrue(actual.isPresent());
-        actual = SingleTableRouteEngineFactory.newInstance(nonEmptySingleTableNames, new OpenGaussCreateSchemaStatement());
-        assertTrue(actual.isPresent());
-    }
-    
-    @Test
-    public void assertNewInstanceWithAlterSchemaStatementForOpenGauss() {
-        Optional<SingleTableRouteEngine> actual = SingleTableRouteEngineFactory.newInstance(emptySingleTableNames, new OpenGaussAlterSchemaStatement());
-        assertTrue(actual.isPresent());
-        actual = SingleTableRouteEngineFactory.newInstance(nonEmptySingleTableNames, new OpenGaussAlterSchemaStatement());
-        assertTrue(actual.isPresent());
-    }
-    
-    @Test
-    public void assertNewInstanceWithDropSchemaStatementForOpenGauss() {
-        Optional<SingleTableRouteEngine> actual = SingleTableRouteEngineFactory.newInstance(emptySingleTableNames, new OpenGaussDropSchemaStatement());
-        assertTrue(actual.isPresent());
-        actual = SingleTableRouteEngineFactory.newInstance(nonEmptySingleTableNames, new OpenGaussDropSchemaStatement());
-        assertTrue(actual.isPresent());
+    public void assertNewInstanceWithEmptySingleTableNameAndOtherStatement() {
+        assertFalse(SingleTableRouteEngineFactory.newInstance(Collections.emptyList(), mock(SQLStatement.class)).isPresent());
     }
 }

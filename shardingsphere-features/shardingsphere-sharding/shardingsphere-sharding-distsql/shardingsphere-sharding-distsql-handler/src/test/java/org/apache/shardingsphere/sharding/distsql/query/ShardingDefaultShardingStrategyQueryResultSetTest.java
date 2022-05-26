@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.distsql.query;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.HintShardingStrategyConfiguration;
@@ -45,10 +45,10 @@ public final class ShardingDefaultShardingStrategyQueryResultSetTest {
     
     @Test
     public void assertGetRowData() {
-        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        when(metaData.getRuleMetaData().findRuleConfiguration(any())).thenReturn(Collections.singleton(createRuleConfiguration1()));
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getRuleMetaData().findRuleConfigurations(any())).thenReturn(Collections.singleton(createRuleConfiguration1()));
         DefaultShardingStrategyQueryResultSet resultSet = new DefaultShardingStrategyQueryResultSet();
-        resultSet.init(metaData, mock(ShowShardingAlgorithmsStatement.class));
+        resultSet.init(database, mock(ShowShardingAlgorithmsStatement.class));
         List<Object> actual = new ArrayList<>(resultSet.getRowData());
         assertThat(actual.size(), is(6));
         assertThat(actual.get(0), is("TABLE"));
@@ -65,9 +65,9 @@ public final class ShardingDefaultShardingStrategyQueryResultSetTest {
         assertThat(actual.get(3), is("database_inline"));
         assertThat(actual.get(4), is("INLINE"));
         assertThat(actual.get(5).toString(), is("{algorithm-expression=ds_${user_id % 2}}"));
-        when(metaData.getRuleMetaData().findRuleConfiguration(any())).thenReturn(Collections.singleton(createRuleConfiguration2()));
+        when(database.getRuleMetaData().findRuleConfigurations(any())).thenReturn(Collections.singleton(createRuleConfiguration2()));
         resultSet = new DefaultShardingStrategyQueryResultSet();
-        resultSet.init(metaData, mock(ShowShardingAlgorithmsStatement.class));
+        resultSet.init(database, mock(ShowShardingAlgorithmsStatement.class));
         actual = new ArrayList<>(resultSet.getRowData());
         assertThat(actual.size(), is(6));
         assertThat(actual.get(0), is("TABLE"));

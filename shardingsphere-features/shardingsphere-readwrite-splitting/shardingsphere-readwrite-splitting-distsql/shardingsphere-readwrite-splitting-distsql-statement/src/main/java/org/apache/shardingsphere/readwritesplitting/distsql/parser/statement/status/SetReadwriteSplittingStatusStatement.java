@@ -21,8 +21,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
 import org.apache.shardingsphere.distsql.parser.subject.impl.ReadwriteSplittingSubjectSupplier;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.available.FromSchemaAvailable;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.available.FromDatabaseAvailable;
 
 import java.util.Optional;
 
@@ -31,16 +31,16 @@ import java.util.Optional;
  */
 @Getter
 @RequiredArgsConstructor
-public class SetReadwriteSplittingStatusStatement extends UpdatableRALStatement implements FromSchemaAvailable, ReadwriteSplittingSubjectSupplier {
+public class SetReadwriteSplittingStatusStatement extends UpdatableRALStatement implements FromDatabaseAvailable, ReadwriteSplittingSubjectSupplier {
     
     private final String status;
     
     private final String resourceName;
     
-    private final SchemaSegment schema;
+    private final DatabaseSegment database;
     
     @Override
-    public Optional<SchemaSegment> getSchema() {
-        return Optional.ofNullable(schema);
+    public Optional<DatabaseSegment> getDatabase() {
+        return Optional.ofNullable(database);
     }
 }

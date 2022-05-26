@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.subscriber;
 
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.event.AddSchemaEvent;
-import org.apache.shardingsphere.infra.metadata.schema.event.AlterSchemaEvent;
-import org.apache.shardingsphere.infra.metadata.schema.event.DropSchemaEvent;
-import org.apache.shardingsphere.infra.metadata.schema.event.SchemaAlteredEvent;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.event.AddSchemaEvent;
+import org.apache.shardingsphere.infra.metadata.database.schema.event.AlterSchemaEvent;
+import org.apache.shardingsphere.infra.metadata.database.schema.event.DropSchemaEvent;
+import org.apache.shardingsphere.infra.metadata.database.schema.event.SchemaAlteredEvent;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
 import org.apache.shardingsphere.mode.metadata.persist.service.SchemaMetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.junit.Before;
@@ -84,8 +84,8 @@ public final class SchemaMetaDataRegistrySubscriberTest {
         ShardingSphereSchema schema = new ShardingSphereSchema(Collections.singletonMap("t_order", new TableMetaData()));
         AlterSchemaEvent event = new AlterSchemaEvent("foo_db", "foo_schema", "new_foo_schema", schema);
         schemaMetaDataRegistrySubscriber.alterSchema(event);
+        verify(persistService).persistMetaData("foo_db", "new_foo_schema", schema);
         verify(persistService).deleteSchema("foo_db", "foo_schema");
-        verify(persistService).persistTables("foo_db", "new_foo_schema", schema);
     }
     
     @Test
@@ -93,7 +93,7 @@ public final class SchemaMetaDataRegistrySubscriberTest {
         ShardingSphereSchema schema = new ShardingSphereSchema();
         AlterSchemaEvent event = new AlterSchemaEvent("foo_db", "foo_schema", "new_foo_schema", schema);
         schemaMetaDataRegistrySubscriber.alterSchema(event);
+        verify(persistService).persistMetaData("foo_db", "new_foo_schema", schema);
         verify(persistService).deleteSchema("foo_db", "foo_schema");
-        verify(persistService).persistSchema("foo_db", "new_foo_schema");
     }
 }

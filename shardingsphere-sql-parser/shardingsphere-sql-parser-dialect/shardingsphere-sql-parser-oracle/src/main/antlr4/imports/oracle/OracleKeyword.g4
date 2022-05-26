@@ -1927,6 +1927,10 @@ SPFILE
     : S P F I L E
     ;
 
+PFILE
+    : P F I L E
+    ;
+
 BOTH
     : B O T H
     ;
@@ -2761,4 +2765,8 @@ GLOBALLY
 
 ACCESSED
     : A C C E S S E D
+    ;
+
+RESTART
+    : R E S T A R T
     ;

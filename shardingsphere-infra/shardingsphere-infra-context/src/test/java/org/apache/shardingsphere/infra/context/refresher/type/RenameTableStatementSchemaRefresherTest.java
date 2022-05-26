@@ -21,14 +21,15 @@ import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.dialect.SQL92DatabaseType;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
-import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.event.SchemaAlteredEvent;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.event.SchemaAlteredEvent;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.RenameTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
@@ -53,7 +54,7 @@ public final class RenameTableStatementSchemaRefresherTest {
     public void assertRefresh() throws SQLException {
         RenameTableLister listener = new RenameTableLister(2);
         ShardingSphereEventBus.getInstance().register(listener);
-        new RenameTableStatementSchemaRefresher().refresh(createShardingSphereMetaData(), new FederationDatabaseMetaData("foo_database", Collections.emptyMap()),
+        new RenameTableStatementSchemaRefresher().refresh(createDatabaseMetaData(), new FederationDatabaseMetaData("foo_database", Collections.emptyMap()),
                 new HashMap<>(), Collections.singleton("foo_ds"), "foo_schema", createRenameTableStatement(), mock(ConfigurationProperties.class));
         assertThat(listener.getActualCount(), is(listener.getRenameCount()));
         ShardingSphereEventBus.getInstance().unregister(listener);
@@ -73,8 +74,8 @@ public final class RenameTableStatementSchemaRefresherTest {
         return result;
     }
     
-    private ShardingSphereMetaData createShardingSphereMetaData() {
-        return new ShardingSphereMetaData("foo_database", new SQL92DatabaseType(),
+    private ShardingSphereDatabase createDatabaseMetaData() {
+        return new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, new SQL92DatabaseType(),
                 mockShardingSphereResource(), new ShardingSphereRuleMetaData(new LinkedList<>(), new LinkedList<>()), Collections.singletonMap("foo_schema", mock(ShardingSphereSchema.class)));
     }
     

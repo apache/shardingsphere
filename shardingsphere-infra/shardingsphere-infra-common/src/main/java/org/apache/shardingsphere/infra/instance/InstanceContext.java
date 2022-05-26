@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.instance;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.definition.InstanceId;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
@@ -36,7 +35,6 @@ import java.util.Optional;
  * Instance context.
  */
 @Getter
-@RequiredArgsConstructor
 public final class InstanceContext {
     
     private final ComputeNodeInstance instance;
@@ -49,11 +47,20 @@ public final class InstanceContext {
     
     private final Collection<ComputeNodeInstance> computeNodeInstances = new LinkedList<>();
     
+    public InstanceContext(final ComputeNodeInstance instance, final WorkerIdGenerator workerIdGenerator, final ModeConfiguration modeConfiguration, final LockContext lockContext) {
+        this.instance = instance;
+        this.workerIdGenerator = workerIdGenerator;
+        this.modeConfiguration = modeConfiguration;
+        this.lockContext = lockContext;
+        initLockContext();
+        getWorkerId();
+    }
+    
     /**
      * Update instance status.
      *
      * @param instanceId instance id
-     * @param status collection of status
+     * @param status status
      */
     public void updateInstanceStatus(final String instanceId, final Collection<String> status) {
         if (instance.getInstanceDefinition().getInstanceId().getId().equals(instanceId)) {
@@ -95,14 +102,20 @@ public final class InstanceContext {
     }
     
     /**
-     * Update instance xa recovery id.
+     * Update instance XA recovery id.
      *
-     * @param xaRecoveryId xa recovery id
+     * @param instanceId instance id
+     * @param xaRecoveryId XA recovery id
+     * @return true if current instance updated, else false                    
      */
-    public void updateXaRecoveryId(final String xaRecoveryId) {
-        if (!Objects.equals(xaRecoveryId, instance.getXaRecoveryId())) {
+    public boolean updateXaRecoveryId(final String instanceId, final String xaRecoveryId) {
+        if (instanceId.equals(instance.getCurrentInstanceId()) && !Objects.equals(xaRecoveryId, instance.getXaRecoveryId())) {
             instance.setXaRecoveryId(xaRecoveryId);
+            computeNodeInstances.stream().filter(each -> each.getInstanceDefinition().getInstanceId().getId().equals(instanceId)).forEach(each -> each.setXaRecoveryId(xaRecoveryId));
+            return true;
         }
+        computeNodeInstances.stream().filter(each -> each.getInstanceDefinition().getInstanceId().getId().equals(instanceId)).forEach(each -> each.setXaRecoveryId(xaRecoveryId));
+        return false;
     }
     
     /**

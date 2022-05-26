@@ -25,7 +25,8 @@ import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.metadata.database.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.SubstitutableColumnNameToken;
@@ -61,7 +62,7 @@ public final class EncryptOrderByItemTokenGenerator implements CollectionSQLToke
     @Override
     public Collection<SubstitutableColumnNameToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         Collection<SubstitutableColumnNameToken> result = new LinkedHashSet<>();
-        String defaultSchema = sqlStatementContext.getDatabaseType().getDefaultSchema(databaseName);
+        String defaultSchema = DatabaseTypeEngine.getDefaultSchemaName(sqlStatementContext.getDatabaseType(), databaseName);
         ShardingSphereSchema schema = sqlStatementContext.getTablesContext().getSchemaName().map(schemas::get).orElse(schemas.get(defaultSchema));
         for (OrderByItem each : getOrderByItems(sqlStatementContext)) {
             if (each.getSegment() instanceof ColumnOrderByItemSegment) {
@@ -83,7 +84,7 @@ public final class EncryptOrderByItemTokenGenerator implements CollectionSQLToke
             }
             int startIndex = column.getOwner().isPresent() ? column.getOwner().get().getStopIndex() + 2 : column.getStartIndex();
             int stopIndex = column.getStopIndex();
-            boolean queryWithCipherColumn = encryptRule.isQueryWithCipherColumn(tableName);
+            boolean queryWithCipherColumn = encryptRule.isQueryWithCipherColumn(tableName, column.getIdentifier().getValue());
             if (!queryWithCipherColumn) {
                 Optional<String> plainColumn = encryptTable.get().findPlainColumn(column.getIdentifier().getValue());
                 if (plainColumn.isPresent()) {

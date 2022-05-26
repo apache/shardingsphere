@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.rewrite;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContextDecorator;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContextDecoratorFactory;
@@ -41,17 +41,17 @@ import java.util.Map.Entry;
  */
 public final class SQLRewriteEntry {
     
-    private final ShardingSphereMetaData metaData;
+    private final ShardingSphereDatabase database;
     
     private final ConfigurationProperties props;
     
     @SuppressWarnings("rawtypes")
     private final Map<ShardingSphereRule, SQLRewriteContextDecorator> decorators;
     
-    public SQLRewriteEntry(final ShardingSphereMetaData metaData, final ConfigurationProperties props) {
-        this.metaData = metaData;
+    public SQLRewriteEntry(final ShardingSphereDatabase database, final ConfigurationProperties props) {
+        this.database = database;
         this.props = props;
-        decorators = SQLRewriteContextDecoratorFactory.getInstance(metaData.getRuleMetaData().getRules());
+        decorators = SQLRewriteContextDecoratorFactory.getInstance(database.getRuleMetaData().getRules());
     }
     
     /**
@@ -65,16 +65,16 @@ public final class SQLRewriteEntry {
      */
     public SQLRewriteResult rewrite(final String sql, final List<Object> parameters, final SQLStatementContext<?> sqlStatementContext, final RouteContext routeContext) {
         SQLRewriteContext sqlRewriteContext = createSQLRewriteContext(sql, parameters, sqlStatementContext, routeContext);
-        SQLTranslatorRule rule = metaData.getRuleMetaData().findSingleRule(SQLTranslatorRule.class).orElse(new SQLTranslatorRule(new SQLTranslatorRuleConfiguration()));
-        DatabaseType frontendDatabaseType = metaData.getFrontendDatabaseType();
-        DatabaseType backendDatabaseType = metaData.getResource().getDatabaseType();
+        SQLTranslatorRule rule = database.getRuleMetaData().findSingleRule(SQLTranslatorRule.class).orElse(new SQLTranslatorRule(new SQLTranslatorRuleConfiguration()));
+        DatabaseType protocolType = database.getProtocolType();
+        DatabaseType storageType = database.getResource().getDatabaseType();
         return routeContext.getRouteUnits().isEmpty()
-                ? new GenericSQLRewriteEngine(rule, frontendDatabaseType, backendDatabaseType).rewrite(sqlRewriteContext)
-                : new RouteSQLRewriteEngine(rule, frontendDatabaseType, backendDatabaseType).rewrite(sqlRewriteContext, routeContext);
+                ? new GenericSQLRewriteEngine(rule, protocolType, storageType).rewrite(sqlRewriteContext)
+                : new RouteSQLRewriteEngine(rule, protocolType, storageType).rewrite(sqlRewriteContext, routeContext);
     }
     
     private SQLRewriteContext createSQLRewriteContext(final String sql, final List<Object> parameters, final SQLStatementContext<?> sqlStatementContext, final RouteContext routeContext) {
-        SQLRewriteContext result = new SQLRewriteContext(metaData.getDatabaseName(), metaData.getSchemas(), sqlStatementContext, sql, parameters);
+        SQLRewriteContext result = new SQLRewriteContext(database.getName(), database.getSchemas(), sqlStatementContext, sql, parameters);
         decorate(decorators, result, routeContext);
         result.generateSQLTokens();
         return result;

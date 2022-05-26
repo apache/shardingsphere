@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.singletable.route.validator;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -34,7 +34,7 @@ public interface SingleTableMetadataValidator<T extends SQLStatement> {
      * 
      * @param rule single table rule
      * @param sqlStatementContext SQL statement context
-     * @param metaData ShardingSphere meta data
+     * @param database database
      */
-    void validate(SingleTableRule rule, SQLStatementContext<T> sqlStatementContext, ShardingSphereMetaData metaData);
+    void validate(SingleTableRule rule, SQLStatementContext<T> sqlStatementContext, ShardingSphereDatabase database);
 }
