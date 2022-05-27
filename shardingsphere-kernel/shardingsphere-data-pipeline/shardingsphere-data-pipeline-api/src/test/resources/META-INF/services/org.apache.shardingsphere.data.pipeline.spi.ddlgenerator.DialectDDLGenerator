@@ -15,4 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.data.pipeline.spi.fixture.DialectDDLGeneratorFixTure
+org.apache.shardingsphere.data.pipeline.spi.fixture.DialectDDLGeneratorFixture
+

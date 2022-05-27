@@ -21,19 +21,17 @@ import java.sql.SQLException;
 import javax.sql.DataSource;
 import org.apache.shardingsphere.data.pipeline.spi.ddlgenerator.DialectDDLGenerator;
 
-public final class DialectDDLGeneratorFixTure implements DialectDDLGenerator {
-    
+public final class DialectDDLGeneratorFixture implements DialectDDLGenerator {
+
     private static final String SHOW_CREATE_SQL = "SHOW CREATE TABLE %s";
-    
+
     @Override
     public String generateDDLSQL(final String tableName, final String schemaName, final DataSource dataSource) throws SQLException {
-        StringBuilder result = new StringBuilder();
-        result.append(String.format(SHOW_CREATE_SQL, tableName));
-        return result.toString();
+        return String.format(SHOW_CREATE_SQL, tableName);
     }
-    
+
     @Override
     public String getType() {
-        return "Test";
+        return "FIXTURE";
     }
 }

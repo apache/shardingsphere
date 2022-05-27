@@ -26,38 +26,38 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 import static org.mockito.Mockito.mock;
 
-public final class DatabaseTypeFixTure implements DatabaseType {
-    
+public final class DatabaseTypeFixture implements DatabaseType {
+
     @Override
     public String getType() {
-        return "Test";
+        return "FIXTURE";
     }
-    
+
     @Override
     public QuoteCharacter getQuoteCharacter() {
         return QuoteCharacter.NONE;
     }
-    
+
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
-        return Collections.singleton("jdbc:test");
+        return Collections.singleton("jdbc:fixture");
     }
-    
+
     @Override
     public DataSourceMetaData getDataSourceMetaData(final String url, final String username) {
         return mock(DataSourceMetaData.class);
     }
-    
+
     @Override
     public Optional<String> getDataSourceClassName() {
         return Optional.empty();
     }
-    
+
     @Override
     public Map<String, Collection<String>> getSystemDatabaseSchemaMap() {
         return Collections.emptyMap();
     }
-    
+
     @Override
     public Collection<String> getSystemSchemas() {
         return Collections.emptyList();
