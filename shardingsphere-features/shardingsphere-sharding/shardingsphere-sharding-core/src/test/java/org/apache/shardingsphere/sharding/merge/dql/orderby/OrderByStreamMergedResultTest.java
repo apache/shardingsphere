@@ -197,8 +197,8 @@ public final class OrderByStreamMergedResultTest {
     private ShardingSphereDatabase createDatabase() {
         ShardingSphereColumn columnMetaData1 = new ShardingSphereColumn("col1", 0, false, false, true);
         ShardingSphereColumn columnMetaData2 = new ShardingSphereColumn("col2", 0, false, false, false);
-        ShardingSphereTable tableMetaData = new ShardingSphereTable("tbl", Arrays.asList(columnMetaData1, columnMetaData2), Collections.emptyList(), Collections.emptyList());
-        ShardingSphereSchema schema = new ShardingSphereSchema(Collections.singletonMap("tbl", tableMetaData));
+        ShardingSphereTable table = new ShardingSphereTable("tbl", Arrays.asList(columnMetaData1, columnMetaData2), Collections.emptyList(), Collections.emptyList());
+        ShardingSphereSchema schema = new ShardingSphereSchema(Collections.singletonMap("tbl", table));
         return new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME,
                 DatabaseTypeFactory.getInstance("MySQL"), mock(ShardingSphereResource.class), mock(ShardingSphereRuleMetaData.class), Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema));
     }

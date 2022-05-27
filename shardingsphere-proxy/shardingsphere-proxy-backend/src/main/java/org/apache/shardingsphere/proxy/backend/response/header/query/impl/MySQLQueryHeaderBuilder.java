@@ -46,8 +46,8 @@ public final class MySQLQueryHeaderBuilder implements QueryHeaderBuilder {
         boolean primaryKey;
         if (null != actualTableName && null != dataNodeContainedRule.get()) {
             tableName = dataNodeContainedRule.get().findLogicTableByActualTable(actualTableName).orElse("");
-            ShardingSphereTable tableMetaData = database.getSchemas().get(schemaName).get(tableName);
-            primaryKey = null != tableMetaData && Optional.ofNullable(tableMetaData.getColumns().get(columnName.toLowerCase())).map(ShardingSphereColumn::isPrimaryKey).orElse(false);
+            ShardingSphereTable table = database.getSchemas().get(schemaName).get(tableName);
+            primaryKey = null != table && Optional.ofNullable(table.getColumns().get(columnName.toLowerCase())).map(ShardingSphereColumn::isPrimaryKey).orElse(false);
         } else {
             tableName = actualTableName;
             primaryKey = false;

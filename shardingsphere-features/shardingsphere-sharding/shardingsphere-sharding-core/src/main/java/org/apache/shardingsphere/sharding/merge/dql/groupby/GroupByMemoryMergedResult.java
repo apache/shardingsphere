@@ -131,8 +131,8 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
                                                     final SelectStatementContext selectStatementContext, final ShardingSphereSchema schema, final int columnIndex) throws SQLException {
         for (SimpleTableSegment each : selectStatementContext.getAllTables()) {
             String tableName = each.getTableName().getIdentifier().getValue();
-            ShardingSphereTable tableMetaData = schema.get(tableName);
-            Map<String, ShardingSphereColumn> columns = tableMetaData.getColumns();
+            ShardingSphereTable table = schema.get(tableName);
+            Map<String, ShardingSphereColumn> columns = table.getColumns();
             String columnName = queryResult.getMetaData().getColumnName(columnIndex);
             if (columns.containsKey(columnName)) {
                 return columns.get(columnName).isCaseSensitive();

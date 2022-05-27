@@ -45,13 +45,13 @@ public final class ShowCreateTableMergedResult extends LogicTablesMergedResult {
     
     @Override
     protected void setCellValue(final MemoryQueryResultRow memoryResultSetRow, final String logicTableName, final String actualTableName,
-                                final ShardingSphereTable tableMetaData, final ShardingRule shardingRule) {
+                                final ShardingSphereTable table, final ShardingRule shardingRule) {
         memoryResultSetRow.setCell(2, memoryResultSetRow.getCell(2).toString().replaceFirst(actualTableName, logicTableName));
-        for (String each : tableMetaData.getIndexes().keySet()) {
+        for (String each : table.getIndexes().keySet()) {
             String actualIndexName = IndexMetaDataUtil.getActualIndexName(each, actualTableName);
             memoryResultSetRow.setCell(2, memoryResultSetRow.getCell(2).toString().replace(actualIndexName, each));
         }
-        for (Entry<String, ShardingSphereConstraint> each : tableMetaData.getConstrains().entrySet()) {
+        for (Entry<String, ShardingSphereConstraint> each : table.getConstrains().entrySet()) {
             String actualIndexName = IndexMetaDataUtil.getActualIndexName(each.getKey(), actualTableName);
             memoryResultSetRow.setCell(2, memoryResultSetRow.getCell(2).toString().replace(actualIndexName, each.getKey()));
             Optional<TableRule> tableRule = shardingRule.findTableRule(each.getValue().getReferencedTableName());

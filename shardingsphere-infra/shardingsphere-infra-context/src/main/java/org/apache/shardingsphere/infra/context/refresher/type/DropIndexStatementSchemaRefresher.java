@@ -54,9 +54,9 @@ public final class DropIndexStatementSchemaRefresher implements MetaDataRefreshe
             if (!logicTableName.isPresent()) {
                 continue;
             }
-            ShardingSphereTable tableMetaData = database.getSchemas().get(actualSchemaName).get(logicTableName.get());
-            tableMetaData.getIndexes().remove(each.getIndexName().getIdentifier().getValue());
-            post(database.getName(), actualSchemaName, tableMetaData);
+            ShardingSphereTable table = database.getSchemas().get(actualSchemaName).get(logicTableName.get());
+            table.getIndexes().remove(each.getIndexName().getIdentifier().getValue());
+            post(database.getName(), actualSchemaName, table);
         }
     }
     
@@ -69,9 +69,9 @@ public final class DropIndexStatementSchemaRefresher implements MetaDataRefreshe
         return tableNames.isEmpty() ? Optional.empty() : Optional.of(tableNames.iterator().next().getTableName());
     }
     
-    private void post(final String databaseName, final String schemaName, final ShardingSphereTable tableMetaData) {
+    private void post(final String databaseName, final String schemaName, final ShardingSphereTable table) {
         SchemaAlteredEvent event = new SchemaAlteredEvent(databaseName, schemaName);
-        event.getAlteredTables().add(tableMetaData);
+        event.getAlteredTables().add(table);
         ShardingSphereEventBus.getInstance().post(event);
     }
     

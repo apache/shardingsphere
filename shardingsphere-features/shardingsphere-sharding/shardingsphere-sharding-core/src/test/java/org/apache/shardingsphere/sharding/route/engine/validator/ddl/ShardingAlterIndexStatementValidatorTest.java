@@ -55,11 +55,11 @@ public final class ShardingAlterIndexStatementValidatorTest {
         PostgreSQLAlterIndexStatement sqlStatement = new PostgreSQLAlterIndexStatement();
         sqlStatement.setIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
         sqlStatement.setRenameIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index_new"))));
-        ShardingSphereTable tableMetaData = mock(ShardingSphereTable.class);
+        ShardingSphereTable table = mock(ShardingSphereTable.class);
         Map<String, ShardingSphereIndex> indexes = mock(HashMap.class);
-        when(tableMetaData.getIndexes()).thenReturn(indexes);
+        when(table.getIndexes()).thenReturn(indexes);
         when(database.getSchemas().get("public").getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
-        when(database.getSchemas().get("public").get("t_order")).thenReturn(tableMetaData);
+        when(database.getSchemas().get("public").get("t_order")).thenReturn(table);
         when(indexes.containsKey("t_order_index")).thenReturn(true);
         when(indexes.containsKey("t_order_index_new")).thenReturn(false);
         new ShardingAlterIndexStatementValidator().preValidate(shardingRule, new AlterIndexStatementContext(sqlStatement), Collections.emptyList(), database);
@@ -70,11 +70,11 @@ public final class ShardingAlterIndexStatementValidatorTest {
         PostgreSQLAlterIndexStatement sqlStatement = new PostgreSQLAlterIndexStatement();
         sqlStatement.setIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
         sqlStatement.setRenameIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index_new"))));
-        ShardingSphereTable tableMetaData = mock(ShardingSphereTable.class);
+        ShardingSphereTable table = mock(ShardingSphereTable.class);
         Map<String, ShardingSphereIndex> indexes = mock(HashMap.class);
-        when(tableMetaData.getIndexes()).thenReturn(indexes);
+        when(table.getIndexes()).thenReturn(indexes);
         when(database.getSchemas().get("public").getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
-        when(database.getSchemas().get("public").get("t_order")).thenReturn(tableMetaData);
+        when(database.getSchemas().get("public").get("t_order")).thenReturn(table);
         when(indexes.containsKey("t_order_index")).thenReturn(false);
         new ShardingAlterIndexStatementValidator().preValidate(shardingRule, new AlterIndexStatementContext(sqlStatement), Collections.emptyList(), database);
     }
@@ -84,11 +84,11 @@ public final class ShardingAlterIndexStatementValidatorTest {
         PostgreSQLAlterIndexStatement sqlStatement = new PostgreSQLAlterIndexStatement();
         sqlStatement.setIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
         sqlStatement.setRenameIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index_new"))));
-        ShardingSphereTable tableMetaData = mock(ShardingSphereTable.class);
+        ShardingSphereTable table = mock(ShardingSphereTable.class);
         Map<String, ShardingSphereIndex> indexes = mock(HashMap.class);
-        when(tableMetaData.getIndexes()).thenReturn(indexes);
+        when(table.getIndexes()).thenReturn(indexes);
         when(database.getSchemas().get("public").getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
-        when(database.getSchemas().get("public").get("t_order")).thenReturn(tableMetaData);
+        when(database.getSchemas().get("public").get("t_order")).thenReturn(table);
         when(indexes.containsKey("t_order_index")).thenReturn(true);
         when(indexes.containsKey("t_order_index_new")).thenReturn(true);
         new ShardingAlterIndexStatementValidator().preValidate(shardingRule, new AlterIndexStatementContext(sqlStatement), Collections.emptyList(), database);

@@ -56,14 +56,14 @@ public final class FederationDatabaseMetaData {
     }
     
     /**
-     * Put table meta data.
+     * Put table.
      *
      * @param schemaName schema name
-     * @param tableMetaData table meta data
+     * @param table table
      */
-    public void putTableMetadata(final String schemaName, final ShardingSphereTable tableMetaData) {
+    public void putTable(final String schemaName, final ShardingSphereTable table) {
         FederationSchemaMetaData schemaMetaData = schemas.computeIfAbsent(schemaName.toLowerCase(), key -> new FederationSchemaMetaData(schemaName, new LinkedHashMap<>()));
-        schemaMetaData.put(tableMetaData);
+        schemaMetaData.put(table);
     }
     
     /**

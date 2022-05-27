@@ -83,15 +83,15 @@ public final class IndexMetaDataUtilTest {
     @Test
     public void assertGetTableNames() {
         IndexSegment indexSegment = new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue(INDEX_NAME)));
-        Collection<QualifiedTable> actual = IndexMetaDataUtil.getTableNames(buildDatabaseMetaData(), new MySQLDatabaseType(), Collections.singleton(indexSegment));
+        Collection<QualifiedTable> actual = IndexMetaDataUtil.getTableNames(buildDatabase(), new MySQLDatabaseType(), Collections.singleton(indexSegment));
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next().getSchemaName(), is(DefaultDatabase.LOGIC_NAME));
         assertThat(actual.iterator().next().getTableName(), is(TABLE_NAME));
     }
     
-    private ShardingSphereDatabase buildDatabaseMetaData() {
-        ShardingSphereTable tableMetaData = new ShardingSphereTable(TABLE_NAME, Collections.emptyList(), Collections.singleton(new ShardingSphereIndex(INDEX_NAME)), Collections.emptyList());
-        Map<String, ShardingSphereTable> tables = Collections.singletonMap(TABLE_NAME, tableMetaData);
+    private ShardingSphereDatabase buildDatabase() {
+        ShardingSphereTable table = new ShardingSphereTable(TABLE_NAME, Collections.emptyList(), Collections.singleton(new ShardingSphereIndex(INDEX_NAME)), Collections.emptyList());
+        Map<String, ShardingSphereTable> tables = Collections.singletonMap(TABLE_NAME, table);
         Map<String, ShardingSphereSchema> schemas = Collections.singletonMap(DefaultDatabase.LOGIC_NAME, new ShardingSphereSchema(tables));
         return new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class), mock(ShardingSphereResource.class), mock(ShardingSphereRuleMetaData.class), schemas);
     }
