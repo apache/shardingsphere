@@ -27,14 +27,13 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 public final class DialectDDLGeneratorFactoryTest {
-    
-    public final String TYPE = "FIXTURE";
-    
+
     @Test
     public void assertFindInstanceWithDialectDDLGenerator() throws SQLException {
-        DatabaseType databaseType = DatabaseTypeFactory.getInstance(TYPE);
-        assertTrue(DialectDDLSQLGeneratorFactory.findInstance(databaseType).isPresent());
-        DialectDDLGenerator dialectDDLGenerator = DialectDDLSQLGeneratorFactory.findInstance(databaseType).get();
+        String databaseType = "FIXTURE";
+        DatabaseType type = DatabaseTypeFactory.getInstance(databaseType);
+        assertTrue(DialectDDLSQLGeneratorFactory.findInstance(type).isPresent());
+        DialectDDLGenerator dialectDDLGenerator = DialectDDLSQLGeneratorFactory.findInstance(type).get();
         assertThat(dialectDDLGenerator.generateDDLSQL("tableA", "", new MockedDataSource()), is("SHOW CREATE TABLE tableA"));
     }
 }
