@@ -31,7 +31,7 @@ import java.util.Map;
 public final class SQLTranslatorRuleBuilder implements GlobalRuleBuilder<SQLTranslatorRuleConfiguration> {
     
     @Override
-    public SQLTranslatorRule build(final SQLTranslatorRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databaseMap) {
+    public SQLTranslatorRule build(final SQLTranslatorRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases) {
         return new SQLTranslatorRule(ruleConfig);
     }
     

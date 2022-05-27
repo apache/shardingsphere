@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryabl
 
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ShowInstanceStatement;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.QueryableRALBackendHandler;
@@ -60,16 +59,15 @@ public final class ShowInstanceHandler extends QueryableRALBackendHandler<ShowIn
     
     @Override
     protected Collection<List<Object>> getRows(final ContextManager contextManager) {
-        InstanceContext instanceContext = contextManager.getInstanceContext();
-        String modeType = instanceContext.getModeConfiguration().getType();
-        return buildInstanceRows(instanceContext, modeType);
+        return buildInstanceRows(contextManager);
     }
     
-    private Collection<List<Object>> buildInstanceRows(final InstanceContext instanceContext, final String modeType) {
+    private Collection<List<Object>> buildInstanceRows(final ContextManager contextManager) {
+        String modeType = contextManager.getInstanceContext().getModeConfiguration().getType();
         if ("Memory".equalsIgnoreCase(modeType) || "Standalone".equalsIgnoreCase(modeType)) {
-            return Collections.singletonList(buildRow(instanceContext.getInstance(), modeType));
+            return Collections.singletonList(buildRow(contextManager.getInstanceContext().getInstance(), modeType));
         }
-        Collection<ComputeNodeInstance> instances = instanceContext.getComputeNodeInstances().stream()
+        Collection<ComputeNodeInstance> instances = contextManager.getInstanceContext().getComputeNodeInstances().stream()
                 .filter(each -> InstanceType.PROXY.equals(each.getInstanceDefinition().getInstanceType())).collect(Collectors.toList());
         return instances.isEmpty() ? Collections.emptyList()
                 : instances.stream().filter(Objects::nonNull).map(each -> buildRow(each, modeType)).collect(Collectors.toList());

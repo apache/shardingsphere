@@ -9,6 +9,7 @@ weight = 2
 目前 ShardingSphere-Proxy 可以通过以下方式：
 - [二进制发布包](/cn/user-manual/shardingsphere-proxy/startup/bin/)
 - [Docker](/cn/user-manual/shardingsphere-proxy/startup/docker/)
+- [Helm](/cn/user-manual/shardingsphere-proxy/startup/helm/)
 
 ## 规则配置
 

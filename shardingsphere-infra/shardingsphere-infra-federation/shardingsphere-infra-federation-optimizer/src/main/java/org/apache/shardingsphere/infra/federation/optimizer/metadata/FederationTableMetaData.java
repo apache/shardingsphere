@@ -26,8 +26,8 @@ import org.apache.calcite.rel.type.RelDataTypeImpl;
 import org.apache.calcite.rel.type.RelDataTypeSystem;
 import org.apache.calcite.rel.type.RelProtoDataType;
 import org.apache.calcite.sql.type.SqlTypeFactoryImpl;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -46,21 +46,21 @@ public final class FederationTableMetaData {
     
     private final List<String> columnNames;
     
-    public FederationTableMetaData(final String name, final TableMetaData tableMetaData) {
+    public FederationTableMetaData(final String name, final ShardingSphereTable tableMetaData) {
         this.name = name;
         relProtoDataType = createRelProtoDataType(tableMetaData);
-        columnNames = tableMetaData.getColumns().values().stream().map(ColumnMetaData::getName).collect(Collectors.toList());
+        columnNames = tableMetaData.getColumns().values().stream().map(ShardingSphereColumn::getName).collect(Collectors.toList());
     }
     
-    private RelProtoDataType createRelProtoDataType(final TableMetaData tableMetaData) {
+    private RelProtoDataType createRelProtoDataType(final ShardingSphereTable tableMetaData) {
         Builder fieldInfo = REL_DATA_TYPE_FACTORY.builder();
-        for (ColumnMetaData each : tableMetaData.getColumns().values()) {
+        for (ShardingSphereColumn each : tableMetaData.getColumns().values()) {
             fieldInfo.add(each.getName(), getRelDataType(each));
         }
         return RelDataTypeImpl.proto(fieldInfo.build());
     }
     
-    private RelDataType getRelDataType(final ColumnMetaData columnMetaData) {
+    private RelDataType getRelDataType(final ShardingSphereColumn columnMetaData) {
         Class<?> sqlTypeClass = SqlType.valueOf(columnMetaData.getDataType()).clazz;
         RelDataType javaType = REL_DATA_TYPE_FACTORY.createJavaType(sqlTypeClass);
         return REL_DATA_TYPE_FACTORY.createTypeWithNullability(javaType, true);

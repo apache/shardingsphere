@@ -37,8 +37,8 @@ public interface GlobalRuleBuilder<T extends RuleConfiguration> extends RuleBuil
      * Build global rule.
      *
      * @param ruleConfig rule configuration
-     * @param databaseMap database map
+     * @param databases databases
      * @return global rule
      */
-    GlobalRule build(T ruleConfig, Map<String, ShardingSphereDatabase> databaseMap);
+    GlobalRule build(T ruleConfig, Map<String, ShardingSphereDatabase> databases);
 }

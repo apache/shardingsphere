@@ -23,7 +23,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.Types;
-import java.util.ArrayList;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -42,17 +41,11 @@ public final class TableMetaDataTest {
     
     @Test
     public void assertGetColumnMetaData() {
-        ColumnMetaData actual = tableMetaData.getColumns().get(new ArrayList<>(tableMetaData.getColumns().keySet()).get(0));
+        ColumnMetaData actual = tableMetaData.getColumns().iterator().next();
         assertThat(actual.getName(), is("test"));
         assertThat(actual.getDataType(), is(Types.INTEGER));
         assertTrue(actual.isPrimaryKey());
         assertFalse(actual.isGenerated());
         assertTrue(actual.isCaseSensitive());
-    }
-    
-    @Test
-    public void assertEmptyColumnsWithDefaultConstructor() {
-        tableMetaData = new TableMetaData();
-        assertThat(tableMetaData.getColumns(), is(Collections.emptyMap()));
     }
 }

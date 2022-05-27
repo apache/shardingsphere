@@ -61,7 +61,7 @@ public final class RegistryCenter {
     
     private void createSubscribers(final ClusterPersistRepository repository) {
         new SchemaMetaDataRegistrySubscriber(repository);
-        new ComputeNodeStatusSubscriber(repository);
+        new ComputeNodeStatusSubscriber(this, repository);
         new StorageNodeStatusSubscriber(repository);
         new ScalingRegistrySubscriber(repository);
         new ProcessRegistrySubscriber(repository);

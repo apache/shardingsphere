@@ -52,6 +52,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatem
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateUserStatement;
+import org.apache.shardingsphere.transaction.utils.AutoCommitUtils;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -139,7 +140,7 @@ public final class TextProtocolBackendHandlerFactory {
     }
     
     private static void handleAutoCommit(final SQLStatement sqlStatement, final ConnectionSession connectionSession) throws SQLException {
-        if (!(sqlStatement instanceof TCLStatement)) {
+        if (AutoCommitUtils.needOpenTransaction(sqlStatement)) {
             connectionSession.getBackendConnection().prepareForTaskExecution();
         }
     }

@@ -19,9 +19,9 @@ package org.apache.shardingsphere.sharding.merge.dal.show;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
-import org.apache.shardingsphere.infra.metadata.database.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ConstraintMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereConstraint;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -61,10 +61,10 @@ public final class ShowCreateTableMergedResultTest {
     }
     
     private ShardingSphereSchema buildSchema() {
-        Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(2, 1);
+        Map<String, ShardingSphereTable> tableMetaDataMap = new HashMap<>(2, 1);
         tableMetaDataMap.put("t_order",
-                new TableMetaData("t_order", Collections.emptyList(), Collections.emptyList(), Collections.singleton(new ConstraintMetaData("t_order_foreign_key", "t_user"))));
-        tableMetaDataMap.put("t_user", new TableMetaData("t_user", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
+                new ShardingSphereTable("t_order", Collections.emptyList(), Collections.emptyList(), Collections.singleton(new ShardingSphereConstraint("t_order_foreign_key", "t_user"))));
+        tableMetaDataMap.put("t_user", new ShardingSphereTable("t_user", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
         return new ShardingSphereSchema(tableMetaDataMap);
     }
     

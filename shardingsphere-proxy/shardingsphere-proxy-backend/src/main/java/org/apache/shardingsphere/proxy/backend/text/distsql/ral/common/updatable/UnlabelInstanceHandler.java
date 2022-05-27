@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.definition.InstanceId;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsChangedEvent;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepository;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -32,6 +32,7 @@ import org.apache.shardingsphere.proxy.backend.text.distsql.ral.UpdatableRALBack
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.Optional;
 
 /**
@@ -50,10 +51,10 @@ public final class UnlabelInstanceHandler extends UpdatableRALBackendHandler<Unl
         if (computeNodeInstance.isPresent()) {
             Collection<String> labels = new LinkedHashSet<>(computeNodeInstance.get().getLabels());
             if (sqlStatement.getLabels().isEmpty()) {
-                ShardingSphereEventBus.getInstance().post(new LabelsEvent(instanceId, Collections.EMPTY_LIST));
+                ShardingSphereEventBus.getInstance().post(new LabelsChangedEvent(instanceId, Collections.EMPTY_LIST));
             } else {
                 labels.removeAll(sqlStatement.getLabels());
-                ShardingSphereEventBus.getInstance().post(new LabelsEvent(instanceId, labels));
+                ShardingSphereEventBus.getInstance().post(new LabelsChangedEvent(instanceId, new LinkedList<>(labels)));
             }
         }
     }
