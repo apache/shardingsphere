@@ -40,10 +40,10 @@ RAL (Resource & Rule Administration Language) 为 Apache ShardingSphere 的管�
 
 | 语句                                                           | 说明                                                | 示例                                            |
 |:------------------------------------------------------------- |:-------------------------------------------------- |:----------------------------------------------  |
-| [ENABLE / DISABLE] READWRITE_SPLITTING (READ)? resourceName [FROM schemaName] | 启用 / 禁用读库                                      | ENABLE READWRITE_SPLITTING READ resource_0      |
+| [ENABLE / DISABLE] READWRITE_SPLITTING (READ)? resourceName [FROM databaseName] | 启用 / 禁用读库                                      | ENABLE READWRITE_SPLITTING READ resource_0      |
 | [ENABLE / DISABLE] INSTANCE [IP=xxx, PORT=xxx / instanceId]   | 启用 / 禁用 proxy 实例                               | DISABLE INSTANCE 127.0.0.1@3307            |
 | SHOW INSTANCE LIST                                            | 查询 proxy 实例信息                                  | SHOW INSTANCE LIST                              |
-| SHOW READWRITE_SPLITTING (READ)? resourceName [FROM schemaName]         | 查询所有读库的状态                                    | SHOW READWRITE_SPLITTING READ RESOURCES         |
+| SHOW READWRITE_SPLITTING (READ)? resourceName [FROM databaseName]         | 查询所有读库的状态                                    | SHOW READWRITE_SPLITTING READ RESOURCES         |
 
 ## 全局规则
 
@@ -72,7 +72,7 @@ RAL (Resource & Rule Administration Language) 为 Apache ShardingSphere 的管�
 | REFRESH TABLE METADATA [tableName / tableName FROM resource resourceName]   | 刷新指定表的元数据                                              | REFRESH TABLE METADATA t_order FROM resource ds_1 |
 | SHOW TABLE METADATA tableName [, tableName] ...                             | 查询表的元数据                                                 | SHOW TABLE METADATA t_order                       |
 | EXPORT DATABASE CONFIG [FROM database_name] [, file="file_path"]            | 查询 / 导出 database 中的资源和规则配置                          | EXPORT DATABASE CONFIG FROM readwrite_splitting_db |
-| SHOW RULES USED RESOURCE resourceName [from schema]                         | 查询 schema 中使用指定资源的规则                                 | SHOW RULES USED RESOURCE ds_0 FROM schemaName     |
+| SHOW RULES USED RESOURCE resourceName [from schema]                         | 查询 schema 中使用指定资源的规则                                 | SHOW RULES USED RESOURCE ds_0 FROM databaseName     |
 
 ## 注意事项
 

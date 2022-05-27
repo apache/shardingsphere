@@ -39,10 +39,10 @@ RAL (Resource & Rule Administration Language) responsible for the added-on featu
 
 | Statement                                                     | Function                           | Example                                    |
 |:------------------------------------------------------------- |:---------------------------------- |:------------------------------------------ |
-| [ENABLE / DISABLE] READWRITE_SPLITTING (READ)? resourceName [FROM schemaName] | Enable or disable read data source | ENABLE READWRITE_SPLITTING READ resource_0 |
+| [ENABLE / DISABLE] READWRITE_SPLITTING (READ)? resourceName [FROM databaseName] | Enable or disable read data source | ENABLE READWRITE_SPLITTING READ resource_0 |
 | [ENABLE / DISABLE] INSTANCE [IP=xxx, PORT=xxx / instanceId]   | Enable or disable proxy instance   | DISABLE INSTANCE 127.0.0.1@3307            |
 | SHOW INSTANCE LIST                                            | Query proxy instance information   | SHOW INSTANCE LIST                         |
-| SHOW READWRITE_SPLITTING (READ)? resourceName [FROM schemaName]         | Query all read resources status    | SHOW READWRITE_SPLITTING READ RESOURCES    |
+| SHOW READWRITE_SPLITTING (READ)? resourceName [FROM databaseName]         | Query all read resources status    | SHOW READWRITE_SPLITTING READ RESOURCES    |
 
 ## Global Rule
 
@@ -71,7 +71,7 @@ RAL (Resource & Rule Administration Language) responsible for the added-on featu
 | REFRESH TABLE METADATA [tableName / tableName FROM resource resourceName]   | Refresh the metadata of a table                                                    | REFRESH TABLE METADATA t_order FROM resource ds_1  |
 | SHOW TABLE METADATA tableName [, tableName] ...                             | Query table metadata                                                               | SHOW TABLE METADATA t_order                        |
 | EXPORT DATABASE CONFIG [FROM database_name] [, file="file_path"]            | Query / export resources and rule configuration in database                    | EXPORT DATABASE CONFIG FROM readwrite_splitting_db |
-| SHOW RULES USED RESOURCE resourceName [from schema]                         | Query the rules for using the specified resource in schema                         | SHOW RULES USED RESOURCE ds_0 FROM schemaName  |
+| SHOW RULES USED RESOURCE resourceName [from schema]                         | Query the rules for using the specified resource in schema                         | SHOW RULES USED RESOURCE ds_0 FROM databaseName  |
 
 ## Notice
 
