@@ -24,8 +24,8 @@ import org.apache.shardingsphere.infra.federation.optimizer.context.planner.Opti
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.event.SchemaAlteredEvent;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtil;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -54,7 +54,7 @@ public final class DropIndexStatementSchemaRefresher implements MetaDataRefreshe
             if (!logicTableName.isPresent()) {
                 continue;
             }
-            TableMetaData tableMetaData = database.getSchemas().get(actualSchemaName).get(logicTableName.get());
+            ShardingSphereTable tableMetaData = database.getSchemas().get(actualSchemaName).get(logicTableName.get());
             tableMetaData.getIndexes().remove(each.getIndexName().getIdentifier().getValue());
             post(database.getName(), actualSchemaName, tableMetaData);
         }
@@ -69,7 +69,7 @@ public final class DropIndexStatementSchemaRefresher implements MetaDataRefreshe
         return tableNames.isEmpty() ? Optional.empty() : Optional.of(tableNames.iterator().next().getTableName());
     }
     
-    private void post(final String databaseName, final String schemaName, final TableMetaData tableMetaData) {
+    private void post(final String databaseName, final String schemaName, final ShardingSphereTable tableMetaData) {
         SchemaAlteredEvent event = new SchemaAlteredEvent(databaseName, schemaName);
         event.getAlteredTables().add(tableMetaData);
         ShardingSphereEventBus.getInstance().post(event);

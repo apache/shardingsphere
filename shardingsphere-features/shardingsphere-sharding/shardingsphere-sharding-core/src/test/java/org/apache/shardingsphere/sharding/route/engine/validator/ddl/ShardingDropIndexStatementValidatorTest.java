@@ -21,8 +21,8 @@ import org.apache.shardingsphere.infra.binder.statement.ddl.DropIndexStatementCo
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereIndex;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -66,8 +66,8 @@ public final class ShardingDropIndexStatementValidatorTest {
         PostgreSQLDropIndexStatement sqlStatement = new PostgreSQLDropIndexStatement();
         sqlStatement.getIndexes().add(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
         sqlStatement.getIndexes().add(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index_new"))));
-        TableMetaData tableMetaData = mock(TableMetaData.class);
-        Map<String, IndexMetaData> indexes = mock(HashMap.class);
+        ShardingSphereTable tableMetaData = mock(ShardingSphereTable.class);
+        Map<String, ShardingSphereIndex> indexes = mock(HashMap.class);
         when(tableMetaData.getIndexes()).thenReturn(indexes);
         when(database.getSchemas().get("public").getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
         when(database.getSchemas().get("public").get("t_order")).thenReturn(tableMetaData);
@@ -81,8 +81,8 @@ public final class ShardingDropIndexStatementValidatorTest {
         PostgreSQLDropIndexStatement sqlStatement = new PostgreSQLDropIndexStatement();
         sqlStatement.getIndexes().add(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
         sqlStatement.getIndexes().add(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index_new"))));
-        TableMetaData tableMetaData = mock(TableMetaData.class);
-        Map<String, IndexMetaData> indexes = mock(HashMap.class);
+        ShardingSphereTable tableMetaData = mock(ShardingSphereTable.class);
+        Map<String, ShardingSphereIndex> indexes = mock(HashMap.class);
         when(tableMetaData.getIndexes()).thenReturn(indexes);
         when(database.getSchemas().get("public").getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
         when(database.getSchemas().get("public").get("t_order")).thenReturn(tableMetaData);
@@ -95,8 +95,8 @@ public final class ShardingDropIndexStatementValidatorTest {
         PostgreSQLDropIndexStatement sqlStatement = new PostgreSQLDropIndexStatement();
         sqlStatement.getIndexes().add(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
         sqlStatement.getIndexes().add(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index_new"))));
-        TableMetaData tableMetaData = mock(TableMetaData.class);
-        Map<String, IndexMetaData> indexes = mock(HashMap.class);
+        ShardingSphereTable tableMetaData = mock(ShardingSphereTable.class);
+        Map<String, ShardingSphereIndex> indexes = mock(HashMap.class);
         when(tableMetaData.getIndexes()).thenReturn(indexes);
         when(database.getSchemas().get("public").getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
         when(database.getSchemas().get("public").get("t_order")).thenReturn(tableMetaData);
@@ -116,8 +116,8 @@ public final class ShardingDropIndexStatementValidatorTest {
         PostgreSQLDropIndexStatement sqlStatement = new PostgreSQLDropIndexStatement();
         sqlStatement.getIndexes().add(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
         sqlStatement.getIndexes().add(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index_new"))));
-        TableMetaData tableMetaData = mock(TableMetaData.class);
-        Map<String, IndexMetaData> indexes = mock(HashMap.class);
+        ShardingSphereTable tableMetaData = mock(ShardingSphereTable.class);
+        Map<String, ShardingSphereIndex> indexes = mock(HashMap.class);
         when(tableMetaData.getIndexes()).thenReturn(indexes);
         when(database.getSchemas().get("public").getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
         when(database.getSchemas().get("public").get("t_order")).thenReturn(tableMetaData);
@@ -136,8 +136,8 @@ public final class ShardingDropIndexStatementValidatorTest {
         PostgreSQLDropIndexStatement sqlStatement = new PostgreSQLDropIndexStatement();
         sqlStatement.getIndexes().add(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_config_index"))));
         sqlStatement.getIndexes().add(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_config_index_new"))));
-        TableMetaData tableMetaData = mock(TableMetaData.class);
-        Map<String, IndexMetaData> indexes = mock(HashMap.class);
+        ShardingSphereTable tableMetaData = mock(ShardingSphereTable.class);
+        Map<String, ShardingSphereIndex> indexes = mock(HashMap.class);
         when(tableMetaData.getIndexes()).thenReturn(indexes);
         when(database.getSchemas().get("public").getAllTableNames()).thenReturn(Collections.singletonList("t_config"));
         when(database.getSchemas().get("public").get("t_config")).thenReturn(tableMetaData);
@@ -157,8 +157,8 @@ public final class ShardingDropIndexStatementValidatorTest {
         PostgreSQLDropIndexStatement sqlStatement = new PostgreSQLDropIndexStatement();
         sqlStatement.getIndexes().add(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_config_index"))));
         sqlStatement.getIndexes().add(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_config_index_new"))));
-        TableMetaData tableMetaData = mock(TableMetaData.class);
-        Map<String, IndexMetaData> indexes = mock(HashMap.class);
+        ShardingSphereTable tableMetaData = mock(ShardingSphereTable.class);
+        Map<String, ShardingSphereIndex> indexes = mock(HashMap.class);
         when(tableMetaData.getIndexes()).thenReturn(indexes);
         when(database.getSchemas().get("public").getAllTableNames()).thenReturn(Collections.singletonList("t_config"));
         when(database.getSchemas().get("public").get("t_config")).thenReturn(tableMetaData);

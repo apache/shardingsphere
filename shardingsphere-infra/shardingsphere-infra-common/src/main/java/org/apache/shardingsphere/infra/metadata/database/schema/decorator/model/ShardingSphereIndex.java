@@ -15,30 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.schema.event;
+package org.apache.shardingsphere.infra.metadata.database.schema.decorator.model;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
-
-import java.util.ArrayList;
-import java.util.Collection;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 /**
- * Schema altered event.
+ * ShardingSphere index.
  */
+@RequiredArgsConstructor
 @Getter
-public final class SchemaAlteredEvent {
+@EqualsAndHashCode
+@ToString
+public final class ShardingSphereIndex {
     
-    private final String databaseName;
-    
-    private final String schemaName;
-    
-    private final Collection<ShardingSphereTable> alteredTables = new ArrayList<>();
-    
-    private final Collection<String> droppedTables = new ArrayList<>();
-    
-    public SchemaAlteredEvent(final String databaseName, final String schemaName) {
-        this.databaseName = databaseName;
-        this.schemaName = schemaName;
-    }
+    private final String name;
 }

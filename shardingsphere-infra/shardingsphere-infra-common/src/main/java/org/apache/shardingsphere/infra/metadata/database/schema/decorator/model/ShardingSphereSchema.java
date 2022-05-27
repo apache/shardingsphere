@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.decorator.model;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -33,14 +32,14 @@ import java.util.concurrent.ConcurrentHashMap;
 @Getter
 public final class ShardingSphereSchema {
     
-    private final Map<String, TableMetaData> tables;
+    private final Map<String, ShardingSphereTable> tables;
     
     @SuppressWarnings("CollectionWithoutInitialCapacity")
     public ShardingSphereSchema() {
         tables = new ConcurrentHashMap<>();
     }
     
-    public ShardingSphereSchema(final Map<String, TableMetaData> tables) {
+    public ShardingSphereSchema(final Map<String, ShardingSphereTable> tables) {
         this.tables = new ConcurrentHashMap<>(tables.size(), 1);
         tables.forEach((key, value) -> this.tables.put(key.toLowerCase(), value));
     }
@@ -60,7 +59,7 @@ public final class ShardingSphereSchema {
      * @param tableName tableName table name
      * @return table meta data
      */
-    public TableMetaData get(final String tableName) {
+    public ShardingSphereTable get(final String tableName) {
         return tables.get(tableName.toLowerCase());
     }
     
@@ -70,7 +69,7 @@ public final class ShardingSphereSchema {
      * @param tableName table name
      * @param tableMetaData table meta data
      */
-    public void put(final String tableName, final TableMetaData tableMetaData) {
+    public void put(final String tableName, final ShardingSphereTable tableMetaData) {
         tables.put(tableName.toLowerCase(), tableMetaData);
     }
     
@@ -79,8 +78,8 @@ public final class ShardingSphereSchema {
      *
      * @param tableMetaDataMap table meta data map
      */
-    public void putAll(final Map<String, TableMetaData> tableMetaDataMap) {
-        for (Entry<String, TableMetaData> entry : tableMetaDataMap.entrySet()) {
+    public void putAll(final Map<String, ShardingSphereTable> tableMetaDataMap) {
+        for (Entry<String, ShardingSphereTable> entry : tableMetaDataMap.entrySet()) {
             put(entry.getKey(), entry.getValue());
         }
     }

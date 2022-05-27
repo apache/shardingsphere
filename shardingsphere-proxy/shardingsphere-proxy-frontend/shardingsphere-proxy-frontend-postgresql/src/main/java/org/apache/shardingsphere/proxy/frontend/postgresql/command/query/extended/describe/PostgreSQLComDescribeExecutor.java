@@ -37,8 +37,8 @@ import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -132,9 +132,9 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(databaseName);
         String schemaName = insertStatement.getTable().getOwner().map(optional -> optional.getIdentifier()
                 .getValue()).orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(database.getResource().getDatabaseType(), databaseName));
-        TableMetaData tableMetaData = database.getSchemas().get(schemaName).get(logicTableName);
-        Map<String, ColumnMetaData> columnMetaData = tableMetaData.getColumns();
-        Map<String, ColumnMetaData> caseInsensitiveColumnMetaData = null;
+        ShardingSphereTable tableMetaData = database.getSchemas().get(schemaName).get(logicTableName);
+        Map<String, ShardingSphereColumn> columnMetaData = tableMetaData.getColumns();
+        Map<String, ShardingSphereColumn> caseInsensitiveColumnMetaData = null;
         List<String> columnNames;
         if (insertStatement.getColumns().isEmpty()) {
             columnNames = new ArrayList<>(tableMetaData.getColumns().keySet());
@@ -156,7 +156,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
                     continue;
                 }
                 String columnName = columnNames.get(columnIndex);
-                ColumnMetaData column = columnMetaData.get(columnName);
+                ShardingSphereColumn column = columnMetaData.get(columnName);
                 if (null == column) {
                     if (null == caseInsensitiveColumnMetaData) {
                         caseInsensitiveColumnMetaData = convertToCaseInsensitiveColumnMetaDataMap(columnMetaData);
@@ -184,8 +184,8 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         return unspecifiedTypeParameterIndexes;
     }
     
-    private Map<String, ColumnMetaData> convertToCaseInsensitiveColumnMetaDataMap(final Map<String, ColumnMetaData> columnMetaDataMap) {
-        Map<String, ColumnMetaData> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+    private Map<String, ShardingSphereColumn> convertToCaseInsensitiveColumnMetaDataMap(final Map<String, ShardingSphereColumn> columnMetaDataMap) {
+        Map<String, ShardingSphereColumn> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         result.putAll(columnMetaDataMap);
         return result;
     }
