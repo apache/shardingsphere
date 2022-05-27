@@ -15,27 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.builder.fixture;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl;
 
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.builder.global.GlobalRuleBuilder;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropCastStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 
-import java.util.Map;
-
-public final class FixtureGlobalRuleBuilder implements GlobalRuleBuilder<FixtureGlobalRuleConfiguration> {
-    
-    @Override
-    public FixtureGlobalRule build(final FixtureGlobalRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases) {
-        return new FixtureGlobalRule();
-    }
-    
-    @Override
-    public int getOrder() {
-        return 0;
-    }
-    
-    @Override
-    public Class<FixtureGlobalRuleConfiguration> getTypeClass() {
-        return FixtureGlobalRuleConfiguration.class;
-    }
+/**
+ * OpenGauss drop cast statement.
+ */
+@ToString
+public final class OpenGaussDropCastStatement extends DropCastStatement implements OpenGaussStatement {
 }

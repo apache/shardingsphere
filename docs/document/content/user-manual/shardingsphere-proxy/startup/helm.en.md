@@ -1,3 +1,8 @@
++++
+title = "Use Helm"
+weight = 3
++++
+
 # Use Helm
 
 Use [Helm](https://helm.sh/) to provide guidance for the installation of ShardingSphere-Proxy instance in Kubernetes cluster.
@@ -40,10 +45,10 @@ helm install shardingsphere-proxy shardingsphere/shardingsphere-proxy
 ```shell
 cd shardingsphere-proxy/charts/governance
 helm dependency build 
-cd ../..
-helm dependency build 
-cd ..
-helm install shardingsphere-proxy shardingsphere-proxy
+cd ../..                               
+helm dependency build                                   
+cd ..                                                   
+helm install shardingsphere-proxy shardingsphere-proxy 
 ```
 
 Charts will be installed with default configuration if above commands executed.
@@ -85,7 +90,7 @@ Delete all release records by default, add `--keep-history` to keep them.
 ### Compute-Node ShardingSphere-Proxy parameters
 
 | Name                                | Description                                                  | Value                         |
-| ----------------------------------- | ------------------------------------------------------------ | ----------------------------- |
+| ----------------------------------- | ------------------------------------------------------------ |-------------------------------|
 | `compute.image.repository`          | Image name of ShardingSphere-Proxy.                          | `apache/shardingsphere-proxy` |
 | `compute.image.pullPolicy`          | The policy for pulling ShardingSphere-Proxy image            | `IfNotPresent`                |
 | `compute.image.tag`                 | ShardingSphere-Proxy image tag                               | `5.1.2`                       |

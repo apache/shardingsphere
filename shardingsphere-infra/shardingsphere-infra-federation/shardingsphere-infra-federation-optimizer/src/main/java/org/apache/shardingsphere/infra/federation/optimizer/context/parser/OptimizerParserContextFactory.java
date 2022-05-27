@@ -39,12 +39,12 @@ public final class OptimizerParserContextFactory {
     /**
      * Create optimizer parser context map.
      *
-     * @param databaseMap database map
+     * @param databases databases
      * @return created optimizer parser context map
      */
-    public static Map<String, OptimizerParserContext> create(final Map<String, ShardingSphereDatabase> databaseMap) {
+    public static Map<String, OptimizerParserContext> create(final Map<String, ShardingSphereDatabase> databases) {
         Map<String, OptimizerParserContext> result = new HashMap<>();
-        for (Entry<String, ShardingSphereDatabase> entry : databaseMap.entrySet()) {
+        for (Entry<String, ShardingSphereDatabase> entry : databases.entrySet()) {
             DatabaseType databaseType = entry.getValue().getProtocolType();
             result.put(entry.getKey(), new OptimizerParserContext(databaseType, createSQLDialectProperties(databaseType)));
         }

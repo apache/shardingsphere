@@ -31,8 +31,8 @@ import java.util.Map;
 public final class AuthorityRuleBuilder implements GlobalRuleBuilder<AuthorityRuleConfiguration> {
     
     @Override
-    public AuthorityRule build(final AuthorityRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databaseMap) {
-        return new AuthorityRule(ruleConfig, databaseMap);
+    public AuthorityRule build(final AuthorityRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases) {
+        return new AuthorityRule(ruleConfig, databases);
     }
     
     @Override
