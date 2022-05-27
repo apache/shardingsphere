@@ -65,7 +65,7 @@ public final class GenericSchemaBuilderTest {
     @Before
     public void setUp() {
         Collection<ShardingSphereRule> rules = Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule());
-        materials = new GenericSchemaBuilderMaterials(databaseType, databaseType, Collections.singletonMap(DefaultDatabase.LOGIC_NAME, 
+        materials = new GenericSchemaBuilderMaterials(databaseType, databaseType, Collections.singletonMap(DefaultDatabase.LOGIC_NAME,
                 mock(DataSource.class)), rules, new ConfigurationProperties(new Properties()), DefaultDatabase.LOGIC_NAME);
         schemaMetaDataLoaderEngine = mockStatic(SchemaMetaDataLoaderEngine.class);
     }

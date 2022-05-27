@@ -67,7 +67,7 @@ public final class EncryptSchemaMetaDataDecoratorTest {
         Map<String, TableMetaData> tableMetaDataMap = new LinkedHashMap<>();
         tableMetaDataMap.put("t_encrypt", createTableMetaData());
         GenericSchemaBuilderMaterials materials = mock(GenericSchemaBuilderMaterials.class, RETURNS_DEEP_STUBS);
-        TableMetaData actual = loader.decorate(Collections.singletonMap("logic_db", 
+        TableMetaData actual = loader.decorate(Collections.singletonMap("logic_db",
                 new SchemaMetaData("logic_db", tableMetaDataMap)), rule, materials).get("logic_db").getTables().get("t_encrypt");
         assertThat(actual.getColumns().size(), is(2));
         assertTrue(actual.getColumns().containsKey("id"));
