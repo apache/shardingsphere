@@ -6,11 +6,11 @@ weight = 4
 ## 语法说明
 
 ```sql
-SHOW DB_DISCOVERY RULES [FROM schemaName]
+SHOW DB_DISCOVERY RULES [FROM databaseName]
 
-SHOW DB_DISCOVERY TYPES [FROM schemaName]
+SHOW DB_DISCOVERY TYPES [FROM databaseName]
 
-SHOW DB_DISCOVERY HEARTBEATS [FROM schemaName]
+SHOW DB_DISCOVERY HEARTBEATS [FROM databaseName]
 ```
 
 ## 返回值说明
