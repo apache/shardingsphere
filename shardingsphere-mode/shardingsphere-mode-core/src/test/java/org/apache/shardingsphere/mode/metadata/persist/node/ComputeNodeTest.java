@@ -78,7 +78,12 @@ public final class ComputeNodeTest {
     
     @Test
     public void assertGetInstanceXaRecoveryIdNodePath() {
-        assertThat(ComputeNode.getInstanceXaRecoveryIdNodePath("127.0.0.1@3307"), is("/nodes/compute_nodes/xa_recovery_id/127.0.0.1@3307"));
+        assertThat(ComputeNode.getInstanceXaRecoveryIdNodePath("127.0.0.1@3307", "127.0.0.1@3307"), is("/nodes/compute_nodes/xa_recovery_id/127.0.0.1@3307/127.0.0.1@3307"));
+    }
+    
+    @Test
+    public void assertGetXaRecoveryIdNodePath() {
+        assertThat(ComputeNode.getXaRecoveryIdNodePath(), is("/nodes/compute_nodes/xa_recovery_id"));
     }
     
     @Test

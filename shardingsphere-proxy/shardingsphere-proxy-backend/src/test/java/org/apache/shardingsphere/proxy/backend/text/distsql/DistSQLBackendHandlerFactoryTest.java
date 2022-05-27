@@ -271,10 +271,11 @@ public final class DistSQLBackendHandlerFactoryTest extends ProxyContextRestorer
     
     private MetaDataContexts mockMetaDataContexts() {
         MetaDataContexts result = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
-        when(result.getAllDatabaseNames()).thenReturn(Collections.singletonList("db"));
-        when(result.getDatabaseMetaData("db").getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
-        when(result.getDatabaseMetaData("db").getResource().getDataSources()).thenReturn(Collections.emptyMap());
-        when(result.getDatabaseMetaData("db").getResource().getNotExistedResources(any())).thenReturn(Collections.emptyList());
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        when(database.getResource().getDataSources()).thenReturn(Collections.emptyMap());
+        when(database.getResource().getNotExistedResources(any())).thenReturn(Collections.emptyList());
+        when(result.getMetaData().getDatabases()).thenReturn(Collections.singletonMap("db", database));
         return result;
     }
     
@@ -282,11 +283,11 @@ public final class DistSQLBackendHandlerFactoryTest extends ProxyContextRestorer
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("db");
-        ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class);
-        when(metaDataContexts.getDatabaseMetaData("db")).thenReturn(database);
-        when(database.getRuleMetaData()).thenReturn(ruleMetaData);
         when(database.getResource()).thenReturn(mock(ShardingSphereResource.class));
-        when(ruleMetaData.getConfigurations()).thenReturn(Collections.singletonList(mock(ShadowRuleConfiguration.class)));
+        ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class);
+        when(ruleMetaData.getConfigurations()).thenReturn(Collections.singleton(mock(ShadowRuleConfiguration.class)));
+        when(database.getRuleMetaData()).thenReturn(ruleMetaData);
+        when(metaDataContexts.getMetaData().getDatabases()).thenReturn(Collections.singletonMap("db", database));
     }
     
     private void mockScalingContext() {

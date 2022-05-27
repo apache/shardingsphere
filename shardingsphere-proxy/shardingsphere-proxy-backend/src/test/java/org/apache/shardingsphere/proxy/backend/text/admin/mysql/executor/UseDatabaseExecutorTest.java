@@ -43,7 +43,6 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -62,16 +61,17 @@ public final class UseDatabaseExecutorTest extends ProxyContextRestorer {
     public void setUp() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
-                new ShardingSphereMetaData(getDatabaseMap(), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())), mock(OptimizerContext.class));
+                new ShardingSphereMetaData(getDatabases(), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())), mock(OptimizerContext.class));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
     }
     
-    private Map<String, ShardingSphereDatabase> getDatabaseMap() {
+    private Map<String, ShardingSphereDatabase> getDatabases() {
         Map<String, ShardingSphereDatabase> result = new HashMap<>(10, 1);
         for (int i = 0; i < 10; i++) {
             ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
             when(database.getResource().getDatabaseType()).thenReturn(new H2DatabaseType());
+            when(database.getRuleMetaData().getRules()).thenReturn(new LinkedList<>());
             result.put(String.format(DATABASE_PATTERN, i), database);
         }
         return result;
@@ -82,11 +82,10 @@ public final class UseDatabaseExecutorTest extends ProxyContextRestorer {
         MySQLUseStatement useStatement = mock(MySQLUseStatement.class);
         when(useStatement.getSchema()).thenReturn(String.format(DATABASE_PATTERN, 0));
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts().getAllDatabaseNames().contains(anyString())).thenReturn(true);
+        when(contextManager.getMetaDataContexts().getMetaData().getDatabases().containsKey(anyString())).thenReturn(true);
         when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules()).thenReturn(Collections.emptyList());
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getRuleMetaData().getRules()).thenReturn(new LinkedList<>());
-        when(contextManager.getMetaDataContexts().getDatabaseMetaData(any())).thenReturn(database);
+        Map<String, ShardingSphereDatabase> databases = getDatabases();
+        when(contextManager.getMetaDataContexts().getMetaData().getDatabases()).thenReturn(databases);
         ProxyContext.init(contextManager);
         UseDatabaseExecutor useSchemaBackendHandler = new UseDatabaseExecutor(useStatement);
         useSchemaBackendHandler.execute(connectionSession);

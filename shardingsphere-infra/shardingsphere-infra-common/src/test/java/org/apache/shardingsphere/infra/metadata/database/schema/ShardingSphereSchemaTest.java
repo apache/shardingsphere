@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema;
 
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
 import org.junit.Test;
 
 import java.util.Collections;

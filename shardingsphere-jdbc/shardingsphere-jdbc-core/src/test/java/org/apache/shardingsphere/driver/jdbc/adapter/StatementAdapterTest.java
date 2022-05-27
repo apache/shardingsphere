@@ -234,7 +234,8 @@ public final class StatementAdapterTest {
         ShardingSphereConnection connection = mock(ShardingSphereConnection.class, RETURNS_DEEP_STUBS);
         DataNodeContainedRule rule = mock(DataNodeContainedRule.class);
         when(rule.isNeedAccumulate(any())).thenReturn(true);
-        when(connection.getContextManager().getMetaDataContexts().getDatabaseMetaData(DefaultDatabase.LOGIC_NAME).getRuleMetaData().getRules()).thenReturn(Collections.singletonList(rule));
+        when(connection.getContextManager()
+                .getMetaDataContexts().getMetaData().getDatabases().get(DefaultDatabase.LOGIC_NAME).getRuleMetaData().getRules()).thenReturn(Collections.singletonList(rule));
         TrafficRule trafficRule = new TrafficRule(new DefaultTrafficRuleConfigurationBuilder().build());
         when(connection.getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(TrafficRule.class)).thenReturn(Optional.of(trafficRule));
         ShardingSphereStatement result = new ShardingSphereStatement(connection);

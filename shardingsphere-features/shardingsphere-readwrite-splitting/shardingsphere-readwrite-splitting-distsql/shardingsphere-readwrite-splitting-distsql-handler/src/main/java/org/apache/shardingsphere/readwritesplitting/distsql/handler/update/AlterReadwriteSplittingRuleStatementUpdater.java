@@ -108,10 +108,10 @@ public final class AlterReadwriteSplittingRuleStatementUpdater implements RuleDe
     private Collection<String> getLogicResources(final ShardingSphereDatabase database) {
         Collection<String> result = new LinkedHashSet<>();
         Optional<ExportableRule> exportableRule = database.getRuleMetaData().findRules(ExportableRule.class).stream()
-                .filter(each -> each.containExportableKey(Collections.singletonList(ExportableConstants.EXPORTABLE_KEY_PRIMARY_DATA_SOURCE))).findAny();
+                .filter(each -> each.containExportableKey(Collections.singletonList(ExportableConstants.EXPORT_DB_DISCOVERY_PRIMARY_DATA_SOURCES))).findAny();
         exportableRule.ifPresent(optional -> {
-            Map<String, Object> exportData = optional.export(Collections.singletonList(ExportableConstants.EXPORTABLE_KEY_PRIMARY_DATA_SOURCE));
-            Set<String> logicResources = ((Map<String, String>) exportData.getOrDefault(ExportableConstants.EXPORTABLE_KEY_PRIMARY_DATA_SOURCE, Collections.emptyMap())).keySet();
+            Map<String, Object> exportData = optional.export(Collections.singletonList(ExportableConstants.EXPORT_DB_DISCOVERY_PRIMARY_DATA_SOURCES));
+            Set<String> logicResources = ((Map<String, String>) exportData.getOrDefault(ExportableConstants.EXPORT_DB_DISCOVERY_PRIMARY_DATA_SOURCES, Collections.emptyMap())).keySet();
             result.addAll(logicResources);
         });
         return result;

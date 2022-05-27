@@ -72,9 +72,9 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         MetaDataContexts metaDataContexts = createMetaDataContextsBuilder(metaDataPersistService, parameter).build(metaDataPersistService);
         persistMetaData(metaDataContexts);
         Properties transactionProps = getTransactionProperties(metaDataContexts);
-        persistTransactionConfiguration(parameter, metaDataPersistService, transactionProps);
-        ContextManager result = createContextManager(repository, metaDataPersistService, parameter.getInstanceDefinition(), metaDataContexts, transactionProps, parameter.getModeConfig());
-        registerOnline(metaDataPersistService, parameter.getInstanceDefinition(), result, registryCenter);
+        persistTransactionConfiguration(metaDataPersistService, transactionProps);
+        ContextManager result = createContextManager(repository, registryCenter, parameter.getInstanceDefinition(), metaDataContexts, transactionProps, parameter.getModeConfig());
+        registerOnline(metaDataPersistService, parameter, result, registryCenter);
         return result;
     }
     
@@ -83,7 +83,6 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         if (!parameter.isEmpty()) {
             metaDataPersistService.persistConfigurations(parameter.getDatabaseConfigs(), parameter.getGlobalRuleConfigs(), parameter.getProps(), isOverwrite);
         }
-        metaDataPersistService.persistInstanceLabels(parameter.getInstanceDefinition().getInstanceId().getId(), parameter.getLabels(), isOverwrite);
     }
     
     private MetaDataContextsBuilder createMetaDataContextsBuilder(final MetaDataPersistService metaDataPersistService, final ContextManagerBuilderParameter parameter) {
@@ -97,7 +96,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     }
     
     private Properties getTransactionProperties(final MetaDataContexts metaDataContexts) {
-        Optional<String> databaseName = metaDataContexts.getAllDatabaseNames().stream().findFirst();
+        Optional<String> databaseName = metaDataContexts.getMetaData().getDatabases().keySet().stream().findFirst();
         Optional<TransactionRule> transactionRule =
                 metaDataContexts.getMetaData().getGlobalRuleMetaData().getRules().stream().filter(each -> each instanceof TransactionRule).map(each -> (TransactionRule) each).findFirst();
         Optional<TransactionConfigurationFileGenerator> fileGenerator = transactionRule.isPresent()
@@ -106,7 +105,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         if (!databaseName.isPresent() || !fileGenerator.isPresent()) {
             return transactionRule.isPresent() ? transactionRule.get().getProps() : new Properties();
         }
-        ShardingSphereDatabase database = metaDataContexts.getDatabaseMetaData(databaseName.get());
+        ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabases().get(databaseName.get());
         Properties result = fileGenerator.get().getTransactionProps(transactionRule.get().getProps(),
                 new DataSourceProvidedDatabaseConfiguration(database.getResource().getDataSources(), database.getRuleMetaData().getConfigurations()), getType());
         Optional<TransactionRuleConfiguration> transactionRuleConfig = metaDataContexts.getMetaData().getGlobalRuleMetaData().findSingleRuleConfiguration(TransactionRuleConfiguration.class);
@@ -118,13 +117,9 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         return result;
     }
     
-    private void persistTransactionConfiguration(final ContextManagerBuilderParameter parameter, final MetaDataPersistService metaDataPersistService, final Properties transactionProps) {
+    private void persistTransactionConfiguration(final MetaDataPersistService metaDataPersistService, final Properties transactionProps) {
         if (!transactionProps.isEmpty()) {
             metaDataPersistService.persistTransactionRule(transactionProps, true);
-        }
-        String instanceId = parameter.getInstanceDefinition().getInstanceId().getId();
-        if (!metaDataPersistService.getComputeNodePersistService().loadXaRecoveryId(instanceId).isPresent()) {
-            metaDataPersistService.getComputeNodePersistService().persistInstanceXaRecoveryId(instanceId, instanceId);
         }
     }
     
@@ -143,21 +138,20 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     }
     
     private void persistMetaData(final MetaDataContexts metaDataContexts) {
-        metaDataContexts.getMetaData().getDatabaseMap().forEach((databaseName, schemas) -> schemas.getSchemas()
+        metaDataContexts.getMetaData().getDatabases().forEach((databaseName, schemas) -> schemas.getSchemas()
                 .forEach((schemaName, tables) -> metaDataContexts.getPersistService().ifPresent(optional -> optional.getSchemaMetaDataService().persistMetaData(databaseName, schemaName, tables))));
     }
     
-    private ContextManager createContextManager(final ClusterPersistRepository repository, final MetaDataPersistService metaDataPersistService,
+    private ContextManager createContextManager(final ClusterPersistRepository repository, final RegistryCenter registryCenter,
                                                 final InstanceDefinition instanceDefinition, final MetaDataContexts metaDataContexts,
                                                 final Properties transactionProps, final ModeConfiguration modeConfig) {
-        ComputeNodeInstance computeNodeInstance = metaDataPersistService.getComputeNodePersistService().loadComputeNodeInstance(instanceDefinition);
-        ClusterWorkerIdGenerator clusterWorkerIdGenerator = new ClusterWorkerIdGenerator(repository, metaDataPersistService, instanceDefinition);
+        ClusterWorkerIdGenerator clusterWorkerIdGenerator = new ClusterWorkerIdGenerator(repository, registryCenter, instanceDefinition);
         DistributeLockContext distributeLockContext = new DistributeLockContext(repository);
-        InstanceContext instanceContext = new InstanceContext(computeNodeInstance, clusterWorkerIdGenerator, modeConfig, distributeLockContext);
+        InstanceContext instanceContext = new InstanceContext(new ComputeNodeInstance(instanceDefinition), clusterWorkerIdGenerator, modeConfig, distributeLockContext);
         repository.watchSessionConnection(instanceContext);
         generateTransactionConfigurationFile(instanceContext, metaDataContexts, transactionProps);
         TransactionContexts transactionContexts = new TransactionContextsBuilder(
-                metaDataContexts.getMetaData().getDatabaseMap(), metaDataContexts.getMetaData().getGlobalRuleMetaData().getRules()).build();
+                metaDataContexts.getMetaData().getDatabases(), metaDataContexts.getMetaData().getGlobalRuleMetaData().getRules()).build();
         return new ContextManager(metaDataContexts, transactionContexts, instanceContext);
     }
     
@@ -170,11 +164,14 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         }
     }
     
-    private void registerOnline(final MetaDataPersistService metaDataPersistService, final InstanceDefinition instanceDefinition, final ContextManager contextManager,
+    private void registerOnline(final MetaDataPersistService metaDataPersistService, final ContextManagerBuilderParameter parameter, final ContextManager contextManager,
                                 final RegistryCenter registryCenter) {
+        String instanceId = contextManager.getInstanceContext().getInstance().getCurrentInstanceId();
+        contextManager.getInstanceContext().getInstance().setXaRecoveryId(instanceId);
+        contextManager.getInstanceContext().getInstance().setLabels(parameter.getLabels());
+        contextManager.getInstanceContext().getComputeNodeInstances().addAll(registryCenter.getComputeNodeStatusService().loadAllComputeNodeInstances());
         new ClusterContextManagerCoordinator(metaDataPersistService, contextManager, registryCenter);
-        contextManager.getInstanceContext().getComputeNodeInstances().addAll(metaDataPersistService.getComputeNodePersistService().loadAllComputeNodeInstances());
-        registryCenter.onlineInstance(instanceDefinition);
+        registryCenter.onlineInstance(contextManager.getInstanceContext().getInstance());
     }
     
     @Override

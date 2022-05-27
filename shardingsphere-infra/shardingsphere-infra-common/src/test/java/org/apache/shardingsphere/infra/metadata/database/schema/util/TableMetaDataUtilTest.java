@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.metadata.database.schema.util;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.metadata.database.schema.builder.SchemaBuilderMaterials;
+import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.TableMetaDataLoaderMaterial;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
@@ -47,7 +47,7 @@ public final class TableMetaDataUtilTest {
     public void assertGetTableMetaDataLoadMaterialWhenConfigCheckMetaDataEnable() {
         DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class);
         when(dataNodeContainedRule.getDataNodesByTableName("t_order")).thenReturn(mockShardingDataNodes());
-        SchemaBuilderMaterials materials = new SchemaBuilderMaterials(mock(DatabaseType.class), mock(DatabaseType.class), mockDataSourceMap(),
+        GenericSchemaBuilderMaterials materials = new GenericSchemaBuilderMaterials(mock(DatabaseType.class), mock(DatabaseType.class), mockDataSourceMap(),
                 Arrays.asList(dataNodeContainedRule, mock(DataSourceContainedRule.class)), mock(ConfigurationProperties.class), "sharding_db");
         Collection<TableMetaDataLoaderMaterial> actual = TableMetaDataUtil.getTableMetaDataLoadMaterial(Collections.singleton("t_order"), materials, true);
         assertThat(actual.size(), is(2));
@@ -64,7 +64,7 @@ public final class TableMetaDataUtilTest {
     public void assertGetTableMetaDataLoadMaterialWhenNotConfigCheckMetaDataEnable() {
         DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class);
         when(dataNodeContainedRule.getDataNodesByTableName("t_order")).thenReturn(mockShardingDataNodes());
-        SchemaBuilderMaterials materials = new SchemaBuilderMaterials(mock(DatabaseType.class), mock(DatabaseType.class), mockDataSourceMap(),
+        GenericSchemaBuilderMaterials materials = new GenericSchemaBuilderMaterials(mock(DatabaseType.class), mock(DatabaseType.class), mockDataSourceMap(),
                 Arrays.asList(dataNodeContainedRule, mock(DataSourceContainedRule.class)), mock(ConfigurationProperties.class), "sharding_db");
         Collection<TableMetaDataLoaderMaterial> actual = TableMetaDataUtil.getTableMetaDataLoadMaterial(Collections.singleton("t_order"), materials, false);
         assertThat(actual.size(), is(1));
@@ -78,7 +78,7 @@ public final class TableMetaDataUtilTest {
     public void assertGetTableMetaDataLoadMaterialWhenNotConfigCheckMetaDataEnableForSingleTableDataNode() {
         DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class);
         when(dataNodeContainedRule.getDataNodesByTableName("t_single")).thenReturn(mockSingleTableDataNodes());
-        SchemaBuilderMaterials materials = new SchemaBuilderMaterials(mock(DatabaseType.class), mock(DatabaseType.class), mockDataSourceMap(),
+        GenericSchemaBuilderMaterials materials = new GenericSchemaBuilderMaterials(mock(DatabaseType.class), mock(DatabaseType.class), mockDataSourceMap(),
                 Arrays.asList(dataNodeContainedRule, mock(DataSourceContainedRule.class)), mock(ConfigurationProperties.class), "public");
         Collection<TableMetaDataLoaderMaterial> actual = TableMetaDataUtil.getTableMetaDataLoadMaterial(Collections.singleton("t_single"), materials, false);
         assertThat(actual.size(), is(1));

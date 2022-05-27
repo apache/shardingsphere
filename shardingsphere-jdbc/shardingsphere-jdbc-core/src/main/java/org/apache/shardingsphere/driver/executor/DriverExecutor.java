@@ -51,7 +51,7 @@ public final class DriverExecutor implements AutoCloseable {
         JDBCExecutor jdbcExecutor = new JDBCExecutor(executorEngine, connection.isHoldTransaction());
         regularExecutor = new DriverJDBCExecutor(connection.getDatabaseName(), metaDataContexts, jdbcExecutor);
         rawExecutor = new RawExecutor(executorEngine, connection.isHoldTransaction(), metaDataContexts.getMetaData().getProps());
-        DatabaseType databaseType = metaDataContexts.getDatabaseMetaData(connection.getDatabaseName()).getResource().getDatabaseType();
+        DatabaseType databaseType = metaDataContexts.getMetaData().getDatabases().get(connection.getDatabaseName()).getResource().getDatabaseType();
         String schemaName = DatabaseTypeEngine.getDefaultSchemaName(databaseType, connection.getDatabaseName());
         federationExecutor = FederationExecutorFactory.newInstance(
                 connection.getDatabaseName(), schemaName, metaDataContexts.getOptimizerContext(), metaDataContexts.getMetaData().getProps(), jdbcExecutor);

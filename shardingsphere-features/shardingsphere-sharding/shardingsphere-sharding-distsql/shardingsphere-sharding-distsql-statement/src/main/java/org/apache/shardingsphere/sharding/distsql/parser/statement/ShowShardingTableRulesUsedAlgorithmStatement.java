@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.distsql.parser.statement;
 
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStatement;
 import org.apache.shardingsphere.distsql.parser.subject.impl.ShardingSubjectSupplier;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 
 import java.util.Optional;
 
@@ -30,8 +30,8 @@ public final class ShowShardingTableRulesUsedAlgorithmStatement extends ShowRule
     
     private final String algorithmName;
     
-    public ShowShardingTableRulesUsedAlgorithmStatement(final String algorithmName, final SchemaSegment schema) {
-        super(schema);
+    public ShowShardingTableRulesUsedAlgorithmStatement(final String algorithmName, final DatabaseSegment database) {
+        super(database);
         this.algorithmName = algorithmName;
     }
     

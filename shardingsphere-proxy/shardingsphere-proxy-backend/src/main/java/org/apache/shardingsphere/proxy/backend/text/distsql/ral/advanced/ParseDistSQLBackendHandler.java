@@ -22,7 +22,6 @@ import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.ParseStatement;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -68,8 +67,7 @@ public final class ParseDistSQLBackendHandler extends QueryableRALBackendHandler
         Preconditions.checkState(sqlParserRule.isPresent());
         SQLStatement parsedSqlStatement;
         try {
-            parsedSqlStatement = new ShardingSphereSQLParserEngine(
-                    getStorageType(databaseType, connectionSession).getType(), sqlParserRule.get().toParserConfiguration()).parse(sqlStatement.getSql(), false);
+            parsedSqlStatement = sqlParserRule.get().getSQLParserEngine(getStorageType(databaseType, connectionSession).getType()).parse(sqlStatement.getSql(), false);
         } catch (SQLParsingException ex) {
             throw new SQLParsingException("You have a syntax error in your parsed statement");
         }
@@ -80,6 +78,6 @@ public final class ParseDistSQLBackendHandler extends QueryableRALBackendHandler
         String databaseName = connectionSession.getDatabaseName();
         return Strings.isNullOrEmpty(databaseName) || !ProxyContext.getInstance().databaseExists(databaseName)
                 ? defaultDatabaseType
-                : ProxyContext.getInstance().getContextManager().getMetaDataContexts().getDatabaseMetaData(databaseName).getResource().getDatabaseType();
+                : ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases().get(databaseName).getResource().getDatabaseType();
     }
 }

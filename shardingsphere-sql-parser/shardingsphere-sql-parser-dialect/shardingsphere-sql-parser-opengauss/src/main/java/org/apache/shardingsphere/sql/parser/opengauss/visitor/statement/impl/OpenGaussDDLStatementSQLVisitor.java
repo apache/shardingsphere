@@ -40,6 +40,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Alt
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterSchemaContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterSequenceContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterSynonymContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterDirectoryContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterTableActionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterTablespaceContext;
@@ -51,6 +52,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Clo
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.ColumnConstraintContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.ColumnDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CommentContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CreateCastContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CreateConversionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CreateDatabaseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CreateDefinitionClauseContext;
@@ -88,6 +90,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Dro
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropSchemaContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropSequenceContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropSynonymContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropDirectoryContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropTablespaceContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropViewContext;
@@ -154,6 +157,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussAlterSchemaStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussAlterSequenceStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussAlterSynonymStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussAlterDirectoryStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussAlterTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussAlterTablespaceStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussAlterTextSearchStatement;
@@ -161,6 +165,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCloseStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCommentStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateConversionStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateCastStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateDomainStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateExtensionStatement;
@@ -192,6 +197,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropSchemaStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropSequenceStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropSynonymStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropDirectoryStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropTablespaceStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropViewStatement;
@@ -657,6 +663,11 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
     }
     
     @Override
+    public ASTNode visitDropDirectory(final DropDirectoryContext ctx) {
+        return new OpenGaussDropDirectoryStatement();
+    }
+    
+    @Override
     public ASTNode visitPrepare(final PrepareContext ctx) {
         OpenGaussPrepareStatement result = new OpenGaussPrepareStatement();
         if (null != ctx.preparableStmt().select()) {
@@ -779,6 +790,11 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
     }
     
     @Override
+    public ASTNode visitAlterDirectory(final AlterDirectoryContext ctx) {
+        return new OpenGaussAlterDirectoryStatement();
+    }
+    
+    @Override
     public ASTNode visitDropLanguage(final DropLanguageContext ctx) {
         return new OpenGaussDropLanguageStatement();
     }
@@ -786,6 +802,11 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
     @Override
     public ASTNode visitCreateConversion(final CreateConversionContext ctx) {
         return new OpenGaussCreateConversionStatement();
+    }
+    
+    @Override
+    public ASTNode visitCreateCast(final CreateCastContext ctx) {
+        return new OpenGaussCreateCastStatement();
     }
     
     @Override

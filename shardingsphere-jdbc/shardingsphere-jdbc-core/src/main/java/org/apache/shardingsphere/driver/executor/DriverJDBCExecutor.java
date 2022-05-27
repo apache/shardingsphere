@@ -57,7 +57,7 @@ public final class DriverJDBCExecutor {
         this.databaseName = databaseName;
         this.metaDataContexts = metaDataContexts;
         this.jdbcExecutor = jdbcExecutor;
-        metadataRefreshEngine = new MetaDataRefreshEngine(metaDataContexts.getDatabaseMetaData(databaseName),
+        metadataRefreshEngine = new MetaDataRefreshEngine(metaDataContexts.getMetaData().getDatabases().get(databaseName),
                 metaDataContexts.getOptimizerContext().getFederationMetaData().getDatabases().get(databaseName),
                 metaDataContexts.getOptimizerContext().getPlannerContexts(), metaDataContexts.getMetaData().getProps());
     }
@@ -99,7 +99,7 @@ public final class DriverJDBCExecutor {
             ExecuteProcessEngine.initialize(logicSQL, executionGroupContext, metaDataContexts.getMetaData().getProps());
             SQLStatementContext<?> sqlStatementContext = logicSQL.getSqlStatementContext();
             List<Integer> results = doExecute(executionGroupContext, sqlStatementContext, routeUnits, callback);
-            int result = isNeedAccumulate(metaDataContexts.getDatabaseMetaData(databaseName).getRuleMetaData().getRules(), sqlStatementContext) ? accumulate(results) : results.get(0);
+            int result = isNeedAccumulate(metaDataContexts.getMetaData().getDatabases().get(databaseName).getRuleMetaData().getRules(), sqlStatementContext) ? accumulate(results) : results.get(0);
             ExecuteProcessEngine.finish(executionGroupContext.getExecutionID());
             return result;
         } finally {

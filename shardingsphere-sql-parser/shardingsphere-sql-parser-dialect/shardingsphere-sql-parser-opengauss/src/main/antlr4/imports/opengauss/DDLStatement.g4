@@ -128,6 +128,10 @@ dropDatabase
     : DROP DATABASE existClause? name
     ;
 
+dropDirectory
+    : DROP DIRECTORY existClause? directoryName
+    ;
+
 createDatabaseSpecification
     :  createdbOptName EQ_? (signedIconst | booleanOrString | DEFAULT)
     ;
@@ -728,6 +732,10 @@ alterSynonym
     : ALTER SYNONYM synonymName OWNER TO owner
     ;
 
+alterDirectory
+    : ALTER DIRECTORY directoryName OWNER TO owner
+    ;
+
 alterConversion
     : ALTER CONVERSION anyName alterConversionClause
     ;
@@ -1288,14 +1296,15 @@ oldAggrElem
     ;
 
 createCast
-    : CREATE CAST LP_ typeName AS typeName RP_
-    ( WITH FUNCTION functionWithArgtypes castContext?
-    | WITHOUT FUNCTION castContext?
-    | WITH INOUT castContext?)
+    : CREATE CAST LP_ typeName AS typeName RP_ (
+    | WITH FUNCTION (funcName | dataTypeName) funcArgs
+    | WITHOUT FUNCTION
+    | WITH INOUT 
+    ) castContext?
     ;
 
 castContext
-    : AS IMPLICIT | AS ASSIGNMENT
+    : AS (ASSIGNMENT | IMPLICIT)
     ;
 
 createCollation

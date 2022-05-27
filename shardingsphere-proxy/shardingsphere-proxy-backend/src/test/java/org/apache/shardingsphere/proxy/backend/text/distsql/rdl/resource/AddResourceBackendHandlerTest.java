@@ -88,8 +88,7 @@ public final class AddResourceBackendHandlerTest extends ProxyContextRestorer {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
-        when(metaDataContexts.getAllDatabaseNames()).thenReturn(Collections.singleton("test_db"));
-        when(metaDataContexts.getDatabaseMetaData("test_db")).thenReturn(database);
+        when(metaDataContexts.getMetaData().getDatabases()).thenReturn(Collections.singletonMap("test_db", database));
         when(database.getResource()).thenReturn(resource);
         when(resource.getDataSources()).thenReturn(Collections.emptyMap());
         ResponseHeader responseHeader = addResourceBackendHandler.execute("test_db", createAddResourceStatement());
@@ -101,8 +100,7 @@ public final class AddResourceBackendHandlerTest extends ProxyContextRestorer {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
-        when(metaDataContexts.getAllDatabaseNames()).thenReturn(Collections.singleton("test_db"));
-        when(metaDataContexts.getDatabaseMetaData("test_db")).thenReturn(database);
+        when(metaDataContexts.getMetaData().getDatabases()).thenReturn(Collections.singletonMap("test_db", database));
         when(database.getResource()).thenReturn(resource);
         when(resource.getDataSources()).thenReturn(Collections.emptyMap());
         addResourceBackendHandler.execute("test_db", createAlterResourceStatementWithDuplicateResourceNames());

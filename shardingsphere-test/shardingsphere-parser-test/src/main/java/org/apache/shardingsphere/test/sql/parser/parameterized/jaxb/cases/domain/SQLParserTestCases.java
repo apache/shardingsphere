@@ -118,6 +118,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterServiceStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterSessionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterSynonymStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterDirectoryStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterSystemStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterTextSearchStatementTestCase;
@@ -130,6 +131,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CommentStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateContextStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateConversionStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateCastStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateDatabaseLinkStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateDatabaseStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateDimensionStatementTestCase;
@@ -212,6 +214,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.RenameStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.RenameTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.TruncateStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateControlFileStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AddShardingHintDatabaseValueStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AddShardingHintTableValueStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AlterInstanceStatementTestCase;
@@ -574,6 +577,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "alter-synonym")
     private final List<AlterSynonymStatementTestCase> alterSynonymTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "alter-directory")
+    private final List<AlterDirectoryStatementTestCase> alterDirectoryTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-system")
     private final List<AlterSystemStatementTestCase> alterSystemTestCases = new LinkedList<>();
@@ -1202,6 +1208,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "create-conversion")
     private final List<CreateConversionStatementTestCase> createConversionTestCases = new LinkedList<>();
     
+    @XmlElement(name = "create-cast")
+    private final List<CreateCastStatementTestCase> createCastTestCases = new LinkedList<>();
+    
     @XmlElement(name = "drop-conversion")
     private final List<DropConversionStatementTestCase> dropConversionTestCases = new LinkedList<>();
     
@@ -1349,6 +1358,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "create-pfile")
     private final List<CreatePFileStatementTestCase> createPFileTestCases = new LinkedList<>();
     
+    @XmlElement(name = "create-control-file")
+    private final List<CreateControlFileStatementTestCase> createControlFileTestCases = new LinkedList<>();
+    
     @XmlElement(name = "cursor")
     private final List<CursorStatementTestCase> cursorTestCases = new LinkedList<>();
     
@@ -1433,6 +1445,7 @@ public final class SQLParserTestCases {
         putAll(alterServerTestCases, result);
         putAll(alterSessionTestCases, result);
         putAll(alterSynonymTestCases, result);
+        putAll(alterDirectoryTestCases, result);
         putAll(alterSystemTestCases, result);
         putAll(alterProcedureTestCases, result);
         putAll(alterDatabaseTestCases, result);
@@ -1636,6 +1649,7 @@ public final class SQLParserTestCases {
         putAll(alterSQLParserRuleTestCases, result);
         putAll(createTypeTestCases, result);
         putAll(createConversionTestCases, result);
+        putAll(createCastTestCases, result);
         putAll(dropConversionTestCases, result);
         putAll(alterDomainTestCases, result);
         putAll(alterAggregateTestCases, result);
@@ -1699,6 +1713,7 @@ public final class SQLParserTestCases {
         putAll(createContextTestCases, result);
         putAll(createSPFileTestCases, result);
         putAll(createPFileTestCases, result);
+        putAll(createControlFileTestCases, result);
         putAll(cursorTestCases, result);
         putAll(closeTestCases, result);
         putAll(moveTestCases, result);

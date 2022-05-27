@@ -83,8 +83,7 @@ public final class DropResourceBackendHandlerTest extends ProxyContextRestorer {
     @Before
     public void setUp() throws Exception {
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
-        when(metaDataContexts.getAllDatabaseNames()).thenReturn(Collections.singleton("test"));
-        when(metaDataContexts.getDatabaseMetaData("test")).thenReturn(database);
+        when(metaDataContexts.getMetaData().getDatabases()).thenReturn(Collections.singletonMap("test", database));
         when(database.getRuleMetaData()).thenReturn(ruleMetaData);
         when(database.getResource()).thenReturn(resource);
         contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);

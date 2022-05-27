@@ -47,10 +47,10 @@ public final class FrontDatabaseProtocolTypeFactory {
             return configuredDatabaseType.get();
         }
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        if (metaDataContexts.getMetaData().getDatabaseMap().isEmpty()) {
+        if (metaDataContexts.getMetaData().getDatabases().isEmpty()) {
             return DatabaseTypeEngine.getTrunkDatabaseType(DEFAULT_FRONTEND_DATABASE_PROTOCOL_TYPE);
         }
-        Optional<ShardingSphereDatabase> database = metaDataContexts.getMetaData().getDatabaseMap().values().stream().filter(ShardingSphereDatabase::isComplete).findFirst();
+        Optional<ShardingSphereDatabase> database = metaDataContexts.getMetaData().getDatabases().values().stream().filter(ShardingSphereDatabase::isComplete).findFirst();
         return database.isPresent() ? database.get().getResource().getDatabaseType() : DatabaseTypeEngine.getTrunkDatabaseType(DEFAULT_FRONTEND_DATABASE_PROTOCOL_TYPE);
     }
     

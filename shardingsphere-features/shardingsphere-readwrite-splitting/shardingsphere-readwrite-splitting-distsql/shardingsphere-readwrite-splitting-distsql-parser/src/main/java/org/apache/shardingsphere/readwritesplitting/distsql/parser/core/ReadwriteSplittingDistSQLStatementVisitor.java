@@ -47,7 +47,7 @@ import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.hin
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.hint.ShowReadwriteSplittingHintStatusStatement;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Objects;
@@ -76,19 +76,19 @@ public final class ReadwriteSplittingDistSQLStatementVisitor extends ReadwriteSp
     
     @Override
     public ASTNode visitEnableReadDataSource(final EnableReadDataSourceContext ctx) {
-        SchemaSegment schemaSegment = Objects.nonNull(ctx.schemaName()) ? (SchemaSegment) visit(ctx.schemaName()) : null;
+        DatabaseSegment schemaSegment = Objects.nonNull(ctx.schemaName()) ? (DatabaseSegment) visit(ctx.schemaName()) : null;
         return new SetReadwriteSplittingStatusStatement(ctx.ENABLE().getText().toUpperCase(), getIdentifierValue(ctx.resourceName()), schemaSegment);
     }
     
     @Override
     public ASTNode visitDisableReadDataSource(final DisableReadDataSourceContext ctx) {
-        SchemaSegment schemaSegment = Objects.nonNull(ctx.schemaName()) ? (SchemaSegment) visit(ctx.schemaName()) : null;
+        DatabaseSegment schemaSegment = Objects.nonNull(ctx.schemaName()) ? (DatabaseSegment) visit(ctx.schemaName()) : null;
         return new SetReadwriteSplittingStatusStatement(ctx.DISABLE().getText().toUpperCase(), getIdentifierValue(ctx.resourceName()), schemaSegment);
     }
     
     @Override
     public ASTNode visitShowReadwriteSplittingRules(final ShowReadwriteSplittingRulesContext ctx) {
-        return new ShowReadwriteSplittingRulesStatement(Objects.nonNull(ctx.schemaName()) ? (SchemaSegment) visit(ctx.schemaName()) : null);
+        return new ShowReadwriteSplittingRulesStatement(Objects.nonNull(ctx.schemaName()) ? (DatabaseSegment) visit(ctx.schemaName()) : null);
     }
     
     @Override
@@ -114,7 +114,7 @@ public final class ReadwriteSplittingDistSQLStatementVisitor extends ReadwriteSp
     
     @Override
     public ASTNode visitSchemaName(final SchemaNameContext ctx) {
-        return new SchemaSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), new IdentifierValue(ctx.getText()));
+        return new DatabaseSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), new IdentifierValue(ctx.getText()));
     }
     
     @Override
@@ -124,7 +124,7 @@ public final class ReadwriteSplittingDistSQLStatementVisitor extends ReadwriteSp
     
     @Override
     public ASTNode visitShowReadwriteSplittingReadResources(final ShowReadwriteSplittingReadResourcesContext ctx) {
-        return new ShowReadwriteSplittingReadResourcesStatement(Objects.nonNull(ctx.schemaName()) ? (SchemaSegment) visit(ctx.schemaName()) : null);
+        return new ShowReadwriteSplittingReadResourcesStatement(Objects.nonNull(ctx.schemaName()) ? (DatabaseSegment) visit(ctx.schemaName()) : null);
     }
     
     @Override

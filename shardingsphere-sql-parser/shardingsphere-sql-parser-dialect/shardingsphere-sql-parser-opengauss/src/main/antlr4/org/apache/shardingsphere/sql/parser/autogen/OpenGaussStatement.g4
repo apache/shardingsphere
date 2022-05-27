@@ -124,5 +124,8 @@ execute
     | move
     | fetch
     | createDirectory
+    | alterDirectory
+    | dropDirectory
+    | createCast
     ) SEMI_? EOF
     ;

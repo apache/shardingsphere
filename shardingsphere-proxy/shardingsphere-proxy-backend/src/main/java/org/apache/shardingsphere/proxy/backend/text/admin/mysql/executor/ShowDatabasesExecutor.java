@@ -74,7 +74,7 @@ public final class ShowDatabasesExecutor implements DatabaseAdminQueryExecutor {
     
     private Collection<ShardingSphereRule> getRules(final String schemaName) {
         Collection<ShardingSphereRule> result;
-        result = new LinkedList<>(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getDatabaseMetaData(schemaName).getRuleMetaData().getRules());
+        result = new LinkedList<>(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases().get(schemaName).getRuleMetaData().getRules());
         result.addAll(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules());
         return result;
     }

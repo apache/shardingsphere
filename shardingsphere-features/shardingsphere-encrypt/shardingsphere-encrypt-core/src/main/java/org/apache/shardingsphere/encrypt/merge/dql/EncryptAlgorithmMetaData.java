@@ -40,8 +40,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public final class EncryptAlgorithmMetaData {
     
-    private final String databaseName;
-    
     private final ShardingSphereDatabase database;
     
     private final EncryptRule encryptRule;
@@ -86,7 +84,7 @@ public final class EncryptAlgorithmMetaData {
         Map<String, String> expressionTableNames = tablesContext.findTableNamesByColumnProjection(
                 Collections.singletonList(columnProjection.get()), database.getSchemas().get(schemaName));
         Optional<String> tableName = findTableName(columnProjection.get(), expressionTableNames);
-        return tableName.map(optional -> EncryptContextBuilder.build(databaseName, schemaName, optional, columnProjection.get().getName(), encryptRule));
+        return tableName.map(optional -> EncryptContextBuilder.build(database.getName(), schemaName, optional, columnProjection.get().getName(), encryptRule));
     }
     
     private Optional<ColumnProjection> findColumnProjection(final int columnIndex) {

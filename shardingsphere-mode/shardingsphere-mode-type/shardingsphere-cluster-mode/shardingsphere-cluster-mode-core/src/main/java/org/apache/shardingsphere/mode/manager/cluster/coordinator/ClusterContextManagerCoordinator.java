@@ -179,7 +179,7 @@ public final class ClusterContextManagerCoordinator {
     @Subscribe
     public synchronized void renew(final DisabledStateChangedEvent event) {
         QualifiedDatabase qualifiedDatabase = event.getQualifiedSchema();
-        contextManager.getMetaDataContexts().getMetaData().getDatabaseMap().get(qualifiedDatabase.getDatabaseName()).getRuleMetaData().getRules()
+        contextManager.getMetaDataContexts().getMetaData().getDatabases().get(qualifiedDatabase.getDatabaseName()).getRuleMetaData().getRules()
                 .stream().filter(each -> each instanceof StatusContainedRule)
                 .forEach(each -> ((StatusContainedRule) each).updateStatus(new DataSourceNameDisabledEvent(qualifiedDatabase, event.isDisabled())));
     }
@@ -192,7 +192,7 @@ public final class ClusterContextManagerCoordinator {
     @Subscribe
     public synchronized void renew(final PrimaryStateChangedEvent event) {
         QualifiedDatabase qualifiedDatabase = event.getQualifiedDatabase();
-        contextManager.getMetaDataContexts().getMetaData().getDatabaseMap().get(qualifiedDatabase.getDatabaseName()).getRuleMetaData().getRules()
+        contextManager.getMetaDataContexts().getMetaData().getDatabases().get(qualifiedDatabase.getDatabaseName()).getRuleMetaData().getRules()
                 .stream()
                 .filter(each -> each instanceof StatusContainedRule)
                 .forEach(each -> ((StatusContainedRule) each)
@@ -238,6 +238,7 @@ public final class ClusterContextManagerCoordinator {
      */
     @Subscribe
     public synchronized void renew(final LabelsEvent event) {
+        // TODO labels may be empty
         contextManager.getInstanceContext().updateLabel(event.getInstanceId(), event.getLabels());
     }
     
@@ -248,8 +249,7 @@ public final class ClusterContextManagerCoordinator {
      */
     @Subscribe
     public synchronized void renew(final XaRecoveryIdEvent event) {
-        if (contextManager.getInstanceContext().getInstance().getInstanceDefinition().getInstanceId().getId().equals(event.getInstanceId())) {
-            contextManager.getInstanceContext().updateXaRecoveryId(event.getXaRecoveryId());
+        if (contextManager.getInstanceContext().updateXaRecoveryId(event.getInstanceId(), event.getXaRecoveryId())) {
             contextManager.renewAllTransactionContext();
         }
     }
@@ -261,7 +261,7 @@ public final class ClusterContextManagerCoordinator {
      */
     @Subscribe
     public synchronized void renew(final InstanceOnlineEvent event) {
-        ComputeNodeInstance instance = metaDataPersistService.getComputeNodePersistService().loadComputeNodeInstance(event.getInstanceDefinition());
+        ComputeNodeInstance instance = new ComputeNodeInstance(event.getInstanceDefinition());
         contextManager.getInstanceContext().addComputeNodeInstance(instance);
     }
     
@@ -272,7 +272,7 @@ public final class ClusterContextManagerCoordinator {
      */
     @Subscribe
     public synchronized void renew(final InstanceOfflineEvent event) {
-        contextManager.getInstanceContext().deleteComputeNodeInstance(metaDataPersistService.getComputeNodePersistService().loadComputeNodeInstance(event.getInstanceDefinition()));
+        contextManager.getInstanceContext().deleteComputeNodeInstance(new ComputeNodeInstance(event.getInstanceDefinition()));
     }
     
     /**
@@ -319,7 +319,7 @@ public final class ClusterContextManagerCoordinator {
     }
     
     private void buildSpecialRules() {
-        contextManager.getMetaDataContexts().getMetaData().getDatabaseMap().forEach((key, value) -> value.getRuleMetaData().getRules().forEach(each -> {
+        contextManager.getMetaDataContexts().getMetaData().getDatabases().forEach((key, value) -> value.getRuleMetaData().getRules().forEach(each -> {
             if (each instanceof StatusContainedRule) {
                 disableDataSources((StatusContainedRule) each);
             }
