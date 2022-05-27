@@ -22,7 +22,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropCastSta
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 
 /**
- * OpenGauss drop cast  statement.
+ * OpenGauss drop cast statement.
  */
 @ToString
 public final class OpenGaussDropCastStatement extends DropCastStatement implements OpenGaussStatement {
