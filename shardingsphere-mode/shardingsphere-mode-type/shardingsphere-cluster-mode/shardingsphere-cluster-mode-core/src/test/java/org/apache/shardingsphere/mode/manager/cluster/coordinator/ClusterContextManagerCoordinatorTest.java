@@ -40,8 +40,8 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.StatusContainedRule;
@@ -139,12 +139,12 @@ public final class ClusterContextManagerCoordinatorTest {
                 .globalRuleConfigs(Collections.emptyList()).props(new Properties()).instanceDefinition(new InstanceDefinition(InstanceType.PROXY, 3307)).build());
         assertTrue(contextManager.getMetaDataContexts().getPersistService().isPresent());
         contextManager.renewMetaDataContexts(new MetaDataContexts(contextManager.getMetaDataContexts().getPersistService().get(),
-                new ShardingSphereMetaData(createDatabaseMap(), globalRuleMetaData, new ConfigurationProperties(new Properties())), createOptimizerContext()));
+                new ShardingSphereMetaData(createDatabases(), globalRuleMetaData, new ConfigurationProperties(new Properties())), createOptimizerContext()));
         contextManager.renewTransactionContexts(mock(TransactionContexts.class, RETURNS_DEEP_STUBS));
         coordinator = new ClusterContextManagerCoordinator(metaDataPersistService, contextManager, new RegistryCenter(mock(ClusterPersistRepository.class)));
     }
     
-    private Map<String, ShardingSphereDatabase> createDatabaseMap() {
+    private Map<String, ShardingSphereDatabase> createDatabases() {
         when(database.getName()).thenReturn("db");
         ShardingSphereResource resource = mock(ShardingSphereResource.class);
         when(resource.getDatabaseType()).thenReturn(new MySQLDatabaseType());
@@ -167,7 +167,7 @@ public final class ClusterContextManagerCoordinatorTest {
         when(metaDataPersistService.getDataSourceService().load("db_add")).thenReturn(getDataSourcePropertiesMap());
         when(metaDataPersistService.getDatabaseRulePersistService().load("db_add")).thenReturn(Collections.emptyList());
         coordinator.renew(new DatabaseAddedEvent("db_add"));
-        assertNotNull(contextManager.getMetaDataContexts().getDatabase("db_add").getResource().getDataSources());
+        assertNotNull(contextManager.getMetaDataContexts().getMetaData().getDatabases().get("db_add").getResource().getDataSources());
     }
     
     private Map<String, DataSourceProperties> getDataSourcePropertiesMap() {
@@ -182,7 +182,7 @@ public final class ClusterContextManagerCoordinatorTest {
     @Test
     public void assertSchemaDelete() {
         coordinator.renew(new DatabaseDeletedEvent("db"));
-        assertNull(contextManager.getMetaDataContexts().getDatabase("db"));
+        assertNull(contextManager.getMetaDataContexts().getMetaData().getDatabases().get("db"));
     }
     
     @Test
@@ -195,26 +195,26 @@ public final class ClusterContextManagerCoordinatorTest {
     
     @Test
     public void assertSchemaAdd() {
-        when(contextManager.getMetaDataContexts().getDatabase("db").getSchemas().get("foo_schema")).thenReturn(null);
+        when(contextManager.getMetaDataContexts().getMetaData().getDatabases().get("db").getSchemas().get("foo_schema")).thenReturn(null);
         coordinator.renew(new SchemaAddedEvent("db", "foo_schema"));
-        verify(contextManager.getMetaDataContexts().getDatabase("db").getSchemas()).put(argThat(argument -> argument.equals("foo_schema")), any(ShardingSphereSchema.class));
+        verify(contextManager.getMetaDataContexts().getMetaData().getDatabases().get("db").getSchemas()).put(argThat(argument -> argument.equals("foo_schema")), any(ShardingSphereSchema.class));
     }
     
     @Test
     public void assertSchemaChanged() {
-        TableMetaData changedTableMetaData = new TableMetaData("t_order", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        ShardingSphereTable changedTableMetaData = new ShardingSphereTable("t_order", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
         SchemaChangedEvent event = new SchemaChangedEvent("db", "db", changedTableMetaData, null);
         coordinator.renew(event);
         assertTrue(contextManager.getMetaDataContexts().getMetaData().getDatabases().containsKey("db"));
-        verify(contextManager.getMetaDataContexts().getDatabase("db").getSchemas().get("db")).put("t_order", event.getChangedTableMetaData());
+        verify(contextManager.getMetaDataContexts().getMetaData().getDatabases().get("db").getSchemas().get("db")).put("t_order", event.getChangedTableMetaData());
     }
     
     @Test
     public void assertRuleConfigurationsChanged() {
         when(metaDataPersistService.getDatabaseVersionPersistService().isActiveVersion("db", "0")).thenReturn(true);
-        assertThat(contextManager.getMetaDataContexts().getDatabase("db"), is(database));
+        assertThat(contextManager.getMetaDataContexts().getMetaData().getDatabases().get("db"), is(database));
         coordinator.renew(new RuleConfigurationsChangedEvent("db", "0", Collections.emptyList()));
-        assertThat(contextManager.getMetaDataContexts().getDatabase("db"), not(database));
+        assertThat(contextManager.getMetaDataContexts().getMetaData().getDatabases().get("db"), not(database));
     }
     
     @Test
@@ -231,7 +231,7 @@ public final class ClusterContextManagerCoordinatorTest {
     public void assertDataSourceChanged() {
         when(metaDataPersistService.getDatabaseVersionPersistService().isActiveVersion("db", "0")).thenReturn(true);
         coordinator.renew(new DataSourceChangedEvent("db", "0", getChangedDataSourcePropertiesMap()));
-        assertTrue(contextManager.getMetaDataContexts().getDatabase("db").getResource().getDataSources().containsKey("ds_2"));
+        assertTrue(contextManager.getMetaDataContexts().getMetaData().getDatabases().get("db").getResource().getDataSources().containsKey("ds_2"));
     }
     
     private Map<String, DataSourceProperties> getChangedDataSourcePropertiesMap() {
@@ -335,13 +335,11 @@ public final class ClusterContextManagerCoordinatorTest {
     @Test
     public void assertRenewInstanceOnlineEvent() {
         InstanceDefinition instanceDefinition1 = new InstanceDefinition(InstanceType.PROXY, "online_instance_id@1");
-        InstanceDefinition instanceDefinition2 = new InstanceDefinition(InstanceType.PROXY, "online_instance_id@2");
-        when(metaDataPersistService.getComputeNodePersistService().loadComputeNodeInstance(instanceDefinition1)).thenReturn(new ComputeNodeInstance(instanceDefinition1));
-        when(metaDataPersistService.getComputeNodePersistService().loadComputeNodeInstance(instanceDefinition2)).thenReturn(new ComputeNodeInstance(instanceDefinition2));
         InstanceOnlineEvent instanceOnlineEvent1 = new InstanceOnlineEvent(instanceDefinition1);
         coordinator.renew(instanceOnlineEvent1);
         assertThat(contextManager.getInstanceContext().getComputeNodeInstances().size(), is(1));
         assertThat(((LinkedList<ComputeNodeInstance>) contextManager.getInstanceContext().getComputeNodeInstances()).get(0).getInstanceDefinition(), is(instanceDefinition1));
+        InstanceDefinition instanceDefinition2 = new InstanceDefinition(InstanceType.PROXY, "online_instance_id@2");
         InstanceOnlineEvent instanceOnlineEvent2 = new InstanceOnlineEvent(instanceDefinition2);
         coordinator.renew(instanceOnlineEvent2);
         assertThat(contextManager.getInstanceContext().getComputeNodeInstances().size(), is(2));

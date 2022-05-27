@@ -32,8 +32,8 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
@@ -109,22 +109,21 @@ public final class PostgreSQLComDescribeExecutorTest extends ProxyContextRestore
         ProxyContext.init(contextManager);
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
         when(connectionSession.getDatabaseName()).thenReturn(DATABASE_NAME);
-        when(contextManager.getMetaDataContexts().getMetaData().getDatabases().containsKey(DATABASE_NAME)).thenReturn(true);
-        when(contextManager.getMetaDataContexts().getMetaData().getDatabases().get(DATABASE_NAME)).thenReturn(mock(ShardingSphereDatabase.class));
-        when(contextManager.getMetaDataContexts().getDatabase(any(String.class)).getRuleMetaData().findSingleRule(SQLTranslatorRule.class))
-                .thenReturn(Optional.of(new SQLTranslatorRule(new SQLTranslatorRuleConfiguration())));
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getRuleMetaData().findSingleRule(SQLTranslatorRule.class)).thenReturn(Optional.of(new SQLTranslatorRule(new SQLTranslatorRuleConfiguration())));
+        when(contextManager.getMetaDataContexts().getMetaData().getDatabases()).thenReturn(Collections.singletonMap(DATABASE_NAME, database));
         prepareTableMetaData();
     }
     
     private void prepareTableMetaData() {
-        Collection<ColumnMetaData> columnMetaData = Arrays.asList(
-                new ColumnMetaData("id", Types.INTEGER, true, false, false),
-                new ColumnMetaData("k", Types.INTEGER, true, false, false),
-                new ColumnMetaData("c", Types.CHAR, true, false, false),
-                new ColumnMetaData("pad", Types.CHAR, true, false, false));
-        TableMetaData tableMetaData = new TableMetaData(TABLE_NAME, columnMetaData, Collections.emptyList(), Collections.emptyList());
-        when(contextManager.getMetaDataContexts().getDatabase(DATABASE_NAME).getSchemas().get("public").get(TABLE_NAME)).thenReturn(tableMetaData);
-        when(contextManager.getMetaDataContexts().getDatabase(DATABASE_NAME).getResource().getDatabaseType()).thenReturn(new PostgreSQLDatabaseType());
+        Collection<ShardingSphereColumn> columnMetaData = Arrays.asList(
+                new ShardingSphereColumn("id", Types.INTEGER, true, false, false),
+                new ShardingSphereColumn("k", Types.INTEGER, true, false, false),
+                new ShardingSphereColumn("c", Types.CHAR, true, false, false),
+                new ShardingSphereColumn("pad", Types.CHAR, true, false, false));
+        ShardingSphereTable table = new ShardingSphereTable(TABLE_NAME, columnMetaData, Collections.emptyList(), Collections.emptyList());
+        when(contextManager.getMetaDataContexts().getMetaData().getDatabases().get(DATABASE_NAME).getSchemas().get("public").get(TABLE_NAME)).thenReturn(table);
+        when(contextManager.getMetaDataContexts().getMetaData().getDatabases().get(DATABASE_NAME).getResource().getDatabaseType()).thenReturn(new PostgreSQLDatabaseType());
     }
     
     @Test

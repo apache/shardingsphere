@@ -22,8 +22,8 @@ import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeaderBuilder;
@@ -46,8 +46,8 @@ public final class MySQLQueryHeaderBuilder implements QueryHeaderBuilder {
         boolean primaryKey;
         if (null != actualTableName && null != dataNodeContainedRule.get()) {
             tableName = dataNodeContainedRule.get().findLogicTableByActualTable(actualTableName).orElse("");
-            TableMetaData tableMetaData = database.getSchemas().get(schemaName).get(tableName);
-            primaryKey = null != tableMetaData && Optional.ofNullable(tableMetaData.getColumns().get(columnName.toLowerCase())).map(ColumnMetaData::isPrimaryKey).orElse(false);
+            ShardingSphereTable table = database.getSchemas().get(schemaName).get(tableName);
+            primaryKey = null != table && Optional.ofNullable(table.getColumns().get(columnName.toLowerCase())).map(ShardingSphereColumn::isPrimaryKey).orElse(false);
         } else {
             tableName = actualTableName;
             primaryKey = false;

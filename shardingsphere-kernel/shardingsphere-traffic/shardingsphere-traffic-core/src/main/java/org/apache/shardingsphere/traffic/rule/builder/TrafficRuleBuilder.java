@@ -32,7 +32,7 @@ import java.util.Map;
 public final class TrafficRuleBuilder implements GlobalRuleBuilder<TrafficRuleConfiguration> {
     
     @Override
-    public GlobalRule build(final TrafficRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databaseMap) {
+    public GlobalRule build(final TrafficRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases) {
         return new TrafficRule(ruleConfig);
     }
     

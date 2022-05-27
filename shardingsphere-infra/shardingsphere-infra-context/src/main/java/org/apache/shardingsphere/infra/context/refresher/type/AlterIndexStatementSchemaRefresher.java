@@ -24,10 +24,10 @@ import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereIndex;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.event.SchemaAlteredEvent;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.AlterIndexStatementHandler;
@@ -55,13 +55,13 @@ public final class AlterIndexStatementSchemaRefresher implements MetaDataRefresh
         String indexName = sqlStatement.getIndex().get().getIndexName().getIdentifier().getValue();
         Optional<String> logicTableName = findLogicTableName(database.getSchemas().get(actualSchemaName), indexName);
         if (logicTableName.isPresent()) {
-            TableMetaData tableMetaData = database.getSchemas().get(actualSchemaName).get(logicTableName.get());
-            Preconditions.checkNotNull(tableMetaData, "Can not get the table '%s' metadata!", logicTableName.get());
-            tableMetaData.getIndexes().remove(indexName);
+            ShardingSphereTable table = database.getSchemas().get(actualSchemaName).get(logicTableName.get());
+            Preconditions.checkNotNull(table, "Can not get the table '%s' metadata!", logicTableName.get());
+            table.getIndexes().remove(indexName);
             String renameIndexName = renameIndex.get().getIndexName().getIdentifier().getValue();
-            tableMetaData.getIndexes().put(renameIndexName, new IndexMetaData(renameIndexName));
+            table.getIndexes().put(renameIndexName, new ShardingSphereIndex(renameIndexName));
             SchemaAlteredEvent event = new SchemaAlteredEvent(database.getName(), actualSchemaName);
-            event.getAlteredTables().add(tableMetaData);
+            event.getAlteredTables().add(table);
             ShardingSphereEventBus.getInstance().post(event);
         }
     }

@@ -21,10 +21,10 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.database.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilder;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterials;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
@@ -118,11 +118,11 @@ public final class SingleTableSchemaBuilderTest {
                 Collections.emptyList(), new ConfigurationProperties(new Properties()));
     }
     
-    private void assertActualOfSingleTables(final Collection<TableMetaData> actual) {
-        Map<String, TableMetaData> tableMetaDataMap = actual.stream().collect(Collectors.toMap(TableMetaData::getName, v -> v));
-        assertTrue(tableMetaDataMap.containsKey(singleTableNames[0]));
-        assertFalse(tableMetaDataMap.get(singleTableNames[0]).getColumns().isEmpty());
-        assertTrue(tableMetaDataMap.containsKey(singleTableNames[1]));
-        assertFalse(tableMetaDataMap.get(singleTableNames[1]).getColumns().isEmpty());
+    private void assertActualOfSingleTables(final Collection<ShardingSphereTable> actual) {
+        Map<String, ShardingSphereTable> tables = actual.stream().collect(Collectors.toMap(ShardingSphereTable::getName, v -> v));
+        assertTrue(tables.containsKey(singleTableNames[0]));
+        assertFalse(tables.get(singleTableNames[0]).getColumns().isEmpty());
+        assertTrue(tables.containsKey(singleTableNames[1]));
+        assertFalse(tables.get(singleTableNames[1]).getColumns().isEmpty());
     }
 }

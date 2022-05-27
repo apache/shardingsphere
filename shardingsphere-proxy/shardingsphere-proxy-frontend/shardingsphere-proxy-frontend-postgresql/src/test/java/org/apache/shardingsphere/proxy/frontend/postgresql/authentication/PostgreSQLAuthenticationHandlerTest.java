@@ -36,7 +36,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -137,14 +137,14 @@ public final class PostgreSQLAuthenticationHandlerTest extends ProxyContextResto
     
     private MetaDataContexts getMetaDataContexts(final ShardingSphereUser user) {
         return new MetaDataContexts(mock(MetaDataPersistService.class),
-                new ShardingSphereMetaData(getDatabaseMap(), buildGlobalRuleMetaData(user), new ConfigurationProperties(new Properties())), mock(OptimizerContext.class));
+                new ShardingSphereMetaData(getDatabases(), buildGlobalRuleMetaData(user), new ConfigurationProperties(new Properties())), mock(OptimizerContext.class));
     }
     
     private ByteBuf createByteBuf(final int initialCapacity, final int maxCapacity) {
         return new UnpooledHeapByteBuf(UnpooledByteBufAllocator.DEFAULT, initialCapacity, maxCapacity);
     }
     
-    private Map<String, ShardingSphereDatabase> getDatabaseMap() {
+    private Map<String, ShardingSphereDatabase> getDatabases() {
         Map<String, ShardingSphereDatabase> result = new HashMap<>(10, 1);
         for (int i = 0; i < 10; i++) {
             ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);

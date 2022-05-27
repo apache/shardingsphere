@@ -31,3 +31,5 @@ DistSQL 细分为 RDL、RQL 和 RAL 三种类型。
 ## 注意事项
 
 DistSQL 只能用于 ShardingSphere-Proxy，ShardingSphere-JDBC 暂不提供。
+
+**源码：https://github.com/apache/shardingsphere/tree/master/shardingsphere-distsql**

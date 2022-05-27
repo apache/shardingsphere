@@ -71,7 +71,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         Optional<SQLParserRule> sqlParserRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().findSingleRule(SQLParserRule.class);
         Preconditions.checkState(sqlParserRule.isPresent());
         SQLStatement sqlStatement = sqlParserRule.get().getSQLParserEngine(
-                DatabaseTypeEngine.getTrunkDatabaseTypeName(metaDataContexts.getDatabase(connectionSession.getDatabaseName()).getProtocolType())).parse(packet.getSql(), true);
+                DatabaseTypeEngine.getTrunkDatabaseTypeName(metaDataContexts.getMetaData().getDatabases().get(connectionSession.getDatabaseName()).getProtocolType())).parse(packet.getSql(), true);
         if (!MySQLComStmtPrepareChecker.isStatementAllowed(sqlStatement)) {
             throw new UnsupportedPreparedStatementException();
         }
@@ -92,9 +92,9 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     
     private int getProjectionCount(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof SelectStatement) {
-            Map<String, ShardingSphereDatabase> databaseMap = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases();
+            Map<String, ShardingSphereDatabase> databases = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases();
             String databaseName = connectionSession.getDatabaseName();
-            SelectStatementContext sqlStatementContext = (SelectStatementContext) SQLStatementContextFactory.newInstance(databaseMap, sqlStatement, databaseName);
+            SelectStatementContext sqlStatementContext = (SelectStatementContext) SQLStatementContextFactory.newInstance(databases, sqlStatement, databaseName);
             return sqlStatementContext.getProjectionsContext().getExpandProjections().size();
         }
         return 0;

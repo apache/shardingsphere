@@ -20,10 +20,10 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryabl
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ShowTableMetadataStatement;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereIndex;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -35,6 +35,7 @@ import org.junit.Test;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -54,7 +55,6 @@ public final class ShowTableMetadataHandlerTest extends ProxyContextRestorer {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getSchemas().get("db_name")).thenReturn(new ShardingSphereSchema(createTableMap()));
         when(contextManager.getMetaDataContexts().getMetaData().getDatabases()).thenReturn(Collections.singletonMap("db_name", database));
-        when(contextManager.getMetaDataContexts().getDatabase("db_name")).thenReturn(database);
         ProxyContext.init(contextManager);
         ConnectionSession connectionSession = mock(ConnectionSession.class, RETURNS_DEEP_STUBS);
         when(connectionSession.getDatabaseName()).thenReturn("db_name");
@@ -76,11 +76,11 @@ public final class ShowTableMetadataHandlerTest extends ProxyContextRestorer {
         assertThat(data.get(3), is("primary"));
     }
     
-    private Map<String, TableMetaData> createTableMap() {
-        Map<String, TableMetaData> result = new HashMap<>();
-        List<ColumnMetaData> columns = Collections.singletonList(new ColumnMetaData("order_id", 0, false, false, false));
-        List<IndexMetaData> indexes = Collections.singletonList(new IndexMetaData("primary"));
-        result.put("t_order", new TableMetaData("t_order", columns, indexes, Collections.emptyList()));
+    private Map<String, ShardingSphereTable> createTableMap() {
+        Map<String, ShardingSphereTable> result = new HashMap<>();
+        Collection<ShardingSphereColumn> columns = Collections.singletonList(new ShardingSphereColumn("order_id", 0, false, false, false));
+        Collection<ShardingSphereIndex> indexes = Collections.singletonList(new ShardingSphereIndex("primary"));
+        result.put("t_order", new ShardingSphereTable("t_order", columns, indexes, Collections.emptyList()));
         return result;
     }
     

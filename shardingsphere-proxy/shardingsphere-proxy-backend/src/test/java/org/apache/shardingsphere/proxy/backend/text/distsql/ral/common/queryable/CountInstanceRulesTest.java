@@ -86,8 +86,6 @@ public final class CountInstanceRulesTest extends ProxyContextRestorer {
         databases.put("db_1", database1);
         databases.put("db_2", database2);
         when(contextManager.getMetaDataContexts().getMetaData().getDatabases()).thenReturn(databases);
-        when(contextManager.getMetaDataContexts().getDatabase("db_1")).thenReturn(database1);
-        when(contextManager.getMetaDataContexts().getDatabase("db_2")).thenReturn(database2);
         ProxyContext.init(contextManager);
     }
     

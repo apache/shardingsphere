@@ -59,12 +59,12 @@ public final class ShowDatabasesExecutorTest extends ProxyContextRestorer {
         showDatabasesExecutor = new ShowDatabasesExecutor(new MySQLShowDatabasesStatement());
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
-                new ShardingSphereMetaData(getDatabaseMap(), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())), mock(OptimizerContext.class));
+                new ShardingSphereMetaData(getDatabases(), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())), mock(OptimizerContext.class));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
     }
     
-    private Map<String, ShardingSphereDatabase> getDatabaseMap() {
+    private Map<String, ShardingSphereDatabase> getDatabases() {
         Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(10, 1);
         for (int i = 0; i < 10; i++) {
             ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);

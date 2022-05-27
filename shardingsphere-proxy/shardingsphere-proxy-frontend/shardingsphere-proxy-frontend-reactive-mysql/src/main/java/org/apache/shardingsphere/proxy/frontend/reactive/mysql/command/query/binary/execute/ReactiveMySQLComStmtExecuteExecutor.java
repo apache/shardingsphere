@@ -86,7 +86,7 @@ public final class ReactiveMySQLComStmtExecuteExecutor implements ReactiveComman
         Optional<SQLParserRule> sqlParserRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().findSingleRule(SQLParserRule.class);
         Preconditions.checkState(sqlParserRule.isPresent());
         SQLStatement sqlStatement = sqlParserRule.get().getSQLParserEngine(
-                DatabaseTypeEngine.getTrunkDatabaseTypeName(metaDataContexts.getDatabase(databaseName).getProtocolType())).parse(packet.getSql(), true);
+                DatabaseTypeEngine.getTrunkDatabaseTypeName(metaDataContexts.getMetaData().getDatabases().get(databaseName).getProtocolType())).parse(packet.getSql(), true);
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getMetaData().getDatabases(), packet.getParameters(),
                 sqlStatement, connectionSession.getDefaultDatabaseName());
         // TODO optimize SQLStatementDatabaseHolder
@@ -109,7 +109,7 @@ public final class ReactiveMySQLComStmtExecuteExecutor implements ReactiveComman
     
     private static Collection<ShardingSphereRule> getRules(final String schemaName) {
         Collection<ShardingSphereRule> result;
-        result = new LinkedList<>(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getDatabase(schemaName).getRuleMetaData().getRules());
+        result = new LinkedList<>(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases().get(schemaName).getRuleMetaData().getRules());
         result.addAll(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules());
         return result;
     }

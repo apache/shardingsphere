@@ -109,28 +109,28 @@ public final class SQLStatementContextFactory {
     /**
      * Create SQL statement context.
      *
-     * @param databaseMap database map
+     * @param databases databases
      * @param sqlStatement SQL statement
      * @param defaultDatabaseName default database name
      * @return SQL statement context
      */
-    public static SQLStatementContext<?> newInstance(final Map<String, ShardingSphereDatabase> databaseMap, final SQLStatement sqlStatement, final String defaultDatabaseName) {
-        return newInstance(databaseMap, Collections.emptyList(), sqlStatement, defaultDatabaseName);
+    public static SQLStatementContext<?> newInstance(final Map<String, ShardingSphereDatabase> databases, final SQLStatement sqlStatement, final String defaultDatabaseName) {
+        return newInstance(databases, Collections.emptyList(), sqlStatement, defaultDatabaseName);
     }
     
     /**
      * Create SQL statement context.
      *
-     * @param databaseMap database map
+     * @param databases databases
      * @param parameters SQL parameters
      * @param sqlStatement SQL statement
      * @param defaultDatabaseName default database name
      * @return SQL statement context
      */
-    public static SQLStatementContext<?> newInstance(final Map<String, ShardingSphereDatabase> databaseMap,
+    public static SQLStatementContext<?> newInstance(final Map<String, ShardingSphereDatabase> databases,
                                                      final List<Object> parameters, final SQLStatement sqlStatement, final String defaultDatabaseName) {
         if (sqlStatement instanceof DMLStatement) {
-            return getDMLStatementContext(databaseMap, parameters, (DMLStatement) sqlStatement, defaultDatabaseName);
+            return getDMLStatementContext(databases, parameters, (DMLStatement) sqlStatement, defaultDatabaseName);
         }
         if (sqlStatement instanceof DDLStatement) {
             return getDDLStatementContext((DDLStatement) sqlStatement);
@@ -144,10 +144,10 @@ public final class SQLStatementContextFactory {
         return new CommonSQLStatementContext<>(sqlStatement);
     }
     
-    private static SQLStatementContext<?> getDMLStatementContext(final Map<String, ShardingSphereDatabase> databaseMap,
+    private static SQLStatementContext<?> getDMLStatementContext(final Map<String, ShardingSphereDatabase> databases,
                                                                  final List<Object> parameters, final DMLStatement sqlStatement, final String defaultDatabaseName) {
         if (sqlStatement instanceof SelectStatement) {
-            return new SelectStatementContext(databaseMap, parameters, (SelectStatement) sqlStatement, defaultDatabaseName);
+            return new SelectStatementContext(databases, parameters, (SelectStatement) sqlStatement, defaultDatabaseName);
         }
         if (sqlStatement instanceof UpdateStatement) {
             return new UpdateStatementContext((UpdateStatement) sqlStatement);
@@ -156,7 +156,7 @@ public final class SQLStatementContextFactory {
             return new DeleteStatementContext((DeleteStatement) sqlStatement);
         }
         if (sqlStatement instanceof InsertStatement) {
-            return new InsertStatementContext(databaseMap, parameters, (InsertStatement) sqlStatement, defaultDatabaseName);
+            return new InsertStatementContext(databases, parameters, (InsertStatement) sqlStatement, defaultDatabaseName);
         }
         if (sqlStatement instanceof CallStatement) {
             return new CallStatementContext((CallStatement) sqlStatement);

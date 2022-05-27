@@ -105,7 +105,7 @@ public final class JDBCBackendConnectionTest extends ProxyContextRestorer {
     private void setContextManager() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
-                new ShardingSphereMetaData(createDatabaseMap(), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())), mock(OptimizerContext.class));
+                new ShardingSphereMetaData(createDatabases(), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())), mock(OptimizerContext.class));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         TransactionContexts transactionContexts = createTransactionContexts();
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
@@ -113,7 +113,7 @@ public final class JDBCBackendConnectionTest extends ProxyContextRestorer {
         ProxyContext.init(contextManager);
     }
     
-    private Map<String, ShardingSphereDatabase> createDatabaseMap() {
+    private Map<String, ShardingSphereDatabase> createDatabases() {
         Map<String, ShardingSphereDatabase> result = new HashMap<>(10, 1);
         for (int i = 0; i < 10; i++) {
             String name = String.format(SCHEMA_PATTERN, i);

@@ -238,6 +238,7 @@ public final class ClusterContextManagerCoordinator {
      */
     @Subscribe
     public synchronized void renew(final LabelsEvent event) {
+        // TODO labels may be empty
         contextManager.getInstanceContext().updateLabel(event.getInstanceId(), event.getLabels());
     }
     
@@ -260,8 +261,7 @@ public final class ClusterContextManagerCoordinator {
      */
     @Subscribe
     public synchronized void renew(final InstanceOnlineEvent event) {
-        ComputeNodeInstance instance = metaDataPersistService.getComputeNodePersistService().loadComputeNodeInstance(event.getInstanceDefinition());
-        contextManager.getInstanceContext().addComputeNodeInstance(instance);
+        contextManager.getInstanceContext().addComputeNodeInstance(registryCenter.getComputeNodeStatusService().loadComputeNodeInstance(event.getInstanceDefinition()));
     }
     
     /**
@@ -271,7 +271,7 @@ public final class ClusterContextManagerCoordinator {
      */
     @Subscribe
     public synchronized void renew(final InstanceOfflineEvent event) {
-        contextManager.getInstanceContext().deleteComputeNodeInstance(metaDataPersistService.getComputeNodePersistService().loadComputeNodeInstance(event.getInstanceDefinition()));
+        contextManager.getInstanceContext().deleteComputeNodeInstance(new ComputeNodeInstance(event.getInstanceDefinition()));
     }
     
     /**
