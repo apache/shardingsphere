@@ -60,10 +60,10 @@ public final class ShardingCreateIndexStatementValidatorTest {
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         sqlStatement.setIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
         when(database.getSchemas().get("public").containsTable("t_order")).thenReturn(true);
-        ShardingSphereTable tableMetaData = mock(ShardingSphereTable.class);
-        when(database.getSchemas().get("public").get("t_order")).thenReturn(tableMetaData);
+        ShardingSphereTable table = mock(ShardingSphereTable.class);
+        when(database.getSchemas().get("public").get("t_order")).thenReturn(table);
         Map<String, ShardingSphereIndex> indexes = mock(HashMap.class);
-        when(tableMetaData.getIndexes()).thenReturn(indexes);
+        when(table.getIndexes()).thenReturn(indexes);
         when(indexes.containsKey("t_order_index")).thenReturn(false);
         new ShardingCreateIndexStatementValidator().preValidate(shardingRule, new CreateIndexStatementContext(sqlStatement), Collections.emptyList(), database);
     }
@@ -83,10 +83,10 @@ public final class ShardingCreateIndexStatementValidatorTest {
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         sqlStatement.setIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
         when(database.getSchemas().get("public").containsTable("t_order")).thenReturn(true);
-        ShardingSphereTable tableMetaData = mock(ShardingSphereTable.class);
-        when(database.getSchemas().get("public").get("t_order")).thenReturn(tableMetaData);
+        ShardingSphereTable table = mock(ShardingSphereTable.class);
+        when(database.getSchemas().get("public").get("t_order")).thenReturn(table);
         Map<String, ShardingSphereIndex> indexes = mock(HashMap.class);
-        when(tableMetaData.getIndexes()).thenReturn(indexes);
+        when(table.getIndexes()).thenReturn(indexes);
         when(indexes.containsKey("t_order_index")).thenReturn(true);
         new ShardingCreateIndexStatementValidator().preValidate(shardingRule, new CreateIndexStatementContext(sqlStatement), Collections.emptyList(), database);
     }
@@ -98,10 +98,10 @@ public final class ShardingCreateIndexStatementValidatorTest {
         sqlStatement.setColumns(Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("content"))));
         sqlStatement.setGeneratedIndexStartIndex(10);
         when(database.getSchemas().get("public").containsTable("t_order")).thenReturn(true);
-        ShardingSphereTable tableMetaData = mock(ShardingSphereTable.class);
-        when(database.getSchemas().get("public").get("t_order")).thenReturn(tableMetaData);
+        ShardingSphereTable table = mock(ShardingSphereTable.class);
+        when(database.getSchemas().get("public").get("t_order")).thenReturn(table);
         Map<String, ShardingSphereIndex> indexes = mock(HashMap.class);
-        when(tableMetaData.getIndexes()).thenReturn(indexes);
+        when(table.getIndexes()).thenReturn(indexes);
         new ShardingCreateIndexStatementValidator().preValidate(shardingRule, new CreateIndexStatementContext(sqlStatement), Collections.emptyList(), database);
     }
     
@@ -122,10 +122,10 @@ public final class ShardingCreateIndexStatementValidatorTest {
         sqlStatement.setColumns(Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("content"))));
         sqlStatement.setGeneratedIndexStartIndex(10);
         when(database.getSchemas().get("public").containsTable("t_order")).thenReturn(true);
-        ShardingSphereTable tableMetaData = mock(ShardingSphereTable.class);
-        when(database.getSchemas().get("public").get("t_order")).thenReturn(tableMetaData);
+        ShardingSphereTable table = mock(ShardingSphereTable.class);
+        when(database.getSchemas().get("public").get("t_order")).thenReturn(table);
         Map<String, ShardingSphereIndex> indexes = mock(HashMap.class);
-        when(tableMetaData.getIndexes()).thenReturn(indexes);
+        when(table.getIndexes()).thenReturn(indexes);
         when(indexes.containsKey("content_idx")).thenReturn(true);
         new ShardingCreateIndexStatementValidator().preValidate(shardingRule, new CreateIndexStatementContext(sqlStatement), Collections.emptyList(), database);
     }

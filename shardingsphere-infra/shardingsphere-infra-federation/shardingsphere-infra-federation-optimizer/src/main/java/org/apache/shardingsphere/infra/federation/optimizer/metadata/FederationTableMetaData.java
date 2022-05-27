@@ -46,23 +46,23 @@ public final class FederationTableMetaData {
     
     private final List<String> columnNames;
     
-    public FederationTableMetaData(final String name, final ShardingSphereTable tableMetaData) {
+    public FederationTableMetaData(final String name, final ShardingSphereTable table) {
         this.name = name;
-        relProtoDataType = createRelProtoDataType(tableMetaData);
+        relProtoDataType = createRelProtoDataType(table);
         // TODO consider using keySet when ShardingSphere supports column name case sensitivity
-        columnNames = tableMetaData.getColumns().values().stream().map(ShardingSphereColumn::getName).collect(Collectors.toList());
+        columnNames = table.getColumns().values().stream().map(ShardingSphereColumn::getName).collect(Collectors.toList());
     }
     
-    private RelProtoDataType createRelProtoDataType(final ShardingSphereTable tableMetaData) {
-        Builder fieldInfo = REL_DATA_TYPE_FACTORY.builder();
-        for (ShardingSphereColumn each : tableMetaData.getColumns().values()) {
-            fieldInfo.add(each.getName(), getRelDataType(each));
+    private RelProtoDataType createRelProtoDataType(final ShardingSphereTable table) {
+        Builder fieldInfoBuilder = REL_DATA_TYPE_FACTORY.builder();
+        for (ShardingSphereColumn each : table.getColumns().values()) {
+            fieldInfoBuilder.add(each.getName(), getRelDataType(each));
         }
-        return RelDataTypeImpl.proto(fieldInfo.build());
+        return RelDataTypeImpl.proto(fieldInfoBuilder.build());
     }
     
-    private RelDataType getRelDataType(final ShardingSphereColumn columnMetaData) {
-        Class<?> sqlTypeClass = SqlType.valueOf(columnMetaData.getDataType()).clazz;
+    private RelDataType getRelDataType(final ShardingSphereColumn column) {
+        Class<?> sqlTypeClass = SqlType.valueOf(column.getDataType()).clazz;
         RelDataType javaType = REL_DATA_TYPE_FACTORY.createJavaType(sqlTypeClass);
         return REL_DATA_TYPE_FACTORY.createTypeWithNullability(javaType, true);
     }

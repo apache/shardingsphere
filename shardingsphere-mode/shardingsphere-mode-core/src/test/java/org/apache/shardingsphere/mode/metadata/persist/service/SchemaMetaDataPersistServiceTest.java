@@ -55,9 +55,9 @@ public final class SchemaMetaDataPersistServiceTest {
     
     @Test
     public void assertPersist() {
-        ShardingSphereTable tableMetaData = new TableMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(readYAML(), YamlTableMetaData.class));
+        ShardingSphereTable table = new TableMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(readYAML(), YamlTableMetaData.class));
         ShardingSphereSchema schema = new ShardingSphereSchema();
-        schema.getTables().put("t_order", tableMetaData);
+        schema.getTables().put("t_order", table);
         new SchemaMetaDataPersistService(repository).persistMetaData("foo_db", "foo_schema", schema);
         verify(repository).persist(eq("/metadata/foo_db/schemas/foo_schema/tables/t_order"), anyString());
     }
@@ -93,8 +93,8 @@ public final class SchemaMetaDataPersistServiceTest {
     
     @Test
     public void assertPersistTableMetaData() {
-        ShardingSphereTable tableMetaData = new ShardingSphereTable("FOO_TABLE", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-        new SchemaMetaDataPersistService(repository).persistTable("foo_db", "foo_schema", tableMetaData);
+        ShardingSphereTable table = new ShardingSphereTable("FOO_TABLE", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        new SchemaMetaDataPersistService(repository).persistTable("foo_db", "foo_schema", table);
         verify(repository).persist(eq("/metadata/foo_db/schemas/foo_schema/tables/foo_table"), anyString());
     }
     

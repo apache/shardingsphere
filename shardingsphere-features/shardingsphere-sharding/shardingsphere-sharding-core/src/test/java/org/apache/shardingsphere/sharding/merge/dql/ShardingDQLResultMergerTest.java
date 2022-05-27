@@ -501,20 +501,18 @@ public final class ShardingDQLResultMergerTest {
     }
     
     private ShardingSphereDatabase createDatabase() {
-        ShardingSphereColumn columnMetaData1 = new ShardingSphereColumn("col1", 0, false, false, false);
-        ShardingSphereColumn columnMetaData2 = new ShardingSphereColumn("col2", 0, false, false, false);
-        ShardingSphereColumn columnMetaData3 = new ShardingSphereColumn("col3", 0, false, false, false);
-        ShardingSphereTable tableMetaData = new ShardingSphereTable("tbl", Arrays.asList(columnMetaData1, columnMetaData2, columnMetaData3), Collections.emptyList(), Collections.emptyList());
-        ShardingSphereSchema schema = new ShardingSphereSchema(Collections.singletonMap("tbl", tableMetaData));
+        ShardingSphereColumn column1 = new ShardingSphereColumn("col1", 0, false, false, false);
+        ShardingSphereColumn column2 = new ShardingSphereColumn("col2", 0, false, false, false);
+        ShardingSphereColumn column3 = new ShardingSphereColumn("col3", 0, false, false, false);
+        ShardingSphereTable table = new ShardingSphereTable("tbl", Arrays.asList(column1, column2, column3), Collections.emptyList(), Collections.emptyList());
+        ShardingSphereSchema schema = new ShardingSphereSchema(Collections.singletonMap("tbl", table));
         return new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, DatabaseTypeFactory.getInstance("MySQL"), mock(ShardingSphereResource.class),
                 mock(ShardingSphereRuleMetaData.class), Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema));
     }
     
     private SelectStatement buildSelectStatement(final SelectStatement result) {
-        SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(10, 13, new IdentifierValue("tbl")));
-        result.setFrom(tableSegment);
-        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
-        result.setProjections(projectionsSegment);
+        result.setFrom(new SimpleTableSegment(new TableNameSegment(10, 13, new IdentifierValue("tbl"))));
+        result.setProjections(new ProjectionsSegment(0, 0));
         return result;
     }
 }

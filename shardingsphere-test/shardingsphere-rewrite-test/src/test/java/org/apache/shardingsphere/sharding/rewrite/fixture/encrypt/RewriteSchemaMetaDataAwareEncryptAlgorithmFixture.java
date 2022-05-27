@@ -51,8 +51,8 @@ public final class RewriteSchemaMetaDataAwareEncryptAlgorithmFixture implements 
     
     @Override
     public Object decrypt(final String cipherValue, final EncryptContext encryptContext) {
-        ShardingSphereTable tableMetaData = schemas.get(databaseName).get(encryptContext.getTableName());
-        return cipherValue.replaceAll("encrypt_", "").replaceAll("_" + tableMetaData.getName(), "");
+        ShardingSphereTable table = schemas.get(databaseName).get(encryptContext.getTableName());
+        return cipherValue.replaceAll("encrypt_", "").replaceAll("_" + table.getName(), "");
     }
     
     @Override

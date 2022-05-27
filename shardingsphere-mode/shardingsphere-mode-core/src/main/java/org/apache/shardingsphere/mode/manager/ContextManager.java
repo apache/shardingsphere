@@ -159,7 +159,7 @@ public final class ContextManager implements AutoCloseable {
             return;
         }
         FederationDatabaseMetaData federationDatabaseMetaData = metaDataContexts.getOptimizerContext().getFederationMetaData().getDatabases().get(databaseName);
-        federationDatabaseMetaData.putTableMetadata(schemaName, new ShardingSphereTable());
+        federationDatabaseMetaData.putTable(schemaName, new ShardingSphereTable());
         metaDataContexts.getOptimizerContext().getPlannerContexts().put(databaseName, OptimizerPlannerContextFactory.create(federationDatabaseMetaData));
         metaDataContexts.getMetaData().getDatabases().get(databaseName).getSchemas().put(schemaName, new ShardingSphereSchema());
     }
@@ -207,7 +207,7 @@ public final class ContextManager implements AutoCloseable {
         alterSingleTableDataNodes(databaseName, database, changedTableMetaData);
         FederationDatabaseMetaData federationDatabaseMetaData = metaDataContexts.getOptimizerContext().getFederationMetaData().getDatabases().get(databaseName);
         database.getSchemas().get(schemaName).put(changedTableMetaData.getName(), changedTableMetaData);
-        federationDatabaseMetaData.putTableMetadata(schemaName, changedTableMetaData);
+        federationDatabaseMetaData.putTable(schemaName, changedTableMetaData);
         metaDataContexts.getOptimizerContext().getPlannerContexts().put(databaseName, OptimizerPlannerContextFactory.create(federationDatabaseMetaData));
     }
     
