@@ -65,8 +65,8 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
         }
     }
     
-    private void closeDataSources(final Collection<DataSource> dataSourceMap) {
-        dataSourceMap.stream().map(DataSourcePoolDestroyer::new).forEach(DataSourcePoolDestroyer::asyncDestroy);
+    private void closeDataSources(final Collection<DataSource> dataSources) {
+        dataSources.stream().map(DataSourcePoolDestroyer::new).forEach(DataSourcePoolDestroyer::asyncDestroy);
     }
     
     @Override
