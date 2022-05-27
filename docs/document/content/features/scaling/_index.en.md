@@ -32,3 +32,5 @@ ShardingSphere-Scaling is a common solution for migrating or scaling data.
 
 ShardingSphere-Scaling since version **4.1.0**.
 Current status is in **alpha** development.
+
+**Source Codes: https://github.com/apache/shardingsphere/tree/master/shardingsphere-kernel/shardingsphere-data-pipeline**

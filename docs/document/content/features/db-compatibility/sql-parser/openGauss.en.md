@@ -21,3 +21,5 @@ The unsupported SQL list for openGauss are as follows:
 | CREATE RULE def_view_test_ins AS ON INSERT TO def_view_test DO INSTEAD INSERT INTO def_test SELECT new.*  |
 | ALTER TABLE alterlock SET (toast.autovacuum_enabled = off)                                                |
 | CREATE PUBLICATION pub1 FOR TABLE alter1.t1, ALL TABLES IN SCHEMA alter2                                  |
+
+**Source Codes: https://github.com/apache/shardingsphere/tree/master/shardingsphere-sql-parser/shardingsphere-sql-parser-dialect/shardingsphere-sql-parser-opengauss**
