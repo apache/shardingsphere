@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.datanode.DataNodes;
 import org.apache.shardingsphere.infra.datasource.registry.GlobalDataSourceRegistry;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterials;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.TableMetaDataLoaderMaterial;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.SchemaMetaDataLoaderMaterials;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -35,21 +35,21 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Table meta data utility class.
+ * Schema meta data utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class TableMetaDataUtil {
+public class SchemaMetaDataUtil {
     
     /**
-     * Get table meta data load materials.
+     * Get schema meta data load materials.
      *
      * @param tableNames table name collection
      * @param materials materials
-     * @param checkMetaDataEnable config CHECK_TABLE_METADATA_ENABLED
-     * @return TableMetaDataLoadMaterials
+     * @param checkMetaDataEnable check meta data enable config
+     * @return schema meta data load materials
      */
-    public static Collection<TableMetaDataLoaderMaterial> getTableMetaDataLoadMaterial(final Collection<String> tableNames,
-                                                                                       final GenericSchemaBuilderMaterials materials, final boolean checkMetaDataEnable) {
+    public static Collection<SchemaMetaDataLoaderMaterials> getSchemaMetaDataLoadMaterials(final Collection<String> tableNames,
+                                                                                           final GenericSchemaBuilderMaterials materials, final boolean checkMetaDataEnable) {
         Map<String, Collection<String>> dataSourceTableGroups = new LinkedHashMap<>();
         DataNodes dataNodes = new DataNodes(materials.getRules());
         for (String each : tableNames) {
@@ -60,7 +60,7 @@ public class TableMetaDataUtil {
                 addOneActualTableDataNode(materials, dataSourceTableGroups, dataNodes, each);
             }
         }
-        return dataSourceTableGroups.entrySet().stream().map(entry -> new TableMetaDataLoaderMaterial(entry.getValue(),
+        return dataSourceTableGroups.entrySet().stream().map(entry -> new SchemaMetaDataLoaderMaterials(entry.getValue(),
                 materials.getDataSourceMap().get(entry.getKey().contains(".") ? entry.getKey().split("\\.")[0] : entry.getKey()), materials.getDefaultSchemaName())).collect(Collectors.toList());
     }
     

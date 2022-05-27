@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.subscriber;
 
-import org.apache.shardingsphere.infra.metadata.database.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.event.AddSchemaEvent;
 import org.apache.shardingsphere.infra.metadata.database.schema.event.AlterSchemaEvent;
 import org.apache.shardingsphere.infra.metadata.database.schema.event.DropSchemaEvent;

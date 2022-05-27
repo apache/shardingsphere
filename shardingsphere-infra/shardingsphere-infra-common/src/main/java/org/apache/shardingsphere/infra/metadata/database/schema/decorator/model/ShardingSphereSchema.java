@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.schema;
+package org.apache.shardingsphere.infra.metadata.database.schema.decorator.model;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;

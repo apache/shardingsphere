@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.metadata.database.schema.loader.common;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.SchemaMetaDataLoaderEngine;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.TableMetaDataLoaderMaterial;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.SchemaMetaDataLoaderMaterials;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
@@ -104,7 +104,7 @@ public final class TableMetaDataLoaderTest {
         DatabaseType databaseType = mock(DatabaseType.class, RETURNS_DEEP_STUBS);
         when(databaseType.formatTableNamePattern(TEST_TABLE)).thenReturn(TEST_TABLE);
         Map<String, SchemaMetaData> actual = SchemaMetaDataLoaderEngine.load(Collections.singletonList(
-                new TableMetaDataLoaderMaterial(Collections.singletonList(TEST_TABLE), dataSource, "sharding_db")), databaseType);
+                new SchemaMetaDataLoaderMaterials(Collections.singletonList(TEST_TABLE), dataSource, "sharding_db")), databaseType);
         assertFalse(actual.isEmpty());
         assertTrue(actual.containsKey("sharding_db"));
         assertTrue(actual.get("sharding_db").getTables().containsKey(TEST_TABLE));
@@ -128,7 +128,7 @@ public final class TableMetaDataLoaderTest {
     @Test
     public void assertLoadWithNotExistedTable() throws SQLException {
         Map<String, SchemaMetaData> actual = SchemaMetaDataLoaderEngine.load(Collections.singletonList(
-                new TableMetaDataLoaderMaterial(Collections.singletonList(TEST_TABLE), dataSource, "sharding_db")), mock(DatabaseType.class));
+                new SchemaMetaDataLoaderMaterials(Collections.singletonList(TEST_TABLE), dataSource, "sharding_db")), mock(DatabaseType.class));
         assertFalse(actual.isEmpty());
         assertTrue(actual.containsKey("sharding_db"));
         assertTrue(actual.get("sharding_db").getTables().isEmpty());
