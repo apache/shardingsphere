@@ -24,6 +24,8 @@ import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgori
 import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.database.metadata.dialect.MySQLDataSourceMetaData;
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -31,7 +33,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collection;
 import java.util.Properties;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
 
 /**
  * MGR database discovery provider algorithm for MySQL.
@@ -61,7 +66,21 @@ public final class MGRMySQLDatabaseDiscoveryProviderAlgorithm implements Databas
     }
     
     @Override
-    public void checkEnvironment(final String databaseName, final DataSource dataSource) throws SQLException {
+    public void checkEnvironment(final String databaseName, final Collection<DataSource> dataSources) {
+        dataSources.forEach(each -> runAsyncCheckEnvironment(databaseName, each, ExecutorEngine.createExecutorEngineWithCPUAndResources(dataSources.size()).getExecutorServiceManager().getExecutorService()));
+    }
+    
+    private void runAsyncCheckEnvironment(final String databaseName, final DataSource dataSource, final ExecutorService executorService) {
+        CompletableFuture.runAsync(() -> {
+            try {
+                checkEnvironment(databaseName, dataSource);
+            } catch (SQLException ex) {
+                throw new ShardingSphereException(ex);
+            }
+        }, executorService);
+    }
+    
+    private void checkEnvironment(final String databaseName, final DataSource dataSource) throws SQLException {
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {

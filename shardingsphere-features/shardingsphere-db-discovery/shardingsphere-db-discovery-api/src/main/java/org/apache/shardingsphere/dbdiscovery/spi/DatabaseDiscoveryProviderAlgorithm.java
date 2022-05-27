@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Collection;
 
 /**
  * Database discovery provider algorithm.
@@ -31,10 +32,10 @@ public interface DatabaseDiscoveryProviderAlgorithm extends ShardingSphereAlgori
      * Check environment.
      * 
      * @param databaseName database name
-     * @param dataSource data source
+     * @param dataSources data sources
      * @throws SQLException SQL exception
      */
-    void checkEnvironment(String databaseName, DataSource dataSource) throws SQLException;
+    void checkEnvironment(String databaseName, Collection<DataSource> dataSources);
     
     /**
      * Judge whether database instance is primary.

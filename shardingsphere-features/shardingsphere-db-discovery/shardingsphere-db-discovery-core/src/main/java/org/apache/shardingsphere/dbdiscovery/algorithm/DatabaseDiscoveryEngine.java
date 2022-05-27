@@ -58,13 +58,8 @@ public final class DatabaseDiscoveryEngine {
      * @param dataSourceMap data source map
      * @throws SQLException SQL exception
      */
-    public void checkEnvironment(final String databaseName, final Map<String, DataSource> dataSourceMap) throws SQLException {
-        ExecutorEngine executorEngine = ExecutorEngine.createExecutorEngineWithCPUAndResources(dataSourceMap.size());
-        executorEngine.execute(createExecutionGroupContext(dataSourceMap), new DatabaseDiscoveryExecutorCallback(databaseName, databaseDiscoveryProviderAlgorithm));
-    }
-    
-    private ExecutionGroupContext<DataSource> createExecutionGroupContext(final Map<String, DataSource> dataSourceMap) {
-        return new ExecutionGroupContext<>(dataSourceMap.values().stream().map(each -> new ExecutionGroup<>(Collections.singletonList(each))).collect(Collectors.toList()));
+    public void checkEnvironment(final String databaseName, final Map<String, DataSource> dataSourceMap) {
+        databaseDiscoveryProviderAlgorithm.checkEnvironment(databaseName, dataSourceMap.values());
     }
     
     /**
