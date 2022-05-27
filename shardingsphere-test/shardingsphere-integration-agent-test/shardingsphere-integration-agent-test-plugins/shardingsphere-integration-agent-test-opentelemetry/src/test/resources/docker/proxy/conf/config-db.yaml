@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-schemaName: agent-tracing-opentelemetry-db
+databaseName: agent-tracing-opentelemetry-db
 
 dataSources:
   ds_0:

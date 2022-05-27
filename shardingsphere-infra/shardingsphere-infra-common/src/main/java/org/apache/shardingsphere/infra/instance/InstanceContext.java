@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.instance;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.definition.InstanceId;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
@@ -34,9 +33,7 @@ import java.util.Optional;
 
 /**
  * Instance context.
- * 
  */
-@RequiredArgsConstructor
 @Getter
 public final class InstanceContext {
     
@@ -49,6 +46,15 @@ public final class InstanceContext {
     private final LockContext lockContext;
     
     private final Collection<ComputeNodeInstance> computeNodeInstances = new LinkedList<>();
+    
+    public InstanceContext(final ComputeNodeInstance instance, final WorkerIdGenerator workerIdGenerator, final ModeConfiguration modeConfiguration, final LockContext lockContext) {
+        this.instance = instance;
+        this.workerIdGenerator = workerIdGenerator;
+        this.modeConfiguration = modeConfiguration;
+        this.lockContext = lockContext;
+        initLockContext();
+        getWorkerId();
+    }
     
     /**
      * Update instance status.
@@ -98,12 +104,18 @@ public final class InstanceContext {
     /**
      * Update instance XA recovery id.
      *
+     * @param instanceId instance id
      * @param xaRecoveryId XA recovery id
+     * @return true if current instance updated, else false                    
      */
-    public void updateXaRecoveryId(final String xaRecoveryId) {
-        if (!Objects.equals(xaRecoveryId, instance.getXaRecoveryId())) {
+    public boolean updateXaRecoveryId(final String instanceId, final String xaRecoveryId) {
+        if (instanceId.equals(instance.getCurrentInstanceId()) && !Objects.equals(xaRecoveryId, instance.getXaRecoveryId())) {
             instance.setXaRecoveryId(xaRecoveryId);
+            computeNodeInstances.stream().filter(each -> each.getInstanceDefinition().getInstanceId().getId().equals(instanceId)).forEach(each -> each.setXaRecoveryId(xaRecoveryId));
+            return true;
         }
+        computeNodeInstances.stream().filter(each -> each.getInstanceDefinition().getInstanceId().getId().equals(instanceId)).forEach(each -> each.setXaRecoveryId(xaRecoveryId));
+        return false;
     }
     
     /**
@@ -153,6 +165,16 @@ public final class InstanceContext {
             }
         }
         return result;
+    }
+    
+    /**
+     * Get compute node instance by instance id.
+     * 
+     * @param instanceId instance id
+     * @return compute node instance
+     */
+    public Optional<ComputeNodeInstance> getComputeNodeInstanceById(final String instanceId) {
+        return computeNodeInstances.stream().filter(each -> instanceId.equals(each.getCurrentInstanceId())).findFirst();
     }
     
     /**

@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable;
 
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.LabelInstanceStatement;
+import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.instance.definition.InstanceId;
-import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsEvent;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepository;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -30,6 +30,7 @@ import org.apache.shardingsphere.proxy.backend.text.distsql.ral.UpdatableRALBack
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.Optional;
 
 /**
  * Label instance handler.
@@ -38,16 +39,18 @@ public final class LabelInstanceHandler extends UpdatableRALBackendHandler<Label
     
     @Override
     public void update(final ContextManager contextManager, final LabelInstanceStatement sqlStatement) {
-        MetaDataPersistService persistService = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataPersistService().orElse(null);
+        MetaDataPersistService persistService = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getPersistService().orElse(null);
         if (null == persistService || null == persistService.getRepository() || persistService.getRepository() instanceof StandalonePersistRepository) {
             throw new UnsupportedOperationException("Labels can only be added in cluster mode");
         }
-        String instanceId = new InstanceId(sqlStatement.getIp(), Integer.valueOf(sqlStatement.getPort())).getId();
-        ComputeNodeInstance instances = persistService.getComputeNodePersistService().loadComputeNodeInstance(new InstanceDefinition(InstanceType.PROXY, instanceId));
-        Collection<String> labels = new LinkedHashSet<>(sqlStatement.getLabels());
-        if (!sqlStatement.isOverwrite()) {
-            labels.addAll(instances.getLabels());
+        String instanceId = new InstanceId(sqlStatement.getIp(), String.valueOf(sqlStatement.getPort())).getId();
+        Optional<ComputeNodeInstance> computeNodeInstance = contextManager.getInstanceContext().getComputeNodeInstanceById(instanceId);
+        if (computeNodeInstance.isPresent()) {
+            Collection<String> labels = new LinkedHashSet<>(sqlStatement.getLabels());
+            if (!sqlStatement.isOverwrite() && null != computeNodeInstance.get().getLabels()) {
+                labels.addAll(computeNodeInstance.get().getLabels());
+            }
+            ShardingSphereEventBus.getInstance().post(new LabelsEvent(instanceId, labels));
         }
-        persistService.getComputeNodePersistService().persistInstanceLabels(instanceId, labels, true);
     }
 }

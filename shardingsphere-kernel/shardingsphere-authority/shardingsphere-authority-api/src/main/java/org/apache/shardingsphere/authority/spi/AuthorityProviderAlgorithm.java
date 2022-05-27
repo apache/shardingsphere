@@ -19,7 +19,7 @@ package org.apache.shardingsphere.authority.spi;
 
 import org.apache.shardingsphere.authority.model.AuthorityRegistry;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 
 import java.util.Collection;
@@ -33,9 +33,9 @@ public interface AuthorityProviderAlgorithm extends ShardingSphereAlgorithm {
     /**
      * Build authority registry.
      * 
-     * @param metaDataMap meta data map
+     * @param databases databases
      * @param users users
      * @return built authority registry
      */
-    AuthorityRegistry buildAuthorityRegistry(Map<String, ShardingSphereMetaData> metaDataMap, Collection<ShardingSphereUser> users);
+    AuthorityRegistry buildAuthorityRegistry(Map<String, ShardingSphereDatabase> databases, Collection<ShardingSphereUser> users);
 }

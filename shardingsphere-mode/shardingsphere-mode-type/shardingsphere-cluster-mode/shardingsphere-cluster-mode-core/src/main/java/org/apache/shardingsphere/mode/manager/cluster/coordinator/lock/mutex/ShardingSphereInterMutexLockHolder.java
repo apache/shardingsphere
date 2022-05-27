@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockRegistryService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.MutexLockRegistryService;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeType;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 import java.util.Collection;
@@ -53,12 +54,12 @@ public final class ShardingSphereInterMutexLockHolder {
     }
     
     /**
-     * Get inter mutex Lock.
+     * Get or create inter mutex Lock.
      *
      * @param locksName locks name
      * @return inter mutex lock
      */
-    public synchronized InterMutexLock getInterMutexLock(final String locksName) {
+    public synchronized InterMutexLock getOrCreateInterMutexLock(final String locksName) {
         InterMutexLock result = interMutexLocks.get(locksName);
         if (null == result) {
             result = createInterMutexLock(locksName);
@@ -68,7 +69,18 @@ public final class ShardingSphereInterMutexLockHolder {
     }
     
     private InterMutexLock createInterMutexLock(final String locksName) {
-        return new InterMutexLock(locksName, mutexLockRegistryService, currentInstance, computeNodeInstances);
+        InterReentrantMutexLock interReentrantMutexLock = getInterReentrantMutexLock(locksName + "/sequence");
+        return new InterMutexLock(locksName, interReentrantMutexLock, mutexLockRegistryService, currentInstance, computeNodeInstances);
+    }
+    
+    /**
+     * Get inter mutex Lock.
+     *
+     * @param locksName locks name
+     * @return inter mutex lock
+     */
+    public InterMutexLock getInterMutexLock(final String locksName) {
+        return interMutexLocks.get(locksName);
     }
     
     /**
@@ -94,6 +106,9 @@ public final class ShardingSphereInterMutexLockHolder {
     public void synchronizeMutexLock(final LockNodeService lockNodeService) {
         Collection<String> allGlobalLock = repository.getChildrenKeys(lockNodeService.getLocksNodePath());
         if (allGlobalLock.isEmpty()) {
+            if (LockNodeType.MUTEX == lockNodeService.getType()) {
+                return;
+            }
             repository.persist(lockNodeService.getLocksNodePath(), "");
             return;
         }

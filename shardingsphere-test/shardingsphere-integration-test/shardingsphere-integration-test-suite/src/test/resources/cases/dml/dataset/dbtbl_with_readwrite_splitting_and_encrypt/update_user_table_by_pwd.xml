@@ -17,11 +17,11 @@
 
 <dataset update-count="1">
     <metadata data-nodes="encrypt_write_ds_${0..9}.t_user_${0..9}">
-        <column name="user_id" type="numeric"/>
+        <column name="user_id" type="numeric" />
         <column name="address_id" type="numeric" />
-        <column name="pwd_plain" type="varchar"/>
-        <column name="pwd_cipher" type="varchar"/>
-        <column name="status" type="varchar"/>
+        <column name="pwd_plain" type="varchar" />
+        <column name="pwd_cipher" type="varchar" />
+        <column name="status" type="varchar" />
     </metadata>
     <row data-node="encrypt_write_ds_0.t_user_0" values="0, 10000, null, dL/JAiR/3cVG8lt6DMDa/A==, init" />
     <row data-node="encrypt_write_ds_0.t_user_1" values="1, 11000, null, wPc6WYJBzQIt4i4T0KhqXA==, init" />

@@ -17,5 +17,6 @@
   -->
 
 <sql-cases>
-    <sql-case id="drop_directory" value="DROP DIRECTORY bfile_dir;" db-types="Oracle" />
+    <sql-case id="drop_directory" value="DROP DIRECTORY bfile_dir;" db-types="Oracle,openGauss" />
+    <sql-case id="drop_directory_if_exists" value="DROP DIRECTORY IF EXISTS bfile_dir;" db-types="openGauss" />
 </sql-cases>

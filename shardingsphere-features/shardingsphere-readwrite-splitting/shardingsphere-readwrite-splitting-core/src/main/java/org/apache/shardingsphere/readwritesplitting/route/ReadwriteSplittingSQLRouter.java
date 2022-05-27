@@ -19,7 +19,7 @@ package org.apache.shardingsphere.readwritesplitting.route;
 
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.SQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
@@ -40,7 +40,7 @@ import java.util.Optional;
 public final class ReadwriteSplittingSQLRouter implements SQLRouter<ReadwriteSplittingRule> {
     
     @Override
-    public RouteContext createRouteContext(final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final ReadwriteSplittingRule rule, final ConfigurationProperties props) {
+    public RouteContext createRouteContext(final LogicSQL logicSQL, final ShardingSphereDatabase database, final ReadwriteSplittingRule rule, final ConfigurationProperties props) {
         RouteContext result = new RouteContext();
         ReadwriteSplittingDataSourceRule singleDataSourceRule = rule.getSingleDataSourceRule();
         String dataSourceName = new ReadwriteSplittingDataSourceRouter(singleDataSourceRule).route(logicSQL.getSqlStatementContext());
@@ -50,7 +50,7 @@ public final class ReadwriteSplittingSQLRouter implements SQLRouter<ReadwriteSpl
     
     @Override
     public void decorateRouteContext(final RouteContext routeContext,
-                                     final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final ReadwriteSplittingRule rule, final ConfigurationProperties props) {
+                                     final LogicSQL logicSQL, final ShardingSphereDatabase database, final ReadwriteSplittingRule rule, final ConfigurationProperties props) {
         Collection<RouteUnit> toBeRemoved = new LinkedList<>();
         Collection<RouteUnit> toBeAdded = new LinkedList<>();
         for (RouteUnit each : routeContext.getRouteUnits()) {

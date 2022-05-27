@@ -188,7 +188,11 @@ instanceId
     ;
 
 refreshScope
-    : tableName | tableName FROM RESOURCE resourceName
+    : tableName fromSegment?
+    ;
+
+fromSegment
+    : FROM RESOURCE resourceName (SCHEMA schemaName)?
     ;
 
 sqlCommentParseEnable

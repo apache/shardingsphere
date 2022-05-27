@@ -262,7 +262,7 @@ The solution has provided two methods `encrypt()` and `decrypt()` to encrypt/dec
 When users `INSERT`, `DELETE` and `UPDATE`, ShardingSphere will parse, rewrite and route SQL according to the configuration. It will also use `encrypt()` to encrypt data and store them in the database. When using `SELECT`, 
 they will decrypt sensitive data from the database with `decrypt()` reversely and return them to users at last.
 
-Currently, Apache ShardingSphere has provided three types of implementations for this kind of encrypt solution, MD5 (irreversible), AES (reversible) and RC4 (reversible), which can be used after configuration.
+Currently, Apache ShardingSphere has provided five types of implementations for this kind of encrypt solution, MD5 (irreversible), AES (reversible), RC4 (reversible), SM3 (irreversible) and SM4 (reversible), which can be used after configuration.
 
 ### QueryAssistedEncryptAlgorithm
 

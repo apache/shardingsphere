@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredAlgorithmMissedException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.update.AlterShardingAlgorithmStatementUpdater;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.ShardingAlgorithmSegment;
@@ -31,6 +31,7 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterSharding
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -44,14 +45,14 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class AlterShardingAlgorithmStatementUpdaterTest {
     
-    @Mock
-    private ShardingSphereMetaData shardingSphereMetaData;
-    
     private final AlterShardingAlgorithmStatementUpdater updater = new AlterShardingAlgorithmStatementUpdater();
+    
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private ShardingSphereDatabase database;
     
     @Before
     public void before() {
-        when(shardingSphereMetaData.getDatabaseName()).thenReturn("test");
+        when(database.getName()).thenReturn("test");
     }
     
     @Test(expected = DuplicateRuleException.class)
@@ -59,7 +60,7 @@ public final class AlterShardingAlgorithmStatementUpdaterTest {
         Properties props = new Properties();
         props.put("input_key", "input_value");
         ShardingAlgorithmSegment algorithmSegment = new ShardingAlgorithmSegment("input_algorithm_name", new AlgorithmSegment("input_algorithm_name", props));
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(algorithmSegment, algorithmSegment), null);
+        updater.checkSQLStatement(database, createSQLStatement(algorithmSegment, algorithmSegment), null);
     }
     
     @Test(expected = RequiredAlgorithmMissedException.class)
@@ -69,7 +70,7 @@ public final class AlterShardingAlgorithmStatementUpdaterTest {
         ShardingAlgorithmSegment algorithmSegment = new ShardingAlgorithmSegment("not_exist_algorithm_name", new AlgorithmSegment("input_algorithm_name", props));
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getShardingAlgorithms().put("exist_algorithm_name", new ShardingSphereAlgorithmConfiguration("hash_mod", props));
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(algorithmSegment), shardingRuleConfig);
+        updater.checkSQLStatement(database, createSQLStatement(algorithmSegment), shardingRuleConfig);
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
@@ -79,7 +80,7 @@ public final class AlterShardingAlgorithmStatementUpdaterTest {
         ShardingAlgorithmSegment algorithmSegment = new ShardingAlgorithmSegment("exist_algorithm_name", new AlgorithmSegment("input_algorithm_name", props));
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
         ruleConfig.getShardingAlgorithms().put("exist_algorithm_name", new ShardingSphereAlgorithmConfiguration("invalid_algorithm", props));
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(algorithmSegment), ruleConfig);
+        updater.checkSQLStatement(database, createSQLStatement(algorithmSegment), ruleConfig);
     }
     
     @Test

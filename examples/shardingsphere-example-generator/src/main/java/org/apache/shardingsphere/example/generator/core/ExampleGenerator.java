@@ -42,7 +42,7 @@ public interface ExampleGenerator extends TypedSPI {
             for (String eachTransaction : exampleConfig.getTransactions()) {
                 for (String eachFramework : exampleConfig.getFrameworks()) {
                     for (String eachFeature : GenerateUtil.generateCombination(exampleConfig.getFeatures())) {
-                        generate(templateConfig, buildDataModel(exampleConfig.getProps(), eachMode, eachTransaction, eachFramework, eachFeature), eachFramework, eachFeature);
+                        generate(templateConfig, buildDataModel(exampleConfig.getProps(), eachMode, eachTransaction, eachFramework, eachFeature), eachFeature, eachFramework, eachTransaction);
                     }
                 }
             }
@@ -70,5 +70,5 @@ public interface ExampleGenerator extends TypedSPI {
      * @throws IOException IO exception
      * @throws TemplateException template exception
      */
-    void generate(final Configuration templateConfig, final Map<String, String> dataModel, final String framework, final String feature) throws IOException, TemplateException;
+    void generate(final Configuration templateConfig, final Map<String, String> dataModel, final String framework, final String feature, String transaction) throws IOException, TemplateException;
 }

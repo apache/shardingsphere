@@ -25,9 +25,10 @@ import org.apache.shardingsphere.infra.binder.type.IndexAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.QualifiedTable;
-import org.apache.shardingsphere.infra.metadata.schema.util.IndexMetaDataUtil;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
+import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtil;
 import org.apache.shardingsphere.infra.route.SQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
@@ -52,15 +53,15 @@ public final class SingleTableSQLRouter implements SQLRouter<SingleTableRule> {
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
-    public RouteContext createRouteContext(final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final SingleTableRule rule, final ConfigurationProperties props) {
-        if (1 == metaData.getResource().getDataSources().size()) {
-            return createSingleDataSourceRouteContext(rule, metaData);
+    public RouteContext createRouteContext(final LogicSQL logicSQL, final ShardingSphereDatabase database, final SingleTableRule rule, final ConfigurationProperties props) {
+        if (1 == database.getResource().getDataSources().size()) {
+            return createSingleDataSourceRouteContext(rule, database);
         }
         RouteContext result = new RouteContext();
         SQLStatementContext<?> sqlStatementContext = logicSQL.getSqlStatementContext();
         Optional<SingleTableMetadataValidator> validator = SingleTableMetadataValidatorFactory.newInstance(sqlStatementContext.getSqlStatement());
-        validator.ifPresent(optional -> optional.validate(rule, sqlStatementContext, metaData));
-        Collection<QualifiedTable> singleTableNames = getSingleTableNames(sqlStatementContext, metaData, rule, result);
+        validator.ifPresent(optional -> optional.validate(rule, sqlStatementContext, database));
+        Collection<QualifiedTable> singleTableNames = getSingleTableNames(sqlStatementContext, database, rule, result);
         if (!singleTableNames.isEmpty()) {
             validateSameDataSource(sqlStatementContext, rule, props, singleTableNames, result);
         }
@@ -69,10 +70,10 @@ public final class SingleTableSQLRouter implements SQLRouter<SingleTableRule> {
     }
     
     @Override
-    public void decorateRouteContext(final RouteContext routeContext, final LogicSQL logicSQL, final ShardingSphereMetaData metaData,
+    public void decorateRouteContext(final RouteContext routeContext, final LogicSQL logicSQL, final ShardingSphereDatabase database,
                                      final SingleTableRule rule, final ConfigurationProperties props) {
         SQLStatementContext<?> sqlStatementContext = logicSQL.getSqlStatementContext();
-        Collection<QualifiedTable> singleTableNames = getSingleTableNames(sqlStatementContext, metaData, rule, routeContext);
+        Collection<QualifiedTable> singleTableNames = getSingleTableNames(sqlStatementContext, database, rule, routeContext);
         if (singleTableNames.isEmpty()) {
             return;
         }
@@ -80,27 +81,27 @@ public final class SingleTableSQLRouter implements SQLRouter<SingleTableRule> {
         SingleTableRouteEngineFactory.newInstance(singleTableNames, sqlStatementContext.getSqlStatement()).ifPresent(optional -> optional.route(routeContext, rule));
     }
     
-    private RouteContext createSingleDataSourceRouteContext(final SingleTableRule rule, final ShardingSphereMetaData metaData) {
+    private RouteContext createSingleDataSourceRouteContext(final SingleTableRule rule, final ShardingSphereDatabase database) {
         String logicDataSource = rule.getDataSourceNames().iterator().next();
-        String actualDataSource = metaData.getResource().getDataSources().keySet().iterator().next();
+        String actualDataSource = database.getResource().getDataSources().keySet().iterator().next();
         RouteContext result = new RouteContext();
         result.getRouteUnits().add(new RouteUnit(new RouteMapper(logicDataSource, actualDataSource), Collections.emptyList()));
         return result;
     }
     
-    private static Collection<QualifiedTable> getSingleTableNames(final SQLStatementContext<?> sqlStatementContext, final ShardingSphereMetaData metaData,
-                                                                  final SingleTableRule rule, final RouteContext routeContext) {
+    private static Collection<QualifiedTable> getSingleTableNames(final SQLStatementContext<?> sqlStatementContext,
+                                                                  final ShardingSphereDatabase database, final SingleTableRule rule, final RouteContext routeContext) {
         DatabaseType databaseType = sqlStatementContext.getDatabaseType();
-        Collection<QualifiedTable> result = getQualifiedTables(metaData, sqlStatementContext.getTablesContext().getTables(), databaseType);
+        Collection<QualifiedTable> result = getQualifiedTables(database, databaseType, sqlStatementContext.getTablesContext().getTables());
         if (result.isEmpty() && sqlStatementContext instanceof IndexAvailable) {
-            result = IndexMetaDataUtil.getTableNamesFromMetaData(metaData, ((IndexAvailable) sqlStatementContext).getIndexes(), databaseType);
+            result = IndexMetaDataUtil.getTableNames(database, databaseType, ((IndexAvailable) sqlStatementContext).getIndexes());
         }
         return routeContext.getRouteUnits().isEmpty() && sqlStatementContext.getSqlStatement() instanceof CreateTableStatement ? result : rule.getSingleTableNames(result);
     }
     
-    private static Collection<QualifiedTable> getQualifiedTables(final ShardingSphereMetaData metaData, final Collection<SimpleTableSegment> tableSegments, final DatabaseType databaseType) {
+    private static Collection<QualifiedTable> getQualifiedTables(final ShardingSphereDatabase database, final DatabaseType databaseType, final Collection<SimpleTableSegment> tableSegments) {
         Collection<QualifiedTable> result = new LinkedList<>();
-        String schemaName = databaseType.getDefaultSchema(metaData.getDatabaseName());
+        String schemaName = DatabaseTypeEngine.getDefaultSchemaName(databaseType, database.getName());
         for (SimpleTableSegment each : tableSegments) {
             String actualSchemaName = each.getOwner().map(optional -> optional.getIdentifier().getValue()).orElse(schemaName);
             result.add(new QualifiedTable(actualSchemaName, each.getTableName().getIdentifier().getValue()));

@@ -128,6 +128,10 @@ dropDatabase
     : DROP DATABASE existClause? name
     ;
 
+dropDirectory
+    : DROP DIRECTORY existClause? directoryName
+    ;
+
 createDatabaseSpecification
     :  createdbOptName EQ_? (signedIconst | booleanOrString | DEFAULT)
     ;
@@ -724,6 +728,14 @@ alterCollationClause
     | SET SCHEMA schemaName
     ;
 
+alterSynonym
+    : ALTER SYNONYM synonymName OWNER TO owner
+    ;
+
+alterDirectory
+    : ALTER DIRECTORY directoryName OWNER TO owner
+    ;
+
 alterConversion
     : ALTER CONVERSION anyName alterConversionClause
     ;
@@ -832,6 +844,10 @@ alterExtension
     : ALTER EXTENSION name alterExtensionClauses
     ;
 
+createSynonym
+    : CREATE (OR REPLACE)? SYNONYM synonymName FOR objectName
+    ;
+    
 alterExtensionClauses
     : UPDATE alterExtensionOptList
     | (ADD | DROP) ACCESS METHOD name
@@ -953,18 +969,20 @@ alterMaterializedViewClauses
     ;
 
 declare
-    : DECLARE name cursorOptions CURSOR (WITH HOLD | WITHOUT HOLD)? FOR select
+    : DECLARE cursorName cursorOptions CURSOR (WITH HOLD | WITHOUT HOLD)? FOR select
     ;
 
+cursor
+    : CURSOR cursorName cursorOptions (WITH HOLD | WITHOUT HOLD)? FOR select
+    ;
+    
 cursorOptions
     : cursorOption*
     ;
 
 cursorOption
-    : NO SCROLL
-    | SCROLL
-    | BINARY
-    | INSENSITIVE
+    : BINARY
+    | NO SCROLL
     ;
 
 executeStmt
@@ -1278,14 +1296,15 @@ oldAggrElem
     ;
 
 createCast
-    : CREATE CAST LP_ typeName AS typeName RP_
-    ( WITH FUNCTION functionWithArgtypes castContext?
-    | WITHOUT FUNCTION castContext?
-    | WITH INOUT castContext?)
+    : CREATE CAST LP_ typeName AS typeName RP_ (
+    | WITH FUNCTION (funcName | dataTypeName) funcArgs
+    | WITHOUT FUNCTION
+    | WITH INOUT 
+    ) castContext?
     ;
 
 castContext
-    : AS IMPLICIT | AS ASSIGNMENT
+    : AS (ASSIGNMENT | IMPLICIT)
     ;
 
 createCollation
@@ -1707,6 +1726,10 @@ dropSequence
     : DROP SEQUENCE existClause? qualifiedNameList dropBehavior?
     ;
 
+dropSynonym
+    : DROP SYNONYM existClause? synonymName dropBehavior?
+    ;
+
 dropServer
     : DROP SERVER existClause? qualifiedNameList dropBehavior?
     ;
@@ -1764,7 +1787,7 @@ listen
     ;
 
 move
-    : MOVE fetchArgs
+    : MOVE (direction (FROM | IN)?)? cursorName
     ;
 
 prepare
@@ -1938,10 +1961,35 @@ privilegeType
     | ALL PRIVILEGES?
     ;
 
+createDirectory
+    : CREATE (OR REPLACE)? DIRECTORY directoryName AS pathString
+    ;
+
 alterSchema
     : ALTER SCHEMA name (RENAME TO name | OWNER TO roleSpec)
     ;
 
 dropSchema
     : DROP SCHEMA existClause? nameList dropBehavior?
+    ;
+
+fetch
+    : FETCH (direction (FROM | IN))? cursorName
+    ;
+
+direction
+    : NEXT
+    | PRIOR
+    | FIRST
+    | LAST
+    | ABSOLUTE signedIconst
+    | RELATIVE signedIconst
+    | signedIconst
+    | ALL
+    | FORWARD
+    | FORWARD signedIconst
+    | FORWARD ALL
+    | BACKWARD
+    | BACKWARD signedIconst
+    | BACKWARD ALL
     ;

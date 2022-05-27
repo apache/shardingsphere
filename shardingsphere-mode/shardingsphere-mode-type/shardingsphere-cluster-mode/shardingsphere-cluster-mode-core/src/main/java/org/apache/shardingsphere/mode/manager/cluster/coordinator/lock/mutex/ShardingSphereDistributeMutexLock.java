@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex;
 
 import com.google.common.eventbus.Subscribe;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeService;
@@ -29,21 +30,25 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.eve
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeType;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.TimeoutMilliseconds;
 
+import java.util.Optional;
+
 /**
  * Distribute mutex lock of ShardingSphere.
  */
+@Slf4j
 public final class ShardingSphereDistributeMutexLock implements ShardingSphereLock {
     
     private final LockNodeService lockNodeService = LockNodeServiceFactory.getInstance().getLockNodeService(LockNodeType.MUTEX);
-    
-    private final MutexLock sequencedLock;
     
     private final ShardingSphereInterMutexLockHolder lockHolder;
     
     public ShardingSphereDistributeMutexLock(final ShardingSphereInterMutexLockHolder lockHolder) {
         this.lockHolder = lockHolder;
-        this.sequencedLock = lockHolder.getInterReentrantMutexLock(lockNodeService.getSequenceNodePath());
         ShardingSphereEventBus.getInstance().register(this);
+        syncMutexLockStatus();
+    }
+    
+    private void syncMutexLockStatus() {
         lockHolder.synchronizeMutexLock(lockNodeService);
     }
     
@@ -58,28 +63,21 @@ public final class ShardingSphereDistributeMutexLock implements ShardingSphereLo
     }
     
     private boolean innerTryLock(final String lockName, final long timeoutMillis) {
-        if (!sequencedLock.tryLock(TimeoutMilliseconds.DEFAULT_REGISTRY)) {
-            return false;
-        }
-        try {
-            return getInterMutexLock(lockName).tryLock(timeoutMillis);
-        } finally {
-            sequencedLock.unlock();
-        }
+        return lockHolder.getOrCreateInterMutexLock(lockNodeService.generateLocksName(lockName)).tryLock(timeoutMillis);
     }
     
-    private InterMutexLock getInterMutexLock(final String lockName) {
-        return lockHolder.getInterMutexLock(lockNodeService.generateLocksName(lockName));
+    private Optional<InterMutexLock> getInterMutexLock(final String lockName) {
+        return Optional.ofNullable(lockHolder.getInterMutexLock(lockNodeService.generateLocksName(lockName)));
     }
     
     @Override
     public void releaseLock(final String lockName) {
-        getInterMutexLock(lockName).unlock();
+        getInterMutexLock(lockName).ifPresent(InterMutexLock::unlock);
     }
     
     @Override
     public boolean isLocked(final String lockName) {
-        return getInterMutexLock(lockName).isLocked();
+        return getInterMutexLock(lockName).map(InterMutexLock::isLocked).orElse(false);
     }
     
     /**
@@ -90,8 +88,8 @@ public final class ShardingSphereDistributeMutexLock implements ShardingSphereLo
     @Subscribe
     public synchronized void locked(final MutexLockedEvent event) {
         String lockName = event.getLockedName();
-        InterMutexLock interMutexLock = getInterMutexLock(lockName);
         String lockedInstanceId = lockHolder.getCurrentInstanceId();
+        InterMutexLock interMutexLock = lockHolder.getOrCreateInterMutexLock(lockNodeService.generateLocksName(lockName));
         interMutexLock.ackLock(lockNodeService.generateAckLockName(lockName, lockedInstanceId), lockedInstanceId);
     }
     
@@ -103,9 +101,8 @@ public final class ShardingSphereDistributeMutexLock implements ShardingSphereLo
     @Subscribe
     public synchronized void lockReleased(final MutexLockReleasedEvent event) {
         String lockName = event.getLockedName();
-        InterMutexLock interMutexLock = getInterMutexLock(lockName);
         String lockedInstanceId = lockHolder.getCurrentInstanceId();
-        interMutexLock.releaseAckLock(lockNodeService.generateAckLockName(lockName, lockedInstanceId), lockedInstanceId);
+        getInterMutexLock(lockName).ifPresent(mutexLock -> mutexLock.releaseAckLock(lockNodeService.generateAckLockName(lockName, lockedInstanceId), lockedInstanceId));
     }
     
     /**
@@ -115,9 +112,7 @@ public final class ShardingSphereDistributeMutexLock implements ShardingSphereLo
      */
     @Subscribe
     public synchronized void ackLocked(final MutexAckLockedEvent event) {
-        String lockName = event.getLockName();
-        InterMutexLock interMutexLock = getInterMutexLock(lockName);
-        interMutexLock.addLockedInstance(event.getLockedInstance());
+        getInterMutexLock(event.getLockName()).ifPresent(mutexLock -> mutexLock.addLockedInstance(event.getLockedInstance()));
     }
     
     /**
@@ -127,8 +122,6 @@ public final class ShardingSphereDistributeMutexLock implements ShardingSphereLo
      */
     @Subscribe
     public synchronized void ackLockReleased(final MutexAckLockReleasedEvent event) {
-        String lockName = event.getLockName();
-        InterMutexLock interMutexLock = getInterMutexLock(lockName);
-        interMutexLock.removeLockedInstance(event.getLockedInstance());
+        getInterMutexLock(event.getLockName()).ifPresent(mutexLock -> mutexLock.removeLockedInstance(event.getLockedInstance()));
     }
 }

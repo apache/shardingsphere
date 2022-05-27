@@ -20,7 +20,8 @@ package org.apache.shardingsphere.mode.metadata;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.junit.Test;
@@ -39,16 +40,13 @@ import static org.mockito.Mockito.mock;
 @RunWith(MockitoJUnitRunner.class)
 public final class MetaDataContextsTest {
     
-    @Mock
-    private OptimizerContext optimizerContext;
-    
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private ShardingSphereMetaData metaData;
+    private ShardingSphereDatabase database;
     
     @Test
     public void assertGetDefaultMetaData() {
-        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), Collections.singletonMap(DefaultDatabase.LOGIC_NAME, metaData),
-                mock(ShardingSphereRuleMetaData.class), null, optimizerContext, new ConfigurationProperties(new Properties()));
-        assertThat(metaDataContexts.getMetaData(DefaultDatabase.LOGIC_NAME), is(metaData));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(
+                Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties()));
+        assertThat(new MetaDataContexts(mock(MetaDataPersistService.class), metaData, mock(OptimizerContext.class)).getMetaData().getDatabases().get(DefaultDatabase.LOGIC_NAME), is(database));
     }
 }

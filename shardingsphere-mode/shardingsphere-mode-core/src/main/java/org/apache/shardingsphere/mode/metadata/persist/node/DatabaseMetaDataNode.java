@@ -48,7 +48,7 @@ public final class DatabaseMetaDataNode {
      * Get meta data data source path.
      *
      * @param databaseName database name
-     * @param version data source version                  
+     * @param version data source version
      * @return data source path
      */
     public static String getMetaDataDataSourcePath(final String databaseName, final String version) {
@@ -78,7 +78,7 @@ public final class DatabaseMetaDataNode {
      * Get rule path.
      *
      * @param databaseName database name
-     * @param version rule version                  
+     * @param version rule version
      * @return rule path
      */
     public static String getRulePath(final String databaseName, final String version) {

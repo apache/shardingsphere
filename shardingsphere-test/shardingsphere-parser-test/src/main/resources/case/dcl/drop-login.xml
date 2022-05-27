@@ -17,7 +17,7 @@
   -->
 
 <sql-parser-test-cases>
-    <drop-login sql-case-id="drop_login" >
-        <login name="login1" start-index="11" stop-index="16"/>
+    <drop-login sql-case-id="drop_login">
+        <login name="login1" start-index="11" stop-index="16" />
     </drop-login>
 </sql-parser-test-cases>

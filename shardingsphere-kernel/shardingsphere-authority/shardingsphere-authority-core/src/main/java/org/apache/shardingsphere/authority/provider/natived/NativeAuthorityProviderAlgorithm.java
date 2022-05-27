@@ -22,7 +22,7 @@ import org.apache.shardingsphere.authority.model.AuthorityRegistry;
 import org.apache.shardingsphere.authority.provider.natived.builder.StoragePrivilegeBuilder;
 import org.apache.shardingsphere.authority.registry.UserPrivilegeMapAuthorityRegistry;
 import org.apache.shardingsphere.authority.spi.AuthorityProviderAlgorithm;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 
 import java.util.Collection;
@@ -47,8 +47,8 @@ public final class NativeAuthorityProviderAlgorithm implements AuthorityProvider
     }
     
     @Override
-    public AuthorityRegistry buildAuthorityRegistry(final Map<String, ShardingSphereMetaData> metaDataMap, final Collection<ShardingSphereUser> users) {
-        return new UserPrivilegeMapAuthorityRegistry(StoragePrivilegeBuilder.build(new LinkedList<>(metaDataMap.values()), users));
+    public AuthorityRegistry buildAuthorityRegistry(final Map<String, ShardingSphereDatabase> databases, final Collection<ShardingSphereUser> users) {
+        return new UserPrivilegeMapAuthorityRegistry(StoragePrivilegeBuilder.build(new LinkedList<>(databases.values()), users));
     }
     
     @Override

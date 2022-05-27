@@ -47,8 +47,8 @@ public final class CreateTrafficRuleHandler extends UpdatableRALBackendHandler<C
     
     @Override
     protected void update(final ContextManager contextManager, final CreateTrafficRuleStatement sqlStatement) throws DistSQLException {
-        Optional<TrafficRuleConfiguration> trafficRuleConfig = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData()
-                .findRuleConfiguration(TrafficRuleConfiguration.class).stream().findAny();
+        Optional<TrafficRuleConfiguration> trafficRuleConfig = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData()
+                .findRuleConfigurations(TrafficRuleConfiguration.class).stream().findAny();
         if (trafficRuleConfig.isPresent()) {
             checkTrafficRuleConfiguration(sqlStatement, trafficRuleConfig.get());
         }
@@ -77,13 +77,13 @@ public final class CreateTrafficRuleHandler extends UpdatableRALBackendHandler<C
     
     private void updateToRepository(final TrafficRuleConfiguration toBeCreatedRuleConfig, final TrafficRuleConfiguration currentRuleConfig) {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        Collection<RuleConfiguration> globalRuleConfigs = metaDataContexts.getGlobalRuleMetaData().getConfigurations();
+        Collection<RuleConfiguration> globalRuleConfigs = metaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations();
         if (null == currentRuleConfig) {
             globalRuleConfigs.add(toBeCreatedRuleConfig);
         } else {
             setUpCurrentRuleConfiguration(toBeCreatedRuleConfig, currentRuleConfig);
         }
-        Optional<MetaDataPersistService> metaDataPersistService = metaDataContexts.getMetaDataPersistService();
+        Optional<MetaDataPersistService> metaDataPersistService = metaDataContexts.getPersistService();
         metaDataPersistService.ifPresent(optional -> optional.getGlobalRuleService().persist(globalRuleConfigs, true));
     }
     

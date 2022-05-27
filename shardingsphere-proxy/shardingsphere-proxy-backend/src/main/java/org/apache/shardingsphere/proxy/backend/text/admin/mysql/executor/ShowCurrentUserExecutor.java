@@ -50,7 +50,7 @@ public final class ShowCurrentUserExecutor implements DatabaseAdminQueryExecutor
     
     @Override
     public void execute(final ConnectionSession connectionSession) {
-        Collection<ShardingSphereRule> rules = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData().getRules();
+        Collection<ShardingSphereRule> rules = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules();
         Optional<Grantee> grantee = rules.stream().filter(each -> each instanceof AuthorityRule)
                 .map(each -> ((AuthorityRule) each).findUser(connectionSession.getGrantee())).filter(Optional::isPresent)
                 .map(Optional::get).map(ShardingSphereUser::getGrantee).findFirst();

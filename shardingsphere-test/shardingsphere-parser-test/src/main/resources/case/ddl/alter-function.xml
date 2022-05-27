@@ -17,10 +17,10 @@
   -->
 
 <sql-parser-test-cases>
-    <alter-function sql-case-id="alter_function_rename"/>
-    <alter-function sql-case-id="alter_function_owner"/>
-    <alter-function sql-case-id="alter_function_set_schema"/>
-    <alter-function sql-case-id="alter_function_reset"/>
-    <alter-function sql-case-id="alter_function_set"/>
-    <alter-function sql-case-id="alter_function_depend_on"/>
+    <alter-function sql-case-id="alter_function_rename" />
+    <alter-function sql-case-id="alter_function_owner" />
+    <alter-function sql-case-id="alter_function_set_schema" />
+    <alter-function sql-case-id="alter_function_reset" />
+    <alter-function sql-case-id="alter_function_set" />
+    <alter-function sql-case-id="alter_function_depend_on" />
 </sql-parser-test-cases>

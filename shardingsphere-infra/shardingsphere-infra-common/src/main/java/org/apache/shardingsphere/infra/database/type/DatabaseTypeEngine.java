@@ -41,13 +41,13 @@ public final class DatabaseTypeEngine {
     private static final String DEFAULT_DATABASE_TYPE = "MySQL";
     
     /**
-     * Get frontend database type.
+     * Get protocol type.
      *
      * @param databaseConfigs database configs
      * @param props props
-     * @return frontend database type
+     * @return protocol type
      */
-    public static DatabaseType getFrontendDatabaseType(final Map<String, ? extends DatabaseConfiguration> databaseConfigs, final ConfigurationProperties props) {
+    public static DatabaseType getProtocolType(final Map<String, ? extends DatabaseConfiguration> databaseConfigs, final ConfigurationProperties props) {
         Optional<DatabaseType> configuredDatabaseType = findConfiguredDatabaseType(props);
         if (configuredDatabaseType.isPresent()) {
             return configuredDatabaseType.get();
@@ -58,12 +58,12 @@ public final class DatabaseTypeEngine {
     }
     
     /**
-     * Get backend database type.
+     * Get storage type.
      *
      * @param databaseConfigs database configs
-     * @return backend database type
+     * @return storage type
      */
-    public static DatabaseType getBackendDatabaseType(final Map<String, ? extends DatabaseConfiguration> databaseConfigs) {
+    public static DatabaseType getStorageType(final Map<String, ? extends DatabaseConfiguration> databaseConfigs) {
         return getDatabaseType(
                 databaseConfigs.values().stream().filter(DatabaseTypeEngine::isComplete).findFirst().map(optional -> optional.getDataSources().values()).orElseGet(Collections::emptyList));
     }
@@ -134,5 +134,16 @@ public final class DatabaseTypeEngine {
      */
     public static String getTrunkDatabaseTypeName(final DatabaseType databaseType) {
         return databaseType instanceof BranchDatabaseType ? ((BranchDatabaseType) databaseType).getTrunkDatabaseType().getType() : databaseType.getType();
+    }
+    
+    /**
+     * Get default schema name.
+     * 
+     * @param databaseType database type
+     * @param databaseName database name
+     * @return default schema name
+     */
+    public static String getDefaultSchemaName(final DatabaseType databaseType, final String databaseName) {
+        return databaseType instanceof SchemaSupportedDatabaseType ? ((SchemaSupportedDatabaseType) databaseType).getDefaultSchema() : databaseName;
     }
 }
