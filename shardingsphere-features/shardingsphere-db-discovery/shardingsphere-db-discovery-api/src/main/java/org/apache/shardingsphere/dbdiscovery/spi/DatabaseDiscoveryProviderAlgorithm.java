@@ -33,7 +33,6 @@ public interface DatabaseDiscoveryProviderAlgorithm extends ShardingSphereAlgori
      * 
      * @param databaseName database name
      * @param dataSources data sources
-     * @throws SQLException SQL exception
      */
     void checkEnvironment(String databaseName, Collection<DataSource> dataSources);
     
