@@ -22,14 +22,14 @@ import javax.sql.DataSource;
 import org.apache.shardingsphere.data.pipeline.spi.ddlgenerator.DialectDDLGenerator;
 
 public final class DialectDDLGeneratorFixture implements DialectDDLGenerator {
-
+    
     private static final String SHOW_CREATE_SQL = "SHOW CREATE TABLE %s";
-
+    
     @Override
     public String generateDDLSQL(final String tableName, final String schemaName, final DataSource dataSource) throws SQLException {
         return String.format(SHOW_CREATE_SQL, tableName);
     }
-
+    
     @Override
     public String getType() {
         return "FIXTURE";

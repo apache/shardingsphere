@@ -19,29 +19,28 @@ package org.apache.shardingsphere.data.pipeline.spi.ddlgenerator;
 
 import java.sql.SQLException;
 import javax.sql.DataSource;
-import org.apache.shardingsphere.data.pipeline.spi.mock.MockedDataSource;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.test.mock.MockedDataSource;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class DialectDDLGeneratorFactoryTest {
-
-    public static final String TYPE = "FIXTURE";
-
+    
+    public final String TYPE = "FIXTURE";
+    
     @Test
     public void assertFindInstanceWithDialectDDLGenerator() throws SQLException {
-        DataSource dataSource = new MockedDataSource();
+        DataSource dataSource = buildDataSource();
         DatabaseType databaseType = DatabaseTypeFactory.getInstance(TYPE);
         assertTrue(DialectDDLSQLGeneratorFactory.findInstance(databaseType).isPresent());
-        if (DialectDDLSQLGeneratorFactory.findInstance(databaseType).isPresent()) {
-            DialectDDLGenerator dialectDDLGenerator = DialectDDLSQLGeneratorFactory.findInstance(databaseType).get();
-            assertThat(dialectDDLGenerator.generateDDLSQL("tableA", "", dataSource), is("SHOW CREATE TABLE tableA"));
-        }
+        DialectDDLGenerator dialectDDLGenerator = DialectDDLSQLGeneratorFactory.findInstance(databaseType).get();
+        assertThat(dialectDDLGenerator.generateDDLSQL("tableA", "", dataSource), is("SHOW CREATE TABLE tableA"));
+    }
+    
+    public DataSource buildDataSource() {
+        return new MockedDataSource();
     }
 }
