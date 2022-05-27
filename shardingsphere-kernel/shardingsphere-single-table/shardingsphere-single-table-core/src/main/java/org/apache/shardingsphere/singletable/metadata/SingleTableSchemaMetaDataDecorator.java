@@ -18,47 +18,28 @@
 package org.apache.shardingsphere.singletable.metadata;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterials;
-import org.apache.shardingsphere.infra.metadata.database.schema.builder.spi.RuleBasedSchemaMetaDataBuilder;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.SchemaMetaDataLoaderEngine;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.TableMetaDataLoaderMaterial;
+import org.apache.shardingsphere.infra.metadata.database.schema.builder.spi.RuleBasedSchemaMetaDataDecorator;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ConstraintMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtil;
-import org.apache.shardingsphere.infra.metadata.database.schema.util.TableMetaDataUtil;
 import org.apache.shardingsphere.singletable.constant.SingleTableOrder;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 
-import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
- * Schema meta data builder for single table.
+ * Schema meta data decorator for single table.
  */
-public final class SingleTableSchemaMetaDataBuilder implements RuleBasedSchemaMetaDataBuilder<SingleTableRule> {
+public final class SingleTableSchemaMetaDataDecorator implements RuleBasedSchemaMetaDataDecorator<SingleTableRule> {
     
     @Override
-    public Map<String, SchemaMetaData> load(final Collection<String> tableNames, final SingleTableRule rule, final GenericSchemaBuilderMaterials materials) throws SQLException {
-        Collection<String> ruleTables = rule.getTables();
-        Collection<String> needLoadTables = tableNames.stream().filter(ruleTables::contains).collect(Collectors.toSet());
-        if (needLoadTables.isEmpty()) {
-            return Collections.emptyMap();
-        }
-        Collection<TableMetaDataLoaderMaterial> tableMetaDataLoaderMaterials = TableMetaDataUtil.getTableMetaDataLoadMaterial(needLoadTables, materials, false);
-        if (tableMetaDataLoaderMaterials.isEmpty()) {
-            return Collections.emptyMap();
-        }
-        return SchemaMetaDataLoaderEngine.load(tableMetaDataLoaderMaterials, materials.getStorageType());
-    }
-    
-    @Override
-    public Map<String, SchemaMetaData> decorate(final Map<String, SchemaMetaData> schemaMetaDataMap, final SingleTableRule rule, final GenericSchemaBuilderMaterials materials) throws SQLException {
+    public Map<String, SchemaMetaData> decorate(final Map<String, SchemaMetaData> schemaMetaDataMap, final SingleTableRule rule, final GenericSchemaBuilderMaterials materials) {
         Map<String, SchemaMetaData> result = new LinkedHashMap<>();
         for (Entry<String, SchemaMetaData> entry : schemaMetaDataMap.entrySet()) {
             Map<String, TableMetaData> tables = new LinkedHashMap<>(entry.getValue().getTables().size(), 1);

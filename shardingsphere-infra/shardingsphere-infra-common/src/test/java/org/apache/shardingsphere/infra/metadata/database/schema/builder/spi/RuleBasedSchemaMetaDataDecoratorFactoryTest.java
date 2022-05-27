@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.federation.optimizer.metadata.fixture;
+package org.apache.shardingsphere.infra.metadata.database.schema.builder.spi;
 
-import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
+import org.apache.shardingsphere.infra.metadata.database.schema.fixture.loader.CommonFixtureSchemaMetaDataDecorator;
+import org.apache.shardingsphere.infra.metadata.database.schema.fixture.rule.CommonFixtureRule;
+import org.junit.Test;
 
-import java.util.Collection;
 import java.util.Collections;
 
-public final class CommonFixtureRule implements TableContainedRule {
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
+
+public final class RuleBasedSchemaMetaDataDecoratorFactoryTest {
     
-    @Override
-    public Collection<String> getTables() {
-        return Collections.singletonList("t_order_new");
-    }
-    
-    @Override
-    public String getType() {
-        return CommonFixtureRule.class.getSimpleName();
+    @Test
+    public void assertGetInstances() {
+        CommonFixtureRule rule = new CommonFixtureRule();
+        assertThat(RuleBasedSchemaMetaDataDecoratorFactory.getInstances(Collections.singleton(rule)).get(rule), instanceOf(CommonFixtureSchemaMetaDataDecorator.class));
     }
 }

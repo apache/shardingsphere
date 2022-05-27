@@ -25,22 +25,22 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * Rule based schema meta data builder factory.
+ * Rule based schema meta data decorator factory.
  */
-public final class RuleBasedSchemaMetaDataBuilderFactory {
+public final class RuleBasedSchemaMetaDataDecoratorFactory {
     
     static {
-        ShardingSphereServiceLoader.register(RuleBasedSchemaMetaDataBuilder.class);
+        ShardingSphereServiceLoader.register(RuleBasedSchemaMetaDataDecorator.class);
     }
     
     /**
-     * Get instances of rule based schema meta data builder.
+     * Get instances of rule based schema meta data decorator.
      * 
      * @param rules rules
      * @return got instances
      */
     @SuppressWarnings("rawtypes")
-    public static Map<ShardingSphereRule, RuleBasedSchemaMetaDataBuilder> getInstances(final Collection<ShardingSphereRule> rules) {
-        return OrderedSPIRegistry.getRegisteredServices(RuleBasedSchemaMetaDataBuilder.class, rules);
+    public static Map<ShardingSphereRule, RuleBasedSchemaMetaDataDecorator> getInstances(final Collection<ShardingSphereRule> rules) {
+        return OrderedSPIRegistry.getRegisteredServices(RuleBasedSchemaMetaDataDecorator.class, rules);
     }
 }
