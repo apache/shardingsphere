@@ -75,7 +75,7 @@ public final class AuthorityCheckerTest {
         ShardingSphereUser root = new ShardingSphereUser("root", "", "localhost");
         users.add(root);
         AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(users, new ShardingSphereAlgorithmConfiguration("NATIVE", new Properties()));
-        AuthorityRule rule = new AuthorityRule(ruleConfig, createDatabaseMap(users));
+        AuthorityRule rule = new AuthorityRule(ruleConfig, createDatabases(users));
         SQLChecker<AuthorityRule> sqlChecker = SQLCheckerFactory.getInstance(Collections.singleton(rule)).get(rule);
         assertTrue(sqlChecker.check("db0", new Grantee("root", "localhost"), rule));
         assertFalse(sqlChecker.check("db1", new Grantee("root", "localhost"), rule));
@@ -113,7 +113,7 @@ public final class AuthorityCheckerTest {
         assertTrue(sqlChecker.check(createTableStatement, Collections.emptyList(), new Grantee("root", "localhost"), "db0", Collections.emptyMap(), rule).isPassed());
     }
     
-    private Map<String, ShardingSphereDatabase> createDatabaseMap(final Collection<ShardingSphereUser> users) throws SQLException {
+    private Map<String, ShardingSphereDatabase> createDatabases(final Collection<ShardingSphereUser> users) throws SQLException {
         when(database.getName()).thenReturn("db0");
         DataSource dataSource = mockDataSourceForPrivileges(users);
         when(database.getResource().getAllInstanceDataSources()).thenReturn(Collections.singletonList(dataSource));

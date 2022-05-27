@@ -68,8 +68,8 @@ public final class SelectTableExecutorTest extends ProxyContextRestorer {
     
     @Test
     public void assertSelectSchemataExecute() throws SQLException {
-        Map<String, ShardingSphereDatabase> databaseMap = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases();
-        databaseMap.put("public", createDatabase());
+        Map<String, ShardingSphereDatabase> databases = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases();
+        databases.put("public", createDatabase());
         String sql = "SELECT c.oid, n.nspname AS schemaname, c.relname AS tablename from pg_tablespace";
         SelectTableExecutor selectSchemataExecutor = new SelectTableExecutor(sql);
         selectSchemataExecutor.execute(mock(ConnectionSession.class));

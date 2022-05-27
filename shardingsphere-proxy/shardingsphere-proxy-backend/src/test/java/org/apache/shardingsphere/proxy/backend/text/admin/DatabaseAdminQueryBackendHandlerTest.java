@@ -66,7 +66,7 @@ public final class DatabaseAdminQueryBackendHandlerTest extends ProxyContextRest
     @Before
     public void before() {
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
-                new ShardingSphereMetaData(getDatabaseMap(), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())), mock(OptimizerContext.class));
+                new ShardingSphereMetaData(getDatabases(), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())), mock(OptimizerContext.class));
         ContextManager contextManager = new ContextManager(metaDataContexts, mock(TransactionContexts.class), mock(InstanceContext.class));
         ProxyContext.init(contextManager);
         when(connectionSession.getDatabaseName()).thenReturn("db");
@@ -77,7 +77,7 @@ public final class DatabaseAdminQueryBackendHandlerTest extends ProxyContextRest
         handler = new DatabaseAdminQueryBackendHandler(connectionSession, executor);
     }
     
-    private Map<String, ShardingSphereDatabase> getDatabaseMap() {
+    private Map<String, ShardingSphereDatabase> getDatabases() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(result.getName()).thenReturn("db");
         when(result.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());

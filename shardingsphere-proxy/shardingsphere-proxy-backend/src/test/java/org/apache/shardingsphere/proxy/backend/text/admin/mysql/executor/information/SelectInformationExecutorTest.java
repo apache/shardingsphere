@@ -85,9 +85,9 @@ public final class SelectInformationExecutorTest extends ProxyContextRestorer {
         expectedResultSetMap.put("SCHEMA_NAME", "foo_ds");
         expectedResultSetMap.put("DEFAULT_CHARACTER_SET_NAME", "utf8mb4_0900_ai_ci");
         expectedResultSetMap.put("DEFAULT_COLLATION_NAME", "utf8mb4");
-        Map<String, ShardingSphereDatabase> databaseMap = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases();
-        databaseMap.put("sharding_db", createDatabase(expectedResultSetMap));
-        databaseMap.put("database_without_authority", createEmptyDatabase("database_without_authority"));
+        Map<String, ShardingSphereDatabase> databases = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases();
+        databases.put("sharding_db", createDatabase(expectedResultSetMap));
+        databases.put("database_without_authority", createEmptyDatabase("database_without_authority"));
         String sql = "SELECT SCHEMA_NAME, DEFAULT_CHARACTER_SET_NAME, DEFAULT_COLLATION_NAME FROM information_schema.SCHEMATA";
         SelectInformationSchemataExecutor executor = new SelectInformationSchemataExecutor((SelectStatement) sqlParserRule.getSQLParserEngine("MySQL").parse(sql, false), sql);
         executor.execute(connectionSession);
@@ -107,8 +107,8 @@ public final class SelectInformationExecutorTest extends ProxyContextRestorer {
     
     @Test
     public void assertSelectSchemataInSchemaWithoutDataSourceExecute() throws SQLException {
-        Map<String, ShardingSphereDatabase> databaseMap = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases();
-        databaseMap.put("empty_db", createEmptyDatabase("empty_db"));
+        Map<String, ShardingSphereDatabase> databases = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases();
+        databases.put("empty_db", createEmptyDatabase("empty_db"));
         String sql = "SELECT SCHEMA_NAME, DEFAULT_CHARACTER_SET_NAME, DEFAULT_COLLATION_NAME, DEFAULT_ENCRYPTION FROM information_schema.SCHEMATA";
         SelectInformationSchemataExecutor executor = new SelectInformationSchemataExecutor((SelectStatement) sqlParserRule.getSQLParserEngine("MySQL").parse(sql, false), sql);
         executor.execute(connectionSession);
@@ -134,9 +134,9 @@ public final class SelectInformationExecutorTest extends ProxyContextRestorer {
         Map<String, String> expectedResultSetMap = new HashMap<>();
         expectedResultSetMap.put("sn", "foo_ds");
         expectedResultSetMap.put("DEFAULT_CHARACTER_SET_NAME", "utf8mb4");
-        Map<String, ShardingSphereDatabase> databaseMap = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases();
-        databaseMap.put("foo_ds", createDatabase(expectedResultSetMap));
-        databaseMap.put("empty_db", createEmptyDatabase("empty_db"));
+        Map<String, ShardingSphereDatabase> databases = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases();
+        databases.put("foo_ds", createDatabase(expectedResultSetMap));
+        databases.put("empty_db", createEmptyDatabase("empty_db"));
         String sql = "SELECT SCHEMA_NAME AS sn, DEFAULT_CHARACTER_SET_NAME FROM information_schema.SCHEMATA";
         DefaultDatabaseMetadataExecutor executor = new DefaultDatabaseMetadataExecutor(sql);
         executor.execute(connectionSession);
@@ -146,8 +146,8 @@ public final class SelectInformationExecutorTest extends ProxyContextRestorer {
     
     @Test
     public void assertDefaultExecute() throws SQLException {
-        Map<String, ShardingSphereDatabase> databaseMap = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases();
-        databaseMap.put("sharding_db", createDatabase(Collections.singletonMap("support_ndb", "0")));
+        Map<String, ShardingSphereDatabase> databases = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases();
+        databases.put("sharding_db", createDatabase(Collections.singletonMap("support_ndb", "0")));
         String sql = "SELECT COUNT(*) AS support_ndb FROM information_schema.ENGINES WHERE Engine = 'ndbcluster'";
         DefaultDatabaseMetadataExecutor executor = new DefaultDatabaseMetadataExecutor(sql);
         executor.execute(connectionSession);

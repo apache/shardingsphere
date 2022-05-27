@@ -42,10 +42,10 @@ public final class AuthorityRule implements GlobalRule {
     
     private volatile AuthorityRegistry authorityRegistry;
     
-    public AuthorityRule(final AuthorityRuleConfiguration config, final Map<String, ShardingSphereDatabase> databaseMap) {
+    public AuthorityRule(final AuthorityRuleConfiguration config, final Map<String, ShardingSphereDatabase> databases) {
         users = config.getUsers();
         provider = AuthorityProviderAlgorithmFactory.newInstance(config.getProvider());
-        authorityRegistry = provider.buildAuthorityRegistry(databaseMap, config.getUsers());
+        authorityRegistry = provider.buildAuthorityRegistry(databases, config.getUsers());
     }
     
     /**
@@ -70,11 +70,11 @@ public final class AuthorityRule implements GlobalRule {
     /**
      * Refresh authority.
      *
-     * @param databaseMap database map
+     * @param databases databases
      * @param users users
      */
-    public synchronized void refresh(final Map<String, ShardingSphereDatabase> databaseMap, final Collection<ShardingSphereUser> users) {
-        authorityRegistry = provider.buildAuthorityRegistry(databaseMap, users);
+    public synchronized void refresh(final Map<String, ShardingSphereDatabase> databases, final Collection<ShardingSphereUser> users) {
+        authorityRegistry = provider.buildAuthorityRegistry(databases, users);
     }
     
     @Override
