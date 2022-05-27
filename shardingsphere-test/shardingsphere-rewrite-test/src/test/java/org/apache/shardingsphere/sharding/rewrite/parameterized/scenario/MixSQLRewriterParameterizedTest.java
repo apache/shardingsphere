@@ -70,12 +70,12 @@ public final class MixSQLRewriterParameterizedTest extends AbstractSQLRewriterPa
         ShardingSphereSchema result = mock(ShardingSphereSchema.class);
         when(result.getAllTableNames()).thenReturn(Arrays.asList("t_account", "t_account_bak", "t_account_detail"));
         ShardingSphereTable accountTableMetaData = mock(ShardingSphereTable.class);
-        when(accountTableMetaData.getColumns()).thenReturn(createColumnMetaDataMap());
+        when(accountTableMetaData.getColumns()).thenReturn(createColumns());
         when(accountTableMetaData.getIndexes()).thenReturn(Collections.singletonMap("index_name", new ShardingSphereIndex("index_name")));
         when(result.containsTable("t_account")).thenReturn(true);
         when(result.get("t_account")).thenReturn(accountTableMetaData);
         ShardingSphereTable accountBakTableMetaData = mock(ShardingSphereTable.class);
-        when(accountBakTableMetaData.getColumns()).thenReturn(createColumnMetaDataMap());
+        when(accountBakTableMetaData.getColumns()).thenReturn(createColumns());
         when(result.containsTable("t_account_bak")).thenReturn(true);
         when(result.get("t_account_bak")).thenReturn(accountBakTableMetaData);
         when(result.get("t_account_detail")).thenReturn(mock(ShardingSphereTable.class));
@@ -92,7 +92,7 @@ public final class MixSQLRewriterParameterizedTest extends AbstractSQLRewriterPa
     protected void mockDataSource(final Map<String, DataSource> dataSources) {
     }
     
-    private Map<String, ShardingSphereColumn> createColumnMetaDataMap() {
+    private Map<String, ShardingSphereColumn> createColumns() {
         Map<String, ShardingSphereColumn> result = new LinkedHashMap<>(4, 1);
         result.put("account_id", new ShardingSphereColumn("account_id", Types.INTEGER, true, true, false));
         result.put("password", mock(ShardingSphereColumn.class));

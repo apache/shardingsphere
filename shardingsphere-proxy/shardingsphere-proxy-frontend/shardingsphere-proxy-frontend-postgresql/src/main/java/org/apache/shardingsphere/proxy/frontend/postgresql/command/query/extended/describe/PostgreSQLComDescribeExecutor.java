@@ -133,8 +133,8 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         String schemaName = insertStatement.getTable().getOwner().map(optional -> optional.getIdentifier()
                 .getValue()).orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(database.getResource().getDatabaseType(), databaseName));
         ShardingSphereTable table = database.getSchemas().get(schemaName).get(logicTableName);
-        Map<String, ShardingSphereColumn> columnMetaData = table.getColumns();
-        Map<String, ShardingSphereColumn> caseInsensitiveColumnMetaData = null;
+        Map<String, ShardingSphereColumn> columns = table.getColumns();
+        Map<String, ShardingSphereColumn> caseInsensitiveColumns = null;
         List<String> columnNames;
         if (insertStatement.getColumns().isEmpty()) {
             columnNames = new ArrayList<>(table.getColumns().keySet());
@@ -156,12 +156,12 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
                     continue;
                 }
                 String columnName = columnNames.get(columnIndex);
-                ShardingSphereColumn column = columnMetaData.get(columnName);
+                ShardingSphereColumn column = columns.get(columnName);
                 if (null == column) {
-                    if (null == caseInsensitiveColumnMetaData) {
-                        caseInsensitiveColumnMetaData = convertToCaseInsensitiveColumnMetaDataMap(columnMetaData);
+                    if (null == caseInsensitiveColumns) {
+                        caseInsensitiveColumns = convertToCaseInsensitiveColumnMetaDataMap(columns);
                     }
-                    column = caseInsensitiveColumnMetaData.get(columnName);
+                    column = caseInsensitiveColumns.get(columnName);
                 }
                 if (null == column) {
                     String reason = String.format("Column \"%s\" of relation \"%s\" does not exist. Please check the SQL or execute REFRESH TABLE METADATA.", columnName, logicTableName);
@@ -184,9 +184,9 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         return unspecifiedTypeParameterIndexes;
     }
     
-    private Map<String, ShardingSphereColumn> convertToCaseInsensitiveColumnMetaDataMap(final Map<String, ShardingSphereColumn> columnMetaDataMap) {
+    private Map<String, ShardingSphereColumn> convertToCaseInsensitiveColumnMetaDataMap(final Map<String, ShardingSphereColumn> columns) {
         Map<String, ShardingSphereColumn> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-        result.putAll(columnMetaDataMap);
+        result.putAll(columns);
         return result;
     }
     
