@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.lock;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.infra.lock.LockContext;
 
@@ -90,6 +91,6 @@ public final class PipelineSimpleLock {
     }
     
     private String decorateLockName(final String lockName) {
-        return "scaling-" + lockName;
+        return DataPipelineConstants.DATA_PIPELINE_NODE_NAME + "-" + lockName;
     }
 }
