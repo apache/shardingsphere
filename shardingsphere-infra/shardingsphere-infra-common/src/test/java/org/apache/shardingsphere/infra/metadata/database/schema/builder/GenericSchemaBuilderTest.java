@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.fixture.rule.CommonFixtureRule;
 import org.apache.shardingsphere.infra.metadata.database.schema.fixture.rule.DataNodeContainedFixtureRule;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.SchemaMetaDataLoaderEngine;
@@ -98,7 +99,7 @@ public final class GenericSchemaBuilderTest {
         schemaMetaDataLoaderEngine.close();
     }
     
-    private void assertTables(final Map<String, TableMetaData> actual) {
+    private void assertTables(final Map<String, ShardingSphereTable> actual) {
         assertThat(actual.size(), is(2));
         assertTrue(actual.get("data_node_routed_table1").getColumns().isEmpty());
         assertTrue(actual.get("data_node_routed_table2").getColumns().isEmpty());
