@@ -27,12 +27,11 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -49,14 +48,15 @@ public final class SingleTableSchemaMetaDataBuilderTest {
         Collection<ShardingSphereRule> rules = Collections.singletonList(singleTableRule);
         SingleTableSchemaMetaDataDecorator builder = (SingleTableSchemaMetaDataDecorator) RuleBasedSchemaMetaDataDecoratorFactory.getInstances(rules).get(singleTableRule);
         Map<String, SchemaMetaData> schemaMetaDataMap = mockSchemaMetaDataMap();
-        TableMetaData tableMetaData = builder.decorate(schemaMetaDataMap, singleTableRule, mock(GenericSchemaBuilderMaterials.class)).get("sharding_db").getTables().get(TABLE_NAME);
-        List<String> actualColumnNames = new ArrayList<>(tableMetaData.getColumns().keySet());
-        assertThat(tableMetaData.getColumns().get(actualColumnNames.get(0)), is(new ColumnMetaData("id", 4, true, false, false)));
-        assertThat(tableMetaData.getColumns().get(actualColumnNames.get(1)), is(new ColumnMetaData("name", 12, false, false, false)));
-        assertThat(tableMetaData.getColumns().get(actualColumnNames.get(2)), is(new ColumnMetaData("doc", -1, false, false, false)));
+        TableMetaData tableMetaData = builder.decorate(schemaMetaDataMap, singleTableRule, mock(GenericSchemaBuilderMaterials.class)).get("sharding_db").getTables().iterator().next();
+        Iterator<ColumnMetaData> columnsIterator = tableMetaData.getColumns().iterator();
+        assertThat(columnsIterator.next(), is(new ColumnMetaData("id", 4, true, false, false)));
+        assertThat(columnsIterator.next(), is(new ColumnMetaData("name", 12, false, false, false)));
+        assertThat(columnsIterator.next(), is(new ColumnMetaData("doc", -1, false, false, false)));
         assertThat(tableMetaData.getIndexes().size(), is(2));
-        assertThat(tableMetaData.getIndexes().get("id"), is(new IndexMetaData("id")));
-        assertThat(tableMetaData.getIndexes().get("idx_name"), is(new IndexMetaData("idx_name")));
+        Iterator<IndexMetaData> indexesIterator = tableMetaData.getIndexes().iterator();
+        assertThat(indexesIterator.next(), is(new IndexMetaData("id")));
+        assertThat(indexesIterator.next(), is(new IndexMetaData("idx_name")));
     }
     
     private Map<String, SchemaMetaData> mockSchemaMetaDataMap() {
@@ -64,8 +64,8 @@ public final class SingleTableSchemaMetaDataBuilderTest {
                 new ColumnMetaData("name", 12, false, false, false),
                 new ColumnMetaData("doc", -1, false, false, false));
         Collection<IndexMetaData> indexMetaDataList = Arrays.asList(new IndexMetaData("id_" + TABLE_NAME), new IndexMetaData("idx_name_" + TABLE_NAME));
-        Map<String, TableMetaData> tableMetaDataMap = new LinkedHashMap<>();
-        tableMetaDataMap.put(TABLE_NAME, new TableMetaData(TABLE_NAME, columns, indexMetaDataList, Collections.emptyList()));
-        return Collections.singletonMap("sharding_db", new SchemaMetaData("sharding_db", tableMetaDataMap));
+        Collection<TableMetaData> tableMetaDataList = new LinkedList<>();
+        tableMetaDataList.add(new TableMetaData(TABLE_NAME, columns, indexMetaDataList, Collections.emptyList()));
+        return Collections.singletonMap("sharding_db", new SchemaMetaData("sharding_db", tableMetaDataList));
     }
 }

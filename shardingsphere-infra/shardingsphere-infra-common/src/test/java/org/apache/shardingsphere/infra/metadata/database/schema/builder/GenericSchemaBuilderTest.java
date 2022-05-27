@@ -41,7 +41,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 
@@ -107,11 +107,11 @@ public final class GenericSchemaBuilderTest {
     
     private Map<String, SchemaMetaData> mockSchemaMetaDataMap(final Collection<String> tableNames, final GenericSchemaBuilderMaterials materials) {
         if (!tableNames.isEmpty() && (tableNames.contains("data_node_routed_table1") || tableNames.contains("data_node_routed_table2"))) {
-            Map<String, TableMetaData> tableMetaDataMap = new LinkedHashMap<>();
+            Collection<TableMetaData> tableMetaDataList = new LinkedList<>();
             for (String each : tableNames) {
-                tableMetaDataMap.put(each, new TableMetaData(each, Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
+                tableMetaDataList.add(new TableMetaData(each, Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
             }
-            return Collections.singletonMap(materials.getDefaultSchemaName(), new SchemaMetaData(materials.getDefaultSchemaName(), tableMetaDataMap));
+            return Collections.singletonMap(materials.getDefaultSchemaName(), new SchemaMetaData(materials.getDefaultSchemaName(), tableMetaDataList));
         }
         return Collections.emptyMap();
     }

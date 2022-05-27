@@ -36,7 +36,9 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -105,17 +107,16 @@ public final class TableMetaDataLoaderTest {
         when(databaseType.formatTableNamePattern(TEST_TABLE)).thenReturn(TEST_TABLE);
         Map<String, SchemaMetaData> actual = SchemaMetaDataLoaderEngine.load(Collections.singletonList(
                 new SchemaMetaDataLoaderMaterials(Collections.singletonList(TEST_TABLE), dataSource, "sharding_db")), databaseType);
-        assertFalse(actual.isEmpty());
-        assertTrue(actual.containsKey("sharding_db"));
-        assertTrue(actual.get("sharding_db").getTables().containsKey(TEST_TABLE));
-        TableMetaData tableMetaData = actual.get("sharding_db").getTables().get(TEST_TABLE);
-        Map<String, ColumnMetaData> columnMetaDataMap = tableMetaData.getColumns();
-        assertThat(columnMetaDataMap.size(), is(2));
-        assertColumnMetaData(columnMetaDataMap.get("pk_col"), "pk_col", Types.INTEGER, true, true);
-        assertColumnMetaData(columnMetaDataMap.get("col"), "col", Types.VARCHAR, false, false);
-        Map<String, IndexMetaData> indexMetaDataMap = tableMetaData.getIndexes();
-        assertThat(indexMetaDataMap.size(), is(1));
-        assertTrue(indexMetaDataMap.containsKey("my_index"));
+        TableMetaData tableMetaData = actual.get("sharding_db").getTables().iterator().next();
+        Collection<ColumnMetaData> columns = tableMetaData.getColumns();
+        assertThat(columns.size(), is(2));
+        Iterator<ColumnMetaData> columnsIterator = columns.iterator();
+        assertColumnMetaData(columnsIterator.next(), "pk_col", Types.INTEGER, true, true);
+        assertColumnMetaData(columnsIterator.next(), "col", Types.VARCHAR, false, false);
+        Collection<IndexMetaData> indexes = tableMetaData.getIndexes();
+        assertThat(indexes.size(), is(1));
+        Iterator<IndexMetaData> indexesIterator = indexes.iterator();
+        assertThat(indexesIterator.next().getName(), is("my_index"));
     }
     
     private void assertColumnMetaData(final ColumnMetaData actual, final String name, final int dataType, final boolean primaryKey, final boolean caseSensitive) {

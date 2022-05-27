@@ -32,8 +32,8 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -51,28 +51,31 @@ public final class EncryptSchemaMetaDataDecoratorTest {
     public void assertDecorate() {
         EncryptRule rule = createEncryptRule();
         EncryptSchemaMetaDataDecorator loader = getEncryptMetaDataBuilder(rule, Collections.singleton(rule));
-        Map<String, TableMetaData> tableMetaDataMap = new LinkedHashMap<>();
-        tableMetaDataMap.put("t_encrypt", createTableMetaData());
+        Collection<TableMetaData> tableMetaDataList = new LinkedList<>();
+        tableMetaDataList.add(createTableMetaData());
         TableMetaData actual = loader.decorate(Collections.singletonMap("logic_db",
-                new SchemaMetaData("logic_db", tableMetaDataMap)), rule, mock(GenericSchemaBuilderMaterials.class)).get("logic_db").getTables().get("t_encrypt");
+                new SchemaMetaData("logic_db", tableMetaDataList)), rule, mock(GenericSchemaBuilderMaterials.class)).get("logic_db").getTables().iterator().next();
         assertThat(actual.getColumns().size(), is(2));
-        assertTrue(actual.getColumns().containsKey("id"));
-        assertTrue(actual.getColumns().containsKey("pwd"));
+        Iterator<ColumnMetaData> columnsIterator = actual.getColumns().iterator();
+        assertThat(columnsIterator.next().getName(), is("id"));
+        assertThat(columnsIterator.next().getName(), is("pwd"));
     }
     
     @Test
     public void assertDecorateWithConfigDataType() {
         EncryptRule rule = createEncryptRuleWithDataTypeConfig();
         EncryptSchemaMetaDataDecorator loader = getEncryptMetaDataBuilder(rule, Collections.singleton(rule));
-        Map<String, TableMetaData> tableMetaDataMap = new LinkedHashMap<>();
-        tableMetaDataMap.put("t_encrypt", createTableMetaData());
+        Collection<TableMetaData> tableMetaDataList = new LinkedList<>();
+        tableMetaDataList.add(createTableMetaData());
         GenericSchemaBuilderMaterials materials = mock(GenericSchemaBuilderMaterials.class, RETURNS_DEEP_STUBS);
         TableMetaData actual = loader.decorate(Collections.singletonMap("logic_db",
-                new SchemaMetaData("logic_db", tableMetaDataMap)), rule, materials).get("logic_db").getTables().get("t_encrypt");
+                new SchemaMetaData("logic_db", tableMetaDataList)), rule, materials).get("logic_db").getTables().iterator().next();
         assertThat(actual.getColumns().size(), is(2));
-        assertTrue(actual.getColumns().containsKey("id"));
-        assertTrue(actual.getColumns().containsKey("pwd"));
-        assertThat(actual.getColumns().get("pwd").getDataType(), is(12));
+        Iterator<ColumnMetaData> columnsIterator = actual.getColumns().iterator();
+        assertThat(columnsIterator.next().getName(), is("id"));
+        ColumnMetaData columnMetaData = columnsIterator.next();
+        assertThat(columnMetaData.getName(), is("pwd"));
+        assertThat(columnMetaData.getDataType(), is(12));
     }
     
     private EncryptRule createEncryptRuleWithDataTypeConfig() {

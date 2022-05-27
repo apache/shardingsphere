@@ -41,15 +41,15 @@ import java.util.stream.Collectors;
 public class SchemaMetaDataUtil {
     
     /**
-     * Get schema meta data load materials.
+     * Get schema meta data loader materials.
      *
      * @param tableNames table name collection
      * @param materials materials
      * @param checkMetaDataEnable check meta data enable config
-     * @return schema meta data load materials
+     * @return schema meta data loader materials
      */
-    public static Collection<SchemaMetaDataLoaderMaterials> getSchemaMetaDataLoadMaterials(final Collection<String> tableNames,
-                                                                                           final GenericSchemaBuilderMaterials materials, final boolean checkMetaDataEnable) {
+    public static Collection<SchemaMetaDataLoaderMaterials> getSchemaMetaDataLoaderMaterials(final Collection<String> tableNames,
+                                                                                             final GenericSchemaBuilderMaterials materials, final boolean checkMetaDataEnable) {
         Map<String, Collection<String>> dataSourceTableGroups = new LinkedHashMap<>();
         DataNodes dataNodes = new DataNodes(materials.getRules());
         for (String each : tableNames) {
