@@ -67,20 +67,21 @@ public final class MGRMySQLDatabaseDiscoveryProviderAlgorithm implements Databas
     
     @Override
     public void checkEnvironment(final String databaseName, final Collection<DataSource> dataSources) {
-        dataSources.forEach(each -> runAsyncCheckEnvironment(databaseName, each, ExecutorEngine.createExecutorEngineWithCPUAndResources(dataSources.size()).getExecutorServiceManager().getExecutorService()));
+        ExecutorService executorService = ExecutorEngine.createExecutorEngineWithCPUAndResources(dataSources.size()).getExecutorServiceManager().getExecutorService();
+        dataSources.forEach(each -> runAsyncCheckEnvironment(databaseName, each, executorService));
     }
     
     private void runAsyncCheckEnvironment(final String databaseName, final DataSource dataSource, final ExecutorService executorService) {
         CompletableFuture.runAsync(() -> {
             try {
-                checkEnvironment(databaseName, dataSource);
+                checkSingleDatasourceEnvironment(databaseName, dataSource);
             } catch (SQLException ex) {
                 throw new ShardingSphereException(ex);
             }
         }, executorService);
     }
     
-    private void checkEnvironment(final String databaseName, final DataSource dataSource) throws SQLException {
+    private void checkSingleDatasourceEnvironment(final String databaseName, final DataSource dataSource) throws SQLException {
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {

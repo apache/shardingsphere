@@ -57,9 +57,10 @@ public final class MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm impl
     
     @Override
     public void checkEnvironment(final String databaseName, final Collection<DataSource> dataSources) {
+        ExecutorService executorService = ExecutorEngine.createExecutorEngineWithCPUAndResources(dataSources.size()).getExecutorServiceManager().getExecutorService();
         Collection<CompletableFuture<Collection<String>>> completableFutures = new LinkedList<>();
         for (DataSource dataSource : dataSources) {
-            completableFutures.add(supplyAsyncCheckEnvironment(dataSource, ExecutorEngine.createExecutorEngineWithCPUAndResources(dataSources.size()).getExecutorServiceManager().getExecutorService()));
+            completableFutures.add(supplyAsyncCheckEnvironment(dataSource, executorService));
         }
         CompletableFuture.allOf(completableFutures.toArray(new CompletableFuture[0]));
         Iterator<CompletableFuture<Collection<String>>> replicationInstancesFuture = completableFutures.stream().iterator();
@@ -69,11 +70,11 @@ public final class MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm impl
                 replicationGroupCount++;
             }
         }
-        Preconditions.checkState(1 == replicationGroupCount,  "Check Environment are failed in database `%s`.", databaseName);
+        Preconditions.checkState(1 == replicationGroupCount, "Check Environment are failed in database `%s`.", databaseName);
     }
     
     private CompletableFuture<Collection<String>> supplyAsyncCheckEnvironment(final DataSource dataSource, final ExecutorService executorService) {
-        return CompletableFuture.supplyAsync(()-> {
+        return CompletableFuture.supplyAsync(() -> {
             try {
                 return getReplicationInstances(dataSource);
             } catch (SQLException ex) {

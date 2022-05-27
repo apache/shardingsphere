@@ -44,10 +44,10 @@ public final class MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithmTest 
     private DataSource mockDataSource() throws SQLException {
         DataSource result = mock(DataSource.class, RETURNS_DEEP_STUBS);
         ResultSet resultSet = mock(ResultSet.class);
-        when(result.getConnection().createStatement().executeQuery("SHOW SLAVE STATUS")).thenReturn(resultSet);
+        when(result.getConnection().createStatement().executeQuery("SHOW SLAVE HOSTS")).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true, false);
-        when(resultSet.getString("Master_Host")).thenReturn("127.0.0.1");
-        when(resultSet.getString("Master_Port")).thenReturn("3306");
+        when(resultSet.getString("Host")).thenReturn("127.0.0.1");
+        when(resultSet.getString("Port")).thenReturn("3306");
         when(result.getConnection().getMetaData().getURL()).thenReturn("jdbc:mysql://127.0.0.1:3306/foo_ds");
         return result;
     }
