@@ -2361,8 +2361,7 @@ createPFile
     ;
 
 createControlFile
-    : CREATE CONTROLFILE REUSE? SET? DATABASE databaseName logfileForControlClause?
-    ( RESETLOGS | NORESETLOGS) (DATAFILE fileSpecifications)?
+    : CREATE CONTROLFILE REUSE? SET? DATABASE databaseName logfileForControlClause? resetLogsOrNot
     ( MAXLOGFILES INTEGER_
     | MAXLOGMEMBERS INTEGER_
     | MAXLOGHISTORY INTEGER_
@@ -2375,6 +2374,10 @@ createControlFile
     )*
     characterSetClause?
     ;
+
+resetLogsOrNot
+   :  ( RESETLOGS | NORESETLOGS) (DATAFILE fileSpecifications)?
+   ;
 
 logfileForControlClause
     : LOGFILE (GROUP INTEGER_)? fileSpecification (COMMA_ (GROUP INTEGER_)? fileSpecification)+
