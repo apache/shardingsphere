@@ -48,12 +48,12 @@ import java.util.concurrent.TimeUnit;
 public final class SchemaMetaDataLoaderEngine {
     
     private static final ExecutorService EXECUTOR_SERVICE = new ThreadPoolExecutor(Runtime.getRuntime().availableProcessors() * 2, Runtime.getRuntime().availableProcessors() * 2,
-            0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(), new ThreadFactoryBuilder().setDaemon(true).setNameFormat("ShardingSphere-TableMetaDataLoaderEngine-%d").build());
+            0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(), new ThreadFactoryBuilder().setDaemon(true).setNameFormat("ShardingSphere-SchemaMetaDataLoaderEngine-%d").build());
     
     /**
      * Load schema meta data.
      *
-     * @param materials table meta data load material
+     * @param materials schema meta data load materials
      * @param databaseType database type
      * @return schema meta data map
      * @throws SQLException SQL exception
@@ -64,7 +64,7 @@ public final class SchemaMetaDataLoaderEngine {
             try {
                 return loadByDialect(dialectTableMetaDataLoader.get(), materials);
             } catch (final SQLException | ShardingSphereException ex) {
-                log.error("Dialect load table meta data error", ex);
+                log.error("Dialect load table meta data error.", ex);
                 return loadByDefault(materials, databaseType);
             }
         }
