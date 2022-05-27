@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CloseStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
- * OpenGauss close statement.
+ * PostgreSQL close statement.
  */
 @ToString
-public final class OpenGaussCloseStatement extends CloseStatement implements OpenGaussStatement {
+public final class PostgreSQLCloseStatement extends CloseStatement implements PostgreSQLStatement {
 }

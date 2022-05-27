@@ -15,15 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CloseStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.cursor.CursorNameSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * OpenGauss close statement.
+ * Close statement.
  */
 @ToString
-public final class OpenGaussCloseStatement extends CloseStatement implements OpenGaussStatement {
+@Getter
+@Setter
+public abstract class CloseStatement extends AbstractSQLStatement implements DDLStatement {
+    
+    private CursorNameSegment cursorName;
 }
