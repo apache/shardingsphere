@@ -49,6 +49,7 @@ public final class FederationTableMetaData {
     public FederationTableMetaData(final String name, final ShardingSphereTable tableMetaData) {
         this.name = name;
         relProtoDataType = createRelProtoDataType(tableMetaData);
+        // TODO consider using keySet when ShardingSphere supports column name case sensitivity
         columnNames = tableMetaData.getColumns().values().stream().map(ShardingSphereColumn::getName).collect(Collectors.toList());
     }
     
