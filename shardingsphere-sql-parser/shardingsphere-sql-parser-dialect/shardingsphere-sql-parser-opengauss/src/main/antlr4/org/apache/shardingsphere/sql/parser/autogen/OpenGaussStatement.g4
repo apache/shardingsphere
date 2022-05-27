@@ -126,5 +126,6 @@ execute
     | createDirectory
     | alterDirectory
     | dropDirectory
+    | createCast
     ) SEMI_? EOF
     ;
