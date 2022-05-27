@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.transaction.utils;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
@@ -27,9 +25,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectState
 /**
  * Auto commit utils.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AutoCommitUtils {
-    
     
     /**
      * Judge whether to start a new transaction.
