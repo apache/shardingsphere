@@ -6,11 +6,11 @@ weight = 6
 ## Syntax
 
 ```sql
-SHOW SHADOW shadowRule | RULES [FROM schemaName]
+SHOW SHADOW shadowRule | RULES [FROM databaseName]
 
-SHOW SHADOW TABLE RULES [FROM schemaName]
+SHOW SHADOW TABLE RULES [FROM databaseName]
 
-SHOW SHADOW ALGORITHMS [FROM schemaName]
+SHOW SHADOW ALGORITHMS [FROM databaseName]
 
 shadowRule: 
     RULE ruleName
