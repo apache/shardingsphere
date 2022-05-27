@@ -176,6 +176,7 @@ public abstract class BaseITCase {
         executeWithLog(addTargetResource);
         List<Map<String, Object>> resources = queryForListWithLog("SHOW SCHEMA RESOURCES from sharding_db");
         assertThat(resources.size(), is(5));
+        assertBeforeApplyScalingMetadataCorrectly();
     }
     
     private String getActualJdbcUrlTemplate(final String databaseName) {
@@ -195,8 +196,9 @@ public abstract class BaseITCase {
         executeWithLog(getCommonSQLCommand().getCreateOrderItemShardingAlgorithm());
     }
     
-    protected void createAllSharingTableRule() {
+    protected void getCreateOrderWithItemSharingTableRule() {
         executeWithLog(commonSQLCommand.getCreateOrderWithItemSharingTableRule());
+        assertBeforeApplyScalingMetadataCorrectly();
     }
     
     protected void createOrderSharingTableRule() {
@@ -233,8 +235,10 @@ public abstract class BaseITCase {
     protected void assertBeforeApplyScalingMetadataCorrectly() {
         List<Map<String, Object>> previewResults = queryForListWithLog("PREVIEW SELECT COUNT(1) FROM t_order");
         Set<Object> actualSources = previewResults.stream().map(each -> each.get("actual_sql")).collect(Collectors.toSet());
-        assertThat(previewResults.stream().map(each -> each.get("data_source_name")).collect(Collectors.toSet()), is(new HashSet<>(Arrays.asList("ds_0", "ds_1"))));
-        assertThat(actualSources, is(new HashSet<>(Collections.singletonList("SELECT COUNT(1) FROM t_order_0 UNION ALL SELECT COUNT(1) FROM t_order_1"))));
+        assertThat("data_source_name name not correct, it's effective early, search watcher failed get more info",
+                previewResults.stream().map(each -> each.get("data_source_name")).collect(Collectors.toSet()), is(new HashSet<>(Arrays.asList("ds_0", "ds_1"))));
+        assertThat("actual_sql not correct, it's effective early, search watcher failed get more info", actualSources,
+                is(new HashSet<>(Collections.singletonList("SELECT COUNT(1) FROM t_order_0 UNION ALL SELECT COUNT(1) FROM t_order_1"))));
     }
     
     /**
