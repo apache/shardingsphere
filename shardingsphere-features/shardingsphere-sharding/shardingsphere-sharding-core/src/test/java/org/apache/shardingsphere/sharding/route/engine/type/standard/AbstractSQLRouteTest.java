@@ -74,18 +74,18 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
     }
     
     private Map<String, ShardingSphereSchema> buildSchemas() {
-        Map<String, ShardingSphereTable> tableMetaDataMap = new HashMap<>(3, 1);
-        tableMetaDataMap.put("t_order", new ShardingSphereTable("t_order", Arrays.asList(new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false),
+        Map<String, ShardingSphereTable> tables = new HashMap<>(3, 1);
+        tables.put("t_order", new ShardingSphereTable("t_order", Arrays.asList(new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false),
                 new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false),
                 new ShardingSphereColumn("status", Types.INTEGER, false, false, false)), Collections.emptyList(), Collections.emptyList()));
-        tableMetaDataMap.put("t_order_item", new ShardingSphereTable("t_order_item", Arrays.asList(new ShardingSphereColumn("item_id", Types.INTEGER, true, false, false),
+        tables.put("t_order_item", new ShardingSphereTable("t_order_item", Arrays.asList(new ShardingSphereColumn("item_id", Types.INTEGER, true, false, false),
                 new ShardingSphereColumn("order_id", Types.INTEGER, false, false, false),
                 new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false),
                 new ShardingSphereColumn("status", Types.VARCHAR, false, false, false),
                 new ShardingSphereColumn("c_date", Types.TIMESTAMP, false, false, false)), Collections.emptyList(), Collections.emptyList()));
-        tableMetaDataMap.put("t_other", new ShardingSphereTable("t_other", Collections.singletonList(
+        tables.put("t_other", new ShardingSphereTable("t_other", Collections.singletonList(
                 new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false)), Collections.emptyList(), Collections.emptyList()));
-        tableMetaDataMap.put("t_category", new ShardingSphereTable("t_category", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
-        return Collections.singletonMap(DefaultDatabase.LOGIC_NAME, new ShardingSphereSchema(tableMetaDataMap));
+        tables.put("t_category", new ShardingSphereTable("t_category", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
+        return Collections.singletonMap(DefaultDatabase.LOGIC_NAME, new ShardingSphereSchema(tables));
     }
 }

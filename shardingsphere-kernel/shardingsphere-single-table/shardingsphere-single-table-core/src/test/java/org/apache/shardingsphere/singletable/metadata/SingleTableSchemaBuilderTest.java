@@ -119,10 +119,10 @@ public final class SingleTableSchemaBuilderTest {
     }
     
     private void assertActualOfSingleTables(final Collection<ShardingSphereTable> actual) {
-        Map<String, ShardingSphereTable> tableMetaDataMap = actual.stream().collect(Collectors.toMap(ShardingSphereTable::getName, v -> v));
-        assertTrue(tableMetaDataMap.containsKey(singleTableNames[0]));
-        assertFalse(tableMetaDataMap.get(singleTableNames[0]).getColumns().isEmpty());
-        assertTrue(tableMetaDataMap.containsKey(singleTableNames[1]));
-        assertFalse(tableMetaDataMap.get(singleTableNames[1]).getColumns().isEmpty());
+        Map<String, ShardingSphereTable> tables = actual.stream().collect(Collectors.toMap(ShardingSphereTable::getName, v -> v));
+        assertTrue(tables.containsKey(singleTableNames[0]));
+        assertFalse(tables.get(singleTableNames[0]).getColumns().isEmpty());
+        assertTrue(tables.containsKey(singleTableNames[1]));
+        assertFalse(tables.get(singleTableNames[1]).getColumns().isEmpty());
     }
 }
