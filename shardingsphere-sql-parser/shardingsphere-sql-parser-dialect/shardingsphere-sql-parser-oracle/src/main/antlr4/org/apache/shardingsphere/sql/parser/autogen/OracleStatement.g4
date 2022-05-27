@@ -91,5 +91,6 @@ execute
     | createContext
     | createSPFile
     | createPFile
+    | createControlFile
     ) SEMI_?
     ;

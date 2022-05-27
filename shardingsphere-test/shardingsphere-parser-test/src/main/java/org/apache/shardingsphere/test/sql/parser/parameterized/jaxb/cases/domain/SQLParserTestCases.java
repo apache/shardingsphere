@@ -213,6 +213,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.RenameStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.RenameTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.TruncateStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateControlFileStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AddShardingHintDatabaseValueStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AddShardingHintTableValueStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AlterInstanceStatementTestCase;
@@ -1353,6 +1354,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "create-pfile")
     private final List<CreatePFileStatementTestCase> createPFileTestCases = new LinkedList<>();
     
+    @XmlElement(name = "create-control-file")
+    private final List<CreateControlFileStatementTestCase> createControlFileTestCases = new LinkedList<>();
+    
     @XmlElement(name = "cursor")
     private final List<CursorStatementTestCase> cursorTestCases = new LinkedList<>();
     
@@ -1704,6 +1708,7 @@ public final class SQLParserTestCases {
         putAll(createContextTestCases, result);
         putAll(createSPFileTestCases, result);
         putAll(createPFileTestCases, result);
+        putAll(createControlFileTestCases, result);
         putAll(cursorTestCases, result);
         putAll(closeTestCases, result);
         putAll(moveTestCases, result);
