@@ -107,7 +107,7 @@ public final class GenericSchemaBuilder {
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private static Map<String, SchemaMetaData> decorate(final Map<String, SchemaMetaData> schemaMetaDataMap, final GenericSchemaBuilderMaterials materials) throws SQLException {
+    private static Map<String, SchemaMetaData> decorate(final Map<String, SchemaMetaData> schemaMetaDataMap, final GenericSchemaBuilderMaterials materials) {
         Map<String, SchemaMetaData> result = new LinkedHashMap<>(schemaMetaDataMap);
         for (Entry<ShardingSphereRule, RuleBasedSchemaMetaDataDecorator> entry : RuleBasedSchemaMetaDataDecoratorFactory.getInstances(materials.getRules()).entrySet()) {
             if (!(entry.getKey() instanceof TableContainedRule)) {
