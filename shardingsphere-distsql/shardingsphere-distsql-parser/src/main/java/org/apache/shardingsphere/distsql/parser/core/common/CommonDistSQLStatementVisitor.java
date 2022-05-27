@@ -335,15 +335,15 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     public ASTNode visitRefreshTableMetadata(final RefreshTableMetadataContext ctx) {
         if (null == ctx.refreshScope()) {
             return new RefreshTableMetadataStatement();
-        } 
-        String tableName = getIdentifierValue(ctx.refreshScope().tableName()); 
+        }
+        String tableName = getIdentifierValue(ctx.refreshScope().tableName());
         String databaseName = null;
-        String schemaName = null; 
+        String schemaName = null;
         if (null != ctx.refreshScope().fromSegment()) {
             FromSegmentContext fromSegment = ctx.refreshScope().fromSegment();
             databaseName = getIdentifierValue(fromSegment.resourceName());
             schemaName = null == fromSegment.schemaName() ? null : getIdentifierValue(fromSegment.schemaName());
-        } 
+        }
         return new RefreshTableMetadataStatement(tableName, databaseName, schemaName);
     }
     
