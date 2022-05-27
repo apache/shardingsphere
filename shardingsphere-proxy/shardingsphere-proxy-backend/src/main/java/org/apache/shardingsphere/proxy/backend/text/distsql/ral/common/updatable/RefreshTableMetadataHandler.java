@@ -44,8 +44,7 @@ public final class RefreshTableMetadataHandler extends UpdatableRALBackendHandle
     
     @Override
     protected void update(final ContextManager contextManager, final RefreshTableMetadataStatement sqlStatement) throws DistSQLException {
-        String databaseName = getDatabaseName();
-        String schemaName = DatabaseTypeEngine.getDefaultSchemaName(connectionSession.getDatabaseType(), databaseName);
+        String databaseName = getDatabaseName(); String schemaName = getSchemaName(sqlStatement, databaseName);
         if (sqlStatement.getResourceName().isPresent()) {
             contextManager.reloadMetaData(databaseName, schemaName, sqlStatement.getTableName().get(), sqlStatement.getResourceName().get());
             return;
@@ -66,5 +65,11 @@ public final class RefreshTableMetadataHandler extends UpdatableRALBackendHandle
             throw new UnknownDatabaseException(result);
         }
         return result;
+    }
+    
+    private String getSchemaName(final RefreshTableMetadataStatement sqlStatement, final String databaseName) {
+        if (sqlStatement.getSchemaName().isPresent()) {
+            return sqlStatement.getSchemaName().get();
+        } return DatabaseTypeEngine.getDefaultSchemaName(connectionSession.getDatabaseType(), databaseName);
     }
 }
