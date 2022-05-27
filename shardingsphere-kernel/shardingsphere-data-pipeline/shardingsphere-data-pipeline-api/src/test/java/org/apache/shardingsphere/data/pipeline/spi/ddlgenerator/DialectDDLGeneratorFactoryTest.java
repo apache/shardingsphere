@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.spi.ddlgenerator;
 
 import java.sql.SQLException;
-import javax.sql.DataSource;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
@@ -33,14 +32,9 @@ public final class DialectDDLGeneratorFactoryTest {
     
     @Test
     public void assertFindInstanceWithDialectDDLGenerator() throws SQLException {
-        DataSource dataSource = buildDataSource();
         DatabaseType databaseType = DatabaseTypeFactory.getInstance(TYPE);
         assertTrue(DialectDDLSQLGeneratorFactory.findInstance(databaseType).isPresent());
         DialectDDLGenerator dialectDDLGenerator = DialectDDLSQLGeneratorFactory.findInstance(databaseType).get();
-        assertThat(dialectDDLGenerator.generateDDLSQL("tableA", "", dataSource), is("SHOW CREATE TABLE tableA"));
-    }
-    
-    public DataSource buildDataSource() {
-        return new MockedDataSource();
+        assertThat(dialectDDLGenerator.generateDDLSQL("tableA", "", new MockedDataSource()), is("SHOW CREATE TABLE tableA"));
     }
 }
