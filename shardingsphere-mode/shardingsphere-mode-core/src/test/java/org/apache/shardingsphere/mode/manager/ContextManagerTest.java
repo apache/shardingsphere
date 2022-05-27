@@ -171,8 +171,8 @@ public final class ContextManagerTest {
     
     @Test
     public void assertAlterResource() throws SQLException {
-        Map<String, ShardingSphereDatabase> originalDatabaseMap = new HashMap<>(Collections.singletonMap("foo_db", createOriginalDatabaseMetaData()));
-        when(metaDataContexts.getMetaData().getDatabases()).thenReturn(originalDatabaseMap);
+        Map<String, ShardingSphereDatabase> originalDatabases = new HashMap<>(Collections.singletonMap("foo_db", createOriginalDatabaseMetaData()));
+        when(metaDataContexts.getMetaData().getDatabases()).thenReturn(originalDatabases);
         contextManager.alterResource("foo_db", Collections.singletonMap("bar_ds", new DataSourceProperties(MockedDataSource.class.getName(), createProperties("test", "test"))));
         assertAlteredDataSource((MockedDataSource) contextManager.getMetaDataContexts().getMetaData().getDatabases().get("foo_db").getResource().getDataSources().get("bar_ds"));
     }

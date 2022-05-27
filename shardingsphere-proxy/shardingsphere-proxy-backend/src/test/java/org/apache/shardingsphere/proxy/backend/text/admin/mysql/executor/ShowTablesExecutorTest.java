@@ -59,15 +59,15 @@ public final class ShowTablesExecutorTest extends ProxyContextRestorer {
     
     @Before
     public void setUp() {
-        Map<String, ShardingSphereDatabase> databaseMap = getDatabaseMap();
+        Map<String, ShardingSphereDatabase> databases = getDatabases();
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
-                new ShardingSphereMetaData(databaseMap, mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())), mock(OptimizerContext.class));
+                new ShardingSphereMetaData(databases, mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())), mock(OptimizerContext.class));
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
     }
     
-    private Map<String, ShardingSphereDatabase> getDatabaseMap() {
+    private Map<String, ShardingSphereDatabase> getDatabases() {
         Map<String, TableMetaData> tables = new HashMap<>(4, 1);
         tables.put("t_account", new TableMetaData("t_account", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
         tables.put("t_account_bak", new TableMetaData("t_account_bak", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));

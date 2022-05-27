@@ -40,14 +40,14 @@ public final class GlobalRulesBuilder {
      * Build rules.
      *
      * @param globalRuleConfigs global rule configurations
-     * @param databaseMap database map
+     * @param databases databases
      * @return built rules
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public static Collection<ShardingSphereRule> buildRules(final Collection<RuleConfiguration> globalRuleConfigs, final Map<String, ShardingSphereDatabase> databaseMap) {
+    public static Collection<ShardingSphereRule> buildRules(final Collection<RuleConfiguration> globalRuleConfigs, final Map<String, ShardingSphereDatabase> databases) {
         Collection<ShardingSphereRule> result = new LinkedList<>();
         for (Entry<RuleConfiguration, GlobalRuleBuilder> entry : getRuleBuilderMap(globalRuleConfigs).entrySet()) {
-            result.add(entry.getValue().build(entry.getKey(), databaseMap));
+            result.add(entry.getValue().build(entry.getKey(), databases));
         }
         return result;
     }
