@@ -102,27 +102,27 @@ public final class ExecutionContextBuilderTest {
     }
     
     private Map<String, ShardingSphereSchema> buildDatabaseWithoutPrimaryKey() {
-        Map<String, ShardingSphereTable> tableMetaDataMap = new HashMap<>(3, 1);
-        tableMetaDataMap.put("logicName1", new ShardingSphereTable("logicName1", Arrays.asList(new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false),
+        Map<String, ShardingSphereTable> tables = new HashMap<>(3, 1);
+        tables.put("logicName1", new ShardingSphereTable("logicName1", Arrays.asList(new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false),
                 new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false),
                 new ShardingSphereColumn("status", Types.INTEGER, false, false, false)), Collections.emptySet(), Collections.emptyList()));
-        tableMetaDataMap.put("t_other", new ShardingSphereTable("t_other", Collections.singletonList(
+        tables.put("t_other", new ShardingSphereTable("t_other", Collections.singletonList(
                 new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false)), Collections.emptySet(), Collections.emptyList()));
-        return Collections.singletonMap("name", new ShardingSphereSchema(tableMetaDataMap));
+        return Collections.singletonMap("name", new ShardingSphereSchema(tables));
     }
     
     private Map<String, ShardingSphereSchema> buildDatabase() {
-        Map<String, ShardingSphereTable> tableMetaDataMap = new HashMap<>(3, 1);
-        tableMetaDataMap.put("logicName1", new ShardingSphereTable("logicName1", Arrays.asList(new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false),
+        Map<String, ShardingSphereTable> tables = new HashMap<>(3, 1);
+        tables.put("logicName1", new ShardingSphereTable("logicName1", Arrays.asList(new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false),
                 new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false),
                 new ShardingSphereColumn("status", Types.INTEGER, false, false, false)), Collections.emptySet(), Collections.emptyList()));
-        tableMetaDataMap.put("logicName2", new ShardingSphereTable("logicName2", Arrays.asList(new ShardingSphereColumn("item_id", Types.INTEGER, true, false, false),
+        tables.put("logicName2", new ShardingSphereTable("logicName2", Arrays.asList(new ShardingSphereColumn("item_id", Types.INTEGER, true, false, false),
                 new ShardingSphereColumn("order_id", Types.INTEGER, false, false, false),
                 new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false),
                 new ShardingSphereColumn("status", Types.VARCHAR, false, false, false),
                 new ShardingSphereColumn("c_date", Types.TIMESTAMP, false, false, false)), Collections.emptySet(), Collections.emptyList()));
-        tableMetaDataMap.put("t_other", new ShardingSphereTable("t_other", Collections.singletonList(
+        tables.put("t_other", new ShardingSphereTable("t_other", Collections.singletonList(
                 new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false)), Collections.emptySet(), Collections.emptyList()));
-        return Collections.singletonMap("name", new ShardingSphereSchema(tableMetaDataMap));
+        return Collections.singletonMap("name", new ShardingSphereSchema(tables));
     }
 }

@@ -50,7 +50,7 @@ public final class ShowCreateTableMergedResultTest {
     @Before
     public void setUp() {
         shardingRule = buildShardingRule();
-        schema = buildSchema();
+        schema = createSchema();
     }
     
     private ShardingRule buildShardingRule() {
@@ -60,12 +60,12 @@ public final class ShowCreateTableMergedResultTest {
         return new ShardingRule(shardingRuleConfig, Collections.singletonList("ds"));
     }
     
-    private ShardingSphereSchema buildSchema() {
-        Map<String, ShardingSphereTable> tableMetaDataMap = new HashMap<>(2, 1);
-        tableMetaDataMap.put("t_order",
+    private ShardingSphereSchema createSchema() {
+        Map<String, ShardingSphereTable> tables = new HashMap<>(2, 1);
+        tables.put("t_order",
                 new ShardingSphereTable("t_order", Collections.emptyList(), Collections.emptyList(), Collections.singleton(new ShardingSphereConstraint("t_order_foreign_key", "t_user"))));
-        tableMetaDataMap.put("t_user", new ShardingSphereTable("t_user", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
-        return new ShardingSphereSchema(tableMetaDataMap);
+        tables.put("t_user", new ShardingSphereTable("t_user", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
+        return new ShardingSphereSchema(tables);
     }
     
     @Test

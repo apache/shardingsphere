@@ -48,12 +48,12 @@ public class CustomizedFilterableExecutorTest {
     
     @Before
     public void init() throws Exception {
-        Map<String, ShardingSphereTable> tableMetaDataMap = new HashMap<>(2, 1);
-        tableMetaDataMap.put("t_order_federate", createOrderTableMetaData());
-        tableMetaDataMap.put("t_user_info", createUserInfoTableMetaData());
+        Map<String, ShardingSphereTable> tables = new HashMap<>(2, 1);
+        tables.put("t_order_federate", createOrderTableMetaData());
+        tables.put("t_user_info", createUserInfoTableMetaData());
         String schemaName = "federate_jdbc";
         String databaseName = "database_name";
-        Map<String, ShardingSphereSchema> schemas = Collections.singletonMap(databaseName, new ShardingSphereSchema(tableMetaDataMap));
+        Map<String, ShardingSphereSchema> schemas = Collections.singletonMap(databaseName, new ShardingSphereSchema(tables));
         ShardingSphereDatabase metaData = new ShardingSphereDatabase(schemaName, new H2DatabaseType(), mockResource(), null, schemas);
         OptimizerContext optimizerContext = OptimizerContextFactory.create(Collections.singletonMap(schemaName, metaData), createGlobalRuleMetaData());
         executor = new CustomizedFilterableExecutor(databaseName, schemaName, optimizerContext);

@@ -94,11 +94,11 @@ public final class ShardingSphereOptimizerTest {
     
     @Before
     public void init() throws Exception {
-        Map<String, ShardingSphereTable> tableMetaDataMap = new HashMap<>(2, 1);
-        tableMetaDataMap.put("t_order_federate", createOrderTableMetaData());
-        tableMetaDataMap.put("t_user_info", createUserInfoTableMetaData());
+        Map<String, ShardingSphereTable> tables = new HashMap<>(2, 1);
+        tables.put("t_order_federate", createOrderTableMetaData());
+        tables.put("t_user_info", createUserInfoTableMetaData());
         ShardingSphereDatabase database = new ShardingSphereDatabase(databaseName,
-                new H2DatabaseType(), mockResource(), null, Collections.singletonMap(schemaName, new ShardingSphereSchema(tableMetaDataMap)));
+                new H2DatabaseType(), mockResource(), null, Collections.singletonMap(schemaName, new ShardingSphereSchema(tables)));
         optimizer = new ShardingSphereOptimizer(OptimizerContextFactory.create(Collections.singletonMap(databaseName, database), createGlobalRuleMetaData()));
     }
     
