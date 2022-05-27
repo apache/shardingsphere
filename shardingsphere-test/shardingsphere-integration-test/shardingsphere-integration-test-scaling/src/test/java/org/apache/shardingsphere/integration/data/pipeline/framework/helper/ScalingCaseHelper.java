@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.integration.data.pipeline.framework.helper;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrlAppender;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
@@ -37,10 +36,6 @@ import java.util.concurrent.ThreadLocalRandom;
  * Scaling case helper, some config is different between different database.
  */
 public final class ScalingCaseHelper {
-    
-    private static final JdbcUrlAppender JDBC_URL_APPENDER = new JdbcUrlAppender();
-    
-    private static final String CUSTOM_SCHEMA = "test";
     
     /**
      * Get query properties by database type.
