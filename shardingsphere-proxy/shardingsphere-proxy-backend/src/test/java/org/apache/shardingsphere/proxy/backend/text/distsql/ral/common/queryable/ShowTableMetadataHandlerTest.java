@@ -35,6 +35,7 @@ import org.junit.Test;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -77,8 +78,8 @@ public final class ShowTableMetadataHandlerTest extends ProxyContextRestorer {
     
     private Map<String, ShardingSphereTable> createTableMap() {
         Map<String, ShardingSphereTable> result = new HashMap<>();
-        List<ShardingSphereColumn> columns = Collections.singletonList(new ShardingSphereColumn("order_id", 0, false, false, false));
-        List<ShardingSphereIndex> indexes = Collections.singletonList(new ShardingSphereIndex("primary"));
+        Collection<ShardingSphereColumn> columns = Collections.singletonList(new ShardingSphereColumn("order_id", 0, false, false, false));
+        Collection<ShardingSphereIndex> indexes = Collections.singletonList(new ShardingSphereIndex("primary"));
         result.put("t_order", new ShardingSphereTable("t_order", columns, indexes, Collections.emptyList()));
         return result;
     }

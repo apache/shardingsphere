@@ -20,9 +20,8 @@ package org.apache.shardingsphere.sharding.route.engine.validator.ddl;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CreateIndexStatementContext;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ShardingSphereTable;
 import org.apache.shardingsphere.sharding.route.engine.exception.NoSuchTableException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingCreateIndexStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -63,7 +62,7 @@ public final class ShardingCreateIndexStatementValidatorTest {
         when(database.getSchemas().get("public").containsTable("t_order")).thenReturn(true);
         ShardingSphereTable tableMetaData = mock(ShardingSphereTable.class);
         when(database.getSchemas().get("public").get("t_order")).thenReturn(tableMetaData);
-        Map<String, IndexMetaData> indexes = mock(HashMap.class);
+        Map<String, ShardingSphereIndex> indexes = mock(HashMap.class);
         when(tableMetaData.getIndexes()).thenReturn(indexes);
         when(indexes.containsKey("t_order_index")).thenReturn(false);
         new ShardingCreateIndexStatementValidator().preValidate(shardingRule, new CreateIndexStatementContext(sqlStatement), Collections.emptyList(), database);
@@ -86,7 +85,7 @@ public final class ShardingCreateIndexStatementValidatorTest {
         when(database.getSchemas().get("public").containsTable("t_order")).thenReturn(true);
         ShardingSphereTable tableMetaData = mock(ShardingSphereTable.class);
         when(database.getSchemas().get("public").get("t_order")).thenReturn(tableMetaData);
-        Map<String, IndexMetaData> indexes = mock(HashMap.class);
+        Map<String, ShardingSphereIndex> indexes = mock(HashMap.class);
         when(tableMetaData.getIndexes()).thenReturn(indexes);
         when(indexes.containsKey("t_order_index")).thenReturn(true);
         new ShardingCreateIndexStatementValidator().preValidate(shardingRule, new CreateIndexStatementContext(sqlStatement), Collections.emptyList(), database);
@@ -101,7 +100,7 @@ public final class ShardingCreateIndexStatementValidatorTest {
         when(database.getSchemas().get("public").containsTable("t_order")).thenReturn(true);
         ShardingSphereTable tableMetaData = mock(ShardingSphereTable.class);
         when(database.getSchemas().get("public").get("t_order")).thenReturn(tableMetaData);
-        Map<String, IndexMetaData> indexes = mock(HashMap.class);
+        Map<String, ShardingSphereIndex> indexes = mock(HashMap.class);
         when(tableMetaData.getIndexes()).thenReturn(indexes);
         new ShardingCreateIndexStatementValidator().preValidate(shardingRule, new CreateIndexStatementContext(sqlStatement), Collections.emptyList(), database);
     }
@@ -125,7 +124,7 @@ public final class ShardingCreateIndexStatementValidatorTest {
         when(database.getSchemas().get("public").containsTable("t_order")).thenReturn(true);
         ShardingSphereTable tableMetaData = mock(ShardingSphereTable.class);
         when(database.getSchemas().get("public").get("t_order")).thenReturn(tableMetaData);
-        Map<String, IndexMetaData> indexes = mock(HashMap.class);
+        Map<String, ShardingSphereIndex> indexes = mock(HashMap.class);
         when(tableMetaData.getIndexes()).thenReturn(indexes);
         when(indexes.containsKey("content_idx")).thenReturn(true);
         new ShardingCreateIndexStatementValidator().preValidate(shardingRule, new CreateIndexStatementContext(sqlStatement), Collections.emptyList(), database);
