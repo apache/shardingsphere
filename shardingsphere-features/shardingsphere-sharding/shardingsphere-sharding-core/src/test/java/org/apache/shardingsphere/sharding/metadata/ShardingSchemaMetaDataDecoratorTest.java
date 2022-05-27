@@ -55,7 +55,7 @@ public class ShardingSchemaMetaDataDecoratorTest {
         tableMetaDataMap.put(TABLE_NAME, createTableMetaData());
         GenericSchemaBuilderMaterials materials = mock(GenericSchemaBuilderMaterials.class);
         when(materials.getProps()).thenReturn(new ConfigurationProperties(new Properties()));
-        Map<String, SchemaMetaData> actual = builder.decorate(Collections.singletonMap("sharding_db", 
+        Map<String, SchemaMetaData> actual = builder.decorate(Collections.singletonMap("sharding_db",
                 new SchemaMetaData("sharding_db", tableMetaDataMap)), shardingRule, materials);
         Map<String, ColumnMetaData> columns = actual.get("sharding_db").getTables().get(TABLE_NAME).getColumns();
         Iterator<ColumnMetaData> iterator = columns.values().iterator();

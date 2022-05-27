@@ -75,23 +75,11 @@ public final class ShardingSchemaMetaDataDecorator implements RuleBasedSchemaMet
         return new TableMetaData(tableRule.getLogicTable(), columnMetaDataList, indexMetaDataList, constraintMetaDataList);
     }
     
-    private void checkMetaData(final Map<String, SchemaMetaData> schemaMetaDataMap, final ShardingRule rule) {
-        for (Entry<String, SchemaMetaData> entry : schemaMetaDataMap.entrySet()) {
-            Map<String, Collection<TableMetaData>> logicTableMetaDataMap = getLogicTableMetaDataMap(entry.getValue(), rule);
-            for (Entry<String, Collection<TableMetaData>> tableEntry : logicTableMetaDataMap.entrySet()) {
-                checkUniformed(tableEntry.getKey(), tableEntry.getValue());
-            }
-        }
-    }
-    
     private Map<String, Collection<TableMetaData>> getLogicTableMetaDataMap(final SchemaMetaData schemaMetaData, final ShardingRule rule) {
         Map<String, Collection<TableMetaData>> result = new LinkedHashMap<>();
         for (Entry<String, TableMetaData> entry : schemaMetaData.getTables().entrySet()) {
-            Optional<String> logicTable = rule.findLogicTableByActualTable(entry.getKey());
-            if (!logicTable.isPresent()) {
-                continue;
-            }
-            Collection<TableMetaData> tableMetaDataList = result.computeIfAbsent(logicTable.get(), key -> new LinkedList<>());
+            String logicTableName = rule.findLogicTableByActualTable(entry.getKey()).orElse(entry.getKey());
+            Collection<TableMetaData> tableMetaDataList = result.computeIfAbsent(logicTableName, key -> new LinkedList<>());
             tableMetaDataList.add(decorate(entry.getValue(), rule));
         }
         return result;
