@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema.builder.spi;
 
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi.RuleBasedSchemaMetaDataDecoratorFactory;
 import org.apache.shardingsphere.infra.metadata.database.schema.fixture.loader.CommonFixtureSchemaMetaDataDecorator;
 import org.apache.shardingsphere.infra.metadata.database.schema.fixture.rule.CommonFixtureRule;
 import org.junit.Test;

@@ -58,7 +58,7 @@ public final class SchemaMetaDataLoaderEngine {
      * @return schema meta data map
      * @throws SQLException SQL exception
      */
-    public static Map<String, SchemaMetaData> load(final Collection<TableMetaDataLoaderMaterial> materials, final DatabaseType databaseType) throws SQLException {
+    public static Map<String, SchemaMetaData> load(final Collection<SchemaMetaDataLoaderMaterials> materials, final DatabaseType databaseType) throws SQLException {
         Optional<DialectSchemaMetaDataLoader> dialectTableMetaDataLoader = DialectSchemaMetaDataLoaderFactory.findInstance(databaseType);
         if (dialectTableMetaDataLoader.isPresent()) {
             try {
@@ -71,10 +71,10 @@ public final class SchemaMetaDataLoaderEngine {
         return loadByDefault(materials, databaseType);
     }
     
-    private static Map<String, SchemaMetaData> loadByDefault(final Collection<TableMetaDataLoaderMaterial> materials, final DatabaseType databaseType) throws SQLException {
+    private static Map<String, SchemaMetaData> loadByDefault(final Collection<SchemaMetaDataLoaderMaterials> materials, final DatabaseType databaseType) throws SQLException {
         Map<String, TableMetaData> result = new LinkedHashMap<>();
         String defaultSchemaName = null;
-        for (TableMetaDataLoaderMaterial each : materials) {
+        for (SchemaMetaDataLoaderMaterials each : materials) {
             defaultSchemaName = each.getDefaultSchemaName();
             for (String tableName : each.getActualTableNames()) {
                 TableMetaDataLoader.load(each.getDataSource(), tableName, databaseType).ifPresent(optional -> result.put(tableName, optional));
@@ -83,10 +83,10 @@ public final class SchemaMetaDataLoaderEngine {
         return Collections.singletonMap(defaultSchemaName, new SchemaMetaData(defaultSchemaName, result));
     }
     
-    private static Map<String, SchemaMetaData> loadByDialect(final DialectSchemaMetaDataLoader loader, final Collection<TableMetaDataLoaderMaterial> materials) throws SQLException {
+    private static Map<String, SchemaMetaData> loadByDialect(final DialectSchemaMetaDataLoader loader, final Collection<SchemaMetaDataLoaderMaterials> materials) throws SQLException {
         Map<String, SchemaMetaData> result = new LinkedHashMap<>();
         Collection<Future<Collection<SchemaMetaData>>> futures = new LinkedList<>();
-        for (TableMetaDataLoaderMaterial each : materials) {
+        for (SchemaMetaDataLoaderMaterials each : materials) {
             futures.add(EXECUTOR_SERVICE.submit(() -> loader.load(each.getDataSource(), each.getActualTableNames(), each.getDefaultSchemaName())));
         }
         try {

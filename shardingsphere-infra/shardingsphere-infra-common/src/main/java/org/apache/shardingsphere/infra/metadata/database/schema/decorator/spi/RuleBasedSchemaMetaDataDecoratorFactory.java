@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.schema.builder.spi;
+package org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi;
 
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
