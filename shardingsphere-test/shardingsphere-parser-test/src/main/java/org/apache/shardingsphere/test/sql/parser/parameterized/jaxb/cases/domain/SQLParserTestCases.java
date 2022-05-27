@@ -131,6 +131,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CommentStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateContextStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateConversionStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateCastStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateDatabaseLinkStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateDatabaseStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateDimensionStatementTestCase;
@@ -1206,6 +1207,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "create-conversion")
     private final List<CreateConversionStatementTestCase> createConversionTestCases = new LinkedList<>();
     
+    @XmlElement(name = "create-cast")
+    private final List<CreateCastStatementTestCase> createCastTestCases = new LinkedList<>();
+    
     @XmlElement(name = "drop-conversion")
     private final List<DropConversionStatementTestCase> dropConversionTestCases = new LinkedList<>();
     
@@ -1641,6 +1645,7 @@ public final class SQLParserTestCases {
         putAll(alterSQLParserRuleTestCases, result);
         putAll(createTypeTestCases, result);
         putAll(createConversionTestCases, result);
+        putAll(createCastTestCases, result);
         putAll(dropConversionTestCases, result);
         putAll(alterDomainTestCases, result);
         putAll(alterAggregateTestCases, result);
