@@ -1,3 +1,8 @@
++++
+title = "使用 Helm"
+weight = 3
++++
+
 # 使用 Helm
 
 使用 [Helm](https://helm.sh/) 在 Kubernetes 集群中引导 ShardingSphere-Proxy 实例进行安装。
@@ -41,10 +46,10 @@ helm install shardingsphere-proxy shardingsphere/shardingsphere-proxy
 ```shell
 cd shardingsphere-proxy/charts/governance
 helm dependency build 
-cd ../..
-helm dependency build 
-cd ..
-helm install shardingsphere-proxy shardingsphere-proxy 
+cd ../..                               
+helm dependency build                                   
+cd ..                                                   
+helm install shardingsphere-proxy shardingsphere-proxy  
 ```
 
 执行上述命令以执行默认配置进行安装。
