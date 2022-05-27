@@ -41,7 +41,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class ShardingSchemaMetaDataDecoratorTest {
+public final class ShardingSchemaMetaDataDecoratorTest {
     
     private static final String TABLE_NAME = "t_order";
     

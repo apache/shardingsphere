@@ -41,7 +41,7 @@ public final class EncryptSchemaMetaDataDecorator implements RuleBasedSchemaMeta
     
     @Override
     public Map<String, SchemaMetaData> decorate(final Map<String, SchemaMetaData> schemaMetaDataMap, final EncryptRule rule, final GenericSchemaBuilderMaterials materials) {
-        Map<String, SchemaMetaData> result = new LinkedHashMap<>();
+        Map<String, SchemaMetaData> result = new LinkedHashMap<>(schemaMetaDataMap.size(), 1);
         for (Entry<String, SchemaMetaData> entry : schemaMetaDataMap.entrySet()) {
             Map<String, TableMetaData> tables = new LinkedHashMap<>(entry.getValue().getTables().size(), 1);
             for (Entry<String, TableMetaData> tableEntry : entry.getValue().getTables().entrySet()) {
