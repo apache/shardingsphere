@@ -881,7 +881,7 @@ alterExtensionClauses
     ;
 
 functionWithArgtypes
-    : (funcName | dataTypeName) funcArgs
+    : funcName funcArgs
     | typeFuncNameKeyword
     | colId
     | colId indirection
@@ -1297,7 +1297,7 @@ oldAggrElem
 
 createCast
     : CREATE CAST LP_ typeName AS typeName RP_ (
-    | WITH FUNCTION functionWithArgtypes
+    | WITH FUNCTION (funcName | dataTypeName) funcArgs
     | WITHOUT FUNCTION
     | WITH INOUT 
     ) castContext?
