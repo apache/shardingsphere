@@ -176,6 +176,7 @@ public abstract class BaseITCase {
         executeWithLog(addTargetResource);
         List<Map<String, Object>> resources = queryForListWithLog("SHOW SCHEMA RESOURCES from sharding_db");
         assertThat(resources.size(), is(5));
+        assertBeforeApplyScalingMetadataCorrectly();
     }
     
     private String getActualJdbcUrlTemplate(final String databaseName) {
@@ -195,8 +196,9 @@ public abstract class BaseITCase {
         executeWithLog(getCommonSQLCommand().getCreateOrderItemShardingAlgorithm());
     }
     
-    protected void createAllSharingTableRule() {
+    protected void getCreateOrderWithItemSharingTableRule() {
         executeWithLog(commonSQLCommand.getCreateOrderWithItemSharingTableRule());
+        assertBeforeApplyScalingMetadataCorrectly();
     }
     
     protected void createOrderSharingTableRule() {

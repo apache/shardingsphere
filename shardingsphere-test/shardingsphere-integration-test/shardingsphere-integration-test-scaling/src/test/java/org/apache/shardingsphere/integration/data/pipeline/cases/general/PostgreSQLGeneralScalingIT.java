@@ -74,7 +74,7 @@ public final class PostgreSQLGeneralScalingIT extends BaseExtraSQLITCase {
         assertTrue(waitShardingAlgorithmEffect(15));
         createScalingRule();
         createSchema("test");
-        createAllSharingTableRule();
+        getCreateOrderWithItemSharingTableRule();
         createOrderTable();
         createOrderItemTable();
         SnowflakeKeyGenerateAlgorithm keyGenerateAlgorithm = new SnowflakeKeyGenerateAlgorithm();
