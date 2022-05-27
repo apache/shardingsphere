@@ -171,7 +171,8 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
      */
     @SuppressWarnings("rawtypes")
     public Optional<EncryptAlgorithm> findEncryptor(final String logicTable, final String logicColumn) {
-        return tables.containsKey(logicTable.toLowerCase()) ? tables.get(logicTable.toLowerCase()).findEncryptorName(logicColumn).map(encryptors::get) : Optional.empty();
+        EncryptTable encryptTable = tables.get(logicTable.toLowerCase());
+        return null != encryptTable ? encryptTable.findEncryptorName(logicColumn).map(encryptors::get) : Optional.empty();
     }
     
     /**
@@ -220,7 +221,8 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
      * @return logic and cipher columns
      */
     public Map<String, String> getLogicAndCipherColumns(final String logicTable) {
-        return tables.containsKey(logicTable.toLowerCase()) ? tables.get(logicTable.toLowerCase()).getLogicAndCipherColumns() : Collections.emptyMap();
+        EncryptTable encryptTable = tables.get(logicTable.toLowerCase());
+        return null != encryptTable ? encryptTable.getLogicAndCipherColumns() : Collections.emptyMap();
     }
     
     /**
@@ -231,7 +233,8 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
      * @return assisted query column
      */
     public Optional<String> findAssistedQueryColumn(final String logicTable, final String logicColumn) {
-        return tables.containsKey(logicTable.toLowerCase()) ? tables.get(logicTable.toLowerCase()).findAssistedQueryColumn(logicColumn) : Optional.empty();
+        EncryptTable encryptTable = tables.get(logicTable.toLowerCase());
+        return null != encryptTable ? encryptTable.findAssistedQueryColumn(logicColumn) : Optional.empty();
     }
     
     /**
