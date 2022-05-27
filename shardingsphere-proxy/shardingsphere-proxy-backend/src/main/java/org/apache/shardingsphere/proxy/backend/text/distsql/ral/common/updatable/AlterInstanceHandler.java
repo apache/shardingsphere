@@ -21,7 +21,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.A
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.XaRecoveryIdEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.XaRecoveryIdChangedEvent;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.UpdatableRALBackendHandler;
 
@@ -52,6 +52,6 @@ public final class AlterInstanceHandler extends UpdatableRALBackendHandler<Alter
             throw new UnsupportedOperationException(String.format("'%s' does not exist", sqlStatement.getInstanceId()));
         }
         // TODO need support standalone mode
-        ShardingSphereEventBus.getInstance().post(new XaRecoveryIdEvent(sqlStatement.getInstanceId(), sqlStatement.getValue()));
+        ShardingSphereEventBus.getInstance().post(new XaRecoveryIdChangedEvent(sqlStatement.getInstanceId(), sqlStatement.getValue()));
     }
 }

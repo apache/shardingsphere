@@ -261,8 +261,7 @@ public final class ClusterContextManagerCoordinator {
      */
     @Subscribe
     public synchronized void renew(final InstanceOnlineEvent event) {
-        ComputeNodeInstance instance = new ComputeNodeInstance(event.getInstanceDefinition());
-        contextManager.getInstanceContext().addComputeNodeInstance(instance);
+        contextManager.getInstanceContext().addComputeNodeInstance(registryCenter.getComputeNodeStatusService().loadComputeNodeInstance(event.getInstanceDefinition()));
     }
     
     /**
