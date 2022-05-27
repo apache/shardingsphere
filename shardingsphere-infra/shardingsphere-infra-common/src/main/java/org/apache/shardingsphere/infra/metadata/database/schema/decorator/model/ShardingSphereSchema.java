@@ -64,22 +64,22 @@ public final class ShardingSphereSchema {
     }
     
     /**
-     * Add table meta data.
+     * Add table.
      * 
      * @param tableName table name
-     * @param tableMetaData table meta data
+     * @param table table
      */
-    public void put(final String tableName, final ShardingSphereTable tableMetaData) {
-        tables.put(tableName.toLowerCase(), tableMetaData);
+    public void put(final String tableName, final ShardingSphereTable table) {
+        tables.put(tableName.toLowerCase(), table);
     }
     
     /**
-     * Add table meta data map.
+     * Add tables.
      *
-     * @param tableMetaDataMap table meta data map
+     * @param tables tables
      */
-    public void putAll(final Map<String, ShardingSphereTable> tableMetaDataMap) {
-        for (Entry<String, ShardingSphereTable> entry : tableMetaDataMap.entrySet()) {
+    public void putAll(final Map<String, ShardingSphereTable> tables) {
+        for (Entry<String, ShardingSphereTable> entry : tables.entrySet()) {
             put(entry.getKey(), entry.getValue());
         }
     }

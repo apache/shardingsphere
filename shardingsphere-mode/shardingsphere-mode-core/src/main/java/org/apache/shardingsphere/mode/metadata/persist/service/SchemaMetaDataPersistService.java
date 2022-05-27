@@ -70,11 +70,11 @@ public final class SchemaMetaDataPersistService {
      *
      * @param databaseName database name
      * @param schemaName schema name
-     * @param tableMetaData table meta data
+     * @param table table meta data
      */
-    public void persistTable(final String databaseName, final String schemaName, final ShardingSphereTable tableMetaData) {
-        repository.persist(DatabaseMetaDataNode.getTableMetaDataPath(databaseName, schemaName, tableMetaData.getName().toLowerCase()),
-                YamlEngine.marshal(new TableMetaDataYamlSwapper().swapToYamlConfiguration(tableMetaData)));
+    public void persistTable(final String databaseName, final String schemaName, final ShardingSphereTable table) {
+        repository.persist(DatabaseMetaDataNode.getTableMetaDataPath(databaseName, schemaName, table.getName().toLowerCase()),
+                YamlEngine.marshal(new TableMetaDataYamlSwapper().swapToYamlConfiguration(table)));
     }
     
     /**
@@ -150,8 +150,8 @@ public final class SchemaMetaDataPersistService {
         ShardingSphereSchema schema = new ShardingSphereSchema();
         tables.forEach(each -> {
             String content = repository.get(DatabaseMetaDataNode.getTableMetaDataPath(databaseName, schemaName, each));
-            ShardingSphereTable tableMetaData = new TableMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(content, YamlTableMetaData.class));
-            schema.getTables().put(each, tableMetaData);
+            ShardingSphereTable table = new TableMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(content, YamlTableMetaData.class));
+            schema.getTables().put(each, table);
         });
         return Optional.of(schema);
     }

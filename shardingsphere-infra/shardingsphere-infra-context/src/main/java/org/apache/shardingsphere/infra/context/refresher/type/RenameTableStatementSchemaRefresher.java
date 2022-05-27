@@ -81,7 +81,7 @@ public final class RenameTableStatementSchemaRefresher implements MetaDataRefres
         Optional<ShardingSphereTable> actualTableMetaData = Optional.ofNullable(schemaMap.get(schemaName)).map(optional -> optional.getTables().get(tableName));
         actualTableMetaData.ifPresent(optional -> {
             database.getSchemas().get(schemaName).put(tableName, optional);
-            federationDatabaseMetaData.putTableMetadata(schemaName, optional);
+            federationDatabaseMetaData.putTable(schemaName, optional);
             optimizerPlanners.put(federationDatabaseMetaData.getName(), OptimizerPlannerContextFactory.create(federationDatabaseMetaData));
         });
     }

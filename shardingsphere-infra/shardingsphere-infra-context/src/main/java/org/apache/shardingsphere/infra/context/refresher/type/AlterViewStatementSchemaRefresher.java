@@ -86,7 +86,7 @@ public final class AlterViewStatementSchemaRefresher implements MetaDataRefreshe
         Optional<ShardingSphereTable> actualViewMetaData = Optional.ofNullable(schemaMap.get(schemaName)).map(optional -> optional.getTables().get(viewName));
         actualViewMetaData.ifPresent(optional -> {
             database.getSchemas().get(schemaName).put(viewName, optional);
-            federationDatabaseMetaData.putTableMetadata(schemaName, optional);
+            federationDatabaseMetaData.putTable(schemaName, optional);
             optimizerPlanners.put(federationDatabaseMetaData.getName(), OptimizerPlannerContextFactory.create(federationDatabaseMetaData));
         });
     }
