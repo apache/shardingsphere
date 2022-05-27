@@ -192,7 +192,7 @@ refreshScope
     ;
 
 fromSegment
-    : FROM RESOURCE resourceName (SCHEMA databaseName)?
+    : FROM RESOURCE resourceName (SCHEMA schemaName)?
     ;
 
 sqlCommentParseEnable

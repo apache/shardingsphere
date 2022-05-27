@@ -32,8 +32,8 @@ import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ApplyDistSQLContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.CacheOptionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ClearHintContext;
+import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.CountDatabaseRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.CountInstanceRulesContext;
-import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.CountSchemaRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.CreateDefaultSingleTableRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.CreateTrafficRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.DataSourceContext;
@@ -249,7 +249,7 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     }
     
     @Override
-    public ASTNode visitCountSchemaRules(final CountSchemaRulesContext ctx) {
+    public ASTNode visitCountDatabaseRules(final CountDatabaseRulesContext ctx) {
         return new CountDatabaseRulesStatement(null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()));
     }
     
@@ -337,14 +337,14 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
             return new RefreshTableMetadataStatement();
         }
         String tableName = getIdentifierValue(ctx.refreshScope().tableName());
-        String databaseName = null;
+        String resourceName = null;
         String schemaName = null;
         if (null != ctx.refreshScope().fromSegment()) {
             FromSegmentContext fromSegment = ctx.refreshScope().fromSegment();
-            databaseName = getIdentifierValue(fromSegment.databaseName());
-            schemaName = null == fromSegment.databaseName() ? null : getIdentifierValue(fromSegment.databaseName());
+            resourceName = getIdentifierValue(fromSegment.resourceName());
+            schemaName = null == fromSegment.schemaName() ? null : getIdentifierValue(fromSegment.schemaName());
         }
-        return new RefreshTableMetadataStatement(tableName, databaseName, schemaName);
+        return new RefreshTableMetadataStatement(tableName, resourceName, schemaName);
     }
     
     @Override

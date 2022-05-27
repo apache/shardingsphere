@@ -35,7 +35,7 @@ showSingleTable
     : SHOW SINGLE (table | TABLES) (FROM databaseName)?
     ;
 
-countSchemaRules
+countDatabaseRules
     : COUNT DATABASE RULES (FROM databaseName)?
     ;
 

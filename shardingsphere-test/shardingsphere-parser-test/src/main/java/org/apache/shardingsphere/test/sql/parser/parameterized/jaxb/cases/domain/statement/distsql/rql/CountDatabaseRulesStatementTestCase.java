@@ -25,11 +25,11 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Count schema rules statement test case.
+ * Count database rules statement test case.
  */
 @Getter
 @Setter
-public final class CountSchemaRulesStatementTestCase extends SQLParserTestCase {
+public final class CountDatabaseRulesStatementTestCase extends SQLParserTestCase {
     
     @XmlElement
     private ExpectedDatabase database;

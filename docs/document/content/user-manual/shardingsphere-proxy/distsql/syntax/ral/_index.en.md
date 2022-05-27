@@ -58,8 +58,8 @@ RAL (Resource & Rule Administration Language) responsible for the added-on featu
 
 | Statement                                                                   | Function                                                                           | Example                                   |
 |:--------------------------------------------------------------------------- |:---------------------------------------------------------------------------------- |:----------------------------------------- |
-| SHOW INSTANCE MODE                                                         | Query the mode configuration of the proxy                                          | SHOW INSTANCE MODE                        |
-| COUNT SCHEMA RULES [FROM schema]                                            | Query the number of rules in a schema                                              | count schema rules                               |
+| SHOW INSTANCE MODE                                                          | Query the mode configuration of the proxy                                          | SHOW INSTANCE MODE                        |
+| COUNT DATABASE RULES [FROM database]                                        | Query the number of rules in a database                                            | COUNT DATABASE RULES                               |
 | SET VARIABLE proxy_property_name = xx                                       | proxy_property_name is one of [properties configuration](/en/user-manual/shardingsphere-proxy/yaml-config/props/) of proxy, name is split by underscore            | SET VARIABLE sql_show = true            |  
 | SET VARIABLE transaction_type = xx                                          | Modify transaction_type of the current connection, supports LOCAL, XA, BASE        | SET VARIABLE transaction_type = XA        |
 | SET VARIABLE agent_plugins_enabled = [TRUE / FALSE]                         | Set whether the agent plugins are enabled, the default value is false              | SET VARIABLE agent_plugins_enabled = TRUE |
@@ -68,10 +68,10 @@ RAL (Resource & Rule Administration Language) responsible for the added-on featu
 | PREVIEW SQL                                                                 | Preview the actual SQLs                                                            | PREVIEW SELECT * FROM t_order             |
 | PARSE SQL                                                                   | Parse SQL and output abstract syntax tree                                          | PARSE SELECT * FROM t_order               |
 | REFRESH TABLE METADATA                                                      | Refresh the metadata of all tables                                                 | REFRESH TABLE METADATA                    |
-| REFRESH TABLE METADATA [tableName / tableName FROM resource resourceName]   | Refresh the metadata of a table                                                    | REFRESH TABLE METADATA t_order FROM resource ds_1  |
+| REFRESH TABLE METADATA [tableName / tableName FROM RESOURCE resourceName]   | Refresh the metadata of a table                                                    | REFRESH TABLE METADATA t_order FROM resource ds_1  |
 | SHOW TABLE METADATA tableName [, tableName] ...                             | Query table metadata                                                               | SHOW TABLE METADATA t_order                        |
 | EXPORT DATABASE CONFIG [FROM database_name] [, file="file_path"]            | Query / export resources and rule configuration in database                    | EXPORT DATABASE CONFIG FROM readwrite_splitting_db |
-| SHOW RULES USED RESOURCE resourceName [from schema]                         | Query the rules for using the specified resource in schema                         | SHOW RULES USED RESOURCE ds_0 FROM databaseName  |
+| SHOW RULES USED RESOURCE resourceName [from database]                         | Query the rules for using the specified resource in database                         | SHOW RULES USED RESOURCE ds_0 FROM databaseName  |
 
 ## Notice
 
