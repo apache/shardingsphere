@@ -86,19 +86,19 @@ public final class GenericSchemaBuilder {
     
     private static Map<String, SchemaMetaData> loadSchemas(final Collection<String> tableNames, final GenericSchemaBuilderMaterials materials) throws SQLException {
         boolean isCheckingMetaData = materials.getProps().getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED);
-        Collection<SchemaMetaDataLoaderMaterials> tableMetaDataLoaderMaterials = SchemaMetaDataUtil.getSchemaMetaDataLoadMaterials(tableNames, materials, isCheckingMetaData);
-        if (tableMetaDataLoaderMaterials.isEmpty()) {
+        Collection<SchemaMetaDataLoaderMaterials> schemaMetaDataLoaderMaterials = SchemaMetaDataUtil.getSchemaMetaDataLoaderMaterials(tableNames, materials, isCheckingMetaData);
+        if (schemaMetaDataLoaderMaterials.isEmpty()) {
             return Collections.emptyMap();
         }
-        return SchemaMetaDataLoaderEngine.load(tableMetaDataLoaderMaterials, materials.getStorageType());
+        return SchemaMetaDataLoaderEngine.load(schemaMetaDataLoaderMaterials, materials.getStorageType());
     }
     
     private static Map<String, SchemaMetaData> translate(final Map<String, SchemaMetaData> schemaMetaDataMap, final GenericSchemaBuilderMaterials materials) {
         Map<String, SchemaMetaData> result = new LinkedHashMap<>();
-        Map<String, TableMetaData> tableMetaDataMap = Optional.ofNullable(schemaMetaDataMap.get(
-                DatabaseTypeEngine.getDefaultSchemaName(materials.getStorageType(), materials.getDefaultSchemaName()))).map(SchemaMetaData::getTables).orElseGet(Collections::emptyMap);
+        Collection<TableMetaData> tableMetaDataList = Optional.ofNullable(schemaMetaDataMap.get(
+                DatabaseTypeEngine.getDefaultSchemaName(materials.getStorageType(), materials.getDefaultSchemaName()))).map(SchemaMetaData::getTables).orElseGet(Collections::emptyList);
         String frontendSchemaName = DatabaseTypeEngine.getDefaultSchemaName(materials.getProtocolType(), materials.getDefaultSchemaName());
-        result.put(frontendSchemaName, new SchemaMetaData(frontendSchemaName, tableMetaDataMap));
+        result.put(frontendSchemaName, new SchemaMetaData(frontendSchemaName, tableMetaDataList));
         return result;
     }
     
@@ -126,13 +126,13 @@ public final class GenericSchemaBuilder {
         return result;
     }
     
-    private static Map<String, ShardingSphereTable> convertToTableMap(final Map<String, TableMetaData> tableMetaDataMap) {
-        Map<String, ShardingSphereTable> result = new LinkedHashMap<>(tableMetaDataMap.size(), 1);
-        for (Entry<String, TableMetaData> entry : tableMetaDataMap.entrySet()) {
-            Collection<ShardingSphereColumn> columns = convertToColumns(entry.getValue().getColumns().values());
-            Collection<ShardingSphereIndex> indexes = convertToIndexes(entry.getValue().getIndexes().values());
-            Collection<ShardingSphereConstraint> constraints = convertToConstraints(entry.getValue().getConstrains().values());
-            result.put(entry.getKey(), new ShardingSphereTable(entry.getValue().getName(), columns, indexes, constraints));
+    private static Map<String, ShardingSphereTable> convertToTableMap(final Collection<TableMetaData> tableMetaDataList) {
+        Map<String, ShardingSphereTable> result = new LinkedHashMap<>(tableMetaDataList.size(), 1);
+        for (TableMetaData each : tableMetaDataList) {
+            Collection<ShardingSphereColumn> columns = convertToColumns(each.getColumns());
+            Collection<ShardingSphereIndex> indexes = convertToIndexes(each.getIndexes());
+            Collection<ShardingSphereConstraint> constraints = convertToConstraints(each.getConstrains());
+            result.put(each.getName(), new ShardingSphereTable(each.getName(), columns, indexes, constraints));
         }
         return result;
     }

@@ -29,6 +29,7 @@ import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -42,9 +43,9 @@ public final class SingleTableSchemaMetaDataDecorator implements RuleBasedSchema
     public Map<String, SchemaMetaData> decorate(final Map<String, SchemaMetaData> schemaMetaDataMap, final SingleTableRule rule, final GenericSchemaBuilderMaterials materials) {
         Map<String, SchemaMetaData> result = new LinkedHashMap<>();
         for (Entry<String, SchemaMetaData> entry : schemaMetaDataMap.entrySet()) {
-            Map<String, TableMetaData> tables = new LinkedHashMap<>(entry.getValue().getTables().size(), 1);
-            for (Entry<String, TableMetaData> tableEntry : entry.getValue().getTables().entrySet()) {
-                tables.put(tableEntry.getKey(), decorate(tableEntry.getKey(), tableEntry.getValue()));
+            Collection<TableMetaData> tables = new LinkedList<>();
+            for (TableMetaData each : entry.getValue().getTables()) {
+                tables.add(decorate(each.getName(), each));
             }
             result.put(entry.getKey(), new SchemaMetaData(entry.getKey(), tables));
         }
@@ -52,16 +53,16 @@ public final class SingleTableSchemaMetaDataDecorator implements RuleBasedSchema
     }
     
     private TableMetaData decorate(final String tableName, final TableMetaData tableMetaData) {
-        return new TableMetaData(tableName, tableMetaData.getColumns().values(), getIndex(tableMetaData), getConstraint(tableMetaData));
+        return new TableMetaData(tableName, tableMetaData.getColumns(), getIndex(tableMetaData), getConstraint(tableMetaData));
     }
     
     private Collection<IndexMetaData> getIndex(final TableMetaData tableMetaData) {
-        return tableMetaData.getIndexes().values().stream().map(each -> new IndexMetaData(IndexMetaDataUtil.getLogicIndexName(each.getName(), tableMetaData.getName()))).collect(Collectors.toList());
+        return tableMetaData.getIndexes().stream().map(each -> new IndexMetaData(IndexMetaDataUtil.getLogicIndexName(each.getName(), tableMetaData.getName()))).collect(Collectors.toList());
     }
     
     private Collection<ConstraintMetaData> getConstraint(final TableMetaData tableMetaData) {
-        return tableMetaData.getConstrains().values().stream()
-                .map(each -> new ConstraintMetaData(IndexMetaDataUtil.getLogicIndexName(each.getName(), tableMetaData.getName()), each.getReferencedTableName())).collect(Collectors.toList());
+        return tableMetaData.getConstrains().stream().map(each -> new ConstraintMetaData(
+                IndexMetaDataUtil.getLogicIndexName(each.getName(), tableMetaData.getName()), each.getReferencedTableName())).collect(Collectors.toList());
     }
     
     @Override

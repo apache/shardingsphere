@@ -43,9 +43,9 @@ public final class EncryptSchemaMetaDataDecorator implements RuleBasedSchemaMeta
     public Map<String, SchemaMetaData> decorate(final Map<String, SchemaMetaData> schemaMetaDataMap, final EncryptRule rule, final GenericSchemaBuilderMaterials materials) {
         Map<String, SchemaMetaData> result = new LinkedHashMap<>(schemaMetaDataMap.size(), 1);
         for (Entry<String, SchemaMetaData> entry : schemaMetaDataMap.entrySet()) {
-            Map<String, TableMetaData> tables = new LinkedHashMap<>(entry.getValue().getTables().size(), 1);
-            for (Entry<String, TableMetaData> tableEntry : entry.getValue().getTables().entrySet()) {
-                tables.put(tableEntry.getKey(), decorate(tableEntry.getKey(), tableEntry.getValue(), rule));
+            Collection<TableMetaData> tables = new LinkedList<>();
+            for (TableMetaData each : entry.getValue().getTables()) {
+                tables.add(decorate(each.getName(), each, rule));
             }
             result.put(entry.getKey(), new SchemaMetaData(entry.getKey(), tables));
         }
@@ -53,9 +53,8 @@ public final class EncryptSchemaMetaDataDecorator implements RuleBasedSchemaMeta
     }
     
     private TableMetaData decorate(final String tableName, final TableMetaData tableMetaData, final EncryptRule encryptRule) {
-        Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
-        return encryptTable.map(optional -> new TableMetaData(tableName, getEncryptColumnMetaDataList(optional, tableMetaData.getColumns().values()),
-                tableMetaData.getIndexes().values(), tableMetaData.getConstrains().values())).orElse(tableMetaData);
+        return encryptRule.findEncryptTable(tableName).map(optional -> new TableMetaData(tableName,
+                getEncryptColumnMetaDataList(optional, tableMetaData.getColumns()), tableMetaData.getIndexes(), tableMetaData.getConstrains())).orElse(tableMetaData);
     }
     
     private Collection<ColumnMetaData> getEncryptColumnMetaDataList(final EncryptTable encryptTable, final Collection<ColumnMetaData> originalColumnMetaDataList) {

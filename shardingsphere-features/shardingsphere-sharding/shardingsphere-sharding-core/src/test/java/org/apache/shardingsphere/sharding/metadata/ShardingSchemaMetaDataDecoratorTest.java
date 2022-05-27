@@ -31,7 +31,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
@@ -51,14 +51,14 @@ public final class ShardingSchemaMetaDataDecoratorTest {
         when(shardingRule.findLogicTableByActualTable(TABLE_NAME)).thenReturn(Optional.of(TABLE_NAME));
         Collection<ShardingSphereRule> rules = Collections.singletonList(shardingRule);
         ShardingSchemaMetaDataDecorator builder = (ShardingSchemaMetaDataDecorator) RuleBasedSchemaMetaDataDecoratorFactory.getInstances(rules).get(shardingRule);
-        Map<String, TableMetaData> tableMetaDataMap = new LinkedHashMap<>();
-        tableMetaDataMap.put(TABLE_NAME, createTableMetaData());
+        Collection<TableMetaData> tableMetaDataList = new LinkedList<>();
+        tableMetaDataList.add(createTableMetaData());
         GenericSchemaBuilderMaterials materials = mock(GenericSchemaBuilderMaterials.class);
         when(materials.getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         Map<String, SchemaMetaData> actual = builder.decorate(Collections.singletonMap("sharding_db",
-                new SchemaMetaData("sharding_db", tableMetaDataMap)), shardingRule, materials);
-        Map<String, ColumnMetaData> columns = actual.get("sharding_db").getTables().get(TABLE_NAME).getColumns();
-        Iterator<ColumnMetaData> iterator = columns.values().iterator();
+                new SchemaMetaData("sharding_db", tableMetaDataList)), shardingRule, materials);
+        Collection<ColumnMetaData> columns = actual.get("sharding_db").getTables().iterator().next().getColumns();
+        Iterator<ColumnMetaData> iterator = columns.iterator();
         assertTrue(iterator.next().isGenerated());
         assertFalse(iterator.next().isGenerated());
         assertFalse(iterator.next().isGenerated());
