@@ -50,6 +50,6 @@ public final class InventoryDumperConfiguration extends DumperConfiguration {
         setDataSourceName(dumperConfig.getDataSourceName());
         setDataSourceConfig(dumperConfig.getDataSourceConfig());
         setTableNameMap(dumperConfig.getTableNameMap());
-        setTableNameSchemaNameMapping(dumperConfig.getTableNameSchemaNameMapping());
+        setTableSchemaMap(dumperConfig.getTableSchemaMap());
     }
 }

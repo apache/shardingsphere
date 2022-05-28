@@ -20,7 +20,6 @@ package org.apache.shardingsphere.data.pipeline.api.config.ingest;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.api.metadata.ActualTableName;
@@ -40,6 +39,8 @@ public class DumperConfiguration {
     
     private String databaseName;
     
+    private Map<LogicTableName, String> tableSchemaMap;
+    
     private String dataSourceName;
     
     private PipelineDataSourceConfiguration dataSourceConfig;
@@ -47,8 +48,6 @@ public class DumperConfiguration {
     private IngestPosition<?> position;
     
     private Map<ActualTableName, LogicTableName> tableNameMap;
-    
-    private TableNameSchemaNameMapping tableNameSchemaNameMapping;
     
     /**
      * Get logic table name.
@@ -75,13 +74,13 @@ public class DumperConfiguration {
     }
     
     /**
-     * Get schema name.
+     * Get schema of logic table name.
      *
      * @param logicTableName logic table name
-     * @return schema name. nullable
+     * @return schema of logic table name
      */
     public String getSchemaName(final LogicTableName logicTableName) {
-        return tableNameSchemaNameMapping.getSchemaName(logicTableName);
+        return getTableSchemaMap().get(logicTableName);
     }
     
     /**
@@ -91,6 +90,6 @@ public class DumperConfiguration {
      * @return schema name. nullable
      */
     public String getSchemaName(final ActualTableName actualTableName) {
-        return tableNameSchemaNameMapping.getSchemaName(getLogicTableName(actualTableName));
+        return getTableSchemaMap().get(getLogicTableName(actualTableName));
     }
 }

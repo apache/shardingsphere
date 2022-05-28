@@ -19,11 +19,12 @@ package org.apache.shardingsphere.data.pipeline.core.prepare.datasource;
 
 import lombok.Getter;
 import lombok.NonNull;
-import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeLine;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
+
+import java.util.Map;
 
 /**
  * Prepare target tables parameter.
@@ -37,14 +38,14 @@ public final class PrepareTargetTablesParameter {
     
     private final PipelineDataSourceManager dataSourceManager;
     
-    private final TableNameSchemaNameMapping tableNameSchemaNameMapping;
+    private final Map<String, String> tableSchemaMap;
     
     public PrepareTargetTablesParameter(@NonNull final TaskConfiguration taskConfig, @NonNull final PipelineDataSourceManager dataSourceManager,
-                                        final TableNameSchemaNameMapping tableNameSchemaNameMapping) {
+                                        final Map<String, String> tableSchemaMap) {
         this.taskConfig = taskConfig;
         tablesFirstDataNodes = JobDataNodeLine.unmarshal(taskConfig.getJobConfig().getTablesFirstDataNodes());
         this.dataSourceManager = dataSourceManager;
-        this.tableNameSchemaNameMapping = tableNameSchemaNameMapping;
+        this.tableSchemaMap = tableSchemaMap;
     }
     
     /**

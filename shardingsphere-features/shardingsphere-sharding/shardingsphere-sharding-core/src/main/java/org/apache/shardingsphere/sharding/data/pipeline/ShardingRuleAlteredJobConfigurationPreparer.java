@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sharding.data.pipeline;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
@@ -39,6 +38,7 @@ import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionCon
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -75,10 +75,31 @@ public final class ShardingRuleAlteredJobConfigurationPreparer implements RuleAl
     
     @Override
     public void extendJobConfiguration(final YamlRuleAlteredJobConfiguration yamlJobConfig) {
-        Map<String, List<DataNode>> actualDataNodes = getActualDataNodes(new RuleAlteredJobConfigurationSwapper().swapToObject(yamlJobConfig));
+        RuleAlteredJobConfiguration jobConfig = new RuleAlteredJobConfigurationSwapper().swapToObject(yamlJobConfig);
+        Map<String, List<DataNode>> actualDataNodes = getActualDataNodes(jobConfig);
         yamlJobConfig.setJobShardingDataNodes(getJobShardingDataNodes(actualDataNodes));
         yamlJobConfig.setLogicTables(getLogicTables(actualDataNodes.keySet()));
         yamlJobConfig.setTablesFirstDataNodes(getTablesFirstDataNodes(actualDataNodes));
+        ShardingSphereDatabase database = PipelineContext.getContextManager().getMetaDataContexts().getMetaData().getDatabases().get(jobConfig.getDatabaseName());
+        Map<String, String> tableSchema = new HashMap<>(actualDataNodes.size(), 1);
+        for (String logicTable : actualDataNodes.keySet()) {
+            tableSchema.put(logicTable, getLogicTableSchema(database.getSchemas(), new LogicTableName(logicTable)));
+        }
+        yamlJobConfig.setSourceTableSchemaMap(tableSchema);
+        yamlJobConfig.setTargetTableSchemaMap(tableSchema);
+    }
+    
+    private static String getLogicTableSchema(final Map<String, ShardingSphereSchema> schemaMap, final LogicTableName logicTableName) {
+        if (schemaMap == null || schemaMap.isEmpty()) {
+            return null;
+        }
+        // TODO if create same table, will use the first, may cause problem.
+        for (Entry<String, ShardingSphereSchema> entry : schemaMap.entrySet()) {
+            if (entry.getValue().containsTable(logicTableName.getLowercase())) {
+                return entry.getKey();
+            }
+        }
+        return null;
     }
     
     private static Map<String, List<DataNode>> getActualDataNodes(final RuleAlteredJobConfiguration jobConfig) {
@@ -147,13 +168,12 @@ public final class ShardingRuleAlteredJobConfigurationPreparer implements RuleAl
                 tableNameMap.put(new ActualTableName(dataNode.getTableName()), new LogicTableName(each.getLogicTableName()));
             }
         }
-        ShardingSphereDatabase database = PipelineContext.getContextManager().getMetaDataContexts().getMetaData().getDatabases().get(jobConfig.getDatabaseName());
         DumperConfiguration dumperConfig = createDumperConfiguration(jobConfig.getDatabaseName(), dataSourceName,
-                dataSourcePropsMap.get(dataSourceName).getAllLocalProperties(), tableNameMap, database);
+                dataSourcePropsMap.get(dataSourceName).getAllLocalProperties(), tableNameMap, jobConfig.getSourceSchemaMap());
         Optional<ShardingRuleConfiguration> targetRuleConfig = getTargetRuleConfiguration(jobConfig);
         Set<LogicTableName> reShardNeededTables = jobConfig.splitLogicTableNames().stream().map(LogicTableName::new).collect(Collectors.toSet());
         Map<LogicTableName, Set<String>> shardingColumnsMap = getShardingColumnsMap(targetRuleConfig.orElse(sourceRuleConfig), reShardNeededTables);
-        ImporterConfiguration importerConfig = createImporterConfiguration(jobConfig, onRuleAlteredActionConfig, shardingColumnsMap, database);
+        ImporterConfiguration importerConfig = createImporterConfiguration(jobConfig, onRuleAlteredActionConfig, shardingColumnsMap, jobConfig.getTargetSchemaMap());
         TaskConfiguration result = new TaskConfiguration(jobConfig, dumperConfig, importerConfig);
         log.info("createTaskConfiguration, dataSourceName={}, result={}", dataSourceName, result);
         return result;
@@ -209,23 +229,22 @@ public final class ShardingRuleAlteredJobConfigurationPreparer implements RuleAl
     }
     
     private static DumperConfiguration createDumperConfiguration(final String databaseName, final String dataSourceName, final Map<String, Object> props,
-                                                                 final Map<ActualTableName, LogicTableName> tableNameMap, final ShardingSphereDatabase database) {
+                                                                 final Map<ActualTableName, LogicTableName> tableNameMap, final Map<String, String> sourceSchemaMap) {
         DumperConfiguration result = new DumperConfiguration();
         result.setDatabaseName(databaseName);
         result.setDataSourceName(dataSourceName);
         result.setDataSourceConfig(new StandardPipelineDataSourceConfiguration(YamlEngine.marshal(props)));
         result.setTableNameMap(tableNameMap);
-        result.setTableNameSchemaNameMapping(new TableNameSchemaNameMapping(TableNameSchemaNameMapping.convert(database.getSchemas())));
+        result.setTableSchemaMap(convertToLogicTableNameKey(sourceSchemaMap));
         return result;
     }
     
     private static ImporterConfiguration createImporterConfiguration(final RuleAlteredJobConfiguration jobConfig, final OnRuleAlteredActionConfiguration onRuleAlteredActionConfig,
-                                                                     final Map<LogicTableName, Set<String>> shardingColumnsMap, final ShardingSphereDatabase database) {
+                                                                     final Map<LogicTableName, Set<String>> shardingColumnsMap, final Map<String, String> schemaNameMap) {
         PipelineDataSourceConfiguration dataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(jobConfig.getTarget().getType(), jobConfig.getTarget().getParameter());
-        TableNameSchemaNameMapping tableNameSchemaNameMapping = new TableNameSchemaNameMapping(TableNameSchemaNameMapping.convert(database.getSchemas()));
         int batchSize = onRuleAlteredActionConfig.getOutput().getBatchSize();
         int retryTimes = jobConfig.getRetryTimes();
-        return new ImporterConfiguration(dataSourceConfig, unmodifiable(shardingColumnsMap), tableNameSchemaNameMapping, batchSize, retryTimes);
+        return new ImporterConfiguration(dataSourceConfig, unmodifiable(shardingColumnsMap), convertToLogicTableNameKey(schemaNameMap), batchSize, retryTimes);
     }
     
     private static Map<LogicTableName, Set<String>> unmodifiable(final Map<LogicTableName, Set<String>> shardingColumnsMap) {
@@ -234,5 +253,13 @@ public final class ShardingRuleAlteredJobConfigurationPreparer implements RuleAl
             result.put(entry.getKey(), Collections.unmodifiableSet(entry.getValue()));
         }
         return Collections.unmodifiableMap(result);
+    }
+    
+    private static Map<LogicTableName, String> convertToLogicTableNameKey(final Map<String, String> tableNameMap) {
+        Map<LogicTableName, String> result = new HashMap<>(tableNameMap.size());
+        for (Entry<String, String> entry : tableNameMap.entrySet()) {
+            result.put(new LogicTableName(entry.getKey()), entry.getValue());
+        }
+        return result;
     }
 }

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.core.check.datasource;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
 import org.junit.Before;
 import org.junit.Test;
@@ -97,7 +96,7 @@ public final class AbstractDataSourceCheckerTest {
         when(dataSource.getConnection()).thenReturn(connection);
         when(connection.prepareStatement("SELECT * FROM `t_order` LIMIT 1")).thenReturn(preparedStatement);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
-        dataSourceChecker.checkTargetTable(dataSources, new TableNameSchemaNameMapping(Collections.emptyMap()), Collections.singletonList("t_order"));
+        dataSourceChecker.checkTargetTable(dataSources, Collections.emptyMap(), Collections.singletonList("t_order"));
     }
     
     @Test(expected = PipelineJobPrepareFailedException.class)
@@ -106,6 +105,6 @@ public final class AbstractDataSourceCheckerTest {
         when(connection.prepareStatement("SELECT * FROM `t_order` LIMIT 1")).thenReturn(preparedStatement);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
-        dataSourceChecker.checkTargetTable(dataSources, new TableNameSchemaNameMapping(Collections.emptyMap()), Collections.singletonList("t_order"));
+        dataSourceChecker.checkTargetTable(dataSources, Collections.emptyMap(), Collections.singletonList("t_order"));
     }
 }

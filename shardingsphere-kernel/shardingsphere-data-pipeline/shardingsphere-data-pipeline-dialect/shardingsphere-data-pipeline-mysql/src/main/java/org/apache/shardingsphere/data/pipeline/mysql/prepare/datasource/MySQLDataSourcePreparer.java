@@ -55,7 +55,7 @@ public final class MySQLDataSourcePreparer extends AbstractDataSourcePreparer {
         PipelineDDLGenerator generator = new PipelineDDLGenerator(PipelineContext.getContextManager());
         List<String> result = new LinkedList<>();
         for (JobDataNodeEntry each : parameter.getTablesFirstDataNodes().getEntries()) {
-            String schemaName = parameter.getTableNameSchemaNameMapping().getSchemaName(each.getLogicTableName());
+            String schemaName = parameter.getTableSchemaMap().get(each.getLogicTableName().toLowerCase());
             result.add(generator.generateLogicDDLSQL(new MySQLDatabaseType(), parameter.getJobConfig().getDatabaseName(), schemaName, each.getLogicTableName()));
         }
         return result;

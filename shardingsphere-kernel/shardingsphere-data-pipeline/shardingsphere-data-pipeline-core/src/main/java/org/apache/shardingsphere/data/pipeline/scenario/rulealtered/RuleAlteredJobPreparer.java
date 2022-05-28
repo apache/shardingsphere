@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
+
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
@@ -142,10 +142,9 @@ public final class RuleAlteredJobPreparer {
             log.info("dataSourcePreparer null, ignore prepare target");
             return;
         }
-        TableNameSchemaNameMapping tableNameSchemaNameMapping = jobContext.getTaskConfig().getDumperConfig().getTableNameSchemaNameMapping();
-        PrepareTargetSchemasParameter prepareTargetSchemasParameter = new PrepareTargetSchemasParameter(jobContext.getTaskConfig(), jobContext.getDataSourceManager(), tableNameSchemaNameMapping);
+        PrepareTargetSchemasParameter prepareTargetSchemasParameter = new PrepareTargetSchemasParameter(jobContext.getTaskConfig(), jobContext.getDataSourceManager(), jobConfig.getTargetSchemaMap());
         dataSourcePreparer.get().prepareTargetSchemas(prepareTargetSchemasParameter);
-        PrepareTargetTablesParameter prepareTargetTablesParameter = new PrepareTargetTablesParameter(jobContext.getTaskConfig(), jobContext.getDataSourceManager(), tableNameSchemaNameMapping);
+        PrepareTargetTablesParameter prepareTargetTablesParameter = new PrepareTargetTablesParameter(jobContext.getTaskConfig(), jobContext.getDataSourceManager(), jobConfig.getTargetSchemaMap());
         dataSourcePreparer.get().prepareTargetTables(prepareTargetTablesParameter);
     }
     
@@ -162,7 +161,7 @@ public final class RuleAlteredJobPreparer {
         Collection<PipelineDataSourceWrapper> targetDataSources = Collections.singletonList(targetDataSource);
         dataSourceChecker.checkConnection(targetDataSources);
         ImporterConfiguration importerConfig = jobContext.getTaskConfig().getImporterConfig();
-        dataSourceChecker.checkTargetTable(targetDataSources, importerConfig.getTableNameSchemaNameMapping(), importerConfig.getLogicTableNames());
+        dataSourceChecker.checkTargetTable(targetDataSources, jobContext.getJobConfig().getTargetSchemaMap(), importerConfig.getLogicTableNames());
     }
     
     private void initInventoryTasks(final RuleAlteredJobContext jobContext) {

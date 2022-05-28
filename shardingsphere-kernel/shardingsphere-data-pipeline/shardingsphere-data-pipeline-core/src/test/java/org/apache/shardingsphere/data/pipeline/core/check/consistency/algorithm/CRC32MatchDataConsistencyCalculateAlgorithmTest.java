@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.core.check.consistency.algorithm;
 
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCalculateParameter;
-import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineDataConsistencyCheckFailedException;
 import org.junit.Before;
@@ -33,7 +32,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Iterator;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -57,7 +55,7 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithmTest {
     
     @Before
     public void setUp() throws SQLException {
-        parameter = new DataConsistencyCalculateParameter(pipelineDataSource, new TableNameSchemaNameMapping(Collections.emptyMap()),
+        parameter = new DataConsistencyCalculateParameter(pipelineDataSource, "",
                 "foo_tbl", Arrays.asList("foo_col", "bar_col"), "FIXTURE", "FIXTURE", "1");
         when(pipelineDataSource.getConnection()).thenReturn(connection);
     }

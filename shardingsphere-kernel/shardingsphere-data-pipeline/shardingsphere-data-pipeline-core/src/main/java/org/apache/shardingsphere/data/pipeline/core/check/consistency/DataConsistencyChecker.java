@@ -22,7 +22,6 @@ import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsist
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyContentCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCountCheckResult;
-import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
@@ -74,13 +73,15 @@ public final class DataConsistencyChecker {
     
     private final Collection<String> logicTableNames;
     
-    private final TableNameSchemaNameMapping tableNameSchemaNameMapping;
+    private final Map<String, String> sourceSchemaName;
+    
+    private final Map<String, String> targetSchemaName;
     
     public DataConsistencyChecker(final RuleAlteredJobConfiguration jobConfig) {
         this.jobConfig = jobConfig;
         logicTableNames = jobConfig.splitLogicTableNames();
-        ShardingSphereDatabase database = PipelineContext.getContextManager().getMetaDataContexts().getMetaData().getDatabases().get(jobConfig.getDatabaseName());
-        tableNameSchemaNameMapping = new TableNameSchemaNameMapping(TableNameSchemaNameMapping.convert(database.getSchemas()));
+        sourceSchemaName = jobConfig.getSourceSchemaMap();
+        targetSchemaName = jobConfig.getTargetSchemaMap();
     }
     
     /**
@@ -141,7 +142,7 @@ public final class DataConsistencyChecker {
     }
     
     private long count(final DataSource dataSource, final String tableName, final DatabaseType databaseType) {
-        String sql = PipelineSQLBuilderFactory.getInstance(databaseType.getType()).buildCountSQL(tableNameSchemaNameMapping.getSchemaName(tableName), tableName);
+        String sql = PipelineSQLBuilderFactory.getInstance(databaseType.getType()).buildCountSQL(sourceSchemaName.get(tableName), tableName);
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -174,8 +175,10 @@ public final class DataConsistencyChecker {
                 }
                 Collection<String> columnNames = table.getColumns().keySet();
                 String uniqueKey = table.getPrimaryKeyColumns().get(0);
-                DataConsistencyCalculateParameter sourceParameter = buildParameter(sourceDataSource, tableNameSchemaNameMapping, each, columnNames, sourceDatabaseType, targetDatabaseType, uniqueKey);
-                DataConsistencyCalculateParameter targetParameter = buildParameter(targetDataSource, tableNameSchemaNameMapping, each, columnNames, targetDatabaseType, sourceDatabaseType, uniqueKey);
+                DataConsistencyCalculateParameter sourceParameter = buildParameter(sourceDataSource, sourceSchemaName.getOrDefault(each, ""), each, columnNames, sourceDatabaseType,
+                        targetDatabaseType, uniqueKey);
+                DataConsistencyCalculateParameter targetParameter = buildParameter(targetDataSource, targetSchemaName.getOrDefault(each, ""), each, columnNames, targetDatabaseType,
+                        sourceDatabaseType, uniqueKey);
                 Iterator<Object> sourceCalculatedResults = calculator.calculate(sourceParameter).iterator();
                 Iterator<Object> targetCalculatedResults = calculator.calculate(targetParameter).iterator();
                 boolean contentMatched = true;
@@ -229,7 +232,7 @@ public final class DataConsistencyChecker {
         if (null == database) {
             throw new RuntimeException("Can not get meta data by database name " + databaseName);
         }
-        String schemaName = tableNameSchemaNameMapping.getSchemaName(logicTableName);
+        String schemaName = sourceSchemaName.get(logicTableName);
         ShardingSphereSchema schema = database.getSchemas().get(schemaName);
         if (null == schema) {
             throw new RuntimeException("Can not get schema by schema name " + schemaName + ", logicTableName=" + logicTableName);
@@ -237,8 +240,8 @@ public final class DataConsistencyChecker {
         return schema.get(logicTableName);
     }
     
-    private DataConsistencyCalculateParameter buildParameter(final PipelineDataSourceWrapper sourceDataSource, final TableNameSchemaNameMapping tableNameSchemaNameMapping, final String tableName,
+    private DataConsistencyCalculateParameter buildParameter(final PipelineDataSourceWrapper sourceDataSource, final String schemaName, final String tableName,
                                                              final Collection<String> columnNames, final String sourceDatabaseType, final String targetDatabaseType, final String uniqueKey) {
-        return new DataConsistencyCalculateParameter(sourceDataSource, tableNameSchemaNameMapping, tableName, columnNames, sourceDatabaseType, targetDatabaseType, uniqueKey);
+        return new DataConsistencyCalculateParameter(sourceDataSource, schemaName, tableName, columnNames, sourceDatabaseType, targetDatabaseType, uniqueKey);
     }
 }

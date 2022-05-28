@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.data.pipeline.core.fixture;
 
-import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
 import org.apache.shardingsphere.data.pipeline.spi.check.datasource.DataSourceChecker;
 
 import javax.sql.DataSource;
 import java.util.Collection;
+import java.util.Map;
 
 public final class FixtureDataSourceChecker implements DataSourceChecker {
     
@@ -38,7 +38,7 @@ public final class FixtureDataSourceChecker implements DataSourceChecker {
     }
     
     @Override
-    public void checkTargetTable(final Collection<? extends DataSource> dataSources, final TableNameSchemaNameMapping tableNameSchemaNameMapping, final Collection<String> tableNames) {
+    public void checkTargetTable(final Collection<? extends DataSource> dataSources, final Map<String, String> tableSchemaMap, final Collection<String> tableNames) {
     }
     
     @Override

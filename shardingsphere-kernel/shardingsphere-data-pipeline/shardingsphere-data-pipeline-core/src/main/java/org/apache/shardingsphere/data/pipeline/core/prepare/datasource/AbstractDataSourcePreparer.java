@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.prepare.datasource;
 
+import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
@@ -24,8 +25,10 @@ import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfig
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.api.prepare.datasource.TableDefinitionSQLType;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
+import org.apache.shardingsphere.data.pipeline.core.metadata.generator.PipelineDDLGenerator;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -59,6 +62,9 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
     
     private static final String[] IGNORE_EXCEPTION_MESSAGE = {"multiple primary keys for table", "already exists"};
     
+    @Getter
+    private final PipelineDDLGenerator pipelineDDLGenerator = new PipelineDDLGenerator(PipelineContext.getContextManager());
+    
     @Override
     public void prepareTargetSchemas(final PrepareTargetSchemasParameter parameter) {
         DatabaseType sourceDatabaseType = DatabaseTypeFactory.getInstance(parameter.getTaskConfig().getJobConfig().getSourceDatabaseType());
@@ -91,7 +97,7 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
     private Set<String> getSchemaNames(final PrepareTargetSchemasParameter parameter) {
         Set<String> result = new HashSet<>();
         for (String each : parameter.getTaskConfig().getJobConfig().splitLogicTableNames()) {
-            String schemaName = parameter.getTableNameSchemaNameMapping().getSchemaName(each);
+            String schemaName = parameter.getTableSchemaMap().get(each);
             if (null == schemaName) {
                 throw new PipelineJobPrepareFailedException("Can not get schemaName by logic table name " + each);
             }

@@ -59,7 +59,7 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithm implements DataCo
     
     private long calculateCRC32(final PipelineSQLBuilder sqlBuilder, final DataConsistencyCalculateParameter parameter, final String columnName) {
         String logicTableName = parameter.getLogicTableName();
-        String schemaName = parameter.getTableNameSchemaNameMapping().getSchemaName(logicTableName);
+        String schemaName = parameter.getSchemaName();
         Optional<String> sql = sqlBuilder.buildCRC32SQL(schemaName, logicTableName, columnName);
         if (!sql.isPresent()) {
             throw new PipelineDataConsistencyCheckFailedException(

@@ -59,6 +59,10 @@ public final class YamlRuleAlteredJobConfiguration implements YamlConfiguration 
     
     private YamlPipelineDataSourceConfiguration target;
     
+    private Map<String, String> sourceTableSchemaMap;
+    
+    private Map<String, String> targetTableSchemaMap;
+    
     /**
      * Map{altered rule yaml class name, re-shard needed table names}.
      */
