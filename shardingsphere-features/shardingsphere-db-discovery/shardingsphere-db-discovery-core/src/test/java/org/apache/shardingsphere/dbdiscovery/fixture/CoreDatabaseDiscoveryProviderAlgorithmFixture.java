@@ -22,6 +22,7 @@ import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgori
 import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
 
 import javax.sql.DataSource;
+import java.util.Collection;
 import java.util.Properties;
 
 @Getter
@@ -35,7 +36,7 @@ public final class CoreDatabaseDiscoveryProviderAlgorithmFixture implements Data
     }
     
     @Override
-    public void checkEnvironment(final String databaseName, final DataSource dataSource) {
+    public void checkEnvironment(final String databaseName, final Collection<DataSource> dataSource) {
     }
     
     @Override
