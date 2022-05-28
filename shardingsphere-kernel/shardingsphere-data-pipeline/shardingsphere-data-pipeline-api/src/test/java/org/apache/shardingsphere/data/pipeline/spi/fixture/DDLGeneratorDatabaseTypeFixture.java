@@ -17,21 +17,18 @@
 
 package org.apache.shardingsphere.data.pipeline.spi.fixture;
 
+import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
-import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
+
 import static org.mockito.Mockito.mock;
 
-public final class DatabaseTypeFixture implements DatabaseType {
-    
-    @Override
-    public String getType() {
-        return "FIXTURE";
-    }
+public final class DDLGeneratorDatabaseTypeFixture implements DatabaseType {
     
     @Override
     public QuoteCharacter getQuoteCharacter() {
@@ -40,7 +37,7 @@ public final class DatabaseTypeFixture implements DatabaseType {
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
-        return Collections.singleton("jdbc:fixture");
+        return Collections.singleton("jdbc:ddl.generator.fixture");
     }
     
     @Override
@@ -61,5 +58,10 @@ public final class DatabaseTypeFixture implements DatabaseType {
     @Override
     public Collection<String> getSystemSchemas() {
         return Collections.emptyList();
+    }
+    
+    @Override
+    public String getType() {
+        return "DDL.GENERATOR.FIXTURE";
     }
 }

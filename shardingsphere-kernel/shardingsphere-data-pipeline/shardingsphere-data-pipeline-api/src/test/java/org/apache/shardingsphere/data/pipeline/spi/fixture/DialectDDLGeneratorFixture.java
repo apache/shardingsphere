@@ -17,21 +17,19 @@
 
 package org.apache.shardingsphere.data.pipeline.spi.fixture;
 
-import java.sql.SQLException;
-import javax.sql.DataSource;
 import org.apache.shardingsphere.data.pipeline.spi.ddlgenerator.DialectDDLGenerator;
+
+import javax.sql.DataSource;
 
 public final class DialectDDLGeneratorFixture implements DialectDDLGenerator {
     
-    private static final String SHOW_CREATE_SQL = "SHOW CREATE TABLE %s";
-    
     @Override
-    public String generateDDLSQL(final String tableName, final String schemaName, final DataSource dataSource) throws SQLException {
-        return String.format(SHOW_CREATE_SQL, tableName);
+    public String generateDDLSQL(final String tableName, final String schemaName, final DataSource dataSource) {
+        return "";
     }
     
     @Override
     public String getType() {
-        return "FIXTURE";
+        return "DDL.GENERATOR.FIXTURE";
     }
 }
