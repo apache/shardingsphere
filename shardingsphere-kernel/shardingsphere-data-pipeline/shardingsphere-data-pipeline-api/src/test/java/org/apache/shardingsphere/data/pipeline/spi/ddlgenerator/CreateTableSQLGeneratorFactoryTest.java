@@ -17,31 +17,15 @@
 
 package org.apache.shardingsphere.data.pipeline.spi.ddlgenerator;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
+import org.junit.Test;
 
-import java.util.Optional;
+import static org.junit.Assert.assertTrue;
 
-/**
- * Dialect DDL SQL generator factory.
- */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DialectDDLSQLGeneratorFactory {
+public final class CreateTableSQLGeneratorFactoryTest {
     
-    static {
-        ShardingSphereServiceLoader.register(DialectDDLGenerator.class);
-    }
-    
-    /**
-     * Find instance of dialect DDL SQL generator.
-     *
-     * @param databaseType database type
-     * @return found instance
-     */
-    public static Optional<DialectDDLGenerator> findInstance(final DatabaseType databaseType) {
-        return TypedSPIRegistry.findRegisteredService(DialectDDLGenerator.class, databaseType.getType());
+    @Test
+    public void assertFindInstance() {
+        assertTrue(CreateTableSQLGeneratorFactory.findInstance(DatabaseTypeFactory.getInstance("DDL.GENERATOR.FIXTURE")).isPresent());
     }
 }

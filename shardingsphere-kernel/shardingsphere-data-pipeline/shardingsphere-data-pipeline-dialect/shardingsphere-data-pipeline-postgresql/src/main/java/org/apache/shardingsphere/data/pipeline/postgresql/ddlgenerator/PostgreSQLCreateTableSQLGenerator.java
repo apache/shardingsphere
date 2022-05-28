@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql.ddlgenerator;
 
-import org.apache.shardingsphere.data.pipeline.spi.ddlgenerator.DialectDDLGenerator;
+import org.apache.shardingsphere.data.pipeline.spi.ddlgenerator.CreateTableSQLGenerator;
 import org.apache.shardingsphere.data.pipeline.postgresql.util.FreemarkerManager;
 
 import javax.sql.DataSource;
@@ -27,13 +27,13 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * DDL generator for PostgreSQL.
+ * Create table SQL generator for PostgreSQL.
  */
-public final class PostgreDDLGenerator implements DialectDDLGenerator {
+public final class PostgreSQLCreateTableSQLGenerator implements CreateTableSQLGenerator {
     
     // TODO support partitions etc.
     @Override
-    public String generateDDLSQL(final String tableName, final String schemaName, final DataSource dataSource) throws SQLException {
+    public String generate(final String tableName, final String schemaName, final DataSource dataSource) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             int majorVersion = connection.getMetaData().getDatabaseMajorVersion();
             int minorVersion = connection.getMetaData().getDatabaseMinorVersion();

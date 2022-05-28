@@ -15,21 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.fixture;
+package org.apache.shardingsphere.data.pipeline.spi.ddlgenerator;
 
-import org.apache.shardingsphere.data.pipeline.spi.ddlgenerator.DialectDDLGenerator;
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 
-public final class DialectDDLGeneratorFixture implements DialectDDLGenerator {
+/**
+ * Create table SQL generator.
+ */
+@SingletonSPI
+public interface CreateTableSQLGenerator extends TypedSPI {
     
-    @Override
-    public String generateDDLSQL(final String tableName, final String schemaName, final DataSource dataSource) {
-        return "";
-    }
-    
-    @Override
-    public String getType() {
-        return "DDL.GENERATOR.FIXTURE";
-    }
+    /**
+    * Generate create table SQL.
+    * 
+    * @param tableName table name
+    * @param schemaName schema name
+    * @param dataSource dataSource
+    * @return created SQL
+    * @throws SQLException SQL exception
+    */
+    String generate(String tableName, String schemaName, DataSource dataSource) throws SQLException;
 }
