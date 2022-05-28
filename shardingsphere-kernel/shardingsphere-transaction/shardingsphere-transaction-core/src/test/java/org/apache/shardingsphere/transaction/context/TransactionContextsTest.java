@@ -27,19 +27,11 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 public final class TransactionContextsTest {
-    
-    @Test
-    public void assertNewInstanceWithEmptyEngines() {
-        TransactionContexts transactionContexts = new TransactionContexts();
-        Map<String, ShardingSphereTransactionManagerEngine> engines = transactionContexts.getEngines();
-        assertTrue(engines.isEmpty());
-    }
     
     @Test
     public void assertGetDefaultTransactionManagerEngine() {
