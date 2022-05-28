@@ -1277,3 +1277,7 @@ pfileName
 characterSetName
     : identifier
     ;
+
+quotaUnit
+    : ('M' | 'G' | 'T' | 'P' | 'E')
+    ;
