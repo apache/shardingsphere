@@ -43,7 +43,6 @@ import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEve
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.locks.Lock;
 import java.util.stream.Collectors;
