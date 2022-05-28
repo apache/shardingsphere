@@ -35,7 +35,7 @@ public interface CreateTableSQLGenerator extends TypedSPI {
     * @param tableName table name
     * @param schemaName schema name
     * @param dataSource dataSource
-    * @return created SQL
+    * @return generated SQL
     * @throws SQLException SQL exception
     */
     String generate(String tableName, String schemaName, DataSource dataSource) throws SQLException;

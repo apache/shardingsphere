@@ -29,21 +29,21 @@ import java.util.LinkedList;
 import java.util.Map;
 
 /**
- * Postgres index sql generator.
+ * Postgres index SQL generator.
  */
-public final class PostgresIndexSqlGenerator extends AbstractPostgresDDLAdapter {
+public final class PostgresIndexSQLGenerator extends AbstractPostgresDDLAdapter {
     
     private static final Integer PG_INDEX_INCLUDE_VERSION = 11;
     
-    public PostgresIndexSqlGenerator(final Connection connection, final int majorVersion, final int minorVersion) {
+    public PostgresIndexSQLGenerator(final Connection connection, final int majorVersion, final int minorVersion) {
         super(connection, majorVersion, minorVersion);
     }
     
     /**
-     * Generate create index sql.
+     * Generate create index SQL.
      * 
      * @param context context
-     * @return index sql
+     * @return generated SQL
      */
     @SneakyThrows
     public String generate(final Map<String, Object> context) {
@@ -74,9 +74,9 @@ public final class PostgresIndexSqlGenerator extends AbstractPostgresDDLAdapter 
     }
     
     private String doGenerateIndexSql(final Map<String, Object> indexData) {
-        String result = FreemarkerManager.getSqlByPgVersion(indexData, "indexes/%s/create.ftl", getMajorVersion(), getMinorVersion());
+        String result = FreemarkerManager.getSQLByPgVersion(indexData, "indexes/%s/create.ftl", getMajorVersion(), getMinorVersion());
         result += System.lineSeparator();
-        result += FreemarkerManager.getSqlByPgVersion(indexData, "indexes/%s/alter.ftl", getMajorVersion(), getMinorVersion());
+        result += FreemarkerManager.getSQLByPgVersion(indexData, "indexes/%s/alter.ftl", getMajorVersion(), getMinorVersion());
         return result;
     }
     
