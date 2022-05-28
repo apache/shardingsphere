@@ -25,12 +25,12 @@ import org.apache.shardingsphere.encrypt.spi.context.EncryptColumnDataType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
 
 /**
  * Encrypt table.
@@ -175,7 +175,11 @@ public final class EncryptTable {
      * @return logic and cipher columns
      */
     public Map<String, String> getLogicAndCipherColumns() {
-        return columns.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getCipherColumn()));
+        Map<String, String> result = new HashMap<>(columns.size(), 1);
+        for (Entry<String, EncryptColumn> entry : columns.entrySet()) {
+            result.put(entry.getKey(), entry.getValue().getCipherColumn());
+        }
+        return result;
     }
     
     /**
