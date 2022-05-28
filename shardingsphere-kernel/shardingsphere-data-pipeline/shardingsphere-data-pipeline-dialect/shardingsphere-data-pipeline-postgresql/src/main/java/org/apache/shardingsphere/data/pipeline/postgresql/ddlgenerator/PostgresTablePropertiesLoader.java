@@ -43,7 +43,6 @@ public final class PostgresTablePropertiesLoader extends AbstractPostgresDDLAdap
      * Load table properties.
      *
      * @return loaded table properties
-     * @throws SQLException SQL exception
      */
     public Map<String, Object> load() throws SQLException {
         Map<String, Object> result = new LinkedHashMap<>();
