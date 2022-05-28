@@ -23,11 +23,9 @@ import javax.sql.DataSource;
 
 public final class DialectDDLGeneratorFixture implements DialectDDLGenerator {
     
-    private static final String SHOW_CREATE_SQL = "SHOW CREATE TABLE %s";
-    
     @Override
     public String generateDDLSQL(final String tableName, final String schemaName, final DataSource dataSource) {
-        return String.format(SHOW_CREATE_SQL, tableName);
+        return "";
     }
     
     @Override
