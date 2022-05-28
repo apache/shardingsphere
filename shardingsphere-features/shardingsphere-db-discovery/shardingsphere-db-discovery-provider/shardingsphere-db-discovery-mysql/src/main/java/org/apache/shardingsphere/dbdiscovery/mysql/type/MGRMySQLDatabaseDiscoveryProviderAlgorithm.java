@@ -81,7 +81,7 @@ public final class MGRMySQLDatabaseDiscoveryProviderAlgorithm implements Databas
         }
     }
     
-    private CompletableFuture<Void> runAsyncCheckEnvironment(String databaseName, final DataSource dataSource, final ExecutorService executorService) {
+    private CompletableFuture<Void> runAsyncCheckEnvironment(final String databaseName, final DataSource dataSource, final ExecutorService executorService) {
         return CompletableFuture.runAsync(() -> {
             try {
                 checkSingleDatasourceEnvironment(databaseName, dataSource);
