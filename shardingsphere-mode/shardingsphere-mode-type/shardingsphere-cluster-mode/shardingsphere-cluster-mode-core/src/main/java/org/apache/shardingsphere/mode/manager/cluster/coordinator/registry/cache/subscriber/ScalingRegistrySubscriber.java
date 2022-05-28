@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cach
 import com.google.common.eventbus.Subscribe;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.event.StartScalingEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingTaskFinishedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.schema.SchemaChangedEvent;
@@ -92,7 +92,7 @@ public final class ScalingRegistrySubscriber {
      */
     @Subscribe
     public void schemaChanged(final SchemaChangedEvent event) {
-        TableMetaData changedTableMetaData = event.getChangedTableMetaData();
+        ShardingSphereTable changedTableMetaData = event.getChangedTableMetaData();
         String changedTableName = null != changedTableMetaData ? changedTableMetaData.getName() : null;
         log.info("schemaChanged, databaseName={}, schemaName={}, changedTableName={}, deletedTable={}", event.getDatabaseName(), event.getSchemaName(), changedTableName, event.getDeletedTable());
     }

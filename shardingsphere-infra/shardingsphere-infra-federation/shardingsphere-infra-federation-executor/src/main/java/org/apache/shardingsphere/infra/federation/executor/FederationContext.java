@@ -40,5 +40,5 @@ public final class FederationContext {
     
     private final LogicSQL logicSQL;
     
-    private final Map<String, ShardingSphereDatabase> databaseMap;
+    private final Map<String, ShardingSphereDatabase> databases;
 }

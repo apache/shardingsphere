@@ -39,8 +39,8 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import javax.sql.DataSource;
@@ -168,12 +168,12 @@ public final class DataConsistencyChecker {
             String sourceDatabaseType = sourceDataSourceConfig.getDatabaseType().getType();
             String targetDatabaseType = targetDataSourceConfig.getDatabaseType().getType();
             for (String each : logicTableNames) {
-                TableMetaData tableMetaData = getTableMetaData(jobConfig.getDatabaseName(), each);
-                if (null == tableMetaData) {
+                ShardingSphereTable table = getTableMetaData(jobConfig.getDatabaseName(), each);
+                if (null == table) {
                     throw new PipelineDataConsistencyCheckFailedException("Can not get metadata for table " + each);
                 }
-                Collection<String> columnNames = tableMetaData.getColumns().keySet();
-                String uniqueKey = tableMetaData.getPrimaryKeyColumns().get(0);
+                Collection<String> columnNames = table.getColumns().keySet();
+                String uniqueKey = table.getPrimaryKeyColumns().get(0);
                 DataConsistencyCalculateParameter sourceParameter = buildParameter(sourceDataSource, tableNameSchemaNameMapping, each, columnNames, sourceDatabaseType, targetDatabaseType, uniqueKey);
                 DataConsistencyCalculateParameter targetParameter = buildParameter(targetDataSource, tableNameSchemaNameMapping, each, columnNames, targetDatabaseType, sourceDatabaseType, uniqueKey);
                 Iterator<Object> sourceCalculatedResults = calculator.calculate(sourceParameter).iterator();
@@ -222,7 +222,7 @@ public final class DataConsistencyChecker {
         }
     }
     
-    private TableMetaData getTableMetaData(final String databaseName, final String logicTableName) {
+    private ShardingSphereTable getTableMetaData(final String databaseName, final String logicTableName) {
         ContextManager contextManager = PipelineContext.getContextManager();
         Preconditions.checkNotNull(contextManager, "ContextManager null");
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(databaseName);

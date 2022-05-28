@@ -56,7 +56,7 @@ governance:
 ## @section Compute-Node parameters
 ## 
 compute:
-  ## @section Compute-Node ShardingSphere-Proxy  parameters
+  ## @section Compute-Node ShardingSphere-Proxy parameters
   ## ref: https://kubernetes.io/docs/concepts/containers/images/
   ## @param compute.image.repository Image name of ShardingSphere-Proxy.
   ## @param compute.image.pullPolicy The policy for pulling ShardingSphere-Proxy image

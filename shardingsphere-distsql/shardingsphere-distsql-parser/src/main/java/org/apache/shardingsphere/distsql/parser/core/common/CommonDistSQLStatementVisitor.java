@@ -44,6 +44,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.DropTrafficRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.EnableInstanceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ExportDatabaseConfigurationContext;
+import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.FromSegmentContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ImportDatabaseConfigurationContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.InstanceDefinationContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.InstanceIdContext;
@@ -332,8 +333,18 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     
     @Override
     public ASTNode visitRefreshTableMetadata(final RefreshTableMetadataContext ctx) {
-        return null == ctx.refreshScope() ? new RefreshTableMetadataStatement()
-                : new RefreshTableMetadataStatement(getIdentifierValue(ctx.refreshScope().tableName()), getIdentifierValue(ctx.refreshScope().resourceName()));
+        if (null == ctx.refreshScope()) {
+            return new RefreshTableMetadataStatement();
+        }
+        String tableName = getIdentifierValue(ctx.refreshScope().tableName());
+        String databaseName = null;
+        String schemaName = null;
+        if (null != ctx.refreshScope().fromSegment()) {
+            FromSegmentContext fromSegment = ctx.refreshScope().fromSegment();
+            databaseName = getIdentifierValue(fromSegment.resourceName());
+            schemaName = null == fromSegment.schemaName() ? null : getIdentifierValue(fromSegment.schemaName());
+        }
+        return new RefreshTableMetadataStatement(tableName, databaseName, schemaName);
     }
     
     @Override

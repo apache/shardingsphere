@@ -54,13 +54,13 @@ public final class DriverStateContextTest {
     
     @Before
     public void setUp() {
-        Map<String, ShardingSphereDatabase> databaseMap = mockDatabaseMap();
+        Map<String, ShardingSphereDatabase> databases = mockDatabases();
         when(contextManager.getMetaDataContexts()).thenReturn(new MetaDataContexts(mock(MetaDataPersistService.class),
-                new ShardingSphereMetaData(databaseMap, mock(ShardingSphereRuleMetaData.class), mock(ConfigurationProperties.class)), mock(OptimizerContext.class)));
+                new ShardingSphereMetaData(databases, mock(ShardingSphereRuleMetaData.class), mock(ConfigurationProperties.class)), mock(OptimizerContext.class)));
         when(contextManager.getInstanceContext().getInstance().getState()).thenReturn(new StateContext());
     }
     
-    private Map<String, ShardingSphereDatabase> mockDatabaseMap() {
+    private Map<String, ShardingSphereDatabase> mockDatabases() {
         Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>();
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, Answers.RETURNS_DEEP_STUBS);
         when(database.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());

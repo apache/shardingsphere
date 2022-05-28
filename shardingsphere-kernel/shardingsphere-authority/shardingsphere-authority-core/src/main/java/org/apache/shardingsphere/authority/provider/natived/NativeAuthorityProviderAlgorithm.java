@@ -47,8 +47,8 @@ public final class NativeAuthorityProviderAlgorithm implements AuthorityProvider
     }
     
     @Override
-    public AuthorityRegistry buildAuthorityRegistry(final Map<String, ShardingSphereDatabase> databaseMap, final Collection<ShardingSphereUser> users) {
-        return new UserPrivilegeMapAuthorityRegistry(StoragePrivilegeBuilder.build(new LinkedList<>(databaseMap.values()), users));
+    public AuthorityRegistry buildAuthorityRegistry(final Map<String, ShardingSphereDatabase> databases, final Collection<ShardingSphereUser> users) {
+        return new UserPrivilegeMapAuthorityRegistry(StoragePrivilegeBuilder.build(new LinkedList<>(databases.values()), users));
     }
     
     @Override

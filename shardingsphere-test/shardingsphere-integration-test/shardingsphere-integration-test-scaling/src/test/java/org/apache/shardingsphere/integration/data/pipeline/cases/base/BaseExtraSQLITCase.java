@@ -34,15 +34,15 @@ public abstract class BaseExtraSQLITCase extends BaseITCase {
     }
     
     protected void createNoUseTable() {
-        getJdbcTemplate().execute("CREATE SHARDING TABLE RULE no_use (RESOURCES(ds_0, ds_1), SHARDING_COLUMN=sharding_id, TYPE(NAME=MOD,PROPERTIES('sharding-count'=4)))");
-        getJdbcTemplate().execute("CREATE TABLE no_use(id int(11) NOT NULL,sharding_id int(11) NOT NULL, PRIMARY KEY (id))");
+        executeWithLog("CREATE SHARDING TABLE RULE no_use (RESOURCES(ds_0, ds_1), SHARDING_COLUMN=sharding_id, TYPE(NAME=MOD,PROPERTIES('sharding-count'=4)))");
+        executeWithLog("CREATE TABLE no_use(id int(11) NOT NULL,sharding_id int(11) NOT NULL, PRIMARY KEY (id))");
     }
     
     protected void createOrderTable() {
-        getJdbcTemplate().execute(extraSQLCommand.getCreateTableOrder());
+        executeWithLog(extraSQLCommand.getCreateTableOrder());
     }
     
     protected void createOrderItemTable() {
-        getJdbcTemplate().execute(extraSQLCommand.getCreateTableOrderItem());
+        executeWithLog(extraSQLCommand.getCreateTableOrderItem());
     }
 }

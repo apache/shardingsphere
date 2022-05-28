@@ -4202,38 +4202,6 @@
     <sql-case id="alter_by_postgresql_source_test_case459" value="ALTER TYPE test_typex DROP ATTRIBUTE a;" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case460" value="ALTER TYPE tt_t0 DROP ATTRIBUTE z;" db-types="PostgreSQL" />
     <sql-case id="analyze_by_postgresql_source_test_case1" value="ANALYZE (nonexistent-arg) does_not_exist;" db-types="PostgreSQL" />
-    <sql-case id="close_by_postgresql_source_test_case1" value="CLOSE ALL;" db-types="PostgreSQL" />
-    <sql-case id="close_by_postgresql_source_test_case2" value="CLOSE ALL;" db-types="PostgreSQL" />
-    <sql-case id="close_by_postgresql_source_test_case3" value="CLOSE c;" db-types="PostgreSQL" />
-    <sql-case id="close_by_postgresql_source_test_case4" value="CLOSE foo10;" db-types="PostgreSQL" />
-    <sql-case id="close_by_postgresql_source_test_case5" value="CLOSE foo11;" db-types="PostgreSQL" />
-    <sql-case id="close_by_postgresql_source_test_case6" value="CLOSE foo12;" db-types="PostgreSQL" />
-    <sql-case id="close_by_postgresql_source_test_case7" value="CLOSE foo13;" db-types="PostgreSQL" />
-    <sql-case id="close_by_postgresql_source_test_case8" value="CLOSE foo14;" db-types="PostgreSQL" />
-    <sql-case id="close_by_postgresql_source_test_case9" value="CLOSE foo15;" db-types="PostgreSQL" />
-    <sql-case id="close_by_postgresql_source_test_case10" value="CLOSE foo16;" db-types="PostgreSQL" />
-    <sql-case id="close_by_postgresql_source_test_case11" value="CLOSE foo17;" db-types="PostgreSQL" />
-    <sql-case id="close_by_postgresql_source_test_case12" value="CLOSE foo18;" db-types="PostgreSQL" />
-    <sql-case id="close_by_postgresql_source_test_case13" value="CLOSE foo19;" db-types="PostgreSQL" />
-    <sql-case id="close_by_postgresql_source_test_case14" value="CLOSE foo1;" db-types="PostgreSQL" />
-    <sql-case id="close_by_postgresql_source_test_case15" value="CLOSE foo20;" db-types="PostgreSQL" />
-    <sql-case id="close_by_postgresql_source_test_case16" value="CLOSE foo21;" db-types="PostgreSQL" />
-    <sql-case id="close_by_postgresql_source_test_case17" value="CLOSE foo22;" db-types="PostgreSQL" />
-    <sql-case id="close_by_postgresql_source_test_case18" value="CLOSE foo23;" db-types="PostgreSQL" />
-    <sql-case id="close_by_postgresql_source_test_case19" value="CLOSE foo24;" db-types="PostgreSQL" />
-    <sql-case id="close_by_postgresql_source_test_case20" value="CLOSE foo25;" db-types="PostgreSQL" />
-    <sql-case id="close_by_postgresql_source_test_case21" value="CLOSE foo25;" db-types="PostgreSQL" />
-    <sql-case id="close_by_postgresql_source_test_case22" value="CLOSE foo25ns;" db-types="PostgreSQL" />
-    <sql-case id="close_by_postgresql_source_test_case23" value="CLOSE foo2;" db-types="PostgreSQL" />
-    <sql-case id="close_by_postgresql_source_test_case24" value="CLOSE foo3;" db-types="PostgreSQL" />
-    <sql-case id="close_by_postgresql_source_test_case25" value="CLOSE foo4;" db-types="PostgreSQL" />
-    <sql-case id="close_by_postgresql_source_test_case26" value="CLOSE foo5;" db-types="PostgreSQL" />
-    <sql-case id="close_by_postgresql_source_test_case27" value="CLOSE foo6;" db-types="PostgreSQL" />
-    <sql-case id="close_by_postgresql_source_test_case28" value="CLOSE foo7;" db-types="PostgreSQL" />
-    <sql-case id="close_by_postgresql_source_test_case29" value="CLOSE foo8;" db-types="PostgreSQL" />
-    <sql-case id="close_by_postgresql_source_test_case30" value="CLOSE foo9;" db-types="PostgreSQL" />
-    <sql-case id="close_by_postgresql_source_test_case31" value="CLOSE hsc;" db-types="PostgreSQL" />
-    <sql-case id="close_by_postgresql_source_test_case32" value="CLOSE tablesample_cur;" db-types="PostgreSQL" />
     <sql-case id="cluster_by_postgresql_source_test_case1" value="CLUSTER abbrev_abort_uuids USING abbrev_abort_uuids__abort_decreasing_idx;" db-types="PostgreSQL" />
     <sql-case id="cluster_by_postgresql_source_test_case2" value="CLUSTER abbrev_abort_uuids USING abbrev_abort_uuids__abort_increasing_idx;" db-types="PostgreSQL" />
     <sql-case id="cluster_by_postgresql_source_test_case3" value="CLUSTER abbrev_abort_uuids USING abbrev_abort_uuids__noabort_decreasing_idx;" db-types="PostgreSQL" />

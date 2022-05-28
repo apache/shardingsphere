@@ -58,20 +58,20 @@ public final class MetaDataContextsBuilder {
     public MetaDataContexts build(final MetaDataPersistService metaDataPersistService) throws SQLException {
         DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(databaseConfigMap, props);
         DatabaseType storageType = DatabaseTypeEngine.getStorageType(databaseConfigMap);
-        Map<String, ShardingSphereDatabase> databaseMap = getDatabaseMap(protocolType, storageType);
-        ShardingSphereRuleMetaData globalMetaData = new ShardingSphereRuleMetaData(globalRuleConfigs, GlobalRulesBuilder.buildRules(globalRuleConfigs, databaseMap));
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(databaseMap, globalMetaData, props);
-        return new MetaDataContexts(metaDataPersistService, metaData, OptimizerContextFactory.create(databaseMap, globalMetaData));
+        Map<String, ShardingSphereDatabase> databases = getDatabases(protocolType, storageType);
+        ShardingSphereRuleMetaData globalMetaData = new ShardingSphereRuleMetaData(globalRuleConfigs, GlobalRulesBuilder.buildRules(globalRuleConfigs, databases));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(databases, globalMetaData, props);
+        return new MetaDataContexts(metaDataPersistService, metaData, OptimizerContextFactory.create(databases, globalMetaData));
     }
     
-    private Map<String, ShardingSphereDatabase> getDatabaseMap(final DatabaseType protocolType, final DatabaseType storageType) throws SQLException {
+    private Map<String, ShardingSphereDatabase> getDatabases(final DatabaseType protocolType, final DatabaseType storageType) throws SQLException {
         Map<String, ShardingSphereDatabase> result = new HashMap<>(databaseConfigMap.size() + protocolType.getSystemDatabaseSchemaMap().size(), 1);
-        result.putAll(getGenericDatabaseMap(protocolType, storageType));
-        result.putAll(getSystemDatabaseMap(protocolType));
+        result.putAll(getGenericDatabases(protocolType, storageType));
+        result.putAll(getSystemDatabases(protocolType));
         return result;
     }
     
-    private Map<String, ShardingSphereDatabase> getGenericDatabaseMap(final DatabaseType protocolType, final DatabaseType storageType) throws SQLException {
+    private Map<String, ShardingSphereDatabase> getGenericDatabases(final DatabaseType protocolType, final DatabaseType storageType) throws SQLException {
         Map<String, ShardingSphereDatabase> result = new HashMap<>(databaseConfigMap.size(), 1);
         for (Entry<String, DatabaseConfiguration> entry : databaseConfigMap.entrySet()) {
             String databaseName = entry.getKey();
@@ -82,7 +82,7 @@ public final class MetaDataContextsBuilder {
         return result;
     }
     
-    private Map<String, ShardingSphereDatabase> getSystemDatabaseMap(final DatabaseType protocolType) throws SQLException {
+    private Map<String, ShardingSphereDatabase> getSystemDatabases(final DatabaseType protocolType) throws SQLException {
         Map<String, ShardingSphereDatabase> result = new HashMap<>(protocolType.getSystemDatabaseSchemaMap().size(), 1);
         for (String each : protocolType.getSystemDatabaseSchemaMap().keySet()) {
             if (!databaseConfigMap.containsKey(each) || databaseConfigMap.get(each).getDataSources().isEmpty()) {

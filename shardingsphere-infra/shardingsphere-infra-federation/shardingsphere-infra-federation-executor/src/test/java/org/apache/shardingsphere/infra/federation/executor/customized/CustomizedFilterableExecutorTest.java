@@ -24,9 +24,9 @@ import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerCon
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
@@ -48,12 +48,12 @@ public class CustomizedFilterableExecutorTest {
     
     @Before
     public void init() throws Exception {
-        Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(2, 1);
-        tableMetaDataMap.put("t_order_federate", createOrderTableMetaData());
-        tableMetaDataMap.put("t_user_info", createUserInfoTableMetaData());
+        Map<String, ShardingSphereTable> tables = new HashMap<>(2, 1);
+        tables.put("t_order_federate", createOrderTableMetaData());
+        tables.put("t_user_info", createUserInfoTableMetaData());
         String schemaName = "federate_jdbc";
         String databaseName = "database_name";
-        Map<String, ShardingSphereSchema> schemas = Collections.singletonMap(databaseName, new ShardingSphereSchema(tableMetaDataMap));
+        Map<String, ShardingSphereSchema> schemas = Collections.singletonMap(databaseName, new ShardingSphereSchema(tables));
         ShardingSphereDatabase metaData = new ShardingSphereDatabase(schemaName, new H2DatabaseType(), mockResource(), null, schemas);
         OptimizerContext optimizerContext = OptimizerContextFactory.create(Collections.singletonMap(schemaName, metaData), createGlobalRuleMetaData());
         executor = new CustomizedFilterableExecutor(databaseName, schemaName, optimizerContext);
@@ -70,17 +70,17 @@ public class CustomizedFilterableExecutorTest {
         return result;
     }
     
-    private TableMetaData createOrderTableMetaData() {
-        ColumnMetaData orderIdColumn = new ColumnMetaData("order_id", Types.VARCHAR, true, false, false);
-        ColumnMetaData userIdColumn = new ColumnMetaData("user_id", Types.VARCHAR, false, false, false);
-        ColumnMetaData statusColumn = new ColumnMetaData("status", Types.VARCHAR, false, false, false);
-        return new TableMetaData("t_order_federate", Arrays.asList(orderIdColumn, userIdColumn, statusColumn), Collections.emptyList(), Collections.emptyList());
+    private ShardingSphereTable createOrderTableMetaData() {
+        ShardingSphereColumn orderIdColumn = new ShardingSphereColumn("order_id", Types.VARCHAR, true, false, false);
+        ShardingSphereColumn userIdColumn = new ShardingSphereColumn("user_id", Types.VARCHAR, false, false, false);
+        ShardingSphereColumn statusColumn = new ShardingSphereColumn("status", Types.VARCHAR, false, false, false);
+        return new ShardingSphereTable("t_order_federate", Arrays.asList(orderIdColumn, userIdColumn, statusColumn), Collections.emptyList(), Collections.emptyList());
     }
     
-    private TableMetaData createUserInfoTableMetaData() {
-        ColumnMetaData userIdColumn = new ColumnMetaData("user_id", Types.VARCHAR, true, false, false);
-        ColumnMetaData informationColumn = new ColumnMetaData("information", Types.VARCHAR, false, false, false);
-        return new TableMetaData("t_user_info", Arrays.asList(userIdColumn, informationColumn), Collections.emptyList(), Collections.emptyList());
+    private ShardingSphereTable createUserInfoTableMetaData() {
+        ShardingSphereColumn userIdColumn = new ShardingSphereColumn("user_id", Types.VARCHAR, true, false, false);
+        ShardingSphereColumn informationColumn = new ShardingSphereColumn("information", Types.VARCHAR, false, false, false);
+        return new ShardingSphereTable("t_user_info", Arrays.asList(userIdColumn, informationColumn), Collections.emptyList(), Collections.emptyList());
     }
     
     @Test

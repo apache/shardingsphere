@@ -58,24 +58,9 @@ public final class ComputeNodeStatusService {
      * @param labels collection of label
      */
     public void persistInstanceLabels(final String instanceId, final Collection<String> labels) {
-        if (null != labels && !labels.isEmpty()) {
+        if (null != labels) {
             repository.persistEphemeral(ComputeNode.getInstanceLabelsNodePath(instanceId), YamlEngine.marshal(labels));
         }
-    }
-    
-    /**
-     * Delete instance labels.
-     *
-     * @param instanceId instance id
-     */
-    public void deleteInstanceLabels(final String instanceId) {
-        if (isExisted(instanceId)) {
-            repository.delete(ComputeNode.getInstanceLabelsNodePath(instanceId));
-        }
-    }
-    
-    private boolean isExisted(final String instanceId) {
-        return !Strings.isNullOrEmpty(repository.get(ComputeNode.getInstanceLabelsNodePath(instanceId)));
     }
     
     /**

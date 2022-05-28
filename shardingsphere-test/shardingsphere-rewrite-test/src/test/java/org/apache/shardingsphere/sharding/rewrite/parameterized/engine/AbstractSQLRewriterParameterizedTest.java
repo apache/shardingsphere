@@ -33,7 +33,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
 import org.apache.shardingsphere.infra.rewrite.SQLRewriteEntry;
 import org.apache.shardingsphere.infra.rewrite.engine.result.GenericSQLRewriteResult;
@@ -108,11 +108,11 @@ public abstract class AbstractSQLRewriterParameterizedTest {
         mockRules(databaseRules, schemaName);
         databaseRules.add(sqlParserRule);
         ShardingSphereDatabase database = new ShardingSphereDatabase(schemaName, databaseType, resource, new ShardingSphereRuleMetaData(Collections.emptyList(), databaseRules), schemas);
-        Map<String, ShardingSphereDatabase> databaseMap = new HashMap<>(2, 1);
-        databaseMap.put(schemaName, database);
+        Map<String, ShardingSphereDatabase> databases = new HashMap<>(2, 1);
+        databases.put(schemaName, database);
         SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine(getTestParameters().getDatabaseType(),
                 sqlParserRule.getSqlStatementCache(), sqlParserRule.getParseTreeCache(), sqlParserRule.isSqlCommentParseEnabled());
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(databaseMap,
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(databases,
                 sqlStatementParserEngine.parse(getTestParameters().getInputSQL(), false), schemaName);
         if (sqlStatementContext instanceof ParameterAware) {
             ((ParameterAware) sqlStatementContext).setUpParameters(getTestParameters().getInputParameters());

@@ -32,3 +32,5 @@ ShardingSphere-Scaling 是一个提供给用户的通用数据接入迁移及弹
 
 ShardingSphere-Scaling 从 **4.1.0** 版本开始向用户提供。
 当前处于 **alpha** 开发阶段。
+
+**源码：https://github.com/apache/shardingsphere/tree/master/shardingsphere-kernel/shardingsphere-data-pipeline**
