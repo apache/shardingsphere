@@ -78,7 +78,7 @@ public final class MGRMySQLDatabaseDiscoveryProviderAlgorithm implements Databas
             } catch (SQLException ex) {
                 throw new ShardingSphereException(ex);
             }
-        }, executorService);
+        }, executorService).join();
     }
     
     private void checkSingleDatasourceEnvironment(final String databaseName, final DataSource dataSource) throws SQLException {
