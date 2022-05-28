@@ -2770,3 +2770,11 @@ ACCESSED
 RESTART
     : R E S T A R T
     ;
+
+OPTIMIZE
+    : O P T I M I Z E
+    ;
+
+QUOTA
+    : Q U O T A
+    ;

@@ -520,6 +520,8 @@ public enum SQLVisitorRule {
     
     CREATE_CONTROL_FILE("CreateControlFile", SQLStatementType.DDL),
     
+    CREATE_FLASHBACK_ARCHIVE("CreateFlashbackArchive", SQLStatementType.DDL),
+    
     CURSOR("Cursor", SQLStatementType.DDL),
     
     CLOSE("Close", SQLStatementType.DDL),

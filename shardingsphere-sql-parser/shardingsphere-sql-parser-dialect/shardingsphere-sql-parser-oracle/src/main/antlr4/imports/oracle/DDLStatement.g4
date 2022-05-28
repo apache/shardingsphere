@@ -2386,3 +2386,16 @@ logfileForControlClause
 characterSetClause
     : CHARACTER SET characterSetName
     ;
+
+createFlashbackArchive
+   : CREATE FLASHBACK ARCHIVE DEFAULT? flashbackArchiveName tablespaceClause
+     flashArchiveQuota? (NO? OPTIMIZE DATA)? flashbackArchiveRetention
+   ;
+
+flashArchiveQuota
+    : QUOTA INTEGER_ quotaUnit
+    ;
+
+flashbackArchiveRetention
+    : RETENTION INTEGER_ (YEAR | MONTH | DAY)
+    ;
