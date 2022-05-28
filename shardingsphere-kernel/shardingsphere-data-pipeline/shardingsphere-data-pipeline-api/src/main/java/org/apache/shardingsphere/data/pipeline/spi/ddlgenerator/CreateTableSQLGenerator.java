@@ -17,31 +17,26 @@
 
 package org.apache.shardingsphere.data.pipeline.spi.ddlgenerator;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 
-import java.util.Optional;
+import javax.sql.DataSource;
+import java.sql.SQLException;
 
 /**
- * Dialect DDL SQL generator factory.
+ * Create table SQL generator.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DialectDDLSQLGeneratorFactory {
-    
-    static {
-        ShardingSphereServiceLoader.register(DialectDDLGenerator.class);
-    }
+@SingletonSPI
+public interface CreateTableSQLGenerator extends TypedSPI {
     
     /**
-     * Find instance of dialect DDL SQL generator.
-     *
-     * @param databaseType database type
-     * @return found instance
-     */
-    public static Optional<DialectDDLGenerator> findInstance(final DatabaseType databaseType) {
-        return TypedSPIRegistry.findRegisteredService(DialectDDLGenerator.class, databaseType.getType());
-    }
+    * Generate create table SQL.
+    * 
+    * @param tableName table name
+    * @param schemaName schema name
+    * @param dataSource dataSource
+    * @return generated SQL
+    * @throws SQLException SQL exception
+    */
+    String generate(String tableName, String schemaName, DataSource dataSource) throws SQLException;
 }

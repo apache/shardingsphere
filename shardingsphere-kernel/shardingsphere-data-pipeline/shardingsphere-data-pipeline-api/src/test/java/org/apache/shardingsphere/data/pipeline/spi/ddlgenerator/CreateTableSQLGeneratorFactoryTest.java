@@ -15,21 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.fixture;
+package org.apache.shardingsphere.data.pipeline.spi.ddlgenerator;
 
-import org.apache.shardingsphere.data.pipeline.spi.ddlgenerator.DialectDDLGenerator;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
+import org.junit.Test;
 
-import javax.sql.DataSource;
+import static org.junit.Assert.assertTrue;
 
-public final class DialectDDLGeneratorFixture implements DialectDDLGenerator {
+public final class CreateTableSQLGeneratorFactoryTest {
     
-    @Override
-    public String generateDDLSQL(final String tableName, final String schemaName, final DataSource dataSource) {
-        return "";
-    }
-    
-    @Override
-    public String getType() {
-        return "DDL.GENERATOR.FIXTURE";
+    @Test
+    public void assertFindInstance() {
+        assertTrue(CreateTableSQLGeneratorFactory.findInstance(DatabaseTypeFactory.getInstance("DDL.GENERATOR.FIXTURE")).isPresent());
     }
 }
