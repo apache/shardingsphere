@@ -2389,13 +2389,28 @@ characterSetClause
 
 createFlashbackArchive
    : CREATE FLASHBACK ARCHIVE DEFAULT? flashbackArchiveName tablespaceClause
-     flashArchiveQuota? (NO? OPTIMIZE DATA)? flashbackArchiveRetention
+     flashbackArchiveQuota? (NO? OPTIMIZE DATA)? flashbackArchiveRetention
    ;
 
-flashArchiveQuota
+flashbackArchiveQuota
     : QUOTA INTEGER_ quotaUnit
     ;
 
 flashbackArchiveRetention
     : RETENTION INTEGER_ (YEAR | MONTH | DAY)
+    ;
+
+alterFlashbackArchive
+    : ALTER FLASHBACK ARCHIVE flashbackArchiveName
+    ( SET DEFAULT
+    | (ADD | MODIFY) TABLESPACE tablespaceName flashbackArchiveQuota?
+    | REMOVE TABLESPACE tablespaceName
+    | MODIFY RETENTION flashbackArchiveRetention
+    | PURGE purgeClause
+    | NO? OPTIMIZE DATA)
+    ;
+
+purgeClause
+    : ALL
+    | BEFORE (SCN expr | TIMESTAMP expr)
     ;
