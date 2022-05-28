@@ -38,8 +38,8 @@ public final class PostgreSQLCreateTableSQLGenerator implements CreateTableSQLGe
             int majorVersion = connection.getMetaData().getDatabaseMajorVersion();
             int minorVersion = connection.getMetaData().getDatabaseMinorVersion();
             Map<String, Object> materials = loadMaterials(tableName, schemaName, connection, majorVersion, minorVersion);
-            String tableSql = generateCreateTableSql(materials, majorVersion, minorVersion);
-            String indexSql = generateCreateIndexSql(materials, majorVersion, minorVersion, connection);
+            String tableSql = generateCreateTableSQL(materials, majorVersion, minorVersion);
+            String indexSql = generateCreateIndexSQL(materials, majorVersion, minorVersion, connection);
             return tableSql + System.lineSeparator() + indexSql;
         }
     }
@@ -48,20 +48,20 @@ public final class PostgreSQLCreateTableSQLGenerator implements CreateTableSQLGe
         Map<String, Object> result = new PostgresTablePropertiesLoader(connection, tableName, schemaName, majorVersion, minorVersion).loadTableProperties();
         new PostgresColumnPropertiesAppender(connection, majorVersion, minorVersion).append(result);
         new PostgresConstraintsPropertiesAppender(connection, majorVersion, minorVersion).append(result);
-        formatColumnList(result);
+        formatColumns(result);
         return result;
     }
     
-    private String generateCreateTableSql(final Map<String, Object> materials, final int majorVersion, final int minorVersion) {
+    private String generateCreateTableSQL(final Map<String, Object> materials, final int majorVersion, final int minorVersion) {
         return FreemarkerManager.getSqlByPgVersion(materials, "table/%s/create.ftl", majorVersion, minorVersion).trim();
     }
     
-    private String generateCreateIndexSql(final Map<String, Object> materials, final int majorVersion, final int minorVersion, final Connection connection) {
+    private String generateCreateIndexSQL(final Map<String, Object> materials, final int majorVersion, final int minorVersion, final Connection connection) {
         return new PostgresIndexSqlGenerator(connection, majorVersion, minorVersion).generate(materials);
     }
     
     @SuppressWarnings("unchecked")
-    private void formatColumnList(final Map<String, Object> context) {
+    private void formatColumns(final Map<String, Object> context) {
         Collection<Map<String, Object>> columns = (Collection<Map<String, Object>>) context.get("columns");
         for (Map<String, Object> each : columns) {
             if (each.containsKey("cltype")) {
