@@ -81,6 +81,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Dec
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropConstraintSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropCastContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropRuleContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropConversionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropDatabaseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropDomainContext;
@@ -190,6 +191,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDeallocateStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDeclareStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropCastStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropRuleStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropConversionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropDomainStatement;
@@ -636,6 +638,11 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
     @Override
     public ASTNode visitDropCast(final DropCastContext ctx) {
         return new OpenGaussDropCastStatement();
+    }
+    
+    @Override
+    public ASTNode visitDropRule(final DropRuleContext ctx) {
+        return new OpenGaussDropRuleStatement();
     }
     
     @Override

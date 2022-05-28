@@ -85,6 +85,7 @@ execute
     | dropDatabase
     | dropFunction
     | dropProcedure
+    | dropRule
     | dropServer
     | dropTrigger
     | dropView
