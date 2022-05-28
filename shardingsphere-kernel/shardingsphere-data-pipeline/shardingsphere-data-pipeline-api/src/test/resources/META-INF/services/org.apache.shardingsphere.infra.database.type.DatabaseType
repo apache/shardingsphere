@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.data.pipeline.spi.fixture.DatabaseTypeFixture
+org.apache.shardingsphere.data.pipeline.spi.fixture.DDLGeneratorDatabaseTypeFixture

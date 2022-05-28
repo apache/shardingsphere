@@ -17,23 +17,15 @@
 
 package org.apache.shardingsphere.data.pipeline.spi.ddlgenerator;
 
-import java.sql.SQLException;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
-import org.apache.shardingsphere.test.mock.MockedDataSource;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
-public final class DialectDDLGeneratorFactoryTest {
+import static org.junit.Assert.assertTrue;
 
+public final class DialectDDLSQLGeneratorFactoryTest {
+    
     @Test
-    public void assertFindInstanceWithDialectDDLGenerator() throws SQLException {
-        String databaseType = "FIXTURE";
-        DatabaseType type = DatabaseTypeFactory.getInstance(databaseType);
-        assertTrue(DialectDDLSQLGeneratorFactory.findInstance(type).isPresent());
-        DialectDDLGenerator dialectDDLGenerator = DialectDDLSQLGeneratorFactory.findInstance(type).get();
-        assertThat(dialectDDLGenerator.generateDDLSQL("tableA", "", new MockedDataSource()), is("SHOW CREATE TABLE tableA"));
+    public void assertFindInstance() {
+        assertTrue(DialectDDLSQLGeneratorFactory.findInstance(DatabaseTypeFactory.getInstance("DDL.GENERATOR.FIXTURE")).isPresent());
     }
 }
