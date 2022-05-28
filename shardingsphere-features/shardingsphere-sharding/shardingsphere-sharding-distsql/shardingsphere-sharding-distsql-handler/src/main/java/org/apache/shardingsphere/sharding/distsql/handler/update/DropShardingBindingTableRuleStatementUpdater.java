@@ -94,7 +94,7 @@ public final class DropShardingBindingTableRuleStatementUpdater implements RuleD
         return false;
     }
     
-    private static boolean containsIgnoreCase(final Collection<String> collection, final String str) {
+    private boolean containsIgnoreCase(final Collection<String> collection, final String str) {
         return collection.stream().anyMatch(each -> each.equalsIgnoreCase(str));
     }
     
