@@ -40,7 +40,6 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DataSourcePoolCreator {
     
-    // TODO pipeline doesn't need cache even if cache is enabled, since there might be some temp data sources
     // TODO when all data source configurations of instance are dropped by DistSQL, cached data source should be closed
     
     /**
@@ -50,7 +49,18 @@ public final class DataSourcePoolCreator {
      * @return created data sources
      */
     public static Map<String, DataSource> create(final Map<String, DataSourceProperties> dataSourcePropsMap) {
-        return dataSourcePropsMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> create(entry.getKey(), entry.getValue()), (oldValue, currentValue) -> oldValue,
+        return create(dataSourcePropsMap, true);
+    }
+    
+    /**
+     * Create data sources.
+     *
+     * @param dataSourcePropsMap data source properties map
+     * @param cacheEnabled cache enabled
+     * @return created data sources
+     */
+    public static Map<String, DataSource> create(final Map<String, DataSourceProperties> dataSourcePropsMap, final boolean cacheEnabled) {
+        return dataSourcePropsMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> create(entry.getKey(), entry.getValue(), cacheEnabled), (oldValue, currentValue) -> oldValue,
                 LinkedHashMap::new));
     }
     
@@ -61,7 +71,6 @@ public final class DataSourcePoolCreator {
      * @return created data source
      */
     public static DataSource create(final DataSourceProperties dataSourceProps) {
-        // TODO when aggregation is enabled, some data source properties should be changed, e.g. maxPoolSize
         DataSource result = createDataSource(dataSourceProps.getDataSourceClassName());
         Optional<DataSourcePoolMetaData> poolMetaData = DataSourcePoolMetaDataFactory.findInstance(dataSourceProps.getDataSourceClassName());
         DataSourceReflection dataSourceReflection = new DataSourceReflection(result);
@@ -81,11 +90,12 @@ public final class DataSourcePoolCreator {
      *
      * @param dataSourceName data source name
      * @param dataSourceProps data source properties
+     * @param cacheEnabled cache enabled
      * @return created data source
      */
-    public static DataSource create(final String dataSourceName, final DataSourceProperties dataSourceProps) {
+    public static DataSource create(final String dataSourceName, final DataSourceProperties dataSourceProps, final boolean cacheEnabled) {
         DataSource result = create(dataSourceProps);
-        if (!GlobalDataSourceRegistry.getInstance().getCachedDataSourceDataSources().containsKey(dataSourceName)) {
+        if (cacheEnabled && !GlobalDataSourceRegistry.getInstance().getCachedDataSourceDataSources().containsKey(dataSourceName)) {
             GlobalDataSourceRegistry.getInstance().getCachedDataSourceDataSources().put(dataSourceName, result);
         }
         return result;
