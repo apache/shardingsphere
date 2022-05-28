@@ -226,6 +226,8 @@ public enum SQLVisitorRule {
     
     DROP_EXTENSION("DropExtension", SQLStatementType.DDL),
     
+    ALTER_RULE("AlterRule", SQLStatementType.DDL),
+    
     DECLARE("Declare", SQLStatementType.DDL),
     
     DISCARD("Discard", SQLStatementType.DDL),
