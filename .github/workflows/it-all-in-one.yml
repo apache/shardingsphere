@@ -62,8 +62,8 @@ jobs:
           path: /tmp/shardingsphere-proxy-test.tar
   
   test-all-in-one-jar:
-    name: single rule
-    needs: it-empty-rule
+    name: Test-all-in-one-jar
+    needs: build-it-image
     runs-on: ubuntu-latest
     timeout-minutes: 10
     strategy:
