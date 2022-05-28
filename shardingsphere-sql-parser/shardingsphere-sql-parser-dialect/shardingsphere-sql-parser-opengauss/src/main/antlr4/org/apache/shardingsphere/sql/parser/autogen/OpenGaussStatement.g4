@@ -128,5 +128,6 @@ execute
     | dropDirectory
     | createCast
     | dropCast
+    | alterRule
     ) SEMI_? EOF
     ;
