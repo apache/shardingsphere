@@ -74,9 +74,9 @@ public final class ShowVariableHandler extends QueryableRALBackendHandler<ShowVa
     
     private Collection<List<Object>> buildAllVariableRows(final ContextManager contextManager) {
         List<List<Object>> result = new LinkedList<>();
-        ConfigurationProperties configurationProperties = contextManager.getMetaDataContexts().getProps();
+        ConfigurationProperties props = contextManager.getMetaDataContexts().getMetaData().getProps();
         ConfigurationPropertyKey.getKeyNames().forEach(each -> {
-            String propertyValue = configurationProperties.getValue(ConfigurationPropertyKey.valueOf(each)).toString();
+            String propertyValue = props.getValue(ConfigurationPropertyKey.valueOf(each)).toString();
             result.add(Arrays.asList(each.toLowerCase(), propertyValue));
         });
         result.add(Arrays.asList(VariableEnum.AGENT_PLUGINS_ENABLED.name().toLowerCase(), SystemPropertyUtil.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.TRUE.toString())));
@@ -100,8 +100,7 @@ public final class ShowVariableHandler extends QueryableRALBackendHandler<ShowVa
     }
     
     private String getConfigurationValue(final ContextManager contextManager, final String key) {
-        ConfigurationProperties configurationProperties = contextManager.getMetaDataContexts().getProps();
-        return configurationProperties.getValue(ConfigurationPropertyKey.valueOf(key)).toString();
+        return contextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.valueOf(key)).toString();
     }
     
     private String getSpecialValue(final String key) {

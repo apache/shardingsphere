@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.database;
 
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -24,6 +25,7 @@ import org.apache.shardingsphere.proxy.backend.exception.DBDropNotExistsExceptio
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabaseStatement;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,12 +34,12 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -45,7 +47,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class DropDatabaseBackendHandlerTest {
+public final class DropDatabaseBackendHandlerTest extends ProxyContextRestorer {
     
     @Mock
     private ConnectionSession connectionSession;
@@ -62,11 +64,15 @@ public final class DropDatabaseBackendHandlerTest {
     public void setUp() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        ProxyContext.getInstance().init(contextManager);
+        ProxyContext.init(contextManager);
         handler = new DropDatabaseBackendHandler(sqlStatement, connectionSession);
-        when(metaDataContexts.getAllDatabaseNames()).thenReturn(Arrays.asList("test_db", "other_db"));
-        when(metaDataContexts.getGlobalRuleMetaData().getRules()).thenReturn(Collections.emptyList());
-        when(metaDataContexts.getMetaData(any()).getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
+        Map<String, ShardingSphereDatabase> databases = new HashMap<>(2, 1);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
+        databases.put("test_db", database);
+        databases.put("other_db", database);
+        when(metaDataContexts.getMetaData().getDatabases()).thenReturn(databases);
+        when(metaDataContexts.getMetaData().getGlobalRuleMetaData().getRules()).thenReturn(Collections.emptyList());
     }
     
     @Test(expected = DBDropNotExistsException.class)
@@ -87,8 +93,7 @@ public final class DropDatabaseBackendHandlerTest {
         when(sqlStatement.getDatabaseName()).thenReturn("test_db");
         ResponseHeader responseHeader = handler.execute();
         verify(connectionSession, times(0)).setCurrentDatabase(null);
-        assertNotNull(responseHeader);
-        assertTrue(responseHeader instanceof UpdateResponseHeader);
+        assertThat(responseHeader, instanceOf(UpdateResponseHeader.class));
     }
     
     @Test
@@ -97,8 +102,7 @@ public final class DropDatabaseBackendHandlerTest {
         when(sqlStatement.getDatabaseName()).thenReturn("test_db");
         ResponseHeader responseHeader = handler.execute();
         verify(connectionSession).setCurrentDatabase(null);
-        assertNotNull(responseHeader);
-        assertTrue(responseHeader instanceof UpdateResponseHeader);
+        assertThat(responseHeader, instanceOf(UpdateResponseHeader.class));
     }
     
     @Test
@@ -107,7 +111,6 @@ public final class DropDatabaseBackendHandlerTest {
         when(sqlStatement.getDatabaseName()).thenReturn("other_db");
         ResponseHeader responseHeader = handler.execute();
         verify(connectionSession, times(0)).setCurrentDatabase(null);
-        assertNotNull(responseHeader);
-        assertTrue(responseHeader instanceof UpdateResponseHeader);
+        assertThat(responseHeader, instanceOf(UpdateResponseHeader.class));
     }
 }

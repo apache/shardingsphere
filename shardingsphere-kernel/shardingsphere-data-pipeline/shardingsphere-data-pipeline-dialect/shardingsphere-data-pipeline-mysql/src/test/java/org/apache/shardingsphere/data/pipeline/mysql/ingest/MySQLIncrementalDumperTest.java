@@ -18,11 +18,14 @@
 package org.apache.shardingsphere.data.pipeline.mysql.ingest;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.PlaceholderRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
+import org.apache.shardingsphere.data.pipeline.api.metadata.ActualTableName;
+import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory.MultiplexMemoryPipelineChannel;
@@ -44,13 +47,12 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public final class MySQLIncrementalDumperTest {
     
@@ -72,9 +74,8 @@ public final class MySQLIncrementalDumperTest {
     private DumperConfiguration mockDumperConfiguration() {
         DumperConfiguration result = new DumperConfiguration();
         result.setDataSourceConfig(new StandardPipelineDataSourceConfiguration("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL", "root", "root"));
-        Map<String, String> tableNameMap = new HashMap<>(1, 1);
-        tableNameMap.put("t_order", "t_order");
-        result.setTableNameMap(tableNameMap);
+        result.setTableNameMap(Collections.singletonMap(new ActualTableName("t_order"), new LogicTableName("t_order")));
+        result.setTableNameSchemaNameMapping(new TableNameSchemaNameMapping(Collections.emptyMap()));
         return result;
     }
     
@@ -106,7 +107,7 @@ public final class MySQLIncrementalDumperTest {
         invokeHandleEvent(rowsEvent);
         List<Record> records = channel.fetchRecords(1, 0);
         assertThat(records.size(), is(1));
-        assertTrue(records.get(0) instanceof DataRecord);
+        assertThat(records.get(0), instanceOf(DataRecord.class));
         assertThat(((DataRecord) records.get(0)).getType(), is(IngestDataChangeType.INSERT));
     }
     
@@ -124,7 +125,7 @@ public final class MySQLIncrementalDumperTest {
         invokeHandleEvent(rowsEvent);
         List<Record> records = channel.fetchRecords(1, 0);
         assertThat(records.size(), is(1));
-        assertTrue(records.get(0) instanceof DataRecord);
+        assertThat(records.get(0), instanceOf(DataRecord.class));
         assertThat(((DataRecord) records.get(0)).getType(), is(IngestDataChangeType.UPDATE));
     }
     
@@ -139,7 +140,7 @@ public final class MySQLIncrementalDumperTest {
         invokeHandleEvent(rowsEvent);
         List<Record> records = channel.fetchRecords(1, 0);
         assertThat(records.size(), is(1));
-        assertTrue(records.get(0) instanceof DataRecord);
+        assertThat(records.get(0), instanceOf(DataRecord.class));
         assertThat(((DataRecord) records.get(0)).getType(), is(IngestDataChangeType.DELETE));
     }
     
@@ -148,7 +149,7 @@ public final class MySQLIncrementalDumperTest {
         invokeHandleEvent(new PlaceholderEvent());
         List<Record> records = channel.fetchRecords(1, 0);
         assertThat(records.size(), is(1));
-        assertTrue(records.get(0) instanceof PlaceholderRecord);
+        assertThat(records.get(0), instanceOf(PlaceholderRecord.class));
     }
     
     @Test
@@ -158,7 +159,7 @@ public final class MySQLIncrementalDumperTest {
         invokeHandleEvent(rowsEvent);
         List<Record> records = channel.fetchRecords(1, 0);
         assertThat(records.size(), is(1));
-        assertTrue(records.get(0) instanceof PlaceholderRecord);
+        assertThat(records.get(0), instanceOf(PlaceholderRecord.class));
     }
     
     @SneakyThrows({NoSuchMethodException.class, ReflectiveOperationException.class})

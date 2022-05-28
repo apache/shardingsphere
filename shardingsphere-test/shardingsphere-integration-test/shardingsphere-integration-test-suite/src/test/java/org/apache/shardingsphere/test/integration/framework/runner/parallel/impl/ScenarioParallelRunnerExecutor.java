@@ -81,7 +81,7 @@ public final class ScenarioParallelRunnerExecutor implements ParallelRunnerExecu
         private ScenarioKey(final ParameterizedArray parameterizedArray) {
             adapter = parameterizedArray.getAdapter();
             scenario = parameterizedArray.getScenario();
-            databaseTypeName = parameterizedArray.getDatabaseType().getName();
+            databaseTypeName = parameterizedArray.getDatabaseType().getType();
         }
         
         @Override

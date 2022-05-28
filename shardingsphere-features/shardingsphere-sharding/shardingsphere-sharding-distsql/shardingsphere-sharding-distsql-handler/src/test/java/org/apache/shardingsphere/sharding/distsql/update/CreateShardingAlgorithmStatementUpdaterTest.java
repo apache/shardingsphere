@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmC
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.update.CreateShardingAlgorithmStatementUpdater;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.ShardingAlgorithmSegment;
@@ -30,6 +30,7 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardin
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -41,51 +42,50 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class CreateShardingAlgorithmStatementUpdaterTest {
     
-    @Mock
-    private ShardingSphereMetaData shardingSphereMetaData;
+    private final CreateShardingAlgorithmStatementUpdater updater = new CreateShardingAlgorithmStatementUpdater();
     
-    private CreateShardingAlgorithmStatementUpdater updater = new CreateShardingAlgorithmStatementUpdater();
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private ShardingSphereDatabase database;
     
     @Before
     public void before() {
-        when(shardingSphereMetaData.getDatabaseName()).thenReturn("test");
+        when(database.getName()).thenReturn("test");
     }
     
     @Test(expected = DuplicateRuleException.class)
     public void assertExecuteWithDuplicate() throws DistSQLException {
-        Properties properties = new Properties();
-        properties.put("inputKey", "inputValue");
-        ShardingAlgorithmSegment algorithmSegment = new ShardingAlgorithmSegment("inputAlgorithmName", new AlgorithmSegment("inputAlgorithmName", properties));
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(algorithmSegment, algorithmSegment), null);
+        Properties props = new Properties();
+        props.put("inputKey", "inputValue");
+        ShardingAlgorithmSegment algorithmSegment = new ShardingAlgorithmSegment("inputAlgorithmName", new AlgorithmSegment("inputAlgorithmName", props));
+        updater.checkSQLStatement(database, createSQLStatement(algorithmSegment, algorithmSegment), null);
     }
     
     @Test(expected = DuplicateRuleException.class)
     public void assertExecuteWithExist() throws DistSQLException {
-        Properties properties = new Properties();
-        properties.put("inputKey", "inputValue");
-        ShardingAlgorithmSegment algorithmSegment = new ShardingAlgorithmSegment("existAlgorithmName", new AlgorithmSegment("inputAlgorithmName", properties));
-        ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
-        shardingRuleConfiguration.getShardingAlgorithms().put("existAlgorithmName", new ShardingSphereAlgorithmConfiguration("hash_mod", properties));
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(algorithmSegment), shardingRuleConfiguration);
+        Properties props = new Properties();
+        props.put("inputKey", "inputValue");
+        ShardingAlgorithmSegment algorithmSegment = new ShardingAlgorithmSegment("existAlgorithmName", new AlgorithmSegment("inputAlgorithmName", props));
+        ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
+        ruleConfig.getShardingAlgorithms().put("existAlgorithmName", new ShardingSphereAlgorithmConfiguration("hash_mod", props));
+        updater.checkSQLStatement(database, createSQLStatement(algorithmSegment), ruleConfig);
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
     public void assertExecuteWithoutRuleConfiguration() throws DistSQLException {
-        Properties properties = new Properties();
-        properties.put("inputKey", "inputValue");
-        ShardingAlgorithmSegment algorithmSegment = new ShardingAlgorithmSegment("inputAlgorithmName", new AlgorithmSegment("inputAlgorithmName", properties));
-        ShardingRuleConfiguration shardingRuleConfiguration = null;
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(algorithmSegment), shardingRuleConfiguration);
+        Properties props = new Properties();
+        props.put("inputKey", "inputValue");
+        ShardingAlgorithmSegment algorithmSegment = new ShardingAlgorithmSegment("inputAlgorithmName", new AlgorithmSegment("inputAlgorithmName", props));
+        updater.checkSQLStatement(database, createSQLStatement(algorithmSegment), null);
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
     public void assertExecuteWithInvalidAlgorithm() throws DistSQLException {
-        Properties properties = new Properties();
-        properties.put("inputKey", "inputValue");
-        ShardingAlgorithmSegment algorithmSegment = new ShardingAlgorithmSegment("inputAlgorithmName", new AlgorithmSegment("inputAlgorithmName", properties));
-        ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
-        shardingRuleConfiguration.getShardingAlgorithms().put("existAlgorithmName", new ShardingSphereAlgorithmConfiguration("InvalidAlgorithm", properties));
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(algorithmSegment), shardingRuleConfiguration);
+        Properties props = new Properties();
+        props.put("inputKey", "inputValue");
+        ShardingAlgorithmSegment algorithmSegment = new ShardingAlgorithmSegment("inputAlgorithmName", new AlgorithmSegment("inputAlgorithmName", props));
+        ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
+        ruleConfig.getShardingAlgorithms().put("existAlgorithmName", new ShardingSphereAlgorithmConfiguration("InvalidAlgorithm", props));
+        updater.checkSQLStatement(database, createSQLStatement(algorithmSegment), ruleConfig);
     }
     
     private CreateShardingAlgorithmStatement createSQLStatement(final ShardingAlgorithmSegment... ruleSegments) {

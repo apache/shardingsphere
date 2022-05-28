@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.repository.standalone.file;
 
-import com.google.common.base.Joiner;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,12 +36,7 @@ public final class FileRepositoryTest {
     public void setUp() {
         Properties props = new Properties();
         props.setProperty("path", "target");
-        fileRepository.setProps(props);
-    }
-    
-    @Test
-    public void assertType() {
-        assertThat(fileRepository.getType(), is("File"));
+        fileRepository.init(props);
     }
     
     @Test
@@ -66,7 +60,7 @@ public final class FileRepositoryTest {
     }
     
     private String getFilePath() {
-        return Joiner.on(File.separator).join("testDir", "test1");
+        return String.join(File.separator, "testDir", "test1");
     }
     
     @After

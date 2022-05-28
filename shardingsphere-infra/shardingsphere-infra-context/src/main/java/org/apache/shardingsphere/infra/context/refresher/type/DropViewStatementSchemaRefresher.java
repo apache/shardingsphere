@@ -22,8 +22,8 @@ import org.apache.shardingsphere.infra.context.refresher.MetaDataRefresher;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.event.SchemaAlteredEvent;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.event.SchemaAlteredEvent;
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropViewStatement;
@@ -40,18 +40,24 @@ public final class DropViewStatementSchemaRefresher implements MetaDataRefresher
     private static final String TYPE = DropViewStatement.class.getName();
     
     @Override
-    public void refresh(final ShardingSphereMetaData metaData, final FederationDatabaseMetaData database, final Map<String, OptimizerPlannerContext> optimizerPlanners,
+    public void refresh(final ShardingSphereDatabase database, final FederationDatabaseMetaData federationDatabaseMetaData, final Map<String, OptimizerPlannerContext> optimizerPlanners,
                         final Collection<String> logicDataSourceNames, final String schemaName, final DropViewStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
-        SchemaAlteredEvent event = new SchemaAlteredEvent(metaData.getDatabaseName(), schemaName);
+        SchemaAlteredEvent event = new SchemaAlteredEvent(database.getName(), schemaName);
         sqlStatement.getViews().forEach(each -> {
-            metaData.getSchemaByName(schemaName).remove(each.getTableName().getIdentifier().getValue());
+            database.getSchemas().get(schemaName).remove(each.getTableName().getIdentifier().getValue());
             event.getDroppedTables().add(each.getTableName().getIdentifier().getValue());
         });
-        Collection<MutableDataNodeRule> rules = metaData.getRuleMetaData().findRules(MutableDataNodeRule.class);
+        Collection<MutableDataNodeRule> rules = database.getRuleMetaData().findRules(MutableDataNodeRule.class);
         for (SimpleTableSegment each : sqlStatement.getViews()) {
-            rules.forEach(rule -> rule.remove(each.getTableName().getIdentifier().getValue()));
+            removeDataNode(rules, each, schemaName);
         }
         ShardingSphereEventBus.getInstance().post(event);
+    }
+    
+    private void removeDataNode(final Collection<MutableDataNodeRule> rules, final SimpleTableSegment tobeRemovedSegment, final String schemaName) {
+        for (MutableDataNodeRule each : rules) {
+            each.remove(schemaName, tobeRemovedSegment.getTableName().getIdentifier().getValue());
+        }
     }
     
     @Override

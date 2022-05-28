@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.driver.state.lock;
 
+import org.apache.shardingsphere.driver.jdbc.context.JDBCContext;
 import org.apache.shardingsphere.driver.state.DriverState;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
@@ -28,7 +29,7 @@ import java.sql.Connection;
 public final class LockDriverState implements DriverState {
     
     @Override
-    public Connection getConnection(final String schemaName, final ContextManager contextManager) {
+    public Connection getConnection(final String databaseName, final ContextManager contextManager, final JDBCContext jdbcContext) {
         // TODO
         throw new UnsupportedOperationException("LockDriverState");
     }

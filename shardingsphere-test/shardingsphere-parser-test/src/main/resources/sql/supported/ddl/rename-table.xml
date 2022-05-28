@@ -19,5 +19,5 @@
 <sql-cases>
     <sql-case id="rename_single_table" value="RENAME TABLE t_order TO t_order1" db-types="MySQL" />
     <sql-case id="rename_multiple_tables" value="RENAME TABLE t_order TO t_order1, t_order_item TO t_order_item1" db-types="MySQL" />
-    <sql-case id="rename_by_mysql_source" value="RENAME TABLE mysql.columns_priv TO mysql.columns_priv_bak" db-types="MySQL"/>
+    <sql-case id="rename_by_mysql_source" value="RENAME TABLE mysql.columns_priv TO mysql.columns_priv_bak" db-types="MySQL" />
 </sql-cases>

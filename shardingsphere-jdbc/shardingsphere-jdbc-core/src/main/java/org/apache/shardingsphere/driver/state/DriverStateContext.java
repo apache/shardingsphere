@@ -19,9 +19,8 @@ package org.apache.shardingsphere.driver.state;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.driver.jdbc.context.JDBCContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
 import java.sql.Connection;
 
@@ -31,19 +30,15 @@ import java.sql.Connection;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DriverStateContext {
     
-    static {
-        ShardingSphereServiceLoader.register(DriverState.class);
-    }
-    
     /**
      * Get connection.
      *
-     * @param schemaName schema name
+     * @param databaseName database name
      * @param contextManager context manager
+     * @param jdbcContext JDBC context
      * @return connection
      */
-    public static Connection getConnection(final String schemaName, final ContextManager contextManager) {
-        return TypedSPIRegistry.getRegisteredService(DriverState.class,
-                contextManager.getInstanceContext().getInstance().getState().getCurrentState().name()).getConnection(schemaName, contextManager);
+    public static Connection getConnection(final String databaseName, final ContextManager contextManager, final JDBCContext jdbcContext) {
+        return DriverStateFactory.getInstance(contextManager.getInstanceContext().getInstance().getState().getCurrentState()).getConnection(databaseName, contextManager, jdbcContext);
     }
 }

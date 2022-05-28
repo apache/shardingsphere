@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware;
 
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 
 import java.util.Map;
 
@@ -27,16 +27,16 @@ import java.util.Map;
 public interface SchemaMetaDataAware {
     
     /**
+     * Set database name.
+     *
+     * @param databaseName database name
+     */
+    void setDatabaseName(String databaseName);
+    
+    /**
      * Set schema meta data.
      * 
      * @param schemas schema meta data map
      */
     void setSchemas(Map<String, ShardingSphereSchema> schemas);
-    
-    /**
-     * Set database name.
-     * 
-     * @param databaseName database name
-     */
-    void setDatabaseName(String databaseName);
 }

@@ -8,17 +8,17 @@ weight = 1
 ### Sharding Table Rule
 
 ```sql
-SHOW SHARDING TABLE tableRule | RULES [FROM schemaName]
+SHOW SHARDING TABLE tableRule | RULES [FROM databaseName]
 
-SHOW SHARDING ALGORITHMS [FROM schemaName]
+SHOW SHARDING ALGORITHMS [FROM databaseName]
 
-SHOW UNUSED SHARDING ALGORITHMS [FROM schemaName]
+SHOW UNUSED SHARDING ALGORITHMS [FROM databaseName]
 
-SHOW SHARDING KEY GENERATORS [FROM schemaName]
+SHOW SHARDING KEY GENERATORS [FROM databaseName]
 
-SHOW UNUSED SHARDING KEY GENERATORS [FROM schemaName]
+SHOW UNUSED SHARDING KEY GENERATORS [FROM databaseName]
 
-SHOW SHARDING TABLE RULES USED KEY GENERATOR keyGeneratorName [FROM schemaName]
+SHOW SHARDING TABLE RULES USED KEY GENERATOR keyGeneratorName [FROM databaseName]
 
 SHOW DEFAULT SHARDING STRATEGY 
 
@@ -33,18 +33,18 @@ tableRule:
 ### Sharding Binding Table Rule
 
 ```sql
-SHOW SHARDING BINDING TABLE RULES [FROM schemaName]
+SHOW SHARDING BINDING TABLE RULES [FROM databaseName]
 ```
 
 ### Sharding Broadcast Table Rule
 
 ```sql
-SHOW SHARDING BROADCAST TABLE RULES [FROM schemaName]
+SHOW SHARDING BROADCAST TABLE RULES [FROM databaseName]
 ```
 
 ### Sharding Scaling Rule
 ```sql
-SHOW SHARDING SCALING RULES [FROM schemaName]
+SHOW SHARDING SCALING RULES [FROM databaseName]
 ```
 
 ## 返回值说明
@@ -285,7 +285,7 @@ mysql> SHOW SHARDING SCALING RULES;
 +------------------+----------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------+--------------------------------------------------------+-------------------------------------------------------------------------+-----------------------------------------------------+
 | name             | input                                                                                  | output                                                                                   | stream_channel                                         | completion_detector                                                     | data_consistency_checker                            |
 +------------------+----------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------+--------------------------------------------------------+-------------------------------------------------------------------------+-----------------------------------------------------+
-| sharding_scaling | {"workerThread":40,"batchSize":1000} | {"workerThread":40,"batchSize":1000} | {"type":"MEMORY","props":{"block-queue-size":"10000"}} | {"type":"IDLE","props":{"incremental-task-idle-minute-threshold":"30"}} | {"type":"DATA_MATCH","props":{"chunk-size":"1000"}} |
+| sharding_scaling | {"workerThread":40,"batchSize":1000} | {"workerThread":40,"batchSize":1000} | {"type":"MEMORY","props":{"block-queue-size":"10000"}} | {"type":"IDLE","props":{"incremental-task-idle-seconds-threshold":"1800"}} | {"type":"DATA_MATCH","props":{"chunk-size":"1000"}} |
 +------------------+----------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------+--------------------------------------------------------+-------------------------------------------------------------------------+-----------------------------------------------------+
 1 row in set (0.00 sec)
 ```

@@ -13,3 +13,5 @@ SQL 解析引擎负责将 SQL 字符串解析为抽象语法树，供 Apache Sha
 本章节详细罗列出目前不支持的 SQL 种类，供使用者参考。
 
 其中有未涉及到的 SQL 欢迎补充，未支持的 SQL 也尽量会在未来的版本中支持。
+
+**源码：https://github.com/apache/shardingsphere/tree/master/shardingsphere-sql-parser**

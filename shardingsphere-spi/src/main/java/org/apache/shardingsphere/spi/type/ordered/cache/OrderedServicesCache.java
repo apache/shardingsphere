@@ -44,7 +44,7 @@ public final class OrderedServicesCache {
      * @return cached services
      */
     public static Optional<Map<?, ?>> findCachedServices(final Class<?> spiClass, final Collection<?> types) {
-        return Optional.ofNullable(softCache.get()).map(cache -> cache.get(new Key(spiClass, types)));
+        return Optional.ofNullable(softCache.get()).map(optional -> optional.get(new Key(spiClass, types)));
     }
     
     /**

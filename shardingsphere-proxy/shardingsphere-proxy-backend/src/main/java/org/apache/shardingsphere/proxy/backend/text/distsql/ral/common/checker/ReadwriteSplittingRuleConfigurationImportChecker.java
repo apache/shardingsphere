@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.expr.InlineExpressionParser;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.factory.ReplicaLoadBalanceAlgorithmFactory;
@@ -39,20 +39,20 @@ public final class ReadwriteSplittingRuleConfigurationImportChecker {
     /**
      * Check readwrite-splitting rule configuration.
      *
-     * @param shardingSphereMetaData ShardingSphere meta data
+     * @param database database
      * @param currentRuleConfig current rule configuration
      * @throws DistSQLException definition violation exception
      */
-    public void check(final ShardingSphereMetaData shardingSphereMetaData, final ReadwriteSplittingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        if (null == shardingSphereMetaData || null == currentRuleConfig) {
+    public void check(final ShardingSphereDatabase database, final ReadwriteSplittingRuleConfiguration currentRuleConfig) throws DistSQLException {
+        if (null == database || null == currentRuleConfig) {
             return;
         }
-        String databaseName = shardingSphereMetaData.getDatabaseName();
-        checkResources(databaseName, shardingSphereMetaData, currentRuleConfig);
+        String databaseName = database.getName();
+        checkResources(databaseName, database, currentRuleConfig);
         checkLoadBalancers(currentRuleConfig);
     }
     
-    private void checkResources(final String databaseName, final ShardingSphereMetaData shardingSphereMetaData, final ReadwriteSplittingRuleConfiguration currentRuleConfig) throws DistSQLException {
+    private void checkResources(final String databaseName, final ShardingSphereDatabase database, final ReadwriteSplittingRuleConfiguration currentRuleConfig) throws DistSQLException {
         Collection<String> requireResources = new LinkedHashSet<>();
         Collection<String> requireDiscoverableResources = new LinkedHashSet<>();
         currentRuleConfig.getDataSources().forEach(each -> {
@@ -66,15 +66,15 @@ public final class ReadwriteSplittingRuleConfigurationImportChecker {
                 requireResources.addAll(new InlineExpressionParser(each.getReadDataSourceNames().get()).splitAndEvaluate());
             }
         });
-        Collection<String> notExistResources = shardingSphereMetaData.getResource().getNotExistedResources(requireResources);
+        Collection<String> notExistResources = database.getResource().getNotExistedResources(requireResources);
         DistSQLException.predictionThrow(notExistResources.isEmpty(), () -> new RequiredResourceMissedException(databaseName, notExistResources));
-        Collection<String> logicResources = getLogicResources(shardingSphereMetaData);
+        Collection<String> logicResources = getLogicResources(database);
         Collection<String> notExistLogicResources = requireDiscoverableResources.stream().filter(each -> !logicResources.contains(each)).collect(Collectors.toSet());
         DistSQLException.predictionThrow(notExistLogicResources.isEmpty(), () -> new RequiredResourceMissedException(databaseName, notExistLogicResources));
     }
     
-    private Collection<String> getLogicResources(final ShardingSphereMetaData shardingSphereMetaData) {
-        return shardingSphereMetaData.getRuleMetaData().getRules().stream().filter(each -> each instanceof DataSourceContainedRule)
+    private Collection<String> getLogicResources(final ShardingSphereDatabase database) {
+        return database.getRuleMetaData().getRules().stream().filter(each -> each instanceof DataSourceContainedRule)
                 .map(each -> ((DataSourceContainedRule) each).getDataSourceMapper().keySet()).flatMap(Collection::stream).collect(Collectors.toCollection(LinkedHashSet::new));
     }
     

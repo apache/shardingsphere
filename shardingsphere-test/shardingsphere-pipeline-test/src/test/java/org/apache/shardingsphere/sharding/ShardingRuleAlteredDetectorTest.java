@@ -21,8 +21,7 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.Shardi
 import org.apache.shardingsphere.data.pipeline.core.util.ConfigurationFileUtil;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.schedule.ShardingRuleAlteredDetector;
-import org.hamcrest.Matchers;
+import org.apache.shardingsphere.sharding.data.pipeline.ShardingRuleAlteredDetector;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -50,9 +49,13 @@ public final class ShardingRuleAlteredDetectorTest {
         Collection<YamlRuleConfiguration> sourceRules = pipelineDataSourceConfig.getRootConfig().getRules();
         Collection<YamlRuleConfiguration> targetRules = pipelineDataTargetConfig.getRootConfig().getRules();
         assertThat(targetRules.size(), is(1));
-        List<String> ruleAlteredLogicTables = new ShardingRuleAlteredDetector().findRuleAlteredLogicTables(sourceRules.stream().findFirst().get(), targetRules.stream().findFirst().get(),
+        Optional<YamlRuleConfiguration> sourceRule = sourceRules.stream().findFirst();
+        assertTrue(sourceRule.isPresent());
+        Optional<YamlRuleConfiguration> targetRule = targetRules.stream().findFirst();
+        assertTrue(targetRule.isPresent());
+        List<String> ruleAlteredLogicTables = new ShardingRuleAlteredDetector().findRuleAlteredLogicTables(sourceRule.get(), targetRule.get(),
                 pipelineDataSourceConfig.getRootConfig().getDataSources(), pipelineDataSourceConfig.getRootConfig().getDataSources());
-        assertThat(ruleAlteredLogicTables.get(0), Matchers.is("t_order"));
+        assertThat(ruleAlteredLogicTables.get(0), is("t_order"));
     }
     
     @Test
@@ -62,7 +65,7 @@ public final class ShardingRuleAlteredDetectorTest {
         Optional<YamlRuleConfiguration> firstRule = pipelineDataSourceConfig.getRootConfig().getRules().stream().findFirst();
         assertTrue(firstRule.isPresent());
         List<String> ruleAlteredLogicTables = new ShardingRuleAlteredDetector().findRuleAlteredLogicTables(firstRule.get(), firstRule.get(), null, null);
-        assertThat("not table rule alter", ruleAlteredLogicTables.size(), Matchers.is(0));
+        assertThat("not table rule alter", ruleAlteredLogicTables.size(), is(0));
     }
     
     @Test
@@ -72,6 +75,6 @@ public final class ShardingRuleAlteredDetectorTest {
         Optional<YamlRuleConfiguration> firstRule = pipelineDataSourceConfig.getRootConfig().getRules().stream().findFirst();
         assertTrue(firstRule.isPresent());
         List<String> ruleAlteredLogicTables = new ShardingRuleAlteredDetector().findRuleAlteredLogicTables(firstRule.get(), null, null, null);
-        assertThat(ruleAlteredLogicTables.get(0), Matchers.is("t_order"));
+        assertThat(ruleAlteredLogicTables.get(0), is("t_order"));
     }
 }

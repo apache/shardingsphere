@@ -20,7 +20,7 @@ package org.apache.shardingsphere.readwritesplitting.spring.boot;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.algorithm.config.AlgorithmProvidedReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
+import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.spring.boot.algorithm.ReadwriteSplittingAlgorithmProvidedBeanRegistry;
 import org.apache.shardingsphere.readwritesplitting.spring.boot.condition.ReadwriteSplittingSpringBootCondition;
 import org.apache.shardingsphere.readwritesplitting.spring.boot.rule.YamlReadwriteSplittingRuleSpringBootConfiguration;
@@ -59,9 +59,9 @@ public class ReadwriteSplittingRuleSpringbootConfiguration {
      * @return readwrite-splitting rule configuration
      */
     @Bean
-    public RuleConfiguration readWriteSplittingRuleConfiguration(final ObjectProvider<Map<String, ReplicaLoadBalanceAlgorithm>> loadBalanceAlgorithms) {
+    public RuleConfiguration readWriteSplittingRuleConfiguration(final ObjectProvider<Map<String, ReadQueryLoadBalanceAlgorithm>> loadBalanceAlgorithms) {
         AlgorithmProvidedReadwriteSplittingRuleConfiguration result = swapper.swapToObject(yamlConfig.getReadwriteSplitting());
-        Map<String, ReplicaLoadBalanceAlgorithm> balanceAlgorithmMap = Optional.ofNullable(loadBalanceAlgorithms.getIfAvailable()).orElse(Collections.emptyMap());
+        Map<String, ReadQueryLoadBalanceAlgorithm> balanceAlgorithmMap = Optional.ofNullable(loadBalanceAlgorithms.getIfAvailable()).orElse(Collections.emptyMap());
         result.setLoadBalanceAlgorithms(balanceAlgorithmMap);
         return result;
     }

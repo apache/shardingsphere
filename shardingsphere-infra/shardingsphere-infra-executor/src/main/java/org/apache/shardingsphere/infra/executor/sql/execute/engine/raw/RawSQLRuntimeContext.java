@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.executor.sql.execute.engine.raw;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RawGroup;
 
 /**
@@ -33,7 +33,7 @@ public final class RawSQLRuntimeContext {
     
     private final String schemaName;
     
-    private final ShardingSphereMetaData metaData;
+    private final ShardingSphereDatabase database;
     
     private final RawGroup rawGroup;
     

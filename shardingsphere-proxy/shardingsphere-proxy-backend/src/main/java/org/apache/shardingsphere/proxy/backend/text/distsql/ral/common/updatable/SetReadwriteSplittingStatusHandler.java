@@ -20,18 +20,19 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatabl
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
+import org.apache.shardingsphere.infra.distsql.constant.ExportableItemConstants;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.exception.SchemaNotExistedException;
-import org.apache.shardingsphere.infra.metadata.schema.QualifiedDatabase;
-import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
-import org.apache.shardingsphere.infra.storage.StorageNodeDataSource;
-import org.apache.shardingsphere.infra.storage.StorageNodeRole;
-import org.apache.shardingsphere.infra.storage.StorageNodeStatus;
+import org.apache.shardingsphere.infra.exception.DatabaseNotExistedException;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.service.StorageNodeStatusService;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.storage.StorageNodeDataSource;
+import org.apache.shardingsphere.mode.metadata.storage.StorageNodeRole;
+import org.apache.shardingsphere.mode.metadata.storage.StorageNodeStatus;
+import org.apache.shardingsphere.mode.metadata.storage.event.DataSourceDisabledEvent;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
@@ -68,10 +69,10 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
     
     @Override
     protected void update(final ContextManager contextManager, final SetReadwriteSplittingStatusStatement sqlStatement) throws DistSQLException {
-        String databaseName = sqlStatement.getSchema().isPresent() ? sqlStatement.getSchema().get().getIdentifier().getValue() : connectionSession.getDatabaseName();
+        String databaseName = sqlStatement.getDatabase().isPresent() ? sqlStatement.getDatabase().get().getIdentifier().getValue() : connectionSession.getDatabaseName();
         String toBeUpdatedResource = sqlStatement.getResourceName();
         checkModeAndPersistRepository(contextManager);
-        checkDatabase(databaseName);
+        checkDatabaseName(databaseName);
         checkReadwriteSplittingRule(contextManager, databaseName);
         Map<String, String> replicaResources = getReplicaResources(contextManager, databaseName);
         Map<String, String> disabledResources = getDisabledResources(contextManager, databaseName);
@@ -86,8 +87,8 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
     }
     
     private ReadwriteSplittingRuleConfiguration checkReadwriteSplittingRule(final ContextManager contextManager, final String databaseName) {
-        Optional<ReadwriteSplittingRuleConfiguration> result = contextManager.getMetaDataContexts().getMetaData(databaseName)
-                .getRuleMetaData().findRuleConfiguration(ReadwriteSplittingRuleConfiguration.class).stream().findAny();
+        Optional<ReadwriteSplittingRuleConfiguration> result = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(databaseName)
+                .getRuleMetaData().findRuleConfigurations(ReadwriteSplittingRuleConfiguration.class).stream().findAny();
         if (!result.isPresent()) {
             throw new UnsupportedOperationException("The current schema has no read_write splitting rules");
         }
@@ -98,17 +99,17 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
         if (!"Cluster".equals(contextManager.getInstanceContext().getModeConfiguration().getType())) {
             throw new UnsupportedOperationException("Mode must be `Cluster`.");
         }
-        if (!contextManager.getMetaDataContexts().getMetaDataPersistService().isPresent()) {
+        if (!contextManager.getMetaDataContexts().getPersistService().isPresent()) {
             throw new UnsupportedOperationException("Persistence must be configured");
         }
     }
     
-    private void checkDatabase(final String databaseName) {
-        if (null == databaseName) {
+    private void checkDatabaseName(final String databaseName) {
+        if (Strings.isNullOrEmpty(databaseName)) {
             throw new NoDatabaseSelectedException();
         }
         if (!ProxyContext.getInstance().getAllDatabaseNames().contains(databaseName)) {
-            throw new SchemaNotExistedException(databaseName);
+            throw new DatabaseNotExistedException(databaseName);
         }
     }
     
@@ -120,10 +121,10 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
     }
     
     private Map<String, String> getDisabledResources(final ContextManager contextManager, final String databaseName) {
-        Optional<MetaDataPersistService> persistService = contextManager.getMetaDataContexts().getMetaDataPersistService();
+        Optional<MetaDataPersistService> persistService = contextManager.getMetaDataContexts().getPersistService();
         Map<String, String> result = new HashMap<>();
-        persistService.ifPresent(op -> {
-            Map<String, String> disableNodes = getDisabledStorageNodes(databaseName, op).stream()
+        persistService.ifPresent(optional -> {
+            Map<String, String> disableNodes = getDisabledStorageNodes(databaseName, optional).stream()
                     .collect(Collectors.toMap(QualifiedDatabase::getDataSourceName, QualifiedDatabase::getGroupName, (value1, value2) -> String.join(",", value1, value2)));
             result.putAll(disableNodes);
         });
@@ -136,7 +137,8 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
     }
     
     private void checkResourceExists(final ContextManager contextManager, final String databaseName, final String toBeDisabledResource) throws DistSQLException {
-        Collection<String> notExistedResources = contextManager.getMetaDataContexts().getMetaData(databaseName).getResource().getNotExistedResources(Collections.singleton(toBeDisabledResource));
+        Collection<String> notExistedResources = contextManager
+                .getMetaDataContexts().getMetaData().getDatabases().get(databaseName).getResource().getNotExistedResources(Collections.singleton(toBeDisabledResource));
         DistSQLException.predictionThrow(notExistedResources.isEmpty(), () -> new RequiredResourceMissedException(databaseName, Collections.singleton(toBeDisabledResource)));
     }
     
@@ -197,12 +199,12 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
     
     private Map<String, Map<String, String>> getExportedReadwriteSplittingRules(final ContextManager contextManager, final String databaseName) {
         Map<String, Map<String, String>> result = new HashMap<>();
-        contextManager.getMetaDataContexts().getMetaData(databaseName).getRuleMetaData().findRules(ReadwriteSplittingRule.class).stream().findAny()
-                .filter(each -> each.containExportableKey(Arrays.asList(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE, ExportableConstants.EXPORTABLE_KEY_ENABLED_DATA_SOURCE)))
-                .map(each -> each.export(Arrays.asList(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE, ExportableConstants.EXPORTABLE_KEY_ENABLED_DATA_SOURCE)))
-                .ifPresent(each -> {
-                    result.putAll((Map) each.getOrDefault(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE, Collections.emptyMap()));
-                    result.putAll((Map) each.getOrDefault(ExportableConstants.EXPORTABLE_KEY_ENABLED_DATA_SOURCE, Collections.emptyMap()));
+        contextManager.getMetaDataContexts().getMetaData().getDatabases().get(databaseName).getRuleMetaData().findRules(ReadwriteSplittingRule.class).stream().findAny()
+                .filter(each -> each.containExportableKey(Arrays.asList(ExportableConstants.EXPORT_DYNAMIC_READWRITE_SPLITTING_RULE, ExportableConstants.EXPORT_STATIC_READWRITE_SPLITTING_RULE)))
+                .map(each -> each.export(Arrays.asList(ExportableConstants.EXPORT_DYNAMIC_READWRITE_SPLITTING_RULE, ExportableConstants.EXPORT_STATIC_READWRITE_SPLITTING_RULE)))
+                .ifPresent(optional -> {
+                    result.putAll((Map) optional.getOrDefault(ExportableConstants.EXPORT_DYNAMIC_READWRITE_SPLITTING_RULE, Collections.emptyMap()));
+                    result.putAll((Map) optional.getOrDefault(ExportableConstants.EXPORT_STATIC_READWRITE_SPLITTING_RULE, Collections.emptyMap()));
                 });
         return result;
     }
@@ -213,9 +215,9 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
                 .filter(entry -> entry.getValue() <= 1).map(Entry::getKey).collect(Collectors.toSet());
     }
     
-    private void addReplicaResource(final Map<String, String> replicaResources, final Entry<String, Map<String, String>> entry) {
-        entry.getValue().entrySet().stream().filter(entry1 -> ExportableConstants.REPLICA_DATA_SOURCE_NAMES.equals(entry1.getKey()))
-                .map(entry1 -> Arrays.asList(entry1.getValue().split(","))).flatMap(Collection::stream).forEach(each -> put(replicaResources, each, entry.getKey()));
+    private void addReplicaResource(final Map<String, String> replicaResources, final Entry<String, Map<String, String>> readwriteSplittingRule) {
+        readwriteSplittingRule.getValue().entrySet().stream().filter(entry -> ExportableItemConstants.REPLICA_DATA_SOURCE_NAMES.equals(entry.getKey()))
+                .map(entry -> Arrays.asList(entry.getValue().split(","))).flatMap(Collection::stream).forEach(each -> put(replicaResources, each, readwriteSplittingRule.getKey()));
     }
     
     private void put(final Map<String, String> map, final String key, final String value) {

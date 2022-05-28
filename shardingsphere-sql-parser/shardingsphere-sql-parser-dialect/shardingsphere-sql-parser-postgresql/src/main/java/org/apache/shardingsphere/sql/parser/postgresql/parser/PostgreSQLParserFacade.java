@@ -37,7 +37,7 @@ public final class PostgreSQLParserFacade implements DatabaseTypedSQLParserFacad
     }
     
     @Override
-    public String getDatabaseType() {
+    public String getType() {
         return "PostgreSQL";
     }
 }

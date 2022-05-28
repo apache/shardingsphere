@@ -18,13 +18,14 @@
 package org.apache.shardingsphere.shadow.route.engine.dml;
 
 import org.apache.shardingsphere.infra.binder.statement.dml.DeleteStatementContext;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadowRuleConfiguration;
-import org.apache.shardingsphere.shadow.algorithm.shadow.column.ColumnRegexMatchShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
+import org.apache.shardingsphere.shadow.factory.ShadowAlgorithmFactory;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
@@ -42,14 +43,13 @@ import org.junit.Test;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -82,12 +82,10 @@ public final class ShadowDeleteStatementRoutingEngineTest {
     @Test
     public void assertRouteAndParseShadowColumnConditions() {
         RouteContext routeContext = mock(RouteContext.class);
-        Collection<RouteUnit> routeUnits = new LinkedList<>();
-        routeUnits.add(new RouteUnit(new RouteMapper("ds", "ds_shadow"), new LinkedList<>()));
-        when(routeContext.getRouteUnits()).thenReturn(routeUnits);
+        when(routeContext.getRouteUnits()).thenReturn(Collections.singleton(new RouteUnit(new RouteMapper("ds", "ds_shadow"), Collections.emptyList())));
         shadowDeleteStatementRoutingEngine.route(routeContext, new ShadowRule(createAlgorithmProvidedShadowRuleConfiguration()));
         Optional<Collection<String>> sqlNotes = shadowDeleteStatementRoutingEngine.parseSQLComments();
-        assertThat(sqlNotes.isPresent(), is(true));
+        assertTrue(sqlNotes.isPresent());
         assertThat(sqlNotes.get().size(), is(2));
         Iterator<String> sqlNotesIt = sqlNotes.get().iterator();
         assertThat(sqlNotesIt.next(), is("/*shadow:true,foo:bar*/"));
@@ -96,40 +94,22 @@ public final class ShadowDeleteStatementRoutingEngineTest {
     
     private AlgorithmProvidedShadowRuleConfiguration createAlgorithmProvidedShadowRuleConfiguration() {
         AlgorithmProvidedShadowRuleConfiguration result = new AlgorithmProvidedShadowRuleConfiguration();
-        result.setDataSources(createDataSources());
-        result.setTables(createTables());
-        result.setShadowAlgorithms(createShadowAlgorithms());
+        result.setDataSources(Collections.singletonMap("shadow-data-source-0", new ShadowDataSourceConfiguration("ds", "ds_shadow")));
+        result.setTables(
+                Collections.singletonMap("t_order", new ShadowTableConfiguration(Collections.singletonList("shadow-data-source-0"), Collections.singleton("user-id-delete-regex-algorithm"))));
+        result.setShadowAlgorithms(Collections.singletonMap("user-id-delete-regex-algorithm", createShadowAlgorithm()));
         return result;
     }
     
-    private Map<String, ShadowAlgorithm> createShadowAlgorithms() {
-        Map<String, ShadowAlgorithm> result = new LinkedHashMap<>();
-        result.put("user-id-delete-regex-algorithm", createColumnShadowAlgorithm());
-        return result;
+    private ShadowAlgorithm createShadowAlgorithm() {
+        return ShadowAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("REGEX_MATCH", createProperties()));
     }
     
-    private ShadowAlgorithm createColumnShadowAlgorithm() {
-        Properties properties = new Properties();
-        properties.setProperty("column", "user_id");
-        properties.setProperty("operation", "delete");
-        properties.setProperty("regex", "[1]");
-        ColumnRegexMatchShadowAlgorithm columnRegexMatchShadowAlgorithm = new ColumnRegexMatchShadowAlgorithm();
-        columnRegexMatchShadowAlgorithm.setProps(properties);
-        columnRegexMatchShadowAlgorithm.init();
-        return columnRegexMatchShadowAlgorithm;
-    }
-    
-    private Map<String, ShadowTableConfiguration> createTables() {
-        Map<String, ShadowTableConfiguration> result = new LinkedHashMap<>();
-        Collection<String> shadowAlgorithmNames = new LinkedList<>();
-        shadowAlgorithmNames.add("user-id-delete-regex-algorithm");
-        result.put("t_order", new ShadowTableConfiguration(Collections.singletonList("shadow-data-source-0"), shadowAlgorithmNames));
-        return result;
-    }
-    
-    private Map<String, ShadowDataSourceConfiguration> createDataSources() {
-        Map<String, ShadowDataSourceConfiguration> result = new LinkedHashMap<>();
-        result.put("shadow-data-source-0", new ShadowDataSourceConfiguration("ds", "ds_shadow"));
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty("column", "user_id");
+        result.setProperty("operation", "delete");
+        result.setProperty("regex", "[1]");
         return result;
     }
     

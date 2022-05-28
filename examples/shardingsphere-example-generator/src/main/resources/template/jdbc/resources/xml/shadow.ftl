@@ -58,8 +58,8 @@
     
     <sql-parser:rule id="sqlParseRule" sql-comment-parse-enable="true" parse-tree-cache-ref="parserTreeCache" sql-statement-cache-ref="sqlStatementCache" />
     
-    <sql-parser:cache-option id="sqlStatementCache" initial-capacity="1024" maximum-size="1024" concurrency-level="4"/>
-    <sql-parser:cache-option id="parserTreeCache" initial-capacity="1024" maximum-size="1024" concurrency-level="4"/>
+    <sql-parser:cache-option id="sqlStatementCache" initial-capacity="1024" maximum-size="1024"/>
+    <sql-parser:cache-option id="parserTreeCache" initial-capacity="1024" maximum-size="1024"/>
     
     <shardingsphere:data-source id="dataSource" data-source-names="ds_0, ds_1" rule-refs="shadowRule, sqlParseRule">
         <props>

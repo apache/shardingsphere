@@ -23,10 +23,12 @@ import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.junit.Test;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -35,7 +37,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowInstanceModeHandlerTest {
+public final class ShowInstanceModeHandlerTest extends ProxyContextRestorer {
     
     @Test
     public void assertExecutor() throws SQLException {
@@ -43,16 +45,16 @@ public final class ShowInstanceModeHandlerTest {
         InstanceContext instanceContext = createInstanceContext();
         when(contextManager.getInstanceContext()).thenReturn(instanceContext);
         ShowInstanceModeHandler handler = new ShowInstanceModeHandler().initStatement(new ShowInstanceModeStatement());
-        ProxyContext.getInstance().init(contextManager);
+        ProxyContext.init(contextManager);
         handler.execute();
         handler.next();
-        ArrayList<Object> data = new ArrayList<>(handler.getRowData());
+        List<Object> data = new ArrayList<>(handler.getRowData());
         assertThat(data.size(), is(5));
         assertThat(data.get(0), is("127.0.0.1@3309"));
         assertThat(data.get(1), is("Cluster"));
         assertThat(data.get(2), is("ZooKeeper"));
         assertThat(data.get(3), is("{\"key\":\"value1,value2\"}"));
-        assertThat(data.get(4), is("false"));
+        assertThat(data.get(4), is(Boolean.FALSE.toString()));
     }
     
     private InstanceContext createInstanceContext() {

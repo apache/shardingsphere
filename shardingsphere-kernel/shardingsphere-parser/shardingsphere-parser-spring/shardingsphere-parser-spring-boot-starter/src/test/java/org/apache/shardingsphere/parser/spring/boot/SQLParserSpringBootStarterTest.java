@@ -30,6 +30,7 @@ import javax.annotation.Resource;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = SQLParserSpringBootStarterTest.class)
@@ -42,7 +43,7 @@ public class SQLParserSpringBootStarterTest {
     
     @Test
     public void assertSQLParserRule() {
-        assertThat(sqlParserRuleConfiguration.isSqlCommentParseEnabled(), is(true));
+        assertTrue(sqlParserRuleConfiguration.isSqlCommentParseEnabled());
         assertCacheOption(sqlParserRuleConfiguration.getParseTreeCache());
         assertCacheOption(sqlParserRuleConfiguration.getSqlStatementCache());
     }
@@ -50,6 +51,5 @@ public class SQLParserSpringBootStarterTest {
     private void assertCacheOption(final CacheOption cacheOption) {
         assertThat(cacheOption.getInitialCapacity(), is(1024));
         assertThat(cacheOption.getMaximumSize(), is(1024L));
-        assertThat(cacheOption.getConcurrencyLevel(), is(4));
     }
 }

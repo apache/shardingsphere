@@ -25,11 +25,6 @@ import org.apache.shardingsphere.transaction.xa.jta.datasource.swapper.DataSourc
 public final class HikariCPPropertyProvider implements DataSourcePropertyProvider {
     
     @Override
-    public String getDataSourceClassName() {
-        return "com.zaxxer.hikari.HikariDataSource";
-    }
-    
-    @Override
     public String getURLPropertyName() {
         return "jdbcUrl";
     }
@@ -42,5 +37,10 @@ public final class HikariCPPropertyProvider implements DataSourcePropertyProvide
     @Override
     public String getPasswordPropertyName() {
         return "password";
+    }
+    
+    @Override
+    public String getType() {
+        return "com.zaxxer.hikari.HikariDataSource";
     }
 }

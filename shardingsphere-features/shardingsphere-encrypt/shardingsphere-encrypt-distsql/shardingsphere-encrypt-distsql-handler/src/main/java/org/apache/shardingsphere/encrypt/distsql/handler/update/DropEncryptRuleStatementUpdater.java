@@ -23,7 +23,7 @@ import org.apache.shardingsphere.encrypt.distsql.parser.statement.DropEncryptRul
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -35,10 +35,8 @@ import java.util.stream.Collectors;
 public final class DropEncryptRuleStatementUpdater implements RuleDefinitionDropUpdater<DropEncryptRuleStatement, EncryptRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final DropEncryptRuleStatement sqlStatement,
-                                  final EncryptRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String databaseName = shardingSphereMetaData.getDatabaseName();
-        checkToBeDroppedEncryptTableNames(databaseName, sqlStatement, currentRuleConfig);
+    public void checkSQLStatement(final ShardingSphereDatabase database, final DropEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) throws DistSQLException {
+        checkToBeDroppedEncryptTableNames(database.getName(), sqlStatement, currentRuleConfig);
     }
     
     private void checkToBeDroppedEncryptTableNames(final String databaseName, final DropEncryptRuleStatement sqlStatement,
@@ -67,11 +65,11 @@ public final class DropEncryptRuleStatementUpdater implements RuleDefinitionDrop
     }
     
     private void dropRule(final EncryptRuleConfiguration currentRuleConfig, final String ruleName) {
-        Optional<EncryptTableRuleConfiguration> encryptTableRuleConfig = currentRuleConfig.getTables().stream().filter(tableRule -> tableRule.getName().equals(ruleName)).findAny();
-        encryptTableRuleConfig.ifPresent(op -> {
+        Optional<EncryptTableRuleConfiguration> encryptTableRuleConfig = currentRuleConfig.getTables().stream().filter(each -> each.getName().equals(ruleName)).findAny();
+        encryptTableRuleConfig.ifPresent(optional -> {
             currentRuleConfig.getTables().remove(encryptTableRuleConfig.get());
             encryptTableRuleConfig.get().getColumns().stream().filter(column -> !isEncryptorInUse(currentRuleConfig, column.getEncryptorName()))
-                    .forEach(column -> currentRuleConfig.getEncryptors().remove(column.getEncryptorName()));
+                    .forEach(each -> currentRuleConfig.getEncryptors().remove(each.getEncryptorName()));
         });
     }
     

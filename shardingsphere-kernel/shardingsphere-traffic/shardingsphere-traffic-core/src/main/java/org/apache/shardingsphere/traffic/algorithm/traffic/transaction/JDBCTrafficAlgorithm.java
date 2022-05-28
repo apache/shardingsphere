@@ -17,17 +17,24 @@
 
 package org.apache.shardingsphere.traffic.algorithm.traffic.transaction;
 
+import lombok.Getter;
 import org.apache.shardingsphere.traffic.api.traffic.identifier.SimplifiedTrafficAlgorithm;
 import org.apache.shardingsphere.traffic.api.traffic.transaction.TransactionTrafficAlgorithm;
 import org.apache.shardingsphere.traffic.api.traffic.transaction.TransactionTrafficValue;
 
+import java.util.Properties;
+
 /**
  * JDBC traffic algorithm.
  */
+@Getter
 public final class JDBCTrafficAlgorithm implements TransactionTrafficAlgorithm, SimplifiedTrafficAlgorithm {
     
+    private Properties props;
+    
     @Override
-    public void init() {
+    public void init(final Properties props) {
+        this.props = props;
     }
     
     @Override

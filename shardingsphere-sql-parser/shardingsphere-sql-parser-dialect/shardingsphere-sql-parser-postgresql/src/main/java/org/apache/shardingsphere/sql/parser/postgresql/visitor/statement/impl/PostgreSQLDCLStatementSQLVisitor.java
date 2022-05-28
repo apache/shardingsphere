@@ -58,16 +58,16 @@ public final class PostgreSQLDCLStatementSQLVisitor extends PostgreSQLStatementS
     @Override
     public ASTNode visitGrant(final GrantContext ctx) {
         PostgreSQLGrantStatement result = new PostgreSQLGrantStatement();
-        Optional<Collection<SimpleTableSegment>> tableSegmentOptional = null == ctx.privilegeClause() ? Optional.empty() : getTableFromPrivilegeClause(ctx.privilegeClause());
-        tableSegmentOptional.ifPresent(tableSegment -> result.getTables().addAll(tableSegment));
+        Optional<Collection<SimpleTableSegment>> tableSegment = null == ctx.privilegeClause() ? Optional.empty() : getTableFromPrivilegeClause(ctx.privilegeClause());
+        tableSegment.ifPresent(optional -> result.getTables().addAll(optional));
         return result;
     }
     
     @Override
     public ASTNode visitRevoke(final RevokeContext ctx) {
         PostgreSQLRevokeStatement result = new PostgreSQLRevokeStatement();
-        Optional<Collection<SimpleTableSegment>> tableSegmentOptional = null == ctx.privilegeClause() ? Optional.empty() : getTableFromPrivilegeClause(ctx.privilegeClause());
-        tableSegmentOptional.ifPresent(tableSegment -> result.getTables().addAll(tableSegment));
+        Optional<Collection<SimpleTableSegment>> tableSegment = null == ctx.privilegeClause() ? Optional.empty() : getTableFromPrivilegeClause(ctx.privilegeClause());
+        tableSegment.ifPresent(optional -> result.getTables().addAll(optional));
         return result;
     }
     

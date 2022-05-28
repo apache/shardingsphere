@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.infra.database.type;
 
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -30,14 +32,8 @@ import java.util.Optional;
 /**
  * Database type.
  */
-public interface DatabaseType {
-    
-    /**
-     * Get database name.
-     * 
-     * @return database name
-     */
-    String getName();
+@SingletonSPI
+public interface DatabaseType extends TypedSPI {
     
     /**
      * Get quote character.
@@ -84,13 +80,12 @@ public interface DatabaseType {
     Collection<String> getSystemSchemas();
     
     /**
-     * Get default schema.
+     * Is schema feature available.
      *
-     * @param databaseName database name
-     * @return default schema
+     * @return true or false
      */
-    default String getDefaultSchema(String databaseName) {
-        return databaseName;
+    default boolean isSchemaAvailable() {
+        return false;
     }
     
     /**

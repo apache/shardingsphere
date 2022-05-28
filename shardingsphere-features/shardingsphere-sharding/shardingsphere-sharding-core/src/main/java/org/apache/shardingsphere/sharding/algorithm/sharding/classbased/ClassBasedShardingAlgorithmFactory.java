@@ -22,7 +22,6 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
-import org.apache.shardingsphere.spi.type.typed.StatefulTypedSPI;
 
 import java.util.Properties;
 
@@ -41,25 +40,21 @@ public final class ClassBasedShardingAlgorithmFactory {
      * @param <T> class generic type
      * @return sharding algorithm instance
      */
-    @SneakyThrows(ReflectiveOperationException.class)
     @SuppressWarnings("unchecked")
+    @SneakyThrows(ReflectiveOperationException.class)
     public static <T extends ShardingAlgorithm> T newInstance(final String shardingAlgorithmClassName, final Class<T> superShardingAlgorithmClass, final Properties props) {
-        Class<?> result = Class.forName(shardingAlgorithmClassName);
-        if (!superShardingAlgorithmClass.isAssignableFrom(result)) {
+        Class<?> algorithmClass = Class.forName(shardingAlgorithmClassName);
+        if (!superShardingAlgorithmClass.isAssignableFrom(algorithmClass)) {
             throw new ShardingSphereException("Class %s should be implement %s", shardingAlgorithmClassName, superShardingAlgorithmClass.getName());
         }
-        T instance = (T) result.getDeclaredConstructor().newInstance();
-        setProperties(instance, props);
-        instance.init();
-        return instance;
+        T result = (T) algorithmClass.getDeclaredConstructor().newInstance();
+        result.init(convertToStringTypedProperties(props));
+        return result;
     }
     
-    private static <T extends StatefulTypedSPI> void setProperties(final T instance, final Properties props) {
-        if (null == props) {
-            return;
-        }
-        Properties newProps = new Properties();
-        props.forEach((key, value) -> newProps.setProperty(key.toString(), null == value ? null : value.toString()));
-        instance.setProps(newProps);
+    private static Properties convertToStringTypedProperties(final Properties props) {
+        Properties result = new Properties();
+        props.forEach((key, value) -> result.setProperty(key.toString(), null == value ? null : value.toString()));
+        return result;
     }
 }

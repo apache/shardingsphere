@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.route.engine.validator.ddl;
 import org.apache.shardingsphere.infra.binder.statement.ddl.PrepareStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -48,7 +48,7 @@ public final class ShardingPrepareStatementValidatorTest {
     private ShardingRule shardingRule;
     
     @Mock
-    private ShardingSphereMetaData metaData;
+    private ShardingSphereDatabase database;
     
     @Mock
     private RouteContext routeContext;
@@ -58,7 +58,7 @@ public final class ShardingPrepareStatementValidatorTest {
         PrepareStatement sqlStatement = new PostgreSQLPrepareStatement();
         when(routeContext.getRouteUnits()).thenReturn(Collections.emptyList());
         new ShardingPrepareStatementValidator().postValidate(shardingRule, new PrepareStatementContext(sqlStatement),
-                Collections.emptyList(), metaData, mock(ConfigurationProperties.class), routeContext);
+                Collections.emptyList(), database, mock(ConfigurationProperties.class), routeContext);
     }
     
     @Test
@@ -69,7 +69,7 @@ public final class ShardingPrepareStatementValidatorTest {
                 Arrays.asList(new RouteMapper("t_order", "t_order_0"), new RouteMapper("t_order_item", "t_order_item_0"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
         new ShardingPrepareStatementValidator().postValidate(shardingRule, new PrepareStatementContext(sqlStatement),
-                Collections.emptyList(), metaData, mock(ConfigurationProperties.class), routeContext);
+                Collections.emptyList(), database, mock(ConfigurationProperties.class), routeContext);
     }
     
     @Test(expected = ShardingSphereException.class)
@@ -82,6 +82,6 @@ public final class ShardingPrepareStatementValidatorTest {
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
         PrepareStatement sqlStatement = new PostgreSQLPrepareStatement();
         new ShardingPrepareStatementValidator().postValidate(shardingRule, new PrepareStatementContext(sqlStatement),
-                Collections.emptyList(), metaData, mock(ConfigurationProperties.class), routeContext);
+                Collections.emptyList(), database, mock(ConfigurationProperties.class), routeContext);
     }
 }

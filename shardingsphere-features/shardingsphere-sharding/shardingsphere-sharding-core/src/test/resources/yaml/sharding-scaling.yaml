@@ -21,6 +21,7 @@ scaling:
     input:
       workerThread: 40
       batchSize: 1000
+      shardingSize: 10000000
     output:
       workerThread: 40
       batchSize: 1000
@@ -31,7 +32,7 @@ scaling:
     completionDetector:
       type: IDLE
       props:
-        incremental-task-idle-minute-threshold: 30
+        incremental-task-idle-seconds-threshold: 1800
     dataConsistencyChecker:
       type: DATA_MATCH
       props:

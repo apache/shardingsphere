@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.yaml.engine.representer;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.infra.yaml.engine.representer.processor.DefaultYamlTupleProcessor;
 import org.apache.shardingsphere.infra.yaml.engine.representer.processor.ShardingSphereYamlTupleProcessor;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.yaml.engine.representer.processor.ShardingSphereYamlTupleProcessorFactory;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.introspector.Property;
 import org.yaml.snakeyaml.nodes.Node;
@@ -38,10 +38,6 @@ import java.util.Map.Entry;
  */
 public final class ShardingSphereYamlRepresenter extends Representer {
     
-    static {
-        ShardingSphereServiceLoader.register(ShardingSphereYamlTupleProcessor.class);
-    }
-    
     public ShardingSphereYamlRepresenter() {
         YamlRuleConfigurationSwapperEngine.getYamlShortcuts().forEach((key, value) -> addClassTag(value, new Tag(key)));
     }
@@ -49,7 +45,7 @@ public final class ShardingSphereYamlRepresenter extends Representer {
     @Override
     protected NodeTuple representJavaBeanProperty(final Object javaBean, final Property property, final Object propertyValue, final Tag customTag) {
         NodeTuple nodeTuple = super.representJavaBeanProperty(javaBean, property, propertyValue, customTag);
-        for (ShardingSphereYamlTupleProcessor each : ShardingSphereServiceLoader.getServiceInstances(ShardingSphereYamlTupleProcessor.class)) {
+        for (ShardingSphereYamlTupleProcessor each : ShardingSphereYamlTupleProcessorFactory.getAllInstances()) {
             if (property.getName().equals(each.getTupleName())) {
                 return each.process(nodeTuple);
             }

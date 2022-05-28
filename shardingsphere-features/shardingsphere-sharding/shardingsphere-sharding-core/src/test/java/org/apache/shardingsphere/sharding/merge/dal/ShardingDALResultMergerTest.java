@@ -17,10 +17,13 @@
 
 package org.apache.shardingsphere.sharding.merge.dal;
 
+import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.merge.dal.common.SingleLocalDataMergedResult;
 import org.apache.shardingsphere.sharding.merge.dal.show.LogicTablesMergedResult;
 import org.apache.shardingsphere.sharding.merge.dal.show.ShowCreateTableMergedResult;
@@ -41,9 +44,11 @@ import org.junit.Test;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -60,62 +65,80 @@ public final class ShardingDALResultMergerTest {
     public void assertMergeForShowDatabasesStatement() throws SQLException {
         DALStatement dalStatement = new MySQLShowDatabasesStatement();
         SQLStatementContext<?> sqlStatementContext = mockSQLStatementContext(dalStatement);
-        ShardingDALResultMerger resultMerger = new ShardingDALResultMerger(DefaultSchema.LOGIC_NAME, null);
-        assertThat(resultMerger.merge(queryResults, sqlStatementContext, null), instanceOf(SingleLocalDataMergedResult.class));
+        ShardingDALResultMerger resultMerger = new ShardingDALResultMerger(DefaultDatabase.LOGIC_NAME, null);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
+        assertThat(resultMerger.merge(queryResults, sqlStatementContext, database), instanceOf(SingleLocalDataMergedResult.class));
     }
     
     @Test
     public void assertMergeForShowShowTablesStatement() throws SQLException {
         DALStatement dalStatement = new MySQLShowTablesStatement();
         SQLStatementContext<?> sqlStatementContext = mockSQLStatementContext(dalStatement);
-        ShardingDALResultMerger resultMerger = new ShardingDALResultMerger(DefaultSchema.LOGIC_NAME, null);
-        assertThat(resultMerger.merge(queryResults, sqlStatementContext, null), instanceOf(LogicTablesMergedResult.class));
+        ShardingDALResultMerger resultMerger = new ShardingDALResultMerger(DefaultDatabase.LOGIC_NAME, null);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
+        assertThat(resultMerger.merge(queryResults, sqlStatementContext, database), instanceOf(LogicTablesMergedResult.class));
     }
     
     @Test
     public void assertMergeForShowCreateTableStatement() throws SQLException {
         DALStatement dalStatement = new MySQLShowCreateTableStatement();
         SQLStatementContext<?> sqlStatementContext = mockSQLStatementContext(dalStatement);
-        ShardingDALResultMerger resultMerger = new ShardingDALResultMerger(DefaultSchema.LOGIC_NAME, null);
-        assertThat(resultMerger.merge(queryResults, sqlStatementContext, null), instanceOf(ShowCreateTableMergedResult.class));
+        ShardingDALResultMerger resultMerger = new ShardingDALResultMerger(DefaultDatabase.LOGIC_NAME, null);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
+        assertThat(resultMerger.merge(queryResults, sqlStatementContext, database), instanceOf(ShowCreateTableMergedResult.class));
     }
     
     @Test
     public void assertMergeForShowOtherStatement() throws SQLException {
         DALStatement dalStatement = new MySQLShowOtherStatement();
         SQLStatementContext<?> sqlStatementContext = mockSQLStatementContext(dalStatement);
-        ShardingDALResultMerger resultMerger = new ShardingDALResultMerger(DefaultSchema.LOGIC_NAME, null);
-        assertThat(resultMerger.merge(queryResults, sqlStatementContext, null), instanceOf(TransparentMergedResult.class));
+        ShardingDALResultMerger resultMerger = new ShardingDALResultMerger(DefaultDatabase.LOGIC_NAME, null);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
+        assertThat(resultMerger.merge(queryResults, sqlStatementContext, database), instanceOf(TransparentMergedResult.class));
     }
     
     @Test
     public void assertMergeForDescribeStatement() throws SQLException {
         DALStatement dalStatement = new MySQLExplainStatement();
         SQLStatementContext<?> sqlStatementContext = mockSQLStatementContext(dalStatement);
-        ShardingDALResultMerger resultMerger = new ShardingDALResultMerger(DefaultSchema.LOGIC_NAME, mock(ShardingRule.class));
-        assertThat(resultMerger.merge(queryResults, sqlStatementContext, null), instanceOf(TransparentMergedResult.class));
+        ShardingDALResultMerger resultMerger = new ShardingDALResultMerger(DefaultDatabase.LOGIC_NAME, mock(ShardingRule.class));
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
+        assertThat(resultMerger.merge(queryResults, sqlStatementContext, database), instanceOf(TransparentMergedResult.class));
     }
     
     @Test
     public void assertMergeForShowIndexStatement() throws SQLException {
         DALStatement dalStatement = new MySQLShowIndexStatement();
         SQLStatementContext<?> sqlStatementContext = mockSQLStatementContext(dalStatement);
-        ShardingDALResultMerger resultMerger = new ShardingDALResultMerger(DefaultSchema.LOGIC_NAME, mock(ShardingRule.class));
-        assertThat(resultMerger.merge(queryResults, sqlStatementContext, null), instanceOf(ShowIndexMergedResult.class));
+        ShardingDALResultMerger resultMerger = new ShardingDALResultMerger(DefaultDatabase.LOGIC_NAME, mock(ShardingRule.class));
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
+        assertThat(resultMerger.merge(queryResults, sqlStatementContext, database), instanceOf(ShowIndexMergedResult.class));
     }
     
     @Test
     public void assertMergeForShowTableStatusStatement() throws SQLException {
         DALStatement dalStatement = new MySQLShowTableStatusStatement();
         SQLStatementContext<?> sqlStatementContext = mockSQLStatementContext(dalStatement);
-        ShardingDALResultMerger resultMerger = new ShardingDALResultMerger(DefaultSchema.LOGIC_NAME, mock(ShardingRule.class));
-        assertThat(resultMerger.merge(queryResults, sqlStatementContext, null), instanceOf(ShowTableStatusMergedResult.class));
+        ShardingDALResultMerger resultMerger = new ShardingDALResultMerger(DefaultDatabase.LOGIC_NAME, mock(ShardingRule.class));
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
+        assertThat(resultMerger.merge(queryResults, sqlStatementContext, database), instanceOf(ShowTableStatusMergedResult.class));
     }
     
     @SuppressWarnings("unchecked")
     private SQLStatementContext<DALStatement> mockSQLStatementContext(final DALStatement dalStatement) {
         SQLStatementContext<DALStatement> result = mock(SQLStatementContext.class);
         when(result.getSqlStatement()).thenReturn(dalStatement);
+        TablesContext tablesContext = mock(TablesContext.class);
+        when(result.getTablesContext()).thenReturn(tablesContext);
+        when(tablesContext.getSchemaName()).thenReturn(Optional.empty());
+        when(result.getDatabaseType()).thenReturn(new MySQLDatabaseType());
         return result;
     }
 }

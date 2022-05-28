@@ -42,6 +42,7 @@ public final class DataNode {
     
     private final String tableName;
     
+    // TODO add final for schemaName
     private String schemaName;
     
     /**

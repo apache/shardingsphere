@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shadow.distsql.handler.query;
 
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.ShowShadowTableRulesStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -45,10 +45,10 @@ public final class ShadowTableRuleQueryResultSet implements DistSQLResultSet {
     private Iterator<Map<String, String>> data = Collections.emptyIterator();
     
     @Override
-    public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
-        Optional<ShadowRuleConfiguration> rule = metaData.getRuleMetaData().getConfigurations()
+    public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
+        Optional<ShadowRuleConfiguration> ruleConfig = database.getRuleMetaData().getConfigurations()
                 .stream().filter(each -> each instanceof ShadowRuleConfiguration).map(each -> (ShadowRuleConfiguration) each).findAny();
-        rule.ifPresent(configuration -> data = buildData(configuration).iterator());
+        ruleConfig.ifPresent(optional -> data = buildData(optional).iterator());
     }
     
     private List<Map<String, String>> buildData(final ShadowRuleConfiguration shadowRuleConfiguration) {

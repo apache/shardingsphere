@@ -15,5 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.config.fixture.WithInitAlgorithm
-org.apache.shardingsphere.infra.config.fixture.WithoutInitAlgorithm
+org.apache.shardingsphere.infra.config.fixture.ShardingSphereAlgorithmFixture

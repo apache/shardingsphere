@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.impl;
 
-import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -67,6 +66,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.In
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.JoinQualContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.JoinedTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.LimitClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.NameContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.NameListContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.NumberLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.OwnerContext;
@@ -174,6 +174,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLUpdateStatement;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -528,7 +529,7 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
         for (int i = 0; i < ctx.getChildCount(); i++) {
             dataTypeNames.add(ctx.getChild(i).getText());
         }
-        return new KeywordValue(Joiner.on(" ").join(dataTypeNames));
+        return new KeywordValue(String.join(" ", dataTypeNames));
     }
     
     @Override
@@ -682,7 +683,6 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
                     new IdentifierValue(ctx.optIndirection().indirectionEl().attrName().getText()));
             result.setOwner(new OwnerSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), new IdentifierValue(ctx.colId().getText())));
             return result;
-            
         } else {
             return new ColumnSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), new IdentifierValue(ctx.colId().getText()));
         }
@@ -964,7 +964,7 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
                 result = new SubqueryProjectionSegment(existsSubqueryExpression.getSubquery(), text);
             }
         }
-        if (result instanceof AliasAvailable && null != ctx.identifier()) {
+        if (null != ctx.identifier()) {
             ((AliasAvailable) result).setAlias(new AliasSegment(ctx.identifier().start.getStartIndex(), ctx.identifier().stop.getStopIndex(), new IdentifierValue(ctx.identifier().getText())));
         }
         return result;
@@ -1050,13 +1050,12 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
     }
     
     private List<ColumnSegment> generateUsingColumn(final NameListContext ctx) {
-        List<ColumnSegment> result = new LinkedList<>();
+        List<ColumnSegment> result = new ArrayList<>();
         if (null != ctx.nameList()) {
             result.addAll(generateUsingColumn(ctx.nameList()));
         }
         if (null != ctx.name()) {
-            ColumnSegment column = new ColumnSegment(ctx.name().start.getStartIndex(), ctx.name().stop.getStopIndex(), new IdentifierValue(ctx.name().getText()));
-            result.add(column);
+            result.add(new ColumnSegment(ctx.name().start.getStartIndex(), ctx.name().stop.getStopIndex(), new IdentifierValue(ctx.name().getText())));
         }
         return result;
     }
@@ -1179,5 +1178,10 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
             result.combine((CollectionValue<NameSegment>) visit(ctx.attrs()));
         }
         return result;
+    }
+    
+    @Override
+    public ASTNode visitName(final NameContext ctx) {
+        return visit(ctx.identifier());
     }
 }

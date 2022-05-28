@@ -42,13 +42,13 @@ public abstract class BaseShadowConfiguration implements ExampleConfiguration {
     
     protected Properties createShardingSphereProps() {
         Properties result = new Properties();
-        result.setProperty(ConfigurationPropertyKey.SQL_SHOW.getKey(), "true");
+        result.setProperty(ConfigurationPropertyKey.SQL_SHOW.getKey(), Boolean.TRUE.toString());
         return result;
     }
     
     protected SQLParserRuleConfiguration createSQLParserRuleConfiguration() {
-        CacheOption parseTreeCacheOption = new CacheOption(128, 1024L, 4);
-        CacheOption sqlStatementCacheOption = new CacheOption(2000, 65535L, 4);
+        CacheOption parseTreeCacheOption = new CacheOption(128, 1024L);
+        CacheOption sqlStatementCacheOption = new CacheOption(2000, 65535L);
         return new SQLParserRuleConfiguration(true, parseTreeCacheOption, sqlStatementCacheOption);
     }
     
@@ -79,7 +79,7 @@ public abstract class BaseShadowConfiguration implements ExampleConfiguration {
         userIdSelectProps.setProperty("value", "1");
         result.put("user-id-select-match-algorithm", new ShardingSphereAlgorithmConfiguration("VALUE_MATCH", userIdSelectProps));
         Properties noteAlgorithmProps = new Properties();
-        noteAlgorithmProps.setProperty("shadow", "true");
+        noteAlgorithmProps.setProperty("shadow", Boolean.TRUE.toString());
         noteAlgorithmProps.setProperty("foo", "bar");
         result.put("simple-hint-algorithm", new ShardingSphereAlgorithmConfiguration("SIMPLE_HINT", noteAlgorithmProps));
         return result;

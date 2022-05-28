@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateSchemaStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.SQLStatementHandler;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateSchemaStatement;
@@ -40,7 +41,7 @@ public final class CreateSchemaStatementHandler implements SQLStatementHandler {
      * @param createSchemaStatement create schema statement
      * @return username
      */
-    public static Optional<String> getUsername(final CreateSchemaStatement createSchemaStatement) {
+    public static Optional<IdentifierValue> getUsername(final CreateSchemaStatement createSchemaStatement) {
         if (createSchemaStatement instanceof PostgreSQLStatement) {
             return ((PostgreSQLCreateSchemaStatement) createSchemaStatement).getUsername();
         }

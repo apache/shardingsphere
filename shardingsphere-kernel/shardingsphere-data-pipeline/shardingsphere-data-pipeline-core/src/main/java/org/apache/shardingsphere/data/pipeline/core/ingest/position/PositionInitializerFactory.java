@@ -34,12 +34,12 @@ public final class PositionInitializerFactory {
     }
     
     /**
-     * Get position initializer instance.
+     * Get instance of position initializer.
      *
      * @param databaseType database type
-     * @return position initializer
+     * @return got instance
      */
-    public static PositionInitializer getPositionInitializer(final String databaseType) {
+    public static PositionInitializer getInstance(final String databaseType) {
         return TypedSPIRegistry.getRegisteredService(PositionInitializer.class, databaseType);
     }
 }

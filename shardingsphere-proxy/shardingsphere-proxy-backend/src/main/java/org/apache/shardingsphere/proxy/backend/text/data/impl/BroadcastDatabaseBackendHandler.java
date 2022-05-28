@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.vertx.VertxDatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.exception.DatabaseNotExistedException;
+import org.apache.shardingsphere.proxy.backend.exception.ResourceNotExistedException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -53,7 +53,7 @@ public final class BroadcastDatabaseBackendHandler implements DatabaseBackendHan
     @SuppressWarnings("rawtypes")
     @Override
     public Future<ResponseHeader> executeFuture() {
-        List<String> databaseNames = getDatabaseNamesWithDataSource().orElseThrow(DatabaseNotExistedException::new);
+        List<String> databaseNames = getDatabaseNamesWithDataSource().orElseThrow(ResourceNotExistedException::new);
         String originalDatabase = connectionSession.getDatabaseName();
         List<Future> futures = new ArrayList<>(databaseNames.size());
         for (String each : databaseNames) {
@@ -70,7 +70,7 @@ public final class BroadcastDatabaseBackendHandler implements DatabaseBackendHan
     
     @Override
     public ResponseHeader execute() throws SQLException {
-        List<String> databaseNames = getDatabaseNamesWithDataSource().orElseThrow(DatabaseNotExistedException::new);
+        List<String> databaseNames = getDatabaseNamesWithDataSource().orElseThrow(ResourceNotExistedException::new);
         String originalDatabase = connectionSession.getDatabaseName();
         try {
             for (String each : databaseNames) {
@@ -84,7 +84,7 @@ public final class BroadcastDatabaseBackendHandler implements DatabaseBackendHan
     }
     
     private Optional<List<String>> getDatabaseNamesWithDataSource() {
-        List<String> result = ProxyContext.getInstance().getAllDatabaseNames().stream().filter(each -> ProxyContext.getInstance().getMetaData(each).hasDataSource()).collect(Collectors.toList());
+        List<String> result = ProxyContext.getInstance().getAllDatabaseNames().stream().filter(each -> ProxyContext.getInstance().getDatabase(each).hasDataSource()).collect(Collectors.toList());
         return Optional.of(result).filter(each -> !each.isEmpty());
     }
 }

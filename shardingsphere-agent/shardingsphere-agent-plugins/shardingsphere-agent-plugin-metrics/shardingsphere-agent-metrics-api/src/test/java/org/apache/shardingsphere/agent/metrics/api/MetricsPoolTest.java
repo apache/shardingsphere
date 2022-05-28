@@ -20,18 +20,14 @@ package org.apache.shardingsphere.agent.metrics.api;
 import org.apache.shardingsphere.agent.metrics.api.fixture.FixtureWrapperFactory;
 import org.junit.Test;
 
-import java.util.Optional;
-
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public final class MetricsPoolTest {
     
-    @SuppressWarnings("OptionalGetWithoutIsPresent")
     @Test
     public void assertCreate() {
         MetricsPool.setMetricsFactory(new FixtureWrapperFactory());
         MetricsPool.create("test");
-        Optional<MetricsWrapper> wrapper = MetricsPool.get("test");
-        assertNotNull(wrapper.get());
+        assertTrue(MetricsPool.get("test").isPresent());
     }
 }

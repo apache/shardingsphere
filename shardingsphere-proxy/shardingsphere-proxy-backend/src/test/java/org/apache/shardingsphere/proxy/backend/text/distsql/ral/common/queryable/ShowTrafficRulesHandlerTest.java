@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.api.config.TrafficStrategyConfiguration;
 import org.junit.Test;
@@ -31,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -40,7 +42,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class ShowTrafficRulesHandlerTest {
+public class ShowTrafficRulesHandlerTest extends ProxyContextRestorer {
     
     @Test
     public void assertExecutor() throws SQLException {
@@ -48,11 +50,11 @@ public class ShowTrafficRulesHandlerTest {
         showTrafficRuleStatement.setRuleName("rule_name_1");
         ShowTrafficRulesHandler handler = new ShowTrafficRulesHandler().initStatement(showTrafficRuleStatement);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(any())).thenReturn(createTrafficRule());
-        ProxyContext.getInstance().init(contextManager);
+        when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findRuleConfigurations(any())).thenReturn(createTrafficRule());
+        ProxyContext.init(contextManager);
         handler.execute();
         handler.next();
-        ArrayList<Object> data = new ArrayList<>(handler.getRowData());
+        List<Object> data = new ArrayList<>(handler.getRowData());
         assertThat(data.size(), is(6));
         assertThat(data.get(0), is("rule_name_1"));
         assertThat(data.get(1), is("olap,order_by"));
@@ -63,15 +65,19 @@ public class ShowTrafficRulesHandlerTest {
     }
     
     private Collection<RuleConfiguration> createTrafficRule() {
-        TrafficRuleConfiguration trafficRuleConfiguration = new TrafficRuleConfiguration();
-        trafficRuleConfiguration.getTrafficStrategies().add(new TrafficStrategyConfiguration("rule_name_1", Arrays.asList("olap", "order_by"), "algorithm_1", "load_balancer_1"));
-        trafficRuleConfiguration.getTrafficStrategies().add(new TrafficStrategyConfiguration("rule_name_2", Collections.singletonList("oltp"), "algorithm_2", "load_balancer_2"));
-        trafficRuleConfiguration.getLoadBalancers().put("load_balancer_1", new ShardingSphereAlgorithmConfiguration("RANDOM", new Properties()));
-        trafficRuleConfiguration.getLoadBalancers().put("load_balancer_2", new ShardingSphereAlgorithmConfiguration("ROBIN", new Properties()));
-        Properties algorithmProperties = new Properties();
-        algorithmProperties.put("sql", "select * from t_order");
-        trafficRuleConfiguration.getTrafficAlgorithms().put("algorithm_1", new ShardingSphereAlgorithmConfiguration("SQL_MATCH", algorithmProperties));
-        trafficRuleConfiguration.getTrafficAlgorithms().put("algorithm_2", new ShardingSphereAlgorithmConfiguration("SQL_HINT", new Properties()));
-        return Collections.singletonList(trafficRuleConfiguration);
+        TrafficRuleConfiguration result = new TrafficRuleConfiguration();
+        result.getTrafficStrategies().add(new TrafficStrategyConfiguration("rule_name_1", Arrays.asList("olap", "order_by"), "algorithm_1", "load_balancer_1"));
+        result.getTrafficStrategies().add(new TrafficStrategyConfiguration("rule_name_2", Collections.singletonList("oltp"), "algorithm_2", "load_balancer_2"));
+        result.getLoadBalancers().put("load_balancer_1", new ShardingSphereAlgorithmConfiguration("RANDOM", new Properties()));
+        result.getLoadBalancers().put("load_balancer_2", new ShardingSphereAlgorithmConfiguration("ROBIN", new Properties()));
+        result.getTrafficAlgorithms().put("algorithm_1", new ShardingSphereAlgorithmConfiguration("SQL_MATCH", createProperties()));
+        result.getTrafficAlgorithms().put("algorithm_2", new ShardingSphereAlgorithmConfiguration("SQL_HINT", new Properties()));
+        return Collections.singleton(result);
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.put("sql", "select * from t_order");
+        return result;
     }
 }

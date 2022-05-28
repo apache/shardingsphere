@@ -34,7 +34,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.DatabaseRequiredBackendHandler;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
  * Alter resource backend handler.
  */
 @Slf4j
-public final class AlterResourceBackendHandler extends SchemaRequiredBackendHandler<AlterResourceStatement> {
+public final class AlterResourceBackendHandler extends DatabaseRequiredBackendHandler<AlterResourceStatement> {
     
     private final DatabaseType databaseType;
     
@@ -83,7 +83,7 @@ public final class AlterResourceBackendHandler extends SchemaRequiredBackendHand
     }
     
     private void checkDatabase(final String databaseName, final AlterResourceStatement sqlStatement) throws DistSQLException {
-        Map<String, DataSource> resources = ProxyContext.getInstance().getMetaData(databaseName).getResource().getDataSources();
+        Map<String, DataSource> resources = ProxyContext.getInstance().getDatabase(databaseName).getResource().getDataSources();
         Collection<String> invalid = sqlStatement.getDataSources().stream().collect(Collectors.toMap(DataSourceSegment::getName, each -> each)).entrySet().stream()
                 .filter(each -> !isIdenticalDatabase(each.getValue(), resources.get(each.getKey()))).map(Entry::getKey).collect(Collectors.toSet());
         DistSQLException.predictionThrow(invalid.isEmpty(), () -> new InvalidResourcesException(Collections.singleton(String.format("Cannot alter the database of %s", invalid))));
@@ -103,7 +103,7 @@ public final class AlterResourceBackendHandler extends SchemaRequiredBackendHand
     }
     
     private void checkResourceNameExisted(final String databaseName, final Collection<String> resourceNames) throws DistSQLException {
-        Map<String, DataSource> resources = ProxyContext.getInstance().getMetaData(databaseName).getResource().getDataSources();
+        Map<String, DataSource> resources = ProxyContext.getInstance().getDatabase(databaseName).getResource().getDataSources();
         Collection<String> notExistedResourceNames = resourceNames.stream().filter(each -> !resources.containsKey(each)).collect(Collectors.toList());
         DistSQLException.predictionThrow(notExistedResourceNames.isEmpty(), () -> new RequiredResourceMissedException(databaseName, notExistedResourceNames));
     }
@@ -118,8 +118,7 @@ public final class AlterResourceBackendHandler extends SchemaRequiredBackendHand
             port = String.valueOf(segmentJdbcUrl.getPort());
             database = segmentJdbcUrl.getDatabase();
         }
-        DataSourceProperties dataSourceProperties = DataSourcePropertiesCreator.create(dataSource);
-        String url = String.valueOf(dataSourceProperties.getConnectionPropertySynonyms().getStandardProperties().get("url"));
+        String url = String.valueOf(DataSourcePropertiesCreator.create(dataSource).getConnectionPropertySynonyms().getStandardProperties().get("url"));
         JdbcUrl dataSourceJdbcUrl = new StandardJdbcUrlParser().parse(url);
         return hostName.equals(dataSourceJdbcUrl.getHostname()) && port.equals(String.valueOf(dataSourceJdbcUrl.getPort())) && database.equals(dataSourceJdbcUrl.getDatabase());
     }

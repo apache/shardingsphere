@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.metadata.persist.node;
 
-import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.junit.Test;
 
 import java.util.Optional;
@@ -30,19 +30,19 @@ public class DatabaseMetaDataNodeTest {
     
     @Test
     public void assertGetRulePath() {
-        assertThat(DatabaseMetaDataNode.getRulePath(DefaultSchema.LOGIC_NAME, "0"), is("/metadata/logic_db/versions/0/rules"));
+        assertThat(DatabaseMetaDataNode.getRulePath(DefaultDatabase.LOGIC_NAME, "0"), is("/metadata/logic_db/versions/0/rules"));
     }
     
     @Test
     public void assertGetDatabaseName() {
-        Optional<String> actualSchemaName = DatabaseMetaDataNode.getDatabaseName("/metadata/logic_db/logic_schema/rules");
+        Optional<String> actualSchemaName = DatabaseMetaDataNode.getDatabaseName("/metadata/logic_db");
         assertTrue(actualSchemaName.isPresent());
         assertThat(actualSchemaName.get(), is("logic_db"));
     }
     
     @Test
     public void assertGetDatabaseNameWithLine() {
-        Optional<String> actualSchemaName = DatabaseMetaDataNode.getDatabaseName("/metadata/logic-db-test/logic-db-schema/rules");
+        Optional<String> actualSchemaName = DatabaseMetaDataNode.getDatabaseNameByDatabasePath("/metadata/logic-db-test/schemas/logic-db-schema");
         assertTrue(actualSchemaName.isPresent());
         assertThat(actualSchemaName.get(), is("logic-db-test"));
     }
@@ -59,7 +59,7 @@ public class DatabaseMetaDataNodeTest {
     
     @Test
     public void assertGetDatabaseNameByDatabasePath() {
-        Optional<String> actualSchemaName = DatabaseMetaDataNode.getDatabaseNameByDatabasePath("/metadata/logic_db");
+        Optional<String> actualSchemaName = DatabaseMetaDataNode.getDatabaseNameByDatabasePath("/metadata/logic_db/schemas/logic_schema");
         assertTrue(actualSchemaName.isPresent());
         assertThat(actualSchemaName.get(), is("logic_db"));
     }
@@ -73,13 +73,13 @@ public class DatabaseMetaDataNodeTest {
     
     @Test
     public void assertGetSchemaName() {
-        Optional<String> actualSchemaName = DatabaseMetaDataNode.getSchemaName("/metadata/logic_db/schemas/logic_schema/tables/t_order");
+        Optional<String> actualSchemaName = DatabaseMetaDataNode.getSchemaName("/metadata/logic_db/schemas/logic_schema");
         assertTrue(actualSchemaName.isPresent());
         assertThat(actualSchemaName.get(), is("logic_schema"));
     }
     
     @Test
-    public void assertGetVersionBySchemaPath() {
+    public void assertGetVersionByDatabasePath() {
         Optional<String> actualVersion = DatabaseMetaDataNode.getVersionByDataSourcesPath("/metadata/logic_db/versions/0/dataSources");
         assertTrue(actualVersion.isPresent());
         assertThat(actualVersion.get(), is("0"));
@@ -114,6 +114,6 @@ public class DatabaseMetaDataNodeTest {
     
     @Test
     public void assertGetMetaDataDataSourcePath() {
-        assertThat(DatabaseMetaDataNode.getMetaDataDataSourcePath(DefaultSchema.LOGIC_NAME, "0"), is("/metadata/logic_db/versions/0/dataSources"));
+        assertThat(DatabaseMetaDataNode.getMetaDataDataSourcePath(DefaultDatabase.LOGIC_NAME, "0"), is("/metadata/logic_db/versions/0/dataSources"));
     }
 }

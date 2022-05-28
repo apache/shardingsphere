@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.statement;
 
-import org.apache.shardingsphere.driver.fixture.ResetIncrementKeyGenerateAlgorithm;
+import org.apache.shardingsphere.driver.fixture.keygen.ResetIncrementKeyGenerateAlgorithmFixture;
 import org.apache.shardingsphere.driver.jdbc.base.AbstractShardingSphereDataSourceForShardingTest;
 import org.junit.Test;
 
@@ -119,7 +119,7 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
                 Connection connection = getShardingSphereDataSource().getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(INSERT_MULTI_VALUES_WITH_GENERATE_SHARDING_KEY_SQL, Statement.RETURN_GENERATED_KEYS);
                 Statement queryStatement = connection.createStatement()) {
-            ResetIncrementKeyGenerateAlgorithm.getCOUNT().set(0);
+            ResetIncrementKeyGenerateAlgorithmFixture.getCOUNT().set(0);
             preparedStatement.setString(1, "BATCH1");
             preparedStatement.setString(2, "BATCH2");
             preparedStatement.setString(3, "BATCH3");
@@ -161,7 +161,7 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
                 Connection connection = getShardingSphereDataSource().getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(INSERT_MULTI_VALUES_WITH_GENERATE_SHARDING_KEY_SQL, Statement.RETURN_GENERATED_KEYS);
                 Statement queryStatement = connection.createStatement()) {
-            ResetIncrementKeyGenerateAlgorithm.getCOUNT().set(10);
+            ResetIncrementKeyGenerateAlgorithmFixture.getCOUNT().set(10);
             preparedStatement.setString(1, "BATCH1");
             preparedStatement.setString(2, "BATCH2");
             preparedStatement.setString(3, "BATCH3");

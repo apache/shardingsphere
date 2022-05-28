@@ -19,16 +19,15 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.stat
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
-import org.apache.shardingsphere.infra.instance.definition.InstanceType;
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.InstanceOfflineEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.InstanceOnlineEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ShowProcessListTriggerEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ShowProcessListTriggerEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ShowProcessListUnitCompleteEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.StateEvent;
-import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.WorkerIdEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.XaRecoveryIdEvent;
 import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
@@ -60,7 +59,7 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<G
     
     @Override
     public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
-        String instanceId = ComputeNode.getInstanceIdByAttributes(event.getKey());
+        String instanceId = ComputeNode.getInstanceIdByComputeNode(event.getKey());
         if (!Strings.isNullOrEmpty(instanceId)) {
             if (event.getKey().equals(ComputeNode.getInstanceStatusNodePath(instanceId))) {
                 Collection<String> status = Strings.isNullOrEmpty(event.getValue()) ? new ArrayList<>() : YamlEngine.unmarshal(event.getValue(), Collection.class);
@@ -69,14 +68,14 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<G
                 return Optional.of(new WorkerIdEvent(instanceId, Strings.isNullOrEmpty(event.getValue()) ? null : Long.valueOf(event.getValue())));
             } else if (event.getKey().equals(ComputeNode.getInstanceLabelsNodePath(instanceId))) {
                 return Optional.of(new LabelsEvent(instanceId, Strings.isNullOrEmpty(event.getValue()) ? new ArrayList<>() : YamlEngine.unmarshal(event.getValue(), Collection.class)));
-            } else if (event.getKey().equals(ComputeNode.getInstanceXaRecoveryIdNodePath(instanceId))) {
-                return Optional.of(new XaRecoveryIdEvent(instanceId, Strings.isNullOrEmpty(event.getValue()) ? null : event.getValue()));
             }
         } else if (event.getKey().startsWith(ComputeNode.getOnlineInstanceNodePath())) {
             Optional<InstanceDefinition> instanceDefinition = ComputeNode.getInstanceDefinitionByInstanceOnlinePath(event.getKey());
             return instanceDefinition.isPresent() ? createInstanceEvent(instanceDefinition.get(), event.getType()) : Optional.empty();
         } else if (event.getKey().startsWith(ComputeNode.getProcessTriggerNodePatch())) {
             return createShowProcessListTriggerEvent(event);
+        } else if (event.getKey().startsWith(ComputeNode.getXaRecoveryIdNodePath())) {
+            return createXaRecoveryIdEvent(event);
         }
         return Optional.empty();
     }
@@ -87,16 +86,15 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<G
             return Optional.empty();
         }
         if (Type.ADDED == event.getType()) {
-            return Optional.of(new ShowProcessListTriggerEvent(
-                    new InstanceDefinition(InstanceType.PROXY.name().equalsIgnoreCase(matcher.group(1)) ? InstanceType.PROXY : InstanceType.JDBC, matcher.group(2)), matcher.group(3)));
+            return Optional.of(new ShowProcessListTriggerEvent(matcher.group(1), matcher.group(2)));
         } else if (Type.DELETED == event.getType()) {
-            return Optional.of(new ShowProcessListUnitCompleteEvent(matcher.group(3)));
+            return Optional.of(new ShowProcessListUnitCompleteEvent(matcher.group(2)));
         }
         return Optional.empty();
     }
     
     private static Matcher getShowProcessTriggerMatcher(final DataChangedEvent event) {
-        Pattern pattern = Pattern.compile(ComputeNode.getProcessTriggerNodePatch() + "/" + "(proxy|jdbc)" + "/([0-9.@]+)" + "/([\\S]+)$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(ComputeNode.getProcessTriggerNodePatch() + "/([0-9.@]+):([\\S]+)$", Pattern.CASE_INSENSITIVE);
         return pattern.matcher(event.getKey());
     }
     
@@ -105,6 +103,14 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<G
             return Optional.of(new InstanceOnlineEvent(instanceDefinition));
         } else if (Type.DELETED == type) {
             return Optional.of(new InstanceOfflineEvent(instanceDefinition));
+        }
+        return Optional.empty();
+    }
+    
+    private Optional<GovernanceEvent> createXaRecoveryIdEvent(final DataChangedEvent event) {
+        Matcher matcher = Pattern.compile(ComputeNode.getXaRecoveryIdNodePath() + "/([\\S]+)/([\\S]+)$", Pattern.CASE_INSENSITIVE).matcher(event.getKey());
+        if (matcher.find()) {
+            return Optional.of(new XaRecoveryIdEvent(matcher.group(2), matcher.group(1)));
         }
         return Optional.empty();
     }

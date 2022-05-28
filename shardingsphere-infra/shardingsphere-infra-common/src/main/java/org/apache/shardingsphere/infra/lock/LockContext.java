@@ -19,6 +19,8 @@ package org.apache.shardingsphere.infra.lock;
 
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 
+import java.util.Set;
+
 /**
  * Lock context.
  */
@@ -29,23 +31,66 @@ public interface LockContext {
      *
      * @param instanceContext instance context
      */
-    void initLockState(InstanceContext instanceContext);
+    default void initLockState(InstanceContext instanceContext) {
+    }
     
     /**
-     * Get or create database lock.
+     * Get or create mutex lock.
      *
-     * @param databaseName database name
-     * @return database lock
+     * @return mutex lock
      */
-    ShardingSphereLock getOrCreateDatabaseLock(String databaseName);
+    ShardingSphereLock getMutexLock();
     
     /**
-     * Get database lock.
+     * Lock write for database.
      *
      * @param databaseName database name
-     * @return database name
+     * @return is locked or not
      */
-    ShardingSphereLock getDatabaseLock(String databaseName);
+    boolean lockWrite(String databaseName);
+    
+    /**
+     * Lock write for schemas.
+     *
+     * @param databaseName database name
+     * @param schemaNames schema names
+     * @return is locked or not
+     */
+    boolean lockWrite(String databaseName, Set<String> schemaNames);
+    
+    /**
+     * Try Lock write for database.
+     *
+     * @param databaseName database name
+     * @param timeoutMilliseconds timeout milliseconds
+     * @return is locked or not
+     */
+    boolean tryLockWrite(String databaseName, long timeoutMilliseconds);
+    
+    /**
+     * Try lock write for schemas.
+     *
+     * @param databaseName database name
+     * @param schemaNames schema names
+     * @param timeoutMilliseconds timeout milliseconds
+     * @return is locked or not
+     */
+    boolean tryLockWrite(String databaseName, Set<String> schemaNames, long timeoutMilliseconds);
+    
+    /**
+     * Release lock write of database.
+     *
+     * @param databaseName database name
+     */
+    void releaseLockWrite(String databaseName);
+    
+    /**
+     * Release lock write for schemas.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     */
+    void releaseLockWrite(String databaseName, String schemaName);
     
     /**
      *  Is locked database.
@@ -53,5 +98,14 @@ public interface LockContext {
      * @param databaseName database name
      * @return is locked database or not
      */
-    boolean isLockedDatabase(String databaseName);
+    boolean isLocked(String databaseName);
+    
+    /**
+     * Is locked schema.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @return is locked or not
+     */
+    boolean isLocked(String databaseName, String schemaName);
 }

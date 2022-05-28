@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredAlgorithmMissedException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -40,23 +40,23 @@ public final class DatabaseDiscoveryRuleConfigurationImportChecker {
     /**
      * Check database discovery rule configuration.
      *
-     * @param shardingSphereMetaData ShardingSphere meta data
+     * @param database database
      * @param currentRuleConfig current rule configuration
      * @throws DistSQLException definition violation exception
      */
-    public void check(final ShardingSphereMetaData shardingSphereMetaData, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
-        if (null == shardingSphereMetaData || null == currentRuleConfig) {
+    public void check(final ShardingSphereDatabase database, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
+        if (null == database || null == currentRuleConfig) {
             return;
         }
-        String databaseName = shardingSphereMetaData.getDatabaseName();
-        checkResources(databaseName, shardingSphereMetaData, currentRuleConfig);
+        String databaseName = database.getName();
+        checkResources(databaseName, database, currentRuleConfig);
         checkDiscoverTypeAndHeartbeat(databaseName, currentRuleConfig);
     }
     
-    private void checkResources(final String databaseName, final ShardingSphereMetaData shardingSphereMetaData, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
+    private void checkResources(final String databaseName, final ShardingSphereDatabase database, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
         Collection<String> requireResources = new LinkedHashSet<>();
         currentRuleConfig.getDataSources().forEach(each -> requireResources.addAll(each.getDataSourceNames()));
-        Collection<String> notExistResources = shardingSphereMetaData.getResource().getNotExistedResources(requireResources);
+        Collection<String> notExistResources = database.getResource().getNotExistedResources(requireResources);
         DistSQLException.predictionThrow(notExistResources.isEmpty(), () -> new RequiredResourceMissedException(databaseName, notExistResources));
     }
     

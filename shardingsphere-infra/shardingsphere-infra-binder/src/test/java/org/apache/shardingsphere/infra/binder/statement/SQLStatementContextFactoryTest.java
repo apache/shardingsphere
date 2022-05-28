@@ -20,8 +20,8 @@ package org.apache.shardingsphere.infra.binder.statement;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
@@ -46,8 +46,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
@@ -59,9 +59,8 @@ public final class SQLStatementContextFactoryTest {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setLimit(new LimitSegment(0, 10, null, null));
         selectStatement.setProjections(projectionsSegment);
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(mockMetaDataMap(), Collections.emptyList(), selectStatement, DefaultSchema.LOGIC_NAME);
-        assertNotNull(sqlStatementContext);
-        assertTrue(sqlStatementContext instanceof SelectStatementContext);
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(mockDatabases(), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
+        assertThat(sqlStatementContext, instanceOf(SelectStatementContext.class));
     }
     
     @Test
@@ -97,19 +96,17 @@ public final class SQLStatementContextFactoryTest {
     
     private void assertSQLStatementContextCreatedWhenSQLStatementInstanceOfInsertStatement(final InsertStatement insertStatement) {
         insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(mockMetaDataMap(), Collections.emptyList(), insertStatement, DefaultSchema.LOGIC_NAME);
-        assertNotNull(sqlStatementContext);
-        assertTrue(sqlStatementContext instanceof InsertStatementContext);
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(mockDatabases(), Collections.emptyList(), insertStatement, DefaultDatabase.LOGIC_NAME);
+        assertThat(sqlStatementContext, instanceOf(InsertStatementContext.class));
     }
     
     @Test
     public void assertSQLStatementContextCreatedWhenSQLStatementNotInstanceOfSelectStatementAndInsertStatement() {
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(mockMetaDataMap(), Collections.emptyList(), mock(MySQLStatement.class), DefaultSchema.LOGIC_NAME);
-        assertNotNull(sqlStatementContext);
-        assertTrue(sqlStatementContext instanceof CommonSQLStatementContext);
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(mockDatabases(), Collections.emptyList(), mock(MySQLStatement.class), DefaultDatabase.LOGIC_NAME);
+        assertThat(sqlStatementContext, instanceOf(CommonSQLStatementContext.class));
     }
     
-    private Map<String, ShardingSphereMetaData> mockMetaDataMap() {
-        return Collections.singletonMap(DefaultSchema.LOGIC_NAME, mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS));
+    private Map<String, ShardingSphereDatabase> mockDatabases() {
+        return Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS));
     }
 }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rql.rule;
 
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowSingleTableRulesStatement;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -37,10 +37,10 @@ public final class SingleTableRulesQueryResultSet implements DistSQLResultSet {
     private Iterator<String> data = Collections.emptyIterator();
     
     @Override
-    public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
-        Optional<SingleTableRuleConfiguration> ruleConfiguration = metaData.getRuleMetaData().getConfigurations().stream()
+    public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
+        Optional<SingleTableRuleConfiguration> ruleConfig = database.getRuleMetaData().getConfigurations().stream()
                 .filter(each -> each instanceof SingleTableRuleConfiguration).map(each -> (SingleTableRuleConfiguration) each).findAny();
-        ruleConfiguration.flatMap(SingleTableRuleConfiguration::getDefaultDataSource).ifPresent(op -> data = Collections.singletonList(op).iterator());
+        ruleConfig.flatMap(SingleTableRuleConfiguration::getDefaultDataSource).ifPresent(optional -> data = Collections.singletonList(optional).iterator());
     }
     
     @Override

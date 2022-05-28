@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.yaml.schema.swapper;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlColumnMetaData;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlSchema;
@@ -34,7 +34,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -48,7 +48,6 @@ public final class SchemaYamlSwapperTest {
     public void assertSwapToYamlSchema() {
         ShardingSphereSchema schema = new SchemaYamlSwapper().swapToObject(YamlEngine.unmarshal(readYAML(YAML), YamlSchema.class));
         YamlSchema yamlSchema = new SchemaYamlSwapper().swapToYamlConfiguration(schema);
-        assertNotNull(yamlSchema);
         assertThat(yamlSchema.getTables().keySet(), is(Collections.singleton("t_order")));
         YamlTableMetaData yamlTableMetaData = yamlSchema.getTables().get("t_order");
         assertThat(yamlTableMetaData.getIndexes().keySet(), is(Collections.singleton("primary")));
@@ -59,16 +58,16 @@ public final class SchemaYamlSwapperTest {
         assertThat(columns.size(), is(2));
         YamlColumnMetaData idColumn = columns.get("id");
         assertThat(idColumn.getName(), is("id"));
-        assertThat(idColumn.isCaseSensitive(), is(false));
+        assertFalse(idColumn.isCaseSensitive());
         assertThat(idColumn.getDataType(), is(0));
-        assertThat(idColumn.isGenerated(), is(false));
-        assertThat(idColumn.isPrimaryKey(), is(true));
+        assertFalse(idColumn.isGenerated());
+        assertTrue(idColumn.isPrimaryKey());
         YamlColumnMetaData nameColumn = columns.get("name");
         assertThat(nameColumn.getName(), is("name"));
-        assertThat(nameColumn.isCaseSensitive(), is(true));
+        assertTrue(nameColumn.isCaseSensitive());
         assertThat(nameColumn.getDataType(), is(10));
-        assertThat(nameColumn.isGenerated(), is(true));
-        assertThat(nameColumn.isPrimaryKey(), is(false));
+        assertTrue(nameColumn.isGenerated());
+        assertFalse(nameColumn.isPrimaryKey());
     }
     
     @Test

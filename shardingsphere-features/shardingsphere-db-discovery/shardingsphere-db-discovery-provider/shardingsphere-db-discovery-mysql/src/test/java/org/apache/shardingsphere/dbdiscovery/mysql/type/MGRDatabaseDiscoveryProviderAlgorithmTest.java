@@ -17,12 +17,17 @@
 
 package org.apache.shardingsphere.dbdiscovery.mysql.type;
 
+import org.apache.shardingsphere.dbdiscovery.factory.DatabaseDiscoveryProviderAlgorithmFactory;
+import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
 import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.junit.Test;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -37,9 +42,10 @@ public final class MGRDatabaseDiscoveryProviderAlgorithmTest {
     
     @Test
     public void assertCheckEnvironment() throws SQLException {
-        MGRMySQLDatabaseDiscoveryProviderAlgorithm actual = new MGRMySQLDatabaseDiscoveryProviderAlgorithm();
-        actual.getProps().setProperty("group-name", "foo_group");
-        actual.checkEnvironment("foo_db", mockEnvironmentAvailableDataSource());
+        Properties props = new Properties();
+        props.setProperty("group-name", "foo_group");
+        DatabaseDiscoveryProviderAlgorithm actual = DatabaseDiscoveryProviderAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("MySQL.MGR", props));
+        actual.checkEnvironment("foo_db", Collections.singletonList(mockEnvironmentAvailableDataSource()));
     }
     
     private DataSource mockEnvironmentAvailableDataSource() throws SQLException {
@@ -57,7 +63,8 @@ public final class MGRDatabaseDiscoveryProviderAlgorithmTest {
     
     @Test
     public void assertIsPrimaryInstance() throws SQLException {
-        assertTrue(new MGRMySQLDatabaseDiscoveryProviderAlgorithm().isPrimaryInstance(mockPrimaryDataSource()));
+        DatabaseDiscoveryProviderAlgorithm actual = DatabaseDiscoveryProviderAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("MySQL.MGR", new Properties()));
+        assertTrue(actual.isPrimaryInstance(mockPrimaryDataSource()));
     }
     
     private DataSource mockPrimaryDataSource() throws SQLException {

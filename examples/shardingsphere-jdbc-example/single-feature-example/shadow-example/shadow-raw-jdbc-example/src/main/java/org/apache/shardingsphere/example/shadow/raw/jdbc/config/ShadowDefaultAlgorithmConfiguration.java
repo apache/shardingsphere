@@ -35,11 +35,10 @@ public final class ShadowDefaultAlgorithmConfiguration extends BaseShadowConfigu
     @Override
     public DataSource getDataSource() throws SQLException {
         Map<String, DataSource> dataSourceMap = createDataSourceMap();
-        Collection<RuleConfiguration> ruleConfigurations = createRuleConfiguration();
-        return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, ruleConfigurations, createShardingSphereProps());
+        return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, createRuleConfigurations(), createShardingSphereProps());
     }
     
-    private Collection<RuleConfiguration> createRuleConfiguration() {
+    private Collection<RuleConfiguration> createRuleConfigurations() {
         Collection<RuleConfiguration> result = new LinkedList<>();
         result.add(createShadowRuleConfiguration());
         result.add(createSQLParserRuleConfiguration());
@@ -48,7 +47,7 @@ public final class ShadowDefaultAlgorithmConfiguration extends BaseShadowConfigu
     
     private RuleConfiguration createShadowRuleConfiguration() {
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
-        result.setDefaultShadowAlgorithmName("simple-note-algorithm");
+        result.setDefaultShadowAlgorithmName("simple-hint-algorithm");
         result.setShadowAlgorithms(createShadowAlgorithmConfigurations());
         result.setDataSources(createShadowDataSources());
         result.setTables(createShadowTables());

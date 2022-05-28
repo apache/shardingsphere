@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingBindingTableRulesStatement;
@@ -36,10 +36,10 @@ public final class ShardingBindingTableRuleQueryResultSet implements DistSQLResu
     private Iterator<String> data;
     
     @Override
-    public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
-        Optional<ShardingRuleConfiguration> shardingRuleConfig = metaData.getRuleMetaData().getConfigurations()
+    public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
+        Optional<ShardingRuleConfiguration> shardingRuleConfig = database.getRuleMetaData().getConfigurations()
                 .stream().filter(each -> each instanceof ShardingRuleConfiguration).map(each -> (ShardingRuleConfiguration) each).findFirst();
-        data = shardingRuleConfig.map(shardingRuleConfiguration -> shardingRuleConfiguration.getBindingTableGroups().iterator()).orElseGet(Collections::emptyIterator);
+        data = shardingRuleConfig.map(each -> each.getBindingTableGroups().iterator()).orElseGet(Collections::emptyIterator);
     }
     
     @Override

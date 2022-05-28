@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.impl;
 
-import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,9 +29,11 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementBaseVisito
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AexprConstContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AliasClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AnyNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AscDescContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AssignmentContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AttrNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AttrsContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.BExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.ColIdContext;
@@ -100,8 +101,6 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Val
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.WhereClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.WhereOrCurrentClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.WindowClauseContext;
-import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AnyNameContext;
-import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AttrsContext;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.ParameterMarkerType;
@@ -177,6 +176,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml.
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml.OpenGaussSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml.OpenGaussUpdateStatement;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -531,7 +531,7 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
         for (int i = 0; i < ctx.getChildCount(); i++) {
             dataTypeNames.add(ctx.getChild(i).getText());
         }
-        return new KeywordValue(Joiner.on(" ").join(dataTypeNames));
+        return new KeywordValue(String.join(" ", dataTypeNames));
     }
     
     @Override
@@ -715,7 +715,6 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
                     new IdentifierValue(ctx.optIndirection().indirectionEl().attrName().getText()));
             result.setOwner(new OwnerSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), new IdentifierValue(ctx.colId().getText())));
             return result;
-            
         } else {
             return new ColumnSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), new IdentifierValue(ctx.colId().getText()));
         }
@@ -999,7 +998,7 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
                 result = new SubqueryProjectionSegment(existsSubqueryExpression.getSubquery(), text);
             }
         }
-        if (result instanceof AliasAvailable && null != ctx.identifier()) {
+        if (null != ctx.identifier()) {
             ((AliasAvailable) result).setAlias(new AliasSegment(ctx.identifier().start.getStartIndex(), ctx.identifier().stop.getStopIndex(), new IdentifierValue(ctx.identifier().getText())));
         }
         return result;
@@ -1085,13 +1084,12 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
     }
     
     private List<ColumnSegment> generateUsingColumn(final NameListContext ctx) {
-        List<ColumnSegment> result = new LinkedList<>();
+        List<ColumnSegment> result = new ArrayList<>();
         if (null != ctx.nameList()) {
             result.addAll(generateUsingColumn(ctx.nameList()));
         }
         if (null != ctx.name()) {
-            ColumnSegment column = new ColumnSegment(ctx.name().start.getStartIndex(), ctx.name().stop.getStopIndex(), new IdentifierValue(ctx.name().getText()));
-            result.add(column);
+            result.add(new ColumnSegment(ctx.name().start.getStartIndex(), ctx.name().stop.getStopIndex(), new IdentifierValue(ctx.name().getText())));
         }
         return result;
     }

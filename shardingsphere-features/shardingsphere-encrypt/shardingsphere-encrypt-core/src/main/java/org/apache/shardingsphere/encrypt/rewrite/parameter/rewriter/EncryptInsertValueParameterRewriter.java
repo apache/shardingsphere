@@ -20,7 +20,7 @@ package org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter;
 import com.google.common.base.Preconditions;
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.context.EncryptContextBuilder;
-import org.apache.shardingsphere.encrypt.rewrite.aware.SchemaNameAware;
+import org.apache.shardingsphere.encrypt.rewrite.aware.DatabaseNameAware;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.aware.EncryptRuleAware;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
@@ -28,6 +28,7 @@ import org.apache.shardingsphere.encrypt.spi.QueryAssistedEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.GroupedParameterBuilder;
@@ -48,11 +49,11 @@ import java.util.Optional;
  * Insert value parameter rewriter for encrypt.
  */
 @Setter
-public final class EncryptInsertValueParameterRewriter implements ParameterRewriter<InsertStatementContext>, EncryptRuleAware, SchemaNameAware {
+public final class EncryptInsertValueParameterRewriter implements ParameterRewriter<InsertStatementContext>, EncryptRuleAware, DatabaseNameAware {
     
     private EncryptRule encryptRule;
     
-    private String schemaName;
+    private String databaseName;
     
     @Override
     public boolean isNeedRewrite(final SQLStatementContext<?> sqlStatementContext) {
@@ -64,11 +65,11 @@ public final class EncryptInsertValueParameterRewriter implements ParameterRewri
     public void rewrite(final ParameterBuilder parameterBuilder, final InsertStatementContext insertStatementContext, final List<Object> parameters) {
         String tableName = insertStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
         Iterator<String> descendingColumnNames = insertStatementContext.getDescendingColumnNames();
+        String schemaName = insertStatementContext.getTablesContext().getSchemaName().orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(insertStatementContext.getDatabaseType(), databaseName));
         while (descendingColumnNames.hasNext()) {
             String columnName = descendingColumnNames.next();
-            EncryptContext encryptContext = EncryptContextBuilder.build(schemaName, tableName, columnName, encryptRule);
-            encryptRule.findEncryptor(tableName, columnName)
-                    .ifPresent(encryptAlgorithm -> encryptInsertValues((GroupedParameterBuilder) parameterBuilder, insertStatementContext, encryptAlgorithm, encryptContext));
+            EncryptContext encryptContext = EncryptContextBuilder.build(databaseName, schemaName, tableName, columnName, encryptRule);
+            encryptRule.findEncryptor(tableName, columnName).ifPresent(optional -> encryptInsertValues((GroupedParameterBuilder) parameterBuilder, insertStatementContext, optional, encryptContext));
         }
     }
     

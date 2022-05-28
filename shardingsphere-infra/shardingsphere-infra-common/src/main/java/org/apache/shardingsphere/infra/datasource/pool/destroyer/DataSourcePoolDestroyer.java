@@ -52,7 +52,7 @@ public final class DataSourcePoolDestroyer {
     }
     
     private void waitUntilActiveConnectionComplete() {
-        DataSourcePoolActiveDetector dataSourcePoolActiveDetector = DataSourcePoolActiveDetectorFactory.newInstance(dataSource.getClass().getName());
+        DataSourcePoolActiveDetector dataSourcePoolActiveDetector = DataSourcePoolActiveDetectorFactory.getInstance(dataSource.getClass().getName());
         while (dataSourcePoolActiveDetector.containsActiveConnection(dataSource)) {
             try {
                 Thread.sleep(10L);

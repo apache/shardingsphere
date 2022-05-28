@@ -55,7 +55,7 @@ public final class CreateShardingScalingRuleStatementAssert {
             assertNotNull(assertContext.getText("Actual statement should exist."), actual);
             assertThat(assertContext.getText(String.format("`%s`'s scaling name assertion error: ", actual.getClass().getSimpleName())),
                     actual.getScalingName(), is(expected.getScalingName()));
-            assertShardingScalingRuleConfiguration(assertContext, actual.getConfigurationSegment(), expected.getConfigurationSegment());
+            assertShardingScalingRuleConfiguration(assertContext, actual.getScalingRuleConfigSegment(), expected.getConfigurationSegment());
         }
     }
     

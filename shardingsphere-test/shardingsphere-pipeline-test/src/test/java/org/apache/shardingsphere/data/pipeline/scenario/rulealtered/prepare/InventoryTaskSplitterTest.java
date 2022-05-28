@@ -19,14 +19,16 @@ package org.apache.shardingsphere.data.pipeline.scenario.rulealtered.prepare;
 
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.ingest.position.PrimaryKeyPosition;
+import org.apache.shardingsphere.data.pipeline.api.ingest.position.IntegerPrimaryKeyPosition;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCreationException;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 import org.apache.shardingsphere.data.pipeline.core.util.JobConfigurationBuilder;
+import org.apache.shardingsphere.data.pipeline.core.util.PipelineContextUtil;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -36,7 +38,6 @@ import java.sql.Statement;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 public final class InventoryTaskSplitterTest {
@@ -49,6 +50,11 @@ public final class InventoryTaskSplitterTest {
     
     private InventoryTaskSplitter inventoryTaskSplitter;
     
+    @BeforeClass
+    public static void beforeClass() {
+        PipelineContextUtil.mockModeConfigAndContextManager();
+    }
+    
     @Before
     public void setUp() {
         initJobContext();
@@ -56,7 +62,7 @@ public final class InventoryTaskSplitterTest {
     }
     
     private void initJobContext() {
-        jobContext = new RuleAlteredJobContext(JobConfigurationBuilder.createJobConfiguration());
+        jobContext = new RuleAlteredJobContext(JobConfigurationBuilder.createJobConfiguration(), 0);
         dataSourceManager = jobContext.getDataSourceManager();
         taskConfig = jobContext.getTaskConfig();
     }
@@ -68,30 +74,33 @@ public final class InventoryTaskSplitterTest {
     
     @Test
     public void assertSplitInventoryDataWithEmptyTable() throws SQLException {
-        taskConfig.getHandleConfig().setShardingSize(10);
         initEmptyTablePrimaryEnvironment(taskConfig.getDumperConfig());
         List<InventoryTask> actual = inventoryTaskSplitter.splitInventoryData(jobContext);
-        assertNotNull(actual);
         assertThat(actual.size(), is(1));
-        assertThat(((PrimaryKeyPosition) actual.get(0).getProgress().getPosition()).getBeginValue(), is(0L));
-        assertThat(((PrimaryKeyPosition) actual.get(0).getProgress().getPosition()).getEndValue(), is(0L));
+        assertThat(((IntegerPrimaryKeyPosition) actual.get(0).getProgress().getPosition()).getBeginValue(), is(0L));
+        assertThat(((IntegerPrimaryKeyPosition) actual.get(0).getProgress().getPosition()).getEndValue(), is(0L));
     }
     
     @Test
     public void assertSplitInventoryDataWithIntPrimary() throws SQLException {
-        taskConfig.getHandleConfig().setShardingSize(10);
         initIntPrimaryEnvironment(taskConfig.getDumperConfig());
         List<InventoryTask> actual = inventoryTaskSplitter.splitInventoryData(jobContext);
-        assertNotNull(actual);
         assertThat(actual.size(), is(10));
-        assertThat(((PrimaryKeyPosition) actual.get(9).getProgress().getPosition()).getBeginValue(), is(91L));
-        assertThat(((PrimaryKeyPosition) actual.get(9).getProgress().getPosition()).getEndValue(), is(100L));
+        assertThat(((IntegerPrimaryKeyPosition) actual.get(9).getProgress().getPosition()).getBeginValue(), is(91L));
+        assertThat(((IntegerPrimaryKeyPosition) actual.get(9).getProgress().getPosition()).getEndValue(), is(100L));
     }
     
-    @Test(expected = PipelineJobCreationException.class)
+    @Test
     public void assertSplitInventoryDataWithCharPrimary() throws SQLException {
         initCharPrimaryEnvironment(taskConfig.getDumperConfig());
         inventoryTaskSplitter.splitInventoryData(jobContext);
+    }
+    
+    @Test
+    public void assertSplitInventoryDataWithoutPrimaryButWithUniqueIndex() throws SQLException {
+        initUniqueIndexOnNotNullColumnEnvironment(taskConfig.getDumperConfig());
+        List<InventoryTask> actual = inventoryTaskSplitter.splitInventoryData(jobContext);
+        assertThat(actual.size(), is(1));
     }
     
     @Test(expected = PipelineJobCreationException.class)
@@ -101,7 +110,7 @@ public final class InventoryTaskSplitterTest {
     }
     
     @Test(expected = PipelineJobCreationException.class)
-    public void assertSplitInventoryDataWithoutPrimary() throws SQLException {
+    public void assertSplitInventoryDataWithoutPrimaryAndUniqueIndex() throws SQLException {
         initNoPrimaryEnvironment(taskConfig.getDumperConfig());
         inventoryTaskSplitter.splitInventoryData(jobContext);
     }
@@ -159,6 +168,18 @@ public final class InventoryTaskSplitterTest {
             statement.execute("DROP TABLE IF EXISTS t_order");
             statement.execute("CREATE TABLE t_order (order_id INT, user_id VARCHAR(12))");
             statement.execute("INSERT INTO t_order (order_id, user_id) VALUES (1, 'xxx'), (999, 'yyy')");
+        }
+    }
+    
+    private void initUniqueIndexOnNotNullColumnEnvironment(final DumperConfiguration dumperConfig) throws SQLException {
+        DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig());
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement()) {
+            statement.execute("DROP TABLE IF EXISTS t_order");
+            statement.execute("CREATE TABLE t_order (order_id INT NOT NULL, user_id VARCHAR(12))");
+            statement.execute("INSERT INTO t_order (order_id, user_id) VALUES (1, 'xxx'), (999, 'yyy')");
+            statement.execute("CREATE UNIQUE INDEX unique_order_id ON t_order (order_id)");
         }
     }
 }

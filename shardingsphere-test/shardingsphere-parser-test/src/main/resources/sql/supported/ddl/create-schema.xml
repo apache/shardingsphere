@@ -17,9 +17,10 @@
   -->
 
 <sql-cases>
-    <sql-case id="create_schema_grant_permissions" value="CREATE SCHEMA Sprockets AUTHORIZATION Annik
+    <sql-case id="create_schema" value="CREATE SCHEMA test_schema" db-types="SQLServer,PostgreSQL,openGauss" />
+    <sql-case id="create_schema_with_grant_permissions" value="CREATE SCHEMA test_schema AUTHORIZATION Annik
         CREATE TABLE NineProngs (source int, cost int, partnumber int)
         GRANT SELECT ON SCHEMA::Sprockets TO Mandar
         DENY SELECT ON SCHEMA::Sprockets TO Prasanna" db-types="SQLServer" />
-    <sql-case id="create_schema" value="CREATE SCHEMA alt_nsp1" db-types="SQLServer,PostgreSQL,openGauss"/>
+    <sql-case id="create_schema_with_if_not_exists" value="CREATE SCHEMA IF NOT EXISTS test_schema" db-types="PostgreSQL" />
 </sql-cases>

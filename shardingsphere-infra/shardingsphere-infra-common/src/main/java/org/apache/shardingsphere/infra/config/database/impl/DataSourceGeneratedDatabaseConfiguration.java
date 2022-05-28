@@ -44,9 +44,9 @@ public final class DataSourceGeneratedDatabaseConfiguration implements DatabaseC
     
     private final Map<String, DataSourceProperties> dataSourceProperties;
     
-    public DataSourceGeneratedDatabaseConfiguration(final Map<String, DataSourceConfiguration> dataSources, final Collection<RuleConfiguration> ruleConfigurations) {
+    public DataSourceGeneratedDatabaseConfiguration(final Map<String, DataSourceConfiguration> dataSources, final Collection<RuleConfiguration> ruleConfigs) {
         this.dataSources = DataSourcePoolCreator.create(createDataSourcePropertiesMap(dataSources));
-        this.ruleConfigurations = ruleConfigurations;
+        ruleConfigurations = ruleConfigs;
         dataSourceProperties = createDataSourcePropertiesMap(dataSources);
     }
     

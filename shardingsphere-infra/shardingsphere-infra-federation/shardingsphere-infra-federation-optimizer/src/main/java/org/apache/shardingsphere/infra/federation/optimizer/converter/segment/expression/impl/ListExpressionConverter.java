@@ -39,15 +39,15 @@ public final class ListExpressionConverter implements SQLSegmentConverter<ListEx
     public Optional<SqlNode> convertToSQLNode(final ListExpression segment) {
         SqlNode left = null;
         for (ExpressionSegment each : segment.getItems()) {
-            Optional<SqlNode> optional = new ExpressionConverter().convertToSQLNode(each);
-            if (!optional.isPresent()) {
+            Optional<SqlNode> sqlNode = new ExpressionConverter().convertToSQLNode(each);
+            if (!sqlNode.isPresent()) {
                 continue;
             }
             if (null == left) {
-                left = optional.get();
+                left = sqlNode.get();
                 continue;
             }
-            left = new SqlBasicCall(SqlStdOperatorTable.OR, new SqlNode[]{left, optional.get()}, SqlParserPos.ZERO);
+            left = new SqlBasicCall(SqlStdOperatorTable.OR, new SqlNode[]{left, sqlNode.get()}, SqlParserPos.ZERO);
         }
         return Optional.ofNullable(left);
     }
@@ -60,7 +60,7 @@ public final class ListExpressionConverter implements SQLSegmentConverter<ListEx
         if (sqlNode instanceof SqlNodeList) {
             List<SqlNode> items = ((SqlNodeList) sqlNode).getList();
             ListExpression result = new ListExpression(getStartIndex(sqlNode), getStopIndex(sqlNode));
-            items.forEach(item -> new ExpressionConverter().convertToSQLSegment(item).ifPresent(result.getItems()::add));
+            items.forEach(each -> new ExpressionConverter().convertToSQLSegment(each).ifPresent(result.getItems()::add));
             return Optional.of(result);
         }
         return Optional.empty();

@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.mode.repository.cluster.zookeeper;
 
 import com.google.common.base.Strings;
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.CuratorFrameworkFactory.Builder;
@@ -27,8 +25,6 @@ import org.apache.curator.framework.api.ACLProvider;
 import org.apache.curator.framework.recipes.cache.CuratorCache;
 import org.apache.curator.framework.recipes.cache.CuratorCacheListener;
 import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
-import org.apache.curator.framework.recipes.locks.InterProcessLock;
-import org.apache.curator.framework.recipes.locks.InterProcessSemaphoreMutex;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.utils.CloseableUtils;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
@@ -39,6 +35,7 @@ import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEve
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.handler.CuratorZookeeperExceptionHandler;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.listener.SessionConnectionListener;
+import org.apache.shardingsphere.mode.repository.cluster.zookeeper.lock.ZookeeperInternalLockHolder;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.props.ZookeeperProperties;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.props.ZookeeperPropertyKey;
 import org.apache.zookeeper.CreateMode;
@@ -52,10 +49,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
 
 /**
  * Registry repository of ZooKeeper.
@@ -64,20 +59,17 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     
     private final Map<String, CuratorCache> caches = new HashMap<>();
     
-    private CuratorFramework client;
-    
     private final Builder builder = CuratorFrameworkFactory.builder();
     
-    private final Map<String, InterProcessLock> locks = new ConcurrentHashMap<>();
+    private CuratorFramework client;
     
-    @Getter
-    @Setter
-    private Properties props = new Properties();
+    private ZookeeperInternalLockHolder internalLockHolder;
     
     @Override
     public void init(final ClusterPersistRepositoryConfiguration config) {
-        ZookeeperProperties zookeeperProps = new ZookeeperProperties(props);
+        ZookeeperProperties zookeeperProps = new ZookeeperProperties(config.getProps());
         client = buildCuratorClient(config, zookeeperProps);
+        internalLockHolder = new ZookeeperInternalLockHolder(client);
         initCuratorClient(zookeeperProps);
     }
     
@@ -276,41 +268,13 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     }
     
     @Override
-    public boolean tryLock(final String key, final long time, final TimeUnit unit) {
-        try {
-            return getLock(key).acquire(time, unit);
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            CuratorZookeeperExceptionHandler.handleException(ex);
-            return false;
-        }
+    public Lock getInternalMutexLock(final String lockName) {
+        return internalLockHolder.getInternalMutexLock(lockName);
     }
     
     @Override
-    public void releaseLock(final String key) {
-        try {
-            if (availableLock(key)) {
-                locks.get(key).release();
-            }
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            CuratorZookeeperExceptionHandler.handleException(ex);
-        }
-    }
-    
-    private InterProcessLock getLock(final String key) {
-        if (availableLock(key)) {
-            return locks.get(key);
-        }
-        InterProcessLock lock = new InterProcessSemaphoreMutex(client, key);
-        locks.put(key, lock);
-        return lock;
-    }
-    
-    private boolean availableLock(final String key) {
-        return Objects.nonNull(locks.get(key));
+    public Lock getInternalReentrantMutexLock(final String lockName) {
+        return internalLockHolder.getInternalReentrantMutexLock(lockName);
     }
     
     @Override

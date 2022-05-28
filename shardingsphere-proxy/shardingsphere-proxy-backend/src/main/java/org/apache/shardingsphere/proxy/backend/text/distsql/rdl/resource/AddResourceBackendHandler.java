@@ -30,7 +30,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.DatabaseRequiredBackendHandler;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -42,7 +42,7 @@ import java.util.Map;
  * Add resource backend handler.
  */
 @Slf4j
-public final class AddResourceBackendHandler extends SchemaRequiredBackendHandler<AddResourceStatement> {
+public final class AddResourceBackendHandler extends DatabaseRequiredBackendHandler<AddResourceStatement> {
     
     private final DatabaseType databaseType;
     
@@ -74,7 +74,7 @@ public final class AddResourceBackendHandler extends SchemaRequiredBackendHandle
         Collection<String> dataSourceNames = new ArrayList<>(sqlStatement.getDataSources().size());
         Collection<String> duplicateDataSourceNames = new HashSet<>(sqlStatement.getDataSources().size(), 1);
         for (DataSourceSegment each : sqlStatement.getDataSources()) {
-            if (dataSourceNames.contains(each.getName()) || ProxyContext.getInstance().getMetaData(databaseName).getResource().getDataSources().containsKey(each.getName())) {
+            if (dataSourceNames.contains(each.getName()) || ProxyContext.getInstance().getDatabase(databaseName).getResource().getDataSources().containsKey(each.getName())) {
                 duplicateDataSourceNames.add(each.getName());
             }
             dataSourceNames.add(each.getName());

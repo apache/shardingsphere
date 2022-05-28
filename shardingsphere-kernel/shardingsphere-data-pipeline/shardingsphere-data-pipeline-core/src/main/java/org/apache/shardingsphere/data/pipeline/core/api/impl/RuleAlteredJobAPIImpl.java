@@ -21,8 +21,8 @@ import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPI;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.WorkflowConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.yaml.RuleAlteredJobConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.api.pojo.DataConsistencyCheckAlgorithmInfo;
@@ -38,6 +38,7 @@ import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobExecuti
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineVerifyFailedException;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJob;
+import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobCenter;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobProgressDetector;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobSchedulerCenter;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobWorker;
@@ -47,7 +48,6 @@ import org.apache.shardingsphere.elasticjob.lite.lifecycle.domain.JobBriefInfo;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.lock.LockContext;
-import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingTaskFinishedEvent;
 import org.apache.shardingsphere.scaling.core.job.environment.ScalingEnvironmentManager;
@@ -91,10 +91,10 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     private JobInfo getJobInfo(final String jobName) {
         JobInfo result = new JobInfo(jobName);
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(result.getJobId());
-        JobConfiguration jobConfig = getJobConfig(jobConfigPOJO);
+        RuleAlteredJobConfiguration jobConfig = getJobConfig(jobConfigPOJO);
         result.setActive(!jobConfigPOJO.isDisabled());
-        result.setShardingTotalCount(jobConfig.getHandleConfig().getJobShardingCount());
-        result.setTables(jobConfig.getHandleConfig().getLogicTables());
+        result.setShardingTotalCount(jobConfig.getJobShardingCount());
+        result.setTables(jobConfig.getLogicTables());
         result.setCreateTime(jobConfigPOJO.getProps().getProperty("create_time"));
         result.setStopTime(jobConfigPOJO.getProps().getProperty("stop_time"));
         result.setJobParameter(jobConfigPOJO.getJobParameter());
@@ -102,30 +102,29 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     }
     
     @Override
-    public Optional<String> start(final JobConfiguration jobConfig) {
-        jobConfig.buildHandleConfig();
-        if (jobConfig.getHandleConfig().getJobShardingCount() == 0) {
+    public Optional<String> start(final RuleAlteredJobConfiguration jobConfig) {
+        if (0 == jobConfig.getJobShardingCount()) {
             log.warn("Invalid scaling job config!");
             throw new PipelineJobCreationException("handleConfig shardingTotalCount is 0");
         }
-        log.info("Start scaling job by {}", jobConfig.getHandleConfig());
+        log.info("Start scaling job by {}", jobConfig);
         GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
-        String jobId = jobConfig.getHandleConfig().getJobId();
+        String jobId = jobConfig.getJobId();
         String jobConfigKey = String.format("%s/%s/config", DataPipelineConstants.DATA_PIPELINE_ROOT, jobId);
         if (repositoryAPI.isExisted(jobConfigKey)) {
             log.warn("jobId already exists in registry center, ignore, jobConfigKey={}", jobConfigKey);
             return Optional.of(jobId);
         }
         repositoryAPI.persist(String.format("%s/%s", DataPipelineConstants.DATA_PIPELINE_ROOT, jobId), RuleAlteredJob.class.getName());
-        repositoryAPI.persist(jobConfigKey, createJobConfig(jobConfig));
+        repositoryAPI.persist(jobConfigKey, createJobConfigText(jobConfig));
         return Optional.of(jobId);
     }
     
-    private String createJobConfig(final JobConfiguration jobConfig) {
+    private String createJobConfigText(final RuleAlteredJobConfiguration jobConfig) {
         JobConfigurationPOJO jobConfigPOJO = new JobConfigurationPOJO();
-        jobConfigPOJO.setJobName(jobConfig.getHandleConfig().getJobId());
-        jobConfigPOJO.setShardingTotalCount(jobConfig.getHandleConfig().getJobShardingCount());
-        jobConfigPOJO.setJobParameter(YamlEngine.marshal(jobConfig));
+        jobConfigPOJO.setJobName(jobConfig.getJobId());
+        jobConfigPOJO.setShardingTotalCount(jobConfig.getJobShardingCount());
+        jobConfigPOJO.setJobParameter(YamlEngine.marshal(new RuleAlteredJobConfigurationSwapper().swapToYamlConfiguration(jobConfig)));
         jobConfigPOJO.getProps().setProperty("create_time", LocalDateTime.now().format(DATE_TIME_FORMATTER));
         return YamlEngine.marshal(jobConfigPOJO);
     }
@@ -137,10 +136,10 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     }
     
     @Override
-    public Map<Integer, JobProgress> getProgress(final JobConfiguration jobConfig) {
-        String jobId = jobConfig.getHandleConfig().getJobId();
+    public Map<Integer, JobProgress> getProgress(final RuleAlteredJobConfiguration jobConfig) {
+        String jobId = jobConfig.getJobId();
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
-        return IntStream.range(0, jobConfig.getHandleConfig().getJobShardingCount()).boxed().collect(LinkedHashMap::new, (map, each) -> {
+        return IntStream.range(0, jobConfig.getJobShardingCount()).boxed().collect(LinkedHashMap::new, (map, each) -> {
             JobProgress jobProgress = PipelineAPIFactory.getGovernanceRepositoryAPI().getJobProgress(jobId, each);
             if (null != jobProgress) {
                 jobProgress.setActive(!jobConfigPOJO.isDisabled());
@@ -149,24 +148,23 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         }, LinkedHashMap::putAll);
     }
     
-    private void verifyManualMode(final JobConfiguration jobConfig) {
+    private void verifyManualMode(final RuleAlteredJobConfiguration jobConfig) {
         RuleAlteredContext ruleAlteredContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
         if (null != ruleAlteredContext.getCompletionDetectAlgorithm()) {
             throw new PipelineVerifyFailedException("It's not necessary to do it in auto mode.");
         }
     }
     
-    private void verifyJobNotCompleted(final JobConfiguration jobConfig) {
-        if (RuleAlteredJobProgressDetector.isJobCompleted(jobConfig.getHandleConfig().getJobShardingCount(), getProgress(jobConfig).values())) {
+    private void verifyJobNotCompleted(final RuleAlteredJobConfiguration jobConfig) {
+        if (RuleAlteredJobProgressDetector.isJobCompleted(jobConfig.getJobShardingCount(), getProgress(jobConfig).values())) {
             throw new PipelineVerifyFailedException("Job is completed, it's not necessary to do it.");
         }
     }
     
-    private void verifySourceWritingStopped(final JobConfiguration jobConfig) {
+    private void verifySourceWritingStopped(final RuleAlteredJobConfiguration jobConfig) {
         LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
-        String databaseName = jobConfig.getWorkflowConfig().getDatabaseName();
-        ShardingSphereLock lock = lockContext.getDatabaseLock(databaseName);
-        if (null == lock || !lock.isLocked(databaseName)) {
+        String databaseName = jobConfig.getDatabaseName();
+        if (!lockContext.isLocked(databaseName)) {
             throw new PipelineVerifyFailedException("Source writing is not stopped. You could run `STOP SCALING SOURCE WRITING {jobId}` to stop it.");
         }
     }
@@ -176,27 +174,26 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         checkModeConfig();
         log.info("stopClusterWriteDB for job {}", jobId);
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
-        JobConfiguration jobConfig = getJobConfig(jobConfigPOJO);
+        RuleAlteredJobConfiguration jobConfig = getJobConfig(jobConfigPOJO);
         verifyManualMode(jobConfig);
         verifyJobNotStopped(jobConfigPOJO);
         verifyJobNotCompleted(jobConfig);
-        String databaseName = jobConfig.getWorkflowConfig().getDatabaseName();
+        String databaseName = jobConfig.getDatabaseName();
         stopClusterWriteDB(databaseName, jobId);
     }
     
     @Override
     public void stopClusterWriteDB(final String databaseName, final String jobId) {
         LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
-        ShardingSphereLock lock = lockContext.getOrCreateDatabaseLock(databaseName);
-        if (lock.isLocked(databaseName)) {
+        if (lockContext.isLocked(databaseName)) {
             log.info("stopClusterWriteDB, already stopped");
             return;
         }
-        boolean tryLockSuccess = lock.tryLock(databaseName);
-        log.info("stopClusterWriteDB, tryLockSuccess={}", tryLockSuccess);
-        if (!tryLockSuccess) {
-            throw new RuntimeException("Stop source writing failed");
+        if (lockContext.lockWrite(databaseName)) {
+            log.info("stopClusterWriteDB, tryLockSuccess=true");
+            return;
         }
+        throw new RuntimeException("Stop source writing failed");
     }
     
     @Override
@@ -204,27 +201,21 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         checkModeConfig();
         log.info("restoreClusterWriteDB for job {}", jobId);
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
-        JobConfiguration jobConfig = getJobConfig(jobConfigPOJO);
+        RuleAlteredJobConfiguration jobConfig = getJobConfig(jobConfigPOJO);
         verifyManualMode(jobConfig);
-        String databaseName = jobConfig.getWorkflowConfig().getDatabaseName();
+        String databaseName = jobConfig.getDatabaseName();
         restoreClusterWriteDB(databaseName, jobId);
     }
     
     @Override
     public void restoreClusterWriteDB(final String databaseName, final String jobId) {
         LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
-        ShardingSphereLock lock = lockContext.getDatabaseLock(databaseName);
-        if (null == lock) {
-            log.info("restoreClusterWriteDB, lock is null");
+        if (lockContext.isLocked(databaseName)) {
+            log.info("restoreClusterWriteDB, before releaseLock, databaseName={}, jobId={}", databaseName, jobId);
+            lockContext.releaseLockWrite(databaseName);
             return;
         }
-        boolean isLocked = lock.isLocked(databaseName);
-        if (!isLocked) {
-            log.info("restoreClusterWriteDB, isLocked false, databaseName={}", databaseName);
-            return;
-        }
-        log.info("restoreClusterWriteDB, before releaseLock, databaseName={}, jobId={}", databaseName, jobId);
-        lock.releaseLock(databaseName);
+        log.info("restoreClusterWriteDB, isLocked false, databaseName={}", databaseName);
     }
     
     @Override
@@ -242,12 +233,12 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     @Override
     public boolean isDataConsistencyCheckNeeded(final String jobId) {
         log.info("isDataConsistencyCheckNeeded for job {}", jobId);
-        JobConfiguration jobConfig = getJobConfig(jobId);
+        RuleAlteredJobConfiguration jobConfig = getJobConfig(jobId);
         return isDataConsistencyCheckNeeded(jobConfig);
     }
     
     @Override
-    public boolean isDataConsistencyCheckNeeded(final JobConfiguration jobConfig) {
+    public boolean isDataConsistencyCheckNeeded(final RuleAlteredJobConfiguration jobConfig) {
         RuleAlteredContext ruleAlteredContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
         return isDataConsistencyCheckNeeded(ruleAlteredContext);
     }
@@ -260,13 +251,13 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final String jobId) {
         checkModeConfig();
         log.info("Data consistency check for job {}", jobId);
-        JobConfiguration jobConfig = getJobConfig(getElasticJobConfigPOJO(jobId));
+        RuleAlteredJobConfiguration jobConfig = getJobConfig(getElasticJobConfigPOJO(jobId));
         verifyDataConsistencyCheck(jobConfig);
         return dataConsistencyCheck(jobConfig);
     }
     
     @Override
-    public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final JobConfiguration jobConfig) {
+    public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final RuleAlteredJobConfiguration jobConfig) {
         RuleAlteredContext ruleAlteredContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
         if (!isDataConsistencyCheckNeeded(ruleAlteredContext)) {
             log.info("DataConsistencyCalculatorAlgorithm is not configured, data consistency check is ignored.");
@@ -279,20 +270,20 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final String jobId, final String algorithmType) {
         checkModeConfig();
         log.info("Data consistency check for job {}, algorithmType: {}", jobId, algorithmType);
-        JobConfiguration jobConfig = getJobConfig(getElasticJobConfigPOJO(jobId));
+        RuleAlteredJobConfiguration jobConfig = getJobConfig(getElasticJobConfigPOJO(jobId));
         verifyDataConsistencyCheck(jobConfig);
         return dataConsistencyCheck(jobConfig, DataConsistencyCalculateAlgorithmFactory.newInstance(algorithmType, new Properties()));
     }
     
-    private Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final JobConfiguration jobConfig, final DataConsistencyCalculateAlgorithm calculator) {
-        String jobId = jobConfig.getHandleConfig().getJobId();
+    private Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final RuleAlteredJobConfiguration jobConfig, final DataConsistencyCalculateAlgorithm calculator) {
+        String jobId = jobConfig.getJobId();
         Map<String, DataConsistencyCheckResult> result = new DataConsistencyChecker(jobConfig).check(calculator);
         log.info("Scaling job {} with check algorithm '{}' data consistency checker result {}", jobId, calculator.getType(), result);
         PipelineAPIFactory.getGovernanceRepositoryAPI().persistJobCheckResult(jobId, aggregateDataConsistencyCheckResults(jobId, result));
         return result;
     }
     
-    private void verifyDataConsistencyCheck(final JobConfiguration jobConfig) {
+    private void verifyDataConsistencyCheck(final RuleAlteredJobConfiguration jobConfig) {
         verifyManualMode(jobConfig);
         verifySourceWritingStopped(jobConfig);
     }
@@ -319,7 +310,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         checkModeConfig();
         log.info("Switch cluster configuration for job {}", jobId);
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
-        JobConfiguration jobConfig = getJobConfig(jobConfigPOJO);
+        RuleAlteredJobConfiguration jobConfig = getJobConfig(jobConfigPOJO);
         verifyManualMode(jobConfig);
         verifyJobNotStopped(jobConfigPOJO);
         verifyJobNotCompleted(jobConfig);
@@ -327,25 +318,24 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     }
     
     @Override
-    public void switchClusterConfiguration(final JobConfiguration jobConfig) {
-        String jobId = jobConfig.getHandleConfig().getJobId();
+    public void switchClusterConfiguration(final RuleAlteredJobConfiguration jobConfig) {
+        String jobId = jobConfig.getJobId();
         RuleAlteredContext ruleAlteredContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
         GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
         if (isDataConsistencyCheckNeeded(ruleAlteredContext)) {
-            Optional<Boolean> checkResultOptional = repositoryAPI.getJobCheckResult(jobId);
-            if (!checkResultOptional.isPresent() || !checkResultOptional.get()) {
+            Optional<Boolean> checkResult = repositoryAPI.getJobCheckResult(jobId);
+            if (!checkResult.isPresent() || !checkResult.get()) {
                 throw new PipelineVerifyFailedException("Data consistency check is not finished or failed.");
             }
         }
-        WorkflowConfiguration workflowConfig = jobConfig.getWorkflowConfig();
-        ScalingTaskFinishedEvent taskFinishedEvent = new ScalingTaskFinishedEvent(workflowConfig.getDatabaseName(), workflowConfig.getActiveVersion(), workflowConfig.getNewVersion());
+        ScalingTaskFinishedEvent taskFinishedEvent = new ScalingTaskFinishedEvent(jobConfig.getDatabaseName(), jobConfig.getActiveVersion(), jobConfig.getNewVersion());
         ShardingSphereEventBus.getInstance().post(taskFinishedEvent);
         // TODO rewrite job status update after job progress structure refactor
         RuleAlteredJobSchedulerCenter.updateJobStatus(jobId, JobStatus.FINISHED);
         for (int each : repositoryAPI.getShardingItems(jobId)) {
             repositoryAPI.updateShardingJobStatus(jobId, each, JobStatus.FINISHED);
         }
-        RuleAlteredJobSchedulerCenter.stop(jobId);
+        RuleAlteredJobCenter.stop(jobId);
         stop(jobId);
     }
     
@@ -363,11 +353,11 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     }
     
     @Override
-    public JobConfiguration getJobConfig(final String jobId) {
+    public RuleAlteredJobConfiguration getJobConfig(final String jobId) {
         return getJobConfig(getElasticJobConfigPOJO(jobId));
     }
     
-    private JobConfiguration getJobConfig(final JobConfigurationPOJO elasticJobConfigPOJO) {
-        return YamlEngine.unmarshal(elasticJobConfigPOJO.getJobParameter(), JobConfiguration.class, true);
+    private RuleAlteredJobConfiguration getJobConfig(final JobConfigurationPOJO jobConfigPOJO) {
+        return RuleAlteredJobConfigurationSwapper.swapToObject(jobConfigPOJO.getJobParameter());
     }
 }

@@ -21,7 +21,6 @@ import com.google.common.base.CharMatcher;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 import org.apache.shardingsphere.traffic.api.traffic.segment.SegmentTrafficAlgorithm;
 import org.apache.shardingsphere.traffic.api.traffic.segment.SegmentTrafficValue;
@@ -33,20 +32,20 @@ import java.util.TreeSet;
 /**
  * SQL match traffic algorithm.
  */
-@Getter
-@Setter
 public final class SQLMatchTrafficAlgorithm implements SegmentTrafficAlgorithm {
     
     private static final String SQL_PROPS_KEY = "sql";
     
     private static final String EXCLUDED_CHARACTERS = "[]`'\" ";
     
-    private Properties props = new Properties();
+    @Getter
+    private Properties props;
     
     private Collection<String> sql;
     
     @Override
-    public void init() {
+    public void init(final Properties props) {
+        this.props = props;
         Preconditions.checkArgument(props.containsKey(SQL_PROPS_KEY), "%s cannot be null.", SQL_PROPS_KEY);
         sql = getExactlySQL(props.getProperty(SQL_PROPS_KEY));
     }

@@ -20,10 +20,8 @@ package org.apache.shardingsphere.infra.rule.builder.global;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.ordered.OrderedSPIRegistry;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -38,23 +36,18 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class GlobalRulesBuilder {
     
-    static {
-        ShardingSphereServiceLoader.register(GlobalRuleBuilder.class);
-        ShardingSphereServiceLoader.register(DefaultGlobalRuleConfigurationBuilder.class);
-    }
-    
     /**
      * Build rules.
      *
      * @param globalRuleConfigs global rule configurations
-     * @param metaDataMap meta data map
+     * @param databases databases
      * @return built rules
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public static Collection<ShardingSphereRule> buildRules(final Collection<RuleConfiguration> globalRuleConfigs, final Map<String, ShardingSphereMetaData> metaDataMap) {
+    public static Collection<ShardingSphereRule> buildRules(final Collection<RuleConfiguration> globalRuleConfigs, final Map<String, ShardingSphereDatabase> databases) {
         Collection<ShardingSphereRule> result = new LinkedList<>();
         for (Entry<RuleConfiguration, GlobalRuleBuilder> entry : getRuleBuilderMap(globalRuleConfigs).entrySet()) {
-            result.add(entry.getValue().build(entry.getKey(), metaDataMap));
+            result.add(entry.getValue().build(entry.getKey(), databases));
         }
         return result;
     }
@@ -62,7 +55,7 @@ public final class GlobalRulesBuilder {
     @SuppressWarnings("rawtypes")
     private static Map<RuleConfiguration, GlobalRuleBuilder> getRuleBuilderMap(final Collection<RuleConfiguration> globalRuleConfigs) {
         Map<RuleConfiguration, GlobalRuleBuilder> result = new LinkedHashMap<>();
-        result.putAll(OrderedSPIRegistry.getRegisteredServices(GlobalRuleBuilder.class, globalRuleConfigs));
+        result.putAll(GlobalRuleBuilderFactory.getInstanceMap(globalRuleConfigs));
         result.putAll(getMissedDefaultRuleBuilderMap(result));
         return result;
     }
@@ -70,8 +63,7 @@ public final class GlobalRulesBuilder {
     @SuppressWarnings("rawtypes")
     private static Map<RuleConfiguration, GlobalRuleBuilder> getMissedDefaultRuleBuilderMap(final Map<RuleConfiguration, GlobalRuleBuilder> builders) {
         Map<RuleConfiguration, GlobalRuleBuilder> result = new LinkedHashMap<>();
-        Map<GlobalRuleBuilder, DefaultGlobalRuleConfigurationBuilder> defaultBuilders =
-                OrderedSPIRegistry.getRegisteredServices(DefaultGlobalRuleConfigurationBuilder.class, getMissedDefaultRuleBuilders(builders.values()));
+        Map<GlobalRuleBuilder, DefaultGlobalRuleConfigurationBuilder> defaultBuilders = DefaultGlobalRuleConfigurationBuilderFactory.getInstance(getMissedDefaultRuleBuilders(builders.values()));
         for (Entry<GlobalRuleBuilder, DefaultGlobalRuleConfigurationBuilder> entry : defaultBuilders.entrySet()) {
             result.put(entry.getValue().build(), entry.getKey());
         }
@@ -81,6 +73,6 @@ public final class GlobalRulesBuilder {
     @SuppressWarnings({"unchecked", "rawtypes"})
     private static Collection<GlobalRuleBuilder> getMissedDefaultRuleBuilders(final Collection<GlobalRuleBuilder> configuredBuilders) {
         Collection<Class<GlobalRuleBuilder>> configuredBuilderClasses = configuredBuilders.stream().map(each -> (Class<GlobalRuleBuilder>) each.getClass()).collect(Collectors.toSet());
-        return OrderedSPIRegistry.getRegisteredServices(GlobalRuleBuilder.class).stream().filter(each -> !configuredBuilderClasses.contains(each.getClass())).collect(Collectors.toList());
+        return GlobalRuleBuilderFactory.getInstances(configuredBuilderClasses);
     }
 }

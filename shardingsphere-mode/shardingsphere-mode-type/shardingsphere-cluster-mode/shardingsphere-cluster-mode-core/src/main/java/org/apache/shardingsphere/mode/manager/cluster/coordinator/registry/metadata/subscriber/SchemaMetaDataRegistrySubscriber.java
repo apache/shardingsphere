@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.subscriber;
 
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.infra.metadata.schema.event.AddSchemaEvent;
-import org.apache.shardingsphere.infra.metadata.schema.event.AlterSchemaEvent;
-import org.apache.shardingsphere.infra.metadata.schema.event.DropSchemaEvent;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
-import org.apache.shardingsphere.mode.metadata.persist.service.SchemaMetaDataPersistService;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.metadata.schema.event.SchemaAlteredEvent;
+import org.apache.shardingsphere.infra.metadata.database.schema.event.AddSchemaEvent;
+import org.apache.shardingsphere.infra.metadata.database.schema.event.AlterSchemaEvent;
+import org.apache.shardingsphere.infra.metadata.database.schema.event.DropSchemaEvent;
+import org.apache.shardingsphere.infra.metadata.database.schema.event.SchemaAlteredEvent;
+import org.apache.shardingsphere.mode.metadata.persist.service.SchemaMetaDataPersistService;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 /**
  * Schema meta data registry subscriber.
@@ -66,8 +66,8 @@ public final class SchemaMetaDataRegistrySubscriber {
      */
     @Subscribe
     public void alterSchema(final AlterSchemaEvent event) {
+        persistService.persistMetaData(event.getDatabaseName(), event.getRenameSchemaName(), event.getSchema());
         persistService.deleteSchema(event.getDatabaseName(), event.getSchemaName());
-        persistService.persistTables(event.getDatabaseName(), event.getRenameSchemaName(), event.getSchema());
     }
     
     /**

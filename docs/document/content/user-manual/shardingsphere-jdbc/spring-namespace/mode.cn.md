@@ -31,7 +31,7 @@ weight = 1
                            http://shardingsphere.apache.org/schema/shardingsphere/datasource
                            http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd">
     
-    <shardingsphere:data-source id="ds" schema-name="foo_schema" data-source-names="..." rule-refs="..." />
+    <shardingsphere:data-source id="ds" database-name="foo_schema" data-source-names="..." rule-refs="..." />
 </beans>
 ```
 
@@ -69,7 +69,7 @@ weight = 1
         </props>
     </standalone:repository>
 
-    <shardingsphere:data-source id="ds" schema-name="foo_schema" data-source-names="..." rule-refs="..." >
+    <shardingsphere:data-source id="ds" database-name="foo_schema" data-source-names="..." rule-refs="..." >
         <shardingsphere:mode type="Standalone" repository-ref="standaloneRepository" overwrite="true" />
     </shardingsphere:data-source>
 </beans>
@@ -112,7 +112,7 @@ weight = 1
         </props>
     </cluster:repository>
     
-    <shardingsphere:data-source id="ds" schema-name="foo_schema" data-source-names="..." rule-refs="...">
+    <shardingsphere:data-source id="ds" database-name="foo_schema" data-source-names="..." rule-refs="...">
         <shardingsphere:mode type="Cluster" repository-ref="clusterRepository" overwrite="true" />
     </shardingsphere:data-source>
 </beans>

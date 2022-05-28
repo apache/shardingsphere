@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.scaling.distsql.handler.update;
 
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsistencyCalculateAlgorithmFactory;
-import org.apache.shardingsphere.data.pipeline.spi.detect.JobCompletionDetectAlgorithm;
-import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelFactory;
-import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
+import org.apache.shardingsphere.data.pipeline.spi.detect.JobCompletionDetectAlgorithmFactory;
+import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreatorFactory;
+import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithmFactory;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
@@ -28,20 +28,14 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleExcep
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.scaling.distsql.handler.converter.ShardingScalingRuleStatementConverter;
 import org.apache.shardingsphere.scaling.distsql.statement.CreateShardingScalingRuleStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.segment.ShardingScalingRuleConfigurationSegment;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.exception.ServiceProviderNotFoundException;
-import org.apache.shardingsphere.spi.type.typed.StatefulTypedSPI;
-import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -49,19 +43,13 @@ import java.util.Properties;
  */
 public final class CreateShardingScalingRuleStatementUpdater implements RuleDefinitionCreateUpdater<CreateShardingScalingRuleStatement, ShardingRuleConfiguration> {
     
-    static {
-        ShardingSphereServiceLoader.register(JobRateLimitAlgorithm.class);
-        ShardingSphereServiceLoader.register(PipelineChannelFactory.class);
-        ShardingSphereServiceLoader.register(JobCompletionDetectAlgorithm.class);
-    }
-    
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final CreateShardingScalingRuleStatement sqlStatement,
-                                  final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String databaseName = shardingSphereMetaData.getDatabaseName();
+    public void checkSQLStatement(final ShardingSphereDatabase database,
+                                  final CreateShardingScalingRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
+        String databaseName = database.getName();
         checkCurrentRuleConfiguration(databaseName, currentRuleConfig);
         checkDuplicate(databaseName, sqlStatement, currentRuleConfig);
-        checkAlgorithms(sqlStatement.getConfigurationSegment());
+        checkAlgorithms(sqlStatement.getScalingRuleConfigSegment());
     }
     
     private void checkCurrentRuleConfiguration(final String databaseName, final ShardingRuleConfiguration currentRuleConfig) throws RequiredRuleMissedException {
@@ -88,28 +76,28 @@ public final class CreateShardingScalingRuleStatementUpdater implements RuleDefi
     
     private void checkRateLimiterExist(final ShardingScalingRuleConfigurationSegment segment) throws DistSQLException {
         if (null != segment.getInputSegment()) {
-            checkRateLimiterAlgorithm(segment.getInputSegment().getRateLimiter());
+            checkRateLimitAlgorithm(segment.getInputSegment().getRateLimiter());
         }
         if (null != segment.getOutputSegment()) {
-            checkRateLimiterAlgorithm(segment.getOutputSegment().getRateLimiter());
+            checkRateLimitAlgorithm(segment.getOutputSegment().getRateLimiter());
         }
     }
     
-    private void checkRateLimiterAlgorithm(final AlgorithmSegment rateLimiter) throws DistSQLException {
-        if (null != rateLimiter) {
-            checkAlgorithm(JobRateLimitAlgorithm.class, "rate limiter", rateLimiter);
+    private void checkRateLimitAlgorithm(final AlgorithmSegment rateLimit) throws DistSQLException {
+        if (null != rateLimit && !JobRateLimitAlgorithmFactory.contains(rateLimit.getName())) {
+            throw new InvalidAlgorithmConfigurationException("rate limit", rateLimit.getName());
         }
     }
     
     private void checkStreamChannelExist(final ShardingScalingRuleConfigurationSegment segment) throws DistSQLException {
-        if (null != segment.getStreamChannel()) {
-            checkAlgorithm(PipelineChannelFactory.class, "stream channel", segment.getStreamChannel());
+        if (null != segment.getStreamChannel() && !PipelineChannelCreatorFactory.contains(segment.getStreamChannel().getName())) {
+            throw new InvalidAlgorithmConfigurationException("stream channel", segment.getStreamChannel().getName());
         }
     }
     
     private void checkCompletionDetectorExist(final ShardingScalingRuleConfigurationSegment segment) throws DistSQLException {
-        if (null != segment.getCompletionDetector()) {
-            checkAlgorithm(JobCompletionDetectAlgorithm.class, "completion detector", segment.getCompletionDetector());
+        if (null != segment.getCompletionDetector() && !JobCompletionDetectAlgorithmFactory.contains(segment.getCompletionDetector().getName())) {
+            throw new InvalidAlgorithmConfigurationException("completion detector", segment.getCompletionDetector().getName());
         }
     }
     
@@ -123,31 +111,15 @@ public final class CreateShardingScalingRuleStatementUpdater implements RuleDefi
         }
     }
     
-    private <T extends StatefulTypedSPI> void checkAlgorithm(final Class<T> algorithmClass, final String algorithmType, final AlgorithmSegment segment) throws DistSQLException {
-        Optional<T> service = TypedSPIRegistry.findRegisteredService(algorithmClass, segment.getName(), new Properties());
-        if (!service.isPresent()) {
-            throw new InvalidAlgorithmConfigurationException(algorithmType, segment.getName());
-        }
-    }
-    
     @Override
     public ShardingRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateShardingScalingRuleStatement sqlStatement) {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        Map<String, OnRuleAlteredActionConfiguration> scalingConfigurationMap = new HashMap<>(1, 1);
-        scalingConfigurationMap.put(sqlStatement.getScalingName(), buildScalingConfiguration(sqlStatement.getConfigurationSegment()));
-        result.setScaling(scalingConfigurationMap);
+        result.setScaling(Collections.singletonMap(sqlStatement.getScalingName(), buildScalingConfiguration(sqlStatement.getScalingRuleConfigSegment())));
         return result;
     }
     
     private OnRuleAlteredActionConfiguration buildScalingConfiguration(final ShardingScalingRuleConfigurationSegment segment) {
-        if (null == segment) {
-            return buildNullScalingConfiguration();
-        }
-        return ShardingScalingRuleStatementConverter.convert(segment);
-    }
-    
-    private OnRuleAlteredActionConfiguration buildNullScalingConfiguration() {
-        return null;
+        return null == segment ? null : ShardingScalingRuleStatementConverter.convert(segment);
     }
     
     @Override

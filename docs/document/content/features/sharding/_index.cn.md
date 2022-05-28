@@ -1,7 +1,7 @@
 +++
-pre = "<b>4.3. </b>"
+pre = "<b>4.4. </b>"
 title = "数据分片"
-weight = 3
+weight = 4
 chapter = true
 +++
 
@@ -68,3 +68,5 @@ chapter = true
 ## 目标
 
 **尽量透明化分库分表所带来的影响，让使用方尽量像使用一个数据库一样使用水平分片之后的数据库集群，是 Apache ShardingSphere 数据分片模块的主要设计目标。**
+
+**源码：https://github.com/apache/shardingsphere/tree/master/shardingsphere-features/shardingsphere-sharding**

@@ -25,15 +25,16 @@ import static org.junit.Assert.assertThat;
 public final class LockNodeUtilTest {
     
     @Test
-    public void assertGenerateLockName() {
-        assertThat(LockNodeUtil.generateDatabaseLockName("database", "127.0.0.1@3307"), is("database-127.0.0.1@3307"));
+    public void assertGenerateLockLeasesNodePath() {
+        String lockName = "/lock/mutex/locks/sharding_db";
+        assertThat(LockNodeUtil.generateLockLeasesNodePath(lockName), is("/lock/mutex/locks/sharding_db/leases"));
     }
     
     @Test
-    public void assertParseLockName() {
-        String[] lockName = LockNodeUtil.parseDatabaseLockName("database-127.0.0.1@3307");
+    public void assertParseAckLockName() {
+        String[] lockName = LockNodeUtil.parseAckLockName("sharding_db#@#127.0.0.1@3307");
         assertThat(lockName.length, is(2));
-        assertThat(lockName[0], is("database"));
+        assertThat(lockName[0], is("sharding_db"));
         assertThat(lockName[1], is("127.0.0.1@3307"));
     }
 }

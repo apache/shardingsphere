@@ -20,7 +20,10 @@ package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor;
 import io.netty.util.DefaultAttributeMap;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,9 +34,10 @@ import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
-public final class ShowProcessListExecutorTest {
+public final class ShowProcessListExecutorTest extends ProxyContextRestorer {
     
     private ShowProcessListExecutor showProcessListExecutor;
     
@@ -41,6 +45,7 @@ public final class ShowProcessListExecutorTest {
     public void setUp() throws NoSuchFieldException, IllegalAccessException {
         showProcessListExecutor = new ShowProcessListExecutor();
         setupBatchProcessContexts();
+        ProxyContext.init(mock(ContextManager.class, RETURNS_DEEP_STUBS));
     }
     
     private void setupBatchProcessContexts() throws NoSuchFieldException, IllegalAccessException {
@@ -50,7 +55,7 @@ public final class ShowProcessListExecutorTest {
                 + "- executionID: f6c2336a-63ba-41bf-941e-2e3504eb2c80\n"
                 + "  sql: alter table t_order add column a varchar(64) after order_id\n"
                 + "  startTimeMillis: 1617939785160\n"
-                + "  schemaName: sharding_db\n"
+                + "  databaseName: sharding_db\n"
                 + "  username: sharding\n"
                 + "  hostname: 127.0.0.1\n"
                 + "  unitStatuses:\n"

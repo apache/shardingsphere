@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.datanode;
 
-import org.apache.shardingsphere.infra.fixture.ReadWriteSplittingRuleFixture;
+import org.apache.shardingsphere.infra.fixture.TestShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
@@ -134,7 +134,7 @@ public final class DataNodesTest {
     }
     
     private ShardingSphereRule mockDataSourceContainedRule() {
-        DataSourceContainedRule result = mock(ReadWriteSplittingRuleFixture.class);
+        DataSourceContainedRule result = mock(TestShardingSphereRule.class);
         when(result.getDataSourceMapper()).thenReturn(READ_WRITE_SPLITTING_DATASOURCE_MAP);
         return result;
     }

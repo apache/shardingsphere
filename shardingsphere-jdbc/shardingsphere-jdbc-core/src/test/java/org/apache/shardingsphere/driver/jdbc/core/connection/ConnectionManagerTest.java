@@ -17,9 +17,8 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.connection;
 
-import com.google.common.collect.Sets;
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
@@ -72,9 +71,9 @@ public final class ConnectionManagerTest {
     @Before
     public void setUp() throws SQLException {
         ContextManager contextManager = mockContextManager();
-        connectionManager = new ConnectionManager(DefaultSchema.LOGIC_NAME, contextManager);
+        connectionManager = new ConnectionManager(DefaultDatabase.LOGIC_NAME, contextManager);
         TransactionTypeHolder.set(TransactionType.XA);
-        connectionManagerInXaTransaction = new ConnectionManager(DefaultSchema.LOGIC_NAME, contextManager);
+        connectionManagerInXaTransaction = new ConnectionManager(DefaultDatabase.LOGIC_NAME, contextManager);
     }
     
     @After
@@ -89,10 +88,10 @@ public final class ConnectionManagerTest {
         Map<String, DataSource> dataSourceMap = mockDataSourceMap();
         TrafficRule trafficRule = mockTrafficRule();
         MetaDataPersistService metaDataPersistService = mockMetaDataPersistService();
-        when(result.getDataSourceMap(DefaultSchema.LOGIC_NAME)).thenReturn(dataSourceMap);
-        when(result.getMetaDataContexts().getMetaDataPersistService()).thenReturn(Optional.of(metaDataPersistService));
-        when(result.getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(TransactionRule.class)).thenReturn(Optional.empty());
-        when(result.getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(TrafficRule.class)).thenReturn(Optional.of(trafficRule));
+        when(result.getDataSourceMap(DefaultDatabase.LOGIC_NAME)).thenReturn(dataSourceMap);
+        when(result.getMetaDataContexts().getPersistService()).thenReturn(Optional.of(metaDataPersistService));
+        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(TransactionRule.class)).thenReturn(Optional.empty());
+        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(TrafficRule.class)).thenReturn(Optional.of(trafficRule));
         when(result.getInstanceContext().getComputeNodeInstanceIds(InstanceType.PROXY, Arrays.asList("OLTP", "OLAP"))).thenReturn(Collections.singletonList(new InstanceId("127.0.0.1@3307")));
         dataSourcePoolCreator = mockStatic(DataSourcePoolCreator.class);
         Map<String, DataSource> trafficDataSourceMap = mockTrafficDataSourceMap();
@@ -108,14 +107,14 @@ public final class ConnectionManagerTest {
     
     private MetaDataPersistService mockMetaDataPersistService() {
         MetaDataPersistService result = mock(MetaDataPersistService.class, RETURNS_DEEP_STUBS);
-        when(result.getDataSourceService().load(DefaultSchema.LOGIC_NAME)).thenReturn(createDataSourcePropertiesMap());
+        when(result.getDataSourceService().load(DefaultDatabase.LOGIC_NAME)).thenReturn(createDataSourcePropertiesMap());
         when(result.getGlobalRuleService().loadUsers()).thenReturn(Collections.singletonList(new ShardingSphereUser("root", "root", "localhost")));
         return result;
     }
     
     private Map<String, DataSourceProperties> createDataSourcePropertiesMap() {
         Map<String, DataSourceProperties> result = new LinkedHashMap<>(1, 1);
-        result.put(DefaultSchema.LOGIC_NAME, new DataSourceProperties(HikariDataSource.class.getName(), createProperties()));
+        result.put(DefaultDatabase.LOGIC_NAME, new DataSourceProperties(HikariDataSource.class.getName(), createProperties()));
         return result;
     }
     
@@ -147,7 +146,7 @@ public final class ConnectionManagerTest {
     @Test
     public void assertGetRandomPhysicalDataSourceNameFromContextManager() {
         String actual = connectionManager.getRandomPhysicalDataSourceName();
-        assertTrue(Sets.newHashSet("ds", "invalid_ds").contains(actual));
+        assertTrue(Arrays.asList("ds", "invalid_ds").contains(actual));
     }
     
     @Test

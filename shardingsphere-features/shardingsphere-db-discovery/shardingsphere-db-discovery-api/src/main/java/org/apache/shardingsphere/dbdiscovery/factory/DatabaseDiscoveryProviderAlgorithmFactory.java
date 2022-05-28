@@ -25,8 +25,6 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmF
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
-import java.util.Properties;
-
 /**
  * Database discovery provider algorithm factory.
  */
@@ -41,7 +39,7 @@ public final class DatabaseDiscoveryProviderAlgorithmFactory {
      * Create new instance of database discovery provider algorithm.
      *
      * @param databaseDiscoveryProviderAlgorithmConfig database discovery provider algorithm configuration
-     * @return new instance of database discovery provider algorithm
+     * @return created instance
      */
     public static DatabaseDiscoveryProviderAlgorithm newInstance(final ShardingSphereAlgorithmConfiguration databaseDiscoveryProviderAlgorithmConfig) {
         return ShardingSphereAlgorithmFactory.createAlgorithm(databaseDiscoveryProviderAlgorithmConfig, DatabaseDiscoveryProviderAlgorithm.class);
@@ -54,6 +52,6 @@ public final class DatabaseDiscoveryProviderAlgorithmFactory {
      * @return contains database discovery provider algorithm or not
      */
     public static boolean contains(final String databaseDiscoveryProviderAlgorithmType) {
-        return TypedSPIRegistry.findRegisteredService(DatabaseDiscoveryProviderAlgorithm.class, databaseDiscoveryProviderAlgorithmType, new Properties()).isPresent();
+        return TypedSPIRegistry.findRegisteredService(DatabaseDiscoveryProviderAlgorithm.class, databaseDiscoveryProviderAlgorithmType).isPresent();
     }
 }

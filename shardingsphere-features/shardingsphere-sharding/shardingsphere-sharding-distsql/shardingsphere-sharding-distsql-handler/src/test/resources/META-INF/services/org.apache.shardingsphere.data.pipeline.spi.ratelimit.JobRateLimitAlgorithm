@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.data.pipeline.spi.ratelimit.FixtureInputJobRateLimitAlgorithm
-org.apache.shardingsphere.data.pipeline.spi.ratelimit.FixtureOutputJobRateLimitAlgorithm
+org.apache.shardingsphere.data.pipeline.spi.ratelimit.InputJobRateLimitAlgorithmFixture
+org.apache.shardingsphere.data.pipeline.spi.ratelimit.OutputJobRateLimitAlgorithmFixture

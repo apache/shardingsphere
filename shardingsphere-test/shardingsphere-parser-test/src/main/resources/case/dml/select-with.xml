@@ -172,7 +172,7 @@
                                     </left>
                                     <operator>IS</operator>
                                     <right>
-                                        <literal-expression value="177..181" start-index="177" stop-index="181" />
+                                        <literal-expression value="NULL" start-index="177" stop-index="181" />
                                     </right>
                                 </binary-operation-expression>
                             </expr>
@@ -223,7 +223,7 @@
                                     </left>
                                     <operator>IS</operator>
                                     <right>
-                                        <literal-expression value="186..190" start-index="186" stop-index="190" />
+                                        <literal-expression value="NULL" start-index="186" stop-index="190" />
                                     </right>
                                 </binary-operation-expression>
                             </expr>
@@ -306,5 +306,72 @@
             <column-item name="mgr_id" start-index="331" stop-index="336" />
             <column-item name="emp_last" start-index="351" stop-index="358" />
         </order-by>
+    </select>
+
+    <select sql-case-id="select_with_multiple_cte_definitions">
+        <with start-index="0" stop-index="119">
+            <common-table-expression name="cte1" start-index="5" stop-index="66">
+                <subquery-expression start-index="31" stop-index="65">
+                    <select>
+                        <from>
+                            <simple-table name="t_order" start-index="59" stop-index="65" />
+                        </from>
+                        <projections start-index="38" stop-index="52">
+                            <column-projection name="status" start-index="38" stop-index="43" />
+                            <column-projection name="user_id" start-index="46" stop-index="52" />
+                        </projections>
+                    </select>
+                </subquery-expression>
+                <columns start-index="10" stop-index="24">
+                    <column name="status" start-index="10" stop-index="15" />
+                    <column name="user_id" start-index="18" stop-index="24" />
+                </columns>
+            </common-table-expression>
+            <common-table-expression name="cte2" start-index="69" stop-index="119">
+                <subquery-expression start-index="87" stop-index="118">
+                    <select>
+                        <from>
+                            <simple-table name="t_order_item" start-index="107" stop-index="118" />
+                        </from>
+                        <projections start-index="94" stop-index="100">
+                            <column-projection name="item_id" start-index="94" stop-index="100" />
+                        </projections>
+                    </select>
+                </subquery-expression>
+                <columns start-index="74" stop-index="80">
+                    <column name="item_id" start-index="74" stop-index="80" />
+                </columns>
+            </common-table-expression>
+        </with>
+        <from>
+            <join-table>
+                <left>
+                    <simple-table name="cte1" start-index="158" stop-index="161" />
+                </left>
+                <right>
+                    <simple-table name="cte2" start-index="174" stop-index="177" />
+                </right>
+                <on-condition>
+                    <binary-operation-expression start-index="182" stop-index="208">
+                        <left>
+                            <column name="user_id" start-index="182" stop-index="193">
+                                <owner name="cte1" start-index="182" stop-index="185" />
+                            </column>
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <column name="user_id" start-index="197" stop-index="208">
+                                <owner name="cte2" start-index="197" stop-index="200" />
+                            </column>
+                        </right>
+                    </binary-operation-expression>
+                </on-condition>
+            </join-table>
+        </from>
+        <projections start-index="128" stop-index="151">
+            <column-projection name="status" start-index="128" stop-index="133" />
+            <column-projection name="user_id" start-index="136" stop-index="142" />
+            <column-projection name="item_id" start-index="145" stop-index="151" />
+        </projections>
     </select>
 </sql-parser-test-cases>

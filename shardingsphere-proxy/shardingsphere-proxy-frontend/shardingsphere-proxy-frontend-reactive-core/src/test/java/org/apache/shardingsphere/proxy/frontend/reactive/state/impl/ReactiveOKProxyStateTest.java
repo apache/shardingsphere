@@ -29,16 +29,12 @@ import org.apache.shardingsphere.proxy.frontend.reactive.spi.ReactiveDatabasePro
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public final class ReactiveOKProxyStateTest {
-    
-    private final ReactiveOKProxyState state = new ReactiveOKProxyState();
     
     @SuppressWarnings("unchecked")
     @Test
@@ -53,13 +49,8 @@ public final class ReactiveOKProxyStateTest {
         DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine = mock(DatabaseProtocolFrontendEngine.class);
         when(databaseProtocolFrontendEngine.getType()).thenReturn("Dummy");
         ConnectionSession connectionSession = mock(ConnectionSession.class);
-        state.execute(channelHandlerContext, null, databaseProtocolFrontendEngine, connectionSession);
+        new ReactiveOKProxyState().execute(channelHandlerContext, null, databaseProtocolFrontendEngine, connectionSession);
         verify(attribute).setIfAbsent(any(DummyReactiveDatabaseProtocolFrontendEngine.class));
         verify(eventExecutor).execute(any(ReactiveCommandExecuteTask.class));
-    }
-    
-    @Test
-    public void assertGetType() {
-        assertThat(state.getType(), is("ExperimentalVertx"));
     }
 }

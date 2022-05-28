@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.core.importer;
 
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
@@ -30,6 +32,7 @@ import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourc
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobExecutionException;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.record.RecordUtil;
+import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.data.pipeline.spi.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
@@ -39,7 +42,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -51,6 +53,7 @@ public abstract class AbstractImporter extends AbstractLifecycleExecutor impleme
     
     private static final DataRecordMerger MERGER = new DataRecordMerger();
     
+    @Getter(AccessLevel.PROTECTED)
     private final ImporterConfiguration importerConfig;
     
     private final PipelineDataSourceManager dataSourceManager;
@@ -63,16 +66,8 @@ public abstract class AbstractImporter extends AbstractLifecycleExecutor impleme
         this.importerConfig = importerConfig;
         this.dataSourceManager = dataSourceManager;
         this.channel = channel;
-        pipelineSqlBuilder = createSQLBuilder(importerConfig.getShardingColumnsMap());
+        pipelineSqlBuilder = PipelineSQLBuilderFactory.getInstance(importerConfig.getDataSourceConfig().getDatabaseType().getType());
     }
-    
-    /**
-     * Create SQL builder.
-     *
-     * @param shardingColumnsMap sharding columns map
-     * @return SQL builder
-     */
-    protected abstract PipelineSQLBuilder createSQLBuilder(Map<String, Set<String>> shardingColumnsMap);
     
     @Override
     protected void doStart() {
@@ -158,7 +153,8 @@ public abstract class AbstractImporter extends AbstractLifecycleExecutor impleme
     }
     
     private void executeBatchInsert(final Connection connection, final List<DataRecord> dataRecords) throws SQLException {
-        String insertSql = pipelineSqlBuilder.buildInsertSQL(dataRecords.get(0));
+        DataRecord dataRecord = dataRecords.get(0);
+        String insertSql = pipelineSqlBuilder.buildInsertSQL(getSchemaName(dataRecord.getTableName()), dataRecord, importerConfig.getShardingColumnsMap());
         try (PreparedStatement ps = connection.prepareStatement(insertSql)) {
             ps.setQueryTimeout(30);
             for (DataRecord each : dataRecords) {
@@ -171,6 +167,8 @@ public abstract class AbstractImporter extends AbstractLifecycleExecutor impleme
         }
     }
     
+    protected abstract String getSchemaName(String logicTableName);
+    
     private void executeUpdate(final Connection connection, final List<DataRecord> dataRecords) throws SQLException {
         for (DataRecord each : dataRecords) {
             executeUpdate(connection, each);
@@ -178,28 +176,36 @@ public abstract class AbstractImporter extends AbstractLifecycleExecutor impleme
     }
     
     private void executeUpdate(final Connection connection, final DataRecord record) throws SQLException {
-        List<Column> conditionColumns = RecordUtil.extractConditionColumns(record, importerConfig.getShardingColumnsMap().get(record.getTableName()));
-        List<Column> updatedColumns = pipelineSqlBuilder.extractUpdatedColumns(record.getColumns(), record);
-        String updateSql = pipelineSqlBuilder.buildUpdateSQL(record, conditionColumns);
+        Set<String> shardingColumns = importerConfig.getShardingColumns(record.getTableName());
+        if (null == shardingColumns) {
+            log.error("executeUpdate, could not get shardingColumns, tableName={}, logicTableNames={}", record.getTableName(), importerConfig.getLogicTableNames());
+        }
+        List<Column> conditionColumns = RecordUtil.extractConditionColumns(record, shardingColumns);
+        List<Column> updatedColumns = pipelineSqlBuilder.extractUpdatedColumns(record, importerConfig.getShardingColumnsMap());
+        String updateSql = pipelineSqlBuilder.buildUpdateSQL(getSchemaName(record.getTableName()), record, conditionColumns, importerConfig.getShardingColumnsMap());
         try (PreparedStatement ps = connection.prepareStatement(updateSql)) {
             for (int i = 0; i < updatedColumns.size(); i++) {
                 ps.setObject(i + 1, updatedColumns.get(i).getValue());
             }
             for (int i = 0; i < conditionColumns.size(); i++) {
                 Column keyColumn = conditionColumns.get(i);
-                ps.setObject(updatedColumns.size() + i + 1, (keyColumn.isPrimaryKey() && keyColumn.isUpdated()) ? keyColumn.getOldValue() : keyColumn.getValue());
+                ps.setObject(updatedColumns.size() + i + 1, (keyColumn.isUniqueKey() && keyColumn.isUpdated()) ? keyColumn.getOldValue() : keyColumn.getValue());
             }
-            ps.execute();
+            int updateCount = ps.executeUpdate();
+            if (1 != updateCount) {
+                log.warn("executeUpdate failed, updateCount={}, updateSql={}, updatedColumns={}, conditionColumns={}", updateCount, updateSql, updatedColumns, conditionColumns);
+            }
         }
     }
     
     private void executeBatchDelete(final Connection connection, final List<DataRecord> dataRecords) throws SQLException {
-        List<Column> conditionColumns = RecordUtil.extractConditionColumns(dataRecords.get(0), importerConfig.getShardingColumnsMap().get(dataRecords.get(0).getTableName()));
-        String deleteSQL = pipelineSqlBuilder.buildDeleteSQL(dataRecords.get(0), conditionColumns);
+        DataRecord dataRecord = dataRecords.get(0);
+        List<Column> conditionColumns = RecordUtil.extractConditionColumns(dataRecord, importerConfig.getShardingColumns(dataRecord.getTableName()));
+        String deleteSQL = pipelineSqlBuilder.buildDeleteSQL(getSchemaName(dataRecord.getTableName()), dataRecord, conditionColumns);
         try (PreparedStatement ps = connection.prepareStatement(deleteSQL)) {
             ps.setQueryTimeout(30);
             for (DataRecord each : dataRecords) {
-                conditionColumns = RecordUtil.extractConditionColumns(each, importerConfig.getShardingColumnsMap().get(each.getTableName()));
+                conditionColumns = RecordUtil.extractConditionColumns(each, importerConfig.getShardingColumns(each.getTableName()));
                 for (int i = 0; i < conditionColumns.size(); i++) {
                     ps.setObject(i + 1, conditionColumns.get(i).getValue());
                 }

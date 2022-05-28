@@ -65,10 +65,8 @@ public final class SQLParserEngineAdviceTest extends AbstractSQLParserEngineAdvi
         advice.afterMethod(getTargetObject(), null, new Object[]{SQL_STMT, true}, new MethodInvocationResult());
         parentSpan.end();
         List<SpanData> spanItems = COLLECTOR.getSpanItems();
-        assertNotNull(spanItems);
         assertThat(spanItems.size(), is(2));
         assertThat(spanItems.get(0).getName(), is("/ShardingSphere/parseSQL/"));
-        assertNotNull(spanItems.get(0).getParentSpanId());
         assertNotNull(spanItems.get(0).getParentSpanId(), is(parentSpan.getSpanContext().getSpanId()));
         Attributes attributes = spanItems.get(0).getAttributes();
         assertThat(attributes.get(AttributeKey.stringKey(OpenTelemetryConstants.COMPONENT)), is(OpenTelemetryConstants.COMPONENT_NAME));
@@ -83,11 +81,9 @@ public final class SQLParserEngineAdviceTest extends AbstractSQLParserEngineAdvi
         advice.afterMethod(getTargetObject(), null, new Object[]{SQL_STMT, true}, new MethodInvocationResult());
         parentSpan.end();
         List<SpanData> spanItems = COLLECTOR.getSpanItems();
-        assertNotNull(spanItems);
         assertThat(spanItems.size(), is(2));
         assertThat(spanItems.get(0).getName(), is("/ShardingSphere/parseSQL/"));
         assertThat(spanItems.get(0).getStatus().getStatusCode(), is(StatusCode.ERROR));
-        assertNotNull(spanItems.get(0).getParentSpanId());
         assertNotNull(spanItems.get(0).getParentSpanId(), is(parentSpan.getSpanContext().getSpanId()));
         Attributes attributes = spanItems.get(0).getAttributes();
         assertThat(attributes.get(AttributeKey.stringKey(OpenTelemetryConstants.COMPONENT)), is(OpenTelemetryConstants.COMPONENT_NAME));

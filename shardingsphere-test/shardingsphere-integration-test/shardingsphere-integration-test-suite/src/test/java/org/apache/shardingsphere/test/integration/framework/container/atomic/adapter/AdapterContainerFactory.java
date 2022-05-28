@@ -37,7 +37,7 @@ public final class AdapterContainerFactory {
      * @param databaseType database type
      * @param storageContainer storage container
      * @param scenario scenario
-     * @return new instance of adapter container
+     * @return created instance
      */
     public static AdapterContainer newInstance(final String adapter, final DatabaseType databaseType, final StorageContainer storageContainer, final String scenario) {
         switch (adapter) {

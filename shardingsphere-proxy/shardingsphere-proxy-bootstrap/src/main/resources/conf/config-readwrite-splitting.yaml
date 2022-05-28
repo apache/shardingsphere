@@ -61,6 +61,10 @@
 #      props:
 #        write-data-source-name: primary_ds
 #        read-data-source-names: replica_ds_0,replica_ds_1
+#      loadBalancerName: random
+#  loadBalancers:
+#    random:
+#      type: RANDOM
 
 ######################################################################################################
 #
@@ -107,3 +111,7 @@
 #      props:
 #        write-data-source-name: write_ds
 #        read-data-source-names: read_ds_0,read_ds_1
+#      loadBalancerName: random
+#  loadBalancers:
+#    random:
+#      type: RANDOM

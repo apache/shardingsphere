@@ -17,16 +17,16 @@
 
 package org.apache.shardingsphere.shadow.rule;
 
-import com.google.common.collect.Lists;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadowRuleConfiguration;
-import org.apache.shardingsphere.shadow.algorithm.shadow.column.ColumnRegexMatchShadowAlgorithm;
-import org.apache.shardingsphere.shadow.algorithm.shadow.hint.SimpleHintShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
+import org.apache.shardingsphere.shadow.factory.ShadowAlgorithmFactory;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -40,11 +40,11 @@ import static org.junit.Assert.assertThat;
 
 public final class ShadowRuleTest {
     
-    private ShadowRule shadowRuleWithAlgorithm;
+    private ShadowRule shadowRule;
     
     @Before
     public void init() {
-        shadowRuleWithAlgorithm = new ShadowRule(createAlgorithmProvidedShadowRuleConfiguration());
+        shadowRule = new ShadowRule(createAlgorithmProvidedShadowRuleConfiguration());
     }
     
     private AlgorithmProvidedShadowRuleConfiguration createAlgorithmProvidedShadowRuleConfiguration() {
@@ -57,39 +57,25 @@ public final class ShadowRuleTest {
     
     private Map<String, ShadowAlgorithm> createShadowAlgorithms() {
         Map<String, ShadowAlgorithm> result = new LinkedHashMap<>();
-        result.put("simple-hint-algorithm", createHintShadowAlgorithm());
-        result.put("user-id-insert-regex-algorithm", createColumnShadowAlgorithm("user_id", "insert"));
-        result.put("user-id-update-regex-algorithm", createColumnShadowAlgorithm("user_id", "update"));
-        result.put("order-id-insert-regex-algorithm", createColumnShadowAlgorithm("order_id", "insert"));
+        result.put("simple-hint-algorithm", ShadowAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("SIMPLE_HINT", createHintProperties())));
+        result.put("user-id-insert-regex-algorithm", ShadowAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("REGEX_MATCH", createColumnProperties("user_id", "insert"))));
+        result.put("user-id-update-regex-algorithm", ShadowAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("REGEX_MATCH", createColumnProperties("user_id", "update"))));
+        result.put("order-id-insert-regex-algorithm", ShadowAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("REGEX_MATCH", createColumnProperties("order_id", "insert"))));
         return result;
     }
     
-    private ShadowAlgorithm createHintShadowAlgorithm() {
-        SimpleHintShadowAlgorithm simpleHintShadowAlgorithm = new SimpleHintShadowAlgorithm();
-        simpleHintShadowAlgorithm.setProps(createHintProperties());
-        simpleHintShadowAlgorithm.init();
-        return simpleHintShadowAlgorithm;
-    }
-    
     private Properties createHintProperties() {
-        Properties properties = new Properties();
-        properties.setProperty("shadow", "true");
-        return properties;
-    }
-    
-    private ShadowAlgorithm createColumnShadowAlgorithm(final String column, final String operation) {
-        ColumnRegexMatchShadowAlgorithm columnRegexMatchShadowAlgorithm = new ColumnRegexMatchShadowAlgorithm();
-        columnRegexMatchShadowAlgorithm.setProps(createColumnProperties(column, operation));
-        columnRegexMatchShadowAlgorithm.init();
-        return columnRegexMatchShadowAlgorithm;
+        Properties result = new Properties();
+        result.setProperty("shadow", Boolean.TRUE.toString());
+        return result;
     }
     
     private Properties createColumnProperties(final String column, final String operation) {
-        Properties properties = new Properties();
-        properties.setProperty("column", column);
-        properties.setProperty("operation", operation);
-        properties.setProperty("regex", "[1]");
-        return properties;
+        Properties result = new Properties();
+        result.setProperty("column", column);
+        result.setProperty("operation", operation);
+        result.setProperty("regex", "[1]");
+        return result;
     }
     
     private Map<String, ShadowTableConfiguration> createTables() {
@@ -112,7 +98,7 @@ public final class ShadowRuleTest {
     }
     
     private Map<String, ShadowDataSourceConfiguration> createDataSources() {
-        Map<String, ShadowDataSourceConfiguration> result = new LinkedHashMap<>();
+        Map<String, ShadowDataSourceConfiguration> result = new LinkedHashMap<>(2, 1);
         result.put("shadow-data-source-0", new ShadowDataSourceConfiguration("ds", "ds_shadow"));
         result.put("shadow-data-source-1", new ShadowDataSourceConfiguration("ds1", "ds1_shadow"));
         return result;
@@ -120,8 +106,8 @@ public final class ShadowRuleTest {
     
     @Test
     public void assertNewShadowRulSuccessByAlgorithmProvidedShadowRuleConfiguration() {
-        assertShadowDataSourceMappings(shadowRuleWithAlgorithm.getShadowDataSourceMappings());
-        assertShadowTableRules(shadowRuleWithAlgorithm.getShadowTableRules());
+        assertShadowDataSourceMappings(shadowRule.getShadowDataSourceMappings());
+        assertShadowTableRules(shadowRule.getShadowTableRules());
     }
     
     private void assertShadowTableRules(final Map<String, ShadowTableRule> shadowTableRules) {
@@ -149,22 +135,17 @@ public final class ShadowRuleTest {
     
     @Test
     public void assertGetRelatedShadowTables() {
-        Collection<String> relatedShadowTables = shadowRuleWithAlgorithm.getRelatedShadowTables(Lists.newArrayList("t_user", "t_auto"));
+        Collection<String> relatedShadowTables = shadowRule.getRelatedShadowTables(Arrays.asList("t_user", "t_auto"));
         assertThat(relatedShadowTables.size(), is(1));
         assertThat(relatedShadowTables.iterator().next(), is("t_user"));
     }
     
     @Test
     public void assertGetAllShadowTableNames() {
-        Collection<String> allShadowTableNames = shadowRuleWithAlgorithm.getAllShadowTableNames();
+        Collection<String> allShadowTableNames = shadowRule.getAllShadowTableNames();
         assertThat(allShadowTableNames.size(), is(2));
         Iterator<String> iterator = allShadowTableNames.iterator();
         assertThat(iterator.next(), is("t_user"));
         assertThat(iterator.next(), is("t_order"));
-    }
-    
-    @Test
-    public void assertGetRuleType() {
-        assertThat(shadowRuleWithAlgorithm.getType(), is(ShadowRule.class.getSimpleName()));
     }
 }

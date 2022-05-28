@@ -38,6 +38,7 @@ import org.apache.curator.framework.recipes.locks.InterProcessLock;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
+import org.apache.shardingsphere.mode.repository.cluster.zookeeper.lock.ZookeeperInternalLockHolder;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.props.ZookeeperPropertyKey;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.data.Stat;
@@ -60,10 +61,7 @@ import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -120,10 +118,10 @@ public final class CuratorZookeeperRepositoryTest {
     @SneakyThrows
     public void init() {
         mockClient();
-        mockField();
         mockBuilder();
         ClusterPersistRepositoryConfiguration config = new ClusterPersistRepositoryConfiguration(REPOSITORY.getType(), "governance", SERVER_LISTS, new Properties());
         REPOSITORY.init(config);
+        mockInternalLockHolder();
     }
     
     @SneakyThrows
@@ -143,10 +141,14 @@ public final class CuratorZookeeperRepositoryTest {
     }
     
     @SneakyThrows
-    private void mockField() {
-        Field locksFiled = CuratorZookeeperRepository.class.getDeclaredField("locks");
+    private void mockInternalLockHolder() {
+        Field internalLockHolderFiled = CuratorZookeeperRepository.class.getDeclaredField("internalLockHolder");
+        internalLockHolderFiled.setAccessible(true);
+        ZookeeperInternalLockHolder holder = new ZookeeperInternalLockHolder(client);
+        Field locksFiled = ZookeeperInternalLockHolder.class.getDeclaredField("locks");
         locksFiled.setAccessible(true);
-        locksFiled.set(REPOSITORY, Collections.singletonMap("/locks/glock", interProcessLock));
+        locksFiled.set(holder, Collections.singletonMap("/locks/glock", new ZookeeperInternalLockHolder.ZookeeperInternalLock(interProcessLock)));
+        internalLockHolderFiled.set(REPOSITORY, holder);
     }
     
     private void mockBuilder() {
@@ -212,7 +214,6 @@ public final class CuratorZookeeperRepositoryTest {
         SettableFuture<DataChangedEvent> settableFuture = SettableFuture.create();
         REPOSITORY.watch("/test/children_updated/1", settableFuture::set);
         DataChangedEvent dataChangedEvent = settableFuture.get();
-        assertNotNull(dataChangedEvent);
         assertThat(dataChangedEvent.getType(), is(Type.UPDATED));
         assertThat(dataChangedEvent.getKey(), is("/test/children_updated/1"));
         assertThat(dataChangedEvent.getValue(), is("value2"));
@@ -227,7 +228,6 @@ public final class CuratorZookeeperRepositoryTest {
         SettableFuture<DataChangedEvent> settableFuture = SettableFuture.create();
         REPOSITORY.watch("/test/children_deleted/5", settableFuture::set);
         DataChangedEvent dataChangedEvent = settableFuture.get();
-        assertNotNull(dataChangedEvent);
         assertThat(dataChangedEvent.getType(), is(Type.DELETED));
         assertThat(dataChangedEvent.getKey(), is("/test/children_deleted/5"));
         assertThat(dataChangedEvent.getValue(), is("value5"));
@@ -242,7 +242,6 @@ public final class CuratorZookeeperRepositoryTest {
         SettableFuture<DataChangedEvent> settableFuture = SettableFuture.create();
         REPOSITORY.watch("/test/children_added/4", settableFuture::set);
         DataChangedEvent dataChangedEvent = settableFuture.get();
-        assertNotNull(dataChangedEvent);
         assertThat(dataChangedEvent.getType(), is(Type.ADDED));
         assertThat(dataChangedEvent.getKey(), is("/test/children_added/4"));
         assertThat(dataChangedEvent.getValue(), is("value4"));
@@ -268,43 +267,32 @@ public final class CuratorZookeeperRepositoryTest {
         props.setProperty(ZookeeperPropertyKey.MAX_RETRIES.getKey(), "1");
         props.setProperty(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey(), "1000");
         props.setProperty(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey(), "2000");
-        ClusterPersistRepositoryConfiguration config = new ClusterPersistRepositoryConfiguration(REPOSITORY.getType(), "governance", SERVER_LISTS, new Properties());
-        REPOSITORY.setProps(props);
+        ClusterPersistRepositoryConfiguration config = new ClusterPersistRepositoryConfiguration(REPOSITORY.getType(), "governance", SERVER_LISTS, props);
         REPOSITORY.init(config);
-        assertThat(REPOSITORY.getProps().getProperty(ZookeeperPropertyKey.RETRY_INTERVAL_MILLISECONDS.getKey()), is("1000"));
-        assertThat(REPOSITORY.getProps().getProperty(ZookeeperPropertyKey.MAX_RETRIES.getKey()), is("1"));
-        assertThat(REPOSITORY.getProps().getProperty(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey()), is("1000"));
-        assertThat(REPOSITORY.getProps().getProperty(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey()), is("2000"));
     }
     
     @Test
     public void assertBuildCuratorClientWithTimeToLiveSecondsEqualsZero() {
         Properties props = new Properties();
         props.setProperty(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey(), "0");
-        ClusterPersistRepositoryConfiguration config = new ClusterPersistRepositoryConfiguration(REPOSITORY.getType(), "governance", SERVER_LISTS, new Properties());
-        REPOSITORY.setProps(props);
+        ClusterPersistRepositoryConfiguration config = new ClusterPersistRepositoryConfiguration(REPOSITORY.getType(), "governance", SERVER_LISTS, props);
         REPOSITORY.init(config);
-        assertThat(REPOSITORY.getProps().getProperty(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey()), is("0"));
     }
     
     @Test
     public void assertBuildCuratorClientWithOperationTimeoutMillisecondsEqualsZero() {
         Properties props = new Properties();
         props.setProperty(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey(), "0");
-        ClusterPersistRepositoryConfiguration config = new ClusterPersistRepositoryConfiguration(REPOSITORY.getType(), "governance", SERVER_LISTS, new Properties());
-        REPOSITORY.setProps(props);
+        ClusterPersistRepositoryConfiguration config = new ClusterPersistRepositoryConfiguration(REPOSITORY.getType(), "governance", SERVER_LISTS, props);
         REPOSITORY.init(config);
-        assertThat(REPOSITORY.getProps().getProperty(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey()), is("0"));
     }
     
     @Test
     public void assertBuildCuratorClientWithDigest() {
         Properties props = new Properties();
         props.setProperty(ZookeeperPropertyKey.DIGEST.getKey(), "any");
-        ClusterPersistRepositoryConfiguration config = new ClusterPersistRepositoryConfiguration(REPOSITORY.getType(), "governance", SERVER_LISTS, new Properties());
-        REPOSITORY.setProps(props);
+        ClusterPersistRepositoryConfiguration config = new ClusterPersistRepositoryConfiguration(REPOSITORY.getType(), "governance", SERVER_LISTS, props);
         REPOSITORY.init(config);
-        assertThat(REPOSITORY.getProps().getProperty(ZookeeperPropertyKey.DIGEST.getKey()), is("any"));
         verify(builder).aclProvider(any(ACLProvider.class));
     }
     
@@ -322,19 +310,5 @@ public final class CuratorZookeeperRepositoryTest {
         when(deleteBuilder.deletingChildrenIfNeeded()).thenReturn(backgroundVersionable);
         REPOSITORY.delete("/test/children/1");
         verify(backgroundVersionable).forPath("/test/children/1");
-    }
-    
-    @Test
-    @SneakyThrows
-    public void assertTryLock() {
-        when(interProcessLock.acquire(5L, TimeUnit.SECONDS)).thenReturn(true);
-        assertTrue(REPOSITORY.tryLock("/locks/glock", 5, TimeUnit.SECONDS));
-    }
-    
-    @Test
-    @SneakyThrows
-    public void assertTryLockFailed() {
-        when(interProcessLock.acquire(5L, TimeUnit.SECONDS)).thenReturn(false);
-        assertFalse(REPOSITORY.tryLock("/locks/glock", 5, TimeUnit.SECONDS));
     }
 }

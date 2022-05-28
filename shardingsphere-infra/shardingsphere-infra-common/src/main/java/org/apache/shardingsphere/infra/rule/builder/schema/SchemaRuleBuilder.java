@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.RuleBuilder;
 import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -32,6 +33,7 @@ import java.util.Map;
  * 
  * @param <T> type of rule configuration
  */
+@SingletonSPI
 public interface SchemaRuleBuilder<T extends RuleConfiguration> extends RuleBuilder<T> {
     
     /**

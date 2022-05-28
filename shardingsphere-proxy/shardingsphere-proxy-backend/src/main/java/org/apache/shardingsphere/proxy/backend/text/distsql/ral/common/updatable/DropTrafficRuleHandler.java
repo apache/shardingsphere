@@ -40,40 +40,40 @@ public final class DropTrafficRuleHandler extends UpdatableRALBackendHandler<Dro
     
     @Override
     protected void update(final ContextManager contextManager, final DropTrafficRuleStatement sqlStatement) throws DistSQLException {
-        Optional<TrafficRuleConfiguration> configuration = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData()
-                .findRuleConfiguration(TrafficRuleConfiguration.class).stream().findAny();
-        check(sqlStatement, configuration);
-        if (configuration.isPresent()) {
-            configuration.get().getTrafficStrategies().removeIf(each -> sqlStatement.getRuleNames().contains(each.getName()));
-            getUnusedAlgorithm(configuration.get()).forEach(each -> configuration.get().getTrafficAlgorithms().remove(each));
-            getUnusedLoadBalancer(configuration.get()).forEach(each -> configuration.get().getLoadBalancers().remove(each));
-            updateToRepository(configuration.get());
-        }
-    }
-    
-    private void check(final DropTrafficRuleStatement sqlStatement, final Optional<TrafficRuleConfiguration> configuration) throws DistSQLException {
+        Optional<TrafficRuleConfiguration> config = ProxyContext.getInstance()
+                .getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRuleConfiguration(TrafficRuleConfiguration.class);
         if (!sqlStatement.isContainsIfExistClause()) {
-            DistSQLException.predictionThrow(configuration.isPresent(), () -> new RequiredRuleMissedException("Traffic"));
-            Set<String> currentTrafficStrategyNames = configuration.get().getTrafficStrategies().stream().map(TrafficStrategyConfiguration::getName).collect(Collectors.toSet());
-            Set<String> notExistRuleNames = sqlStatement.getRuleNames().stream().filter(each -> !currentTrafficStrategyNames.contains(each)).collect(Collectors.toSet());
-            DistSQLException.predictionThrow(notExistRuleNames.isEmpty(), () -> new RequiredRuleMissedException("Traffic"));
+            DistSQLException.predictionThrow(config.isPresent(), () -> new RequiredRuleMissedException("Traffic"));
+            checkTrafficRuleConfiguration(sqlStatement, config.get());
+        }
+        if (config.isPresent()) {
+            config.get().getTrafficStrategies().removeIf(each -> sqlStatement.getRuleNames().contains(each.getName()));
+            getUnusedAlgorithm(config.get()).forEach(each -> config.get().getTrafficAlgorithms().remove(each));
+            getUnusedLoadBalancer(config.get()).forEach(each -> config.get().getLoadBalancers().remove(each));
+            updateToRepository(config.get());
         }
     }
     
-    private Collection<String> getUnusedAlgorithm(final TrafficRuleConfiguration configuration) {
-        Collection<String> currentlyInUse = configuration.getTrafficStrategies().stream().map(TrafficStrategyConfiguration::getAlgorithmName).collect(Collectors.toSet());
-        return configuration.getTrafficAlgorithms().keySet().stream().filter(each -> !currentlyInUse.contains(each)).collect(Collectors.toSet());
+    private void checkTrafficRuleConfiguration(final DropTrafficRuleStatement sqlStatement, final TrafficRuleConfiguration config) throws DistSQLException {
+        Set<String> currentTrafficStrategyNames = config.getTrafficStrategies().stream().map(TrafficStrategyConfiguration::getName).collect(Collectors.toSet());
+        Set<String> notExistRuleNames = sqlStatement.getRuleNames().stream().filter(each -> !currentTrafficStrategyNames.contains(each)).collect(Collectors.toSet());
+        DistSQLException.predictionThrow(notExistRuleNames.isEmpty(), () -> new RequiredRuleMissedException("Traffic"));
     }
     
-    private Collection<String> getUnusedLoadBalancer(final TrafficRuleConfiguration configuration) {
-        Collection<String> currentlyInUse = configuration.getTrafficStrategies().stream().map(TrafficStrategyConfiguration::getLoadBalancerName).collect(Collectors.toSet());
-        return configuration.getLoadBalancers().keySet().stream().filter(each -> !currentlyInUse.contains(each)).collect(Collectors.toSet());
+    private Collection<String> getUnusedAlgorithm(final TrafficRuleConfiguration config) {
+        Collection<String> currentlyInUse = config.getTrafficStrategies().stream().map(TrafficStrategyConfiguration::getAlgorithmName).collect(Collectors.toSet());
+        return config.getTrafficAlgorithms().keySet().stream().filter(each -> !currentlyInUse.contains(each)).collect(Collectors.toSet());
     }
     
-    private void updateToRepository(final TrafficRuleConfiguration currentConfiguration) {
+    private Collection<String> getUnusedLoadBalancer(final TrafficRuleConfiguration config) {
+        Collection<String> currentlyInUse = config.getTrafficStrategies().stream().map(TrafficStrategyConfiguration::getLoadBalancerName).collect(Collectors.toSet());
+        return config.getLoadBalancers().keySet().stream().filter(each -> !currentlyInUse.contains(each)).collect(Collectors.toSet());
+    }
+    
+    private void updateToRepository(final TrafficRuleConfiguration config) {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        Optional<MetaDataPersistService> metaDataPersistService = metaDataContexts.getMetaDataPersistService();
-        getUnusedLoadBalancer(currentConfiguration).forEach(each -> currentConfiguration.getLoadBalancers().remove(each));
-        metaDataPersistService.ifPresent(op -> op.getGlobalRuleService().persist(metaDataContexts.getGlobalRuleMetaData().getConfigurations(), true));
+        Optional<MetaDataPersistService> metaDataPersistService = metaDataContexts.getPersistService();
+        getUnusedLoadBalancer(config).forEach(each -> config.getLoadBalancers().remove(each));
+        metaDataPersistService.ifPresent(optional -> optional.getGlobalRuleService().persist(metaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations(), true));
     }
 }

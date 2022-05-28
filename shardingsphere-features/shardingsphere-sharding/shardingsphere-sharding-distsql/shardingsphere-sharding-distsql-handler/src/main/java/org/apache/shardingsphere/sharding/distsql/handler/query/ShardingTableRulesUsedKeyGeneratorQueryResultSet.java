@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableRulesUsedKeyGeneratorStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -38,25 +38,25 @@ public final class ShardingTableRulesUsedKeyGeneratorQueryResultSet implements D
     private Iterator<Collection<Object>> data = Collections.emptyIterator();
     
     @Override
-    public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
+    public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
         ShowShardingTableRulesUsedKeyGeneratorStatement statement = (ShowShardingTableRulesUsedKeyGeneratorStatement) sqlStatement;
         List<Collection<Object>> result = new ArrayList<>();
-        Collection<ShardingRuleConfiguration> shardingTableRules = metaData.getRuleMetaData().findRuleConfiguration(ShardingRuleConfiguration.class);
-        shardingTableRules.forEach(each -> requireResult(statement, metaData.getDatabaseName(), result, each));
+        Collection<ShardingRuleConfiguration> shardingTableRules = database.getRuleMetaData().findRuleConfigurations(ShardingRuleConfiguration.class);
+        shardingTableRules.forEach(each -> requireResult(statement, database.getName(), result, each));
         data = result.iterator();
     }
     
     private void requireResult(final ShowShardingTableRulesUsedKeyGeneratorStatement statement, final String databaseName, final List<Collection<Object>> result,
-                               final ShardingRuleConfiguration shardingRuleConfiguration) {
+                               final ShardingRuleConfiguration shardingRuleConfig) {
         if (!statement.getKeyGeneratorName().isPresent()) {
             return;
         }
-        shardingRuleConfiguration.getTables().forEach(each -> {
+        shardingRuleConfig.getTables().forEach(each -> {
             if (null != each.getKeyGenerateStrategy() && statement.getKeyGeneratorName().get().equals(each.getKeyGenerateStrategy().getKeyGeneratorName())) {
                 result.add(Arrays.asList(databaseName, "table", each.getLogicTable()));
             }
         });
-        shardingRuleConfiguration.getAutoTables().forEach(each -> {
+        shardingRuleConfig.getAutoTables().forEach(each -> {
             if (null != each.getKeyGenerateStrategy() && statement.getKeyGeneratorName().get().equals(each.getKeyGenerateStrategy().getKeyGeneratorName())) {
                 result.add(Arrays.asList(databaseName, "auto_table", each.getLogicTable()));
             }

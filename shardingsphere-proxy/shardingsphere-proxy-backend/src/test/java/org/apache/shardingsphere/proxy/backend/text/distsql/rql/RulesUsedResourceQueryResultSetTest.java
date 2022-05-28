@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rql;
 
-import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesUsedResourceStatement;
@@ -25,9 +24,9 @@ import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
-import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.rule.RulesUsedResourceQueryResultSet;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
@@ -36,6 +35,7 @@ import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceCo
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
+import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -53,11 +53,11 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public final class RulesUsedResourceQueryResultSetTest {
     
     @Mock
-    private ShardingSphereMetaData shardingSphereMetaData;
+    private ShardingSphereDatabase database;
     
     @Test
     public void assertGetRowDataForSharding() {
@@ -65,7 +65,7 @@ public final class RulesUsedResourceQueryResultSetTest {
         DistSQLResultSet resultSet = new RulesUsedResourceQueryResultSet();
         ShowRulesUsedResourceStatement sqlStatement = mock(ShowRulesUsedResourceStatement.class);
         when(sqlStatement.getResourceName()).thenReturn(Optional.of("ds_0"));
-        resultSet.init(shardingSphereMetaData, sqlStatement);
+        resultSet.init(database, sqlStatement);
         Collection<Object> actual = resultSet.getRowData();
         assertThat(actual.size(), is(2));
         Iterator<Object> rowData = actual.iterator();
@@ -85,7 +85,7 @@ public final class RulesUsedResourceQueryResultSetTest {
         DistSQLResultSet resultSet = new RulesUsedResourceQueryResultSet();
         ShowRulesUsedResourceStatement sqlStatement = mock(ShowRulesUsedResourceStatement.class);
         when(sqlStatement.getResourceName()).thenReturn(Optional.of("ds_0"));
-        resultSet.init(shardingSphereMetaData, sqlStatement);
+        resultSet.init(database, sqlStatement);
         Collection<Object> actual = resultSet.getRowData();
         assertThat(actual.size(), is(2));
         Iterator<Object> rowData = actual.iterator();
@@ -99,11 +99,10 @@ public final class RulesUsedResourceQueryResultSetTest {
         DistSQLResultSet resultSet = new RulesUsedResourceQueryResultSet();
         ShowRulesUsedResourceStatement sqlStatement = mock(ShowRulesUsedResourceStatement.class);
         when(sqlStatement.getResourceName()).thenReturn(Optional.of("ds_0"));
-        resultSet.init(shardingSphereMetaData, sqlStatement);
+        resultSet.init(database, sqlStatement);
         Collection<Object> actual = resultSet.getRowData();
         assertThat(actual.size(), is(2));
         Iterator<Object> rowData = actual.iterator();
-        rowData = actual.iterator();
         assertThat(rowData.next(), is("db_discovery"));
         assertThat(rowData.next(), is("db_discovery_group_name"));
     }
@@ -114,7 +113,7 @@ public final class RulesUsedResourceQueryResultSetTest {
         DistSQLResultSet resultSet = new RulesUsedResourceQueryResultSet();
         ShowRulesUsedResourceStatement sqlStatement = mock(ShowRulesUsedResourceStatement.class);
         when(sqlStatement.getResourceName()).thenReturn(Optional.of("ds_0"));
-        resultSet.init(shardingSphereMetaData, sqlStatement);
+        resultSet.init(database, sqlStatement);
         Collection<Object> actual = resultSet.getRowData();
         assertThat(actual.size(), is(2));
         Iterator<Object> rowData = actual.iterator();
@@ -128,7 +127,7 @@ public final class RulesUsedResourceQueryResultSetTest {
         DistSQLResultSet resultSet = new RulesUsedResourceQueryResultSet();
         ShowRulesUsedResourceStatement sqlStatement = mock(ShowRulesUsedResourceStatement.class);
         when(sqlStatement.getResourceName()).thenReturn(Optional.of("ds_0"));
-        resultSet.init(shardingSphereMetaData, sqlStatement);
+        resultSet.init(database, sqlStatement);
         Collection<Object> actual = resultSet.getRowData();
         assertThat(actual.size(), is(2));
         Iterator<Object> rowData = actual.iterator();
@@ -136,42 +135,43 @@ public final class RulesUsedResourceQueryResultSetTest {
         assertThat(rowData.next(), is("shadow_source"));
     }
     
-    private void init(final RuleConfiguration ruleConfiguration) {
+    private void init(final RuleConfiguration ruleConfig) {
         ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class);
-        when(ruleMetaData.getConfigurations()).thenReturn(Collections.singletonList(ruleConfiguration));
-        when(shardingSphereMetaData.getRuleMetaData()).thenReturn(ruleMetaData);
-        when(shardingSphereMetaData.getResource()).thenReturn(createResource());
-    }
-    
-    private ShardingSphereResource createResource() {
-        return new ShardingSphereResource(Collections.singletonMap("ds_0", new HikariDataSource()), null, null, null);
+        when(ruleMetaData.getConfigurations()).thenReturn(Collections.singleton(ruleConfig));
+        when(database.getRuleMetaData()).thenReturn(ruleMetaData);
+        ShardingSphereResource resource = new ShardingSphereResource(Collections.singletonMap("ds_0", new MockedDataSource()));
+        when(database.getResource()).thenReturn(resource);
     }
     
     private RuleConfiguration mockShardingTableRule() {
         ShardingRuleConfiguration result = mock(ShardingRuleConfiguration.class);
-        when(result.getTables()).thenReturn(Collections.singletonList(new ShardingTableRuleConfiguration("sharding_table")));
-        when(result.getAutoTables()).thenReturn(Collections.singletonList(new ShardingAutoTableRuleConfiguration("sharding_auto_table")));
+        when(result.getTables()).thenReturn(Collections.singleton(new ShardingTableRuleConfiguration("sharding_table")));
+        when(result.getAutoTables()).thenReturn(Collections.singleton(new ShardingAutoTableRuleConfiguration("sharding_auto_table")));
         return result;
     }
     
     private RuleConfiguration mockReadwriteSplittingRule() {
         ReadwriteSplittingRuleConfiguration result = mock(ReadwriteSplittingRuleConfiguration.class);
-        Properties props = new Properties();
-        props.setProperty("write-data-source-name", "ds_0");
-        props.setProperty("read-data-source-names", "read_0,read_1");
-        when(result.getDataSources()).thenReturn(Collections.singletonList(new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_splitting_source", "", props, "")));
+        when(result.getDataSources()).thenReturn(Collections.singleton(new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_splitting_source", "", createProperties(), "")));
+        return result;
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty("write-data-source-name", "ds_0");
+        result.setProperty("read-data-source-names", "read_0,read_1");
         return result;
     }
     
     private RuleConfiguration mockDBDiscoveryRule() {
         DatabaseDiscoveryRuleConfiguration result = mock(DatabaseDiscoveryRuleConfiguration.class);
-        when(result.getDataSources()).thenReturn(Collections.singletonList(new DatabaseDiscoveryDataSourceRuleConfiguration("db_discovery_group_name", Arrays.asList("ds_0", "ds_1"), "", "")));
+        when(result.getDataSources()).thenReturn(Collections.singleton(new DatabaseDiscoveryDataSourceRuleConfiguration("db_discovery_group_name", Arrays.asList("ds_0", "ds_1"), "", "")));
         return result;
     }
     
     private RuleConfiguration mockEncryptRule() {
         EncryptRuleConfiguration result = mock(EncryptRuleConfiguration.class);
-        when(result.getTables()).thenReturn(Collections.singletonList(new EncryptTableRuleConfiguration("encrypt_table", Collections.emptyList(), false)));
+        when(result.getTables()).thenReturn(Collections.singleton(new EncryptTableRuleConfiguration("encrypt_table", Collections.emptyList(), false)));
         return result;
     }
     

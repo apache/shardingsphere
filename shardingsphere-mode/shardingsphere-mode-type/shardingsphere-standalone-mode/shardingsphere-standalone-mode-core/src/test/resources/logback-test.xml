@@ -25,7 +25,7 @@
     <logger name="org.apache.shardingsphere" level="warn" additivity="false">
         <appender-ref ref="console" />
     </logger>
-    <logger name="org.apache.shardingsphere.mode.metadata.persist.service.ComputeNodePersistService" level="off" />
+    <logger name="org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.service.ComputeNodeStatusService" level="off" />
     
     <root>
         <level value="error" />

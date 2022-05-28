@@ -20,8 +20,6 @@ package org.apache.shardingsphere.infra.datanode;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.ordered.OrderedSPIRegistry;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -36,18 +34,14 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public final class DataNodes {
     
-    static {
-        ShardingSphereServiceLoader.register(DataNodeBuilder.class);
-    }
-    
     private final Collection<ShardingSphereRule> rules;
     
     @SuppressWarnings("rawtypes")
-    private final Map<ShardingSphereRule, DataNodeBuilder> decorators;
+    private final Map<ShardingSphereRule, DataNodeBuilder> dataNodeBuilders;
     
     public DataNodes(final Collection<ShardingSphereRule> rules) {
         this.rules = rules;
-        this.decorators = OrderedSPIRegistry.getRegisteredServices(DataNodeBuilder.class, rules);
+        dataNodeBuilders = DataNodeBuilderFactory.getInstances(rules);
     }
     
     /**
@@ -63,14 +57,14 @@ public final class DataNodes {
             return Collections.emptyList();
         }
         Collection<DataNode> result = new LinkedList<>(dataNodeContainedRule.get().getDataNodesByTableName(tableName));
-        for (Entry<ShardingSphereRule, DataNodeBuilder> entry : decorators.entrySet()) {
+        for (Entry<ShardingSphereRule, DataNodeBuilder> entry : dataNodeBuilders.entrySet()) {
             result = entry.getValue().build(result, entry.getKey());
         }
         return result;
     }
     
     private Optional<DataNodeContainedRule> findDataNodeContainedRule(final String tableName) {
-        return rules.stream().filter(each -> isDataNodeContainedRuleContainsTable(each, tableName)).findFirst().map(rule -> (DataNodeContainedRule) rule);
+        return rules.stream().filter(each -> isDataNodeContainedRuleContainsTable(each, tableName)).findFirst().map(optional -> (DataNodeContainedRule) optional);
     }
     
     private boolean isDataNodeContainedRuleContainsTable(final ShardingSphereRule each, final String tableName) {

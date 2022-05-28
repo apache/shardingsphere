@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.traffic.rule;
 
-import com.google.common.collect.Sets;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.CommentSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
@@ -34,10 +33,8 @@ import org.apache.shardingsphere.traffic.api.config.TrafficStrategyConfiguration
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -52,27 +49,19 @@ import static org.mockito.Mockito.when;
 public final class TrafficRuleTest {
     
     @Test
-    public void assertGetRuleType() {
-        TrafficRule authorityRule = new TrafficRule(new TrafficRuleConfiguration());
-        assertThat(authorityRule.getType(), is(TrafficRule.class.getSimpleName()));
-    }
-    
-    @Test
     public void assertFindMatchedStrategyRuleWhenSQLHintMatch() {
         TrafficRule trafficRule = new TrafficRule(createTrafficRuleConfig());
         Optional<TrafficStrategyRule> actual = trafficRule.findMatchedStrategyRule(createLogicSQL(true), false);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getName(), is("sql_hint_traffic"));
-        assertThat(actual.get().getLabels(), is(Sets.newHashSet("OLTP", "OLAP")));
+        assertThat(actual.get().getLabels(), is(new HashSet<>(Arrays.asList("OLTP", "OLAP"))));
         assertThat(actual.get().getTrafficAlgorithm(), instanceOf(SQLHintTrafficAlgorithm.class));
         assertThat(actual.get().getLoadBalancer(), instanceOf(RandomTrafficLoadBalanceAlgorithm.class));
     }
     
     @Test
     public void assertFindMatchedStrategyRuleWhenSQLHintNotMatch() {
-        TrafficRule trafficRule = new TrafficRule(createTrafficRuleConfig());
-        Optional<TrafficStrategyRule> actual = trafficRule.findMatchedStrategyRule(createLogicSQL(false), false);
-        assertFalse(actual.isPresent());
+        assertFalse(new TrafficRule(createTrafficRuleConfig()).findMatchedStrategyRule(createLogicSQL(false), false).isPresent());
     }
     
     @Test
@@ -81,34 +70,25 @@ public final class TrafficRuleTest {
         Optional<TrafficStrategyRule> actual = trafficRule.findMatchedStrategyRule(createLogicSQL(false), true);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getName(), is("transaction_traffic"));
-        assertThat(actual.get().getLabels(), is(Sets.newHashSet("OLAP")));
+        assertThat(actual.get().getLabels(), is(Collections.singleton("OLAP")));
         assertThat(actual.get().getTrafficAlgorithm(), instanceOf(ProxyTrafficAlgorithm.class));
         assertThat(actual.get().getLoadBalancer(), instanceOf(RandomTrafficLoadBalanceAlgorithm.class));
     }
     
     @Test
     public void assertGetLabels() {
-        TrafficRule trafficRule = new TrafficRule(createTrafficRuleConfig());
-        Collection<String> actual = trafficRule.getLabels();
-        assertThat(actual, is(Sets.newHashSet("OLAP", "OLTP")));
+        assertThat(new TrafficRule(createTrafficRuleConfig()).getLabels(), is(new HashSet<>(Arrays.asList("OLAP", "OLTP"))));
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     private LogicSQL createLogicSQL(final boolean includeComments) {
         LogicSQL result = mock(LogicSQL.class);
         MySQLSelectStatement sqlStatement = mock(MySQLSelectStatement.class);
-        Collection<CommentSegment> comments = includeComments ? Collections.singletonList(
-                new CommentSegment("/* ShardingSphere hint: useTraffic=true */", 0, 0)) : Collections.emptyList();
-        when(sqlStatement.getCommentSegments()).thenReturn(comments);
+        when(sqlStatement.getCommentSegments()).thenReturn(includeComments ? Collections.singleton(new CommentSegment("/* ShardingSphere hint: useTraffic=true */", 0, 0)) : Collections.emptyList());
         when(sqlStatement.getProjections()).thenReturn(new ProjectionsSegment(0, 0));
-        SQLStatementContext statementContext = new SelectStatementContext(createMetaDataMap(), Collections.emptyList(), sqlStatement, "sharding_db");
+        SQLStatementContext statementContext = new SelectStatementContext(
+                Collections.singletonMap("sharding_db", mock(ShardingSphereDatabase.class)), Collections.emptyList(), sqlStatement, "sharding_db");
         when(result.getSqlStatementContext()).thenReturn(statementContext);
-        return result;
-    }
-    
-    private Map<String, ShardingSphereMetaData> createMetaDataMap() {
-        Map<String, ShardingSphereMetaData> result = new HashMap<>(1, 1);
-        result.put("sharding_db", mock(ShardingSphereMetaData.class));
         return result;
     }
     

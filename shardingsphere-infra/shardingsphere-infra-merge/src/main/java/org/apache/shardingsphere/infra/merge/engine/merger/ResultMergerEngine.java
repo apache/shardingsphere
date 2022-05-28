@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.infra.merge.engine.merger;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.merge.engine.ResultProcessEngine;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 /**
  * Result merger engine.
@@ -33,12 +33,12 @@ public interface ResultMergerEngine<T extends ShardingSphereRule> extends Result
     /**
      * Create new instance of result merger engine.
      *
-     * @param schemaName schema name
+     * @param databaseName database name
      * @param databaseType database type
      * @param rule rule
      * @param props ShardingSphere properties
      * @param sqlStatementContext SQL statement context
-     * @return new instance of result merger engine
+     * @return created instance
      */
-    ResultMerger newInstance(String schemaName, DatabaseType databaseType, T rule, ConfigurationProperties props, SQLStatementContext<?> sqlStatementContext);
+    ResultMerger newInstance(String databaseName, DatabaseType databaseType, T rule, ConfigurationProperties props, SQLStatementContext<?> sqlStatementContext);
 }

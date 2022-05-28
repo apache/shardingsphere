@@ -66,7 +66,7 @@ public final class ShowDatabasesExecutor implements DatabaseAdminQueryExecutor {
     
     private boolean checkLikePattern(final String schemaName) {
         if (showDatabasesStatement.getFilter().isPresent()) {
-            Optional<String> pattern = showDatabasesStatement.getFilter().get().getLike().map(each -> SQLUtil.convertLikePatternToRegex(each.getPattern()));
+            Optional<String> pattern = showDatabasesStatement.getFilter().get().getLike().map(optional -> SQLUtil.convertLikePatternToRegex(optional.getPattern()));
             return !pattern.isPresent() || schemaName.matches(pattern.get());
         }
         return true;
@@ -74,8 +74,8 @@ public final class ShowDatabasesExecutor implements DatabaseAdminQueryExecutor {
     
     private Collection<ShardingSphereRule> getRules(final String schemaName) {
         Collection<ShardingSphereRule> result;
-        result = new LinkedList<>(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(schemaName).getRuleMetaData().getRules());
-        result.addAll(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData().getRules());
+        result = new LinkedList<>(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases().get(schemaName).getRuleMetaData().getRules());
+        result.addAll(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules());
         return result;
     }
     

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.node;
 
-import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -30,23 +29,13 @@ public final class ProcessNode {
     private static final String EXECUTION_NODES = "execution_nodes";
     
     /**
-     * Get execution path.
-     *
-     * @param executionId execution id
-     * @return execution path
-     */
-    public static String getExecutionPath(final String executionId) {
-        return Joiner.on("/").join("", EXECUTION_NODES, executionId);
-    }
-    
-    /**
      * Get show process list id path.
      *
      * @param showProcessListId show process list id
      * @return execution path
      */
     public static String getShowProcessListIdPath(final String showProcessListId) {
-        return Joiner.on("/").join("", EXECUTION_NODES, showProcessListId);
+        return String.join("/", "", EXECUTION_NODES, showProcessListId);
     }
     
     /**
@@ -57,6 +46,6 @@ public final class ProcessNode {
      * @return execution path
      */
     public static String getShowProcessListInstancePath(final String showProcessListId, final String instancePath) {
-        return Joiner.on("/").join("", EXECUTION_NODES, showProcessListId, instancePath);
+        return String.join("/", "", EXECUTION_NODES, showProcessListId, instancePath);
     }
 }

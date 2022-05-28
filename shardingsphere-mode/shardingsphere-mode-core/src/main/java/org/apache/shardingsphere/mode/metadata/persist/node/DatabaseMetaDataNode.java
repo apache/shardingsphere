@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.metadata.persist.node;
 
-import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -49,11 +48,11 @@ public final class DatabaseMetaDataNode {
      * Get meta data data source path.
      *
      * @param databaseName database name
-     * @param version data source version                  
+     * @param version data source version
      * @return data source path
      */
     public static String getMetaDataDataSourcePath(final String databaseName, final String version) {
-        return Joiner.on("/").join(getFullMetaDataPath(databaseName, VERSIONS), version, DATA_SOURCE_NODE);
+        return String.join("/", getFullMetaDataPath(databaseName, VERSIONS), version, DATA_SOURCE_NODE);
     }
     
     /**
@@ -79,11 +78,11 @@ public final class DatabaseMetaDataNode {
      * Get rule path.
      *
      * @param databaseName database name
-     * @param version rule version                  
+     * @param version rule version
      * @return rule path
      */
     public static String getRulePath(final String databaseName, final String version) {
-        return Joiner.on("/").join(getFullMetaDataPath(databaseName, VERSIONS), version, RULE_NODE);
+        return String.join("/", getFullMetaDataPath(databaseName, VERSIONS), version, RULE_NODE);
     }
     
     /**
@@ -141,7 +140,7 @@ public final class DatabaseMetaDataNode {
      * @return database name
      */
     public static Optional<String> getDatabaseName(final String configNodeFullPath) {
-        Pattern pattern = Pattern.compile(getMetaDataNodePath() + "/([\\w\\-]+)/([\\w\\-]+)" + "(/datasources|/rules|/tables)?", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getMetaDataNodePath() + "/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(configNodeFullPath);
         return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
     }
@@ -153,9 +152,9 @@ public final class DatabaseMetaDataNode {
      * @return schema name
      */
     public static Optional<String> getSchemaName(final String configNodeFullPath) {
-        Pattern pattern = Pattern.compile(getMetaDataNodePath() + "/([\\w\\-]+)/([\\w\\-]+)/([\\w\\-]+)(/tables)?", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getMetaDataNodePath() + "/([\\w\\-]+)/schemas/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(configNodeFullPath);
-        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
+        return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
     }
     
     /**
@@ -165,9 +164,21 @@ public final class DatabaseMetaDataNode {
      * @return database name
      */
     public static Optional<String> getDatabaseNameByDatabasePath(final String databasePath) {
-        Pattern pattern = Pattern.compile(getMetaDataNodePath() + "/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getMetaDataNodePath() + "/([\\w\\-]+)?", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(databasePath);
         return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
+    }
+    
+    /**
+     * Get schema name.
+     *
+     * @param schemaPath schema path
+     * @return schema name
+     */
+    public static Optional<String> getSchemaNameBySchemaPath(final String schemaPath) {
+        Pattern pattern = Pattern.compile(getMetaDataNodePath() + "/([\\w\\-]+)/schemas/([\\w\\-]+)?", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(schemaPath);
+        return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
     }
     
     /**
@@ -200,7 +211,7 @@ public final class DatabaseMetaDataNode {
      * @return database version path
      */
     public static String getDatabaseVersionPath(final String databaseName, final String version) {
-        return Joiner.on("/").join(getFullMetaDataPath(databaseName, VERSIONS), version);
+        return String.join("/", getFullMetaDataPath(databaseName, VERSIONS), version);
     }
     
     /**

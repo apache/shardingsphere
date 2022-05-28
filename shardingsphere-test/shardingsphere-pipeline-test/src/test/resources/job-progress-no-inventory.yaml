@@ -21,11 +21,5 @@
        lastEventTimestamps: 0
        latestActiveTimeMillis: 0
      position: ''
-#inventory:
-#  unfinished:
-#    ds0.t_1: 1,2
-#    ds0.t_2: ''
-#    ds1.t_2: 1,2
-#    ds1.t_1: ''
  sourceDatabaseType: H2
  status: RUNNING

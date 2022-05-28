@@ -108,7 +108,7 @@
 #      completionDetector:
 #        type: IDLE
 #        props:
-#          incremental-task-idle-minute-threshold: 30
+#          incremental-task-idle-seconds-threshold: 1800
 #      dataConsistencyChecker:
 #        type: DATA_MATCH
 #        props:
@@ -206,7 +206,7 @@
 #      completionDetector:
 #        type: IDLE
 #        props:
-#          incremental-task-idle-minute-threshold: 30
+#          incremental-task-idle-seconds-threshold: 1800
 #      dataConsistencyChecker:
 #        type: DATA_MATCH
 #        props:

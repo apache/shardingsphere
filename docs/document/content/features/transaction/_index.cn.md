@@ -1,7 +1,7 @@
 +++
-pre = "<b>4.4. </b>"
+pre = "<b>4.5. </b>"
 title = "分布式事务"
-weight = 4
+weight = 5
 chapter = true
 +++
 
@@ -78,3 +78,5 @@ BASE 是基本可用、柔性状态和最终一致性这三个要素的缩写。
 ## 目标
 
 **整合现有的成熟事务方案，为本地事务、两阶段事务和柔性事务提供统一的分布式事务接口，并弥补当前方案的不足，提供一站式的分布式事务解决方案是 Apache ShardingSphere 分布式事务模块的主要设计目标。**
+
+**源码：https://github.com/apache/shardingsphere/tree/master/shardingsphere-kernel/shardingsphere-transaction**

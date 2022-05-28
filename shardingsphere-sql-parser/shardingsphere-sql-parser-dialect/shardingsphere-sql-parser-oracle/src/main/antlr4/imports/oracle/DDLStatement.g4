@@ -60,6 +60,10 @@ dropTable
     : DROP TABLE tableName (CASCADE CONSTRAINTS)? (PURGE)?
     ;
 
+dropPackage
+    : DROP PACKAGE BODY? packageName
+    ;
+
 dropTrigger
     : DROP TRIGGER triggerName
     ;
@@ -70,6 +74,23 @@ dropIndex
 
 dropView
     : DROP VIEW viewName (CASCADE CONSTRAINTS)?
+    ;
+
+dropEdition
+    : DROP EDITION editionName CASCADE?
+    ;
+
+dropOutline
+    : DROP OUTLINE outlineName
+    ;
+
+alterOutline
+    : ALTER OUTLINE (PUBLIC | PRIVATE)? outlineName
+    ( REBUILD
+    | RENAME TO outlineName
+    | CHANGE CATEGORY TO categoryName
+    | (ENABLE | DISABLE)
+    )+
     ;
 
 truncateTable
@@ -320,6 +341,10 @@ renameTableSpecification
     : RENAME TO identifier
     ;
 
+dropSynonym
+    : DROP PUBLIC? SYNONYM (schemaName DOT_)? synonymName FORCE?
+    ;
+
 columnClauses
     : operateColumnClause+ | renameColumnClause
     ;
@@ -509,6 +534,10 @@ dropReuseClause
 
 collationClause
     : DEFAULT COLLATION collationName
+    ;
+
+createSynonym
+    : CREATE (OR REPLACE)? (EDITIONABLE | NONEDITIONABLE)? (PUBLIC)? SYNONYM (schemaName DOT_)? synonymName (SHARING EQ_ (METADATA | NONE))? FOR objectName (AT_ dbLink)?
     ;
 
 commitClause
@@ -960,6 +989,10 @@ clusterClause
     : BY (LINEAR | INTERLEAVED)? ORDER clusteringColumns
     ;
 
+createDirectory
+    : CREATE (OR REPLACE)? DIRECTORY directoryName (SHARING EQ_ (METADATA | NONE))? AS pathString
+    ;
+
 clusteringColumns
     : LP_? clusteringColumnGroup (COMMA_ clusteringColumnGroup)* RP_?
     ;
@@ -982,6 +1015,17 @@ rowMovementClause
 
 flashbackArchiveClause
     : FLASHBACK ARCHIVE flashbackArchiveName? | NO FLASHBACK ARCHIVE
+    ;
+
+alterPackage
+    : ALTER PACKAGE packageName (
+    | packageCompileClause
+    | (EDITIONABLE | NONEDITIONABLE)
+    )
+    ;
+
+packageCompileClause
+    : COMPILE DEBUG? (PACKAGE | SPECIFICATION | BODY)? (compilerParametersClause*)? (REUSE SETTINGS)?
     ;
 
 alterSynonym
@@ -2233,4 +2277,125 @@ externalParameter
 
 property
     : (INDICATOR (STRUCT | TDO)? | LENGTH | DURATION | MAXLEN | CHARSETID | CHARSETFORM)
+    ;
+
+alterAnalyticView
+    : ALTER ANALYTIC VIEW analyticViewName (RENAME TO analyticViewName | COMPILE)
+    ;
+
+alterAttributeDimension
+    : ALTER ATTRIBUTE DIMENSION (schemaName DOT_)? attributeDimensionName (RENAME TO attributeDimensionName | COMPILE)
+    ;
+
+createSequence
+    : CREATE SEQUENCE (schemaName DOT_)? sequenceName (SHARING EQ_ (METADATA | DATA | NONE))? createSequenceClause+
+    ;
+
+createSequenceClause
+    : (INCREMENT BY | START WITH) INTEGER_
+    | MAXVALUE INTEGER_
+    | NOMAXVALUE
+    | MINVALUE INTEGER_
+    | NOMINVALUE
+    | CYCLE
+    | NOCYCLE
+    | CACHE INTEGER_
+    | NOCACHE
+    | ORDER
+    | NOORDER
+    | KEEP
+    | NOKEEP
+    | SCALE (EXTEND | NOEXTEND)
+    | NOSCALE
+    | SHARD (EXTEND | NOEXTEND)
+    | NOSHARD
+    | SESSION
+    | GLOBAL
+    ;
+
+alterSequence
+    : ALTER SEQUENCE (schemaName DOT_)? sequenceName alterSequenceClause+
+    ;
+
+alterSequenceClause
+   : (INCREMENT BY | START WITH) INTEGER_
+   | MAXVALUE INTEGER_
+   | NOMAXVALUE
+   | MINVALUE INTEGER_
+   | NOMINVALUE
+   | RESTART
+   | CYCLE
+   | NOCYCLE
+   | CACHE INTEGER_
+   | NOCACHE
+   | ORDER
+   | NOORDER
+   | KEEP
+   | NOKEEP
+   | SCALE (EXTEND | NOEXTEND)
+   | NOSCALE
+   | SHARD (EXTEND | NOEXTEND)
+   | NOSHARD
+   | SESSION
+   | GLOBAL
+   ;
+
+createContext
+    : CREATE (OR REPLACE)? CONTEXT namespace USING (schemaName DOT_)? packageName sharingClause? (initializedClause | accessedClause)?
+    ;
+
+initializedClause
+    : INITIALIZED (EXTERNALLY | GLOBALLY)
+    ;
+
+accessedClause
+    : ACCESSED GLOBALLY
+    ;
+
+createSPFile
+    : CREATE SPFILE (EQ_ spfileName)? FROM (PFILE (EQ_ pfileName)? (AS COPY)? | MEMORY)
+    ;
+
+createPFile
+    : CREATE PFILE (EQ_ pfileName)? FROM (SPFILE (EQ_ spfileName)? (AS COPY)? | MEMORY)
+    ;
+
+createControlFile
+    : CREATE CONTROLFILE REUSE? SET? DATABASE databaseName logfileForControlClause? resetLogsOrNot
+    ( MAXLOGFILES INTEGER_
+    | MAXLOGMEMBERS INTEGER_
+    | MAXLOGHISTORY INTEGER_
+    | MAXDATAFILES INTEGER_
+    | MAXINSTANCES INTEGER_
+    | ARCHIVELOG
+    | NOARCHIVELOG
+    | FORCE LOGGING
+    | SET STANDBY NOLOGGING FOR (DATA AVAILABILITY | LOAD PERFORMANCE)
+    )*
+    characterSetClause?
+    ;
+
+resetLogsOrNot
+   :  ( RESETLOGS | NORESETLOGS) (DATAFILE fileSpecifications)?
+   ;
+
+logfileForControlClause
+    : LOGFILE (GROUP INTEGER_)? fileSpecification (COMMA_ (GROUP INTEGER_)? fileSpecification)+
+    ;
+
+characterSetClause
+    : CHARACTER SET characterSetName
+    ;
+
+createFlashbackArchive
+   : CREATE FLASHBACK ARCHIVE DEFAULT? flashbackArchiveName tablespaceClause
+     flashArchiveQuota? (NO? OPTIMIZE DATA)? flashbackArchiveRetention
+   ;
+
+flashArchiveQuota
+    : QUOTA INTEGER_ quotaUnit
+    ;
+
+flashbackArchiveRetention
+    : RETENTION INTEGER_ (YEAR | MONTH | DAY)
     ;

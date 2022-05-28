@@ -108,49 +108,49 @@
     <create-sharding-table-rule sql-case-id="create-sharding-table-rule">
         <rule name="t_order" key-generate-strategy-column="another_id">
             <data-source>ms_group_${0..1}</data-source>
-            <table-strategy type="standard" sharding-column="user_id" sharding-algorithm-name="table_inline"></table-strategy>
-            <database-strategy type="standard" sharding-column="order_id" sharding-algorithm-name="database_inline"></database-strategy>
+            <table-strategy type="standard" sharding-column="user_id" sharding-algorithm-name="table_inline" />
+            <database-strategy type="standard" sharding-column="order_id" sharding-algorithm-name="database_inline" />
             <key-generate-strategy algorithm-name="snowflake" />
         </rule>
         <rule name="t_order_item" key-generate-strategy-column="another_id">
             <data-source>ms_group_${0..1}</data-source>
-            <table-strategy type="standard" sharding-column="user_id" sharding-algorithm-name="table_inline"></table-strategy>
-            <database-strategy type="standard" sharding-column="order_id" sharding-algorithm-name="database_inline"></database-strategy>
+            <table-strategy type="standard" sharding-column="user_id" sharding-algorithm-name="table_inline" />
+            <database-strategy type="standard" sharding-column="order_id" sharding-algorithm-name="database_inline" />
         </rule>
     </create-sharding-table-rule>
 
     <create-sharding-table-rule sql-case-id="create-sharding-table-rule-with-enum-inline-expression">
         <rule name="t_order" key-generate-strategy-column="another_id">
             <data-source>ms_group_${['abc','ac']}.table</data-source>
-            <table-strategy type="standard" sharding-column="user_id" sharding-algorithm-name="table_inline"></table-strategy>
-            <database-strategy type="standard" sharding-column="order_id" sharding-algorithm-name="database_inline"></database-strategy>
+            <table-strategy type="standard" sharding-column="user_id" sharding-algorithm-name="table_inline" />
+            <database-strategy type="standard" sharding-column="order_id" sharding-algorithm-name="database_inline" />
             <key-generate-strategy algorithm-name="snowflake" />
         </rule>
         <rule name="t_order_item" key-generate-strategy-column="another_id">
             <data-source>ms_group_${0..1}</data-source>
-            <table-strategy type="standard" sharding-column="user_id" sharding-algorithm-name="table_inline"></table-strategy>
-            <database-strategy type="standard" sharding-column="order_id" sharding-algorithm-name="database_inline"></database-strategy>
+            <table-strategy type="standard" sharding-column="user_id" sharding-algorithm-name="table_inline" />
+            <database-strategy type="standard" sharding-column="order_id" sharding-algorithm-name="database_inline" />
         </rule>
     </create-sharding-table-rule>
 
     <create-sharding-table-rule sql-case-id="create-sharding-table-rule-complex">
         <rule name="t_order" key-generate-strategy-column="another_id">
             <data-source>ms_group_${0..1}</data-source>
-            <table-strategy type="standard" sharding-column="user_id" sharding-algorithm-name="table_inline"></table-strategy>
-            <database-strategy type="complex" sharding-column="order_id,user_id" sharding-algorithm-name="database_inline"></database-strategy>
+            <table-strategy type="standard" sharding-column="user_id" sharding-algorithm-name="table_inline" />
+            <database-strategy type="complex" sharding-column="order_id,user_id" sharding-algorithm-name="database_inline" />
             <key-generate-strategy algorithm-name="snowflake" />
         </rule>
         <rule name="t_order_item" key-generate-strategy-column="another_id">
             <data-source>ms_group_${0..1}</data-source>
-            <table-strategy type="standard" sharding-column="user_id" sharding-algorithm-name="table_inline"></table-strategy>
-            <database-strategy type="standard" sharding-column="order_id" sharding-algorithm-name="database_inline"></database-strategy>
+            <table-strategy type="standard" sharding-column="user_id" sharding-algorithm-name="table_inline" />
+            <database-strategy type="standard" sharding-column="order_id" sharding-algorithm-name="database_inline" />
         </rule>
     </create-sharding-table-rule>
     
     <create-sharding-table-rule sql-case-id="create-sharding-table-rule-with-auto-create-algorithm">
         <rule name="t_order" key-generate-strategy-column="another_id">
             <data-source>ms_group_${0..1}</data-source>
-            <table-strategy type="standard" sharding-column="user_id" sharding-algorithm-name="table_inline"></table-strategy>
+            <table-strategy type="standard" sharding-column="user_id" sharding-algorithm-name="table_inline" />
             <database-strategy type="standard" sharding-column="order_id">
                 <algorithm-segment algorithm-name="inline">
                     <properties>
@@ -444,12 +444,12 @@
         <configuration>
             <completion-detector algorithm-name="IDLE">
                 <properties>
-                    <property key="incremental-task-idle-minute-threshold" value="30"/>
+                    <property key="incremental-task-idle-seconds-threshold" value="1800" />
                 </properties>
             </completion-detector>
             <data-consistency-checker algorithm-name="DATA_MATCH">
                 <properties>
-                    <property key="chunk-size" value="1000"/>
+                    <property key="chunk-size" value="1000" />
                 </properties>
             </data-consistency-checker>
         </configuration>
@@ -478,7 +478,7 @@
             </stream-channel>
             <completion-detector algorithm-name="IDLE">
                 <properties>
-                    <property key="incremental-task-idle-minute-threshold" value="30"/>
+                    <property key="incremental-task-idle-seconds-threshold" value="1800" />
                 </properties>
             </completion-detector>
             <data-consistency-checker algorithm-name="DATA_MATCH">

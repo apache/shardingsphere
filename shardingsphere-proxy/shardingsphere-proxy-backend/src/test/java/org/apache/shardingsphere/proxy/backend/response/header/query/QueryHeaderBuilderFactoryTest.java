@@ -23,19 +23,18 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.impl.MySQLQ
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.PostgreSQLQueryHeaderBuilder;
 import org.junit.Test;
 
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
 
 public final class QueryHeaderBuilderFactoryTest {
     
     @Test
-    public void assertNewInstance() {
-        QueryHeaderBuilder actual = QueryHeaderBuilderFactory.newInstance(new PostgreSQLDatabaseType());
-        assertTrue(actual instanceof PostgreSQLQueryHeaderBuilder);
+    public void assertGetInstance() {
+        assertThat(QueryHeaderBuilderFactory.getInstance(new PostgreSQLDatabaseType()), instanceOf(PostgreSQLQueryHeaderBuilder.class));
     }
     
     @Test
-    public void assertNewInstanceWithUnsupportedDatabaseType() {
-        QueryHeaderBuilder actual = QueryHeaderBuilderFactory.newInstance(new OracleDatabaseType());
-        assertTrue(actual instanceof MySQLQueryHeaderBuilder);
+    public void assertGetInstanceWithUnsupportedDatabaseType() {
+        assertThat(QueryHeaderBuilderFactory.getInstance(new OracleDatabaseType()), instanceOf(MySQLQueryHeaderBuilder.class));
     }
 }

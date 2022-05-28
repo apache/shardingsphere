@@ -20,8 +20,8 @@ package org.apache.shardingsphere.distsql.parser.statement.rql.show;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.subject.impl.ResourceSubjectSupplier;
 import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.available.FromSchemaAvailable;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.available.FromDatabaseAvailable;
 
 import java.util.Optional;
 
@@ -29,12 +29,12 @@ import java.util.Optional;
  * Show unused resources statement.
  */
 @RequiredArgsConstructor
-public final class ShowUnusedResourcesStatement extends RQLStatement implements FromSchemaAvailable, ResourceSubjectSupplier {
+public final class ShowUnusedResourcesStatement extends RQLStatement implements FromDatabaseAvailable, ResourceSubjectSupplier {
     
-    private final SchemaSegment schema;
+    private final DatabaseSegment database;
     
     @Override
-    public Optional<SchemaSegment> getSchema() {
-        return Optional.ofNullable(schema);
+    public Optional<DatabaseSegment> getDatabase() {
+        return Optional.ofNullable(database);
     }
 }

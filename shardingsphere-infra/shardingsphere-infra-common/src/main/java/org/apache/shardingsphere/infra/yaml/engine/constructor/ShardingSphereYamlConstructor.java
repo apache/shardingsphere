@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.yaml.engine.constructor;
 
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.yaml.snakeyaml.TypeDescription;
 import org.yaml.snakeyaml.constructor.Construct;
 import org.yaml.snakeyaml.constructor.Constructor;
@@ -32,17 +31,13 @@ import java.util.Map;
  */
 public class ShardingSphereYamlConstructor extends Constructor {
     
-    static {
-        ShardingSphereServiceLoader.register(ShardingSphereYamlConstruct.class);
-    }
-    
     private final Map<Class<?>, Construct> typeConstructs = new HashMap<>();
     
     private final Class<?> rootClass;
     
     public ShardingSphereYamlConstructor(final Class<?> rootClass) {
         super(rootClass);
-        ShardingSphereServiceLoader.getServiceInstances(ShardingSphereYamlConstruct.class).forEach(each -> typeConstructs.put(each.getType(), each));
+        ShardingSphereYamlConstructFactory.getInstances().forEach(each -> typeConstructs.put(each.getType(), each));
         YamlRuleConfigurationSwapperEngine.getYamlShortcuts().forEach((key, value) -> addTypeDescription(new TypeDescription(value, key)));
         this.rootClass = rootClass;
     }

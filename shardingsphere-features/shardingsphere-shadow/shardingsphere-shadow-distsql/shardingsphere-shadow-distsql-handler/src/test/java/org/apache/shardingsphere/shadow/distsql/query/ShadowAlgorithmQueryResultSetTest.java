@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shadow.distsql.query;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.distsql.handler.query.ShadowAlgorithmQueryResultSet;
@@ -42,10 +42,10 @@ public final class ShadowAlgorithmQueryResultSetTest {
     
     @Test
     public void assertGetRowData() {
-        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        when(metaData.getRuleMetaData().getConfigurations()).thenReturn(Collections.singleton(createRuleConfiguration()));
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.singleton(createRuleConfiguration()));
         DistSQLResultSet resultSet = new ShadowAlgorithmQueryResultSet();
-        resultSet.init(metaData, mock(ShowShadowAlgorithmsStatement.class));
+        resultSet.init(database, mock(ShowShadowAlgorithmsStatement.class));
         List<Object> actual = new ArrayList<>(resultSet.getRowData());
         assertThat(actual.size(), is(4));
         assertThat(actual.get(0), is("shadowAlgorithmName"));
@@ -55,10 +55,10 @@ public final class ShadowAlgorithmQueryResultSetTest {
     
     private RuleConfiguration createRuleConfiguration() {
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
-        Properties properties = new Properties();
-        properties.setProperty("foo", "bar");
-        result.getTables().put("t_order", new ShadowTableConfiguration(Collections.emptyList(), Collections.singletonList("shadowAlgorithmName")));
-        result.getShadowAlgorithms().put("shadowAlgorithmName", new ShardingSphereAlgorithmConfiguration("simple_hint", properties));
+        Properties props = new Properties();
+        props.setProperty("foo", "bar");
+        result.getTables().put("t_order", new ShadowTableConfiguration(Collections.emptyList(), Collections.singleton("shadowAlgorithmName")));
+        result.getShadowAlgorithms().put("shadowAlgorithmName", new ShardingSphereAlgorithmConfiguration("simple_hint", props));
         return result;
     }
 }

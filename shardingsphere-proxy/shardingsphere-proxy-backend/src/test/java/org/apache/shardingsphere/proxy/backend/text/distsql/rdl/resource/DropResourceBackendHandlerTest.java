@@ -20,15 +20,15 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.resource;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceStatement;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
-import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 import org.junit.Before;
@@ -40,20 +40,17 @@ import org.mockito.junit.MockitoJUnitRunner;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class DropResourceBackendHandlerTest {
+public final class DropResourceBackendHandlerTest extends ProxyContextRestorer {
     
     @Mock
     private DropResourceStatement dropResourceStatement;
@@ -62,7 +59,7 @@ public final class DropResourceBackendHandlerTest {
     private ConnectionSession connectionSession;
     
     @Mock
-    private ShardingSphereMetaData metaData;
+    private ShardingSphereDatabase database;
     
     @Mock
     private ShardingSphereResource resource;
@@ -86,34 +83,30 @@ public final class DropResourceBackendHandlerTest {
     @Before
     public void setUp() throws Exception {
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
-        when(metaDataContexts.getAllDatabaseNames()).thenReturn(Collections.singleton("test"));
-        when(metaDataContexts.getMetaData("test")).thenReturn(metaData);
-        when(metaData.getRuleMetaData()).thenReturn(ruleMetaData);
-        when(metaData.getResource()).thenReturn(resource);
+        when(metaDataContexts.getMetaData().getDatabases()).thenReturn(Collections.singletonMap("test", database));
+        when(database.getRuleMetaData()).thenReturn(ruleMetaData);
+        when(database.getResource()).thenReturn(resource);
         contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        ProxyContext.getInstance().init(contextManager);
+        ProxyContext.init(contextManager);
         dropResourceBackendHandler = new DropResourceBackendHandler(dropResourceStatement, connectionSession);
     }
     
     @Test
     public void assertExecute() throws DistSQLException {
         when(ruleMetaData.getRules()).thenReturn(Collections.emptyList());
-        Map<String, DataSource> dataSources = new HashMap<>(1, 1);
-        dataSources.put("test0", dataSource);
-        when(resource.getDataSources()).thenReturn(dataSources);
-        DropResourceStatement dropResourceStatement = createDropResourceStatement();
-        ResponseHeader responseHeader = dropResourceBackendHandler.execute("test", dropResourceStatement);
-        assertTrue(responseHeader instanceof UpdateResponseHeader);
+        when(resource.getDataSources()).thenReturn(Collections.singletonMap("foo_ds", dataSource));
+        DropResourceStatement dropResourceStatement = new DropResourceStatement(Collections.singleton("foo_ds"), false);
+        assertThat(dropResourceBackendHandler.execute("test", dropResourceStatement), instanceOf(UpdateResponseHeader.class));
         verify(contextManager).dropResource("test", dropResourceStatement.getNames());
     }
     
     @Test
     public void assertResourceNameNotExistedExecute() {
         try {
-            dropResourceBackendHandler.execute("test", createDropResourceStatement());
+            dropResourceBackendHandler.execute("test", new DropResourceStatement(Collections.singleton("foo_ds"), false));
         } catch (final SQLException ex) {
-            assertThat(ex.getMessage(), is("Resources [test0] do not exist in database test."));
+            assertThat(ex.getMessage(), is("Resources [foo_ds] do not exist in database test."));
         }
     }
     
@@ -121,12 +114,12 @@ public final class DropResourceBackendHandlerTest {
     public void assertResourceNameInUseExecute() {
         when(ruleMetaData.getRules()).thenReturn(Collections.singleton(shadowRule));
         when(shadowRule.getType()).thenReturn("ShadowRule");
-        when(shadowRule.getDataSourceMapper()).thenReturn(Collections.singletonMap("", Collections.singleton("test0")));
-        when(resource.getDataSources()).thenReturn(Collections.singletonMap("test0", dataSource));
+        when(shadowRule.getDataSourceMapper()).thenReturn(Collections.singletonMap("", Collections.singleton("foo_ds")));
+        when(resource.getDataSources()).thenReturn(Collections.singletonMap("foo_ds", dataSource));
         try {
-            dropResourceBackendHandler.execute("test", createDropResourceStatement());
+            dropResourceBackendHandler.execute("test", new DropResourceStatement(Collections.singleton("foo_ds"), false));
         } catch (final SQLException ex) {
-            assertThat(ex.getMessage(), is("Resource [test0] is still used by [ShadowRule]."));
+            assertThat(ex.getMessage(), is("Resource [foo_ds] is still used by [ShadowRule]."));
         }
     }
     
@@ -135,13 +128,13 @@ public final class DropResourceBackendHandlerTest {
         when(ruleMetaData.getRules()).thenReturn(Collections.singleton(singleTableRule));
         when(singleTableRule.getType()).thenReturn("SingleTableRule");
         DataNode dataNode = mock(DataNode.class);
-        when(dataNode.getDataSourceName()).thenReturn("test0");
+        when(dataNode.getDataSourceName()).thenReturn("foo_ds");
         when(singleTableRule.getAllDataNodes()).thenReturn(Collections.singletonMap("", Collections.singleton(dataNode)));
-        when(resource.getDataSources()).thenReturn(Collections.singletonMap("test0", dataSource));
+        when(resource.getDataSources()).thenReturn(Collections.singletonMap("foo_ds", dataSource));
         try {
-            dropResourceBackendHandler.execute("test", createDropResourceStatement());
+            dropResourceBackendHandler.execute("test", new DropResourceStatement(Collections.singleton("foo_ds"), false));
         } catch (final SQLException ex) {
-            assertThat(ex.getMessage(), is("Resource [test0] is still used by [SingleTableRule]."));
+            assertThat(ex.getMessage(), is("Resource [foo_ds] is still used by [SingleTableRule]."));
         }
     }
     
@@ -150,20 +143,18 @@ public final class DropResourceBackendHandlerTest {
         when(ruleMetaData.getRules()).thenReturn(Collections.singleton(singleTableRule));
         when(singleTableRule.getType()).thenReturn("SingleTableRule");
         DataNode dataNode = mock(DataNode.class);
-        when(dataNode.getDataSourceName()).thenReturn("test0");
+        when(dataNode.getDataSourceName()).thenReturn("foo_ds");
         when(singleTableRule.getAllDataNodes()).thenReturn(Collections.singletonMap("", Collections.singleton(dataNode)));
-        when(resource.getDataSources()).thenReturn(getDataSourceMapForSupportRemove());
-        DropResourceStatement dropResourceStatement = createDropResourceStatementIgnoreSingleTables();
-        ResponseHeader responseHeader = dropResourceBackendHandler.execute("test", dropResourceStatement);
-        assertTrue(responseHeader instanceof UpdateResponseHeader);
+        when(resource.getDataSources()).thenReturn(Collections.singletonMap("foo_ds", dataSource));
+        DropResourceStatement dropResourceStatement = new DropResourceStatement(Collections.singleton("foo_ds"), true);
+        assertThat(dropResourceBackendHandler.execute("test", dropResourceStatement), instanceOf(UpdateResponseHeader.class));
         verify(contextManager).dropResource("test", dropResourceStatement.getNames());
     }
     
     @Test
     public void assertExecuteWithIfExists() throws DistSQLException {
-        DropResourceStatement dropResourceStatement = createDropResourceStatementWithIfExists();
-        ResponseHeader responseHeader = dropResourceBackendHandler.execute("test", dropResourceStatement);
-        assertTrue(responseHeader instanceof UpdateResponseHeader);
+        DropResourceStatement dropResourceStatement = new DropResourceStatement(true, Collections.singleton("foo_ds"), true);
+        assertThat(dropResourceBackendHandler.execute("test", dropResourceStatement), instanceOf(UpdateResponseHeader.class));
         verify(contextManager).dropResource("test", dropResourceStatement.getNames());
     }
     
@@ -171,26 +162,8 @@ public final class DropResourceBackendHandlerTest {
     public void assertResourceNameInUseWithIfExists() throws DistSQLException {
         when(ruleMetaData.getRules()).thenReturn(Collections.singleton(shadowRule));
         when(shadowRule.getType()).thenReturn("ShadowRule");
-        when(shadowRule.getDataSourceMapper()).thenReturn(Collections.singletonMap("", Collections.singleton("test0")));
-        DropResourceStatement dropResourceStatement = createDropResourceStatementWithIfExists();
+        when(shadowRule.getDataSourceMapper()).thenReturn(Collections.singletonMap("", Collections.singleton("foo_ds")));
+        DropResourceStatement dropResourceStatement = new DropResourceStatement(true, Collections.singleton("foo_ds"), true);
         dropResourceBackendHandler.execute("test", dropResourceStatement);
-    }
-    
-    private Map<String, DataSource> getDataSourceMapForSupportRemove() {
-        Map<String, DataSource> result = new LinkedHashMap<>();
-        result.put("test0", dataSource);
-        return result;
-    }
-    
-    private DropResourceStatement createDropResourceStatement() {
-        return new DropResourceStatement(Collections.singleton("test0"), false);
-    }
-    
-    private DropResourceStatement createDropResourceStatementIgnoreSingleTables() {
-        return new DropResourceStatement(Collections.singleton("test0"), true);
-    }
-    
-    private DropResourceStatement createDropResourceStatementWithIfExists() {
-        return new DropResourceStatement(true, Collections.singleton("test0"), true);
     }
 }

@@ -17,32 +17,27 @@
 
 package org.apache.shardingsphere.proxy.backend.text.admin.postgresql.executor;
 
-import com.zaxxer.hikari.pool.HikariProxyResultSet;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
-import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.resource.CachedDatabaseMetaData;
-import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
-import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
-import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
+import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
 
-import javax.sql.DataSource;
-import java.lang.reflect.Field;
+import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -60,68 +55,25 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
-public final class SelectTableExecutorTest {
-    
-    private static final ResultSet RESULT_SET = mock(HikariProxyResultSet.class);
+public final class SelectTableExecutorTest extends ProxyContextRestorer {
     
     @Before
-    public void setUp() throws IllegalAccessException, NoSuchFieldException, SQLException {
-        Field contextManagerField = ProxyContext.getInstance().getClass().getDeclaredField("contextManager");
-        contextManagerField.setAccessible(true);
+    public void setUp() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), new HashMap<>(), mock(ShardingSphereRuleMetaData.class),
-                mock(ExecutorEngine.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
+        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
+                new ShardingSphereMetaData(new HashMap<>(), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())), mock(OptimizerContext.class));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        ProxyContext.getInstance().init(contextManager);
-    }
-    
-    private void mockResultSet(final Map<String, String> mockMap, final Boolean... values) throws SQLException {
-        ResultSetMetaData metaData = mock(ResultSetMetaData.class);
-        List<String> keys = new ArrayList<>(mockMap.keySet());
-        for (int i = 0; i < keys.size(); i++) {
-            when(metaData.getColumnName(i + 1)).thenReturn(keys.get(i));
-            when(metaData.getColumnLabel(i + 1)).thenReturn(keys.get(i));
-            when(RESULT_SET.getString(i + 1)).thenReturn(mockMap.get(keys.get(i)));
-        }
-        when(RESULT_SET.next()).thenReturn(true, false);
-        when(metaData.getColumnCount()).thenReturn(mockMap.size());
-        when(RESULT_SET.getMetaData()).thenReturn(metaData);
-    }
-    
-    private ShardingSphereMetaData getMetaData() throws SQLException {
-        return new ShardingSphereMetaData("sharding_db",
-                new ShardingSphereResource(mockDatasourceMap(), mockDataSourcesMetaData(), mock(CachedDatabaseMetaData.class), new PostgreSQLDatabaseType()),
-                mock(ShardingSphereRuleMetaData.class), Collections.singletonMap("sharding_db", new ShardingSphereSchema(Collections.singletonMap("t_order", mock(TableMetaData.class)))));
-    }
-    
-    private Map<String, DataSource> mockDatasourceMap() throws SQLException {
-        DataSource dataSource = mock(DataSource.class, RETURNS_DEEP_STUBS);
-        when(dataSource.getConnection().prepareStatement(any(String.class)).executeQuery()).thenReturn(RESULT_SET);
-        Map<String, DataSource> dataSourceMap = new HashMap<>();
-        dataSourceMap.put("ds_0", dataSource);
-        return dataSourceMap;
-    }
-    
-    private DataSourcesMetaData mockDataSourcesMetaData() {
-        DataSourcesMetaData meta = mock(DataSourcesMetaData.class, RETURNS_DEEP_STUBS);
-        when(meta.getDataSourceMetaData("ds_0").getCatalog()).thenReturn("demo_ds_0");
-        return meta;
+        ProxyContext.init(contextManager);
     }
     
     @Test
     public void assertSelectSchemataExecute() throws SQLException {
-        final String sql = "SELECT c.oid, n.nspname AS schemaname, c.relname AS tablename from pg_tablespace";
-        Map<String, String> mockResultSetMap = new LinkedHashMap<>();
-        mockResultSetMap.put("tablename", "t_order_1");
-        mockResultSetMap.put("c.oid", "0000");
-        mockResultSetMap.put("schemaname", "public");
-        mockResultSet(mockResultSetMap, true, false);
-        Map<String, ShardingSphereMetaData> metaDataMap = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaDataMap();
-        metaDataMap.put("sharding_db", getMetaData());
+        Map<String, ShardingSphereDatabase> databases = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases();
+        databases.put("public", createDatabase());
+        String sql = "SELECT c.oid, n.nspname AS schemaname, c.relname AS tablename from pg_tablespace";
         SelectTableExecutor selectSchemataExecutor = new SelectTableExecutor(sql);
         selectSchemataExecutor.execute(mock(ConnectionSession.class));
-        assertThat(selectSchemataExecutor.getQueryResultMetaData().getColumnCount(), is(mockResultSetMap.size()));
+        assertThat(selectSchemataExecutor.getQueryResultMetaData().getColumnCount(), is(3));
         int count = 0;
         while (selectSchemataExecutor.getMergedResult().next()) {
             count++;
@@ -133,5 +85,40 @@ public final class SelectTableExecutorTest {
             }
         }
         assertThat(count, is(1));
+    }
+    
+    private ShardingSphereDatabase createDatabase() throws SQLException {
+        return new ShardingSphereDatabase("sharding_db", new PostgreSQLDatabaseType(), new ShardingSphereResource(Collections.singletonMap("foo_ds", new MockedDataSource(mockConnection()))),
+                mock(ShardingSphereRuleMetaData.class), Collections.singletonMap("public", new ShardingSphereSchema(Collections.singletonMap("t_order", mock(ShardingSphereTable.class)))));
+    }
+    
+    private Connection mockConnection() throws SQLException {
+        Connection result = mock(Connection.class, RETURNS_DEEP_STUBS);
+        when(result.getMetaData().getURL()).thenReturn("jdbc:mysql://localhost:3306/foo_ds");
+        ResultSet resultSet = mockResultSet();
+        when(result.prepareStatement(any(String.class)).executeQuery()).thenReturn(resultSet);
+        return result;
+    }
+    
+    private ResultSet mockResultSet() throws SQLException {
+        ResultSet result = mock(ResultSet.class, RETURNS_DEEP_STUBS);
+        Map<String, String> expectedResultSetMap = createExpectedResultSetMap();
+        List<String> keys = new ArrayList<>(expectedResultSetMap.keySet());
+        for (int i = 0; i < keys.size(); i++) {
+            when(result.getMetaData().getColumnName(i + 1)).thenReturn(keys.get(i));
+            when(result.getMetaData().getColumnLabel(i + 1)).thenReturn(keys.get(i));
+            when(result.getString(i + 1)).thenReturn(expectedResultSetMap.get(keys.get(i)));
+        }
+        when(result.next()).thenReturn(true, false);
+        when(result.getMetaData().getColumnCount()).thenReturn(expectedResultSetMap.size());
+        return result;
+    }
+    
+    private Map<String, String> createExpectedResultSetMap() {
+        Map<String, String> result = new LinkedHashMap<>();
+        result.put("tablename", "t_order_1");
+        result.put("c.oid", "0000");
+        result.put("schemaname", "public");
+        return result;
     }
 }

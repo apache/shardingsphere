@@ -17,40 +17,38 @@
 
 package org.apache.shardingsphere.infra.merge;
 
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.fixture.rule.DecoratorRuleFixture;
 import org.apache.shardingsphere.infra.merge.fixture.rule.IndependentRuleFixture;
 import org.apache.shardingsphere.infra.merge.fixture.rule.MergerRuleFixture;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class MergeEngineTest {
     
-    @Mock
-    private DatabaseType databaseType;
-    
-    @Mock
-    private ShardingSphereSchema schema;
-    
-    @Mock
-    private ConfigurationProperties props;
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private ShardingSphereDatabase database;
     
     @Mock
     private QueryResult queryResult;
@@ -58,32 +56,38 @@ public final class MergeEngineTest {
     @Mock
     private SQLStatementContext<?> sqlStatementContext;
     
+    @Before
+    public void setUp() {
+        when(database.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
+        when(database.getResource().getDatabaseType()).thenReturn(mock(DatabaseType.class));
+    }
+    
     @Test
     public void assertMergeWithIndependentRule() throws SQLException {
+        when(database.getRuleMetaData().getRules()).thenReturn(Collections.singleton(new IndependentRuleFixture()));
         when(queryResult.getValue(1, String.class)).thenReturn("test");
-        MergeEngine mergeEngine = new MergeEngine(DefaultSchema.LOGIC_NAME, databaseType, schema, props, Collections.singletonList(new IndependentRuleFixture()));
-        MergedResult actual = mergeEngine.merge(Collections.singletonList(queryResult), sqlStatementContext);
+        MergedResult actual = new MergeEngine(database, new ConfigurationProperties(new Properties())).merge(Collections.singletonList(queryResult), sqlStatementContext);
         assertThat(actual.getValue(1, String.class), is("test"));
     }
     
     @Test
     public void assertMergeWithMergerRuleOnly() throws SQLException {
-        MergeEngine mergeEngine = new MergeEngine(DefaultSchema.LOGIC_NAME, databaseType, schema, props, Collections.singletonList(new MergerRuleFixture()));
-        MergedResult actual = mergeEngine.merge(Collections.singletonList(queryResult), sqlStatementContext);
+        when(database.getRuleMetaData().getRules()).thenReturn(Collections.singleton(new MergerRuleFixture()));
+        MergedResult actual = new MergeEngine(database, new ConfigurationProperties(new Properties())).merge(Collections.singletonList(queryResult), sqlStatementContext);
         assertThat(actual.getValue(1, String.class), is("merged_value"));
     }
     
     @Test
     public void assertMergeWithDecoratorRuleOnly() throws SQLException {
-        MergeEngine mergeEngine = new MergeEngine(DefaultSchema.LOGIC_NAME, databaseType, schema, props, Collections.singletonList(new DecoratorRuleFixture()));
-        MergedResult actual = mergeEngine.merge(Collections.singletonList(queryResult), sqlStatementContext);
+        when(database.getRuleMetaData().getRules()).thenReturn(Collections.singleton(new DecoratorRuleFixture()));
+        MergedResult actual = new MergeEngine(database, new ConfigurationProperties(new Properties())).merge(Collections.singletonList(queryResult), sqlStatementContext);
         assertThat(actual.getValue(1, String.class), is("decorated_value"));
     }
     
     @Test
     public void assertMergeWithMergerRuleAndDecoratorRuleTogether() throws SQLException {
-        MergeEngine mergeEngine = new MergeEngine(DefaultSchema.LOGIC_NAME, databaseType, schema, props, Arrays.asList(new MergerRuleFixture(), new DecoratorRuleFixture()));
-        MergedResult actual = mergeEngine.merge(Collections.singletonList(queryResult), sqlStatementContext);
+        when(database.getRuleMetaData().getRules()).thenReturn(Arrays.asList(new MergerRuleFixture(), new DecoratorRuleFixture()));
+        MergedResult actual = new MergeEngine(database, new ConfigurationProperties(new Properties())).merge(Collections.singletonList(queryResult), sqlStatementContext);
         assertThat(actual.getValue(1, String.class), is("decorated_merged_value"));
     }
 }

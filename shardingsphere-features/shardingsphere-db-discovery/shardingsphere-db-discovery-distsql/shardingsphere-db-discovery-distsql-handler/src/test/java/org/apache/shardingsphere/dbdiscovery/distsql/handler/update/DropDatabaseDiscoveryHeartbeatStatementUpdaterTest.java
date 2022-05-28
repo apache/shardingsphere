@@ -24,9 +24,10 @@ import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.DropDataba
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RuleInUsedException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -43,43 +44,43 @@ import static org.junit.Assert.assertTrue;
 @RunWith(MockitoJUnitRunner.class)
 public final class DropDatabaseDiscoveryHeartbeatStatementUpdaterTest {
     
-    @Mock
-    private ShardingSphereMetaData shardingSphereMetaData;
-    
     private final DropDatabaseDiscoveryHeartbeatStatementUpdater updater = new DropDatabaseDiscoveryHeartbeatStatementUpdater();
+    
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private ShardingSphereDatabase database;
     
     @Test(expected = RequiredRuleMissedException.class)
     public void assertCheckSQLStatementWithoutCurrentHeartbeat() throws DistSQLException {
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(), null);
+        updater.checkSQLStatement(database, createSQLStatement(), null);
     }
     
     @Test(expected = RequiredRuleMissedException.class)
     public void assertCheckSQLStatementWithoutToBeDroppedHeartbeat() throws DistSQLException {
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(), new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap()));
+        updater.checkSQLStatement(database, createSQLStatement(), new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap()));
     }
     
     @Test(expected = RuleInUsedException.class)
     public void assertCheckSQLStatementWithInUsed() throws DistSQLException {
-        DatabaseDiscoveryDataSourceRuleConfiguration configuration = new DatabaseDiscoveryDataSourceRuleConfiguration("name", Collections.emptyList(), "heartbeat_name", "");
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(), new DatabaseDiscoveryRuleConfiguration(Collections.singletonList(configuration),
+        DatabaseDiscoveryDataSourceRuleConfiguration ruleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("name", Collections.emptyList(), "heartbeat_name", "");
+        updater.checkSQLStatement(database, createSQLStatement(), new DatabaseDiscoveryRuleConfiguration(Collections.singletonList(ruleConfig),
                 Collections.singletonMap("heartbeat_name", null), Collections.emptyMap()));
     }
     
     @Test
     public void assertUpdateCurrentRuleConfiguration() {
-        DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfiguration = createCurrentRuleConfiguration();
-        updater.updateCurrentRuleConfiguration(createSQLStatement(), databaseDiscoveryRuleConfiguration);
-        assertFalse(databaseDiscoveryRuleConfiguration.getDiscoveryHeartbeats().containsKey("heartbeat_name"));
+        DatabaseDiscoveryRuleConfiguration ruleConfig = createCurrentRuleConfiguration();
+        updater.updateCurrentRuleConfiguration(createSQLStatement(), ruleConfig);
+        assertFalse(ruleConfig.getDiscoveryHeartbeats().containsKey("heartbeat_name"));
     }
     
     @Test
     public void assertUpdateCurrentRuleConfigurationWithIfExists() throws DistSQLException {
-        DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfiguration = createCurrentRuleConfiguration();
+        DatabaseDiscoveryRuleConfiguration ruleConfig = createCurrentRuleConfiguration();
         DropDatabaseDiscoveryHeartbeatStatement dropDatabaseDiscoveryHeartbeatStatement = createSQLStatementWithIfExists();
-        updater.checkSQLStatement(shardingSphereMetaData, dropDatabaseDiscoveryHeartbeatStatement, databaseDiscoveryRuleConfiguration);
-        assertFalse(updater.updateCurrentRuleConfiguration(dropDatabaseDiscoveryHeartbeatStatement, databaseDiscoveryRuleConfiguration));
-        assertTrue(databaseDiscoveryRuleConfiguration.getDiscoveryHeartbeats().containsKey("heartbeat_name"));
-        assertThat(databaseDiscoveryRuleConfiguration.getDiscoveryHeartbeats().size(), is(2));
+        updater.checkSQLStatement(database, dropDatabaseDiscoveryHeartbeatStatement, ruleConfig);
+        assertFalse(updater.updateCurrentRuleConfiguration(dropDatabaseDiscoveryHeartbeatStatement, ruleConfig));
+        assertTrue(ruleConfig.getDiscoveryHeartbeats().containsKey("heartbeat_name"));
+        assertThat(ruleConfig.getDiscoveryHeartbeats().size(), is(2));
     }
     
     private DropDatabaseDiscoveryHeartbeatStatement createSQLStatement() {

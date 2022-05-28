@@ -69,6 +69,6 @@ public final class UpdateStatementContextTest {
         UpdateStatementContext actual = new UpdateStatementContext(updateStatement);
         assertThat(actual.getTablesContext().getTableNames(), is(new HashSet<>(Arrays.asList("tbl_1", "tbl_2"))));
         assertThat(actual.getWhereSegments(), is(Collections.singletonList(whereSegment)));
-        assertThat(actual.getAllTables().stream().map(a -> a.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Arrays.asList("tbl_1", "tbl_2", "tbl_2")));
+        assertThat(actual.getAllTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Arrays.asList("tbl_1", "tbl_2", "tbl_2")));
     }
 }

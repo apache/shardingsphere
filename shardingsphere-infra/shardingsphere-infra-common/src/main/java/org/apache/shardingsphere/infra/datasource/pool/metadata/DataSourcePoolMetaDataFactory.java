@@ -35,12 +35,12 @@ public final class DataSourcePoolMetaDataFactory {
     }
     
     /**
-     * Create new instance of data source pool meta data.
+     * Find instance of data source pool meta data.
      * 
      * @param dataSourceClassName data source class name
-     * @return new instance of data source pool meta data
+     * @return found instance
      */
-    public static Optional<DataSourcePoolMetaData> newInstance(final String dataSourceClassName) {
+    public static Optional<DataSourcePoolMetaData> findInstance(final String dataSourceClassName) {
         return TypedSPIRegistry.findRegisteredService(DataSourcePoolMetaData.class, dataSourceClassName);
     }
 }

@@ -20,21 +20,23 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryabl
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ExportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereIndex;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandler.HandlerParameter;
+import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,10 +44,9 @@ import org.junit.Test;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -55,26 +56,25 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ExportDatabaseConfigurationHandlerTest {
+public final class ExportDatabaseConfigurationHandlerTest extends ProxyContextRestorer {
     
     @Before
     public void init() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts().getAllDatabaseNames()).thenReturn(Collections.singletonList("sharding_db"));
-        ShardingSphereMetaData shardingSphereMetaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        when(shardingSphereMetaData.getDefaultSchema()).thenReturn(new ShardingSphereSchema(createTableMap()));
-        when(shardingSphereMetaData.getResource().getDataSources()).thenReturn(createDataSourceMap());
-        when(shardingSphereMetaData.getRuleMetaData().getConfigurations()).thenReturn(Collections.singletonList(createShardingRuleConfiguration()));
-        when(contextManager.getMetaDataContexts().getMetaData("sharding_db")).thenReturn(shardingSphereMetaData);
-        ProxyContext.getInstance().init(contextManager);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getSchemas().get("sharding_db")).thenReturn(new ShardingSphereSchema(createTableMap()));
+        when(database.getResource().getDataSources()).thenReturn(createDataSourceMap());
+        when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.singletonList(createShardingRuleConfiguration()));
+        when(contextManager.getMetaDataContexts().getMetaData().getDatabases()).thenReturn(Collections.singletonMap("sharding_db", database));
+        ProxyContext.init(contextManager);
     }
     
     @Test
     public void assertExportDatabaseExecutor() throws SQLException {
-        ExportDatabaseConfigurationHandler handler = new ExportDatabaseConfigurationHandler().init(getParameter(createSqlStatement(), mockConnectionSession()));
+        ExportDatabaseConfigurationHandler handler = new ExportDatabaseConfigurationHandler().init(createParameter(createSQLStatement(), mock(ConnectionSession.class)));
         handler.execute();
         handler.next();
-        List<Object> data = new ArrayList<>(handler.getRowData());
+        Collection<Object> data = new ArrayList<>(handler.getRowData());
         assertThat(data.size(), is(1));
     }
     
@@ -84,12 +84,16 @@ public final class ExportDatabaseConfigurationHandlerTest {
         result.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "ds_inline"));
         result.setDefaultTableShardingStrategy(new NoneShardingStrategyConfiguration());
         result.getKeyGenerators().put("snowflake", new ShardingSphereAlgorithmConfiguration("SNOWFLAKE", new Properties()));
-        Properties props = new Properties();
-        props.setProperty("algorithm-expression", "ds_${order_id % 2}");
-        result.getShardingAlgorithms().put("ds_inline", new ShardingSphereAlgorithmConfiguration("INLINE", props));
+        result.getShardingAlgorithms().put("ds_inline", new ShardingSphereAlgorithmConfiguration("INLINE", createProperties()));
         String scalingName = "default_scaling";
         result.setScalingName(scalingName);
         result.getScaling().put(scalingName, null);
+        return result;
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty("algorithm-expression", "ds_${order_id % 2}");
         return result;
     }
     
@@ -113,12 +117,10 @@ public final class ExportDatabaseConfigurationHandlerTest {
         return result;
     }
     
-    private Map<String, TableMetaData> createTableMap() {
-        Map<String, TableMetaData> result = new HashMap<>(1, 1);
-        List<ColumnMetaData> columns = Collections.singletonList(new ColumnMetaData("order_id", 0, false, false, false));
-        List<IndexMetaData> indexes = Collections.singletonList(new IndexMetaData("primary"));
-        result.put("t_order", new TableMetaData("t_order", columns, indexes, Collections.emptyList()));
-        return result;
+    private Map<String, ShardingSphereTable> createTableMap() {
+        Collection<ShardingSphereColumn> columns = Collections.singletonList(new ShardingSphereColumn("order_id", 0, false, false, false));
+        Collection<ShardingSphereIndex> indexes = Collections.singletonList(new ShardingSphereIndex("primary"));
+        return Collections.singletonMap("t_order", new ShardingSphereTable("t_order", columns, indexes, Collections.emptyList()));
     }
     
     private ShardingTableRuleConfiguration createTableRuleConfiguration() {
@@ -127,15 +129,11 @@ public final class ExportDatabaseConfigurationHandlerTest {
         return result;
     }
     
-    private ExportDatabaseConfigurationStatement createSqlStatement() {
-        return new ExportDatabaseConfigurationStatement(new SchemaSegment(0, 0, new IdentifierValue("sharding_db")), null);
+    private ExportDatabaseConfigurationStatement createSQLStatement() {
+        return new ExportDatabaseConfigurationStatement(new DatabaseSegment(0, 0, new IdentifierValue("sharding_db")), null);
     }
     
-    private ConnectionSession mockConnectionSession() {
-        return mock(ConnectionSession.class);
-    }
-    
-    private HandlerParameter<ExportDatabaseConfigurationStatement> getParameter(final ExportDatabaseConfigurationStatement statement, final ConnectionSession connectionSession) {
-        return new HandlerParameter<ExportDatabaseConfigurationStatement>().setStatement(statement).setConnectionSession(connectionSession);
+    private HandlerParameter<ExportDatabaseConfigurationStatement> createParameter(final ExportDatabaseConfigurationStatement statement, final ConnectionSession connectionSession) {
+        return new HandlerParameter<>(statement, new MySQLDatabaseType(), connectionSession);
     }
 }

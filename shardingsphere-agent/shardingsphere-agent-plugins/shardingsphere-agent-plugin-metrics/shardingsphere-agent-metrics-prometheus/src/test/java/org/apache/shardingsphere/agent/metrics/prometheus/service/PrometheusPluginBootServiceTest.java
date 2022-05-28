@@ -18,13 +18,16 @@
 package org.apache.shardingsphere.agent.metrics.prometheus.service;
 
 import org.apache.shardingsphere.agent.config.PluginConfiguration;
+import org.apache.shardingsphere.agent.metrics.prometheus.ProxyContextRestorer;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.lock.LockContext;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.memory.workerid.generator.MemoryWorkerIdGenerator;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.AfterClass;
@@ -37,7 +40,7 @@ import java.util.Properties;
 
 import static org.mockito.Mockito.mock;
 
-public final class PrometheusPluginBootServiceTest {
+public final class PrometheusPluginBootServiceTest extends ProxyContextRestorer {
     
     private static final PrometheusPluginBootService PROMETHEUS_PLUGIN_BOOT_SERVICE = new PrometheusPluginBootService();
     
@@ -48,11 +51,16 @@ public final class PrometheusPluginBootServiceTest {
     
     @Test
     public void assertStart() throws IOException {
-        ProxyContext.getInstance().getContextManager().init(mock(MetaDataContexts.class), mock(TransactionContexts.class), new InstanceContext(new ComputeNodeInstance(mock(InstanceDefinition.class)),
-                new MemoryWorkerIdGenerator(), new ModeConfiguration("Memory", null, false), mock(LockContext.class)));
-        Properties props = new Properties();
-        props.setProperty("JVM_INFORMATION_COLLECTOR_ENABLED", Boolean.TRUE.toString());
-        PROMETHEUS_PLUGIN_BOOT_SERVICE.start(new PluginConfiguration("localhost", 8090, "", props));
+        InstanceContext instanceContext = new InstanceContext(
+                new ComputeNodeInstance(mock(InstanceDefinition.class)), new MemoryWorkerIdGenerator(), new ModeConfiguration("Memory", null, false), mock(LockContext.class));
+        ProxyContext.init(new ContextManager(new MetaDataContexts(mock(MetaDataPersistService.class)), mock(TransactionContexts.class), instanceContext));
+        PROMETHEUS_PLUGIN_BOOT_SERVICE.start(new PluginConfiguration("localhost", 8090, "", createProperties()));
         new Socket().connect(new InetSocketAddress("localhost", 8090));
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty("JVM_INFORMATION_COLLECTOR_ENABLED", Boolean.TRUE.toString());
+        return result;
     }
 }

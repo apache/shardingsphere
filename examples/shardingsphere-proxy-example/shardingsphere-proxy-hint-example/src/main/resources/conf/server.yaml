@@ -40,7 +40,7 @@ rules:
     users:
       - root@:root
     provider:
-      type: ALL_PRIVILEGES_PERMITTED
+      type: ALL_PERMITTED
 
 props:
   max-connections-size-per-query: 1

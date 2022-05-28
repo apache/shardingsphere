@@ -17,146 +17,55 @@
 
 package org.apache.shardingsphere.singletable.metadata;
 
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
-import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedSchemaMetaDataBuilder;
-import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.SchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterials;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi.RuleBasedSchemaMetaDataDecoratorFactory;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.ordered.OrderedSPIRegistry;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Answers;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Map;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class SingleTableSchemaMetaDataBuilderTest {
     
-    static {
-        ShardingSphereServiceLoader.register(RuleBasedSchemaMetaDataBuilder.class);
-    }
-    
-    private SingleTableRule singleTableRule;
-    
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private DatabaseType databaseType;
-    
-    @Mock
-    private DataSource dataSource;
-    
-    @Mock
-    private ConfigurationProperties props;
-    
-    @Before
-    public void setUp() throws SQLException {
-        Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
-        when(dataSource.getConnection()).thenReturn(connection);
-        mockSingleTableLoad(connection);
-        singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), databaseType,
-                Collections.singletonMap("ds", dataSource), Collections.emptyList(), new ConfigurationProperties(new Properties()));
-        when(databaseType.formatTableNamePattern("tbl")).thenReturn("tbl");
-        mockTableIsExist(connection);
-        mockTables(connection);
-        when(databaseType.getQuoteCharacter().wrap("tbl")).thenReturn("tbl");
-    }
-    
-    private void mockTables(final Connection connection) throws SQLException {
-        ResultSet resultSet = mock(ResultSet.class);
-        when(resultSet.next()).thenReturn(true, true, true, false);
-        when(resultSet.getString("TABLE_NAME")).thenReturn("tbl");
-        when(resultSet.getString("COLUMN_NAME")).thenReturn("id", "name", "doc");
-        when(resultSet.getInt("DATA_TYPE")).thenReturn(4, 12, -1);
-        when(connection.getMetaData().getColumns(any(), any(), any(), eq("%"))).thenReturn(resultSet);
-        ResultSet indexResultSet = mock(ResultSet.class, Answers.RETURNS_DEEP_STUBS);
-        when(connection.getMetaData().getIndexInfo(any(), any(), eq("tbl"), eq(false), eq(false))).thenReturn(indexResultSet);
-        when(indexResultSet.getString("INDEX_NAME")).thenReturn("id", "idx_name_tbl");
-        when(indexResultSet.next()).thenReturn(true, true, false);
-        ResultSet primaryResultSet = mock(ResultSet.class);
-        when(connection.getMetaData().getPrimaryKeys(any(), any(), eq("tbl"))).thenReturn(primaryResultSet);
-        when(primaryResultSet.next()).thenReturn(true, false);
-        when(primaryResultSet.getString("COLUMN_NAME")).thenReturn("id");
-    }
-    
-    private void mockTableIsExist(final Connection connection) throws SQLException {
-        ResultSet resultSet = mock(ResultSet.class);
-        when(connection.getMetaData().getTables(any(), any(), eq("tbl"), eq(null))).thenReturn(resultSet);
-        when(resultSet.next()).thenReturn(true);
-    }
-    
-    private void mockSingleTableLoad(final Connection connection) throws SQLException {
-        ResultSet resultSet = mock(ResultSet.class);
-        when(connection.getMetaData().getTables(any(), any(), eq(null), any())).thenReturn(resultSet);
-        when(resultSet.next()).thenReturn(true, false);
-        when(resultSet.getString("TABLE_NAME")).thenReturn("tbl");
-    }
+    private static final String TABLE_NAME = "t_single";
     
     @Test
-    public void testLoad() throws SQLException {
+    public void assertDecorate() {
+        SingleTableRule singleTableRule = mock(SingleTableRule.class);
         Collection<ShardingSphereRule> rules = Collections.singletonList(singleTableRule);
-        SingleTableSchemaMetaDataBuilder builder = (SingleTableSchemaMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(RuleBasedSchemaMetaDataBuilder.class, rules).get(singleTableRule);
-        Map<String, SchemaMetaData> actual = builder.load(Collections.singleton("tbl"),
-                singleTableRule, new SchemaBuilderMaterials(databaseType, Collections.singletonMap("ds", dataSource), rules, props, "sharding_db"));
-        assertFalse(actual.isEmpty());
-        assertTrue(actual.containsKey("sharding_db"));
-        assertTrue(actual.get("sharding_db").getTables().containsKey("tbl"));
-        TableMetaData actualTableMetaData = actual.get("sharding_db").getTables().get("tbl");
-        assertThat(actualTableMetaData.getColumns().size(), is(3));
-        List<String> columnNames = new ArrayList<>(actualTableMetaData.getColumns().keySet());
-        assertThat(actualTableMetaData.getColumns().get(columnNames.get(0)), is(new ColumnMetaData("id", 4, true, false, false)));
-        assertThat(actualTableMetaData.getColumns().get(columnNames.get(1)), is(new ColumnMetaData("name", 12, false, false, false)));
-        assertThat(actualTableMetaData.getColumns().get(columnNames.get(2)), is(new ColumnMetaData("doc", -1, false, false, false)));
-    }
-    
-    @Test
-    public void testDecorate() throws SQLException {
-        Collection<ShardingSphereRule> rules = Collections.singletonList(singleTableRule);
-        final SingleTableSchemaMetaDataBuilder builder = (SingleTableSchemaMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(RuleBasedSchemaMetaDataBuilder.class, rules).get(singleTableRule);
-        Map<String, SchemaMetaData> actual = builder.load(Collections.singleton("tbl"), singleTableRule,
-                new SchemaBuilderMaterials(databaseType, Collections.singletonMap("ds", dataSource), rules, props, "sharding_db"));
-        assertFalse(actual.isEmpty());
-        assertTrue(actual.containsKey("sharding_db"));
-        TableMetaData actualTableMetaData = actual.get("sharding_db").getTables().get("tbl");
-        assertThat(actualTableMetaData.getColumns().size(), is(3));
-        List<String> actualColumnNames = new ArrayList<>(actualTableMetaData.getColumns().keySet());
-        assertThat(actualTableMetaData.getColumns().get(actualColumnNames.get(0)), is(new ColumnMetaData("id", 4, true, false, false)));
-        assertThat(actualTableMetaData.getColumns().get(actualColumnNames.get(1)), is(new ColumnMetaData("name", 12, false, false, false)));
-        assertThat(actualTableMetaData.getColumns().get(actualColumnNames.get(2)), is(new ColumnMetaData("doc", -1, false, false, false)));
-        TableMetaData tableMetaData = builder.decorate(actual, singleTableRule, mock(SchemaBuilderMaterials.class)).get("sharding_db").getTables().get("tbl");
-        actualColumnNames = new ArrayList<>(tableMetaData.getColumns().keySet());
-        assertThat(tableMetaData.getColumns().get(actualColumnNames.get(0)), is(new ColumnMetaData("id", 4, true, false, false)));
-        assertThat(tableMetaData.getColumns().get(actualColumnNames.get(1)), is(new ColumnMetaData("name", 12, false, false, false)));
-        assertThat(tableMetaData.getColumns().get(actualColumnNames.get(2)), is(new ColumnMetaData("doc", -1, false, false, false)));
+        SingleTableSchemaMetaDataDecorator builder = (SingleTableSchemaMetaDataDecorator) RuleBasedSchemaMetaDataDecoratorFactory.getInstances(rules).get(singleTableRule);
+        Map<String, SchemaMetaData> schemaMetaDataMap = mockSchemaMetaDataMap();
+        TableMetaData tableMetaData = builder.decorate(schemaMetaDataMap, singleTableRule, mock(GenericSchemaBuilderMaterials.class)).get("sharding_db").getTables().iterator().next();
+        Iterator<ColumnMetaData> columnsIterator = tableMetaData.getColumns().iterator();
+        assertThat(columnsIterator.next(), is(new ColumnMetaData("id", 4, true, false, false)));
+        assertThat(columnsIterator.next(), is(new ColumnMetaData("name", 12, false, false, false)));
+        assertThat(columnsIterator.next(), is(new ColumnMetaData("doc", -1, false, false, false)));
         assertThat(tableMetaData.getIndexes().size(), is(2));
-        assertThat(tableMetaData.getIndexes().get("id"), is(new IndexMetaData("id")));
-        assertThat(tableMetaData.getIndexes().get("idx_name"), is(new IndexMetaData("idx_name")));
+        Iterator<IndexMetaData> indexesIterator = tableMetaData.getIndexes().iterator();
+        assertThat(indexesIterator.next(), is(new IndexMetaData("id")));
+        assertThat(indexesIterator.next(), is(new IndexMetaData("idx_name")));
+    }
+    
+    private Map<String, SchemaMetaData> mockSchemaMetaDataMap() {
+        Collection<ColumnMetaData> columns = Arrays.asList(new ColumnMetaData("id", 4, true, false, false),
+                new ColumnMetaData("name", 12, false, false, false),
+                new ColumnMetaData("doc", -1, false, false, false));
+        Collection<IndexMetaData> indexMetaDataList = Arrays.asList(new IndexMetaData("id_" + TABLE_NAME), new IndexMetaData("idx_name_" + TABLE_NAME));
+        Collection<TableMetaData> tableMetaDataList = new LinkedList<>();
+        tableMetaDataList.add(new TableMetaData(TABLE_NAME, columns, indexMetaDataList, Collections.emptyList()));
+        return Collections.singletonMap("sharding_db", new SchemaMetaData("sharding_db", tableMetaDataList));
     }
 }

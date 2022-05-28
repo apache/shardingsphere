@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rql;
 
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.CountSchemaRulesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.CountDatabaseRulesStatement;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.rule.SchemaRulesCountResultSet;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
@@ -56,7 +56,7 @@ import static org.mockito.Mockito.when;
 public final class SchemaRulesCountResultSetTest {
     
     @Mock
-    private ShardingSphereMetaData shardingSphereMetaData;
+    private ShardingSphereDatabase database;
     
     @Before
     public void before() {
@@ -64,17 +64,17 @@ public final class SchemaRulesCountResultSetTest {
         rules.add(mockSingleTableRule());
         ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class);
         when(ruleMetaData.findRules(any())).thenReturn(rules);
-        Collection<RuleConfiguration> ruleConfiguration = new LinkedList<>();
-        ruleConfiguration.add(mockShardingTableRule());
-        ruleConfiguration.add(mockReadwriteSplittingRule());
-        ruleConfiguration.add(mockEncryptRule());
-        when(ruleMetaData.getConfigurations()).thenReturn(ruleConfiguration);
-        when(shardingSphereMetaData.getRuleMetaData()).thenReturn(ruleMetaData);
+        Collection<RuleConfiguration> ruleConfigs = new LinkedList<>();
+        ruleConfigs.add(mockShardingTableRule());
+        ruleConfigs.add(mockReadwriteSplittingRule());
+        ruleConfigs.add(mockEncryptRule());
+        when(ruleMetaData.getConfigurations()).thenReturn(ruleConfigs);
+        when(database.getRuleMetaData()).thenReturn(ruleMetaData);
     }
     
     private SingleTableRule mockSingleTableRule() {
         SingleTableRule result = mock(SingleTableRule.class);
-        when(result.export(ExportableConstants.EXPORTABLE_KEY_SINGLE_TABLES)).thenReturn(java.util.Optional.of(Arrays.asList("single_table_1", "single_table_2")));
+        when(result.export(ExportableConstants.EXPORT_SINGLE_TABLES)).thenReturn(java.util.Optional.of(Arrays.asList("single_table_1", "single_table_2")));
         return result;
     }
     
@@ -102,7 +102,7 @@ public final class SchemaRulesCountResultSetTest {
     @Test
     public void assertGetRowData() {
         DistSQLResultSet resultSet = new SchemaRulesCountResultSet();
-        resultSet.init(shardingSphereMetaData, mock(CountSchemaRulesStatement.class));
+        resultSet.init(database, mock(CountDatabaseRulesStatement.class));
         Collection<Object> actual = resultSet.getRowData();
         assertThat(actual.size(), is(2));
         Iterator<Object> rowData = actual.iterator();
@@ -148,8 +148,8 @@ public final class SchemaRulesCountResultSetTest {
     @Test
     public void assertGetRowDataWithoutConfiguration() {
         DistSQLResultSet resultSet = new SchemaRulesCountResultSet();
-        when(shardingSphereMetaData.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
-        resultSet.init(shardingSphereMetaData, mock(CountSchemaRulesStatement.class));
+        when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
+        resultSet.init(database, mock(CountDatabaseRulesStatement.class));
         Collection<Object> actual = resultSet.getRowData();
         assertThat(actual.size(), is(2));
         Iterator<Object> rowData = actual.iterator();

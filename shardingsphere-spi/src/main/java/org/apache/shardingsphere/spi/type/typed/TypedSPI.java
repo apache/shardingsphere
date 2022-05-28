@@ -30,7 +30,9 @@ public interface TypedSPI {
      * 
      * @return type
      */
-    String getType();
+    default String getType() {
+        return "";
+    }
     
     /**
      * Get type aliases.

@@ -17,47 +17,42 @@
 
 package org.apache.shardingsphere.shadow.route.engine.determiner;
 
-import org.apache.shardingsphere.shadow.algorithm.shadow.column.ColumnRegexMatchShadowAlgorithm;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
 import org.apache.shardingsphere.shadow.api.shadow.column.ColumnShadowAlgorithm;
 import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
 import org.apache.shardingsphere.shadow.condition.ShadowDetermineCondition;
+import org.apache.shardingsphere.shadow.factory.ShadowAlgorithmFactory;
 import org.junit.Test;
 
-import java.util.Collection;
-import java.util.LinkedList;
+import java.util.Collections;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class ColumnShadowAlgorithmDeterminerTest {
     
     @Test
     public void assertIsShadow() {
-        assertThat(ColumnShadowAlgorithmDeterminer.isShadow(createColumnShadowAlgorithms(), createShadowDetermineCondition()), is(true));
+        assertTrue(ColumnShadowAlgorithmDeterminer.isShadow(createColumnShadowAlgorithms(), createShadowDetermineCondition()));
     }
     
+    @SuppressWarnings("unchecked")
     private ColumnShadowAlgorithm<Comparable<?>> createColumnShadowAlgorithms() {
-        final ColumnShadowAlgorithm<Comparable<?>> result = new ColumnRegexMatchShadowAlgorithm();
-        Properties properties = new Properties();
-        properties.setProperty("column", "user_id");
-        properties.setProperty("operation", "insert");
-        properties.setProperty("regex", "[1]");
-        result.setProps(properties);
-        result.init();
+        return (ColumnShadowAlgorithm<Comparable<?>>) ShadowAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("REGEX_MATCH", createProperties()));
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty("column", "user_id");
+        result.setProperty("operation", "insert");
+        result.setProperty("regex", "[1]");
         return result;
     }
     
     private ShadowDetermineCondition createShadowDetermineCondition() {
         ShadowDetermineCondition result = new ShadowDetermineCondition("t_order", ShadowOperationType.INSERT);
-        result.initShadowColumnCondition(createColumnValuesMapping());
+        result.initShadowColumnCondition(new ShadowColumnCondition("t_order", "user_id", Collections.singleton(1)));
         return result;
-    }
-    
-    private ShadowColumnCondition createColumnValuesMapping() {
-        Collection<Comparable<?>> values = new LinkedList<>();
-        values.add(1);
-        return new ShadowColumnCondition("t_order", "user_id", values);
     }
 }

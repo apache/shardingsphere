@@ -22,9 +22,9 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLDelimiterStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.DelimiterStatementTestCase;
-import org.junit.Assert;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * delimiter statement assert.
@@ -40,6 +40,6 @@ public final class MySQLDelimiterStatementAssert {
      * @param expected expected delimiter statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLDelimiterStatement actual, final DelimiterStatementTestCase expected) {
-        Assert.assertThat(assertContext.getText("delimiter name assertion error: "), actual.getDelimiterName(), is(expected.getDelimiterName()));
+        assertThat(assertContext.getText("delimiter name assertion error: "), actual.getDelimiterName(), is(expected.getDelimiterName()));
     }
 }

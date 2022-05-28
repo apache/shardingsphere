@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.route.engine;
 
 import org.apache.shardingsphere.infra.binder.LogicSQL;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.route.engine.impl.AllSQLRouteExecutor;
@@ -42,10 +42,10 @@ public final class AllSQLRouteExecutorTest {
     @Test
     public void assertRouteSuccess() {
         String name = "test";
-        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        when(metaData.getResource().getDataSources().keySet()).thenReturn(Stream.of(name).collect(Collectors.toSet()));
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getResource().getDataSources().keySet()).thenReturn(Stream.of(name).collect(Collectors.toSet()));
         AllSQLRouteExecutor allSQLRouteExecutor = new AllSQLRouteExecutor();
-        RouteContext actual = allSQLRouteExecutor.route(mock(LogicSQL.class), metaData);
+        RouteContext actual = allSQLRouteExecutor.route(mock(LogicSQL.class), database);
         assertThat(actual.getRouteUnits().size(), is(1));
         RouteUnit routeUnit = actual.getRouteUnits().iterator().next();
         assertThat(routeUnit.getDataSourceMapper().getLogicName(), is(name));

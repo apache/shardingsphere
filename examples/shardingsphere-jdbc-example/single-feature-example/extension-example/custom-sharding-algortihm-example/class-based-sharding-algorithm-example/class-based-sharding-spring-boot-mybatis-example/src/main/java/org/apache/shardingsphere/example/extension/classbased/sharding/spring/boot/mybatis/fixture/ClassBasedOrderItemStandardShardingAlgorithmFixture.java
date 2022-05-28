@@ -20,7 +20,6 @@ package org.apache.shardingsphere.example.extension.classbased.sharding.spring.b
 import com.google.common.base.Preconditions;
 import com.google.common.primitives.Ints;
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
@@ -28,18 +27,18 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.StandardSharding
 import java.util.Collection;
 import java.util.Properties;
 
-@Getter
-@Setter
 public final class ClassBasedOrderItemStandardShardingAlgorithmFixture implements StandardShardingAlgorithm<Long> {
     
     private static final String SHARDING_COUNT = "sharding-count";
     
+    @Getter
+    private Properties props;
+    
     private Integer shardingCount;
     
-    private Properties props = new Properties();
-    
     @Override
-    public void init() {
+    public void init(final Properties props) {
+        this.props = props;
         Preconditions.checkArgument(props.containsKey(SHARDING_COUNT), "%s can not be null.", SHARDING_COUNT);
         shardingCount = Ints.tryParse(props.getProperty(SHARDING_COUNT));
         Preconditions.checkArgument(null != shardingCount, "%s is not valid.", SHARDING_COUNT);
@@ -58,10 +57,5 @@ public final class ClassBasedOrderItemStandardShardingAlgorithmFixture implement
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Long> shardingValue) {
         return availableTargetNames;
-    }
-    
-    @Override
-    public String getType() {
-        return "T_ORDER_ITEM_CLASS_BASED";
     }
 }

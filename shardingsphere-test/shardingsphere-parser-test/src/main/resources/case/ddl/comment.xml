@@ -18,18 +18,18 @@
 
 <sql-parser-test-cases>
     <comment sql-case-id="comment_on_policy" />
-    <comment sql-case-id="comment_on_column" >
+    <comment sql-case-id="comment_on_column">
         <table name="employee" start-index="18" stop-index="26" />
         <column name="job_id" start-index="28" stop-index="33" />
     </comment>
     <comment sql-case-id="comment_on_edition" />
-    <comment sql-case-id="comment_on_indextype" >
+    <comment sql-case-id="comment_on_indextype">
         <indextype name="indtype" start-index="21" stop-index="27" />
     </comment>
     <comment sql-case-id="comment_on_view" />
     <comment sql-case-id="comment_on_model" />
     <comment sql-case-id="comment_on_operator" />
-    <comment sql-case-id="comment_on_table" >
+    <comment sql-case-id="comment_on_table">
         <table name="employee" start-index="17" stop-index="25" />
     </comment>
     <comment sql-case-id="comment_on_constraint" />

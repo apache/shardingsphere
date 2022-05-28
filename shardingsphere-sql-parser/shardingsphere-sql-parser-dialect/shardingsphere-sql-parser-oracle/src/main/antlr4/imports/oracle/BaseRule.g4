@@ -97,7 +97,7 @@ unreservedWord
     | SYSGUID | SYSBACKUP | SYSDBA | SYSDG | SYSKM | SYSOPER | DBA_RECYCLEBIN |SCHEMA
     | DO | DEFINER | CURRENT_USER | CASCADED | CLOSE | OPEN | NEXT | NAME | NAMES
     | COLLATION | REAL | TYPE | FIRST | RANK | SAMPLE | SYSTIMESTAMP | INTERVAL | MINUTE | ANY 
-    | LENGTH | SINGLE_C | capacityUnit
+    | LENGTH | SINGLE_C | capacityUnit | TARGET
     ;
 
 schemaName
@@ -281,6 +281,10 @@ parameterName
     ;
 
 editionName
+    : identifier
+    ;
+
+outlineName
     : identifier
     ;
 
@@ -1252,4 +1256,28 @@ externalDatatype
     
 capacityUnit
     : ('K' | 'M' | 'G' | 'T' | 'P' | 'E')
+    ;
+
+attributeDimensionName
+    : identifier
+    ;
+
+sequenceName
+    : identifier
+    ;
+    
+spfileName
+    : STRING_
+    ;
+
+pfileName
+    : STRING_
+    ;
+
+characterSetName
+    : identifier
+    ;
+
+quotaUnit
+    : ('M' | 'G' | 'T' | 'P' | 'E')
     ;

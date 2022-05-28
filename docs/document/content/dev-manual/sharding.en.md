@@ -11,18 +11,21 @@ chapter = true
 | ----------------------------------- | ---------------------------------------------- |
 | ShardingAlgorithm                   | Sharding algorithm                             |
 
-| *Implementation Class*              | *Description*                                  |
-| ----------------------------------- | ---------------------------------------------- |
-| BoundaryBasedRangeShardingAlgorithm | Boundary based range sharding algorithm        |
-| VolumeBasedRangeShardingAlgorithm   | Volume based range sharding algorithm          |
-| ComplexInlineShardingAlgorithm      | Complex inline sharding algorithm              |
-| AutoIntervalShardingAlgorithm       | Mutable interval sharding algorithm            |
-| ClassBasedShardingAlgorithm         | Class based sharding algorithm                 |
-| HintInlineShardingAlgorithm         | Hint inline sharding algorithm                 |
-| IntervalShardingAlgorithm           | Fixed interval sharding algorithm              |
-| HashModShardingAlgorithm            | Hash modulo sharding algorithm                 |
-| InlineShardingAlgorithm             | Inline sharding algorithm                      |
-| ModShardingAlgorithm                | Modulo sharding algorithm                      |
+| *Implementation Class*                  | *Description*                                                           |
+|-----------------------------------------|-------------------------------------------------------------------------|
+| BoundaryBasedRangeShardingAlgorithm     | Boundary based range sharding algorithm                                 |
+| VolumeBasedRangeShardingAlgorithm       | Volume based range sharding algorithm                                   |
+| ComplexInlineShardingAlgorithm          | Complex inline sharding algorithm                                       |
+| AutoIntervalShardingAlgorithm           | Mutable interval sharding algorithm                                     |
+| ClassBasedShardingAlgorithm             | Class based sharding algorithm                                          |
+| HintInlineShardingAlgorithm             | Hint inline sharding algorithm                                          |
+| IntervalShardingAlgorithm               | Fixed interval sharding algorithm                                       |
+| HashModShardingAlgorithm                | Hash modulo sharding algorithm                                          |
+| InlineShardingAlgorithm                 | Inline sharding algorithm                                               |
+| ModShardingAlgorithm                    | Modulo sharding algorithm                                               |
+| CosIdModShardingAlgorithm               | Modulo sharding algorithm provided by CosId                             |
+| CosIdIntervalShardingAlgorithm          | Fixed interval sharding algorithm provided by CosId                     |
+| CosIdSnowflakeIntervalShardingAlgorithm | Snowflake key-based fixed interval sharding algorithm provided by CosId |
 
 ## KeyGenerateAlgorithm
 
@@ -30,10 +33,13 @@ chapter = true
 | ----------------------------- | -------------------------------- |
 | KeyGenerateAlgorithm          | Key generate algorithm           |
 
-| *Implementation Class*        | *Description*                    |
-| ----------------------------- | -------------------------------- |
-| SnowflakeKeyGenerateAlgorithm | Snowflake key generate algorithm |
-| UUIDKeyGenerateAlgorithm      | UUID key generate algorithm      |
+| *Implementation Class*             | *Description*                                      |
+|----------------------------------- |--------------------------------------------------- |
+| SnowflakeKeyGenerateAlgorithm      | Snowflake key generate algorithm                   |
+| UUIDKeyGenerateAlgorithm           | UUID key generate algorithm                        |
+| CosIdKeyGenerateAlgorithm          | CosId key generate algorithm                       |
+| CosIdSnowflakeKeyGenerateAlgorithm | Snowflake key generate algorithm provided by CosId |
+| NanoIdKeyGenerateAlgorithm         | NanoId key generate algorithm                      |
 
 ## DatetimeService
 

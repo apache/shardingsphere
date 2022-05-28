@@ -24,8 +24,10 @@ import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
+import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
 import java.util.Collections;
 import java.util.List;
@@ -38,9 +40,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public final class EncryptAlgorithmMetaData {
     
-    private final String schemaName;
-    
-    private final ShardingSphereSchema schema;
+    private final ShardingSphereDatabase database;
     
     private final EncryptRule encryptRule;
     
@@ -58,13 +58,14 @@ public final class EncryptAlgorithmMetaData {
     }
     
     /**
-     * Judge whether table is support QueryWithCipherColumn or not.
+     * Judge whether column is support QueryWithCipherColumn or not.
      *
      * @param tableName table name
-     * @return whether table is support QueryWithCipherColumn or not
+     * @param columnName column name
+     * @return whether column is support QueryWithCipherColumn or not
      */
-    public boolean isQueryWithCipherColumn(final String tableName) {
-        return encryptRule.isQueryWithCipherColumn(tableName);
+    public boolean isQueryWithCipherColumn(final String tableName, final String columnName) {
+        return encryptRule.isQueryWithCipherColumn(tableName, columnName);
     }
     
     /**
@@ -78,9 +79,12 @@ public final class EncryptAlgorithmMetaData {
         if (!columnProjection.isPresent()) {
             return Optional.empty();
         }
-        Map<String, String> expressionTableNames = selectStatementContext.getTablesContext().findTableNamesByColumnProjection(Collections.singletonList(columnProjection.get()), schema);
+        TablesContext tablesContext = selectStatementContext.getTablesContext();
+        String schemaName = tablesContext.getSchemaName().orElse(DatabaseTypeEngine.getDefaultSchemaName(selectStatementContext.getDatabaseType(), database.getName()));
+        Map<String, String> expressionTableNames = tablesContext.findTableNamesByColumnProjection(
+                Collections.singletonList(columnProjection.get()), database.getSchemas().get(schemaName));
         Optional<String> tableName = findTableName(columnProjection.get(), expressionTableNames);
-        return tableName.map(optional -> EncryptContextBuilder.build(schemaName, optional, columnProjection.get().getName(), encryptRule));
+        return tableName.map(optional -> EncryptContextBuilder.build(database.getName(), schemaName, optional, columnProjection.get().getName(), encryptRule));
     }
     
     private Optional<ColumnProjection> findColumnProjection(final int columnIndex) {

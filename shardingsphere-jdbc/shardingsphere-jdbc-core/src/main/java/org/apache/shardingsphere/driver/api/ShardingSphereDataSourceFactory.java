@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -47,7 +47,7 @@ public final class ShardingSphereDataSourceFactory {
      * @throws SQLException SQL exception
      */
     public static DataSource createDataSource(final String databaseName, final ModeConfiguration modeConfig) throws SQLException {
-        return new ShardingSphereDataSource(Strings.isNullOrEmpty(databaseName) ? DefaultSchema.LOGIC_NAME : databaseName, modeConfig);
+        return new ShardingSphereDataSource(Strings.isNullOrEmpty(databaseName) ? DefaultDatabase.LOGIC_NAME : databaseName, modeConfig);
     }
     
     /**
@@ -58,7 +58,7 @@ public final class ShardingSphereDataSourceFactory {
      * @throws SQLException SQL exception
      */
     public static DataSource createDataSource(final ModeConfiguration modeConfig) throws SQLException {
-        return createDataSource(DefaultSchema.LOGIC_NAME, modeConfig);
+        return createDataSource(DefaultDatabase.LOGIC_NAME, modeConfig);
     }
     
     /**
@@ -74,7 +74,7 @@ public final class ShardingSphereDataSourceFactory {
      */
     public static DataSource createDataSource(final String databaseName, final ModeConfiguration modeConfig,
                                               final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> configs, final Properties props) throws SQLException {
-        return new ShardingSphereDataSource(Strings.isNullOrEmpty(databaseName) ? DefaultSchema.LOGIC_NAME : databaseName, modeConfig, dataSourceMap, configs, props);
+        return new ShardingSphereDataSource(Strings.isNullOrEmpty(databaseName) ? DefaultDatabase.LOGIC_NAME : databaseName, modeConfig, dataSourceMap, configs, props);
     }
     
     /**
@@ -89,7 +89,7 @@ public final class ShardingSphereDataSourceFactory {
      */
     public static DataSource createDataSource(final ModeConfiguration modeConfig,
                                               final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> configs, final Properties props) throws SQLException {
-        return createDataSource(DefaultSchema.LOGIC_NAME, modeConfig, dataSourceMap, configs, props);
+        return createDataSource(DefaultDatabase.LOGIC_NAME, modeConfig, dataSourceMap, configs, props);
     }
     
     /**
@@ -105,7 +105,7 @@ public final class ShardingSphereDataSourceFactory {
      */
     public static DataSource createDataSource(final String databaseName, final ModeConfiguration modeConfig,
                                               final DataSource dataSource, final Collection<RuleConfiguration> configs, final Properties props) throws SQLException {
-        return createDataSource(databaseName, modeConfig, Collections.singletonMap(Strings.isNullOrEmpty(databaseName) ? DefaultSchema.LOGIC_NAME : databaseName, dataSource), configs, props);
+        return createDataSource(databaseName, modeConfig, Collections.singletonMap(Strings.isNullOrEmpty(databaseName) ? DefaultDatabase.LOGIC_NAME : databaseName, dataSource), configs, props);
     }
     
     /**
@@ -120,7 +120,7 @@ public final class ShardingSphereDataSourceFactory {
      */
     public static DataSource createDataSource(final ModeConfiguration modeConfig,
                                               final DataSource dataSource, final Collection<RuleConfiguration> configs, final Properties props) throws SQLException {
-        return createDataSource(modeConfig, Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSource), configs, props);
+        return createDataSource(modeConfig, Collections.singletonMap(DefaultDatabase.LOGIC_NAME, dataSource), configs, props);
     }
     
     /**

@@ -24,8 +24,8 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.AlgorithmInUsedExc
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.distsql.handler.update.AlterShadowRuleStatementUpdater;
@@ -35,6 +35,7 @@ import org.apache.shardingsphere.shadow.distsql.parser.statement.AlterShadowRule
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -51,14 +52,14 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class AlterShadowRuleStatementUpdaterTest {
     
-    @Mock
-    private ShardingSphereMetaData shardingSphereMetaData;
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private ShardingSphereDatabase database;
     
     @Mock
     private ShardingSphereResource resource;
     
     @Mock
-    private ShadowRuleConfiguration currentConfiguration;
+    private ShadowRuleConfiguration currentConfig;
     
     private final AlterShadowRuleStatementUpdater updater = new AlterShadowRuleStatementUpdater();
     
@@ -67,26 +68,26 @@ public final class AlterShadowRuleStatementUpdaterTest {
         Map<String, ShadowDataSourceConfiguration> map = new HashMap<>();
         map.put("initRuleName1", new ShadowDataSourceConfiguration("ds1", "ds_shadow1"));
         map.put("initRuleName2", new ShadowDataSourceConfiguration("ds2", "ds_shadow2"));
-        when(shardingSphereMetaData.getResource()).thenReturn(resource);
-        when(currentConfiguration.getDataSources()).thenReturn(map);
+        when(database.getResource()).thenReturn(resource);
+        when(currentConfig.getDataSources()).thenReturn(map);
     }
     
     @Test(expected = RequiredRuleMissedException.class)
     public void assertExecuteWithoutCurrentConfiguration() throws DistSQLException {
         ShadowRuleSegment ruleSegment = new ShadowRuleSegment("ruleName", null, null, null);
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(ruleSegment, ruleSegment), null);
+        updater.checkSQLStatement(database, createSQLStatement(ruleSegment, ruleSegment), null);
     }
     
     @Test(expected = DuplicateRuleException.class)
     public void assertExecuteWithDuplicateRuleName() throws DistSQLException {
         ShadowRuleSegment ruleSegment = new ShadowRuleSegment("ruleName", null, null, null);
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(ruleSegment, ruleSegment), currentConfiguration);
+        updater.checkSQLStatement(database, createSQLStatement(ruleSegment, ruleSegment), currentConfig);
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
     public void assertExecuteWithRuleNameNotInMetaData() throws DistSQLException {
         ShadowRuleSegment ruleSegment = new ShadowRuleSegment("ruleName", null, null, null);
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(ruleSegment), currentConfiguration);
+        updater.checkSQLStatement(database, createSQLStatement(ruleSegment), currentConfig);
     }
     
     @Test(expected = RequiredResourceMissedException.class)
@@ -94,7 +95,7 @@ public final class AlterShadowRuleStatementUpdaterTest {
         List<String> dataSources = Arrays.asList("ds", "ds0");
         when(resource.getNotExistedResources(any())).thenReturn(dataSources);
         AlterShadowRuleStatement sqlStatement = createSQLStatement(new ShadowRuleSegment("initRuleName1", "ds3", null, null));
-        updater.checkSQLStatement(shardingSphereMetaData, sqlStatement, currentConfiguration);
+        updater.checkSQLStatement(database, sqlStatement, currentConfig);
     }
     
     @Test(expected = AlgorithmInUsedException.class)
@@ -104,7 +105,7 @@ public final class AlterShadowRuleStatementUpdaterTest {
         ShadowAlgorithmSegment segment = new ShadowAlgorithmSegment("algorithmName", new AlgorithmSegment("name", prop));
         AlterShadowRuleStatement sqlStatement = createSQLStatement(new ShadowRuleSegment("initRuleName1", "ds", null, Collections.singletonMap("t_order", Collections.singleton(segment))),
                 new ShadowRuleSegment("initRuleName2", "ds1", null, Collections.singletonMap("t_order_1", Collections.singletonList(segment))));
-        updater.checkSQLStatement(shardingSphereMetaData, sqlStatement, currentConfiguration);
+        updater.checkSQLStatement(database, sqlStatement, currentConfig);
     }
     
     @Test(expected = AlgorithmInUsedException.class)
@@ -114,7 +115,7 @@ public final class AlterShadowRuleStatementUpdaterTest {
         ShadowAlgorithmSegment segment = new ShadowAlgorithmSegment("algorithmName", new AlgorithmSegment("name", prop));
         AlterShadowRuleStatement sqlStatement = createSQLStatement(new ShadowRuleSegment("initRuleName1", "ds", null, Collections.singletonMap("t_order", Collections.singleton(segment))),
                 new ShadowRuleSegment("initRuleName2", "ds1", null, Collections.singletonMap("t_order_1", Collections.singletonList(segment))));
-        updater.checkSQLStatement(shardingSphereMetaData, sqlStatement, currentConfiguration);
+        updater.checkSQLStatement(database, sqlStatement, currentConfig);
     }
     
     @Test
@@ -125,7 +126,7 @@ public final class AlterShadowRuleStatementUpdaterTest {
         ShadowAlgorithmSegment segment2 = new ShadowAlgorithmSegment("algorithmName2", new AlgorithmSegment("name", prop));
         AlterShadowRuleStatement sqlStatement = createSQLStatement(new ShadowRuleSegment("initRuleName1", "ds", null, Collections.singletonMap("t_order", Collections.singleton(segment1))),
                 new ShadowRuleSegment("initRuleName2", "ds1", null, Collections.singletonMap("t_order_1", Collections.singletonList(segment2))));
-        updater.checkSQLStatement(shardingSphereMetaData, sqlStatement, currentConfiguration);
+        updater.checkSQLStatement(database, sqlStatement, currentConfig);
     }
     
     private AlterShadowRuleStatement createSQLStatement(final ShadowRuleSegment... ruleSegments) {

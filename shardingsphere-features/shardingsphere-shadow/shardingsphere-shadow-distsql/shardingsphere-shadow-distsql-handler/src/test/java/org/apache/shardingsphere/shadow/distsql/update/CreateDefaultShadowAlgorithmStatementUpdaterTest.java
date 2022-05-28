@@ -19,12 +19,13 @@ package org.apache.shardingsphere.shadow.distsql.update;
 
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredAlgorithmMissedException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.distsql.handler.update.CreateDefaultShadowAlgorithmStatementUpdater;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.CreateDefaultShadowAlgorithmStatement;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -35,21 +36,17 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class CreateDefaultShadowAlgorithmStatementUpdaterTest {
     
-    @Mock
-    private ShardingSphereMetaData shardingSphereMetaData;
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private ShardingSphereDatabase database;
     
     @Mock
-    private ShadowRuleConfiguration currentConfiguration;
+    private ShadowRuleConfiguration currentConfig;
     
     private final CreateDefaultShadowAlgorithmStatementUpdater updater = new CreateDefaultShadowAlgorithmStatementUpdater();
     
     @Test(expected = RequiredAlgorithmMissedException.class)
     public void assertExecuteWithNotExistAlgorithm() throws DistSQLException {
-        when(currentConfiguration.getShadowAlgorithms()).thenReturn(Collections.singletonMap("default_name", null));
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement("input_default_name"), currentConfiguration);
-    }
-    
-    private CreateDefaultShadowAlgorithmStatement createSQLStatement(final String defaultShadowAlgorithmName) {
-        return new CreateDefaultShadowAlgorithmStatement(defaultShadowAlgorithmName);
+        when(currentConfig.getShadowAlgorithms()).thenReturn(Collections.singletonMap("default_name", null));
+        updater.checkSQLStatement(database, new CreateDefaultShadowAlgorithmStatement("input_default_name"), currentConfig);
     }
 }

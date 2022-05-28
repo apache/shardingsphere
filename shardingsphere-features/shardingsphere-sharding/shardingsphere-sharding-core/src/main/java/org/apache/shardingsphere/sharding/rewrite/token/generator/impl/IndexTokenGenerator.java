@@ -20,7 +20,8 @@ package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.IndexAvailable;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.IndexToken;
@@ -40,9 +41,9 @@ public final class IndexTokenGenerator implements CollectionSQLTokenGenerator<SQ
     
     private ShardingRule shardingRule;
     
-    private Map<String, ShardingSphereSchema> schemas;
-    
     private String databaseName;
+    
+    private Map<String, ShardingSphereSchema> schemas;
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext<?> sqlStatementContext) {
@@ -52,11 +53,11 @@ public final class IndexTokenGenerator implements CollectionSQLTokenGenerator<SQ
     @Override
     public Collection<IndexToken> generateSQLTokens(final SQLStatementContext<?> sqlStatementContext) {
         Collection<IndexToken> result = new LinkedList<>();
-        String defaultSchema = sqlStatementContext.getDatabaseType().getDefaultSchema(databaseName);
-        ShardingSphereSchema schema = sqlStatementContext.getTablesContext().getSchemaName().map(schemas::get).orElse(schemas.get(defaultSchema));
+        String defaultSchemaName = DatabaseTypeEngine.getDefaultSchemaName(sqlStatementContext.getDatabaseType(), databaseName);
         if (sqlStatementContext instanceof IndexAvailable) {
             for (IndexSegment each : ((IndexAvailable) sqlStatementContext).getIndexes()) {
-                result.add(new IndexToken(each.getStartIndex(), each.getStopIndex(), each.getIndexName().getIdentifier(), sqlStatementContext, shardingRule, schema));
+                ShardingSphereSchema schema = each.getOwner().isPresent() ? schemas.get(each.getOwner().get().getIdentifier().getValue()) : schemas.get(defaultSchemaName);
+                result.add(new IndexToken(each.getIndexName().getStartIndex(), each.getStopIndex(), each.getIndexName().getIdentifier(), sqlStatementContext, shardingRule, schema));
             }
         }
         return result;

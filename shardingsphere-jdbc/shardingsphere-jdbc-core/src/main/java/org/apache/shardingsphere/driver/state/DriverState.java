@@ -17,22 +17,26 @@
 
 package org.apache.shardingsphere.driver.state;
 
+import org.apache.shardingsphere.driver.jdbc.context.JDBCContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.spi.type.typed.StatelessTypedSPI;
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 
 import java.sql.Connection;
 
 /**
  * Driver state.
  */
-public interface DriverState extends StatelessTypedSPI {
+@SingletonSPI
+public interface DriverState extends TypedSPI {
     
     /**
      * Get connection.
      *
-     * @param schemaName schema name
+     * @param databaseName database name
      * @param contextManager context manager
+     * @param jdbcContext JDBC context
      * @return connection
      */
-    Connection getConnection(String schemaName, ContextManager contextManager);
+    Connection getConnection(String databaseName, ContextManager contextManager, JDBCContext jdbcContext);
 }

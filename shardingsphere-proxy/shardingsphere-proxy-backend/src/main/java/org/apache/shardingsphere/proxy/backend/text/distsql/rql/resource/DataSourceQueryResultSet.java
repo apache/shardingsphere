@@ -23,8 +23,8 @@ import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import javax.sql.DataSource;
@@ -60,10 +60,10 @@ public final class DataSourceQueryResultSet implements DistSQLResultSet {
     private Iterator<String> dataSourceNames;
     
     @Override
-    public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
-        resource = metaData.getResource();
-        dataSourcePropsMap = new LinkedHashMap<>(metaData.getResource().getDataSources().size(), 1);
-        for (Entry<String, DataSource> entry : metaData.getResource().getDataSources().entrySet()) {
+    public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
+        resource = database.getResource();
+        dataSourcePropsMap = new LinkedHashMap<>(database.getResource().getDataSources().size(), 1);
+        for (Entry<String, DataSource> entry : database.getResource().getDataSources().entrySet()) {
             dataSourcePropsMap.put(entry.getKey(), DataSourcePropertiesCreator.create(entry.getValue()));
         }
         dataSourceNames = dataSourcePropsMap.keySet().iterator();
@@ -83,29 +83,29 @@ public final class DataSourceQueryResultSet implements DistSQLResultSet {
     @Override
     public Collection<Object> getRowData() {
         String dataSourceName = dataSourceNames.next();
-        DataSourceMetaData metaData = resource.getDataSourcesMetaData().getDataSourceMetaData(dataSourceName);
+        DataSourceMetaData metaData = resource.getDataSourceMetaData(dataSourceName);
         Collection<Object> result = new LinkedList<>();
         result.add(dataSourceName);
-        result.add(resource.getDatabaseType().getName());
+        result.add(resource.getDatabaseType().getType());
         result.add(metaData.getHostname());
         result.add(metaData.getPort());
         result.add(metaData.getCatalog());
-        DataSourceProperties dataSourceProperties = dataSourcePropsMap.get(dataSourceName);
-        Map<String, Object> standardProperties = dataSourceProperties.getPoolPropertySynonyms().getStandardProperties();
-        result.add(getStandardProperty(standardProperties, CONNECTION_TIMEOUT_MILLISECONDS));
-        result.add(getStandardProperty(standardProperties, IDLE_TIMEOUT_MILLISECONDS));
-        result.add(getStandardProperty(standardProperties, MAX_LIFETIME_MILLISECONDS));
-        result.add(getStandardProperty(standardProperties, MAX_POOL_SIZE));
-        result.add(getStandardProperty(standardProperties, MIN_POOL_SIZE));
-        result.add(getStandardProperty(standardProperties, READ_ONLY));
-        Map<String, Object> otherProperties = dataSourceProperties.getCustomDataSourceProperties().getProperties();
-        result.add(otherProperties.isEmpty() ? "" : new Gson().toJson(otherProperties));
+        DataSourceProperties dataSourceProps = dataSourcePropsMap.get(dataSourceName);
+        Map<String, Object> standardProps = dataSourceProps.getPoolPropertySynonyms().getStandardProperties();
+        result.add(getStandardProperty(standardProps, CONNECTION_TIMEOUT_MILLISECONDS));
+        result.add(getStandardProperty(standardProps, IDLE_TIMEOUT_MILLISECONDS));
+        result.add(getStandardProperty(standardProps, MAX_LIFETIME_MILLISECONDS));
+        result.add(getStandardProperty(standardProps, MAX_POOL_SIZE));
+        result.add(getStandardProperty(standardProps, MIN_POOL_SIZE));
+        result.add(getStandardProperty(standardProps, READ_ONLY));
+        Map<String, Object> otherProps = dataSourceProps.getCustomDataSourceProperties().getProperties();
+        result.add(otherProps.isEmpty() ? "" : new Gson().toJson(otherProps));
         return result;
     }
     
-    private String getStandardProperty(final Map<String, Object> standardProperties, final String key) {
-        if (standardProperties.containsKey(key) && null != standardProperties.get(key)) {
-            return standardProperties.get(key).toString();
+    private String getStandardProperty(final Map<String, Object> standardProps, final String key) {
+        if (standardProps.containsKey(key) && null != standardProps.get(key)) {
+            return standardProps.get(key).toString();
         }
         return "";
     }

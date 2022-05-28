@@ -40,9 +40,9 @@ public final class ShardingDatabasesConfigurationRange implements ExampleConfigu
     @Override
     public DataSource getDataSource() throws SQLException {
         ShardingRuleConfiguration shardingRuleConfig = createShardingRuleConfiguration();
-        Collection<RuleConfiguration> configurations = new LinkedList<>();
-        configurations.add(shardingRuleConfig);
-        return ShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), configurations, new Properties());
+        Collection<RuleConfiguration> configs = new LinkedList<>();
+        configs.add(shardingRuleConfig);
+        return ShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), configs, new Properties());
     }
     
     private ShardingRuleConfiguration createShardingRuleConfiguration() {

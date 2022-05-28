@@ -25,12 +25,13 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.L
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.CallStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLCallStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLCallStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.expression.ExpressionAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.call.ExpectedCallParameter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.CallStatementTestCase;
 
-import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -54,8 +55,18 @@ public final class CallStatementAssert {
     private static void assertProcedureParameters(final SQLCaseAssertContext assertContext, final CallStatement actual, final CallStatementTestCase expected) {
         if (actual instanceof MySQLCallStatement) {
             MySQLCallStatement actualStatement = (MySQLCallStatement) actual;
-            if (actualStatement.getParameters() != null && expected.getProcedureParameters() != null) {
-                assertThat(assertContext.getText("Procedure parameters assertion error: "), actualStatement.getParameters().size(), equalTo(expected.getProcedureParameters().getParameters().size()));
+            if (null != actualStatement.getParameters() && null != expected.getProcedureParameters()) {
+                assertThat(assertContext.getText("Procedure parameters assertion error: "), actualStatement.getParameters().size(), is(expected.getProcedureParameters().getParameters().size()));
+                int count = 0;
+                for (ExpressionSegment each : actualStatement.getParameters()) {
+                    assertParameter(assertContext, each, expected.getProcedureParameters().getParameters().get(count));
+                    count++;
+                }
+            }
+        } else if (actual instanceof PostgreSQLCallStatement) {
+            PostgreSQLCallStatement actualStatement = (PostgreSQLCallStatement) actual;
+            if (null != expected.getProcedureParameters()) {
+                assertThat(assertContext.getText("Procedure parameters assertion error: "), actualStatement.getParameters().size(), is(expected.getProcedureParameters().getParameters().size()));
                 int count = 0;
                 for (ExpressionSegment each : actualStatement.getParameters()) {
                     assertParameter(assertContext, each, expected.getProcedureParameters().getParameters().get(count));
@@ -77,7 +88,9 @@ public final class CallStatementAssert {
     
     private static void assertProcedureName(final SQLCaseAssertContext assertContext, final CallStatement actual, final CallStatementTestCase expected) {
         if (actual instanceof MySQLCallStatement) {
-            assertThat(assertContext.getText("Procedure name assertion error: "), ((MySQLCallStatement) actual).getProcedureName(), equalTo(expected.getProcedureName().getName()));
+            assertThat(assertContext.getText("Procedure name assertion error: "), ((MySQLCallStatement) actual).getProcedureName(), is(expected.getProcedureName().getName()));
+        } else if (actual instanceof PostgreSQLCallStatement) {
+            assertThat(assertContext.getText("Procedure name assertion error: "), ((PostgreSQLCallStatement) actual).getProcedureName(), is(expected.getProcedureName().getName()));
         }
     }
 }

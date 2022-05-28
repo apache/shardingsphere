@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock;
 
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeType;
+
 import java.util.Optional;
 
 /**
@@ -24,50 +26,65 @@ import java.util.Optional;
  */
 public interface LockNodeService {
     
-    /**
-     * Get global locks node path.
-     *
-     * @return global lock node path
-     */
-    String getGlobalLocksNodePath();
+    String PATH_DELIMITER = "/";
+    
+    String LOCK_ROOT = "lock";
+    
+    String LOCKS_NODE = "locks";
+    
+    String LOCKED_ACK_NODE = "ack";
     
     /**
-     * Get global locked ack node path.
+     * Get sequence node path.
      *
-     * @return global locked ack node path
+     * @return sequence node path
      */
-    String getGlobalLockedAckNodePath();
+    String getSequenceNodePath();
     
     /**
-     * Generate global locks name.
+     * Get locks node path.
      *
-     * @param locks locks
-     * @return global locks name
+     * @return locks node path
      */
-    String generateGlobalLocksName(String locks);
+    String getLocksNodePath();
     
     /**
-     * Generate global ack lock name.
+     * Generate locks name.
      *
-     * @param lock lock
+     * @param locksName locks name
+     * @return locks name
+     */
+    String generateLocksName(String locksName);
+    
+    /**
+     * Generate ack lock name.
+     *
+     * @param lockName lock name
      * @param lockedInstanceId locked instance id
-     * @return global ack lock name
+     * @return ack lock name
      */
-    String generateGlobalAckLockName(String lock, String lockedInstanceId);
+    String generateAckLockName(String lockName, String lockedInstanceId);
     
     /**
-     * Parse global Locks node path.
+     * Parse Locks node path.
      *
      * @param nodePath locks node path
-     * @return global locked node path
+     * @return locked node path
      */
-    Optional<String> parseGlobalLocksNodePath(String nodePath);
+    Optional<String> parseLocksNodePath(String nodePath);
     
     /**
-     * Parse global locked ack node path.
+     * Parse locks ack node path.
      *
-     * @param nodePath locked ack node path
-     * @return global locked ack node path
+     * @param nodePath node path
+     * @return locks ack node path
      */
-    Optional<String> parseGlobalLockedAckNodePath(String nodePath);
+    Optional<String> parseLocksAckNodePath(String nodePath);
+    
+    /**
+     * Get type.
+     *
+     * @return lock node type
+     */
+    LockNodeType getType();
 }

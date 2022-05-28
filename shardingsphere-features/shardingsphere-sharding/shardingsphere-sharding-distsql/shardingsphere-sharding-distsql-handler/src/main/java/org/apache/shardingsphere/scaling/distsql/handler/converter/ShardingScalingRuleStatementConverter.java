@@ -40,19 +40,19 @@ public final class ShardingScalingRuleStatementConverter {
      * @return on rule altered action configuration
      */
     public static OnRuleAlteredActionConfiguration convert(final ShardingScalingRuleConfigurationSegment segment) {
-        InputConfiguration inputConfiguration = convertToInputConfiguration(segment.getInputSegment());
-        OutputConfiguration outputConfiguration = convertToOutputConfiguration(segment.getOutputSegment());
+        InputConfiguration inputConfig = convertToInputConfiguration(segment.getInputSegment());
+        OutputConfiguration outputConfig = convertToOutputConfiguration(segment.getOutputSegment());
         ShardingSphereAlgorithmConfiguration streamChannel = convertToAlgorithm(segment.getStreamChannel());
         ShardingSphereAlgorithmConfiguration completionDetector = convertToAlgorithm(segment.getCompletionDetector());
         ShardingSphereAlgorithmConfiguration dataConsistencyChecker = convertToAlgorithm(segment.getDataConsistencyCalculator());
-        return new OnRuleAlteredActionConfiguration(inputConfiguration, outputConfiguration, streamChannel, completionDetector, dataConsistencyChecker);
+        return new OnRuleAlteredActionConfiguration(inputConfig, outputConfig, streamChannel, completionDetector, dataConsistencyChecker);
     }
     
     private static InputConfiguration convertToInputConfiguration(final InputOrOutputSegment inputSegment) {
         if (null == inputSegment) {
             return null;
         }
-        return new InputConfiguration(inputSegment.getWorkerThread(), inputSegment.getBatchSize(), convertToAlgorithm(inputSegment.getRateLimiter()));
+        return new InputConfiguration(inputSegment.getWorkerThread(), inputSegment.getBatchSize(), inputSegment.getShardingSize(), convertToAlgorithm(inputSegment.getRateLimiter()));
     }
     
     private static OutputConfiguration convertToOutputConfiguration(final InputOrOutputSegment outputSegment) {

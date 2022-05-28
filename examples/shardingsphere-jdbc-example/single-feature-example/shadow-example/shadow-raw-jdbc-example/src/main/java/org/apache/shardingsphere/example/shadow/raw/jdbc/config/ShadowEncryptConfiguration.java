@@ -40,11 +40,10 @@ public final class ShadowEncryptConfiguration extends BaseShadowConfiguration {
     @Override
     public DataSource getDataSource() throws SQLException {
         Map<String, DataSource> dataSourceMap = createDataSourceMap();
-        Collection<RuleConfiguration> ruleConfigurations = createRuleConfiguration();
-        return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, ruleConfigurations, createShardingSphereProps());
+        return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, createRuleConfigurations(), createShardingSphereProps());
     }
     
-    private Collection<RuleConfiguration> createRuleConfiguration() {
+    private Collection<RuleConfiguration> createRuleConfigurations() {
         Collection<RuleConfiguration> result = new LinkedList<>();
         result.add(new EncryptRuleConfiguration(getEncryptTableRuleConfigurations(), getEncryptAlgorithmConfigurations()));
         result.add(createShadowRuleConfiguration());
@@ -81,8 +80,8 @@ public final class ShadowEncryptConfiguration extends BaseShadowConfiguration {
     private Collection<EncryptTableRuleConfiguration> getEncryptTableRuleConfigurations() {
         Collection<EncryptTableRuleConfiguration> result = new LinkedList<>();
         Collection<EncryptColumnRuleConfiguration> columns = new LinkedList<>();
-        columns.add(new EncryptColumnRuleConfiguration("username", "username", "", "username_plain", "name_encryptor"));
-        columns.add(new EncryptColumnRuleConfiguration("pwd", "pwd", "assisted_query_pwd", "", "pwd_encryptor"));
+        columns.add(new EncryptColumnRuleConfiguration("username", "username", "", "username_plain", "name_encryptor", null));
+        columns.add(new EncryptColumnRuleConfiguration("pwd", "pwd", "assisted_query_pwd", "", "pwd_encryptor", null));
         result.add(new EncryptTableRuleConfiguration("t_user", columns, null));
         return result;
     }

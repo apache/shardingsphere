@@ -25,8 +25,6 @@ import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
-import java.util.Properties;
-
 /**
  * Sharding algorithm factory.
  */
@@ -41,7 +39,7 @@ public final class ShardingAlgorithmFactory {
      * Create new instance of sharding algorithm.
      * 
      * @param shardingAlgorithmConfig sharding algorithm configuration
-     * @return new instance of sharding algorithm
+     * @return created instance
      */
     public static ShardingAlgorithm newInstance(final ShardingSphereAlgorithmConfiguration shardingAlgorithmConfig) {
         return ShardingSphereAlgorithmFactory.createAlgorithm(shardingAlgorithmConfig, ShardingAlgorithm.class);
@@ -54,6 +52,6 @@ public final class ShardingAlgorithmFactory {
      * @return contains sharding algorithm or not
      */
     public static boolean contains(final String shardingAlgorithmType) {
-        return TypedSPIRegistry.findRegisteredService(ShardingAlgorithm.class, shardingAlgorithmType, new Properties()).isPresent();
+        return TypedSPIRegistry.findRegisteredService(ShardingAlgorithm.class, shardingAlgorithmType).isPresent();
     }
 }

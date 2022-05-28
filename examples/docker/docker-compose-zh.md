@@ -14,7 +14,7 @@
 
 1. 运行 'cd docker/shardingsphere-proxy/sharding'，进入 docker 文件夹
 2. 运行 'docker-compose up -d'，启动 docker compose 环境
-3. 运行 `mysql -h127.0.0.1 -P13308 -proot -uroot` 登录代理
+3. 运行 `psql -d sharding_db -h 127.0.0.1 -U root -p 3308 -W` 登录代理, 示例的默认密码：root
 4. 如果有端口冲突，在docker-compose.yml中修改相应的端口，然后再次使用 'docker-compose up -d'启动docker compose
 5. 如果需要关闭程序，请使用命令 'docker-compose down'
 

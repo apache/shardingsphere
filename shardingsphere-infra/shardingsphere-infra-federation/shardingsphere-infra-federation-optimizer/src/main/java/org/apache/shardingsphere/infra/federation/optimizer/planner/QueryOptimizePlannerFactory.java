@@ -34,7 +34,7 @@ public final class QueryOptimizePlannerFactory {
     /**
      * Create new instance of query optimize planner.
      *
-     * @return new instance of query optimize planner
+     * @return created instance
      */
     public static RelOptPlanner newInstance() {
         RelOptPlanner result = createPlanner();

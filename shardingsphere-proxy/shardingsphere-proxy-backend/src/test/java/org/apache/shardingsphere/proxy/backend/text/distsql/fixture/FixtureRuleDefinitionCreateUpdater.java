@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.fixture;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
 public final class FixtureRuleDefinitionCreateUpdater implements RuleDefinitionCreateUpdater<CreateFixtureRuleStatement, FixtureRuleConfiguration> {
     
@@ -33,7 +33,7 @@ public final class FixtureRuleDefinitionCreateUpdater implements RuleDefinitionC
     }
     
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final CreateFixtureRuleStatement sqlStatement, final FixtureRuleConfiguration currentRuleConfig) {
+    public void checkSQLStatement(final ShardingSphereDatabase database, final CreateFixtureRuleStatement sqlStatement, final FixtureRuleConfiguration currentRuleConfig) {
     }
     
     @Override

@@ -21,12 +21,11 @@ import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPIFactory;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.HandleConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.PipelineConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPIFactory;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.WorkflowConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.yaml.RuleAlteredJobConfigurationSwapper;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.yaml.YamlRuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
@@ -45,11 +44,10 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrlAppender;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.lock.LockContext;
-import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
@@ -92,7 +90,7 @@ public final class RuleAlteredJobWorker {
         if (null == ruleConfig) {
             return false;
         }
-        Optional<RuleAlteredDetector> detector = RuleAlteredDetectorFactory.newInstance(ruleConfig);
+        Optional<RuleAlteredDetector> detector = RuleAlteredDetectorFactory.findInstance(ruleConfig);
         return detector.isPresent() && detector.get().getOnRuleAlteredActionConfig(ruleConfig).isPresent();
     }
     
@@ -122,11 +120,11 @@ public final class RuleAlteredJobWorker {
      * @param jobConfig job configuration
      * @return rule altered context
      */
-    public static RuleAlteredContext createRuleAlteredContext(final JobConfiguration jobConfig) {
+    public static RuleAlteredContext createRuleAlteredContext(final RuleAlteredJobConfiguration jobConfig) {
         YamlRootConfiguration targetRootConfig = getYamlRootConfig(jobConfig);
         YamlRuleConfiguration yamlRuleConfig = null;
         for (YamlRuleConfiguration each : targetRootConfig.getRules()) {
-            if (jobConfig.getWorkflowConfig().getAlteredRuleYamlClassNameTablesMap().containsKey(each.getClass().getName())) {
+            if (jobConfig.getAlteredRuleYamlClassNameTablesMap().containsKey(each.getClass().getName())) {
                 yamlRuleConfig = each;
                 break;
             }
@@ -135,14 +133,14 @@ public final class RuleAlteredJobWorker {
             throw new PipelineJobCreationException("could not find altered rule");
         }
         RuleConfiguration ruleConfig = SWAPPER_ENGINE.swapToRuleConfiguration(yamlRuleConfig);
-        Optional<RuleAlteredDetector> detector = RuleAlteredDetectorFactory.newInstance(ruleConfig);
+        Optional<RuleAlteredDetector> detector = RuleAlteredDetectorFactory.findInstance(ruleConfig);
         Preconditions.checkState(detector.isPresent());
         Optional<OnRuleAlteredActionConfiguration> onRuleAlteredActionConfig = detector.get().getOnRuleAlteredActionConfig(ruleConfig);
         if (!onRuleAlteredActionConfig.isPresent()) {
             log.error("rule altered action enabled but actor is not configured, ignored, ruleConfig={}", ruleConfig);
             throw new PipelineJobCreationException("rule altered actor not configured");
         }
-        return new RuleAlteredContext(onRuleAlteredActionConfig.get());
+        return new RuleAlteredContext(jobConfig.getJobId(), onRuleAlteredActionConfig.get());
     }
     
     /**
@@ -151,14 +149,12 @@ public final class RuleAlteredJobWorker {
      * @param jobConfig job configuration
      * @return YAML root configuration
      */
-    private static YamlRootConfiguration getYamlRootConfig(final JobConfiguration jobConfig) {
-        PipelineDataSourceConfiguration targetDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(
-                jobConfig.getPipelineConfig().getTarget().getType(), jobConfig.getPipelineConfig().getTarget().getParameter());
+    private static YamlRootConfiguration getYamlRootConfig(final RuleAlteredJobConfiguration jobConfig) {
+        PipelineDataSourceConfiguration targetDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(jobConfig.getTarget().getType(), jobConfig.getTarget().getParameter());
         if (targetDataSourceConfig instanceof ShardingSpherePipelineDataSourceConfiguration) {
             return ((ShardingSpherePipelineDataSourceConfiguration) targetDataSourceConfig).getRootConfig();
         }
-        PipelineDataSourceConfiguration sourceDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(
-                jobConfig.getPipelineConfig().getSource().getType(), jobConfig.getPipelineConfig().getSource().getParameter());
+        PipelineDataSourceConfiguration sourceDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(jobConfig.getSource().getType(), jobConfig.getSource().getParameter());
         return ((ShardingSpherePipelineDataSourceConfiguration) sourceDataSourceConfig).getRootConfig();
     }
     
@@ -170,13 +166,13 @@ public final class RuleAlteredJobWorker {
     @Subscribe
     public void start(final StartScalingEvent event) {
         log.info("Start scaling job by {}", event);
-        if (!hasUncompletedJobOfSameDatabaseName(event.getDatabaseName())) {
+        if (hasUncompletedJobOfSameDatabaseName(event.getDatabaseName())) {
             log.warn("There is uncompleted job with the same database name, please handle it first, current job will be ignored");
             return;
         }
-        Optional<JobConfiguration> jobConfigOptional = createJobConfig(event);
-        if (jobConfigOptional.isPresent()) {
-            PipelineJobAPIFactory.newInstance().start(jobConfigOptional.get());
+        Optional<RuleAlteredJobConfiguration> jobConfig = createJobConfig(event);
+        if (jobConfig.isPresent()) {
+            RuleAlteredJobAPIFactory.getInstance().start(jobConfig.get());
         } else {
             log.info("Switch rule configuration immediately.");
             ScalingTaskFinishedEvent taskFinishedEvent = new ScalingTaskFinishedEvent(event.getDatabaseName(), event.getActiveVersion(), event.getNewVersion());
@@ -185,13 +181,13 @@ public final class RuleAlteredJobWorker {
         }
     }
     
-    private Optional<JobConfiguration> createJobConfig(final StartScalingEvent event) {
+    private Optional<RuleAlteredJobConfiguration> createJobConfig(final StartScalingEvent event) {
         YamlRootConfiguration sourceRootConfig = getYamlRootConfiguration(event.getDatabaseName(), event.getSourceDataSource(), event.getSourceRule());
         YamlRootConfiguration targetRootConfig = getYamlRootConfiguration(event.getDatabaseName(), event.getTargetDataSource(), event.getTargetRule());
         Map<String, List<String>> alteredRuleYamlClassNameTablesMap = new HashMap<>();
         for (Pair<YamlRuleConfiguration, YamlRuleConfiguration> each : groupSourceTargetRuleConfigsByType(sourceRootConfig.getRules(), targetRootConfig.getRules())) {
             YamlRuleConfiguration yamlRuleConfig = null == each.getLeft() ? each.getRight() : each.getLeft();
-            Optional<RuleAlteredDetector> detector = RuleAlteredDetectorFactory.newInstance(yamlRuleConfig);
+            Optional<RuleAlteredDetector> detector = RuleAlteredDetectorFactory.findInstance(yamlRuleConfig);
             if (!detector.isPresent()) {
                 continue;
             }
@@ -209,9 +205,15 @@ public final class RuleAlteredJobWorker {
             log.error("more than 1 rule altered");
             throw new PipelineJobCreationException("more than 1 rule altered");
         }
-        WorkflowConfiguration workflowConfig = new WorkflowConfiguration(event.getDatabaseName(), alteredRuleYamlClassNameTablesMap, event.getActiveVersion(), event.getNewVersion());
-        PipelineConfiguration pipelineConfig = getPipelineConfiguration(sourceRootConfig, targetRootConfig);
-        return Optional.of(new JobConfiguration(workflowConfig, pipelineConfig));
+        YamlRuleAlteredJobConfiguration result = new YamlRuleAlteredJobConfiguration();
+        result.setDatabaseName(event.getDatabaseName());
+        result.setAlteredRuleYamlClassNameTablesMap(alteredRuleYamlClassNameTablesMap);
+        result.setActiveVersion(event.getActiveVersion());
+        result.setNewVersion(event.getNewVersion());
+        result.setSource(createYamlPipelineDataSourceConfiguration(sourceRootConfig));
+        result.setTarget(createYamlPipelineDataSourceConfiguration(targetRootConfig));
+        result.extendConfiguration();
+        return Optional.of(new RuleAlteredJobConfigurationSwapper().swapToObject(result));
     }
     
     private Collection<Pair<YamlRuleConfiguration, YamlRuleConfiguration>> groupSourceTargetRuleConfigsByType(final Collection<YamlRuleConfiguration> sourceRules,
@@ -228,13 +230,6 @@ public final class RuleAlteredJobWorker {
                 result.add(Pair.of(null, entry.getValue()));
             }
         }
-        return result;
-    }
-    
-    private PipelineConfiguration getPipelineConfiguration(final YamlRootConfiguration sourceRootConfig, final YamlRootConfiguration targetRootConfig) {
-        PipelineConfiguration result = new PipelineConfiguration();
-        result.setSource(createYamlPipelineDataSourceConfiguration(sourceRootConfig));
-        result.setTarget(createYamlPipelineDataSourceConfiguration(targetRootConfig));
         return result;
     }
     
@@ -266,7 +261,7 @@ public final class RuleAlteredJobWorker {
             log.warn("disableSSLForMySQL, could not get jdbcUrl, jdbcUrlKey={}", jdbcUrlKey);
             return;
         }
-        DatabaseType databaseType = DatabaseTypeRegistry.getDatabaseTypeByURL(jdbcUrl);
+        DatabaseType databaseType = DatabaseTypeEngine.getDatabaseType(jdbcUrl);
         if (!(databaseType instanceof MySQLDatabaseType)) {
             return;
         }
@@ -280,40 +275,29 @@ public final class RuleAlteredJobWorker {
     /**
      * Build task configuration.
      *
-     * @param pipelineConfig pipeline configuration
-     * @param handleConfig handle configuration
+     * @param jobConfig job configuration
+     * @param jobShardingItem job sharding item
      * @param onRuleAlteredActionConfig action configuration
      * @return task configuration
      */
-    public static TaskConfiguration buildTaskConfig(final PipelineConfiguration pipelineConfig,
-                                                    final HandleConfiguration handleConfig, final OnRuleAlteredActionConfiguration onRuleAlteredActionConfig) {
-        return RuleAlteredJobConfigurationPreparerFactory.newInstance().createTaskConfiguration(pipelineConfig, handleConfig, onRuleAlteredActionConfig);
+    public static TaskConfiguration buildTaskConfig(final RuleAlteredJobConfiguration jobConfig, final int jobShardingItem, final OnRuleAlteredActionConfiguration onRuleAlteredActionConfig) {
+        return RuleAlteredJobConfigurationPreparerFactory.getInstance().createTaskConfiguration(jobConfig, jobShardingItem, onRuleAlteredActionConfig);
     }
     
     private boolean hasUncompletedJobOfSameDatabaseName(final String databaseName) {
         boolean result = false;
-        for (JobInfo each : PipelineJobAPIFactory.newInstance().list()) {
-            if (PipelineJobAPIFactory.newInstance().getProgress(each.getJobId()).values().stream()
+        for (JobInfo each : RuleAlteredJobAPIFactory.getInstance().list()) {
+            if (RuleAlteredJobAPIFactory.getInstance().getProgress(each.getJobId()).values().stream()
                     .allMatch(progress -> null != progress && progress.getStatus().equals(JobStatus.FINISHED))) {
                 continue;
             }
-            JobConfiguration jobConfiguration = YamlEngine.unmarshal(each.getJobParameter(), JobConfiguration.class, true);
-            if (hasUncompletedJobOfSameDatabaseName(jobConfiguration, each.getJobId(), databaseName)) {
+            RuleAlteredJobConfiguration jobConfig = RuleAlteredJobConfigurationSwapper.swapToObject(each.getJobParameter());
+            if (databaseName.equals(jobConfig.getDatabaseName())) {
                 result = true;
                 break;
             }
         }
-        return !result;
-    }
-    
-    private boolean hasUncompletedJobOfSameDatabaseName(final JobConfiguration jobConfig, final String jobId, final String currentDatabaseName) {
-        HandleConfiguration handleConfig = jobConfig.getHandleConfig();
-        WorkflowConfiguration workflowConfig;
-        if (null == handleConfig || null == (workflowConfig = jobConfig.getWorkflowConfig())) {
-            log.warn("handleConfig or workflowConfig null, jobId={}", jobId);
-            return false;
-        }
-        return currentDatabaseName.equals(workflowConfig.getDatabaseName());
+        return result;
     }
     
     /**
@@ -337,10 +321,9 @@ public final class RuleAlteredJobWorker {
     private void restoreSourceWriting(final String databaseName) {
         log.info("restoreSourceWriting, databaseName={}", databaseName);
         LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
-        ShardingSphereLock lock = lockContext.getDatabaseLock(databaseName);
-        if (null != lock && lock.isLocked(databaseName)) {
+        if (lockContext.isLocked(databaseName)) {
             log.info("Source writing is still stopped on database '{}', restore it now", databaseName);
-            lock.releaseLock(databaseName);
+            lockContext.releaseLockWrite(databaseName);
         }
     }
 }

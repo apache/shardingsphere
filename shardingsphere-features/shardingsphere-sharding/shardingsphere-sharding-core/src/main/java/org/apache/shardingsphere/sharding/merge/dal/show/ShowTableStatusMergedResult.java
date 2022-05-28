@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryMergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 
@@ -46,22 +46,22 @@ public final class ShowTableStatusMergedResult extends MemoryMergedResult<Shardi
     @Override
     protected List<MemoryQueryResultRow> init(final ShardingRule shardingRule, final ShardingSphereSchema schema,
                                               final SQLStatementContext<?> sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
-        Map<String, MemoryQueryResultRow> memoryQueryResultRowMap = new LinkedHashMap<>();
+        Map<String, MemoryQueryResultRow> memoryQueryResultRows = new LinkedHashMap<>();
         for (QueryResult each : queryResults) {
             while (each.next()) {
                 MemoryQueryResultRow memoryResultSetRow = new MemoryQueryResultRow(each);
                 String actualTableName = memoryResultSetRow.getCell(1).toString();
                 Optional<TableRule> tableRule = shardingRule.findTableRuleByActualTable(actualTableName);
-                tableRule.ifPresent(rule -> memoryResultSetRow.setCell(1, rule.getLogicTable()));
+                tableRule.ifPresent(optional -> memoryResultSetRow.setCell(1, optional.getLogicTable()));
                 String tableName = memoryResultSetRow.getCell(1).toString();
-                if (memoryQueryResultRowMap.containsKey(tableName)) {
-                    merge(memoryQueryResultRowMap.get(tableName), memoryResultSetRow);
+                if (memoryQueryResultRows.containsKey(tableName)) {
+                    merge(memoryQueryResultRows.get(tableName), memoryResultSetRow);
                 } else {
-                    memoryQueryResultRowMap.put(tableName, memoryResultSetRow);
+                    memoryQueryResultRows.put(tableName, memoryResultSetRow);
                 }
             }
         }
-        return new LinkedList<>(memoryQueryResultRowMap.values());
+        return new LinkedList<>(memoryQueryResultRows.values());
     }
     
     private void merge(final MemoryQueryResultRow row, final MemoryQueryResultRow newRow) {

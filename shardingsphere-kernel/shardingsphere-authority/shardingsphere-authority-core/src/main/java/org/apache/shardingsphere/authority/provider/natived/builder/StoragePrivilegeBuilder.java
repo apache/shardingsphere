@@ -22,13 +22,11 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.authority.provider.natived.model.privilege.NativePrivileges;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRecognizer;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -53,19 +51,15 @@ public final class StoragePrivilegeBuilder {
     
     private static final long FUTURE_GET_TIME_OUT_MILLISECONDS = 5000L;
     
-    static {
-        ShardingSphereServiceLoader.register(StoragePrivilegeHandler.class);
-    }
-    
     /**
      * Build privileges.
      *
-     * @param metaDataList meta data list
+     * @param databases databases
      * @param users users
      * @return privileges
      */
-    public static Map<ShardingSphereUser, NativePrivileges> build(final Collection<ShardingSphereMetaData> metaDataList, final Collection<ShardingSphereUser> users) {
-        return metaDataList.isEmpty() ? buildPrivilegesInCache(users) : buildPrivilegesInStorage(metaDataList, users);
+    public static Map<ShardingSphereUser, NativePrivileges> build(final Collection<ShardingSphereDatabase> databases, final Collection<ShardingSphereUser> users) {
+        return databases.isEmpty() ? buildPrivilegesInCache(users) : buildPrivilegesInStorage(databases, users);
     }
     
     private static Map<ShardingSphereUser, NativePrivileges> buildPrivilegesInCache(final Collection<ShardingSphereUser> users) {
@@ -76,22 +70,22 @@ public final class StoragePrivilegeBuilder {
         return result;
     }
     
-    private static Map<ShardingSphereUser, NativePrivileges> buildPrivilegesInStorage(final Collection<ShardingSphereMetaData> metaDataList, final Collection<ShardingSphereUser> users) {
+    private static Map<ShardingSphereUser, NativePrivileges> buildPrivilegesInStorage(final Collection<ShardingSphereDatabase> databases, final Collection<ShardingSphereUser> users) {
         Map<ShardingSphereUser, NativePrivileges> result = new LinkedHashMap<>(users.size(), 1);
-        metaDataList.stream().map(each -> buildPrivilegesInStorage(each, users)).forEach(result::putAll);
+        databases.stream().map(each -> buildPrivilegesInStorage(each, users)).forEach(result::putAll);
         return result;
     }
     
-    private static Map<ShardingSphereUser, NativePrivileges> buildPrivilegesInStorage(final ShardingSphereMetaData metaData, final Collection<ShardingSphereUser> users) {
-        DatabaseType databaseType = DatabaseTypeRecognizer.getDatabaseType(metaData.getResource().getAllInstanceDataSources());
-        Optional<StoragePrivilegeHandler> handler = TypedSPIRegistry.findRegisteredService(StoragePrivilegeHandler.class, databaseType.getName());
+    private static Map<ShardingSphereUser, NativePrivileges> buildPrivilegesInStorage(final ShardingSphereDatabase database, final Collection<ShardingSphereUser> users) {
+        DatabaseType databaseType = DatabaseTypeEngine.getDatabaseType(database.getResource().getAllInstanceDataSources());
+        Optional<StoragePrivilegeHandler> handler = StoragePrivilegeHandlerFactory.findInstance(databaseType.getType());
         if (!handler.isPresent()) {
             return buildPrivilegesInCache(users);
         }
-        save(metaData.getResource().getAllInstanceDataSources(), users, handler.get());
-        Map<ShardingSphereUser, Collection<NativePrivileges>> result = load(metaData.getResource().getAllInstanceDataSources(), users, handler.get());
+        save(database.getResource().getAllInstanceDataSources(), users, handler.get());
+        Map<ShardingSphereUser, Collection<NativePrivileges>> result = load(database.getResource().getAllInstanceDataSources(), users, handler.get());
         checkConsistent(result);
-        return StoragePrivilegeMerger.merge(result, metaData.getDatabaseName(), metaData.getRuleMetaData().getRules());
+        return StoragePrivilegeMerger.merge(result, database.getName(), database.getRuleMetaData().getRules());
     }
     
     private static void save(final Collection<DataSource> dataSources,

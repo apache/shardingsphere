@@ -21,6 +21,7 @@ import net.bytebuddy.description.type.TypeDescription;
 import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint;
 
 public interface PluginLoader {
+    
     /**
      * To detect the type whether or not exists.
      *

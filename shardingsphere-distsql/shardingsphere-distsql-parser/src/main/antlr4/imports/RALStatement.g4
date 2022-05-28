@@ -56,7 +56,7 @@ refreshTableMetadata
     ;
 
 showTableMetadata
-    : SHOW TABLE METADATA tableName (COMMA tableName*)? (FROM schemaName)?
+    : SHOW TABLE METADATA tableName (COMMA tableName*)? (FROM databaseName)?
     ;
 
 showAuthorityRule
@@ -108,7 +108,7 @@ unlabelInstance
     ;
 
 countInstanceRules
-    : COUNT INSTANCE RULES (FROM schemaName)?
+    : COUNT INSTANCE RULES (FROM databaseName)?
     ;
 
 trafficRuleDefinition
@@ -188,7 +188,11 @@ instanceId
     ;
 
 refreshScope
-    : tableName | tableName FROM RESOURCE resourceName
+    : tableName fromSegment?
+    ;
+
+fromSegment
+    : FROM RESOURCE resourceName (SCHEMA schemaName)?
     ;
 
 sqlCommentParseEnable

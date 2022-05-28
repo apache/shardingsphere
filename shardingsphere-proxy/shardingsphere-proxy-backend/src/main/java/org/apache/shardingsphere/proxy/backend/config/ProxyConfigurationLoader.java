@@ -79,7 +79,7 @@ public final class ProxyConfigurationLoader {
             result.getRules().removeIf(each -> each instanceof YamlAuthorityRuleConfiguration);
             result.getRules().add(result.getAuthority().convertToYamlAuthorityRuleConfiguration());
         }
-        YamlRuleConfiguration authorityRuleConfig = result.getRules().stream().filter(ruleConfig -> ruleConfig instanceof YamlAuthorityRuleConfiguration).findAny().orElse(null);
+        YamlRuleConfiguration authorityRuleConfig = result.getRules().stream().filter(each -> each instanceof YamlAuthorityRuleConfiguration).findAny().orElse(null);
         Preconditions.checkState(containsGovernance || null != authorityRuleConfig, "Authority configuration is invalid.");
         return result;
     }
@@ -88,10 +88,9 @@ public final class ProxyConfigurationLoader {
         Collection<String> loadedDatabaseNames = new HashSet<>();
         Collection<YamlProxyDatabaseConfiguration> result = new LinkedList<>();
         for (File each : findRuleConfigurationFiles(configPath)) {
-            loadDatabaseConfiguration(each).ifPresent(yamlProxyRuleConfig -> {
-                Preconditions.checkState(
-                        loadedDatabaseNames.add(yamlProxyRuleConfig.getDatabaseName()), "Database name `%s` must unique at all database configurations.", yamlProxyRuleConfig.getDatabaseName());
-                result.add(yamlProxyRuleConfig);
+            loadDatabaseConfiguration(each).ifPresent(optional -> {
+                Preconditions.checkState(loadedDatabaseNames.add(optional.getDatabaseName()), "Database name `%s` must unique at all database configurations.", optional.getDatabaseName());
+                result.add(optional);
             });
         }
         return result;

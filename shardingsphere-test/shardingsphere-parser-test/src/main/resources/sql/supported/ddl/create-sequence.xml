@@ -28,4 +28,9 @@
         MAXVALUE 200
         CYCLE
         CACHE 3;" db-types="SQLServer" />
+    <sql-case id="create_sequence_with_customers" value="CREATE SEQUENCE customers_seq
+        START WITH 1000
+        INCREMENT BY 1
+        NOCACHE
+        NOCYCLE;" db-types="Oracle" />
 </sql-cases>

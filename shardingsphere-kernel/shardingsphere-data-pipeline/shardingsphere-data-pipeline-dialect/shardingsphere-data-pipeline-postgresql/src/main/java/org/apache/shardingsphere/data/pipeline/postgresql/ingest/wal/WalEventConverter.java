@@ -22,6 +22,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.PlaceholderRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
+import org.apache.shardingsphere.data.pipeline.api.metadata.ActualTableName;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineTableMetaData;
@@ -72,7 +73,7 @@ public final class WalEventConverter {
     private boolean filter(final AbstractWalEvent event) {
         if (isRowEvent(event)) {
             AbstractRowEvent rowEvent = (AbstractRowEvent) event;
-            return !dumperConfig.getTableNameMap().containsKey(rowEvent.getTableName());
+            return !dumperConfig.containsTable(rowEvent.getTableName());
         }
         return false;
     }
@@ -90,14 +91,18 @@ public final class WalEventConverter {
     private DataRecord handleWriteRowsEvent(final WriteRowEvent writeRowEvent) {
         DataRecord result = createDataRecord(writeRowEvent, writeRowEvent.getAfterRow().size());
         result.setType(IngestDataChangeType.INSERT);
-        putColumnsIntoDataRecord(result, metaDataLoader.getTableMetaData(writeRowEvent.getTableName()), writeRowEvent.getAfterRow());
+        putColumnsIntoDataRecord(result, getPipelineTableMetaData(writeRowEvent.getTableName()), writeRowEvent.getAfterRow());
         return result;
+    }
+    
+    private PipelineTableMetaData getPipelineTableMetaData(final String actualTableName) {
+        return metaDataLoader.getTableMetaData(dumperConfig.getSchemaName(new ActualTableName(actualTableName)), actualTableName);
     }
     
     private DataRecord handleUpdateRowsEvent(final UpdateRowEvent updateRowEvent) {
         DataRecord result = createDataRecord(updateRowEvent, updateRowEvent.getAfterRow().size());
         result.setType(IngestDataChangeType.UPDATE);
-        putColumnsIntoDataRecord(result, metaDataLoader.getTableMetaData(updateRowEvent.getTableName()), updateRowEvent.getAfterRow());
+        putColumnsIntoDataRecord(result, getPipelineTableMetaData(updateRowEvent.getTableName()), updateRowEvent.getAfterRow());
         return result;
     }
     
@@ -105,7 +110,8 @@ public final class WalEventConverter {
         // TODO completion columns
         DataRecord result = createDataRecord(event, event.getPrimaryKeys().size());
         result.setType(IngestDataChangeType.DELETE);
-        List<String> primaryKeyColumns = metaDataLoader.getTableMetaData(event.getTableName()).getPrimaryKeyColumns();
+        // TODO Unique key may be a column within unique index
+        List<String> primaryKeyColumns = getPipelineTableMetaData(event.getTableName()).getPrimaryKeyColumns();
         for (int i = 0; i < event.getPrimaryKeys().size(); i++) {
             result.addColumn(new Column(primaryKeyColumns.get(i), event.getPrimaryKeys().get(i), true, true));
         }
@@ -114,15 +120,15 @@ public final class WalEventConverter {
     
     private DataRecord createDataRecord(final AbstractRowEvent rowsEvent, final int columnCount) {
         DataRecord result = new DataRecord(new WalPosition(rowsEvent.getLogSequenceNumber()), columnCount);
-        result.setTableName(dumperConfig.getTableNameMap().get(rowsEvent.getTableName()));
+        result.setTableName(dumperConfig.getLogicTableName(rowsEvent.getTableName()).getLowercase());
         return result;
     }
     
     private void putColumnsIntoDataRecord(final DataRecord dataRecord, final PipelineTableMetaData tableMetaData, final List<Object> values) {
         for (int i = 0, count = values.size(); i < count; i++) {
-            boolean isPrimaryKey = tableMetaData.isPrimaryKey(i);
-            Object primaryKeyOldValue = isPrimaryKey ? values.get(i) : null;
-            Column column = new Column(tableMetaData.getColumnMetaData(i).getName(), primaryKeyOldValue, values.get(i), true, isPrimaryKey);
+            boolean isUniqueKey = tableMetaData.isUniqueKey(i);
+            Object uniqueKeyOldValue = isUniqueKey ? values.get(i) : null;
+            Column column = new Column(tableMetaData.getColumnMetaData(i).getName(), uniqueKeyOldValue, values.get(i), true, isUniqueKey);
             dataRecord.addColumn(column);
         }
     }

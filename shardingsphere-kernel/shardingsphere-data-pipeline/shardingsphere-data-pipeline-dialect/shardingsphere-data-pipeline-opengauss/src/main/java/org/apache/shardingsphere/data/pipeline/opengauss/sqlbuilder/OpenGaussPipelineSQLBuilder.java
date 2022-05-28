@@ -17,26 +17,24 @@
 
 package org.apache.shardingsphere.data.pipeline.opengauss.sqlbuilder;
 
-import com.google.common.collect.Collections2;
-import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
+import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.AbstractPipelineSQLBuilder;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Pipeline SQL builder of openGauss.
  */
-@NoArgsConstructor
 public final class OpenGaussPipelineSQLBuilder extends AbstractPipelineSQLBuilder {
     
-    public OpenGaussPipelineSQLBuilder(final Map<String, Set<String>> shardingColumnsMap) {
-        super(shardingColumnsMap);
+    @Override
+    public String buildCreateSchemaSQL(final String schemaName) {
+        return "CREATE SCHEMA " + quote(schemaName);
     }
     
     @Override
@@ -50,17 +48,17 @@ public final class OpenGaussPipelineSQLBuilder extends AbstractPipelineSQLBuilde
     }
     
     @Override
-    public String buildInsertSQL(final DataRecord dataRecord) {
-        return super.buildInsertSQL(dataRecord) + buildConflictSQL();
+    public String buildInsertSQL(final String schemaName, final DataRecord dataRecord, final Map<LogicTableName, Set<String>> shardingColumnsMap) {
+        return super.buildInsertSQL(schemaName, dataRecord, shardingColumnsMap) + buildConflictSQL(shardingColumnsMap);
     }
     
     @Override
-    public List<Column> extractUpdatedColumns(final Collection<Column> columns, final DataRecord record) {
-        return new ArrayList<>(Collections2.filter(columns, column -> !(column.isPrimaryKey() || isShardingColumn(getShardingColumnsMap(), record.getTableName(), column.getName()))));
+    public List<Column> extractUpdatedColumns(final DataRecord record, final Map<LogicTableName, Set<String>> shardingColumnsMap) {
+        return record.getColumns().stream().filter(each -> !(each.isUniqueKey() || isShardingColumn(shardingColumnsMap, record.getTableName(), each.getName()))).collect(Collectors.toList());
     }
     
-    private String buildConflictSQL() {
-        // there need return ON DUPLICATE KEY UPDATE NOTHING after support this syntax.
+    private String buildConflictSQL(final Map<LogicTableName, Set<String>> shardingColumnsMap) {
+        // TODO there need return ON DUPLICATE KEY UPDATE NOTHING after support this syntax.
         return "";
     }
     

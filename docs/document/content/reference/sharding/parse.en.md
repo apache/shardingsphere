@@ -41,28 +41,29 @@ The third generation of SQL parsing engine begins from 3.0.x version. ShardingSp
 * The syntax rules can be easily expanded and modified (using `ANTLR`)
 * Support multiple dialects
 
-| DB    | Status |
-|----------|--------|
-|MySQL     |supported|
-|PostgreSQL|supported|
-|SQLServer |supported|
-|Oracle    |supported|
-|SQL92     |supported|
-|openGauss |supported|
+| Database   | Status            |
+|----------- |------------------ |
+| MySQL      | perfect supported |
+| PostgreSQL | perfect supported |
+| SQLServer  | supported         |
+| Oracle     | supported         |
+| SQL92      | supported         |
+| openGauss  | supported         |
 
 * SQL format (developing)
 * SQL parameterize (developing)
 
 ### API Usage
 
-Maven config
-```
+- Maven
+
+```xml
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
     <artifactId>shardingsphere-sql-parser-engine</artifactId>
     <version>${project.version}</version>
 </dependency>
-// According to the needs, introduce the parsing module of the specified dialect (take MySQL as an example), you can add all the supported dialects, or just what you need
+<!-- According to the needs, introduce the parsing module of the specified dialect (take MySQL as an example), you can add all the supported dialects, or just what you need -->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
     <artifactId>shardingsphere-sql-parser-mysql</artifactId>
@@ -70,56 +71,42 @@ Maven config
 </dependency>
 ```
 
-demo:
-
 - Get AST
 
-```
-/**
- * databaseType type:String values: MySQL, Oracle, PostgreSQL, SQL92, SQLServer, openGauss 
- * sql type:String SQL to be parsed
- * useCache type:boolean whether use cache
- * @return parse context
- */
-ParseContext parseContext = new SQLParserEngine(databaseType).parse(sql, useCache)
+```java
+CacheOption cacheOption = new CacheOption(128, 1024L);
+SQLParserEngine parserEngine = new SQLParserEngine(sql, cacheOption);
+ParseASTNode parseASTNode = parserEngine.parse(sql, useCache);
 ```
 
 - GET SQLStatement
 
-```
-/**
- * databaseType type:String values: MySQL, Oracle, PostgreSQL, SQL92, SQLServer, openGauss 
- * useCache type:boolean whether use cache
- * @return SQLStatement
- */
-ParseContext parseContext = new SQLParserEngine(databaseType).parse(sql, useCache); 
-SQLVisitorEngine sqlVisitorEngine = new SQLVisitorEngine(databaseType, "STATEMENT");
-SQLStatement sqlStatement = sqlVisitorEngine.visit(parseContext);
+```java
+CacheOption cacheOption = new CacheOption(128, 1024L);
+SQLParserEngine parserEngine = new SQLParserEngine(sql, cacheOption);
+ParseASTNode parseASTNode = parserEngine.parse(sql, useCache);
+SQLVisitorEngine sqlVisitorEngine = new SQLVisitorEngine(sql, "STATEMENT", useCache, new Properties());
+SQLStatement sqlStatement = sqlVisitorEngine.visit(parseASTNode);
 ```
 
 - SQL Format
 
-```
-/**
- * databaseType type:String values MySQL
- * useCache type:boolean whether use cache
- * @return String 
- */
-ParseContext parseContext = new SQLParserEngine(databaseType).parse(sql, useCache);
-SQLVisitorEngine sqlVisitorEngine = new SQLVisitorEngine(databaseType, "FORMAT", new Properties());
-String formatedSql = sqlVisitorEngine.visit(parseContext);
+```java
+ParseASTNode parseASTNode = parserEngine.parse(sql, useCache);
+SQLVisitorEngine sqlVisitorEngine = new SQLVisitorEngine(sql, "STATEMENT", useCache, new Properties());
+SQLStatement sqlStatement = sqlVisitorEngine.visit(parseASTNode);
 ```
 
 example：
 
-| sql      | formatedSql |
-|----------|-------------|
-|select a+1 as b, name n from table1 join table2 where id=1 and name='lu';    |SELECT a + 1 AS b, name n<br>FROM table1 JOIN table2<br>WHERE<br>&emsp;&emsp;&emsp;&emsp;id = 1<br>&emsp;&emsp;&emsp;&emsp;and name = 'lu';|
-|select id, name, age, sex, ss, yy from table1 where id=1;|SELECT id , name , age , <br>&emsp;&emsp;&emsp;&emsp;sex , ss , yy <br>FROM table1<br>WHERE <br>&emsp;&emsp;&emsp;&emsp;id = 1;|
-|select id, name, age, count(*) as n, (select id, name, age, sex from table2 where id=2) as sid, yyyy from table1 where id=1;|SELECT id , name , age , <br>&emsp;&emsp;&emsp;&emsp;COUNT(*) AS n, <br>&emsp;&emsp;&emsp;&emsp;(<br>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;SELECT id , name , age , <br>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;sex <br>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;FROM table2<br>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;WHERE <br>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;id = 2<br>&emsp;&emsp;&emsp;&emsp;) AS sid, yyyy <br>FROM table1<br>WHERE <br>&emsp;&emsp;&emsp;&emsp;id = 1;|
-|select id, name, age, sex, ss, yy from table1 where id=1 and name=1 and a=1 and b=2 and c=4 and d=3;|SELECT id , name , age , <br>&emsp;&emsp;&emsp;&emsp;sex , ss , yy <br>FROM table1<br>WHERE <br>&emsp;&emsp;&emsp;&emsp;id = 1<br>&emsp;&emsp;&emsp;&emsp;and name = 1<br>&emsp;&emsp;&emsp;&emsp;and a = 1<br>&emsp;&emsp;&emsp;&emsp;and b = 2<br>&emsp;&emsp;&emsp;&emsp;and c = 4<br>&emsp;&emsp;&emsp;&emsp;and d = 3;|
-|ALTER TABLE t_order ADD column4 DATE, ADD column5 DATETIME, engine ss max_rows 10,min_rows 2, <br>ADD column6 TIMESTAMP, ADD column7 TIME;|ALTER TABLE t_order<br>&emsp;&emsp;&emsp;&emsp;ADD column4 DATE,<br>&emsp;&emsp;&emsp;&emsp;ADD column5 DATETIME,<br>&emsp;&emsp;&emsp;&emsp;ENGINE ss<br>&emsp;&emsp;&emsp;&emsp;MAX_ROWS 10,<br>&emsp;&emsp;&emsp;&emsp;MIN_ROWS 2,<br>&emsp;&emsp;&emsp;&emsp;ADD column6 TIMESTAMP,<br>&emsp;&emsp;&emsp;&emsp;ADD column7 TIME|
-|CREATE TABLE IF NOT EXISTS <br>`runoob_tbl`(`runoob_id` INT UNSIGNED AUTO_INCREMENT,`runoob_title` VARCHAR(100) NOT NULL,<br>`runoob_author` VARCHAR(40) NOT NULL,`runoob_test` NATIONAL CHAR(40),<br>`submission_date` DATE,PRIMARY KEY (`runoob_id`))ENGINE=InnoDB DEFAULT CHARSET=utf8;|CREATE TABLE IF NOT EXISTS `runoob_tbl` (<br>&emsp;&emsp;&emsp;&emsp;`runoob_id` INT UNSIGNED AUTO_INCREMENT,<br>&emsp;&emsp;&emsp;&emsp;`runoob_title` VARCHAR(100) NOT NULL,<br>&emsp;&emsp;&emsp;&emsp;`runoob_author` VARCHAR(40) NOT NULL,<br>&emsp;&emsp;&emsp;&emsp;`runoob_test` NATIONAL CHAR(40),<br>&emsp;&emsp;&emsp;&emsp;`submission_date` DATE,<br>&emsp;&emsp;&emsp;&emsp;PRIMARY KEY (`runoob_id`)<br>) ENGINE = InnoDB DEFAULT CHARSET = utf8;|
-|INSERT INTO t_order_item(order_id, user_id, status, creation_date) <br>values (1, 1, 'insert', '2017-08-08'), (2, 2, 'insert', '2017-08-08') ON DUPLICATE KEY UPDATE status = 'init';|INSERT  INTO t_order_item (order_id , user_id , status , creation_date)<br>VALUES<br>&emsp;&emsp;&emsp;&emsp;(1, 1, 'insert', '2017-08-08'),<br>&emsp;&emsp;&emsp;&emsp;(2, 2, 'insert', '2017-08-08')<br>ON DUPLICATE KEY UPDATE status = 'init';|
-|INSERT INTO t_order SET order_id = 1, user_id = 1, status = convert(to_base64(aes_encrypt(1, 'key')) USING utf8)<br> ON DUPLICATE KEY UPDATE status = VALUES(status);|INSERT  INTO t_order SET order_id = 1,<br>&emsp;&emsp;&emsp;&emsp;user_id = 1,<br>&emsp;&emsp;&emsp;&emsp;status = CONVERT(to_base64(aes_encrypt(1 , 'key')) USING utf8)<br>ON DUPLICATE KEY UPDATE status = VALUES(status);|
-|INSERT INTO t_order (order_id, user_id, status) SELECT order_id, user_id, status FROM t_order WHERE order_id = 1;|INSERT  INTO t_order (order_id , user_id , status) <br>SELECT order_id , user_id , status <br>FROM t_order<br>WHERE <br>&emsp;&emsp;&emsp;&emsp;order_id = 1;|
+| Original SQL                                                                                                                                                                                                                                                                               | Formatted SQL                                                                                                                               |
+|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |-------------------------------------------------------------------------------------------------------------------------------------------- |
+| select a+1 as b, name n from table1 join table2 where id=1 and name='lu';                                                                                                                                                                                                                  | SELECT a + 1 AS b, name n<br>FROM table1 JOIN table2<br>WHERE<br>&emsp;&emsp;&emsp;&emsp;id = 1<br>&emsp;&emsp;&emsp;&emsp;and name = 'lu'; |
+| select id, name, age, sex, ss, yy from table1 where id=1;                                                                                                                                                                                                                                  | SELECT id , name , age , <br>&emsp;&emsp;&emsp;&emsp;sex , ss , yy <br>FROM table1<br>WHERE <br>&emsp;&emsp;&emsp;&emsp;id = 1; |
+| select id, name, age, count(*) as n, (select id, name, age, sex from table2 where id=2) as sid, yyyy from table1 where id=1;                                                                                                                                                               | SELECT id , name , age , <br>&emsp;&emsp;&emsp;&emsp;COUNT(*) AS n, <br>&emsp;&emsp;&emsp;&emsp;(<br>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;SELECT id , name , age , <br>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;sex <br>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;FROM table2<br>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;WHERE <br>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;id = 2<br>&emsp;&emsp;&emsp;&emsp;) AS sid, yyyy <br>FROM table1<br>WHERE <br>&emsp;&emsp;&emsp;&emsp;id = 1; |
+| select id, name, age, sex, ss, yy from table1 where id=1 and name=1 and a=1 and b=2 and c=4 and d=3;                                                                                                                                                                                       | SELECT id , name , age , <br>&emsp;&emsp;&emsp;&emsp;sex , ss , yy <br>FROM table1<br>WHERE <br>&emsp;&emsp;&emsp;&emsp;id = 1<br>&emsp;&emsp;&emsp;&emsp;and name = 1<br>&emsp;&emsp;&emsp;&emsp;and a = 1<br>&emsp;&emsp;&emsp;&emsp;and b = 2<br>&emsp;&emsp;&emsp;&emsp;and c = 4<br>&emsp;&emsp;&emsp;&emsp;and d = 3; |
+| ALTER TABLE t_order ADD column4 DATE, ADD column5 DATETIME, engine ss max_rows 10,min_rows 2, <br>ADD column6 TIMESTAMP, ADD column7 TIME;                                                                                                                                                 | ALTER TABLE t_order<br>&emsp;&emsp;&emsp;&emsp;ADD column4 DATE,<br>&emsp;&emsp;&emsp;&emsp;ADD column5 DATETIME,<br>&emsp;&emsp;&emsp;&emsp;ENGINE ss<br>&emsp;&emsp;&emsp;&emsp;MAX_ROWS 10,<br>&emsp;&emsp;&emsp;&emsp;MIN_ROWS 2,<br>&emsp;&emsp;&emsp;&emsp;ADD column6 TIMESTAMP,<br>&emsp;&emsp;&emsp;&emsp;ADD column7 TIME |
+| CREATE TABLE IF NOT EXISTS <br>`runoob_tbl`(`runoob_id` INT UNSIGNED AUTO_INCREMENT,`runoob_title` VARCHAR(100) NOT NULL,<br>`runoob_author` VARCHAR(40) NOT NULL,`runoob_test` NATIONAL CHAR(40),<br>`submission_date` DATE,PRIMARY KEY (`runoob_id`))ENGINE=InnoDB DEFAULT CHARSET=utf8; | CREATE TABLE IF NOT EXISTS `runoob_tbl` (<br>&emsp;&emsp;&emsp;&emsp;`runoob_id` INT UNSIGNED AUTO_INCREMENT,<br>&emsp;&emsp;&emsp;&emsp;`runoob_title` VARCHAR(100) NOT NULL,<br>&emsp;&emsp;&emsp;&emsp;`runoob_author` VARCHAR(40) NOT NULL,<br>&emsp;&emsp;&emsp;&emsp;`runoob_test` NATIONAL CHAR(40),<br>&emsp;&emsp;&emsp;&emsp;`submission_date` DATE,<br>&emsp;&emsp;&emsp;&emsp;PRIMARY KEY (`runoob_id`)<br>) ENGINE = InnoDB DEFAULT CHARSET = utf8; |
+| INSERT INTO t_order_item(order_id, user_id, status, creation_date) <br>values (1, 1, 'insert', '2017-08-08'), (2, 2, 'insert', '2017-08-08') ON DUPLICATE KEY UPDATE status = 'init';                                                                                                      | INSERT  INTO t_order_item (order_id , user_id , status , creation_date)<br>VALUES<br>&emsp;&emsp;&emsp;&emsp;(1, 1, 'insert', '2017-08-08'),<br>&emsp;&emsp;&emsp;&emsp;(2, 2, 'insert', '2017-08-08')<br>ON DUPLICATE KEY UPDATE status = 'init'; |
+| INSERT INTO t_order SET order_id = 1, user_id = 1, status = convert(to_base64(aes_encrypt(1, 'key')) USING utf8)<br> ON DUPLICATE KEY UPDATE status = VALUES(status);                                                                                                                      | INSERT  INTO t_order SET order_id = 1,<br>&emsp;&emsp;&emsp;&emsp;user_id = 1,<br>&emsp;&emsp;&emsp;&emsp;status = CONVERT(to_base64(aes_encrypt(1 , 'key')) USING utf8)<br>ON DUPLICATE KEY UPDATE status = VALUES(status); |
+| INSERT INTO t_order (order_id, user_id, status) SELECT order_id, user_id, status FROM t_order WHERE order_id = 1;                                                                                                                                                                          | INSERT  INTO t_order (order_id , user_id , status) <br>SELECT order_id , user_id , status <br>FROM t_order<br>WHERE <br>&emsp;&emsp;&emsp;&emsp;order_id = 1; |

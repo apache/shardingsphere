@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleExcep
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -42,9 +42,8 @@ import java.util.stream.Collectors;
 public final class CreateEncryptRuleStatementUpdater implements RuleDefinitionCreateUpdater<CreateEncryptRuleStatement, EncryptRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final CreateEncryptRuleStatement sqlStatement,
-                                  final EncryptRuleConfiguration currentRuleConfig) throws DistSQLException {
-        checkDuplicateRuleNames(shardingSphereMetaData.getDatabaseName(), sqlStatement, currentRuleConfig);
+    public void checkSQLStatement(final ShardingSphereDatabase database, final CreateEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) throws DistSQLException {
+        checkDuplicateRuleNames(database.getName(), sqlStatement, currentRuleConfig);
         checkDataType(sqlStatement);
         checkToBeCreatedEncryptors(sqlStatement);
         // TODO check resource
@@ -67,7 +66,7 @@ public final class CreateEncryptRuleStatementUpdater implements RuleDefinitionCr
     }
     
     private Collection<String> getInvalidColumns(final String tableName, final Collection<EncryptColumnSegment> columns) {
-        return columns.stream().filter(each -> !each.isCorrectDataType()).map(each1 -> String.format("%s.%s", tableName, each1.getName())).collect(Collectors.toList());
+        return columns.stream().filter(each -> !each.isCorrectDataType()).map(each -> String.format("%s.%s", tableName, each.getName())).collect(Collectors.toList());
     }
     
     private void checkToBeCreatedEncryptors(final CreateEncryptRuleStatement sqlStatement) throws InvalidAlgorithmConfigurationException {

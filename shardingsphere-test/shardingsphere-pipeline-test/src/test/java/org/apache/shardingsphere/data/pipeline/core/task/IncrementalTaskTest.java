@@ -30,9 +30,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 public final class IncrementalTaskTest {
@@ -46,11 +46,11 @@ public final class IncrementalTaskTest {
     
     @Before
     public void setUp() {
-        TaskConfiguration taskConfig = new RuleAlteredJobContext(JobConfigurationBuilder.createJobConfiguration()).getTaskConfig();
+        TaskConfiguration taskConfig = new RuleAlteredJobContext(JobConfigurationBuilder.createJobConfiguration(), 0).getTaskConfig();
         taskConfig.getDumperConfig().setPosition(new PlaceholderPosition());
         PipelineTableMetaDataLoader metaDataLoader = new PipelineTableMetaDataLoader(mock(PipelineDataSourceWrapper.class));
         incrementalTask = new IncrementalTask(3, taskConfig.getDumperConfig(), taskConfig.getImporterConfig(),
-                PipelineContextUtil.getPipelineChannelFactory(),
+                PipelineContextUtil.getPipelineChannelCreator(),
                 new PipelineDataSourceManager(), metaDataLoader, PipelineContextUtil.getExecuteEngine());
     }
     
@@ -58,7 +58,7 @@ public final class IncrementalTaskTest {
     public void assertStart() {
         incrementalTask.start();
         assertThat(incrementalTask.getTaskId(), is("ds_0"));
-        assertTrue(incrementalTask.getProgress().getPosition() instanceof PlaceholderPosition);
+        assertThat(incrementalTask.getProgress().getPosition(), instanceOf(PlaceholderPosition.class));
     }
     
     @After

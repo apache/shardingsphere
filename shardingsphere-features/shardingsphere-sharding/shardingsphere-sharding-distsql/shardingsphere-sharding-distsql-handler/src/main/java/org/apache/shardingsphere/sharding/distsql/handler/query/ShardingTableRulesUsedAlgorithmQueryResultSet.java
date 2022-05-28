@@ -18,17 +18,16 @@
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableRulesUsedAlgorithmStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
+import java.util.LinkedList;
 
 /**
  * Result set for show sharding table rules used algorithm.
@@ -38,28 +37,28 @@ public final class ShardingTableRulesUsedAlgorithmQueryResultSet implements Dist
     private Iterator<Collection<Object>> data = Collections.emptyIterator();
     
     @Override
-    public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
+    public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
         ShowShardingTableRulesUsedAlgorithmStatement statement = (ShowShardingTableRulesUsedAlgorithmStatement) sqlStatement;
-        List<Collection<Object>> result = new ArrayList<>();
-        Collection<ShardingRuleConfiguration> shardingTableRules = metaData.getRuleMetaData().findRuleConfiguration(ShardingRuleConfiguration.class);
-        shardingTableRules.forEach(each -> requireResult(statement, metaData.getDatabaseName(), result, each));
-        data = result.iterator();
+        Collection<Collection<Object>> data = new LinkedList<>();
+        Collection<ShardingRuleConfiguration> shardingTableRules = database.getRuleMetaData().findRuleConfigurations(ShardingRuleConfiguration.class);
+        shardingTableRules.forEach(each -> requireResult(statement, database.getName(), data, each));
+        this.data = data.iterator();
     }
     
-    private void requireResult(final ShowShardingTableRulesUsedAlgorithmStatement statement, final String databaseName, final List<Collection<Object>> result,
-                               final ShardingRuleConfiguration shardingRuleConfiguration) {
+    private void requireResult(final ShowShardingTableRulesUsedAlgorithmStatement statement, final String databaseName,
+                               final Collection<Collection<Object>> data, final ShardingRuleConfiguration shardingRuleConfig) {
         if (!statement.getAlgorithmName().isPresent()) {
             return;
         }
-        shardingRuleConfiguration.getTables().forEach(each -> {
+        shardingRuleConfig.getTables().forEach(each -> {
             if (((null != each.getDatabaseShardingStrategy() && statement.getAlgorithmName().get().equals(each.getDatabaseShardingStrategy().getShardingAlgorithmName())))
                     || (null != each.getTableShardingStrategy() && statement.getAlgorithmName().get().equals(each.getTableShardingStrategy().getShardingAlgorithmName()))) {
-                result.add(Arrays.asList(databaseName, "table", each.getLogicTable()));
+                data.add(Arrays.asList(databaseName, "table", each.getLogicTable()));
             }
         });
-        shardingRuleConfiguration.getAutoTables().forEach(each -> {
+        shardingRuleConfig.getAutoTables().forEach(each -> {
             if (null != each.getShardingStrategy() && statement.getAlgorithmName().get().equals(each.getShardingStrategy().getShardingAlgorithmName())) {
-                result.add(Arrays.asList(databaseName, "auto_table", each.getLogicTable()));
+                data.add(Arrays.asList(databaseName, "auto_table", each.getLogicTable()));
             }
         });
     }

@@ -17,6 +17,6 @@
   -->
 
 <sql-cases>
-    <sql-case id="drop_group_if_exists" value="DROP GROUP IF EXISTS regress_test_g1, regress_test_g2;" db-types="PostgreSQL"/>
-    <sql-case id="drop_group" value="DROP GROUP regress_dep_group;" db-types="PostgreSQL"/>
+    <sql-case id="drop_group_if_exists" value="DROP GROUP IF EXISTS regress_test_g1, regress_test_g2;" db-types="PostgreSQL" />
+    <sql-case id="drop_group" value="DROP GROUP regress_dep_group;" db-types="PostgreSQL" />
 </sql-cases>

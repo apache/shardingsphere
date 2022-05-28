@@ -1,7 +1,7 @@
 +++
-pre = "<b>4.7. </b>"
+pre = "<b>4.8. </b>"
 title = "Scaling"
-weight = 7
+weight = 8
 chapter = true
 +++
 
@@ -22,7 +22,7 @@ Finally, scaling should not affect the existing data. How to ensure the availabi
 
 ShardingSphere-Scaling is a common solution for migrating or scaling data.
 
-![Overview](https://shardingsphere.apache.org/document/current/img/scaling/overview.en.png)
+![Overview](https://shardingsphere.apache.org/document/current/img/scaling/overview_v2.png)
 
 ## Goal
 
@@ -32,3 +32,5 @@ ShardingSphere-Scaling is a common solution for migrating or scaling data.
 
 ShardingSphere-Scaling since version **4.1.0**.
 Current status is in **alpha** development.
+
+**Source Codes: https://github.com/apache/shardingsphere/tree/master/shardingsphere-kernel/shardingsphere-data-pipeline**

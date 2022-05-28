@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.traffic.yaml.swapper;
 
-import com.google.common.collect.Lists;
 import org.apache.shardingsphere.traffic.api.config.TrafficStrategyConfiguration;
 import org.apache.shardingsphere.traffic.yaml.config.YamlTrafficStrategyConfiguration;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -42,17 +42,17 @@ public final class TrafficStrategyConfigurationYamlSwapperTest {
     
     private static final String LOAD_BALANCER_NAME = "testLoadBalancerName";
     
-    private static final List<String> LABELS = Lists.newArrayList(TEST_LABEL_ONE, TEST_LABEL_TWO);
+    private static final List<String> LABELS = Arrays.asList(TEST_LABEL_ONE, TEST_LABEL_TWO);
     
     private final TrafficStrategyConfigurationYamlSwapper yamlSwapper = new TrafficStrategyConfigurationYamlSwapper();
     
     @Test
     public void swapToYamlConfiguration() {
-        YamlTrafficStrategyConfiguration yamlTrafficStrategyConfiguration = yamlSwapper.swapToYamlConfiguration(createTrafficStrategyConfiguration());
-        assertThat(yamlTrafficStrategyConfiguration.getName(), is(NAME));
-        assertThat(yamlTrafficStrategyConfiguration.getLabels(), is(LABELS));
-        assertThat(yamlTrafficStrategyConfiguration.getAlgorithmName(), is(ALGORITHM_NAME));
-        assertThat(yamlTrafficStrategyConfiguration.getLoadBalancerName(), is(LOAD_BALANCER_NAME));
+        YamlTrafficStrategyConfiguration yamlStrategyConfig = yamlSwapper.swapToYamlConfiguration(createTrafficStrategyConfiguration());
+        assertThat(yamlStrategyConfig.getName(), is(NAME));
+        assertThat(yamlStrategyConfig.getLabels(), is(LABELS));
+        assertThat(yamlStrategyConfig.getAlgorithmName(), is(ALGORITHM_NAME));
+        assertThat(yamlStrategyConfig.getLoadBalancerName(), is(LOAD_BALANCER_NAME));
     }
     
     private TrafficStrategyConfiguration createTrafficStrategyConfiguration() {
@@ -61,11 +61,11 @@ public final class TrafficStrategyConfigurationYamlSwapperTest {
     
     @Test
     public void swapToObject() {
-        TrafficStrategyConfiguration trafficStrategyConfiguration = yamlSwapper.swapToObject(createYamlTrafficStrategyConfiguration());
-        assertThat(trafficStrategyConfiguration.getName(), is(NAME));
-        assertThat(trafficStrategyConfiguration.getLabels(), is(LABELS));
-        assertThat(trafficStrategyConfiguration.getAlgorithmName(), is(ALGORITHM_NAME));
-        assertThat(trafficStrategyConfiguration.getLoadBalancerName(), is(LOAD_BALANCER_NAME));
+        TrafficStrategyConfiguration strategyConfig = yamlSwapper.swapToObject(createYamlTrafficStrategyConfiguration());
+        assertThat(strategyConfig.getName(), is(NAME));
+        assertThat(strategyConfig.getLabels(), is(LABELS));
+        assertThat(strategyConfig.getAlgorithmName(), is(ALGORITHM_NAME));
+        assertThat(strategyConfig.getLoadBalancerName(), is(LOAD_BALANCER_NAME));
     }
     
     private YamlTrafficStrategyConfiguration createYamlTrafficStrategyConfiguration() {

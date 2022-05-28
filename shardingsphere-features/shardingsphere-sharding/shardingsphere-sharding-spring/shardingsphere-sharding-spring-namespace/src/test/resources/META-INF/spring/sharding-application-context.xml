@@ -39,9 +39,9 @@
             <prop key="sharding-count">2</prop>
         </props>
     </sharding:sharding-algorithm>
-    <sharding:sharding-algorithm id="complexShardingAlgorithm" type="COMPLEX_TEST" />
-    <sharding:sharding-algorithm id="hintShardingAlgorithm" type="HINT_TEST" />
-
+    <sharding:sharding-algorithm id="complexShardingAlgorithm" type="SPRING.COMPLEX.FIXTURE" />
+    <sharding:sharding-algorithm id="hintShardingAlgorithm" type="SPRING.HINT.FIXTURE" />
+    
     <sharding:standard-strategy id="dataSourceShardingStrategy" sharding-column="order_id" algorithm-ref="dataSourceShardingAlgorithm" />
     <sharding:standard-strategy id="dataSourceShardingStrategyWithoutShardingColumn" algorithm-ref="dataSourceShardingAlgorithm" />
     <sharding:standard-strategy id="orderTableShardingStrategy" sharding-column="order_id" algorithm-ref="orderTableShardingAlgorithm" />
@@ -50,10 +50,10 @@
     <sharding:hint-strategy id="hintStrategy" algorithm-ref="hintShardingAlgorithm" />
     <sharding:none-strategy id="noneStrategy" />
     
-    <sharding:key-generate-algorithm id="incrementAlgorithm" type="INCREMENT" />
+    <sharding:key-generate-algorithm id="uuidAlgorithm" type="UUID" />
     
-    <sharding:key-generate-strategy id="defaultKeyGenerator" column="id" algorithm-ref="incrementAlgorithm" />
-    <sharding:key-generate-strategy id="orderKeyGenerator" column="order_id" algorithm-ref="incrementAlgorithm" />
+    <sharding:key-generate-strategy id="defaultKeyGenerator" column="id" algorithm-ref="uuidAlgorithm" />
+    <sharding:key-generate-strategy id="orderKeyGenerator" column="order_id" algorithm-ref="uuidAlgorithm" />
     
     <sharding:rule id="simpleRule">
         <sharding:table-rules>
@@ -99,6 +99,6 @@
             <sharding:auto-table-rule logic-table="t_order" actual-data-sources="ds_0, ds_1" sharding-strategy-ref="modStrategy" />
         </sharding:auto-table-rules>
     </sharding:rule>
-
-    <sharding:rule id="shardingRule" default-sharding-column="order_id" default-database-strategy-ref="dataSourceShardingStrategyWithoutShardingColumn"/>
+    
+    <sharding:rule id="shardingRule" default-sharding-column="order_id" default-database-strategy-ref="dataSourceShardingStrategyWithoutShardingColumn" />
 </beans>

@@ -22,7 +22,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesUsed
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
@@ -68,23 +68,23 @@ public final class RulesUsedResourceQueryResultSet implements DistSQLResultSet {
     }
     
     @Override
-    public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
-        List<Collection<Object>> result = new ArrayList<>();
+    public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
+        List<Collection<Object>> data = new ArrayList<>();
         ShowRulesUsedResourceStatement statement = (ShowRulesUsedResourceStatement) sqlStatement;
-        String resourceName = statement.getResourceName().get();
-        if (hasRulesConfig(metaData) && metaData.getResource().getDataSources().keySet().contains(resourceName)) {
-            getRulesConfig(metaData.getRuleMetaData().getConfigurations(), resourceName, result);
+        String resourceName = statement.getResourceName().orElse(null);
+        if (hasRulesConfiguration(database) && database.getResource().getDataSources().containsKey(resourceName)) {
+            getRulesConfig(database.getRuleMetaData().getConfigurations(), resourceName, data);
         }
-        data = result.iterator();
+        this.data = data.iterator();
     }
     
-    private void getRulesConfig(final Collection<RuleConfiguration> ruleConfigurations, final String resourceName, final List<Collection<Object>> result) {
-        ruleConfigurations.forEach(each -> {
-            getRulesConfigForSharding(each, result);
-            getRulesConfigForReadwriteSplitting(each, resourceName, result);
-            getRulesConfigForDBDiscovery(each, resourceName, result);
-            getRulesConfigForEncrypt(each, result);
-            getRulesConfigForShadow(each, resourceName, result);
+    private void getRulesConfig(final Collection<RuleConfiguration> ruleConfigs, final String resourceName, final List<Collection<Object>> data) {
+        ruleConfigs.forEach(each -> {
+            getRulesConfigForSharding(each, data);
+            getRulesConfigForReadwriteSplitting(each, resourceName, data);
+            getRulesConfigForDBDiscovery(each, resourceName, data);
+            getRulesConfigForEncrypt(each, data);
+            getRulesConfigForShadow(each, resourceName, data);
         });
     }
     
@@ -93,12 +93,8 @@ public final class RulesUsedResourceQueryResultSet implements DistSQLResultSet {
             return;
         }
         ShardingRuleConfiguration config = (ShardingRuleConfiguration) ruleConfig;
-        config.getAutoTables().forEach(each -> {
-            result.add(buildRow(SHARDING, each.getLogicTable()));
-        });
-        config.getTables().forEach(each -> {
-            result.add(buildRow(SHARDING, each.getLogicTable()));
-        });
+        config.getAutoTables().forEach(each -> result.add(buildRow(SHARDING, each.getLogicTable())));
+        config.getTables().forEach(each -> result.add(buildRow(SHARDING, each.getLogicTable())));
     }
     
     private void getRulesConfigForReadwriteSplitting(final RuleConfiguration ruleConfig, final String resourceName, final List<Collection<Object>> result) {
@@ -133,9 +129,7 @@ public final class RulesUsedResourceQueryResultSet implements DistSQLResultSet {
             return;
         }
         EncryptRuleConfiguration config = (EncryptRuleConfiguration) ruleConfig;
-        config.getTables().forEach(each -> {
-            result.add(buildRow(ENCRYPT, each.getName()));
-        });
+        config.getTables().forEach(each -> result.add(buildRow(ENCRYPT, each.getName())));
     }
     
     private void getRulesConfigForShadow(final RuleConfiguration ruleConfig, final String resourceName, final List<Collection<Object>> result) {
@@ -151,19 +145,16 @@ public final class RulesUsedResourceQueryResultSet implements DistSQLResultSet {
     }
     
     private boolean matchFeature(final RuleConfiguration ruleConfig, final String feature) {
-        if (null != ruleConfig && ruleConfig.getClass().getName().equals(FEATURE_MAP.get(feature).getName())) {
-            return true;
-        }
-        return false;
+        return null != ruleConfig && ruleConfig.getClass().getName().equals(FEATURE_MAP.get(feature).getName());
     }
     
     private Collection<Object> buildRow(final String type, final String name) {
         return Arrays.asList(type, name);
     }
     
-    private boolean hasRulesConfig(final ShardingSphereMetaData metaData) {
-        Collection<RuleConfiguration> configurations = metaData.getRuleMetaData().getConfigurations();
-        return null != configurations && !configurations.isEmpty();
+    private boolean hasRulesConfiguration(final ShardingSphereDatabase database) {
+        Collection<RuleConfiguration> configs = database.getRuleMetaData().getConfigurations();
+        return null != configs && !configs.isEmpty();
     }
     
     @Override

@@ -49,18 +49,16 @@ public final class ShowAuthorityRuleHandler extends QueryableRALBackendHandler<S
     
     @Override
     protected Collection<List<Object>> getRows(final ContextManager contextManager) {
-        Optional<AuthorityRuleConfiguration> authorityRuleConfigurationOptional = ProxyContext.getInstance().getContextManager()
-                .getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(AuthorityRuleConfiguration.class).stream().findFirst();
-        if (!authorityRuleConfigurationOptional.isPresent()) {
-            return Collections.emptyList();
-        }
-        AuthorityRuleConfiguration authorityRuleConfiguration = authorityRuleConfigurationOptional.get();
-        List<Object> row = new LinkedList<>();
-        row.add(authorityRuleConfiguration.getUsers().stream().map(each -> each.getGrantee().toString()).collect(Collectors.joining("; ")));
-        row.add(authorityRuleConfiguration.getProvider().getType());
-        row.add(authorityRuleConfiguration.getProvider().getProps().size() == 0 ? "" : authorityRuleConfiguration.getProvider().getProps());
-        Collection<List<Object>> result = new LinkedList<>();
-        result.add(row);
+        Optional<AuthorityRuleConfiguration> authorityRuleConfig = ProxyContext.getInstance().getContextManager()
+                .getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findRuleConfigurations(AuthorityRuleConfiguration.class).stream().findFirst();
+        return authorityRuleConfig.isPresent() ? Collections.singleton(getRow(authorityRuleConfig.get())) : Collections.emptyList();
+    }
+    
+    private List<Object> getRow(final AuthorityRuleConfiguration authorityRuleConfig) {
+        List<Object> result = new LinkedList<>();
+        result.add(authorityRuleConfig.getUsers().stream().map(each -> each.getGrantee().toString()).collect(Collectors.joining("; ")));
+        result.add(authorityRuleConfig.getProvider().getType());
+        result.add(authorityRuleConfig.getProvider().getProps().size() == 0 ? "" : authorityRuleConfig.getProvider().getProps());
         return result;
     }
 }

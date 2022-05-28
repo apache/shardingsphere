@@ -23,7 +23,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.JobConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
@@ -49,9 +49,11 @@ public final class RuleAlteredJobContext {
     
     private final int shardingItem;
     
-    private JobStatus status = JobStatus.RUNNING;
+    private volatile boolean stopping;
     
-    private JobProgress initProgress;
+    private volatile JobStatus status = JobStatus.RUNNING;
+    
+    private volatile JobProgress initProgress;
     
     private final TaskConfiguration taskConfig;
     
@@ -59,13 +61,14 @@ public final class RuleAlteredJobContext {
     
     private final Collection<IncrementalTask> incrementalTasks = new LinkedList<>();
     
-    private final JobConfiguration jobConfig;
+    private final RuleAlteredJobConfiguration jobConfig;
     
     private final RuleAlteredContext ruleAlteredContext;
     
     private final PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager();
     
     private final LazyInitializer<PipelineDataSourceWrapper> sourceDataSourceLazyInitializer = new LazyInitializer<PipelineDataSourceWrapper>() {
+        
         @Override
         protected PipelineDataSourceWrapper initialize() {
             return dataSourceManager.getDataSource(taskConfig.getDumperConfig().getDataSourceConfig());
@@ -73,21 +76,21 @@ public final class RuleAlteredJobContext {
     };
     
     private final LazyInitializer<PipelineTableMetaDataLoader> sourceMetaDataLoaderLazyInitializer = new LazyInitializer<PipelineTableMetaDataLoader>() {
+        
         @Override
         protected PipelineTableMetaDataLoader initialize() throws ConcurrentException {
             return new PipelineTableMetaDataLoader(sourceDataSourceLazyInitializer.get());
         }
     };
     
-    private RuleAlteredJobPreparer jobPreparer;
+    private volatile RuleAlteredJobPreparer jobPreparer;
     
-    public RuleAlteredJobContext(final JobConfiguration jobConfig) {
+    public RuleAlteredJobContext(final RuleAlteredJobConfiguration jobConfig, final int jobShardingItem) {
         ruleAlteredContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
         this.jobConfig = jobConfig;
-        jobConfig.buildHandleConfig();
-        jobId = jobConfig.getHandleConfig().getJobId();
-        shardingItem = jobConfig.getHandleConfig().getJobShardingItem();
-        taskConfig = RuleAlteredJobWorker.buildTaskConfig(jobConfig.getPipelineConfig(), jobConfig.getHandleConfig(), ruleAlteredContext.getOnRuleAlteredActionConfig());
+        jobId = jobConfig.getJobId();
+        this.shardingItem = jobShardingItem;
+        taskConfig = RuleAlteredJobWorker.buildTaskConfig(jobConfig, jobShardingItem, ruleAlteredContext.getOnRuleAlteredActionConfig());
     }
     
     /**

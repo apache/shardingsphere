@@ -17,13 +17,23 @@
 
 package org.apache.shardingsphere.example.extension.spibased.sharding.spring.namespace.jpa.fixture;
 
+import lombok.Getter;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
 
 import java.util.Collection;
+import java.util.Properties;
 
+@Getter
 public final class SPIBasedOrderStandardShardingAlgorithmFixture implements StandardShardingAlgorithm<Long> {
+    
+    private Properties props;
+    
+    @Override
+    public void init(final Properties props) {
+        this.props = props;
+    }
     
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Long> shardingValue) {
@@ -42,10 +52,6 @@ public final class SPIBasedOrderStandardShardingAlgorithmFixture implements Stan
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Long> shardingValue) {
         return availableTargetNames;
-    }
-    
-    @Override
-    public void init() {
     }
     
     @Override

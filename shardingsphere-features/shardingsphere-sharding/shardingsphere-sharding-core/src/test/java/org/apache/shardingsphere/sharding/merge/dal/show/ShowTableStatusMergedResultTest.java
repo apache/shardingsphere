@@ -20,8 +20,8 @@ package org.apache.shardingsphere.sharding.merge.dal.show;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -35,8 +35,6 @@ import java.math.BigInteger;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -56,7 +54,13 @@ public final class ShowTableStatusMergedResultTest {
     @Before
     public void setUp() {
         shardingRule = buildShardingRule();
-        schema = buildSchema();
+        schema = new ShardingSphereSchema(Collections.singletonMap("table", new ShardingSphereTable("table", Collections.emptyList(), Collections.emptyList(), Collections.emptyList())));
+    }
+    
+    private ShardingRule buildShardingRule() {
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        shardingRuleConfig.getTables().add(new ShardingTableRuleConfiguration("table", "ds.table_${0..2}"));
+        return new ShardingRule(shardingRuleConfig, Collections.singletonList("ds"));
     }
     
     @Test
@@ -94,18 +98,5 @@ public final class ShowTableStatusMergedResultTest {
         when(result.getValue(17, Object.class)).thenReturn("");
         when(result.getValue(18, Object.class)).thenReturn("");
         return result;
-    }
-    
-    private ShardingRule buildShardingRule() {
-        ShardingTableRuleConfiguration tableRuleConfig = new ShardingTableRuleConfiguration("table", "ds.table_${0..2}");
-        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        shardingRuleConfig.getTables().add(tableRuleConfig);
-        return new ShardingRule(shardingRuleConfig, Collections.singletonList("ds"));
-    }
-    
-    private ShardingSphereSchema buildSchema() {
-        Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(1, 1);
-        tableMetaDataMap.put("table", new TableMetaData("table", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
-        return new ShardingSphereSchema(tableMetaDataMap);
     }
 }

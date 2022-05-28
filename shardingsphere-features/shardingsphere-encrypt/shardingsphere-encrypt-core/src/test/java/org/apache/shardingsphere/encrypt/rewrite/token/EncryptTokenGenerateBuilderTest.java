@@ -23,7 +23,7 @@ import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.aware.EncryptRuleAware;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.SQLTokenGenerator;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,7 +39,6 @@ import java.util.Iterator;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -66,7 +65,7 @@ public final class EncryptTokenGenerateBuilderTest {
         when(selectStatementContext.getGroupByContext().getItems()).thenReturn(Collections.emptyList());
         when(selectStatementContext.getWhereSegments()).thenReturn(Collections.emptyList());
         EncryptTokenGenerateBuilder encryptTokenGenerateBuilder = new EncryptTokenGenerateBuilder(
-                encryptRule, selectStatementContext, Collections.emptyList(), DefaultSchema.LOGIC_NAME);
+                encryptRule, selectStatementContext, Collections.emptyList(), DefaultDatabase.LOGIC_NAME);
         Collection<SQLTokenGenerator> sqlTokenGenerators = encryptTokenGenerateBuilder.getSQLTokenGenerators();
         assertThat(sqlTokenGenerators.size(), is(2));
         Iterator<SQLTokenGenerator> iterator = sqlTokenGenerators.iterator();
@@ -87,7 +86,6 @@ public final class EncryptTokenGenerateBuilderTest {
     private void assertField(final SQLTokenGenerator sqlTokenGenerator, final Object filedInstance, final String fieldName) throws IllegalAccessException {
         Field field = findField(sqlTokenGenerator.getClass(), fieldName, filedInstance.getClass());
         field.setAccessible(true);
-        assertNotNull(field.get(sqlTokenGenerator));
         assertThat(field.get(sqlTokenGenerator), is(filedInstance));
     }
     
