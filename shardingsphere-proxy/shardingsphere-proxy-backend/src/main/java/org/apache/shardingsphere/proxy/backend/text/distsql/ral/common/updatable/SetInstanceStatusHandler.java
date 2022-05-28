@@ -36,6 +36,7 @@ public final class SetInstanceStatusHandler extends UpdatableRALBackendHandler<S
         if (!"Cluster".equals(contextManager.getInstanceContext().getModeConfiguration().getType())) {
             throw new UnsupportedOperationException("Only allowed in cluster mode");
         }
+        // TODO use instance id
         InstanceId operationInstanceId = new InstanceId(sqlStatement.getIp(), String.valueOf(sqlStatement.getPort()));
         boolean isDisable = "DISABLE".equals(sqlStatement.getStatus());
         if (isDisable) {
