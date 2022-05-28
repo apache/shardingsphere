@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-name: Integration Test
+name: All in one jar integration Test
 
 on:
   push:
