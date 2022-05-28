@@ -23,10 +23,10 @@ import org.apache.shardingsphere.distsql.parser.autogen.EncryptDistSQLStatementP
 import org.apache.shardingsphere.distsql.parser.autogen.EncryptDistSQLStatementParser.AlgorithmPropertyContext;
 import org.apache.shardingsphere.distsql.parser.autogen.EncryptDistSQLStatementParser.AlterEncryptRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.EncryptDistSQLStatementParser.CreateEncryptRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.EncryptDistSQLStatementParser.DatabaseNameContext;
 import org.apache.shardingsphere.distsql.parser.autogen.EncryptDistSQLStatementParser.DropEncryptRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.EncryptDistSQLStatementParser.EncryptColumnDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.EncryptDistSQLStatementParser.EncryptRuleDefinitionContext;
-import org.apache.shardingsphere.distsql.parser.autogen.EncryptDistSQLStatementParser.SchemaNameContext;
 import org.apache.shardingsphere.distsql.parser.autogen.EncryptDistSQLStatementParser.ShowEncryptRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.EncryptDistSQLStatementParser.TableNameContext;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
@@ -68,7 +68,7 @@ public final class EncryptDistSQLStatementVisitor extends EncryptDistSQLStatemen
     @Override
     public ASTNode visitShowEncryptRules(final ShowEncryptRulesContext ctx) {
         return new ShowEncryptRulesStatement(null == ctx.tableRule() ? null : getIdentifierValue(ctx.tableRule().tableName()),
-                null == ctx.schemaName() ? null : (DatabaseSegment) visit(ctx.schemaName()));
+                null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()));
     }
     
     @Override
@@ -120,7 +120,7 @@ public final class EncryptDistSQLStatementVisitor extends EncryptDistSQLStatemen
     }
     
     @Override
-    public ASTNode visitSchemaName(final SchemaNameContext ctx) {
+    public ASTNode visitDatabaseName(final DatabaseNameContext ctx) {
         return new DatabaseSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), new IdentifierValue(ctx.getText()));
     }
 }

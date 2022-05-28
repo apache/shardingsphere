@@ -35,11 +35,11 @@ tableName
     : IDENTIFIER
     ;
 
-schemaName
+databaseName
     : IDENTIFIER
     ;
 
-databaseName
+schemaName
     : IDENTIFIER
     ;
 

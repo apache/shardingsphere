@@ -66,7 +66,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rql.impl.rule.ShowUnusedShardingAlgorithmsStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rql.impl.rule.ShowUnusedShardingKeyGeneratorsStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.CountSchemaRulesStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.CountDatabaseRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowDataBaseDiscoveryRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowDefaultShardingStrategyStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowEncryptRulesStatementTestCase;
@@ -137,7 +137,7 @@ public final class ShowRulesStatementAssert {
         } else if (actual instanceof ShowUnusedShardingKeyGeneratorsStatement) {
             ShowUnusedShardingKeyGeneratorsStatementAssert.assertIs(assertContext, (ShowUnusedShardingKeyGeneratorsStatement) actual, (ShowUnusedShardingKeyGeneratorsStatementTestCase) expected);
         } else if (actual instanceof CountDatabaseRulesStatement) {
-            CountDatabaseRulesStatementAssert.assertIs(assertContext, (CountDatabaseRulesStatement) actual, (CountSchemaRulesStatementTestCase) expected);
+            CountDatabaseRulesStatementAssert.assertIs(assertContext, (CountDatabaseRulesStatement) actual, (CountDatabaseRulesStatementTestCase) expected);
         } else if (actual instanceof ShowRulesUsedResourceStatement) {
             ShowRulesUsedResourceStatementAssert.assertIs(assertContext, (ShowRulesUsedResourceStatement) actual, (ShowRulesUsedResourceStatementTestCase) expected);
         } else if (actual instanceof ShowShardingTableRulesUsedAlgorithmStatement) {

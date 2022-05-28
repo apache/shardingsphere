@@ -45,7 +45,7 @@ public final class ShowTableMetadataStatementAssert {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual statement should exist."), actual);
-            DatabaseAssert.assertIs(assertContext, actual.getDatabase().get(), expected.getSchema());
+            DatabaseAssert.assertIs(assertContext, actual.getDatabase().get(), expected.getDatabase());
             assertThat(assertContext.getText("Table assertion error:"), actual.getTableNames(), is(expected.getTableNames()));
         }
     }

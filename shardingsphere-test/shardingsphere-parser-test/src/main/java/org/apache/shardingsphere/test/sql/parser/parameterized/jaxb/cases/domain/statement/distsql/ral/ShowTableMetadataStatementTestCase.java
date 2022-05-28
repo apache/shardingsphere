@@ -35,6 +35,6 @@ public final class ShowTableMetadataStatementTestCase extends SQLParserTestCase 
     @XmlElement(name = "table-name")
     private Set<String> tableNames;
     
-    @XmlElement(name = "schema")
-    private ExpectedDatabase schema;
+    @XmlElement(name = "database")
+    private ExpectedDatabase database;
 }
