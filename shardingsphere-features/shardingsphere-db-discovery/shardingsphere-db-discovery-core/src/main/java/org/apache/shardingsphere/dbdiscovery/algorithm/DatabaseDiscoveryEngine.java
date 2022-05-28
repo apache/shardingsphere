@@ -51,7 +51,6 @@ public final class DatabaseDiscoveryEngine {
      *
      * @param databaseName database name
      * @param dataSourceMap data source map
-     * @throws SQLException SQL exception
      */
     public void checkEnvironment(final String databaseName, final Map<String, DataSource> dataSourceMap) {
         databaseDiscoveryProviderAlgorithm.checkEnvironment(databaseName, dataSourceMap.values());

@@ -25,7 +25,6 @@ import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.database.metadata.dialect.MySQLDataSourceMetaData;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -35,8 +34,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.Properties;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
 
 /**
  * MGR database discovery provider algorithm for MySQL.
@@ -67,18 +64,14 @@ public final class MGRMySQLDatabaseDiscoveryProviderAlgorithm implements Databas
     
     @Override
     public void checkEnvironment(final String databaseName, final Collection<DataSource> dataSources) {
-        ExecutorService executorService = ExecutorEngine.createExecutorEngineWithCPUAndResources(dataSources.size()).getExecutorServiceManager().getExecutorService();
-        dataSources.forEach(each -> runAsyncCheckEnvironment(databaseName, each, executorService));
-    }
-    
-    private void runAsyncCheckEnvironment(final String databaseName, final DataSource dataSource, final ExecutorService executorService) {
-        CompletableFuture.runAsync(() -> {
+        dataSources.forEach(each -> {
             try {
-                checkSingleDatasourceEnvironment(databaseName, dataSource);
+                checkSingleDatasourceEnvironment(databaseName, each);
             } catch (SQLException ex) {
                 throw new ShardingSphereException(ex);
             }
-        }, executorService).join();
+        });
+        
     }
     
     private void checkSingleDatasourceEnvironment(final String databaseName, final DataSource dataSource) throws SQLException {
