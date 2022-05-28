@@ -62,7 +62,7 @@
 
     <profiles>
         <profile>
-            <id>release-all</id>
+            <id>all.in.one</id>
             <build>
                 <plugins>
                     <plugin>
