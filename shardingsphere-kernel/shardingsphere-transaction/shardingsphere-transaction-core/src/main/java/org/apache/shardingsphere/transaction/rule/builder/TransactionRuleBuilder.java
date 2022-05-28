@@ -31,7 +31,7 @@ import java.util.Map;
 public final class TransactionRuleBuilder implements GlobalRuleBuilder<TransactionRuleConfiguration> {
     
     @Override
-    public TransactionRule build(final TransactionRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databaseMap) {
+    public TransactionRule build(final TransactionRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases) {
         return new TransactionRule(ruleConfig);
     }
     

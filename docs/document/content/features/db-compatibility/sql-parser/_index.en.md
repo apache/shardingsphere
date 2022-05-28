@@ -14,3 +14,5 @@ This chapter has listed unsupported SQLs reference for users.
 
 There are some unsupported SQLs maybe missing, welcome to finish them.
 We will try best to support the unavailable SQLs in future versions.
+
+**Source Codes: https://github.com/apache/shardingsphere/tree/master/shardingsphere-sql-parser**

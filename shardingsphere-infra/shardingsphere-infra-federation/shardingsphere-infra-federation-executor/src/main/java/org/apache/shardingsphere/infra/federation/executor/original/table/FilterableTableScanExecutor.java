@@ -137,8 +137,8 @@ public final class FilterableTableScanExecutor {
         SqlString sqlString = createSQLString(tableMetaData, scanContext, databaseType);
         // TODO replace sql parse with sql convert
         FederationContext federationContext = executorContext.getFederationContext();
-        LogicSQL logicSQL = createLogicSQL(federationContext.getDatabaseMap(), sqlString, databaseType);
-        ShardingSphereDatabase database = federationContext.getDatabaseMap().get(databaseName);
+        LogicSQL logicSQL = createLogicSQL(federationContext.getDatabases(), sqlString, databaseType);
+        ShardingSphereDatabase database = federationContext.getDatabases().get(databaseName);
         ExecutionContext context = new KernelProcessor().generateExecutionContext(logicSQL, database, executorContext.getProps());
         if (federationContext.isPreview() || databaseType.getSystemSchemas().contains(schemaName)) {
             federationContext.getExecutionUnits().addAll(context.getExecutionUnits());
@@ -253,13 +253,13 @@ public final class FilterableTableScanExecutor {
         };
     }
     
-    private LogicSQL createLogicSQL(final Map<String, ShardingSphereDatabase> databaseMap, final SqlString sqlString, final DatabaseType databaseType) {
+    private LogicSQL createLogicSQL(final Map<String, ShardingSphereDatabase> databases, final SqlString sqlString, final DatabaseType databaseType) {
         String sql = sqlString.getSql().replace("\n", " ");
         SQLStatement sqlStatement = new SQLStatementParserEngine(databaseType.getType(),
                 optimizerContext.getSqlParserRule().getSqlStatementCache(), optimizerContext.getSqlParserRule().getParseTreeCache(),
                 optimizerContext.getSqlParserRule().isSqlCommentParseEnabled()).parse(sql, false);
         List<Object> parameters = getParameters(sqlString.getDynamicParameters());
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(databaseMap, parameters, sqlStatement, executorContext.getDatabaseName());
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(databases, parameters, sqlStatement, executorContext.getDatabaseName());
         return new LogicSQL(sqlStatementContext, sql, parameters);
     }
     

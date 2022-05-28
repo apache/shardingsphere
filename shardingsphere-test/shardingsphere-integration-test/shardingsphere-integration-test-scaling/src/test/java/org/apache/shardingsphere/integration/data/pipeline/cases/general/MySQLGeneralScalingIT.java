@@ -69,7 +69,7 @@ public final class MySQLGeneralScalingIT extends BaseExtraSQLITCase {
         initShardingAlgorithm();
         assertTrue(waitShardingAlgorithmEffect(15));
         createScalingRule();
-        createAllSharingTableRule();
+        getCreateOrderWithItemSharingTableRule();
         createNoUseTable();
         createOrderTable();
         createOrderItemTable();

@@ -32,11 +32,12 @@ import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ApplyDistSQLContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.CacheOptionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ClearHintContext;
+import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.CountDatabaseRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.CountInstanceRulesContext;
-import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.CountSchemaRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.CreateDefaultSingleTableRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.CreateTrafficRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.DataSourceContext;
+import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.DatabaseNameContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.DisableInstanceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.DiscardDistSQLContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.DropDefaultSingleTableRuleContext;
@@ -44,6 +45,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.DropTrafficRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.EnableInstanceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ExportDatabaseConfigurationContext;
+import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.FromSegmentContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ImportDatabaseConfigurationContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.InstanceDefinationContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.InstanceIdContext;
@@ -56,7 +58,6 @@ import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.PropertyContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ProviderDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.RefreshTableMetadataContext;
-import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.SchemaNameContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.SetVariableContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ShowAllVariablesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ShowAuthorityRuleContext;
@@ -148,7 +149,7 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     @Override
     public ASTNode visitShowTableMetadata(final ShowTableMetadataContext ctx) {
         Collection<String> tableNames = ctx.tableName().stream().map(this::getIdentifierValue).collect(Collectors.toSet());
-        return new ShowTableMetadataStatement(tableNames, null == ctx.schemaName() ? null : (DatabaseSegment) visit(ctx.schemaName()));
+        return new ShowTableMetadataStatement(tableNames, null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()));
     }
     
     @Override
@@ -248,8 +249,8 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     }
     
     @Override
-    public ASTNode visitCountSchemaRules(final CountSchemaRulesContext ctx) {
-        return new CountDatabaseRulesStatement(null == ctx.schemaName() ? null : (DatabaseSegment) visit(ctx.schemaName()));
+    public ASTNode visitCountDatabaseRules(final CountDatabaseRulesContext ctx) {
+        return new CountDatabaseRulesStatement(null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()));
     }
     
     @Override
@@ -287,16 +288,16 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     
     @Override
     public ASTNode visitShowResources(final ShowResourcesContext ctx) {
-        return new ShowResourcesStatement(null == ctx.schemaName() ? null : (DatabaseSegment) visit(ctx.schemaName()));
+        return new ShowResourcesStatement(null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()));
     }
     
     @Override
     public ASTNode visitShowUnusedResources(final ShowUnusedResourcesContext ctx) {
-        return new ShowUnusedResourcesStatement(null == ctx.schemaName() ? null : (DatabaseSegment) visit(ctx.schemaName()));
+        return new ShowUnusedResourcesStatement(null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()));
     }
     
     @Override
-    public ASTNode visitSchemaName(final SchemaNameContext ctx) {
+    public ASTNode visitDatabaseName(final DatabaseNameContext ctx) {
         return new DatabaseSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), new IdentifierValue(ctx.getText()));
     }
     
@@ -307,12 +308,12 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     
     @Override
     public ASTNode visitShowSingleTableRules(final ShowSingleTableRulesContext ctx) {
-        return new ShowSingleTableRulesStatement(null == ctx.schemaName() ? null : (DatabaseSegment) visit(ctx.schemaName()));
+        return new ShowSingleTableRulesStatement(null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()));
     }
     
     @Override
     public ASTNode visitShowSingleTable(final ShowSingleTableContext ctx) {
-        return new ShowSingleTableStatement(null == ctx.table() ? null : getIdentifierValue(ctx.table().tableName()), null == ctx.schemaName() ? null : (DatabaseSegment) visit(ctx.schemaName()));
+        return new ShowSingleTableStatement(null == ctx.table() ? null : getIdentifierValue(ctx.table().tableName()), null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()));
     }
     
     @Override
@@ -332,8 +333,18 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     
     @Override
     public ASTNode visitRefreshTableMetadata(final RefreshTableMetadataContext ctx) {
-        return null == ctx.refreshScope() ? new RefreshTableMetadataStatement()
-                : new RefreshTableMetadataStatement(getIdentifierValue(ctx.refreshScope().tableName()), getIdentifierValue(ctx.refreshScope().resourceName()));
+        if (null == ctx.refreshScope()) {
+            return new RefreshTableMetadataStatement();
+        }
+        String tableName = getIdentifierValue(ctx.refreshScope().tableName());
+        String resourceName = null;
+        String schemaName = null;
+        if (null != ctx.refreshScope().fromSegment()) {
+            FromSegmentContext fromSegment = ctx.refreshScope().fromSegment();
+            resourceName = getIdentifierValue(fromSegment.resourceName());
+            schemaName = null == fromSegment.schemaName() ? null : getIdentifierValue(fromSegment.schemaName());
+        }
+        return new RefreshTableMetadataStatement(tableName, resourceName, schemaName);
     }
     
     @Override
@@ -462,7 +473,7 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     
     @Override
     public ASTNode visitShowRulesUsedResource(final ShowRulesUsedResourceContext ctx) {
-        return new ShowRulesUsedResourceStatement(getIdentifierValue(ctx.resourceName()), null == ctx.schemaName() ? null : (DatabaseSegment) visit(ctx.schemaName()));
+        return new ShowRulesUsedResourceStatement(getIdentifierValue(ctx.resourceName()), null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()));
     }
     
     @Override

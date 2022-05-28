@@ -33,6 +33,8 @@ It can be considered as an enhanced JDBC driver, which is fully compatible with 
 
 ShardingSphere-JDBC is suitable for java application.
 
+**Source Codes: https://github.com/apache/shardingsphere/tree/master/shardingsphere-jdbc**
+
 ## ShardingSphere-Proxy
 
 ShardingSphere-Proxy is the second product of Apache ShardingSphere.
@@ -54,6 +56,8 @@ Currently, MySQL and PostgreSQL (compatible with PostgreSQL-based databases, suc
 | Static Entry             | No                    | `Yes`                        |
 
 The advantages of ShardingSphere-Proxy lie in supporting heterogeneous languages and providing operational entries for DBA.
+
+**Source Codes: https://github.com/apache/shardingsphere/tree/master/shardingsphere-proxy**
 
 ## Hybrid Adaptors
 

@@ -152,7 +152,7 @@ public abstract class BaseITCase {
                 addSourceResource0(connection);
             }
         }
-        List<Map<String, Object>> resources = queryForListWithLog("SHOW SCHEMA RESOURCES from sharding_db");
+        List<Map<String, Object>> resources = queryForListWithLog("SHOW DATABASE RESOURCES FROM sharding_db");
         assertThat(resources.size(), is(2));
     }
     
@@ -174,8 +174,9 @@ public abstract class BaseITCase {
                 .replace("${ds3}", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_3"), queryProps))
                 .replace("${ds4}", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_4"), queryProps));
         executeWithLog(addTargetResource);
-        List<Map<String, Object>> resources = queryForListWithLog("SHOW SCHEMA RESOURCES from sharding_db");
+        List<Map<String, Object>> resources = queryForListWithLog("SHOW DATABASE RESOURCES from sharding_db");
         assertThat(resources.size(), is(5));
+        assertBeforeApplyScalingMetadataCorrectly();
     }
     
     private String getActualJdbcUrlTemplate(final String databaseName) {
@@ -195,8 +196,9 @@ public abstract class BaseITCase {
         executeWithLog(getCommonSQLCommand().getCreateOrderItemShardingAlgorithm());
     }
     
-    protected void createAllSharingTableRule() {
+    protected void getCreateOrderWithItemSharingTableRule() {
         executeWithLog(commonSQLCommand.getCreateOrderWithItemSharingTableRule());
+        assertBeforeApplyScalingMetadataCorrectly();
     }
     
     protected void createOrderSharingTableRule() {
@@ -233,8 +235,10 @@ public abstract class BaseITCase {
     protected void assertBeforeApplyScalingMetadataCorrectly() {
         List<Map<String, Object>> previewResults = queryForListWithLog("PREVIEW SELECT COUNT(1) FROM t_order");
         Set<Object> actualSources = previewResults.stream().map(each -> each.get("actual_sql")).collect(Collectors.toSet());
-        assertThat(previewResults.stream().map(each -> each.get("data_source_name")).collect(Collectors.toSet()), is(new HashSet<>(Arrays.asList("ds_0", "ds_1"))));
-        assertThat(actualSources, is(new HashSet<>(Collections.singletonList("SELECT COUNT(1) FROM t_order_0 UNION ALL SELECT COUNT(1) FROM t_order_1"))));
+        assertThat("data_source_name name not correct, it's effective early, search watcher failed get more info",
+                previewResults.stream().map(each -> each.get("data_source_name")).collect(Collectors.toSet()), is(new HashSet<>(Arrays.asList("ds_0", "ds_1"))));
+        assertThat("actual_sql not correct, it's effective early, search watcher failed get more info", actualSources,
+                is(new HashSet<>(Collections.singletonList("SELECT COUNT(1) FROM t_order_0 UNION ALL SELECT COUNT(1) FROM t_order_1"))));
     }
     
     /**
@@ -291,7 +295,7 @@ public abstract class BaseITCase {
         List<Map<String, Object>> previewResults = queryForListWithLog("PREVIEW SELECT COUNT(1) FROM t_order");
         Set<Object> targetSources = previewResults.stream().map(each -> each.get("actual_sql")).collect(Collectors.toSet());
         assertThat(previewResults.stream().map(each -> each.get("data_source_name")).collect(Collectors.toSet()), is(new HashSet<>(Arrays.asList("ds_2", "ds_3", "ds_4"))));
-        assertThat(targetSources, is(new HashSet<>(Arrays.asList("SELECT COUNT(1) FROM t_order_0 UNION ALL SELECT COUNT(1) FROM t_order_3", 
+        assertThat(targetSources, is(new HashSet<>(Arrays.asList("SELECT COUNT(1) FROM t_order_0 UNION ALL SELECT COUNT(1) FROM t_order_3",
                 "SELECT COUNT(1) FROM t_order_1 UNION ALL SELECT COUNT(1) FROM t_order_4", "SELECT COUNT(1) FROM t_order_2 UNION ALL SELECT COUNT(1) FROM t_order_5"))));
     }
 }

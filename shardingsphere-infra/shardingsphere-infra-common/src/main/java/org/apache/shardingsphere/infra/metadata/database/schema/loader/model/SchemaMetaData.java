@@ -22,7 +22,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
-import java.util.Map;
+import java.util.Collection;
 
 /**
  * Schema meta data.
@@ -35,5 +35,5 @@ public final class SchemaMetaData {
     
     private final String name;
     
-    private final Map<String, TableMetaData> tables;
+    private final Collection<TableMetaData> tables;
 }

@@ -1273,3 +1273,7 @@ spfileName
 pfileName
     : STRING_
     ;
+
+characterSetName
+    : identifier
+    ;

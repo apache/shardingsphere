@@ -6,7 +6,7 @@ weight = 3
 ## Syntax
 
 ```sql
-SHOW READWRITE_SPLITTING RULES [FROM schemaName]
+SHOW READWRITE_SPLITTING RULES [FROM databaseName]
 ```
 
 ## Return Value Description

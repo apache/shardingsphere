@@ -30,7 +30,7 @@ import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.QueryAssistedEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
-import org.apache.shardingsphere.infra.metadata.database.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.common.DataTypeLoader;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
 import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
@@ -171,7 +171,8 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
      */
     @SuppressWarnings("rawtypes")
     public Optional<EncryptAlgorithm> findEncryptor(final String logicTable, final String logicColumn) {
-        return tables.containsKey(logicTable.toLowerCase()) ? tables.get(logicTable.toLowerCase()).findEncryptorName(logicColumn).map(encryptors::get) : Optional.empty();
+        String lowerCaseLogicTable = logicTable.toLowerCase();
+        return tables.containsKey(lowerCaseLogicTable) ? tables.get(lowerCaseLogicTable).findEncryptorName(logicColumn).map(encryptors::get) : Optional.empty();
     }
     
     /**
@@ -220,7 +221,8 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
      * @return logic and cipher columns
      */
     public Map<String, String> getLogicAndCipherColumns(final String logicTable) {
-        return tables.containsKey(logicTable.toLowerCase()) ? tables.get(logicTable.toLowerCase()).getLogicAndCipherColumns() : Collections.emptyMap();
+        String lowerCaseLogicTable = logicTable.toLowerCase();
+        return tables.containsKey(lowerCaseLogicTable) ? tables.get(lowerCaseLogicTable).getLogicAndCipherColumns() : Collections.emptyMap();
     }
     
     /**
@@ -231,7 +233,8 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
      * @return assisted query column
      */
     public Optional<String> findAssistedQueryColumn(final String logicTable, final String logicColumn) {
-        return tables.containsKey(logicTable.toLowerCase()) ? tables.get(logicTable.toLowerCase()).findAssistedQueryColumn(logicColumn) : Optional.empty();
+        String lowerCaseLogicTable = logicTable.toLowerCase();
+        return tables.containsKey(lowerCaseLogicTable) ? tables.get(lowerCaseLogicTable).findAssistedQueryColumn(logicColumn) : Optional.empty();
     }
     
     /**

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCloseStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CloseStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.value.IdentifierValueAssert;
@@ -41,11 +41,11 @@ public final class CloseStatementAssert {
      * @param actual actual close statement
      * @param expected expected close statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final OpenGaussCloseStatement actual, final CloseStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final CloseStatement actual, final CloseStatementTestCase expected) {
         assertCursorName(assertContext, actual, expected);
     }
     
-    private static void assertCursorName(final SQLCaseAssertContext assertContext, final OpenGaussCloseStatement actual, final CloseStatementTestCase expected) {
+    private static void assertCursorName(final SQLCaseAssertContext assertContext, final CloseStatement actual, final CloseStatementTestCase expected) {
         if (null != expected.getCursorName()) {
             assertNotNull(assertContext.getText("Actual cursor name should exist."), actual.getCursorName());
             IdentifierValueAssert.assertIs(assertContext, actual.getCursorName().getIdentifier(), expected.getCursorName(), "Close");

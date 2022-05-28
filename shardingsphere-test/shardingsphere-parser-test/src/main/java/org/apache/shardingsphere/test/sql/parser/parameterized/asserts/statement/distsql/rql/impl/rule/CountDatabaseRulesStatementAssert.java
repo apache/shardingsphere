@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.CountDatabaseRulesStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.database.DatabaseAssert;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.CountSchemaRulesStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.CountDatabaseRulesStatementTestCase;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -40,7 +40,7 @@ public final class CountDatabaseRulesStatementAssert {
      * @param actual actual count database rules statement
      * @param expected expected count database rules statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final CountDatabaseRulesStatement actual, final CountSchemaRulesStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final CountDatabaseRulesStatement actual, final CountDatabaseRulesStatementTestCase expected) {
         if (null != expected.getDatabase()) {
             assertTrue(assertContext.getText("Actual database should exist."), actual.getDatabase().isPresent());
             DatabaseAssert.assertIs(assertContext, actual.getDatabase().get(), expected.getDatabase());

@@ -462,6 +462,8 @@ public enum SQLVisitorRule {
     
     CREATE_CONVERSION("CreateConversion", SQLStatementType.DDL),
     
+    CREATE_CAST("CreateCast", SQLStatementType.DDL),
+    
     CREATE_TYPE("CreateType", SQLStatementType.DDL),
     
     DROP_CONVERSION("DropConversion", SQLStatementType.DDL),
@@ -515,6 +517,8 @@ public enum SQLVisitorRule {
     CREATE_SPFILE("CreateSPFile", SQLStatementType.DDL),
     
     CREATE_PFILE("CreatePFile", SQLStatementType.DDL),
+    
+    CREATE_CONTROL_FILE("CreateControlFile", SQLStatementType.DDL),
     
     CURSOR("Cursor", SQLStatementType.DDL),
     

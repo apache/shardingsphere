@@ -36,7 +36,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public final class TransactionContextsBuilder {
     
-    private final Map<String, ShardingSphereDatabase> databaseMap;
+    private final Map<String, ShardingSphereDatabase> databases;
     
     private final Collection<ShardingSphereRule> globalRules;
     
@@ -46,11 +46,11 @@ public final class TransactionContextsBuilder {
      * @return transaction contexts
      */
     public TransactionContexts build() {
-        Map<String, ShardingSphereTransactionManagerEngine> engines = new HashMap<>(databaseMap.keySet().size(), 1);
+        Map<String, ShardingSphereTransactionManagerEngine> engines = new HashMap<>(databases.keySet().size(), 1);
         TransactionRule transactionRule = getTransactionRule();
-        for (String each : databaseMap.keySet()) {
+        for (String each : databases.keySet()) {
             ShardingSphereTransactionManagerEngine engine = new ShardingSphereTransactionManagerEngine();
-            ShardingSphereResource resource = databaseMap.get(each).getResource();
+            ShardingSphereResource resource = databases.get(each).getResource();
             engine.init(resource.getDatabaseType(), resource.getDataSources(), transactionRule);
             engines.put(each, engine);
         }
