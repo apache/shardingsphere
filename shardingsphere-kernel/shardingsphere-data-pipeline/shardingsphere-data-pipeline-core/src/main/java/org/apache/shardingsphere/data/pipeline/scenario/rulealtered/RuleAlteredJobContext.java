@@ -116,12 +116,4 @@ public final class RuleAlteredJobContext {
     public PipelineTableMetaDataLoader getSourceMetaDataLoader() {
         return sourceMetaDataLoaderLazyInitializer.get();
     }
-    
-    /**
-     * Release resources.
-     */
-    public void close() {
-        log.info("close...");
-        dataSourceManager.close();
-    }
 }

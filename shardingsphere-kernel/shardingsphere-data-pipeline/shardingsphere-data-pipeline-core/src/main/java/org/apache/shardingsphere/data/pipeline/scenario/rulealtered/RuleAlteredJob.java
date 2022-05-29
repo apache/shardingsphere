@@ -63,6 +63,7 @@ public final class RuleAlteredJob implements SimpleJob {
      */
     public void stop() {
         stopping = true;
+        dataSourceManager.close();
         if (null == jobId) {
             log.info("stop, jobId is null, ignore");
             return;
