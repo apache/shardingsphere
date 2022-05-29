@@ -59,6 +59,10 @@ public class AggregationProjectionSegment implements ProjectionSegment, AliasAva
         return null == alias ? Optional.empty() : Optional.ofNullable(alias.getIdentifier().getValue());
     }
     
+    /**
+     * Get column segment.
+     * @return column segment.
+     */
     public final Optional<ColumnSegment> getColumn() {
         return null == column ? Optional.empty() : Optional.ofNullable(column);
     }
