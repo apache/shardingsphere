@@ -773,15 +773,11 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
     private ASTNode createAggregationSegment(final AggregationFunctionContext ctx, final String aggregationType) {
         AggregationType type = AggregationType.valueOf(aggregationType.toUpperCase());
         String innerExpression = ctx.start.getInputStream().getText(new Interval(ctx.LP_().getSymbol().getStartIndex(), ctx.stop.getStopIndex()));
-        ColumnSegment columnSegment = null;
-        if (null != ctx.columnRef()) {
-            columnSegment = (ColumnSegment) visit(ctx.columnRef());
-        }
         if (null != ctx.distinct()) {
             return new AggregationDistinctProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpression, getDistinctExpression(ctx));
         }
         AggregationProjectionSegment projectionSegment = new AggregationProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpression);
-        projectionSegment.setColumn(columnSegment);
+        projectionSegment.setColumn((null != ctx.columnRef()) ? (ColumnSegment) visit(ctx.columnRef()) : null);
         return projectionSegment;
     }
     
