@@ -2414,3 +2414,7 @@ purgeClause
     : ALL
     | BEFORE (SCN expr | TIMESTAMP expr)
     ;
+
+dropFlashbackArchive
+    : DROP FLASHBACK ARCHIVE flashbackArchiveName
+    ;
