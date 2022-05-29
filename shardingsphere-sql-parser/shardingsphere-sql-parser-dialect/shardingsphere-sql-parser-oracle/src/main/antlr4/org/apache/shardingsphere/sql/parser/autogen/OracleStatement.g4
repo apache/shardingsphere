@@ -92,5 +92,7 @@ execute
     | createSPFile
     | createPFile
     | createControlFile
+    | createFlashbackArchive
+    | alterFlashbackArchive
     ) SEMI_?
     ;

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql.ddlgenerator;
 
-import org.apache.shardingsphere.data.pipeline.spi.ddlgenerator.DialectDDLGenerator;
+import org.apache.shardingsphere.data.pipeline.spi.ddlgenerator.CreateTableSQLGenerator;
 import org.apache.shardingsphere.data.pipeline.postgresql.util.FreemarkerManager;
 
 import javax.sql.DataSource;
@@ -27,41 +27,41 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * DDL generator for PostgreSQL.
+ * Create table SQL generator for PostgreSQL.
  */
-public final class PostgreDDLGenerator implements DialectDDLGenerator {
+public final class PostgreSQLCreateTableSQLGenerator implements CreateTableSQLGenerator {
     
     // TODO support partitions etc.
     @Override
-    public String generateDDLSQL(final String tableName, final String schemaName, final DataSource dataSource) throws SQLException {
+    public String generate(final String tableName, final String schemaName, final DataSource dataSource) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             int majorVersion = connection.getMetaData().getDatabaseMajorVersion();
             int minorVersion = connection.getMetaData().getDatabaseMinorVersion();
             Map<String, Object> materials = loadMaterials(tableName, schemaName, connection, majorVersion, minorVersion);
-            String tableSql = generateCreateTableSql(materials, majorVersion, minorVersion);
-            String indexSql = generateCreateIndexSql(materials, majorVersion, minorVersion, connection);
-            return tableSql + System.lineSeparator() + indexSql;
+            String tableSQL = generateCreateTableSQL(majorVersion, minorVersion, materials);
+            String indexSQL = generateCreateIndexSQL(connection, majorVersion, minorVersion, materials);
+            return tableSQL + System.lineSeparator() + indexSQL;
         }
     }
     
-    private Map<String, Object> loadMaterials(final String tableName, final String schemaName, final Connection connection, final int majorVersion, final int minorVersion) {
-        Map<String, Object> result = new PostgresTablePropertiesLoader(connection, tableName, schemaName, majorVersion, minorVersion).loadTableProperties();
+    private Map<String, Object> loadMaterials(final String tableName, final String schemaName, final Connection connection, final int majorVersion, final int minorVersion) throws SQLException {
+        Map<String, Object> result = new PostgresTablePropertiesLoader(connection, tableName, schemaName, majorVersion, minorVersion).load();
         new PostgresColumnPropertiesAppender(connection, majorVersion, minorVersion).append(result);
         new PostgresConstraintsPropertiesAppender(connection, majorVersion, minorVersion).append(result);
-        formatColumnList(result);
+        formatColumns(result);
         return result;
     }
     
-    private String generateCreateTableSql(final Map<String, Object> materials, final int majorVersion, final int minorVersion) {
-        return FreemarkerManager.getSqlByPgVersion(materials, "table/%s/create.ftl", majorVersion, minorVersion).trim();
+    private String generateCreateTableSQL(final int majorVersion, final int minorVersion, final Map<String, Object> materials) {
+        return FreemarkerManager.getSQLByPgVersion(materials, "table/%s/create.ftl", majorVersion, minorVersion).trim();
     }
     
-    private String generateCreateIndexSql(final Map<String, Object> materials, final int majorVersion, final int minorVersion, final Connection connection) {
-        return new PostgresIndexSqlGenerator(connection, majorVersion, minorVersion).generate(materials);
+    private String generateCreateIndexSQL(final Connection connection, final int majorVersion, final int minorVersion, final Map<String, Object> materials) {
+        return new PostgresIndexSQLGenerator(connection, majorVersion, minorVersion).generate(materials);
     }
     
     @SuppressWarnings("unchecked")
-    private void formatColumnList(final Map<String, Object> context) {
+    private void formatColumns(final Map<String, Object> context) {
         Collection<Map<String, Object>> columns = (Collection<Map<String, Object>>) context.get("columns");
         for (Map<String, Object> each : columns) {
             if (each.containsKey("cltype")) {

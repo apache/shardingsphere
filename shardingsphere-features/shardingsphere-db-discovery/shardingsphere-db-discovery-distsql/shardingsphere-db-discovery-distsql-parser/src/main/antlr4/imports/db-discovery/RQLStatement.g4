@@ -20,17 +20,17 @@ grammar RQLStatement;
 import BaseRule;
 
 showDatabaseDiscoveryRules
-    : SHOW DB_DISCOVERY RULES (FROM schemaName)?
+    : SHOW DB_DISCOVERY RULES (FROM databaseName)?
     ;
 
 showDatabaseDiscoveryTypes
-    : SHOW DB_DISCOVERY TYPES (FROM schemaName)?
+    : SHOW DB_DISCOVERY TYPES (FROM databaseName)?
     ;
 
 showDatabaseDiscoveryHeartbeats
-    : SHOW DB_DISCOVERY HEARTBEATS (FROM schemaName)?
+    : SHOW DB_DISCOVERY HEARTBEATS (FROM databaseName)?
     ;
 
-schemaName
+databaseName
     : IDENTIFIER
     ;

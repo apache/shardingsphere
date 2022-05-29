@@ -15,22 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.schema.ExpectedDatabase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
-
-import javax.xml.bind.annotation.XmlElement;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateFlashbackArchiveStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
- * Count schema rules statement test case.
+ * Oracle create flashback archive statement.
  */
-@Getter
-@Setter
-public final class CountSchemaRulesStatementTestCase extends SQLParserTestCase {
-    
-    @XmlElement
-    private ExpectedDatabase database;
+@ToString
+public class OracleCreateFlashbackArchiveStatement extends CreateFlashbackArchiveStatement implements OracleStatement {
 }

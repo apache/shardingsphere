@@ -152,7 +152,7 @@ public abstract class BaseITCase {
                 addSourceResource0(connection);
             }
         }
-        List<Map<String, Object>> resources = queryForListWithLog("SHOW SCHEMA RESOURCES from sharding_db");
+        List<Map<String, Object>> resources = queryForListWithLog("SHOW DATABASE RESOURCES FROM sharding_db");
         assertThat(resources.size(), is(2));
     }
     
@@ -174,7 +174,7 @@ public abstract class BaseITCase {
                 .replace("${ds3}", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_3"), queryProps))
                 .replace("${ds4}", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_4"), queryProps));
         executeWithLog(addTargetResource);
-        List<Map<String, Object>> resources = queryForListWithLog("SHOW SCHEMA RESOURCES from sharding_db");
+        List<Map<String, Object>> resources = queryForListWithLog("SHOW DATABASE RESOURCES from sharding_db");
         assertThat(resources.size(), is(5));
         assertBeforeApplyScalingMetadataCorrectly();
     }

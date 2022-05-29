@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.opengauss.ddlgenerator;
 
-import org.apache.shardingsphere.data.pipeline.spi.ddlgenerator.DialectDDLGenerator;
+import org.apache.shardingsphere.data.pipeline.spi.ddlgenerator.CreateTableSQLGenerator;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 
 import javax.sql.DataSource;
@@ -26,16 +26,16 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
-* DDL generator for openGauss.
+* Create table SQL generator for openGauss.
  */
-public final class OpenGaussDDLGenerator implements DialectDDLGenerator {
+public final class OpenGaussCreateTableSQLGenerator implements CreateTableSQLGenerator {
     
     private static final String SELECT_TABLE_DEF_SQL = "SELECT * FROM pg_get_tabledef('%s.%s')";
     
     private static final String COLUMN_LABEL = "pg_get_tabledef";
     
     @Override
-    public String generateDDLSQL(final String tableName, final String schemaName, final DataSource dataSource) throws SQLException {
+    public String generate(final String tableName, final String schemaName, final DataSource dataSource) throws SQLException {
         try (
                 Statement statement = dataSource.getConnection().createStatement();
                 ResultSet resultSet = statement.executeQuery(String.format(SELECT_TABLE_DEF_SQL, schemaName, tableName))) {

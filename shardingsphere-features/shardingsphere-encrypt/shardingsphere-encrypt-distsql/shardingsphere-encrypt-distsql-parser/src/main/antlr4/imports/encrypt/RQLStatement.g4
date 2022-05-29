@@ -20,13 +20,13 @@ grammar RQLStatement;
 import BaseRule;
 
 showEncryptRules
-    : SHOW ENCRYPT (TABLE tableRule | RULES) (FROM schemaName)?
+    : SHOW ENCRYPT (TABLE tableRule | RULES) (FROM databaseName)?
     ;
 
 tableRule
     : RULE tableName
     ;
 
-schemaName
+databaseName
     : IDENTIFIER
     ;

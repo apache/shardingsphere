@@ -30,7 +30,6 @@ import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgori
 import org.apache.shardingsphere.infra.datasource.strategy.DynamicDataSourceStrategyFactory;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.rule.event.DataSourceStatusChangedEvent;
 import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
@@ -45,7 +44,6 @@ import org.apache.shardingsphere.schedule.core.api.ModeScheduleContext;
 import org.apache.shardingsphere.schedule.core.api.ModeScheduleContextFactory;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -113,11 +111,7 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
             DatabaseDiscoveryDataSourceRule dataSourceRule = entry.getValue();
             DatabaseDiscoveryEngine engine = new DatabaseDiscoveryEngine(dataSourceRule.getDatabaseDiscoveryProviderAlgorithm());
             Map<String, DataSource> originalDataSourceMap = new HashMap<>(dataSourceMap);
-            try {
-                engine.checkEnvironment(databaseName, originalDataSourceMap);
-            } catch (final SQLException ex) {
-                throw new ShardingSphereException(ex);
-            }
+            engine.checkEnvironment(databaseName, originalDataSourceMap);
             dataSourceRule.changePrimaryDataSourceName(engine.changePrimaryDataSource(
                     databaseName, groupName, entry.getValue().getPrimaryDataSourceName(), originalDataSourceMap, dataSourceRule.getDisabledDataSourceNames()));
         }

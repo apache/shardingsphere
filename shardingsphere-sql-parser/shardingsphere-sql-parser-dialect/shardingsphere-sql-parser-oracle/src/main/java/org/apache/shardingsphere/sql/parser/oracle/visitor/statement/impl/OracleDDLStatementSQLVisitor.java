@@ -97,6 +97,8 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TableN
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TruncateTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TypeNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateControlFileContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateFlashbackArchiveContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterFlashbackArchiveContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.AlterDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.CreateDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.ColumnDefinitionSegment;
@@ -135,6 +137,8 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.Ora
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreatePFileStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateSPFileStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateControlFileStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateFlashbackArchiveStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterFlashbackArchiveStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropEditionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropOutlineStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterOutlineStatement;
@@ -761,5 +765,15 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
     @Override
     public ASTNode visitCreateControlFile(final CreateControlFileContext ctx) {
         return new OracleCreateControlFileStatement();
+    }
+    
+    @Override
+    public ASTNode visitCreateFlashbackArchive(final CreateFlashbackArchiveContext ctx) {
+        return new OracleCreateFlashbackArchiveStatement();
+    }
+    
+    @Override
+    public ASTNode visitAlterFlashbackArchive(final AlterFlashbackArchiveContext ctx) {
+        return new OracleAlterFlashbackArchiveStatement();
     }
 }
