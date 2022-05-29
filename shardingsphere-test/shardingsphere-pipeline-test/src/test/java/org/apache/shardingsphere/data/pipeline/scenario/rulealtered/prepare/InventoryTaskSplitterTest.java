@@ -62,7 +62,7 @@ public final class InventoryTaskSplitterTest {
     }
     
     private void initJobContext() {
-        jobContext = new RuleAlteredJobContext(JobConfigurationBuilder.createJobConfiguration(), 0);
+        jobContext = new RuleAlteredJobContext(JobConfigurationBuilder.createJobConfiguration(), 0, new PipelineDataSourceManager());
         dataSourceManager = jobContext.getDataSourceManager();
         taskConfig = jobContext.getTaskConfig();
     }
