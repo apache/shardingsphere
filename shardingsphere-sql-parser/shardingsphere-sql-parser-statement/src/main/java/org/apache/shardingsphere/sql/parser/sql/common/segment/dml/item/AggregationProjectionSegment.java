@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
@@ -41,6 +42,9 @@ public class AggregationProjectionSegment implements ProjectionSegment, AliasAva
     private final String innerExpression;
     
     @Setter
+    private ColumnSegment column;
+    
+    @Setter
     private AliasSegment alias;
     
     public AggregationProjectionSegment(final int startIndex, final int stopIndex, final AggregationType type, final String innerExpression) {
@@ -53,5 +57,9 @@ public class AggregationProjectionSegment implements ProjectionSegment, AliasAva
     @Override
     public final Optional<String> getAlias() {
         return null == alias ? Optional.empty() : Optional.ofNullable(alias.getIdentifier().getValue());
+    }
+    
+    public final Optional<ColumnSegment> getColumn() {
+        return null == column ? Optional.empty() : Optional.ofNullable(column);
     }
 }
