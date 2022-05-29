@@ -226,7 +226,7 @@ public final class ClusterContextManagerCoordinator {
      */
     @Subscribe
     public synchronized void renew(final WorkerIdEvent event) {
-        if (contextManager.getInstanceContext().getInstance().getInstanceDefinition().getInstanceId().getId().equals(event.getInstanceId())) {
+        if (contextManager.getInstanceContext().getInstance().getInstanceDefinition().getInstanceId().equals(event.getInstanceId())) {
             contextManager.getInstanceContext().updateWorkerId(event.getWorkerId());
         }
     }
@@ -293,7 +293,7 @@ public final class ClusterContextManagerCoordinator {
      */
     @Subscribe
     public synchronized void triggerShowProcessList(final ShowProcessListTriggerEvent event) {
-        if (!event.getInstanceId().equals(contextManager.getInstanceContext().getInstance().getInstanceDefinition().getInstanceId().getId())) {
+        if (!event.getInstanceId().equals(contextManager.getInstanceContext().getInstance().getInstanceDefinition().getInstanceId())) {
             return;
         }
         Collection<YamlExecuteProcessContext> processContexts = ShowProcessListManager.getInstance().getAllProcessContext();

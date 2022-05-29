@@ -44,6 +44,7 @@ public final class LabelInstanceHandler extends UpdatableRALBackendHandler<Label
         if (null == persistService || null == persistService.getRepository() || persistService.getRepository() instanceof StandalonePersistRepository) {
             throw new UnsupportedOperationException("Labels can only be added in cluster mode");
         }
+        // TODO use instance id
         String instanceId = new InstanceId(sqlStatement.getIp(), String.valueOf(sqlStatement.getPort())).getId();
         Optional<ComputeNodeInstance> computeNodeInstance = contextManager.getInstanceContext().getComputeNodeInstanceById(instanceId);
         if (computeNodeInstance.isPresent()) {

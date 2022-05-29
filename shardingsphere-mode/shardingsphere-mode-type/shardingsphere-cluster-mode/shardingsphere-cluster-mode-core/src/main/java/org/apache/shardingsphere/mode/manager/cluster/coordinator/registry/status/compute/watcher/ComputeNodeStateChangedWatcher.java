@@ -71,7 +71,7 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<G
             }
         } else if (event.getKey().startsWith(ComputeNode.getOnlineInstanceNodePath())) {
             Optional<InstanceDefinition> instanceDefinition = ComputeNode.getInstanceDefinitionByInstanceOnlinePath(event.getKey());
-            return instanceDefinition.isPresent() ? createInstanceEvent(instanceDefinition.get(), event.getType()) : Optional.empty();
+            return instanceDefinition.isPresent() ? createInstanceEvent(instanceDefinition.get(), event.getType(), event.getValue()) : Optional.empty();
         } else if (event.getKey().startsWith(ComputeNode.getProcessTriggerNodePatch())) {
             return createShowProcessListTriggerEvent(event);
         } else if (event.getKey().startsWith(ComputeNode.getXaRecoveryIdNodePath())) {
@@ -98,8 +98,9 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<G
         return pattern.matcher(event.getKey());
     }
     
-    private Optional<GovernanceEvent> createInstanceEvent(final InstanceDefinition instanceDefinition, final Type type) {
+    private Optional<GovernanceEvent> createInstanceEvent(final InstanceDefinition instanceDefinition, final Type type, final String value) {
         if (Type.ADDED == type) {
+            instanceDefinition.setAttributes(value);
             return Optional.of(new InstanceOnlineEvent(instanceDefinition));
         } else if (Type.DELETED == type) {
             return Optional.of(new InstanceOfflineEvent(instanceDefinition));
