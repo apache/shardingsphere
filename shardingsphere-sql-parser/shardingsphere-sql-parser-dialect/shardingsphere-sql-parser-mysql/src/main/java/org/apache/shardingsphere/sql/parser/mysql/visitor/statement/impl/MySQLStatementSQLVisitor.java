@@ -778,10 +778,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
             columnSegment = (ColumnSegment) visit(ctx.columnRef());
         }
         if (null != ctx.distinct()) {
-            AggregationDistinctProjectionSegment distinctProjectionSegment = new AggregationDistinctProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), 
-                    type, innerExpression, getDistinctExpression(ctx));
-            distinctProjectionSegment.setColumn(columnSegment);
-            return distinctProjectionSegment;
+            return new AggregationDistinctProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpression, getDistinctExpression(ctx));
         }
         AggregationProjectionSegment projectionSegment = new AggregationProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpression);
         projectionSegment.setColumn(columnSegment);
