@@ -27,20 +27,24 @@ namespace
    ├    ├──compute_nodes
    ├    ├     ├──online
    ├    ├     ├     ├──proxy
-   ├    ├     ├     ├     ├──${your_instance_ip_a}@${your_instance_port_x}
-   ├    ├     ├     ├     ├──${your_instance_ip_b}@${your_instance_port_y}
+   ├    ├     ├     ├     ├──UUID             # Proxy instance identifier
    ├    ├     ├     ├     ├──....
    ├    ├     ├     ├──jdbc
-   ├    ├     ├     ├     ├──${your_instance_ip_a}@${your_instance_pid_x}
-   ├    ├     ├     ├     ├──${your_instance_ip_b}@${your_instance_pid_y}
+   ├    ├     ├     ├     ├──UUID             # JDBC instance identifier
    ├    ├     ├     ├     ├──....   
-   ├    ├     ├──attributies
-   ├    ├     ├     ├──${your_instance_ip_a}@${your_instance_port_x}
-   ├    ├     ├     ├     ├──status
-   ├    ├     ├     ├     ├──label    
-   ├    ├     ├     ├──${your_instance_ip_b}@${your_instance_pid_y}
-   ├    ├     ├     ├     ├──status   
+   ├    ├     ├──status
+   ├    ├     ├     ├──UUID
    ├    ├     ├     ├──....
+   ├    ├     ├──xa_recovery_id
+   ├    ├     ├     ├──recovery_id
+   ├    ├     ├     ├     ├──UUID     
+   ├    ├     ├     ├──....
+   ├    ├     ├──worker_id
+   ├    ├     ├     ├──UUID
+   ├    ├     ├     ├──....
+   ├    ├     ├──process_trigger
+   ├    ├     ├     ├──process_list_id:UUID
+   ├    ├     ├     ├──....   
    ├    ├──storage_nodes
    ├    ├     ├──disable
    ├    ├     ├      ├──${schema_1.ds_0}
@@ -150,7 +154,7 @@ indexs:                                   # Index
 
 ### /nodes/compute_nodes
 
-It includes running instance information of database access object, with sub-nodes as the identifiers of currently running instance, which consist of IP and PORT. Those identifiers are temporary nodes, which are registered when instances are on-line and cleared when instances are off-line. The registry center monitors the change of those nodes to govern the database access of running instances and other things.
+It includes running instance information of database access object, with sub-nodes as the identifiers of currently running instance, which is automatically generated at each startup using UUID. Those identifiers are temporary nodes, which are registered when instances are on-line and cleared when instances are off-line. The registry center monitors the change of those nodes to govern the database access of running instances and other things.
 
 ### /nodes/storage_nodes
 
