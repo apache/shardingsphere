@@ -15,12 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.job;
+package org.apache.shardingsphere.data.pipeline.postgresql.datasource;
+
+import org.apache.shardingsphere.data.pipeline.spi.datasource.JdbcQueryPropertiesExtension;
+
+import java.util.Properties;
 
 /**
- * Job operation type.
+ * PostgreSQL JDBC query properties extension.
  */
-public enum JobOperationType {
+public final class PostgreSQLJdbcQueryPropertiesExtension implements JdbcQueryPropertiesExtension {
     
-    INSERT, DELETE, UPDATE, SELECT,
+    private final Properties queryProps = new Properties();
+    
+    @Override
+    public Properties extendQueryProperties() {
+        return queryProps;
+    }
+    
+    @Override
+    public String getType() {
+        return "PostgreSQL";
+    }
 }

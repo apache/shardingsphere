@@ -15,24 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.mysql.importer;
+package org.apache.shardingsphere.data.pipeline.mysql.datasource;
 
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.ImporterConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
-import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.core.importer.AbstractImporter;
+import org.apache.shardingsphere.data.pipeline.spi.datasource.JdbcQueryPropertiesExtension;
+
+import java.util.Properties;
 
 /**
- * MySQL importer.
+ * MySQL JDBC query properties extension.
  */
-public final class MySQLImporter extends AbstractImporter {
+public final class MySQLJdbcQueryPropertiesExtension implements JdbcQueryPropertiesExtension {
     
-    public MySQLImporter(final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager, final PipelineChannel channel) {
-        super(importerConfig, dataSourceManager, channel);
+    private final Properties queryProps = new Properties();
+    
+    public MySQLJdbcQueryPropertiesExtension() {
+        queryProps.setProperty("useSSL", Boolean.FALSE.toString());
+        queryProps.setProperty("rewriteBatchedStatements", Boolean.TRUE.toString());
+        queryProps.setProperty("yearIsDateType", Boolean.FALSE.toString());
     }
     
     @Override
-    protected String getSchemaName(final String logicTableName) {
-        return null;
+    public Properties extendQueryProperties() {
+        return queryProps;
+    }
+    
+    @Override
+    public String getType() {
+        return "MySQL";
     }
 }
