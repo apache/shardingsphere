@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.yaml.RuleAlteredJobConfigurationSwapper;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
@@ -52,10 +53,8 @@ public final class RuleAlteredJob implements SimpleJob {
         }
         jobId = shardingContext.getJobName();
         RuleAlteredJobConfiguration jobConfig = RuleAlteredJobConfigurationSwapper.swapToObject(shardingContext.getJobParameter());
-        RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfig, shardingContext.getShardingItem(), dataSourceManager);
-        // TODO use final for initProgress and jobPreparer
-        jobContext.setInitProgress(governanceRepositoryAPI.getJobProgress(jobContext.getJobId(), jobContext.getShardingItem()));
-        jobContext.setJobPreparer(jobPreparer);
+        JobProgress initProgress = governanceRepositoryAPI.getJobProgress(shardingContext.getJobName(), shardingContext.getShardingItem());
+        RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfig, shardingContext.getShardingItem(), initProgress, dataSourceManager, jobPreparer);
         RuleAlteredJobSchedulerCenter.start(jobContext);
     }
     
