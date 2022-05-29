@@ -29,7 +29,7 @@ import java.lang.reflect.Method;
  * Schema meta data loader advice.
  */
 @Slf4j
-public final class SchemaMetaDataLoaderAdvice implements InstanceMethodAroundAdvice {
+public final class MetaDataContextsBuilderAdvice implements InstanceMethodAroundAdvice {
     
     @Override
     public void beforeMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
@@ -39,9 +39,8 @@ public final class SchemaMetaDataLoaderAdvice implements InstanceMethodAroundAdv
     @Override
     public void afterMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
         try {
-            String schemaName = (String) args[0];
             long elapsedTime = System.currentTimeMillis() - ElapsedTimeThreadLocal.INSTANCE.get();
-            log.info("Load meta data for schema {} finished, cost {} milliseconds", schemaName, elapsedTime);
+            log.info("Build meta data contexts finished, cost {} milliseconds", elapsedTime);
         } finally {
             ElapsedTimeThreadLocal.INSTANCE.remove();
         }
