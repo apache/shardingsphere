@@ -15,12 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.job;
+package org.apache.shardingsphere.data.pipeline.spi.datasource;
+
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.spi.type.typed.TypedSPI;
+
+import java.util.Properties;
 
 /**
- * Job operation type.
+ * JDBC query properties extension.
  */
-public enum JobOperationType {
+@SingletonSPI
+public interface JdbcQueryPropertiesExtension extends TypedSPI {
     
-    INSERT, DELETE, UPDATE, SELECT,
+    /**
+     * Extend query properties.
+     *
+     * @return JDBC query properties for extension
+     */
+    Properties extendQueryProperties();
 }

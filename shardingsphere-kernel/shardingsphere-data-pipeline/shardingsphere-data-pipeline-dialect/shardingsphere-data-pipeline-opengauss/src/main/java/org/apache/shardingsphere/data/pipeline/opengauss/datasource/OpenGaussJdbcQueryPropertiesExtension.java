@@ -15,12 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.job;
+package org.apache.shardingsphere.data.pipeline.opengauss.datasource;
+
+import org.apache.shardingsphere.data.pipeline.spi.datasource.JdbcQueryPropertiesExtension;
+
+import java.util.Properties;
 
 /**
- * Job operation type.
+ * JDBC query properties extension of openGauss.
  */
-public enum JobOperationType {
+public final class OpenGaussJdbcQueryPropertiesExtension implements JdbcQueryPropertiesExtension {
     
-    INSERT, DELETE, UPDATE, SELECT,
+    private final Properties queryProps = new Properties();
+    
+    @Override
+    public Properties extendQueryProperties() {
+        return queryProps;
+    }
+    
+    @Override
+    public String getType() {
+        return "openGauss";
+    }
 }
