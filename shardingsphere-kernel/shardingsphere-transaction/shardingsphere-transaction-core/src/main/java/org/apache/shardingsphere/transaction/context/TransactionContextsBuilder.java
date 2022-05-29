@@ -51,7 +51,7 @@ public final class TransactionContextsBuilder {
         for (String each : databases.keySet()) {
             ShardingSphereTransactionManagerEngine engine = new ShardingSphereTransactionManagerEngine();
             ShardingSphereResource resource = databases.get(each).getResource();
-            engine.init(resource.getDatabaseType(), resource.getDataSources(), transactionRule);
+            engine.init(resource.getDatabaseType(), resource.getDataSources(), transactionRule.getProviderType());
             engines.put(each, engine);
         }
         return new TransactionContexts(engines);
@@ -59,6 +59,6 @@ public final class TransactionContextsBuilder {
     
     private TransactionRule getTransactionRule() {
         Optional<TransactionRule> transactionRule = globalRules.stream().filter(each -> each instanceof TransactionRule).map(each -> (TransactionRule) each).findFirst();
-        return transactionRule.orElseGet(() -> new TransactionRule(new DefaultTransactionRuleConfigurationBuilder().build()));
+        return transactionRule.orElseGet(() -> new TransactionRule(new DefaultTransactionRuleConfigurationBuilder().build(), databases));
     }
 }

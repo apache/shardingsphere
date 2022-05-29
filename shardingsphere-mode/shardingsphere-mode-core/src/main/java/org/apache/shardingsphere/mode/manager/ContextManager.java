@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager;
 
+import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
@@ -54,7 +55,6 @@ import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEng
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
-import org.apache.shardingsphere.transaction.rule.builder.DefaultTransactionRuleConfigurationBuilder;
 import org.apache.shardingsphere.transaction.spi.TransactionConfigurationFileGenerator;
 import org.apache.shardingsphere.transaction.spi.TransactionConfigurationFileGeneratorFactory;
 
@@ -628,16 +628,18 @@ public final class ContextManager implements AutoCloseable {
     }
     
     private ShardingSphereTransactionManagerEngine createNewEngine(final DatabaseType databaseType, final Map<String, DataSource> dataSources) {
-        Optional<TransactionConfigurationFileGenerator> fileGenerator = TransactionConfigurationFileGeneratorFactory.findInstance(getTransactionRule().getProviderType());
-        fileGenerator.ifPresent(optional -> optional.generateFile(getTransactionRule().getProps(), instanceContext));
+        TransactionRule transactionRule = getTransactionRule();
+        Optional<TransactionConfigurationFileGenerator> fileGenerator = TransactionConfigurationFileGeneratorFactory.findInstance(transactionRule.getProviderType());
+        fileGenerator.ifPresent(optional -> optional.generateFile(transactionRule.getProps(), instanceContext));
         ShardingSphereTransactionManagerEngine result = new ShardingSphereTransactionManagerEngine();
-        result.init(databaseType, dataSources, getTransactionRule());
+        result.init(databaseType, dataSources, transactionRule.getProviderType());
         return result;
     }
     
     private TransactionRule getTransactionRule() {
-        Optional<TransactionRule> transactionRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().findSingleRule(TransactionRule.class);
-        return transactionRule.orElseGet(() -> new TransactionRule(new DefaultTransactionRuleConfigurationBuilder().build()));
+        Optional<TransactionRule> result = metaDataContexts.getMetaData().getGlobalRuleMetaData().findSingleRule(TransactionRule.class);
+        Preconditions.checkState(result.isPresent());
+        return result.get();
     }
     
     private void closeDataSources(final ShardingSphereDatabase removeMetaData) {
