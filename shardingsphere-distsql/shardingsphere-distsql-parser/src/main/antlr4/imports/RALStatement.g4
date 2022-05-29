@@ -176,7 +176,7 @@ variableValues
     ;
 
 variableValue
-    : IDENTIFIER | STRING | (MINUS)? INT | TRUE | FALSE | instanceId
+    : IDENTIFIER | STRING | (MINUS)? INT | TRUE | FALSE
     ;
 
 instanceId
