@@ -94,5 +94,6 @@ execute
     | createControlFile
     | createFlashbackArchive
     | alterFlashbackArchive
+    | dropFlashbackArchive
     ) SEMI_?
     ;
