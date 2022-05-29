@@ -62,7 +62,7 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
     public EncryptRule(final EncryptRuleConfiguration config, final Map<String, DataSource> dataSourceMap) {
         Preconditions.checkArgument(isValidRuleConfiguration(config), "Invalid encrypt column configurations in EncryptTableRuleConfigurations.");
         config.getEncryptors().forEach((key, value) -> encryptors.put(key, EncryptAlgorithmFactory.newInstance(value)));
-        Map<String, Integer> dataTypes = containsConfigDataTypeColumn(config.getTables()) ? getDataTypes(dataSourceMap) : Collections.emptyMap();
+        Map<String, Integer> dataTypes = containsConfiguredDataType(config.getTables()) ? getDataTypes(dataSourceMap) : Collections.emptyMap();
         config.getTables().forEach(each -> tables.put(each.getName().toLowerCase(), new EncryptTable(each, dataTypes)));
         queryWithCipherColumn = config.isQueryWithCipherColumn();
     }
@@ -70,7 +70,7 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
     public EncryptRule(final AlgorithmProvidedEncryptRuleConfiguration config, final Map<String, DataSource> dataSourceMap) {
         Preconditions.checkArgument(isValidRuleConfigurationWithAlgorithmProvided(config), "Invalid encrypt column configurations in EncryptTableRuleConfigurations.");
         encryptors.putAll(config.getEncryptors());
-        Map<String, Integer> dataTypes = containsConfigDataTypeColumn(config.getTables()) ? getDataTypes(dataSourceMap) : Collections.emptyMap();
+        Map<String, Integer> dataTypes = containsConfiguredDataType(config.getTables()) ? getDataTypes(dataSourceMap) : Collections.emptyMap();
         config.getTables().forEach(each -> tables.put(each.getName().toLowerCase(), new EncryptTable(each, dataTypes)));
         queryWithCipherColumn = config.isQueryWithCipherColumn();
     }
@@ -130,15 +130,12 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
         return Collections.emptyMap();
     }
     
-    private boolean containsConfigDataTypeColumn(final Collection<EncryptTableRuleConfiguration> tableRuleConfigs) {
-        for (EncryptTableRuleConfiguration each : tableRuleConfigs) {
-            for (EncryptColumnRuleConfiguration column : each.getColumns()) {
-                if (null != column.getLogicDataType() && !column.getLogicDataType().isEmpty()) {
-                    return true;
-                }
-            }
-        }
-        return false;
+    private boolean containsConfiguredDataType(final Collection<EncryptTableRuleConfiguration> tableRuleConfigs) {
+        return tableRuleConfigs.stream().anyMatch(this::containsConfiguredDataType);
+    }
+    
+    private boolean containsConfiguredDataType(final EncryptTableRuleConfiguration tableConfig) {
+        return tableConfig.getColumns().stream().anyMatch(each -> !Strings.isNullOrEmpty(each.getLogicDataType()));
     }
     
     /**
