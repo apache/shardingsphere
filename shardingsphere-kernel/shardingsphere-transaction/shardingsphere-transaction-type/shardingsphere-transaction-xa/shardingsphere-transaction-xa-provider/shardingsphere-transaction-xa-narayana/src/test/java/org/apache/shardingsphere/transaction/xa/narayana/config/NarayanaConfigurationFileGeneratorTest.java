@@ -41,6 +41,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -63,7 +64,7 @@ public final class NarayanaConfigurationFileGeneratorTest {
     
     @Before
     public void setUp() {
-        transactionRule = new TransactionRule(new TransactionRuleConfiguration("XA", "Narayana", createProperties()));
+        transactionRule = new TransactionRule(new TransactionRuleConfiguration("XA", "Narayana", createProperties()), Collections.emptyMap());
         jdbcAccess = "com.arjuna.ats.internal.arjuna.objectstore.jdbc.accessors.DynamicDataSourceJDBCAccess;ClassName=com.mysql.jdbc.jdbc2.optional.MysqlDataSource;"
                 + "URL=jdbc:mysql://127.0.0.1:3306/jbossts;User=root;Password=12345678";
         when(instanceContext.getInstance().getInstanceDefinition().getInstanceId()).thenReturn("127.0.0.1@3307");

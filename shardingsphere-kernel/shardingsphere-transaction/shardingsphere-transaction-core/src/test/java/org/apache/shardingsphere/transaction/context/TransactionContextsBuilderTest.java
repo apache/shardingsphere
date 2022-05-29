@@ -53,7 +53,8 @@ public final class TransactionContextsBuilderTest {
     public void assertGetDefaultTransactionManagerEngine() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getResource().getDataSources()).thenReturn(createDataSourceMap());
-        Collection<ShardingSphereRule> globalRules = Collections.singleton(new TransactionRule(new TransactionRuleConfiguration(TransactionType.LOCAL.name(), null, new Properties())));
+        Collection<ShardingSphereRule> globalRules = Collections.singleton(
+                new TransactionRule(new TransactionRuleConfiguration(TransactionType.LOCAL.name(), null, new Properties()), Collections.emptyMap()));
         TransactionContexts transactionContexts = new TransactionContextsBuilder(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), globalRules).build();
         Map<String, ShardingSphereTransactionManagerEngine> engines = transactionContexts.getEngines();
         assertThat(engines.size(), is(1));

@@ -80,11 +80,11 @@ public final class ConnectionTransactionTest {
     }
     
     private TransactionRule getLocalTransactionRule() {
-        return new TransactionRule(getTransactionRuleConfiguration("LOCAL", null));
+        return new TransactionRule(getTransactionRuleConfiguration("LOCAL", null), Collections.emptyMap());
     }
     
     private TransactionRule getXATransactionRule() {
-        return new TransactionRule(getTransactionRuleConfiguration("XA", "Atomikos"));
+        return new TransactionRule(getTransactionRuleConfiguration("XA", "Atomikos"), Collections.emptyMap());
     }
     
     private TransactionRuleConfiguration getTransactionRuleConfiguration(final String defaultType, final String providerType) {

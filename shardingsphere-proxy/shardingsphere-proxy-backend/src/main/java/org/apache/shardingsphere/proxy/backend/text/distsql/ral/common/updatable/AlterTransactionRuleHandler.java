@@ -47,7 +47,7 @@ public final class AlterTransactionRuleHandler extends UpdatableRALBackendHandle
         Collection<RuleConfiguration> globalRuleConfigs = new LinkedList<>(globalRuleMetaData.getConfigurations());
         globalRuleConfigs.removeIf(each -> each instanceof TransactionRuleConfiguration);
         TransactionRuleConfiguration toBeAlteredRuleConfig = buildTransactionRuleConfiguration();
-        globalRules.add(new TransactionRule(toBeAlteredRuleConfig));
+        globalRules.add(new TransactionRule(toBeAlteredRuleConfig, contextManager.getMetaDataContexts().getMetaData().getDatabases()));
         globalRuleConfigs.add(toBeAlteredRuleConfig);
         ProxyContext.getInstance().getContextManager().renewAllTransactionContext();
         Optional<MetaDataPersistService> metaDataPersistService = metaDataContexts.getPersistService();
