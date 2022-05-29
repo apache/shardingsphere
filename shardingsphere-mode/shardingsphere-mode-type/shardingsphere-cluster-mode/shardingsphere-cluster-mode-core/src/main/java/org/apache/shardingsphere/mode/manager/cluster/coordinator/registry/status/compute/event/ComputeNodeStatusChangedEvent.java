@@ -30,7 +30,5 @@ public final class ComputeNodeStatusChangedEvent {
     
     private final ComputeNodeStatus status;
     
-    private final String ip;
-    
-    private final String port;
+    private final String instanceId;
 }
