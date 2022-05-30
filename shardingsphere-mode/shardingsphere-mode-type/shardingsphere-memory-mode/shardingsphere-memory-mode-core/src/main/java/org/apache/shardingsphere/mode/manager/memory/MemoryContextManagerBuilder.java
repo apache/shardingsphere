@@ -72,8 +72,9 @@ public final class MemoryContextManagerBuilder implements ContextManagerBuilder 
     }
     
     private void setInstanceContext(final ContextManager contextManager) {
-        contextManager.getMetaDataContexts().getMetaData().getDatabases().forEach((key, value) -> value.getRuleMetaData().getRules().stream().filter(each -> each instanceof InstanceAwareRule)
-                .forEach(each -> ((InstanceAwareRule) each).setInstanceContext(contextManager.getInstanceContext())));
+        contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findRules(InstanceAwareRule.class).forEach(each -> each.setInstanceContext(contextManager.getInstanceContext()));
+        contextManager.getMetaDataContexts().getMetaData().getDatabases()
+                .forEach((key, value) -> value.getRuleMetaData().findRules(InstanceAwareRule.class).forEach(each -> each.setInstanceContext(contextManager.getInstanceContext())));
     }
     
     private ModeConfiguration buildMemoryModeConfiguration(final ModeConfiguration modeConfiguration) {

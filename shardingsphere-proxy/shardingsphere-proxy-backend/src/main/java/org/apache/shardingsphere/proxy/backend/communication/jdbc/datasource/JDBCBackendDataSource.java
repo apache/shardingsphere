@@ -104,8 +104,9 @@ public final class JDBCBackendDataSource implements BackendDataSource {
     }
     
     private Connection createConnection(final String databaseName, final String dataSourceName, final DataSource dataSource, final TransactionType transactionType) throws SQLException {
-        ShardingSphereTransactionManager transactionManager =
-                ProxyContext.getInstance().getContextManager().getTransactionContexts().getEngines().get(databaseName).getTransactionManager(transactionType);
+        Optional<TransactionRule> transactionRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(TransactionRule.class);
+        Preconditions.checkState(transactionRule.isPresent());
+        ShardingSphereTransactionManager transactionManager = transactionRule.get().getResources().get(databaseName).getTransactionManager(transactionType);
         Connection result = isInTransaction(transactionManager) ? transactionManager.getConnection(dataSourceName) : dataSource.getConnection();
         if (dataSourceName.contains(".")) {
             String catalog = dataSourceName.split("\\.")[1];
