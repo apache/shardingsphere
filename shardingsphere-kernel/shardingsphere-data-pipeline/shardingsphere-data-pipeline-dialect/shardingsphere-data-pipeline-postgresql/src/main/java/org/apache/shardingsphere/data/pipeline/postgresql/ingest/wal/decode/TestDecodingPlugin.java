@@ -153,6 +153,14 @@ public final class TestDecodingPlugin implements DecodingPlugin {
     }
     
     private Object readColumnData(final ByteBuffer data, final String columnType) {
+        data.mark();
+        if ('n' == data.get() && data.remaining() >= 3 && 'u' == data.get() && 'l' == data.get() && 'l' == data.get()) {
+            if (data.hasRemaining()) {
+                data.get();
+            }
+            return null;
+        }
+        data.reset();
         if (columnType.startsWith("numeric")) {
             return new BigDecimal(readNextSegment(data));
         }
@@ -207,12 +215,7 @@ public final class TestDecodingPlugin implements DecodingPlugin {
     
     private String readNextString(final ByteBuffer data) {
         StringBuilder result = new StringBuilder();
-        if ('n' == data.get() && data.mark().remaining() >= 3) {
-            if ('u' == data.get() && 'l' == data.get() && 'l' == data.get()) {
-                return null;
-            }
-            data.reset();
-        }
+        data.get();
         while (data.hasRemaining()) {
             char c = (char) data.get();
             if ('\'' == c) {
