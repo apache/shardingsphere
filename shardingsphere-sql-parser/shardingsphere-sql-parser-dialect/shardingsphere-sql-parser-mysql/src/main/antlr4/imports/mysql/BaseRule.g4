@@ -904,7 +904,7 @@ functionCall
     ;
     
 aggregationFunction
-    : aggregationFunctionName LP_ distinct? (columnRef | expr (COMMA_ expr)* | ASTERISK_)? collateClause? RP_ overClause?
+    : aggregationFunctionName LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? collateClause? RP_ overClause?
     ;
     
 aggregationFunctionName

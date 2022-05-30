@@ -450,7 +450,7 @@ public abstract class SQL92StatementSQLVisitor extends SQL92StatementBaseVisitor
             return new AggregationDistinctProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpression, getDistinctExpression(ctx));
         }
         AggregationProjectionSegment projectionSegment = new AggregationProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpression);
-        projectionSegment.setColumn((null != ctx.columnName()) ? (ColumnSegment) visit(ctx.columnName()) : null);
+        projectionSegment.setColumn((ColumnSegment) visit(ctx.expr(0)));
         return projectionSegment;
     }
     
