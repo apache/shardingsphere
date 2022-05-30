@@ -49,7 +49,9 @@ public final class ShardingCreateViewStatementValidator extends ShardingDDLState
         if (!selectStatement.isPresent()) {
             return;
         }
-        isShardingTablesWithoutBinding(shardingRule, sqlStatementContext, selectStatement.get());
+        if (isShardingTablesWithoutBinding(shardingRule, sqlStatementContext, selectStatement.get())) {
+            throw new ShardingSphereException("View name has to bind to sharding tables!");
+        }
     }
     
     @Override
@@ -64,16 +66,17 @@ public final class ShardingCreateViewStatementValidator extends ShardingDDLState
         }
     }
     
-    private void isShardingTablesWithoutBinding(final ShardingRule shardingRule, final SQLStatementContext<CreateViewStatement> sqlStatementContext, final SelectStatement selectStatement) {
+    private boolean isShardingTablesWithoutBinding(final ShardingRule shardingRule, final SQLStatementContext<CreateViewStatement> sqlStatementContext, final SelectStatement selectStatement) {
         TableExtractor extractor = new TableExtractor();
         extractor.extractTablesFromSelect(selectStatement);
         Collection<SimpleTableSegment> tableSegments = extractor.getRewriteTables();
         for (SimpleTableSegment each : tableSegments) {
             String logicTable = each.getTableName().getIdentifier().getValue();
             if (shardingRule.isShardingTable(logicTable) && !isBindingTables(shardingRule, sqlStatementContext.getSqlStatement().getView().getTableName().getIdentifier().getValue(), logicTable)) {
-                throw new ShardingSphereException("View name has to bind to sharding tables!");
+                return true;
             }
         }
+        return false;
     }
     
     private boolean isBindingTables(final ShardingRule shardingRule, final String logicViewName, final String logicTable) {
