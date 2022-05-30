@@ -528,6 +528,8 @@ public enum SQLVisitorRule {
     
     DROP_FLASHBACK_ARCHIVE("DropFlashbackArchive", SQLStatementType.DDL),
     
+    CREATE_DISKGROUP("CreateDiskgroup", SQLStatementType.DDL),
+    
     CURSOR("Cursor", SQLStatementType.DDL),
     
     CLOSE("Close", SQLStatementType.DDL),
