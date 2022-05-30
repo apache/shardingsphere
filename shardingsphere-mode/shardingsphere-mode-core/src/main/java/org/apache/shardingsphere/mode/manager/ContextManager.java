@@ -701,5 +701,6 @@ public final class ContextManager implements AutoCloseable {
     public void close() throws Exception {
         executorEngine.close();
         metaDataContexts.close();
+        transactionContexts.close();
     }
 }
