@@ -19,13 +19,16 @@ package org.apache.shardingsphere.transaction.rule;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.InstanceAwareRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.transaction.spi.TransactionConfigurationFileGeneratorFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,7 +40,7 @@ import java.util.Properties;
  */
 @Getter
 @Slf4j
-public final class TransactionRule implements GlobalRule, ResourceHeldRule<ShardingSphereTransactionManagerEngine> {
+public final class TransactionRule implements GlobalRule, InstanceAwareRule, ResourceHeldRule<ShardingSphereTransactionManagerEngine> {
     
     private final TransactionType defaultType;
     
@@ -45,17 +48,25 @@ public final class TransactionRule implements GlobalRule, ResourceHeldRule<Shard
     
     private final Properties props;
     
-    private final Map<String, ShardingSphereTransactionManagerEngine> resources;
+    private final Map<String, ShardingSphereDatabase> databases;
+    
+    private volatile Map<String, ShardingSphereTransactionManagerEngine> resources;
     
     public TransactionRule(final TransactionRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases) {
         defaultType = TransactionType.valueOf(ruleConfig.getDefaultType().toUpperCase());
         providerType = ruleConfig.getProviderType();
         props = ruleConfig.getProps();
-        resources = createTransactionManagerEngines(databases);
+        this.databases = databases;
     }
     
-    public Map<String, ShardingSphereTransactionManagerEngine> createTransactionManagerEngines(final Map<String, ShardingSphereDatabase> databases) {
+    @Override
+    public void setInstanceContext(final InstanceContext instanceContext) {
+        resources = createTransactionManagerEngines(databases, instanceContext);
+    }
+    
+    private Map<String, ShardingSphereTransactionManagerEngine> createTransactionManagerEngines(final Map<String, ShardingSphereDatabase> databases, final InstanceContext instanceContext) {
         Map<String, ShardingSphereTransactionManagerEngine> result = new HashMap<>(databases.keySet().size(), 1);
+        TransactionConfigurationFileGeneratorFactory.findInstance(providerType).ifPresent(optional -> optional.generateFile(props, instanceContext));
         for (Entry<String, ShardingSphereDatabase> entry : databases.entrySet()) {
             result.put(entry.getKey(), createTransactionManagerEngine(entry.getValue()));
         }
@@ -70,16 +81,33 @@ public final class TransactionRule implements GlobalRule, ResourceHeldRule<Shard
     }
     
     @Override
-    public void closeStaleResource(final String databaseName) {
-        ShardingSphereTransactionManagerEngine staleEngine = resources.remove(databaseName);
-        if (null != staleEngine) {
-            try {
-                staleEngine.close();
-                // CHECKSTYLE:OFF
-            } catch (final Exception ex) {
-                // CHECKSTYLE:ON
-                log.error("Close transaction engine failed", ex);
-            }
+    public synchronized void addResource(final ShardingSphereDatabase database) {
+        ShardingSphereTransactionManagerEngine previousEngine = resources.put(database.getName(), createTransactionManagerEngine(database));
+        if (null != previousEngine) {
+            closeEngine(previousEngine);
+        }
+    }
+    
+    @Override
+    public synchronized void closeStaleResource(final String databaseName) {
+        ShardingSphereTransactionManagerEngine engine = resources.remove(databaseName);
+        if (null != engine) {
+            closeEngine(engine);
+        }
+    }
+    
+    @Override
+    public void closeStaleResources() {
+        resources.values().forEach(this::closeEngine);
+    }
+    
+    private void closeEngine(final ShardingSphereTransactionManagerEngine engine) {
+        try {
+            engine.close();
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            log.error("Close transaction engine failed", ex);
         }
     }
     

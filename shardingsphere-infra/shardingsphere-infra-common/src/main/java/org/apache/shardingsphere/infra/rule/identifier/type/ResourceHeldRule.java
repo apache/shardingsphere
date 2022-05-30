@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.rule.identifier.type;
 
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import java.util.Map;
@@ -36,9 +37,21 @@ public interface ResourceHeldRule<T> extends ShardingSphereRule {
     Map<String, T> getResources();
     
     /**
-     * Remove stale resource.
+     * Add resource.
+     *
+     * @param database database
+     */
+    void addResource(ShardingSphereDatabase database);
+    
+    /**
+     * Close stale resource.
      * 
-     * @param databaseName stale database name
+     * @param databaseName database name
      */
     void closeStaleResource(String databaseName);
+    
+    /**
+     * Close stale resources.
+     */
+    void closeStaleResources();
 }

@@ -104,13 +104,6 @@ public final class ContextManagerTest {
     }
     
     @Test
-    public void assertRenewTransactionContexts() {
-        TransactionContexts contexts = mock(TransactionContexts.class);
-        contextManager.renewTransactionContexts(contexts);
-        assertThat(contextManager.getTransactionContexts(), is(contexts));
-    }
-    
-    @Test
     public void assertAddDatabase() throws SQLException {
         when(metaDataContexts.getMetaData().getDatabases()).thenReturn(new LinkedHashMap<>());
         contextManager.addDatabase("foo_db");
@@ -130,7 +123,7 @@ public final class ContextManagerTest {
     
     @Test
     public void assertDeleteDatabase() {
-        when(metaDataContexts.getMetaData().getDatabases()).thenReturn(new HashMap<>(Collections.singletonMap("foo_db", mock(ShardingSphereDatabase.class))));
+        when(metaDataContexts.getMetaData().getDatabases()).thenReturn(new HashMap<>(Collections.singletonMap("foo_db", mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS))));
         when(metaDataContexts.getOptimizerContext().getFederationMetaData().getDatabases()).thenReturn(new HashMap<>(Collections.singletonMap("foo_db", mock(FederationDatabaseMetaData.class))));
         when(metaDataContexts.getOptimizerContext().getParserContexts()).thenReturn(new HashMap<>(Collections.singletonMap("foo_db", mock(OptimizerParserContext.class))));
         when(metaDataContexts.getOptimizerContext().getPlannerContexts()).thenReturn(new HashMap<>(Collections.singletonMap("foo_db", mock(OptimizerPlannerContext.class))));
