@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.metadata.database.schema.event;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.database.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 
 /**
  * Alter schema event.

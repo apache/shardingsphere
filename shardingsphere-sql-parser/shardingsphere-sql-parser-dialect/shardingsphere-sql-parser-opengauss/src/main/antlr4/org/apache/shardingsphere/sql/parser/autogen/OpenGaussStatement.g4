@@ -85,6 +85,7 @@ execute
     | dropDatabase
     | dropFunction
     | dropProcedure
+    | dropRule
     | dropServer
     | dropTrigger
     | dropView
@@ -125,5 +126,10 @@ execute
     | fetch
     | createDirectory
     | alterDirectory
+    | dropDirectory
+    | createCast
+    | dropCast
+    | alterRule
+    | checkpoint
     ) SEMI_? EOF
     ;

@@ -66,6 +66,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.In
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.JoinQualContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.JoinedTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.LimitClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.NameContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.NameListContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.NumberLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.OwnerContext;
@@ -1177,5 +1178,10 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
             result.combine((CollectionValue<NameSegment>) visit(ctx.attrs()));
         }
         return result;
+    }
+    
+    @Override
+    public ASTNode visitName(final NameContext ctx) {
+        return visit(ctx.identifier());
     }
 }

@@ -25,8 +25,6 @@ import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.infra.state.StateType;
 
 import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 /**
  * Instance of compute node.
@@ -38,7 +36,7 @@ public final class ComputeNodeInstance {
     
     private final InstanceDefinition instanceDefinition;
     
-    private Set<String> labels;
+    private Collection<String> labels;
     
     private final StateContext state = new StateContext();
     
@@ -55,7 +53,7 @@ public final class ComputeNodeInstance {
         if (null == labels) {
             return;
         }
-        this.labels = new LinkedHashSet<>(labels);
+        this.labels = labels;
     }
     
     /**
@@ -73,6 +71,6 @@ public final class ComputeNodeInstance {
      * @return current instance id
      */
     public String getCurrentInstanceId() {
-        return instanceDefinition.getInstanceId().getId();
+        return instanceDefinition.getInstanceId();
     }
 }

@@ -21,8 +21,8 @@ import com.google.common.base.Strings;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ShowTableMetadataStatement;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.exception.DatabaseNotExistedException;
-import org.apache.shardingsphere.infra.metadata.database.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereIndex;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
@@ -72,7 +72,7 @@ public final class ShowTableMetadataHandler extends QueryableRALBackendHandler<S
     }
     
     private String getDatabaseName() {
-        String result = sqlStatement.getSchema().isPresent() ? sqlStatement.getSchema().get().getIdentifier().getValue() : connectionSession.getDatabaseName();
+        String result = sqlStatement.getDatabase().isPresent() ? sqlStatement.getDatabase().get().getIdentifier().getValue() : connectionSession.getDatabaseName();
         if (Strings.isNullOrEmpty(result)) {
             throw new NoDatabaseSelectedException();
         }
@@ -86,7 +86,7 @@ public final class ShowTableMetadataHandler extends QueryableRALBackendHandler<S
         Collection<List<Object>> result = new LinkedList<>();
         Collection<List<Object>> columnRows = schema.getAllColumnNames(tableName).stream().map(each -> buildRow(databaseName, tableName, "COLUMN", each))
                 .collect(Collectors.toList());
-        Collection<List<Object>> indexRows = schema.getTables().get(tableName).getIndexes().values().stream().map(IndexMetaData::getName)
+        Collection<List<Object>> indexRows = schema.getTables().get(tableName).getIndexes().values().stream().map(ShardingSphereIndex::getName)
                 .map(each -> buildRow(databaseName, tableName, "INDEX", each)).collect(Collectors.toList());
         result.addAll(columnRows);
         result.addAll(indexRows);

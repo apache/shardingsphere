@@ -1273,3 +1273,11 @@ spfileName
 pfileName
     : STRING_
     ;
+
+characterSetName
+    : identifier
+    ;
+
+quotaUnit
+    : ('M' | 'G' | 'T' | 'P' | 'E')
+    ;

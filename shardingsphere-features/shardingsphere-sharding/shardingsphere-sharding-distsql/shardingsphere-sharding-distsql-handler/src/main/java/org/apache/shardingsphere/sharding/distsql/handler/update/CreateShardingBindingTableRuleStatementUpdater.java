@@ -61,7 +61,7 @@ public final class CreateShardingBindingTableRuleStatementUpdater implements Rul
         DistSQLException.predictionThrow(notExistedBindingTables.isEmpty(), () -> new RequiredRuleMissedException("Sharding", databaseName, notExistedBindingTables));
     }
     
-    private static boolean containsIgnoreCase(final Collection<String> collection, final String str) {
+    private boolean containsIgnoreCase(final Collection<String> collection, final String str) {
         return collection.stream().anyMatch(each -> each.equalsIgnoreCase(str));
     }
     

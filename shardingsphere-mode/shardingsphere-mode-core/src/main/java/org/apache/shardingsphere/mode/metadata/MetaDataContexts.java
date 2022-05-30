@@ -22,11 +22,9 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContextFactory;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Optional;
@@ -55,25 +53,6 @@ public final class MetaDataContexts implements AutoCloseable {
      */
     public Optional<MetaDataPersistService> getPersistService() {
         return Optional.ofNullable(persistService);
-    }
-    
-    /**
-     * Get all database names.
-     *
-     * @return all database names
-     */
-    public Collection<String> getAllDatabaseNames() {
-        return metaData.getDatabases().keySet();
-    }
-    
-    /**
-     * Get database.
-     *
-     * @param databaseName database name
-     * @return database
-     */
-    public ShardingSphereDatabase getDatabase(final String databaseName) {
-        return metaData.getDatabases().get(databaseName);
     }
     
     @Override

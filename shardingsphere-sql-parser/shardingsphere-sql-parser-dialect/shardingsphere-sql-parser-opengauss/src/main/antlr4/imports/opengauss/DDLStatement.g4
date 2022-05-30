@@ -128,6 +128,10 @@ dropDatabase
     : DROP DATABASE existClause? name
     ;
 
+dropDirectory
+    : DROP DIRECTORY existClause? directoryName
+    ;
+
 createDatabaseSpecification
     :  createdbOptName EQ_? (signedIconst | booleanOrString | DEFAULT)
     ;
@@ -1047,7 +1051,7 @@ alterRoutine
     ;
 
 alterRule
-    : ALTER RULE ON qualifiedName RENAME TO name
+    : ALTER RULE name ON tableName RENAME TO name
     ;
 
 alterSequence
@@ -1292,14 +1296,15 @@ oldAggrElem
     ;
 
 createCast
-    : CREATE CAST LP_ typeName AS typeName RP_
-    ( WITH FUNCTION functionWithArgtypes castContext?
-    | WITHOUT FUNCTION castContext?
-    | WITH INOUT castContext?)
+    : CREATE CAST LP_ typeName AS typeName RP_ (
+    | WITH FUNCTION (funcName | dataTypeName) funcArgs
+    | WITHOUT FUNCTION
+    | WITH INOUT 
+    ) castContext?
     ;
 
 castContext
-    : AS IMPLICIT | AS ASSIGNMENT
+    : AS (ASSIGNMENT | IMPLICIT)
     ;
 
 createCollation

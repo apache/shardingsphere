@@ -30,7 +30,7 @@ import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.QueryAssistedEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
-import org.apache.shardingsphere.infra.metadata.database.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.common.DataTypeLoader;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
 import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
@@ -62,7 +62,7 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
     public EncryptRule(final EncryptRuleConfiguration config, final Map<String, DataSource> dataSourceMap) {
         Preconditions.checkArgument(isValidRuleConfiguration(config), "Invalid encrypt column configurations in EncryptTableRuleConfigurations.");
         config.getEncryptors().forEach((key, value) -> encryptors.put(key, EncryptAlgorithmFactory.newInstance(value)));
-        Map<String, Integer> dataTypes = containsConfigDataTypeColumn(config.getTables()) ? getDataTypes(dataSourceMap) : Collections.emptyMap();
+        Map<String, Integer> dataTypes = containsConfiguredDataType(config.getTables()) ? getDataTypes(dataSourceMap) : Collections.emptyMap();
         config.getTables().forEach(each -> tables.put(each.getName().toLowerCase(), new EncryptTable(each, dataTypes)));
         queryWithCipherColumn = config.isQueryWithCipherColumn();
     }
@@ -70,7 +70,7 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
     public EncryptRule(final AlgorithmProvidedEncryptRuleConfiguration config, final Map<String, DataSource> dataSourceMap) {
         Preconditions.checkArgument(isValidRuleConfigurationWithAlgorithmProvided(config), "Invalid encrypt column configurations in EncryptTableRuleConfigurations.");
         encryptors.putAll(config.getEncryptors());
-        Map<String, Integer> dataTypes = containsConfigDataTypeColumn(config.getTables()) ? getDataTypes(dataSourceMap) : Collections.emptyMap();
+        Map<String, Integer> dataTypes = containsConfiguredDataType(config.getTables()) ? getDataTypes(dataSourceMap) : Collections.emptyMap();
         config.getTables().forEach(each -> tables.put(each.getName().toLowerCase(), new EncryptTable(each, dataTypes)));
         queryWithCipherColumn = config.isQueryWithCipherColumn();
     }
@@ -130,15 +130,12 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
         return Collections.emptyMap();
     }
     
-    private boolean containsConfigDataTypeColumn(final Collection<EncryptTableRuleConfiguration> tableRuleConfigs) {
-        for (EncryptTableRuleConfiguration each : tableRuleConfigs) {
-            for (EncryptColumnRuleConfiguration column : each.getColumns()) {
-                if (null != column.getLogicDataType() && !column.getLogicDataType().isEmpty()) {
-                    return true;
-                }
-            }
-        }
-        return false;
+    private boolean containsConfiguredDataType(final Collection<EncryptTableRuleConfiguration> tableRuleConfigs) {
+        return tableRuleConfigs.stream().anyMatch(this::containsConfiguredDataType);
+    }
+    
+    private boolean containsConfiguredDataType(final EncryptTableRuleConfiguration tableConfig) {
+        return tableConfig.getColumns().stream().anyMatch(each -> !Strings.isNullOrEmpty(each.getLogicDataType()));
     }
     
     /**
@@ -171,7 +168,8 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
      */
     @SuppressWarnings("rawtypes")
     public Optional<EncryptAlgorithm> findEncryptor(final String logicTable, final String logicColumn) {
-        return tables.containsKey(logicTable.toLowerCase()) ? tables.get(logicTable.toLowerCase()).findEncryptorName(logicColumn).map(encryptors::get) : Optional.empty();
+        String lowerCaseLogicTable = logicTable.toLowerCase();
+        return tables.containsKey(lowerCaseLogicTable) ? tables.get(lowerCaseLogicTable).findEncryptorName(logicColumn).map(encryptors::get) : Optional.empty();
     }
     
     /**
@@ -220,7 +218,8 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
      * @return logic and cipher columns
      */
     public Map<String, String> getLogicAndCipherColumns(final String logicTable) {
-        return tables.containsKey(logicTable.toLowerCase()) ? tables.get(logicTable.toLowerCase()).getLogicAndCipherColumns() : Collections.emptyMap();
+        String lowerCaseLogicTable = logicTable.toLowerCase();
+        return tables.containsKey(lowerCaseLogicTable) ? tables.get(lowerCaseLogicTable).getLogicAndCipherColumns() : Collections.emptyMap();
     }
     
     /**
@@ -231,7 +230,8 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
      * @return assisted query column
      */
     public Optional<String> findAssistedQueryColumn(final String logicTable, final String logicColumn) {
-        return tables.containsKey(logicTable.toLowerCase()) ? tables.get(logicTable.toLowerCase()).findAssistedQueryColumn(logicColumn) : Optional.empty();
+        String lowerCaseLogicTable = logicTable.toLowerCase();
+        return tables.containsKey(lowerCaseLogicTable) ? tables.get(lowerCaseLogicTable).findAssistedQueryColumn(logicColumn) : Optional.empty();
     }
     
     /**

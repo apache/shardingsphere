@@ -27,6 +27,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collection;
 import java.util.Properties;
 
 /**
@@ -46,7 +47,7 @@ public final class OpenGaussNormalReplicationDatabaseDiscoveryProviderAlgorithm 
     }
     
     @Override
-    public void checkEnvironment(final String databaseName, final DataSource dataSource) {
+    public void checkEnvironment(final String databaseName, final Collection<DataSource> dataSources) {
     }
     
     @Override

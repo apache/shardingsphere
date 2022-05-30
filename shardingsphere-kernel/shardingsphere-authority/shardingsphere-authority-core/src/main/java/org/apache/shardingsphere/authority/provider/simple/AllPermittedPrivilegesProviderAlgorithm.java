@@ -43,7 +43,7 @@ public final class AllPermittedPrivilegesProviderAlgorithm implements AuthorityP
     }
     
     @Override
-    public AuthorityRegistry buildAuthorityRegistry(final Map<String, ShardingSphereDatabase> databaseMap, final Collection<ShardingSphereUser> users) {
+    public AuthorityRegistry buildAuthorityRegistry(final Map<String, ShardingSphereDatabase> databases, final Collection<ShardingSphereUser> users) {
         return new AllPermittedAuthorityRegistry();
     }
     

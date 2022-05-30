@@ -49,12 +49,11 @@ public final class RQLBackendHandlerTest extends ProxyContextRestorer {
     
     @Before
     public void setUp() {
-        MetaDataContexts metaDataContexts = mock(MetaDataContexts.class);
-        when(metaDataContexts.getAllDatabaseNames()).thenReturn(Collections.singleton("test"));
+        MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
         ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(database.getRuleMetaData()).thenReturn(ruleMetaData);
-        when(metaDataContexts.getDatabase("test")).thenReturn(database);
+        when(metaDataContexts.getMetaData().getDatabases()).thenReturn(Collections.singletonMap("test", database));
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);

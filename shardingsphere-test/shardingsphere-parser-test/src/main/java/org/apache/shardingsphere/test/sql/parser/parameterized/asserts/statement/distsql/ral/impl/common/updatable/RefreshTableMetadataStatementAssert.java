@@ -44,10 +44,13 @@ public final class RefreshTableMetadataStatementAssert {
         } else {
             assertNotNull(assertContext.getText("Actual statement should exist."), actual);
             if (null != expected.getTableName()) {
-                assertThat(assertContext.getText("Table name id assertion error"), actual.getTableName().get(), is(expected.getTableName()));
+                assertThat(assertContext.getText("Table name assertion error"), actual.getTableName().get(), is(expected.getTableName()));
             }
             if (null != expected.getResourceName()) {
-                assertThat(assertContext.getText("Resource name id assertion error"), actual.getResourceName().get(), is(expected.getResourceName()));
+                assertThat(assertContext.getText("Resource name assertion error"), actual.getResourceName().get(), is(expected.getResourceName()));
+            }
+            if (null != expected.getSchemaName()) {
+                assertThat(assertContext.getText("Schema name assertion error"), actual.getSchemaName().get(), is(expected.getSchemaName()));
             }
         }
     }

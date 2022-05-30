@@ -17,6 +17,6 @@
   -->
 
 <sql-cases>
-    <sql-case id="close_cursor" value="CLOSE t_order_cursor;" db-types="openGauss" />
-    <sql-case id="close_all_cursor" value="CLOSE ALL;" db-types="openGauss" />
+    <sql-case id="close_cursor" value="CLOSE t_order_cursor;" db-types="openGauss, PostgreSQL" />
+    <sql-case id="close_all_cursor" value="CLOSE ALL;" db-types="openGauss, PostgreSQL" />
 </sql-cases>

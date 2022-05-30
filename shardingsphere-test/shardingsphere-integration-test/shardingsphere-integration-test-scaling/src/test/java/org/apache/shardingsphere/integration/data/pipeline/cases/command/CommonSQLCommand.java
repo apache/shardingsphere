@@ -38,8 +38,8 @@ public final class CommonSQLCommand {
     @XmlElement(name = "create-order-item-sharding-algorithm")
     private String createOrderItemShardingAlgorithm;
     
-    @XmlElement(name = "create-all-sharding-table-rule")
-    private String createAllSharingTableRule;
+    @XmlElement(name = "create-order-with-item-sharding-table-rule")
+    private String createOrderWithItemSharingTableRule;
     
     @XmlElement(name = "create-order-sharding-table-rule")
     private String createOrderShardingTableRule;

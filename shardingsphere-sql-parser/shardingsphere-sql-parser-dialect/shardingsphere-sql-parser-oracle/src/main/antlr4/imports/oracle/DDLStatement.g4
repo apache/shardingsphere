@@ -2359,3 +2359,62 @@ createSPFile
 createPFile
     : CREATE PFILE (EQ_ pfileName)? FROM (SPFILE (EQ_ spfileName)? (AS COPY)? | MEMORY)
     ;
+
+createControlFile
+    : CREATE CONTROLFILE REUSE? SET? DATABASE databaseName logfileForControlClause? resetLogsOrNot
+    ( MAXLOGFILES INTEGER_
+    | MAXLOGMEMBERS INTEGER_
+    | MAXLOGHISTORY INTEGER_
+    | MAXDATAFILES INTEGER_
+    | MAXINSTANCES INTEGER_
+    | ARCHIVELOG
+    | NOARCHIVELOG
+    | FORCE LOGGING
+    | SET STANDBY NOLOGGING FOR (DATA AVAILABILITY | LOAD PERFORMANCE)
+    )*
+    characterSetClause?
+    ;
+
+resetLogsOrNot
+   :  ( RESETLOGS | NORESETLOGS) (DATAFILE fileSpecifications)?
+   ;
+
+logfileForControlClause
+    : LOGFILE (GROUP INTEGER_)? fileSpecification (COMMA_ (GROUP INTEGER_)? fileSpecification)+
+    ;
+
+characterSetClause
+    : CHARACTER SET characterSetName
+    ;
+
+createFlashbackArchive
+   : CREATE FLASHBACK ARCHIVE DEFAULT? flashbackArchiveName tablespaceClause
+     flashbackArchiveQuota? (NO? OPTIMIZE DATA)? flashbackArchiveRetention
+   ;
+
+flashbackArchiveQuota
+    : QUOTA INTEGER_ quotaUnit
+    ;
+
+flashbackArchiveRetention
+    : RETENTION INTEGER_ (YEAR | MONTH | DAY)
+    ;
+
+alterFlashbackArchive
+    : ALTER FLASHBACK ARCHIVE flashbackArchiveName
+    ( SET DEFAULT
+    | (ADD | MODIFY) TABLESPACE tablespaceName flashbackArchiveQuota?
+    | REMOVE TABLESPACE tablespaceName
+    | MODIFY RETENTION flashbackArchiveRetention
+    | PURGE purgeClause
+    | NO? OPTIMIZE DATA)
+    ;
+
+purgeClause
+    : ALL
+    | BEFORE (SCN expr | TIMESTAMP expr)
+    ;
+
+dropFlashbackArchive
+    : DROP FLASHBACK ARCHIVE flashbackArchiveName
+    ;

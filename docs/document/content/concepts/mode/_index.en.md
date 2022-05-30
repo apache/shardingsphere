@@ -24,3 +24,5 @@ Will create a `.shardingsphere` file in the root directory to store configuratio
 
 Suitable for use in distributed scenarios which provides metadata sharing and state coordination among multiple computing nodes.
 It is necessary to provide registry center for distributed coordination, such as ZooKeeper or Etcd.
+
+**Source Codes: https://github.com/apache/shardingsphere/tree/master/shardingsphere-mode**

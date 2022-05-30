@@ -91,5 +91,9 @@ execute
     | createContext
     | createSPFile
     | createPFile
+    | createControlFile
+    | createFlashbackArchive
+    | alterFlashbackArchive
+    | dropFlashbackArchive
     ) SEMI_?
     ;

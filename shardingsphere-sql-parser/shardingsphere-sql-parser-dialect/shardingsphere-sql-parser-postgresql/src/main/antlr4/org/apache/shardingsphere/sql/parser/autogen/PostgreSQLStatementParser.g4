@@ -145,5 +145,6 @@ execute
     | dropAccessMethod
     | dropServer
     | checkpoint
+    | close
     ) SEMI_? EOF
     ;

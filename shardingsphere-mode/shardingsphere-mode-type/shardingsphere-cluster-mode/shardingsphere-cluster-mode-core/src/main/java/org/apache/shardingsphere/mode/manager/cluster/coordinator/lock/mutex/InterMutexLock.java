@@ -137,7 +137,7 @@ public final class InterMutexLock implements MutexLock, LockAckAble {
             return false;
         }
         for (ComputeNodeInstance each : computeNodeInstances) {
-            if (!lockedInstances.contains(each.getInstanceDefinition().getInstanceId().getId())) {
+            if (!lockedInstances.contains(each.getInstanceDefinition().getInstanceId())) {
                 return false;
             }
         }

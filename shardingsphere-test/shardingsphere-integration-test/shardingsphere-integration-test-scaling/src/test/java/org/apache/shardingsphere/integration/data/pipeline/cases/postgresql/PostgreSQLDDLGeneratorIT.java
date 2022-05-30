@@ -19,7 +19,7 @@ package org.apache.shardingsphere.integration.data.pipeline.cases.postgresql;
 
 import com.google.common.base.Strings;
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.data.pipeline.spi.ddlgenerator.DialectDDLSQLGeneratorFactory;
+import org.apache.shardingsphere.data.pipeline.spi.ddlgenerator.CreateTableSQLGeneratorFactory;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.integration.data.pipeline.cases.entity.DDLGeneratorAssertionEntity;
@@ -96,8 +96,8 @@ public final class PostgreSQLDDLGeneratorIT {
             int majorVersion = connection.getMetaData().getDatabaseMajorVersion();
             for (DDLGeneratorAssertionEntity each : rootEntity.getAssertions()) {
                 statement.execute(each.getInput().getSql());
-                String sql = DialectDDLSQLGeneratorFactory.findInstance(parameterized.getDatabaseType()).orElseThrow(() -> new ShardingSphereException("Failed to get dialect ddl sql generator"))
-                        .generateDDLSQL(each.getInput().getTable(), DEFAULT_SCHEMA, dataSource);
+                String sql = CreateTableSQLGeneratorFactory.findInstance(parameterized.getDatabaseType()).orElseThrow(() -> new ShardingSphereException("Failed to get dialect ddl sql generator"))
+                        .generate(each.getInput().getTable(), DEFAULT_SCHEMA, dataSource);
                 assertThat(REPLACE_LINE_SPACE.matcher(sql).replaceAll(""), is(REPLACE_LINE_SPACE.matcher(getVersionOutput(each.getOutputs(), majorVersion)).replaceAll("")));
             }
         }

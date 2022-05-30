@@ -55,18 +55,18 @@ public final class ShadowRule implements SchemaRule, DataSourceContainedRule {
     
     private final Map<String, ShadowTableRule> shadowTableRules = new LinkedHashMap<>();
     
-    public ShadowRule(final ShadowRuleConfiguration shadowRuleConfig) {
-        initShadowDataSourceMappings(shadowRuleConfig.getDataSources());
-        initShadowAlgorithmConfigurations(shadowRuleConfig.getShadowAlgorithms());
-        initDefaultShadowAlgorithm(shadowRuleConfig.getDefaultShadowAlgorithmName());
-        initShadowTableRules(shadowRuleConfig.getTables());
+    public ShadowRule(final ShadowRuleConfiguration config) {
+        initShadowDataSourceMappings(config.getDataSources());
+        initShadowAlgorithmConfigurations(config.getShadowAlgorithms());
+        initDefaultShadowAlgorithm(config.getDefaultShadowAlgorithmName());
+        initShadowTableRules(config.getTables());
     }
     
-    public ShadowRule(final AlgorithmProvidedShadowRuleConfiguration shadowRuleConfig) {
-        initShadowDataSourceMappings(shadowRuleConfig.getDataSources());
-        initShadowAlgorithms(shadowRuleConfig.getShadowAlgorithms());
-        initDefaultShadowAlgorithm(shadowRuleConfig.getDefaultShadowAlgorithmName());
-        initShadowTableRules(shadowRuleConfig.getTables());
+    public ShadowRule(final AlgorithmProvidedShadowRuleConfiguration config) {
+        initShadowDataSourceMappings(config.getDataSources());
+        initShadowAlgorithms(config.getShadowAlgorithms());
+        initDefaultShadowAlgorithm(config.getDefaultShadowAlgorithmName());
+        initShadowTableRules(config.getTables());
     }
     
     private void initShadowDataSourceMappings(final Map<String, ShadowDataSourceConfiguration> dataSources) {

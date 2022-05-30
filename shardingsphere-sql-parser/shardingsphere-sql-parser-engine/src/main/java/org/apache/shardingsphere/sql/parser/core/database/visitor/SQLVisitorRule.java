@@ -226,6 +226,8 @@ public enum SQLVisitorRule {
     
     DROP_EXTENSION("DropExtension", SQLStatementType.DDL),
     
+    ALTER_RULE("AlterRule", SQLStatementType.DDL),
+    
     DECLARE("Declare", SQLStatementType.DDL),
     
     DISCARD("Discard", SQLStatementType.DDL),
@@ -462,6 +464,8 @@ public enum SQLVisitorRule {
     
     CREATE_CONVERSION("CreateConversion", SQLStatementType.DDL),
     
+    CREATE_CAST("CreateCast", SQLStatementType.DDL),
+    
     CREATE_TYPE("CreateType", SQLStatementType.DDL),
     
     DROP_CONVERSION("DropConversion", SQLStatementType.DDL),
@@ -515,6 +519,14 @@ public enum SQLVisitorRule {
     CREATE_SPFILE("CreateSPFile", SQLStatementType.DDL),
     
     CREATE_PFILE("CreatePFile", SQLStatementType.DDL),
+    
+    CREATE_CONTROL_FILE("CreateControlFile", SQLStatementType.DDL),
+    
+    CREATE_FLASHBACK_ARCHIVE("CreateFlashbackArchive", SQLStatementType.DDL),
+    
+    ALTER_FLASHBACK_ARCHIVE("AlterFlashbackArchive", SQLStatementType.DDL),
+    
+    DROP_FLASHBACK_ARCHIVE("DropFlashbackArchive", SQLStatementType.DDL),
     
     CURSOR("Cursor", SQLStatementType.DDL),
     

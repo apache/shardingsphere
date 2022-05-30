@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.spi.ddlgenerator.DialectDDLSQLGeneratorFactory;
+import org.apache.shardingsphere.data.pipeline.spi.ddlgenerator.CreateTableSQLGeneratorFactory;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
@@ -81,7 +81,7 @@ public final class PipelineDDLGenerator {
      */
     @SneakyThrows
     public String generateLogicDDLSQL(final DatabaseType databaseType, final String databaseName, final String schemaName, final String tableName) {
-        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getDatabase(databaseName);
+        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(databaseName);
         log.info("generateLogicDDLSQL, databaseType={}, databaseName={}, schemaName={}, tableName={}, dataSourceNames={}",
                 databaseType.getType(), databaseName, schemaName, tableName, database.getResource().getDataSources().keySet());
         String sql = generateActualDDLSQL(databaseType, schemaName, tableName, database);
@@ -136,8 +136,8 @@ public final class PipelineDDLGenerator {
                 .findFirst();
         String dataSourceName = filteredDataNode.map(DataNode::getDataSourceName).orElseGet(() -> database.getResource().getDataSources().keySet().iterator().next());
         String actualTable = filteredDataNode.map(DataNode::getTableName).orElse(tableName);
-        return DialectDDLSQLGeneratorFactory.findInstance(databaseType).orElseThrow(() -> new ShardingSphereException("Failed to get dialect ddl sql generator"))
-                .generateDDLSQL(actualTable, schemaName, database.getResource().getDataSources().get(dataSourceName));
+        return CreateTableSQLGeneratorFactory.findInstance(databaseType).orElseThrow(() -> new ShardingSphereException("Failed to get dialect ddl sql generator"))
+                .generate(actualTable, schemaName, database.getResource().getDataSources().get(dataSourceName));
     }
     
     private String decorateActualSQL(final String sql, final ShardingSphereDatabase database, final DatabaseType databaseType, final String databaseName) {

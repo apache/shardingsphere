@@ -9,6 +9,7 @@ weight = 2
 ShardingSphere-Proxy is available at:
 - [Binary Distribution](/en/user-manual/shardingsphere-proxy/startup/bin/)
 - [Docker](/en/user-manual/shardingsphere-proxy/startup/docker/)
+- [Helm](/en/user-manual/shardingsphere-proxy/startup/helm/)
 
 ## Rule Configuration
 

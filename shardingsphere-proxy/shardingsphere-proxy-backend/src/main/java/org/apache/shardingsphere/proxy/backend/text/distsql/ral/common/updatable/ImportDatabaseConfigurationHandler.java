@@ -111,7 +111,7 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
         }
         Collection<RuleConfiguration> toBeUpdatedRuleConfigs = new LinkedList<>();
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        ShardingSphereDatabase database = metaDataContexts.getDatabase(databaseName);
+        ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabases().get(databaseName);
         for (YamlRuleConfiguration each : yamlRuleConfigs) {
             if (each instanceof YamlShardingRuleConfiguration) {
                 ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfigurationYamlSwapper().swapToObject((YamlShardingRuleConfiguration) each);
