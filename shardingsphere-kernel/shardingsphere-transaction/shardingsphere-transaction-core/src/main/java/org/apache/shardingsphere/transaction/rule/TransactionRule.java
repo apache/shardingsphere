@@ -82,6 +82,10 @@ public final class TransactionRule implements GlobalRule, InstanceAwareRule, Res
     
     @Override
     public synchronized void addResource(final ShardingSphereDatabase database) {
+        // TODO process null when for information_schema
+        if (null == database) {
+            return;
+        }
         ShardingSphereTransactionManagerEngine previousEngine = resources.put(database.getName(), createTransactionManagerEngine(database));
         if (null != previousEngine) {
             closeEngine(previousEngine);
