@@ -308,9 +308,9 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
         if (null == ctx.refreshScope()) {
             return new RefreshTableMetadataStatement();
         }
-        String tableName = getIdentifierValue(ctx.refreshScope().tableName());
         String resourceName = null;
         String schemaName = null;
+        String tableName = getIdentifierValue(ctx.refreshScope().tableName());
         if (null != ctx.refreshScope().fromSegment()) {
             FromSegmentContext fromSegment = ctx.refreshScope().fromSegment();
             resourceName = getIdentifierValue(fromSegment.resourceName());
