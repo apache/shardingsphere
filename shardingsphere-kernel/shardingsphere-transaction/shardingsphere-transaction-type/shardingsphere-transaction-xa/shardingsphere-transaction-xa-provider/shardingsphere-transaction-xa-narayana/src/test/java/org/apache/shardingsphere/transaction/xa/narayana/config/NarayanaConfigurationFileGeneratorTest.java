@@ -66,7 +66,7 @@ public final class NarayanaConfigurationFileGeneratorTest {
         transactionRule = new TransactionRule(new TransactionRuleConfiguration("XA", "Narayana", createProperties()));
         jdbcAccess = "com.arjuna.ats.internal.arjuna.objectstore.jdbc.accessors.DynamicDataSourceJDBCAccess;ClassName=com.mysql.jdbc.jdbc2.optional.MysqlDataSource;"
                 + "URL=jdbc:mysql://127.0.0.1:3306/jbossts;User=root;Password=12345678";
-        when(instanceContext.getInstance().getInstanceDefinition().getInstanceId().getId()).thenReturn("127.0.0.1@3307");
+        when(instanceContext.getInstance().getInstanceDefinition().getInstanceId()).thenReturn("127.0.0.1@3307");
         when(instanceContext.getInstance().getXaRecoveryId()).thenReturn("127.0.0.1@3307");
     }
     

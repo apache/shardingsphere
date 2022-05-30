@@ -86,24 +86,24 @@
             </load-balancer>
         </rule>
     </alter-traffic-rule>
-    <label-instance sql-case-id="label-instance" ip="127.0.0.1" port="3309" overwrite="false">
+    <label-instance sql-case-id="label-instance" instance-id="instance_label" overwrite="false">
         <label>OLAP_1</label>
         <label>OLAP_2</label>
     </label-instance>
-    <label-instance sql-case-id="relabel-instance" ip="127.0.0.1" port="3309" overwrite="true">
+    <label-instance sql-case-id="relabel-instance" instance-id="instance_relabel" overwrite="true">
         <label>OLAP_1</label>
         <label>OLAP_2</label>
     </label-instance>
-    <unlabel-instance sql-case-id="unlabel-instance" ip="127.0.0.1" port="3309">
+    <unlabel-instance sql-case-id="unlabel-instance" instance-id="instance_unlabel">
         <label>OLAP_1</label>
     </unlabel-instance>
-    <unlabel-instance sql-case-id="unlabel-instance-without-label" ip="127.0.0.1" port="3309">
+    <unlabel-instance sql-case-id="unlabel-instance-without-label" instance-id="instance_unlabel_2">
     </unlabel-instance>
     <prepare-distsql sql-case-id="prepare-distsql" />
     <apply-distsql sql-case-id="apply-distsql" />
     <discard-distsql sql-case-id="discard-distsql" />
-    <alter-instance sql-case-id="alter-instance-xa-recovery-nodes" instance-id="1.2.3.4@3307" key="XA_RECOVERY_NODES" value="1.2.3.4@3308" />
-    <alter-instance sql-case-id="alter-instance-xa-recovery-nodes-with-multiple-values" instance-id="1.2.3.4@3307" key="XA_RECOVERY_NODES" value="1.2.3.4@3308,1.2.3.4@3307" />
+    <alter-instance sql-case-id="alter-instance-xa-recovery-nodes" instance-id="instance_xa_recovery" key="XA_RECOVERY_NODES" value="instance_1" />
+    <alter-instance sql-case-id="alter-instance-xa-recovery-nodes-with-multiple-values" instance-id="instance_xa_recovery_multiple" key="XA_RECOVERY_NODES" value="instance_1,instance_2" />
     <import-database-config sql-case-id="import-database-config">
         <filePath>/yaml/config-sharding.yaml</filePath>
     </import-database-config>

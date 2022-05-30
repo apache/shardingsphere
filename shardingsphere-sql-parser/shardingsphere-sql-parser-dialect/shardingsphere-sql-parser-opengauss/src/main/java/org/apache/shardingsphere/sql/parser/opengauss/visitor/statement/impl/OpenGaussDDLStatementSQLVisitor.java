@@ -41,6 +41,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Alt
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterSequenceContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterSynonymContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterDirectoryContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterRuleContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterTableActionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterTablespaceContext;
@@ -80,6 +81,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Dec
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropConstraintSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropCastContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropRuleContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropConversionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropDatabaseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropDomainContext;
@@ -159,6 +161,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussAlterSequenceStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussAlterSynonymStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussAlterDirectoryStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussAlterRuleStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussAlterTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussAlterTablespaceStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussAlterTextSearchStatement;
@@ -188,6 +191,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDeallocateStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDeclareStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropCastStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropRuleStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropConversionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropDomainStatement;
@@ -637,6 +641,11 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
     }
     
     @Override
+    public ASTNode visitDropRule(final DropRuleContext ctx) {
+        return new OpenGaussDropRuleStatement();
+    }
+    
+    @Override
     public ASTNode visitCreateDatabase(final CreateDatabaseContext ctx) {
         OpenGaussCreateDatabaseStatement result = new OpenGaussCreateDatabaseStatement();
         result.setDatabaseName(((IdentifierValue) visit(ctx.name())).getValue());
@@ -799,6 +808,11 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
     @Override
     public ASTNode visitAlterDirectory(final AlterDirectoryContext ctx) {
         return new OpenGaussAlterDirectoryStatement();
+    }
+    
+    @Override
+    public ASTNode visitAlterRule(final AlterRuleContext ctx) {
+        return new OpenGaussAlterRuleStatement();
     }
     
     @Override

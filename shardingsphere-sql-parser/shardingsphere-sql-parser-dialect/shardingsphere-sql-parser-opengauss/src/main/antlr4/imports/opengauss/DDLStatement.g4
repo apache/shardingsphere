@@ -1051,7 +1051,7 @@ alterRoutine
     ;
 
 alterRule
-    : ALTER RULE ON qualifiedName RENAME TO name
+    : ALTER RULE name ON tableName RENAME TO name
     ;
 
 alterSequence

@@ -118,6 +118,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterServiceStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterSessionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterSynonymStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterDirectoryStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterSystemStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterTableStatementTestCase;
@@ -216,6 +217,9 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.TruncateStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateControlFileStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateFlashbackArchiveStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterFlashbackArchiveStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropFlashbackArchiveStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateDiskgroupStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AddShardingHintDatabaseValueStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AddShardingHintTableValueStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AlterInstanceStatementTestCase;
@@ -578,6 +582,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "alter-synonym")
     private final List<AlterSynonymStatementTestCase> alterSynonymTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "alter-rule")
+    private final List<AlterRuleStatementTestCase> alterRuleTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-directory")
     private final List<AlterDirectoryStatementTestCase> alterDirectoryTestCases = new LinkedList<>();
@@ -1365,6 +1372,15 @@ public final class SQLParserTestCases {
     @XmlElement(name = "create-flashback-archive")
     private final List<CreateFlashbackArchiveStatementTestCase> createFlashbackArchiveTestCases = new LinkedList<>();
     
+    @XmlElement(name = "alter-flashback-archive")
+    private final List<AlterFlashbackArchiveStatementTestCase> alterFlashbackArchiveTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "drop-flashback-archive")
+    private final List<DropFlashbackArchiveStatementTestCase> dropFlashbackArchiveTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "create-diskgroup")
+    private final List<CreateDiskgroupStatementTestCase> createDiskgroupTestCases = new LinkedList<>();
+    
     @XmlElement(name = "cursor")
     private final List<CursorStatementTestCase> cursorTestCases = new LinkedList<>();
     
@@ -1449,6 +1465,7 @@ public final class SQLParserTestCases {
         putAll(alterServerTestCases, result);
         putAll(alterSessionTestCases, result);
         putAll(alterSynonymTestCases, result);
+        putAll(alterRuleTestCases, result);
         putAll(alterDirectoryTestCases, result);
         putAll(alterSystemTestCases, result);
         putAll(alterProcedureTestCases, result);
@@ -1719,6 +1736,9 @@ public final class SQLParserTestCases {
         putAll(createPFileTestCases, result);
         putAll(createControlFileTestCases, result);
         putAll(createFlashbackArchiveTestCases, result);
+        putAll(alterFlashbackArchiveTestCases, result);
+        putAll(dropFlashbackArchiveTestCases, result);
+        putAll(createDiskgroupTestCases, result);
         putAll(cursorTestCases, result);
         putAll(closeTestCases, result);
         putAll(moveTestCases, result);

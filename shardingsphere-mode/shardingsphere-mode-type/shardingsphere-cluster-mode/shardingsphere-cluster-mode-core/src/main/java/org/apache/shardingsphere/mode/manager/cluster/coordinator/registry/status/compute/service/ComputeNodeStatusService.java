@@ -48,7 +48,8 @@ public final class ComputeNodeStatusService {
      * @param instanceDefinition instance definition
      */
     public void registerOnline(final InstanceDefinition instanceDefinition) {
-        repository.persistEphemeral(ComputeNode.getOnlineInstanceNodePath(instanceDefinition.getInstanceId().getId(), instanceDefinition.getInstanceType()), "");
+        repository.persistEphemeral(ComputeNode.getOnlineInstanceNodePath(instanceDefinition.getInstanceId(), instanceDefinition.getInstanceType()),
+                instanceDefinition.getAttributes());
     }
     
     /**
@@ -149,7 +150,11 @@ public final class ComputeNodeStatusService {
         Collection<ComputeNodeInstance> result = new ArrayList<>();
         Arrays.stream(InstanceType.values()).forEach(instanceType -> {
             Collection<String> onlineComputeNodes = repository.getChildrenKeys(ComputeNode.getOnlineNodePath(instanceType));
-            onlineComputeNodes.forEach(each -> result.add(loadComputeNodeInstance(new InstanceDefinition(instanceType, each))));
+            onlineComputeNodes.forEach(each -> {
+                InstanceDefinition instanceDefinition = new InstanceDefinition(instanceType, each);
+                instanceDefinition.setAttributes(repository.get(ComputeNode.getOnlineInstanceNodePath(each, instanceType)));
+                result.add(loadComputeNodeInstance(instanceDefinition));
+            });
         });
         return result;
     }
@@ -162,10 +167,10 @@ public final class ComputeNodeStatusService {
      */
     public ComputeNodeInstance loadComputeNodeInstance(final InstanceDefinition instanceDefinition) {
         ComputeNodeInstance result = new ComputeNodeInstance(instanceDefinition);
-        result.setLabels(loadInstanceLabels(instanceDefinition.getInstanceId().getId()));
-        result.switchState(loadInstanceStatus(instanceDefinition.getInstanceId().getId()));
-        loadInstanceWorkerId(instanceDefinition.getInstanceId().getId()).ifPresent(result::setWorkerId);
-        loadXaRecoveryId(instanceDefinition.getInstanceId().getId()).ifPresent(result::setXaRecoveryId);
+        result.setLabels(loadInstanceLabels(instanceDefinition.getInstanceId()));
+        result.switchState(loadInstanceStatus(instanceDefinition.getInstanceId()));
+        loadInstanceWorkerId(instanceDefinition.getInstanceId()).ifPresent(result::setWorkerId);
+        loadXaRecoveryId(instanceDefinition.getInstanceId()).ifPresent(result::setXaRecoveryId);
         return result;
     }
 }

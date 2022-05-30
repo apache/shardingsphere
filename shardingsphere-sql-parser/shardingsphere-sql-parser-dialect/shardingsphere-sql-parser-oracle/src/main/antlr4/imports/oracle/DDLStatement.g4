@@ -2389,13 +2389,60 @@ characterSetClause
 
 createFlashbackArchive
    : CREATE FLASHBACK ARCHIVE DEFAULT? flashbackArchiveName tablespaceClause
-     flashArchiveQuota? (NO? OPTIMIZE DATA)? flashbackArchiveRetention
+     flashbackArchiveQuota? (NO? OPTIMIZE DATA)? flashbackArchiveRetention
    ;
 
-flashArchiveQuota
+flashbackArchiveQuota
     : QUOTA INTEGER_ quotaUnit
     ;
 
 flashbackArchiveRetention
     : RETENTION INTEGER_ (YEAR | MONTH | DAY)
+    ;
+
+alterFlashbackArchive
+    : ALTER FLASHBACK ARCHIVE flashbackArchiveName
+    ( SET DEFAULT
+    | (ADD | MODIFY) TABLESPACE tablespaceName flashbackArchiveQuota?
+    | REMOVE TABLESPACE tablespaceName
+    | MODIFY RETENTION flashbackArchiveRetention
+    | PURGE purgeClause
+    | NO? OPTIMIZE DATA)
+    ;
+
+purgeClause
+    : ALL
+    | BEFORE (SCN expr | TIMESTAMP expr)
+    ;
+
+dropFlashbackArchive
+    : DROP FLASHBACK ARCHIVE flashbackArchiveName
+    ;
+
+createDiskgroup
+    : CREATE DISKGROUP diskgroupName (redundancyClause REDUNDANCY)? diskClause+ attribute?
+    ;
+
+redundancyClause
+    : HIGH
+    | NORMAL
+    | FLEX
+    | EXTENDED (SITE siteName)?
+    | EXTERNAL
+    ;
+
+diskClause
+    : (QUORUM | REGULAR)? (FAILGROUP diskgroupName)? DISK qualifieDiskClause (COMMA_ qualifieDiskClause)*
+    ;
+
+qualifieDiskClause
+    : searchString (NAME diskName)? (SIZE sizeClause)? (FORCE | NOFORCE)?
+    ;
+
+attribute
+    : ATTRIBUTE attributeNameAndValue (COMMA_ attributeNameAndValue)*
+    ;
+
+attributeNameAndValue
+    : SQ_ attributeName SQ_ EQ_ SQ_ attributeValue SQ_
     ;

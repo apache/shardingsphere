@@ -46,8 +46,7 @@ public final class EncryptTable {
         for (EncryptColumnRuleConfiguration each : config.getColumns()) {
             checkColumnConfig(each);
             columns.put(each.getLogicColumn(), new EncryptColumn(getEncryptColumnDataType(each.getLogicDataType(), dataTypes), each.getCipherColumn(),
-                    getEncryptColumnDataType(each.getCipherDataType(), dataTypes), each.getAssistedQueryColumn(), getEncryptColumnDataType(each.getAssistedQueryDataType(),
-                            dataTypes),
+                    getEncryptColumnDataType(each.getCipherDataType(), dataTypes), each.getAssistedQueryColumn(), getEncryptColumnDataType(each.getAssistedQueryDataType(), dataTypes),
                     each.getPlainColumn(), getEncryptColumnDataType(each.getPlainDataType(), dataTypes), each.getEncryptorName(), each.getQueryWithCipherColumn()));
         }
         queryWithCipherColumn = config.getQueryWithCipherColumn();

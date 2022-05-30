@@ -21,7 +21,6 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.U
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
-import org.apache.shardingsphere.infra.instance.definition.InstanceId;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsChangedEvent;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
@@ -46,7 +45,7 @@ public final class UnlabelInstanceHandler extends UpdatableRALBackendHandler<Unl
         if (null == persistService || null == persistService.getRepository() || persistService.getRepository() instanceof StandalonePersistRepository) {
             throw new UnsupportedOperationException("Labels can only be removed in cluster mode");
         }
-        String instanceId = new InstanceId(sqlStatement.getIp(), String.valueOf(sqlStatement.getPort())).getId();
+        String instanceId = sqlStatement.getInstanceId();
         Optional<ComputeNodeInstance> computeNodeInstance = contextManager.getInstanceContext().getComputeNodeInstanceById(instanceId);
         if (computeNodeInstance.isPresent()) {
             Collection<String> labels = new LinkedHashSet<>(computeNodeInstance.get().getLabels());

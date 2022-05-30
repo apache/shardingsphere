@@ -54,7 +54,7 @@ public final class NarayanaConfigurationFileGenerator implements TransactionConf
     
     @Override
     public void generateFile(final Properties transactionProps, final InstanceContext instanceContext) {
-        String instanceId = instanceContext.getInstance().getInstanceDefinition().getInstanceId().getId();
+        String instanceId = instanceContext.getInstance().getInstanceDefinition().getInstanceId();
         String recoveryId = null == instanceContext.getInstance().getXaRecoveryId() ? instanceId : instanceContext.getInstance().getXaRecoveryId();
         NarayanaConfiguration config = createDefaultConfiguration(instanceId, recoveryId);
         if (!transactionProps.isEmpty()) {
