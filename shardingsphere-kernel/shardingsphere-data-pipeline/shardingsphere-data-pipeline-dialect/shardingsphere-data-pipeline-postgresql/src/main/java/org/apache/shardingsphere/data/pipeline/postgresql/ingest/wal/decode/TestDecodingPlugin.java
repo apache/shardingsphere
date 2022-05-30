@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode;
 
 import lombok.AllArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractRowEvent;
@@ -33,6 +34,7 @@ import java.sql.Date;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Test decoding plugin.
@@ -154,24 +156,31 @@ public final class TestDecodingPlugin implements DecodingPlugin {
     
     private Object readColumnData(final ByteBuffer data, final String columnType) {
         if (columnType.startsWith("numeric")) {
-            return new BigDecimal(readNextSegment(data));
+            String numeric = readNextSegment(data);
+            return checkStringIsNullOrEmpty(numeric) ? null : new BigDecimal(numeric);
         }
         if (columnType.startsWith("bit") || columnType.startsWith("bit varying")) {
             return readNextSegment(data);
         }
         switch (columnType) {
             case "smallint":
-                return Short.parseShort(readNextSegment(data));
+                String smallint = readNextSegment(data);
+                return checkStringIsNullOrEmpty(smallint) ? null : Short.parseShort(smallint);
             case "integer":
-                return Integer.parseInt(readNextSegment(data));
+                String integer = readNextSegment(data);
+                return checkStringIsNullOrEmpty(integer) ? null : Integer.parseInt(integer);
             case "bigint":
-                return Long.parseLong(readNextSegment(data));
+                String bigint = readNextSegment(data);
+                return checkStringIsNullOrEmpty(bigint) ? null : Long.parseLong(bigint);
             case "real":
-                return Float.parseFloat(readNextSegment(data));
+                String real = readNextSegment(data);
+                return checkStringIsNullOrEmpty(real) ? null : Float.parseFloat(real);
             case "double precision":
-                return Double.parseDouble(readNextSegment(data));
+                String doubleStr = readNextSegment(data);
+                return checkStringIsNullOrEmpty(doubleStr) ? null : Double.parseDouble(doubleStr);
             case "boolean":
-                return Boolean.parseBoolean(readNextSegment(data));
+                String boolStr = readNextSegment(data);
+                return checkStringIsNullOrEmpty(boolStr) ? null : Boolean.parseBoolean(boolStr);
             case "time without time zone":
                 try {
                     return timestampUtils.toTime(null, readNextString(data));
@@ -203,6 +212,10 @@ public final class TestDecodingPlugin implements DecodingPlugin {
             eventType.append(c);
         }
         return eventType.toString();
+    }
+    
+    private boolean checkStringIsNullOrEmpty(final String string) {
+        return StringUtils.isEmpty(string) || Objects.equals("null", string);
     }
     
     private String readNextString(final ByteBuffer data) {
