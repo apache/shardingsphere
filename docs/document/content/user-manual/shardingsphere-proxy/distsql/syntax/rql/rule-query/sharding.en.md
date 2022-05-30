@@ -14,6 +14,8 @@ SHOW SHARDING ALGORITHMS [FROM databaseName]
 
 SHOW UNUSED SHARDING ALGORITHMS [FROM databaseName]
 
+SHOW SHARDING TABLE RULES USED ALGORITHM algorithmName [FROM databaseName]
+
 SHOW SHARDING KEY GENERATORS [FROM databaseName]
 
 SHOW UNUSED SHARDING KEY GENERATORS [FROM databaseName]
@@ -192,6 +194,17 @@ mysql> SHOW UNUSED SHARDING ALGORITHMS;
 1 row in set (0.01 sec)
 ```
 
+*SHOW SHARDING TABLE RULES USED ALGORITHM algorithmName*
+```sql
+mysql> SHOW SHARDING TABLE RULES USED ALGORITHM t_order_inline;
++-------+---------+
+| type  | name    |
++-------+---------+
+| table | t_order |
++-------+---------+
+1 row in set (0.01 sec)
+```
+
 *SHOW SHARDING KEY GENERATORS*
 ```sql
 mysql> SHOW SHARDING KEY GENERATORS;
@@ -219,11 +232,11 @@ mysql> SHOW UNUSED SHARDING KEY GENERATORS;
 *SHOW SHARDING TABLE RULES USED KEY GENERATOR keyGeneratorName*
 ```sql
 mysql> SHOW SHARDING TABLE RULES USED KEY GENERATOR keyGeneratorName;
-+------------------------+-----------+-----------------+
-| schema                 | type      | name            |
-+------------------------+-----------+-----------------+
-| sharding_db            | table     | t_order         |
-+------------------------+-----------+-----------------+
++-------+---------+
+| type  | name    |
++-------+---------+
+| table | t_order |
++-------+---------+
 1 row in set (0.01 sec)
 ```
 
