@@ -130,5 +130,6 @@ execute
     | createCast
     | dropCast
     | alterRule
+    | checkpoint
     ) SEMI_? EOF
     ;

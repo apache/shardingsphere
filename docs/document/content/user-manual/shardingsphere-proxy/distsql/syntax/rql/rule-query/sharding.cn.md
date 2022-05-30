@@ -14,6 +14,8 @@ SHOW SHARDING ALGORITHMS [FROM databaseName]
 
 SHOW UNUSED SHARDING ALGORITHMS [FROM databaseName]
 
+SHOW SHARDING TABLE RULES USED ALGORITHM algorithmName [FROM databaseName]
+
 SHOW SHARDING KEY GENERATORS [FROM databaseName]
 
 SHOW UNUSED SHARDING KEY GENERATORS [FROM databaseName]
@@ -86,19 +88,19 @@ SHOW SHARDING SCALING RULES [FROM databaseName]
 
 ### Sharding Key Generators
 
-| 列     | 说明             |
-| ------| -----------------|
-| name  | 分片列生成器名称    |
-| type  | 分片列生成器类型    |
-| props | 分片列生成器参数    |
+| 列     | 说明        |
+| ------|-------------|
+| name  | 主键生成器名称 |
+| type  | 主键生成器类型 |
+| props | 主键生成器参数 |
 
 ### Unused Sharding Key Generators
 
-| 列     | 说明             |
-| ------| -----------------|
-| name  | 分片列生成器名称    |
-| type  | 分片列生成器类型    |
-| props | 分片列生成器参数    |
+| 列     | 说明        |
+| ------|-------------|
+| name  | 主键生成器名称 |
+| type  | 主键生成器类型 |
+| props | 主键生成器参数 |
 
 ### Default Sharding Strategy
 
@@ -192,6 +194,17 @@ mysql> SHOW UNUSED SHARDING ALGORITHMS;
 1 row in set (0.01 sec)
 ```
 
+*SHOW SHARDING TABLE RULES USED ALGORITHM algorithmName*
+```sql
+mysql> SHOW SHARDING TABLE RULES USED ALGORITHM t_order_inline;
++-------+---------+
+| type  | name    |
++-------+---------+
+| table | t_order |
++-------+---------+
+1 row in set (0.01 sec)
+```
+
 *SHOW SHARDING KEY GENERATORS*
 ```sql
 mysql> SHOW SHARDING KEY GENERATORS;
@@ -218,12 +231,12 @@ mysql> SHOW UNUSED SHARDING KEY GENERATORS;
 
 *SHOW SHARDING TABLE RULES USED KEY GENERATOR keyGeneratorName*
 ```sql
-mysql> SHOW SHARDING TABLE RULES USED KEY GENERATOR keyGeneratorName;
-+------------------------+-----------+-----------------+
-| schema                 | type      | name            |
-+------------------------+-----------+-----------------+
-| sharding_db            | table     | t_order         |
-+------------------------+-----------+-----------------+
+mysql> SHOW SHARDING TABLE RULES USED KEY GENERATOR t_order_snowflake;
++-------+---------+
+| type  | name    |
++-------+---------+
+| table | t_order |
++-------+---------+
 1 row in set (0.01 sec)
 ```
 

@@ -21,14 +21,10 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlJd
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.junit.Test;
 
-import java.util.Properties;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class StandardPipelineDataSourceConfigurationTest {
-    
-    private static final String NEW_JDBC_URL = "jdbc:mysql://127.0.0.1:3306/demo_ds?serverTimezone=UTC&useSSL=true";
     
     private static final String JDBC_URL = "jdbc:mysql://127.0.0.1:3306/demo_ds?serverTimezone=UTC&useSSL=false";
     
@@ -42,12 +38,11 @@ public final class StandardPipelineDataSourceConfigurationTest {
         assertGetConfig(actual);
         actual = new StandardPipelineDataSourceConfiguration(actual.getParameter());
         assertGetConfig(actual);
-        assertAppendJDBCQueryProperties(actual);
     }
     
     private void assertGetConfig(final StandardPipelineDataSourceConfiguration actual) {
         assertThat(actual.getDatabaseType().getType(), is("MySQL"));
-        assertThat(actual.getType(), is("JDBC"));
+        assertThat(actual.getType(), is(StandardPipelineDataSourceConfiguration.TYPE));
         assertThat(((DataSourceProperties) actual.getDataSourceConfiguration()).getDataSourceClassName(), is("com.zaxxer.hikari.HikariDataSource"));
         assertGetJdbcConfig(actual.getJdbcConfig());
     }
@@ -56,12 +51,5 @@ public final class StandardPipelineDataSourceConfigurationTest {
         assertThat(actual.getJdbcUrl(), is(JDBC_URL));
         assertThat(actual.getUsername(), is(USERNAME));
         assertThat(actual.getPassword(), is(PASSWORD));
-    }
-    
-    private void assertAppendJDBCQueryProperties(final StandardPipelineDataSourceConfiguration actual) {
-        Properties props = new Properties();
-        props.setProperty("useSSL", Boolean.TRUE.toString());
-        actual.appendJDBCQueryProperties(props);
-        assertThat(actual.getJdbcConfig().getJdbcUrl(), is(NEW_JDBC_URL));
     }
 }

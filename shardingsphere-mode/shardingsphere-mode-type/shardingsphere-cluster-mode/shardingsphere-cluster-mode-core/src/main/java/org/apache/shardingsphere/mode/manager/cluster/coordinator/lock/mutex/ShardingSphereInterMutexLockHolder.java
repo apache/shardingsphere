@@ -106,7 +106,7 @@ public final class ShardingSphereInterMutexLockHolder {
     public void synchronizeMutexLock(final LockNodeService lockNodeService) {
         Collection<String> allGlobalLock = repository.getChildrenKeys(lockNodeService.getLocksNodePath());
         if (allGlobalLock.isEmpty()) {
-            if (LockNodeType.MUTEX == lockNodeService.getType()) {
+            if (LockNodeType.DISTRIBUTED == lockNodeService.getType()) {
                 return;
             }
             repository.persist(lockNodeService.getLocksNodePath(), "");

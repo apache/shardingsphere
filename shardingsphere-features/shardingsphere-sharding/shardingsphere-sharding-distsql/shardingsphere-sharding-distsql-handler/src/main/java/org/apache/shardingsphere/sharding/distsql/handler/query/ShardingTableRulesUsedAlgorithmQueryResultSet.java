@@ -41,31 +41,30 @@ public final class ShardingTableRulesUsedAlgorithmQueryResultSet implements Dist
         ShowShardingTableRulesUsedAlgorithmStatement statement = (ShowShardingTableRulesUsedAlgorithmStatement) sqlStatement;
         Collection<Collection<Object>> data = new LinkedList<>();
         Collection<ShardingRuleConfiguration> shardingTableRules = database.getRuleMetaData().findRuleConfigurations(ShardingRuleConfiguration.class);
-        shardingTableRules.forEach(each -> requireResult(statement, database.getName(), data, each));
+        shardingTableRules.forEach(each -> requireResult(statement, data, each));
         this.data = data.iterator();
     }
     
-    private void requireResult(final ShowShardingTableRulesUsedAlgorithmStatement statement, final String databaseName,
-                               final Collection<Collection<Object>> data, final ShardingRuleConfiguration shardingRuleConfig) {
+    private void requireResult(final ShowShardingTableRulesUsedAlgorithmStatement statement, final Collection<Collection<Object>> data, final ShardingRuleConfiguration shardingRuleConfig) {
         if (!statement.getAlgorithmName().isPresent()) {
             return;
         }
         shardingRuleConfig.getTables().forEach(each -> {
             if (((null != each.getDatabaseShardingStrategy() && statement.getAlgorithmName().get().equals(each.getDatabaseShardingStrategy().getShardingAlgorithmName())))
                     || (null != each.getTableShardingStrategy() && statement.getAlgorithmName().get().equals(each.getTableShardingStrategy().getShardingAlgorithmName()))) {
-                data.add(Arrays.asList(databaseName, "table", each.getLogicTable()));
+                data.add(Arrays.asList("table", each.getLogicTable()));
             }
         });
         shardingRuleConfig.getAutoTables().forEach(each -> {
             if (null != each.getShardingStrategy() && statement.getAlgorithmName().get().equals(each.getShardingStrategy().getShardingAlgorithmName())) {
-                data.add(Arrays.asList(databaseName, "auto_table", each.getLogicTable()));
+                data.add(Arrays.asList("auto_table", each.getLogicTable()));
             }
         });
     }
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("schema", "type", "name");
+        return Arrays.asList("type", "name");
     }
     
     @Override
