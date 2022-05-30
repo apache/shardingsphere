@@ -182,7 +182,7 @@ intValue:
 ```
 - `ENABLE` is used to set which sharding scaling rule is enabled;
 - `DISABLE` will disable the sharding scaling rule currently in use;
-- Enabled by default when creating the first sharding scaling rule in a logic database.
+- Enabled by default when creating the first sharding scaling rule in a logical database.
 
 ## Example
 
