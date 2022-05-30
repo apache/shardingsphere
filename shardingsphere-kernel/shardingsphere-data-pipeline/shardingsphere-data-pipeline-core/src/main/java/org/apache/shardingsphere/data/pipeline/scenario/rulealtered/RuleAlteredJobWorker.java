@@ -298,7 +298,7 @@ public final class RuleAlteredJobWorker {
         LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
         if (lockContext.isLocked(databaseName)) {
             log.info("Source writing is still stopped on database '{}', restore it now", databaseName);
-            lockContext.releaseLockWrite(databaseName);
+            lockContext.releaseLock(databaseName);
         }
     }
 }

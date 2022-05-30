@@ -15,12 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.distributed.event;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 
 /**
- * Lock node type.
+ * Distributed lock released event.
  */
-public enum LockNodeType {
+@RequiredArgsConstructor
+@Getter
+public final class DistributedLockReleasedEvent implements GovernanceEvent {
     
-    DISTRIBUTED, DATABASE, SCHEMA
+    private final String lockedName;
 }

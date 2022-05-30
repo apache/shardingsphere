@@ -19,9 +19,10 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager;
 
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.lock.LockMode;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.database.ShardingSphereDistributeDatabaseLock;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.ShardingSphereDistributeMutexLock;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.distributed.ShardingSphereDistributedLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.ShardingSphereInterMutexLockHolder;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.TimeoutMilliseconds;
 
@@ -29,41 +30,51 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.Time
  * Distribute lock manager.
  */
 @Slf4j
-public final class DistributeLockManager implements ShardingSphereLockManager {
+public final class DistributedLockManager implements ShardingSphereLockManager {
     
-    private ShardingSphereDistributeMutexLock mutexLock;
+    private ShardingSphereDistributedLock distributedLock;
     
     private ShardingSphereDistributeDatabaseLock databaseLock;
     
     @Override
     public void init(final ShardingSphereInterMutexLockHolder lockHolder) {
-        mutexLock = new ShardingSphereDistributeMutexLock(lockHolder);
+        distributedLock = new ShardingSphereDistributedLock(lockHolder);
         databaseLock = new ShardingSphereDistributeDatabaseLock(lockHolder);
     }
     
     @Override
-    public ShardingSphereLock getMutexLock() {
-        return mutexLock;
+    public ShardingSphereLock getDistributedLock() {
+        return distributedLock;
     }
     
     @Override
-    public boolean lockWrite(final String databaseName) {
-        return tryLockWrite(databaseName, TimeoutMilliseconds.MAX_TRY_LOCK);
+    public boolean tryLock(final String databaseName, final LockMode lockMode) {
+        return innerTryLock(databaseName, lockMode, TimeoutMilliseconds.MAX_TRY_LOCK);
     }
     
     @Override
-    public boolean tryLockWrite(final String databaseName, final long timeoutMilliseconds) {
-        return innerDatabaseTryLock(databaseName, timeoutMilliseconds);
+    public boolean tryLock(final String databaseName, final LockMode lockMode, final long timeoutMilliseconds) {
+        return innerTryLock(databaseName, lockMode, timeoutMilliseconds);
     }
     
-    private synchronized boolean innerDatabaseTryLock(final String databaseName, final long timeoutMilliseconds) {
+    private synchronized boolean innerTryLock(final String databaseName, final LockMode lockMode, final long timeoutMilliseconds) {
+        switch (lockMode) {
+            case READ:
+                return innerDatabaseTryLock(databaseName, timeoutMilliseconds);
+            case WRITE:
+            default:
+                throw new UnsupportedOperationException();
+        }
+    }
+    
+    private boolean innerDatabaseTryLock(final String databaseName, final long timeoutMilliseconds) {
         Preconditions.checkNotNull(databaseName, "Try Lock write for database args database name can not be null.");
         log.debug("Distribute database lock acquire sequenced success, database name: {}", databaseName);
         return databaseLock.tryLock(databaseName, timeoutMilliseconds - TimeoutMilliseconds.DEFAULT_REGISTRY);
     }
     
     @Override
-    public void releaseLockWrite(final String databaseName) {
+    public void releaseLock(final String databaseName) {
         Preconditions.checkNotNull(databaseName, "Release lock write args database name can not be null.");
         databaseLock.releaseLock(databaseName);
     }

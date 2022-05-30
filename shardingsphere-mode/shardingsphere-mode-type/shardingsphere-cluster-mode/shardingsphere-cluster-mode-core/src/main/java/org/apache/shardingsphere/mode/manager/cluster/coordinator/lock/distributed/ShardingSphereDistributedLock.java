@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.distributed;
 
 import com.google.common.eventbus.Subscribe;
 import lombok.extern.slf4j.Slf4j;
@@ -23,10 +23,12 @@ import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeServiceFactory;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.event.MutexAckLockReleasedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.event.MutexAckLockedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.event.MutexLockReleasedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.event.MutexLockedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.InterMutexLock;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.ShardingSphereInterMutexLockHolder;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.distributed.event.DistributedAckLockReleasedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.distributed.event.DistributedAckLockedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.distributed.event.DistributedLockReleasedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.distributed.event.DistributedLockedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeType;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.TimeoutMilliseconds;
 
@@ -36,13 +38,13 @@ import java.util.Optional;
  * Distribute mutex lock of ShardingSphere.
  */
 @Slf4j
-public final class ShardingSphereDistributeMutexLock implements ShardingSphereLock {
+public final class ShardingSphereDistributedLock implements ShardingSphereLock {
     
-    private final LockNodeService lockNodeService = LockNodeServiceFactory.getInstance().getLockNodeService(LockNodeType.MUTEX);
+    private final LockNodeService lockNodeService = LockNodeServiceFactory.getInstance().getLockNodeService(LockNodeType.DISTRIBUTED);
     
     private final ShardingSphereInterMutexLockHolder lockHolder;
     
-    public ShardingSphereDistributeMutexLock(final ShardingSphereInterMutexLockHolder lockHolder) {
+    public ShardingSphereDistributedLock(final ShardingSphereInterMutexLockHolder lockHolder) {
         this.lockHolder = lockHolder;
         ShardingSphereEventBus.getInstance().register(this);
         syncMutexLockStatus();
@@ -86,7 +88,7 @@ public final class ShardingSphereDistributeMutexLock implements ShardingSphereLo
      * @param event mutex locked event
      */
     @Subscribe
-    public synchronized void locked(final MutexLockedEvent event) {
+    public synchronized void locked(final DistributedLockedEvent event) {
         String lockName = event.getLockedName();
         String lockedInstanceId = lockHolder.getCurrentInstanceId();
         InterMutexLock interMutexLock = lockHolder.getOrCreateInterMutexLock(lockNodeService.generateLocksName(lockName));
@@ -99,7 +101,7 @@ public final class ShardingSphereDistributeMutexLock implements ShardingSphereLo
      * @param event mutex lock released event
      */
     @Subscribe
-    public synchronized void lockReleased(final MutexLockReleasedEvent event) {
+    public synchronized void lockReleased(final DistributedLockReleasedEvent event) {
         String lockName = event.getLockedName();
         String lockedInstanceId = lockHolder.getCurrentInstanceId();
         getInterMutexLock(lockName).ifPresent(mutexLock -> mutexLock.releaseAckLock(lockNodeService.generateAckLockName(lockName, lockedInstanceId), lockedInstanceId));
@@ -111,7 +113,7 @@ public final class ShardingSphereDistributeMutexLock implements ShardingSphereLo
      * @param event mutex ack locked event
      */
     @Subscribe
-    public synchronized void ackLocked(final MutexAckLockedEvent event) {
+    public synchronized void ackLocked(final DistributedAckLockedEvent event) {
         getInterMutexLock(event.getLockName()).ifPresent(mutexLock -> mutexLock.addLockedInstance(event.getLockedInstance()));
     }
     
@@ -121,7 +123,7 @@ public final class ShardingSphereDistributeMutexLock implements ShardingSphereLo
      * @param event mutex ack lock released event
      */
     @Subscribe
-    public synchronized void ackLockReleased(final MutexAckLockReleasedEvent event) {
+    public synchronized void ackLockReleased(final DistributedAckLockReleasedEvent event) {
         getInterMutexLock(event.getLockName()).ifPresent(mutexLock -> mutexLock.removeLockedInstance(event.getLockedInstance()));
     }
 }

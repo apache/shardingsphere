@@ -15,24 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.node;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.distributed.node;
 
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class MutexLockNodeServiceTest {
+public final class DistributedLockNodeServiceTest {
     
-    private static final MutexLockNodeService SERVICE = new MutexLockNodeService();
+    private static final DistributedLockNodeService SERVICE = new DistributedLockNodeService();
     
     @Test
     public void assertGetSequenceNodePath() {
-        assertThat(SERVICE.getSequenceNodePath(), is("/lock/mutex/sequence"));
+        assertThat(SERVICE.getSequenceNodePath(), is("/lock/distributed/sequence"));
     }
     
     @Test
     public void assertGetLockLevel() {
-        assertThat(SERVICE.getLockTypeName(), is("mutex"));
+        assertThat(SERVICE.getLockTypeName(), is("distributed"));
     }
 }
