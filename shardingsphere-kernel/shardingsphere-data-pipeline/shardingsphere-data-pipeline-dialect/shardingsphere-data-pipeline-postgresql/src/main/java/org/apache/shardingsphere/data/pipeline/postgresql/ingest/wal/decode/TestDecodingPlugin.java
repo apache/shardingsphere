@@ -155,43 +155,46 @@ public final class TestDecodingPlugin implements DecodingPlugin {
     }
     
     private Object readColumnData(final ByteBuffer data, final String columnType) {
-        if (columnType.startsWith("numeric")) {
-            String numeric = readNextSegment(data);
-            return checkStringIsNullOrEmpty(numeric) ? null : new BigDecimal(numeric);
-        }
         if (columnType.startsWith("bit") || columnType.startsWith("bit varying")) {
             return readNextSegment(data);
         }
+        String result;
+        if (columnType.startsWith("numeric")) {
+            result = readNextSegment(data);
+            return checkStringIsNullOrEmpty(result) ? null : new BigDecimal(result);
+        }
         switch (columnType) {
             case "smallint":
-                String smallint = readNextSegment(data);
-                return checkStringIsNullOrEmpty(smallint) ? null : Short.parseShort(smallint);
+                result = readNextSegment(data);
+                return checkStringIsNullOrEmpty(result) ? null : Short.parseShort(result);
             case "integer":
-                String integer = readNextSegment(data);
-                return checkStringIsNullOrEmpty(integer) ? null : Integer.parseInt(integer);
+                result = readNextSegment(data);
+                return checkStringIsNullOrEmpty(result) ? null : Integer.parseInt(result);
             case "bigint":
-                String bigint = readNextSegment(data);
-                return checkStringIsNullOrEmpty(bigint) ? null : Long.parseLong(bigint);
+                result = readNextSegment(data);
+                return checkStringIsNullOrEmpty(result) ? null : Long.parseLong(result);
             case "real":
-                String real = readNextSegment(data);
-                return checkStringIsNullOrEmpty(real) ? null : Float.parseFloat(real);
+                result = readNextSegment(data);
+                return checkStringIsNullOrEmpty(result) ? null : Float.parseFloat(result);
             case "double precision":
-                String doubleStr = readNextSegment(data);
-                return checkStringIsNullOrEmpty(doubleStr) ? null : Double.parseDouble(doubleStr);
+                result = readNextSegment(data);
+                return checkStringIsNullOrEmpty(result) ? null : Double.parseDouble(result);
             case "boolean":
-                String boolStr = readNextSegment(data);
-                return checkStringIsNullOrEmpty(boolStr) ? null : Boolean.parseBoolean(boolStr);
+                result = readNextSegment(data);
+                return checkStringIsNullOrEmpty(result) ? null : Boolean.parseBoolean(result);
             case "time without time zone":
+                result = readNextSegment(data);
                 try {
-                    return timestampUtils.toTime(null, readNextString(data));
+                    return checkStringIsNullOrEmpty(result) ? null : timestampUtils.toTime(null, result);
                 } catch (final SQLException ex) {
                     throw new DecodingException(ex);
                 }
             case "date":
                 return Date.valueOf(readNextString(data));
             case "timestamp without time zone":
+                result = readNextSegment(data);
                 try {
-                    return timestampUtils.toTimestamp(null, readNextString(data));
+                    return checkStringIsNullOrEmpty(result) ? null : timestampUtils.toTimestamp(null, result);
                 } catch (final SQLException ex) {
                     throw new DecodingException(ex);
                 }
