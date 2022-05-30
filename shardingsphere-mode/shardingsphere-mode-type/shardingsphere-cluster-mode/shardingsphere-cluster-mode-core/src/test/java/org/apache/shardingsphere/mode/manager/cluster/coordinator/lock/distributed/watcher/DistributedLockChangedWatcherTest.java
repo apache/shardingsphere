@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.watcher;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.distributed.watcher;
 
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.event.MutexAckLockReleasedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.event.MutexAckLockedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.event.MutexLockReleasedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.event.MutexLockedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.distributed.event.DistributedAckLockReleasedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.distributed.event.DistributedAckLockedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.distributed.event.DistributedLockReleasedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.distributed.event.DistributedLockedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.junit.Test;
@@ -35,15 +35,15 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class MutexLockChangedWatcherTest {
+public final class DistributedLockChangedWatcherTest {
     
-    private final MutexLockChangedWatcher watcher = new MutexLockChangedWatcher();
+    private final DistributedLockChangedWatcher watcher = new DistributedLockChangedWatcher();
     
     @Test
     public void assertGetWatchingKeys() {
         Collection<String> keys = watcher.getWatchingKeys();
         assertThat(keys.size(), is(1));
-        assertThat("/lock/mutex/locks", is(keys.iterator().next()));
+        assertThat("/lock/distributed/locks", is(keys.iterator().next()));
     }
     
     @Test
@@ -57,17 +57,17 @@ public final class MutexLockChangedWatcherTest {
     
     @Test
     public void assertLocksCreateGovernanceEvent() {
-        String eventKey = "/lock/mutex/locks/lockName/leases/c_l_0000000";
+        String eventKey = "/lock/distributed/locks/lockName/leases/c_l_0000000";
         DataChangedEvent addDataChangedEvent = new DataChangedEvent(eventKey, "127.0.0.1@3307", DataChangedEvent.Type.ADDED);
         Optional<GovernanceEvent> addGovernanceEvent = watcher.createGovernanceEvent(addDataChangedEvent);
         assertTrue(addGovernanceEvent.isPresent());
-        assertThat(addGovernanceEvent.get(), instanceOf(MutexLockedEvent.class));
-        assertThat(((MutexLockedEvent) addGovernanceEvent.get()).getLockedName(), is("lockName"));
+        assertThat(addGovernanceEvent.get(), instanceOf(DistributedLockedEvent.class));
+        assertThat(((DistributedLockedEvent) addGovernanceEvent.get()).getLockedName(), is("lockName"));
         DataChangedEvent deleteDataChangedEvent = new DataChangedEvent(eventKey, "127.0.0.1@3307", DataChangedEvent.Type.DELETED);
         Optional<GovernanceEvent> deleteGovernanceEvent = watcher.createGovernanceEvent(deleteDataChangedEvent);
         assertTrue(deleteGovernanceEvent.isPresent());
-        assertThat(deleteGovernanceEvent.get(), instanceOf(MutexLockReleasedEvent.class));
-        assertThat(((MutexLockReleasedEvent) deleteGovernanceEvent.get()).getLockedName(), is("lockName"));
+        assertThat(deleteGovernanceEvent.get(), instanceOf(DistributedLockReleasedEvent.class));
+        assertThat(((DistributedLockReleasedEvent) deleteGovernanceEvent.get()).getLockedName(), is("lockName"));
         DataChangedEvent updateDataChangedEvent = new DataChangedEvent(eventKey, "127.0.0.1@3307", DataChangedEvent.Type.UPDATED);
         Optional<GovernanceEvent> updateGovernanceEvent = watcher.createGovernanceEvent(updateDataChangedEvent);
         assertFalse(updateGovernanceEvent.isPresent());
@@ -78,19 +78,19 @@ public final class MutexLockChangedWatcherTest {
     
     @Test
     public void assertLocksAckCreateGovernanceEvent() {
-        String eventKey = "/lock/mutex/locks/lockName/ack/127.0.0.1@3307";
+        String eventKey = "/lock/distributed/locks/lockName/ack/127.0.0.1@3307";
         DataChangedEvent addDataChangedEvent = new DataChangedEvent(eventKey, "127.0.0.1@3307", DataChangedEvent.Type.ADDED);
         Optional<GovernanceEvent> addGovernanceEvent = watcher.createGovernanceEvent(addDataChangedEvent);
         assertTrue(addGovernanceEvent.isPresent());
-        assertThat(addGovernanceEvent.get(), instanceOf(MutexAckLockedEvent.class));
-        assertThat(((MutexAckLockedEvent) addGovernanceEvent.get()).getLockName(), is("lockName"));
-        assertThat(((MutexAckLockedEvent) addGovernanceEvent.get()).getLockedInstance(), is("127.0.0.1@3307"));
+        assertThat(addGovernanceEvent.get(), instanceOf(DistributedAckLockedEvent.class));
+        assertThat(((DistributedAckLockedEvent) addGovernanceEvent.get()).getLockName(), is("lockName"));
+        assertThat(((DistributedAckLockedEvent) addGovernanceEvent.get()).getLockedInstance(), is("127.0.0.1@3307"));
         DataChangedEvent deleteDataChangedEvent = new DataChangedEvent(eventKey, "127.0.0.1@3307", DataChangedEvent.Type.DELETED);
         Optional<GovernanceEvent> deleteGovernanceEvent = watcher.createGovernanceEvent(deleteDataChangedEvent);
         assertTrue(deleteGovernanceEvent.isPresent());
-        assertThat(deleteGovernanceEvent.get(), instanceOf(MutexAckLockReleasedEvent.class));
-        assertThat(((MutexAckLockReleasedEvent) deleteGovernanceEvent.get()).getLockName(), is("lockName"));
-        assertThat(((MutexAckLockReleasedEvent) deleteGovernanceEvent.get()).getLockedInstance(), is("127.0.0.1@3307"));
+        assertThat(deleteGovernanceEvent.get(), instanceOf(DistributedAckLockReleasedEvent.class));
+        assertThat(((DistributedAckLockReleasedEvent) deleteGovernanceEvent.get()).getLockName(), is("lockName"));
+        assertThat(((DistributedAckLockReleasedEvent) deleteGovernanceEvent.get()).getLockedInstance(), is("127.0.0.1@3307"));
         DataChangedEvent updateDataChangedEvent = new DataChangedEvent(eventKey, "127.0.0.1@3307", DataChangedEvent.Type.UPDATED);
         Optional<GovernanceEvent> updateGovernanceEvent = watcher.createGovernanceEvent(updateDataChangedEvent);
         assertFalse(updateGovernanceEvent.isPresent());

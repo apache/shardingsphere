@@ -33,7 +33,7 @@ import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.ClusterContextManagerCoordinator;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.DistributeLockContext;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.DistributedLockContext;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.workerid.generator.ClusterWorkerIdGenerator;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsBuilder;
@@ -146,8 +146,8 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
                                                 final InstanceDefinition instanceDefinition, final MetaDataContexts metaDataContexts,
                                                 final Properties transactionProps, final ModeConfiguration modeConfig) {
         ClusterWorkerIdGenerator clusterWorkerIdGenerator = new ClusterWorkerIdGenerator(repository, registryCenter, instanceDefinition);
-        DistributeLockContext distributeLockContext = new DistributeLockContext(repository);
-        InstanceContext instanceContext = new InstanceContext(new ComputeNodeInstance(instanceDefinition), clusterWorkerIdGenerator, modeConfig, distributeLockContext);
+        DistributedLockContext distributedLockContext = new DistributedLockContext(repository);
+        InstanceContext instanceContext = new InstanceContext(new ComputeNodeInstance(instanceDefinition), clusterWorkerIdGenerator, modeConfig, distributedLockContext);
         repository.watchSessionConnection(instanceContext);
         generateTransactionConfigurationFile(instanceContext, metaDataContexts, transactionProps);
         TransactionContexts transactionContexts = new TransactionContextsBuilder(

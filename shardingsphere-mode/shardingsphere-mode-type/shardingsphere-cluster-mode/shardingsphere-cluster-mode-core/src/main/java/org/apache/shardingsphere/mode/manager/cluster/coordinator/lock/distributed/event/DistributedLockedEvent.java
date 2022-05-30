@@ -15,25 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.event;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.distributed.event;
 
 import lombok.Getter;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeUtil;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 
 /**
- * Mutex ack released Lock event.
+ * Distributed locked event.
  */
+@RequiredArgsConstructor
 @Getter
-public final class MutexAckLockReleasedEvent implements GovernanceEvent {
+public final class DistributedLockedEvent implements GovernanceEvent {
     
-    private final String lockName;
-    
-    private final String lockedInstance;
-    
-    public MutexAckLockReleasedEvent(final String ackLockName) {
-        String[] lockNameInstance = LockNodeUtil.parseAckLockName(ackLockName);
-        lockName = lockNameInstance[0];
-        lockedInstance = lockNameInstance[1];
-    }
+    private final String lockedName;
 }

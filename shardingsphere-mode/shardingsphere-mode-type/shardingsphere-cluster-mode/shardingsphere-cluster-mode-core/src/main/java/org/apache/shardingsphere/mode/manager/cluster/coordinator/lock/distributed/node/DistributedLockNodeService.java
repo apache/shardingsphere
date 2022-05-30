@@ -15,18 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.event;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.distributed.node;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.AbstractDistributedLockNodeService;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeType;
 
 /**
- * Mutex locked event.
+ * Distributed lock node service.
  */
-@RequiredArgsConstructor
-@Getter
-public final class MutexLockedEvent implements GovernanceEvent {
+public final class DistributedLockNodeService extends AbstractDistributedLockNodeService {
     
-    private final String lockedName;
+    @Override
+    public String getSequenceNodePath() {
+        return PATH_DELIMITER + LOCK_ROOT + PATH_DELIMITER + getLockTypeName() + PATH_DELIMITER + "sequence";
+    }
+    
+    @Override
+    protected String getLockTypeName() {
+        return "distributed";
+    }
+    
+    @Override
+    public LockNodeType getType() {
+        return LockNodeType.DISTRIBUTED;
+    }
 }

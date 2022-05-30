@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.lock.LockContext;
+import org.apache.shardingsphere.infra.lock.LockMode;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.ShardingSphereLockManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.ShardingSphereInterMutexLockHolder;
@@ -30,10 +31,10 @@ import org.apache.shardingsphere.spi.type.required.RequiredSPIRegistry;
 import java.util.Set;
 
 /**
- * Distribute lock context.
+ * Distributed lock context.
  */
 @RequiredArgsConstructor
-public final class DistributeLockContext implements LockContext {
+public final class DistributedLockContext implements LockContext {
     
     static {
         ShardingSphereServiceLoader.register(ShardingSphereLockManager.class);
@@ -54,38 +55,38 @@ public final class DistributeLockContext implements LockContext {
     }
     
     @Override
-    public ShardingSphereLock getMutexLock() {
-        return lockManager.getMutexLock();
+    public ShardingSphereLock getLock() {
+        return lockManager.getDistributedLock();
     }
     
     @Override
-    public boolean lockWrite(final String databaseName) {
-        return lockManager.lockWrite(databaseName);
+    public boolean tryLock(final String databaseName, final LockMode lockMode) {
+        return lockManager.tryLock(databaseName, lockMode);
     }
     
     @Override
-    public boolean lockWrite(final String databaseName, final Set<String> schemaNames) {
-        return lockManager.lockWrite(databaseName, schemaNames);
+    public boolean tryLock(final String databaseName, final Set<String> schemaNames, final LockMode lockMode) {
+        return lockManager.tryLock(databaseName, schemaNames, lockMode);
     }
     
     @Override
-    public boolean tryLockWrite(final String databaseName, final long timeoutMilliseconds) {
-        return lockManager.tryLockWrite(databaseName, timeoutMilliseconds);
+    public boolean tryLock(final String databaseName, final LockMode lockMode, final long timeoutMilliseconds) {
+        return lockManager.tryLock(databaseName, lockMode, timeoutMilliseconds);
     }
     
     @Override
-    public boolean tryLockWrite(final String databaseName, final Set<String> schemaNames, final long timeoutMilliseconds) {
-        return lockManager.tryLockWrite(databaseName, schemaNames, timeoutMilliseconds);
+    public boolean tryLock(final String databaseName, final Set<String> schemaNames, final LockMode lockMode, final long timeoutMilliseconds) {
+        return lockManager.tryLock(databaseName, schemaNames, lockMode, timeoutMilliseconds);
     }
     
     @Override
-    public void releaseLockWrite(final String databaseName) {
-        lockManager.releaseLockWrite(databaseName);
+    public void releaseLock(final String databaseName) {
+        lockManager.releaseLock(databaseName);
     }
     
     @Override
-    public void releaseLockWrite(final String databaseName, final String schemaName) {
-        lockManager.releaseLockWrite(databaseName, schemaName);
+    public void releaseLock(final String databaseName, final String schemaName) {
+        lockManager.releaseLock(databaseName, schemaName);
     }
     
     @Override

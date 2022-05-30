@@ -22,9 +22,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Abstract distribute lock node service.
+ * Abstract distributed lock node service.
  */
-public abstract class AbstractDistributeLockNodeService implements LockNodeService {
+public abstract class AbstractDistributedLockNodeService implements LockNodeService {
     
     @Override
     public String getLocksNodePath() {
