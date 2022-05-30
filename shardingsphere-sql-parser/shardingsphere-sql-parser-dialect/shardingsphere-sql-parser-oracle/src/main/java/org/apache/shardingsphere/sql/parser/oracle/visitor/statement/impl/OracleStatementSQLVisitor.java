@@ -518,15 +518,7 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
         if (null == ctx.expr()) {
             return Collections.emptyList();
         }
-        ASTNode result = visit(ctx.expr());
-        if (result instanceof ColumnSegment) {
-            return Collections.singletonList((ColumnSegment) result);
-        } else if (result instanceof LiteralExpressionSegment) {
-            return Collections.singletonList((LiteralExpressionSegment) result);
-        } else if (result instanceof ExpressionSegment) {
-            return Collections.singletonList((ExpressionSegment) result);
-        }
-        return Collections.emptyList();
+        return Collections.singletonList((ExpressionSegment) visit(ctx.expr()));
     }
     
     private String getDistinctExpression(final AggregationFunctionContext ctx) {

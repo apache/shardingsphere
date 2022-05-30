@@ -790,14 +790,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         }
         Collection<ExpressionSegment> result = new LinkedList<>();
         for (ExprContext each : ctx.expr()) {
-            ASTNode visitNode = visit(each);
-            if (visitNode instanceof ColumnSegment) {
-                result.add((ColumnSegment) visitNode);
-            } else if (visitNode instanceof LiteralExpressionSegment) {
-                result.add((LiteralExpressionSegment) visitNode);
-            } else if (visitNode instanceof ExpressionSegment) {
-                result.add((ExpressionSegment) visitNode);
-            }
+            result.add((ExpressionSegment) visit(each));
         }
         return result;
     }
