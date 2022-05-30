@@ -456,7 +456,7 @@ public final class ContextManager implements AutoCloseable {
                     database.getRuleMetaData().getRules(), metaDataContexts.getMetaData().getProps(), schemaName);
             loadTableMetaData(databaseName, schemaName, materials);
         } catch (final SQLException ex) {
-            log.error("Reload schema:{} meta data of database:{} failed", schemaName, databaseName, ex);
+            log.error("Reload meta data of database:{} schema:{} with data source:{} failed", databaseName, schemaName, dataSourceName, ex);
         }
     }
     
