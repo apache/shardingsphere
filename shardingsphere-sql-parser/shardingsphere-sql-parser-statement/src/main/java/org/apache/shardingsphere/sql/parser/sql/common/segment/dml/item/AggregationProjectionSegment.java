@@ -24,6 +24,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.Expressi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Optional;
 
 /**
@@ -40,8 +42,7 @@ public class AggregationProjectionSegment implements ProjectionSegment, AliasAva
     
     private final String innerExpression;
     
-    @Setter
-    private ExpressionSegment expression;
+    private final Collection<ExpressionSegment> parameters = new LinkedList<>();
     
     @Setter
     private AliasSegment alias;
@@ -56,13 +57,5 @@ public class AggregationProjectionSegment implements ProjectionSegment, AliasAva
     @Override
     public final Optional<String> getAlias() {
         return null == alias ? Optional.empty() : Optional.ofNullable(alias.getIdentifier().getValue());
-    }
-    
-    /**
-     * Get column segment.
-     * @return column segment.
-     */
-    public final Optional<ExpressionSegment> getExpression() {
-        return null == expression ? Optional.empty() : Optional.ofNullable(expression);
     }
 }

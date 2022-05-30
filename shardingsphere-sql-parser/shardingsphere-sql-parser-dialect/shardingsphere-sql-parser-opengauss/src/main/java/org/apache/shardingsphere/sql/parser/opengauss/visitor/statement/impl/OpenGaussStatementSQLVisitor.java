@@ -181,6 +181,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -509,27 +510,27 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
         if (null != ctx.DISTINCT()) {
             AggregationDistinctProjectionSegment distinctProjectionSegment = new AggregationDistinctProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
                     type, innerExpression, getDistinctExpression(ctx));
-            distinctProjectionSegment.setExpression(getExpression(ctx));
+            getExpression(ctx).ifPresent(each -> distinctProjectionSegment.getParameters().add(each));
             return distinctProjectionSegment;
         }
         AggregationProjectionSegment projectionSegment = new AggregationProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpression);
-        projectionSegment.setExpression(getExpression(ctx));
+        getExpression(ctx).ifPresent(each -> projectionSegment.getParameters().add(each));
         return projectionSegment;
     }
     
-    private ExpressionSegment getExpression(final FuncApplicationContext ctx) {
+    private Optional<ExpressionSegment> getExpression(final FuncApplicationContext ctx) {
         if (null == ctx.funcArgList()) {
-            return null;
+            return Optional.empty();
         }
         ASTNode result = visit(ctx.funcArgList());
         if (result instanceof ColumnSegment) {
-            return (ColumnSegment) result;
+            return Optional.ofNullable((ColumnSegment) result);
         } else if (result instanceof LiteralExpressionSegment) {
-            return (LiteralExpressionSegment) result;
+            return Optional.ofNullable((LiteralExpressionSegment) result);
         } else if (result instanceof ExpressionSegment) {
-            return (ExpressionSegment) result;
+            return Optional.ofNullable((ExpressionSegment) result);
         }
-        return null;
+        return Optional.empty();
     }
     
     private ColumnSegment getColumnSegment(final FuncApplicationContext ctx) {
