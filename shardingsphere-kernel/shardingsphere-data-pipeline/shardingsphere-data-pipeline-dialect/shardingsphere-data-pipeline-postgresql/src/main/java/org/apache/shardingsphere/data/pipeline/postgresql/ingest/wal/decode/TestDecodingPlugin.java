@@ -207,7 +207,12 @@ public final class TestDecodingPlugin implements DecodingPlugin {
     
     private String readNextString(final ByteBuffer data) {
         StringBuilder result = new StringBuilder();
-        data.get();
+        if ('n' == data.get() && data.mark().remaining() >= 3) {
+            if ('u' == data.get() && 'l' == data.get() && 'l' == data.get()) {
+                return null;
+            }
+            data.reset();
+        }
         while (data.hasRemaining()) {
             char c = (char) data.get();
             if ('\'' == c) {
