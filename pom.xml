@@ -566,6 +566,11 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
+                <groupId>org.urbcomp</groupId>
+                <artifactId>start-db-jdbc-driver</artifactId>
+                <version>1.0.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
                 <groupId>com.microsoft.sqlserver</groupId>
                 <artifactId>mssql-jdbc</artifactId>
                 <version>${mssql.version}</version>
@@ -1304,7 +1309,7 @@
                                 <excludes>
                                     <exclude />
                                 </excludes>
-                                <argLine>--add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED</argLine>
+<!--                                <argLine>&#45;&#45;add-opens java.base/java.lang=ALL-UNNAMED &#45;&#45;add-opens java.base/java.lang.reflect=ALL-UNNAMED</argLine>-->
                             </configuration>
                         </plugin>
                     </plugins>

@@ -23,3 +23,4 @@ org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType
 org.apache.shardingsphere.infra.database.type.dialect.OracleDatabaseType
 org.apache.shardingsphere.infra.database.type.dialect.SQLServerDatabaseType
 org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType
+org.apache.shardingsphere.infra.database.type.dialect.StartDatabaseType

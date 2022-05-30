@@ -23,3 +23,4 @@ org.apache.shardingsphere.infra.federation.optimizer.context.parser.dialect.impl
 org.apache.shardingsphere.infra.federation.optimizer.context.parser.dialect.impl.SQLServerOptimizerBuilder
 org.apache.shardingsphere.infra.federation.optimizer.context.parser.dialect.impl.OracleOptimizerBuilder
 org.apache.shardingsphere.infra.federation.optimizer.context.parser.dialect.impl.SQL92OptimizerBuilder
+org.apache.shardingsphere.infra.federation.optimizer.context.parser.dialect.impl.StartOptimizerBuilder

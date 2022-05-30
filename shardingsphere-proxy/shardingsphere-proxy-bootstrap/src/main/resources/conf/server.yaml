@@ -21,6 +21,8 @@
 # 
 ######################################################################################################
 
+mode:
+  type: Memory
 #mode:
 #  type: Cluster
 #  repository:
@@ -33,16 +35,16 @@
 #      maxRetries: 3
 #      operationTimeoutMilliseconds: 500
 #  overwrite: false
-#
-#rules:
-#  - !AUTHORITY
-#    users:
-#      - root@%:root
-#      - sharding@:sharding
-#    provider:
-#      type: ALL_PERMITTED
-#  - !TRANSACTION
-#    defaultType: XA
+
+rules:
+  - !AUTHORITY
+    users:
+      - root@%:root
+      - sharding@:sharding
+    provider:
+      type: ALL_PERMITTED
+  - !TRANSACTION
+    defaultType: LOCAL
 #    providerType: Atomikos
 #    # When the provider type is Narayana, the following properties can be configured or not
 #    props:
