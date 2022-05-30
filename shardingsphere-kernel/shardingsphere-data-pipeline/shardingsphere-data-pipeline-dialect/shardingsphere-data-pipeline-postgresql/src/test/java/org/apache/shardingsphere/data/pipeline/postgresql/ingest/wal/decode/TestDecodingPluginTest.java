@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractWalEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.DeleteRowEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.PlaceholderEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.UpdateRowEvent;
@@ -97,5 +98,12 @@ public final class TestDecodingPluginTest {
         when(timestampUtils.toTime(null, "1 2 3'")).thenThrow(new SQLException(""));
         ByteBuffer data = ByteBuffer.wrap("table public.test: INSERT: data[time without time zone]:'1 2 3'''".getBytes());
         new TestDecodingPlugin(new PostgreSQLTimestampUtils(timestampUtils)).decode(data, logSequenceNumber);
+    }
+    
+    @Test
+    public void assertDecodeInsertCharacterVaryingWithNullValue() {
+        ByteBuffer data = ByteBuffer.wrap("table public.test: INSERT: col1[character varying]:null col2[character varying]:'nonnull'".getBytes());
+        AbstractWalEvent actual = new TestDecodingPlugin(null).decode(data, logSequenceNumber);
+        assertThat(actual, instanceOf(WriteRowEvent.class));
     }
 }
