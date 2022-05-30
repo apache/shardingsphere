@@ -50,4 +50,9 @@ public final class TestQueryAssistedShardingEncryptAlgorithm implements QueryAss
     public String getType() {
         return "assistedTest";
     }
+
+    @Override
+    public void init(Properties props) {
+
+    }
 }
