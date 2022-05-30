@@ -507,7 +507,7 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
             return new AggregationDistinctProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpression, getDistinctExpression(ctx));
         }
         AggregationProjectionSegment projectionSegment = new AggregationProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpression);
-        projectionSegment.setColumn((ColumnSegment) visit(ctx.expr(0)));
+        projectionSegment.setColumn((ColumnSegment) visit(ctx.expr()));
         return projectionSegment;
     }
     
