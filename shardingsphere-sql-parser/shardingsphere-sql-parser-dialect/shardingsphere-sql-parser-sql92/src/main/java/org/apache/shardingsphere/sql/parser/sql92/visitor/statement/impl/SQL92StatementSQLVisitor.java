@@ -450,8 +450,23 @@ public abstract class SQL92StatementSQLVisitor extends SQL92StatementBaseVisitor
             return new AggregationDistinctProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpression, getDistinctExpression(ctx));
         }
         AggregationProjectionSegment projectionSegment = new AggregationProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpression);
-        projectionSegment.setColumn((ColumnSegment) visit(ctx.expr(0)));
+        projectionSegment.setExpression(getExpression(ctx));
         return projectionSegment;
+    }
+    
+    private ExpressionSegment getExpression(final AggregationFunctionContext ctx) {
+        if (null == ctx.expr(0)) {
+            return null;
+        }
+        ASTNode result = visit(ctx.expr(0));
+        if (result instanceof ColumnSegment) {
+            return (ColumnSegment) result;
+        } else if (result instanceof LiteralExpressionSegment) {
+            return (LiteralExpressionSegment) result;
+        } else if (result instanceof ExpressionSegment) {
+            return (ExpressionSegment) result;
+        }
+        return null;
     }
     
     private String getDistinctExpression(final AggregationFunctionContext ctx) {

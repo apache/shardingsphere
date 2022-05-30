@@ -508,8 +508,23 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
             return new AggregationDistinctProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpression, getDistinctExpression(ctx));
         }
         AggregationProjectionSegment projectionSegment = new AggregationProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpression);
-        projectionSegment.setColumn((ColumnSegment) visit(ctx.funcArgList()));
+        projectionSegment.setExpression(getExpression(ctx));
         return projectionSegment;
+    }
+    
+    private ExpressionSegment getExpression(final FuncApplicationContext ctx) {
+        if (null == ctx.funcArgList()) {
+            return null;
+        }
+        ASTNode result = visit(ctx.funcArgList());
+        if (result instanceof ColumnSegment) {
+            return (ColumnSegment) result;
+        } else if (result instanceof LiteralExpressionSegment) {
+            return (LiteralExpressionSegment) result;
+        } else if (result instanceof ExpressionSegment) {
+            return (ExpressionSegment) result;
+        }
+        return null;
     }
     
     private String getDistinctExpression(final FuncApplicationContext ctx) {
