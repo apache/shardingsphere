@@ -102,7 +102,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -450,27 +449,30 @@ public abstract class SQL92StatementSQLVisitor extends SQL92StatementBaseVisitor
         if (null != ctx.distinct()) {
             AggregationDistinctProjectionSegment distinctProjectionSegment = new AggregationDistinctProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
                     type, innerExpression, getDistinctExpression(ctx));
-            getExpression(ctx).ifPresent(each -> distinctProjectionSegment.getParameters().add(each));
+            distinctProjectionSegment.getParameters().addAll(getExpressions(ctx));
             return distinctProjectionSegment;
         }
         AggregationProjectionSegment projectionSegment = new AggregationProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpression);
-        getExpression(ctx).ifPresent(each -> projectionSegment.getParameters().add(each));
+        projectionSegment.getParameters().addAll(getExpressions(ctx));
         return projectionSegment;
     }
     
-    private Optional<ExpressionSegment> getExpression(final AggregationFunctionContext ctx) {
-        if (null == ctx.expr(0)) {
-            return Optional.empty();
+    private Collection<ExpressionSegment> getExpressions(final AggregationFunctionContext ctx) {
+        if (null == ctx.expr()) {
+            return Collections.emptyList();
         }
-        ASTNode result = visit(ctx.expr(0));
-        if (result instanceof ColumnSegment) {
-            return Optional.ofNullable((ColumnSegment) result);
-        } else if (result instanceof LiteralExpressionSegment) {
-            return Optional.ofNullable((LiteralExpressionSegment) result);
-        } else if (result instanceof ExpressionSegment) {
-            return Optional.ofNullable((ExpressionSegment) result);
+        Collection<ExpressionSegment> result = new LinkedList<>();
+        for (ExprContext each : ctx.expr()) {
+            ASTNode visitNode = visit(each);
+            if (visitNode instanceof ColumnSegment) {
+                result.add((ColumnSegment) visitNode);
+            } else if (visitNode instanceof LiteralExpressionSegment) {
+                result.add((LiteralExpressionSegment) visitNode);
+            } else if (visitNode instanceof ExpressionSegment) {
+                result.add((ExpressionSegment) visitNode);
+            }
         }
-        return Optional.empty();
+        return result;
     }
     
     private String getDistinctExpression(final AggregationFunctionContext ctx) {

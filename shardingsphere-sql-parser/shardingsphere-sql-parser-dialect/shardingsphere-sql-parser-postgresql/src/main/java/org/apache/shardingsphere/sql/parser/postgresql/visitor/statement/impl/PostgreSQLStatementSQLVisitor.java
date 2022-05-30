@@ -508,27 +508,27 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
         if (null != ctx.DISTINCT()) {
             AggregationDistinctProjectionSegment distinctProjectionSegment = new AggregationDistinctProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
                     type, innerExpression, getDistinctExpression(ctx));
-            getExpression(ctx).ifPresent(each -> distinctProjectionSegment.getParameters().add(each));
+            distinctProjectionSegment.getParameters().addAll(getExpressions(ctx));
             return distinctProjectionSegment;
         }
         AggregationProjectionSegment projectionSegment = new AggregationProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpression);
-        getExpression(ctx).ifPresent(each -> projectionSegment.getParameters().add(each));
+        projectionSegment.getParameters().addAll(getExpressions(ctx));
         return projectionSegment;
     }
     
-    private Optional<ExpressionSegment> getExpression(final FuncApplicationContext ctx) {
+    private Collection<ExpressionSegment> getExpressions(final FuncApplicationContext ctx) {
         if (null == ctx.funcArgList()) {
-            return Optional.empty();
+            return Collections.emptyList();
         }
         ASTNode result = visit(ctx.funcArgList());
         if (result instanceof ColumnSegment) {
-            return Optional.ofNullable((ColumnSegment) result);
+            return Collections.singletonList((ColumnSegment) result);
         } else if (result instanceof LiteralExpressionSegment) {
-            return Optional.ofNullable((LiteralExpressionSegment) result);
+            return Collections.singletonList((LiteralExpressionSegment) result);
         } else if (result instanceof ExpressionSegment) {
-            return Optional.ofNullable((ExpressionSegment) result);
+            return Collections.singletonList((ExpressionSegment) result);
         }
-        return Optional.empty();
+        return Collections.emptyList();
     }
     
     private String getDistinctExpression(final FuncApplicationContext ctx) {
