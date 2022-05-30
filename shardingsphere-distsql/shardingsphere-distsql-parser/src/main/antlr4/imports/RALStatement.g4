@@ -184,7 +184,7 @@ instanceId
     ;
 
 refreshScope
-    : (tableName fromSegment?) | SCHEMA schemaName
+    : tableName? fromSegment?
     ;
 
 fromSegment

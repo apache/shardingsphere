@@ -39,8 +39,8 @@
     <refresh-table-metadata sql-case-id="refresh-table-metadata" />
     <refresh-table-metadata sql-case-id="refresh-table-metadata-with-table-name" table-name="t_order" />
     <refresh-table-metadata sql-case-id="refresh-table-metadata-with-resource" table-name="t_order" resource-name="ds_0" />
-    <refresh-table-metadata sql-case-id="refresh-table-metadata-with-schema" schema-name="test" />
-    <refresh-table-metadata sql-case-id="refresh-table-metadata-with-default-schema" table-name="t_order" resource-name="ds_0" schema-name="public" />
+    <refresh-table-metadata sql-case-id="refresh-table-metadata-with-schema" resource-name="ds_0" schema-name="public" />
+    <refresh-table-metadata sql-case-id="refresh-table-metadata-table-with-schema" table-name="t_order" resource-name="ds_0" schema-name="public" />
     <show-authority-rule sql-case-id="show-authority-rule" />
     <show-transaction-rule sql-case-id="show-transaction-rule" />
     <show-sql-parser-rule sql-case-id="show-sql-parser-rule" />

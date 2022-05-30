@@ -407,24 +407,6 @@ public final class ContextManager implements AutoCloseable {
      *
      * @param databaseName database name
      * @param schemaName schema name
-     */
-    public void reloadMetaData(final String databaseName, final String schemaName) {
-        try {
-            ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabases().get(databaseName);
-            refreshRules(databaseName, database);
-            GenericSchemaBuilderMaterials materials = new GenericSchemaBuilderMaterials(database.getProtocolType(),
-                    database.getResource().getDatabaseType(), database.getResource().getDataSources(), database.getRuleMetaData().getRules(), metaDataContexts.getMetaData().getProps(), schemaName);
-            loadTableMetaData(databaseName, schemaName, materials);
-        } catch (final SQLException ex) {
-            log.error("Reload schema:{} meta data of database:{} failed", databaseName, schemaName, ex);
-        }
-    }
-    
-    /**
-     * Reload table meta data.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
      * @param tableName logic table name
      */
     public void reloadMetaData(final String databaseName, final String schemaName, final String tableName) {
@@ -443,10 +425,10 @@ public final class ContextManager implements AutoCloseable {
      *
      * @param databaseName database name
      * @param schemaName schema name
-     * @param tableName logic table name
      * @param dataSourceName data source name
+     * @param tableName logic table name
      */
-    public void reloadMetaData(final String databaseName, final String schemaName, final String tableName, final String dataSourceName) {
+    public void reloadMetaData(final String databaseName, final String schemaName, final String dataSourceName, final String tableName) {
         try {
             ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabases().get(databaseName);
             GenericSchemaBuilderMaterials materials = new GenericSchemaBuilderMaterials(database.getProtocolType(), database.getResource().getDatabaseType(),
@@ -455,6 +437,26 @@ public final class ContextManager implements AutoCloseable {
             loadTableMetaData(databaseName, schemaName, tableName, materials);
         } catch (final SQLException ex) {
             log.error("Reload table:{} meta data of database:{} schema:{} with data source:{} failed", tableName, databaseName, schemaName, dataSourceName, ex);
+        }
+    }
+    
+    /**
+     * Reload table meta data.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param dataSourceName data source name
+     */
+    public void reloadSchemaMetaData(final String databaseName, final String schemaName, final String dataSourceName) {
+        try {
+            ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabases().get(databaseName);
+            refreshRules(databaseName, database);
+            GenericSchemaBuilderMaterials materials = new GenericSchemaBuilderMaterials(database.getProtocolType(), database.getResource().getDatabaseType(),
+                    Collections.singletonMap(dataSourceName, database.getResource().getDataSources().get(dataSourceName)),
+                    database.getRuleMetaData().getRules(), metaDataContexts.getMetaData().getProps(), schemaName);
+            loadTableMetaData(databaseName, schemaName, materials);
+        } catch (final SQLException ex) {
+            log.error("Reload schema:{} meta data of database:{} failed", schemaName, databaseName, ex);
         }
     }
     
