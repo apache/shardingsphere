@@ -407,6 +407,24 @@ public final class ContextManager implements AutoCloseable {
      *
      * @param databaseName database name
      * @param schemaName schema name
+     */
+    public void reloadMetaData(final String databaseName, final String schemaName) {
+        try {
+            ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabases().get(databaseName);
+            refreshRules(databaseName, database);
+            GenericSchemaBuilderMaterials materials = new GenericSchemaBuilderMaterials(database.getProtocolType(),
+                    database.getResource().getDatabaseType(), database.getResource().getDataSources(), database.getRuleMetaData().getRules(), metaDataContexts.getMetaData().getProps(), schemaName);
+            loadTableMetaData(databaseName, schemaName, materials);
+        } catch (final SQLException ex) {
+            log.error("Reload schema:{} meta data of database:{} failed", databaseName, schemaName, ex);
+        }
+    }
+    
+    /**
+     * Reload table meta data.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
      * @param tableName logic table name
      */
     public void reloadMetaData(final String databaseName, final String schemaName, final String tableName) {
@@ -450,6 +468,15 @@ public final class ContextManager implements AutoCloseable {
                 metaDataContexts.getPersistService().ifPresent(optional -> optional.getSchemaMetaDataService().deleteSchema(databaseName, key));
             }
         });
+    }
+    
+    private void loadTableMetaData(final String databaseName, final String schemaName, final GenericSchemaBuilderMaterials materials) throws SQLException {
+        Map<String, ShardingSphereSchema> schemaMap = GenericSchemaBuilder.build(materials);
+        if (schemaMap.containsKey(schemaName)) {
+            metaDataContexts.getMetaData().getDatabases().get(databaseName).getSchemas().put(schemaName, schemaMap.get(schemaName));
+            metaDataContexts.getPersistService().ifPresent(optional -> optional.getSchemaMetaDataService()
+                    .persistMetaData(databaseName, schemaName, metaDataContexts.getMetaData().getDatabases().get(databaseName).getSchemas().get(schemaName)));
+        }
     }
     
     private void loadTableMetaData(final String databaseName, final String schemaName, final String tableName, final GenericSchemaBuilderMaterials materials) throws SQLException {
