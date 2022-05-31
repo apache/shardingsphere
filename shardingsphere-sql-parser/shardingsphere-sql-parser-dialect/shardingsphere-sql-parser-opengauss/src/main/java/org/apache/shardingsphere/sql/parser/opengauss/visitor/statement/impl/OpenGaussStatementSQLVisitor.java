@@ -506,29 +506,10 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
     private ProjectionSegment createAggregationSegment(final FuncApplicationContext ctx, final String aggregationType) {
         AggregationType type = AggregationType.valueOf(aggregationType.toUpperCase());
         String innerExpression = ctx.start.getInputStream().getText(new Interval(ctx.LP_().getSymbol().getStartIndex(), ctx.stop.getStopIndex()));
-        if (null != ctx.DISTINCT()) {
-            AggregationDistinctProjectionSegment distinctProjectionSegment = new AggregationDistinctProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
-                    type, innerExpression, getDistinctExpression(ctx));
-            distinctProjectionSegment.getParameters().addAll(getExpressions(ctx));
-            return distinctProjectionSegment;
+        if (null == ctx.DISTINCT()) {
+            return new AggregationProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpression);
         }
-        AggregationProjectionSegment projectionSegment = new AggregationProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpression);
-        projectionSegment.getParameters().addAll(getExpressions(ctx));
-        return projectionSegment;
-    }
-    
-    private Collection<ExpressionSegment> getExpressions(final FuncApplicationContext ctx) {
-        if (null == ctx.funcArgList()) {
-            return Collections.emptyList();
-        }
-        return ((FunctionSegment) visit(ctx.funcArgList())).getParameters();
-    }
-    
-    private ColumnSegment getColumnSegment(final FuncApplicationContext ctx) {
-        if (null == ctx.funcArgList()) {
-            return null;
-        }
-        return (ColumnSegment) visit(ctx.funcArgList());
+        return new AggregationDistinctProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpression, getDistinctExpression(ctx));
     }
     
     private String getDistinctExpression(final FuncApplicationContext ctx) {
