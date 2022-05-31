@@ -37,7 +37,7 @@ public final class CursorTokenTest {
     
     @Test
     public void assertToString() {
-        CursorToken cursorToken = new CursorToken(0, 0, 
+        CursorToken cursorToken = new CursorToken(0, 0,
                 new IdentifierValue("t_order_cursor"), mock(CursorStatementContext.class, RETURNS_DEEP_STUBS), mock(ShardingRule.class));
         RouteUnit routeUnit = mock(RouteUnit.class);
         when(routeUnit.getTableMappers()).thenReturn(Collections.singletonList(new RouteMapper("t_order", "t_order_0")));
