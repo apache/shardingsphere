@@ -44,6 +44,6 @@ public class StartDatabaseType implements DatabaseType {
 
     @Override
     public String getType() {
-        return "START-DB";
+        return "MYSQL";
     }
 }
