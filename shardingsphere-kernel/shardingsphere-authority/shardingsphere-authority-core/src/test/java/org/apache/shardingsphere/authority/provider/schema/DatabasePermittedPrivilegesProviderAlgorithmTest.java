@@ -20,6 +20,7 @@ package org.apache.shardingsphere.authority.provider.schema;
 import org.apache.shardingsphere.authority.factory.AuthorityProviderAlgorithmFactory;
 import org.apache.shardingsphere.authority.model.AuthorityRegistry;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
+import org.apache.shardingsphere.authority.provider.database.DatabasePermittedPrivilegesProviderAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
@@ -31,25 +32,25 @@ import java.util.Properties;
 
 import static org.junit.Assert.assertTrue;
 
-public final class SchemaPermittedPrivilegesProviderAlgorithmTest {
+public final class DatabasePermittedPrivilegesProviderAlgorithmTest {
     
     @Test
     public void assertBuildAuthorityRegistry() {
-        SchemaPermittedPrivilegesProviderAlgorithm algorithm = createAuthorityProviderAlgorithm();
+        DatabasePermittedPrivilegesProviderAlgorithm algorithm = createAuthorityProviderAlgorithm();
         AuthorityRegistry actual = algorithm.buildAuthorityRegistry(Collections.emptyMap(), Collections.singletonList(new ShardingSphereUser("user1", "", "127.0.0.2")));
         Optional<ShardingSpherePrivileges> privileges = actual.findPrivileges(new Grantee("user1", "127.0.0.2"));
         assertTrue(privileges.isPresent());
         assertTrue(privileges.get().hasPrivileges("test"));
     }
     
-    private SchemaPermittedPrivilegesProviderAlgorithm createAuthorityProviderAlgorithm() {
-        return (SchemaPermittedPrivilegesProviderAlgorithm) AuthorityProviderAlgorithmFactory.newInstance(
-                new ShardingSphereAlgorithmConfiguration("SCHEMA_PERMITTED", createProperties()));
+    private DatabasePermittedPrivilegesProviderAlgorithm createAuthorityProviderAlgorithm() {
+        return (DatabasePermittedPrivilegesProviderAlgorithm) AuthorityProviderAlgorithmFactory.newInstance(
+                new ShardingSphereAlgorithmConfiguration("DATABASE_PERMITTED", createProperties()));
     }
     
     private Properties createProperties() {
         Properties result = new Properties();
-        result.setProperty(SchemaPermittedPrivilegesProviderAlgorithm.PROP_USER_SCHEMA_MAPPINGS, "root@localhost=test, user1@127.0.0.1=db_dal_admin, user1@=test, user1@=test1");
+        result.setProperty(DatabasePermittedPrivilegesProviderAlgorithm.PROP_USER_DATABASE_MAPPINGS, "root@localhost=test, user1@127.0.0.1=db_dal_admin, user1@=test, user1@=test1");
         return result;
     }
 }
