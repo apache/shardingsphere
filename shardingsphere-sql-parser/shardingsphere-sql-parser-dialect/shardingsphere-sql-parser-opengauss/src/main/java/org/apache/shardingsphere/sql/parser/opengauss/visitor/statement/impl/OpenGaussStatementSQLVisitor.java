@@ -521,7 +521,7 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
         if (null == ctx.funcArgList()) {
             return Collections.emptyList();
         }
-        return Collections.singletonList((ExpressionSegment) visit(ctx.funcArgList()));
+        return ((FunctionSegment) visit(ctx.funcArgList())).getParameters();
     }
     
     private ColumnSegment getColumnSegment(final FuncApplicationContext ctx) {

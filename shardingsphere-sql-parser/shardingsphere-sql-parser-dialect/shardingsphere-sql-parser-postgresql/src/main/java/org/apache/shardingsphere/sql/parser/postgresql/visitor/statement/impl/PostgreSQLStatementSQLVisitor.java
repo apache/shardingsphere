@@ -519,7 +519,7 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
         if (null == ctx.funcArgList()) {
             return Collections.emptyList();
         }
-        return Collections.singletonList((ExpressionSegment) visit(ctx.funcArgList()));
+        return ((FunctionSegment) visit(ctx.funcArgList())).getParameters();
     }
     
     private String getDistinctExpression(final FuncApplicationContext ctx) {
