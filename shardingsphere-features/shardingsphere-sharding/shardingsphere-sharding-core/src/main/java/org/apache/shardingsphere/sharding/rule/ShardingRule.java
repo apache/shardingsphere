@@ -19,11 +19,13 @@ package org.apache.shardingsphere.sharding.rule;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.InstanceAwareAlgorithm;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datanode.DataNode;
@@ -84,6 +86,8 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
     
     private static final String EQUAL = "=";
     
+    private static final String ALGORITHM_EXPRESSION_KEY = "algorithm-expression";
+    
     private final Collection<String> dataSourceNames;
     
     private final Map<String, ShardingAlgorithm> shardingAlgorithms = new LinkedHashMap<>();
@@ -108,7 +112,7 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
     
     public ShardingRule(final ShardingRuleConfiguration config, final Collection<String> dataSourceNames) {
         this.dataSourceNames = getDataSourceNames(config.getTables(), config.getAutoTables(), dataSourceNames);
-        config.getShardingAlgorithms().forEach((key, value) -> shardingAlgorithms.put(key, ShardingAlgorithmFactory.newInstance(value)));
+        config.getShardingAlgorithms().forEach((key, value) -> shardingAlgorithms.put(key, createShardingAlgorithm(key, value, config.getTables(), config.getAutoTables())));
         config.getKeyGenerators().forEach((key, value) -> keyGenerators.put(key, KeyGenerateAlgorithmFactory.newInstance(value)));
         tableRules.putAll(createTableRules(config.getTables(), config.getDefaultKeyGenerateStrategy()));
         tableRules.putAll(createAutoTableRules(config.getAutoTables(), config.getDefaultKeyGenerateStrategy()));
@@ -148,7 +152,7 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
     
     @Override
     public boolean check(final RuleConfiguration ruleConfig, final Collection<String> dataSourceNames) {
-        if (null == ruleConfig || !(ruleConfig instanceof ShardingRuleConfiguration)) {
+        if (!(ruleConfig instanceof ShardingRuleConfiguration)) {
             return true;
         }
         ShardingRuleConfiguration config = (ShardingRuleConfiguration) ruleConfig;
@@ -806,5 +810,33 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
         if (defaultKeyGenerateAlgorithm instanceof InstanceAwareAlgorithm) {
             ((InstanceAwareAlgorithm) defaultKeyGenerateAlgorithm).setInstanceContext(instanceContext);
         }
+    }
+    
+    private ShardingAlgorithm createShardingAlgorithm(final String name, final ShardingSphereAlgorithmConfiguration config, final Collection<ShardingTableRuleConfiguration> tables,
+                                                      final Collection<ShardingAutoTableRuleConfiguration> autoTables) {
+        Map<String, String> algorithmTablePrefixMap = getAlgorithmTablePrefixMap(tables, autoTables);
+        if (algorithmTablePrefixMap.containsKey(name)) {
+            String algorithmExpression = config.getProps().getProperty(ALGORITHM_EXPRESSION_KEY);
+            String actualTablePrefix = algorithmTablePrefixMap.get(name);
+            if (!Strings.isNullOrEmpty(algorithmExpression) && !algorithmExpression.startsWith(actualTablePrefix)) {
+                config.getProps().setProperty(ALGORITHM_EXPRESSION_KEY, actualTablePrefix + algorithmExpression);
+            }
+        }
+        return ShardingAlgorithmFactory.newInstance(config);
+    }
+    
+    private Map<String, String> getAlgorithmTablePrefixMap(final Collection<ShardingTableRuleConfiguration> tables, final Collection<ShardingAutoTableRuleConfiguration> autoTables) {
+        Map<String, String> result = new LinkedHashMap<>(tables.size() + autoTables.size());
+        for (ShardingTableRuleConfiguration each : tables) {
+            if (null != each.getActualTablePrefix() && null != each.getTableShardingStrategy()) {
+                result.put(each.getTableShardingStrategy().getShardingAlgorithmName(), each.getActualTablePrefix());
+            }
+        }
+        for (ShardingAutoTableRuleConfiguration each : autoTables) {
+            if (null != each.getActualTablePrefix() && null != each.getShardingStrategy()) {
+                result.put(each.getShardingStrategy().getShardingAlgorithmName(), each.getActualTablePrefix());
+            }
+        }
+        return result;
     }
 }
