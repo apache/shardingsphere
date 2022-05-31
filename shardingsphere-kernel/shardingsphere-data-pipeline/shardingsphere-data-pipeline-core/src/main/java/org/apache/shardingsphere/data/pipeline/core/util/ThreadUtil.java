@@ -20,6 +20,8 @@ package org.apache.shardingsphere.data.pipeline.core.util;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * Thread util.
  */
@@ -34,6 +36,19 @@ public final class ThreadUtil {
     public static void sleep(final long millis) {
         try {
             Thread.sleep(millis);
+        } catch (final InterruptedException ignored) {
+        }
+    }
+    
+    /**
+     * Sleep ignored InterruptedException.
+     *
+     * @param timeUnit time unit.
+     * @param number sleep time.
+     */
+    public static void sleep(final TimeUnit timeUnit, final int number) {
+        try {
+            timeUnit.sleep(number);
         } catch (final InterruptedException ignored) {
         }
     }

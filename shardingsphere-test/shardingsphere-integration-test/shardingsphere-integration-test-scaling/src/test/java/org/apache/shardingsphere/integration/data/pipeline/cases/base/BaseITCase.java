@@ -25,6 +25,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
+import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrlAppender;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
@@ -41,6 +42,7 @@ import org.apache.shardingsphere.integration.data.pipeline.framework.watcher.Sca
 import org.apache.shardingsphere.integration.data.pipeline.util.DatabaseTypeUtil;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
 import org.junit.Rule;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
@@ -107,7 +109,7 @@ public abstract class BaseITCase {
         Properties queryProps = ScalingCaseHelper.getQueryPropertiesByDatabaseType(databaseType);
         String defaultDatabaseName = DatabaseTypeUtil.isPostgreSQL(databaseType) ? "postgres" : "";
         try (Connection connection = DriverManager.getConnection(jdbcUrlAppender.appendQueryProperties(composedContainer.getProxyJdbcUrl(defaultDatabaseName), queryProps), "root", "root")) {
-            connection.createStatement().execute("CREATE DATABASE sharding_db");
+            executeWithLogAndWait(connection, "CREATE DATABASE sharding_db");
         }
         jdbcTemplate = new JdbcTemplate(getProxyDataSource("sharding_db"));
     }
@@ -162,7 +164,7 @@ public abstract class BaseITCase {
                 .replace("${password}", ScalingCaseHelper.getPassword(databaseType))
                 .replace("${ds0}", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_0"), queryProps))
                 .replace("${ds1}", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_1"), queryProps));
-        connection.createStatement().execute(addSourceResource);
+        executeWithLogAndWait(connection, addSourceResource);
     }
     
     @SneakyThrows
@@ -173,7 +175,7 @@ public abstract class BaseITCase {
                 .replace("${ds2}", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_2"), queryProps))
                 .replace("${ds3}", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_3"), queryProps))
                 .replace("${ds4}", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_4"), queryProps));
-        executeWithLog(addTargetResource);
+        executeWithLogAndWait(addTargetResource);
         List<Map<String, Object>> resources = queryForListWithLog("SHOW DATABASE RESOURCES from sharding_db");
         assertThat(resources.size(), is(5));
         assertBeforeApplyScalingMetadataCorrectly();
@@ -188,43 +190,57 @@ public abstract class BaseITCase {
         }
     }
     
-    protected void initShardingAlgorithm() throws InterruptedException {
-        executeWithLog(getCommonSQLCommand().getCreateDatabaseShardingAlgorithm());
-        TimeUnit.SECONDS.sleep(2);
-        executeWithLog(getCommonSQLCommand().getCreateOrderShardingAlgorithm());
-        TimeUnit.SECONDS.sleep(2);
-        executeWithLog(getCommonSQLCommand().getCreateOrderItemShardingAlgorithm());
+    protected void initShardingAlgorithm() {
+        executeWithLogAndWait(getCommonSQLCommand().getCreateDatabaseShardingAlgorithm());
+        executeWithLogAndWait(getCommonSQLCommand().getCreateOrderShardingAlgorithm());
+        executeWithLogAndWait(getCommonSQLCommand().getCreateOrderItemShardingAlgorithm());
     }
     
     protected void getCreateOrderWithItemSharingTableRule() {
-        executeWithLog(commonSQLCommand.getCreateOrderWithItemSharingTableRule());
+        executeWithLogAndWait(commonSQLCommand.getCreateOrderWithItemSharingTableRule());
         assertBeforeApplyScalingMetadataCorrectly();
     }
     
     protected void createOrderSharingTableRule() {
-        executeWithLog(commonSQLCommand.getCreateOrderShardingTableRule());
+        executeWithLogAndWait(commonSQLCommand.getCreateOrderShardingTableRule());
     }
     
     protected void bindingShardingRule() {
-        executeWithLog("CREATE SHARDING BINDING TABLE RULES (t_order,t_order_item)");
+        executeWithLogAndWait("CREATE SHARDING BINDING TABLE RULES (t_order,t_order_item)");
     }
     
     protected void createScalingRule() {
-        executeWithLog("CREATE SHARDING SCALING RULE scaling_manual (INPUT(SHARDING_SIZE=1000), DATA_CONSISTENCY_CHECKER(TYPE(NAME=DATA_MATCH)))");
+        executeWithLogAndWait("CREATE SHARDING SCALING RULE scaling_manual (INPUT(SHARDING_SIZE=1000), DATA_CONSISTENCY_CHECKER(TYPE(NAME=DATA_MATCH)))");
     }
     
     protected void createSchema(final String schemaName) {
-        executeWithLog(String.format("CREATE SCHEMA %s", schemaName));
+        executeWithLogAndWait(String.format("CREATE SCHEMA %s", schemaName));
     }
     
-    protected void executeWithLog(final String sql) {
+    protected void executeWithLogAndWait(final Connection connection, final String sql) throws SQLException {
+        log.info("connection execute:{}", sql);
+        connection.createStatement().execute(sql);
+        ThreadUtil.sleep(TimeUnit.SECONDS, 1);
+    }
+    
+    protected void executeWithLogAndWait(final String sql) {
         log.info("jdbcTemplate execute:{}", sql);
         jdbcTemplate.execute(sql);
+        ThreadUtil.sleep(TimeUnit.SECONDS, 2);
     }
     
     protected List<Map<String, Object>> queryForListWithLog(final String sql) {
-        log.info("jdbcTemplate queryForMap:{}", sql);
-        return jdbcTemplate.queryForList(sql);
+        int retryNumber = 0;
+        while (retryNumber <= 3) {
+            try {
+                return jdbcTemplate.queryForList(sql);
+            } catch (final DataAccessException ex) {
+                log.error("data access error", ex);
+            }
+            ThreadUtil.sleep(TimeUnit.SECONDS, 2);
+            retryNumber++;
+        }
+        throw new RuntimeException("can't get result from proxy");
     }
     
     protected void startIncrementTask(final BaseIncrementTask baseIncrementTask) {
@@ -281,7 +297,7 @@ public abstract class BaseITCase {
             TimeUnit.SECONDS.sleep(2);
         }
         assertThat(actualStatusMap.values().stream().filter(StringUtils::isNotBlank).collect(Collectors.toSet()).size(), is(1));
-        executeWithLog(String.format("STOP SCALING SOURCE WRITING %s", jobId));
+        executeWithLogAndWait(String.format("STOP SCALING SOURCE WRITING %s", jobId));
         assertBeforeApplyScalingMetadataCorrectly();
         List<Map<String, Object>> checkScalingResults = queryForListWithLog(String.format("CHECK SCALING %s BY TYPE (NAME=DATA_MATCH)", jobId));
         log.info("checkScalingResults: {}", checkScalingResults);
@@ -289,7 +305,7 @@ public abstract class BaseITCase {
             assertTrue(Boolean.parseBoolean(entry.get("records_content_matched").toString()));
         }
         assertBeforeApplyScalingMetadataCorrectly();
-        executeWithLog(String.format("APPLY SCALING %s", jobId));
+        executeWithLogAndWait(String.format("APPLY SCALING %s", jobId));
         // TODO make sure the scaling job was applied
         TimeUnit.SECONDS.sleep(2);
         List<Map<String, Object>> previewResults = queryForListWithLog("PREVIEW SELECT COUNT(1) FROM t_order");
