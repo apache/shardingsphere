@@ -75,7 +75,7 @@ public final class ComputeNodeStatusServiceTest {
     public void assertPersistInstanceXaRecoveryId() {
         InstanceDefinition instanceDefinition = new InstanceDefinition(InstanceType.PROXY, 3307);
         final String instanceId = instanceDefinition.getInstanceId();
-        new ComputeNodeStatusService(repository).persistInstanceXaRecoveryId(instanceId, instanceId);
+        new ComputeNodeStatusService(repository).persistInstanceXaRecoveryId(instanceId, Collections.singleton(instanceId));
         verify(repository).getChildrenKeys(ComputeNode.getXaRecoveryIdNodePath());
         verify(repository).persistEphemeral(ComputeNode.getInstanceXaRecoveryIdNodePath(instanceId, instanceId), "");
     }
@@ -108,7 +108,7 @@ public final class ComputeNodeStatusServiceTest {
     public void assertLoadInstanceXaRecoveryId() {
         InstanceDefinition instanceDefinition = new InstanceDefinition(InstanceType.PROXY, 3307);
         final String instanceId = instanceDefinition.getInstanceId();
-        new ComputeNodeStatusService(repository).loadXaRecoveryId(instanceId);
+        new ComputeNodeStatusService(repository).loadXaRecoveryIds(instanceId);
         verify(repository).getChildrenKeys(ComputeNode.getXaRecoveryIdNodePath());
         
     }

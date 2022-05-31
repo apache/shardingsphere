@@ -2814,3 +2814,11 @@ FAILGROUP
 DISK
     : D I S K
     ;
+
+EXCLUDING
+    : E X C L U D I N G
+    ;
+
+CONTENTS
+    : C O N T E N T S
+    ;

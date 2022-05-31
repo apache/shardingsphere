@@ -81,6 +81,7 @@ execute
     | alterSchema
     | dropSchema
     | createType
+    | dropType
     | createTextSearch
     | dropDatabase
     | dropFunction
@@ -131,5 +132,6 @@ execute
     | dropCast
     | alterRule
     | checkpoint
+    | alterType
     ) SEMI_? EOF
     ;

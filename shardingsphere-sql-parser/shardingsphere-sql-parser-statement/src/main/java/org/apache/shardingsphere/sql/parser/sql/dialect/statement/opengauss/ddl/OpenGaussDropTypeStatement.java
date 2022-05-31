@@ -15,20 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTypeStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 
 /**
- * Xa recovery id event.
+ * OpenGauss drop type statement.
  */
-@RequiredArgsConstructor
-@Getter
-public final class XaRecoveryIdEvent implements GovernanceEvent {
-    
-    private final String instanceId;
-    
-    private final String xaRecoveryId;
+@ToString
+public final class OpenGaussDropTypeStatement extends DropTypeStatement implements OpenGaussStatement {
 }

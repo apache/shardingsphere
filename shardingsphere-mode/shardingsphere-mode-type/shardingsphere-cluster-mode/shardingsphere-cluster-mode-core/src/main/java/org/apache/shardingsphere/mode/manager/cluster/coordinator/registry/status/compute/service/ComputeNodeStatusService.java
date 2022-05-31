@@ -30,6 +30,7 @@ import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositor
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -78,11 +79,18 @@ public final class ComputeNodeStatusService {
      * Persist instance xa recovery id.
      *
      * @param instanceId instance id
-     * @param xaRecoveryId xa recovery id
+     * @param xaRecoveryIds collection of xa recovery id
      */
-    public void persistInstanceXaRecoveryId(final String instanceId, final String xaRecoveryId) {
-        loadXaRecoveryId(instanceId).ifPresent(each -> repository.delete(ComputeNode.getInstanceXaRecoveryIdNodePath(each, instanceId)));
-        repository.persistEphemeral(ComputeNode.getInstanceXaRecoveryIdNodePath(xaRecoveryId, instanceId), "");
+    public void persistInstanceXaRecoveryId(final String instanceId, final Collection<String> xaRecoveryIds) {
+        Collection<String> originalXaRecoveryIds = loadXaRecoveryIds(instanceId);
+        if (originalXaRecoveryIds.isEmpty()) {
+            xaRecoveryIds.forEach(each -> repository.persistEphemeral(ComputeNode.getInstanceXaRecoveryIdNodePath(each, instanceId), ""));
+        } else {
+            originalXaRecoveryIds.stream().filter(each -> !xaRecoveryIds.contains(each)).forEach(each -> repository.delete(ComputeNode
+                    .getInstanceXaRecoveryIdNodePath(each, instanceId)));
+            xaRecoveryIds.stream().filter(each -> !originalXaRecoveryIds.contains(each)).forEach(each -> repository.persistEphemeral(ComputeNode
+                    .getInstanceXaRecoveryIdNodePath(each, instanceId), ""));
+        }
     }
     
     /**
@@ -126,19 +134,20 @@ public final class ComputeNodeStatusService {
     }
     
     /**
-     * Load instance xa recovery id.
+     * Load instance xa recovery id list.
      *
      * @param instanceId instance id
-     * @return xa recovery id
+     * @return collection of xa recovery id
      */
-    public Optional<String> loadXaRecoveryId(final String instanceId) {
+    public Collection<String> loadXaRecoveryIds(final String instanceId) {
+        Collection<String> result = new LinkedList<>();
         List<String> xaRecoveryIds = repository.getChildrenKeys(ComputeNode.getXaRecoveryIdNodePath());
         for (String xaRecoveryId : xaRecoveryIds) {
             if (repository.getChildrenKeys(String.join("/", ComputeNode.getXaRecoveryIdNodePath(), xaRecoveryId)).contains(instanceId)) {
-                return Optional.of(xaRecoveryId);
+                result.add(xaRecoveryId);
             }
         }
-        return Optional.empty();
+        return result;
     }
     
     /**
@@ -169,8 +178,8 @@ public final class ComputeNodeStatusService {
         ComputeNodeInstance result = new ComputeNodeInstance(instanceDefinition);
         result.setLabels(loadInstanceLabels(instanceDefinition.getInstanceId()));
         result.switchState(loadInstanceStatus(instanceDefinition.getInstanceId()));
+        result.getXaRecoveryIds().addAll(loadXaRecoveryIds(instanceDefinition.getInstanceId()));
         loadInstanceWorkerId(instanceDefinition.getInstanceId()).ifPresent(result::setWorkerId);
-        loadXaRecoveryId(instanceDefinition.getInstanceId()).ifPresent(result::setXaRecoveryId);
         return result;
     }
 }

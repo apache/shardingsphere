@@ -50,7 +50,8 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.statu
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ShowProcessListUnitCompleteEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.StateEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.WorkerIdEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.XaRecoveryIdEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.XaRecoveryIdAddedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.XaRecoveryIdDeletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.PrimaryStateChangedEvent;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
@@ -248,17 +249,32 @@ public final class ClusterContextManagerCoordinator {
     /**
      * Renew instance xa recovery id event.
      *
-     * @param event xa recovery id event
+     * @param event xa recovery id added event
      */
     @Subscribe
-    public synchronized void renew(final XaRecoveryIdEvent event) {
-        if (!contextManager.getInstanceContext().updateXaRecoveryId(event.getInstanceId(), event.getXaRecoveryId())) {
-            return;
+    public synchronized void renew(final XaRecoveryIdAddedEvent event) {
+        if (contextManager.getInstanceContext().addXaRecoveryId(event.getInstanceId(), event.getXaRecoveryId())) {
+            Optional<TransactionRule> transactionRule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(TransactionRule.class);
+            Preconditions.checkState(transactionRule.isPresent());
+            for (String each : transactionRule.get().getResources().keySet()) {
+                transactionRule.get().addResource(contextManager.getMetaDataContexts().getMetaData().getDatabases().get(each));
+            }
         }
-        Optional<TransactionRule> transactionRule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(TransactionRule.class);
-        Preconditions.checkState(transactionRule.isPresent());
-        for (String each : transactionRule.get().getResources().keySet()) {
-            transactionRule.get().addResource(contextManager.getMetaDataContexts().getMetaData().getDatabases().get(each));
+    }
+    
+    /**
+     * Renew instance xa recovery id event.
+     *
+     * @param event xa recovery id deleted event
+     */
+    @Subscribe
+    public synchronized void renew(final XaRecoveryIdDeletedEvent event) {
+        if (contextManager.getInstanceContext().deleteXaRecoveryId(event.getInstanceId(), event.getXaRecoveryId())) {
+            Optional<TransactionRule> transactionRule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(TransactionRule.class);
+            Preconditions.checkState(transactionRule.isPresent());
+            for (String each : transactionRule.get().getResources().keySet()) {
+                transactionRule.get().addResource(contextManager.getMetaDataContexts().getMetaData().getDatabases().get(each));
+            }
         }
     }
     
@@ -326,7 +342,6 @@ public final class ClusterContextManagerCoordinator {
     }
     
     private void buildSpecialRules() {
-        contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findRules(InstanceAwareRule.class).forEach(each -> each.setInstanceContext(contextManager.getInstanceContext()));
         contextManager.getMetaDataContexts().getMetaData().getDatabases().forEach((key, value) -> value.getRuleMetaData().getRules().forEach(each -> {
             if (each instanceof StatusContainedRule) {
                 disableDataSources((StatusContainedRule) each);

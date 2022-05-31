@@ -53,7 +53,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class NarayanaConfigurationFileGeneratorTest {
     
-    private final NarayanaConfigurationFileGenerator narayanaConfigurationFileGenerator = new NarayanaConfigurationFileGenerator();
+    private final NarayanaConfigurationFileGenerator narayanaConfigFileGenerator = new NarayanaConfigurationFileGenerator();
     
     private TransactionRule transactionRule;
     
@@ -68,7 +68,7 @@ public final class NarayanaConfigurationFileGeneratorTest {
         jdbcAccess = "com.arjuna.ats.internal.arjuna.objectstore.jdbc.accessors.DynamicDataSourceJDBCAccess;ClassName=com.mysql.jdbc.jdbc2.optional.MysqlDataSource;"
                 + "URL=jdbc:mysql://127.0.0.1:3306/jbossts;User=root;Password=12345678";
         when(instanceContext.getInstance().getInstanceDefinition().getInstanceId()).thenReturn("127.0.0.1@3307");
-        when(instanceContext.getInstance().getXaRecoveryId()).thenReturn("127.0.0.1@3307");
+        when(instanceContext.getInstance().getXaRecoveryIds()).thenReturn(Collections.singletonList("127.0.0.1@3307"));
     }
     
     private Properties createProperties() {
@@ -82,7 +82,7 @@ public final class NarayanaConfigurationFileGeneratorTest {
     
     @Test
     public void assertNarayanaConfigurationFileGenerator() throws JAXBException, FileNotFoundException {
-        narayanaConfigurationFileGenerator.generateFile(transactionRule.getProps(), instanceContext);
+        narayanaConfigFileGenerator.generateFile(transactionRule.getProps(), instanceContext);
         JAXBContext jaxbContext = JAXBContext.newInstance(NarayanaConfiguration.class);
         Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
         InputStream inputStream = new FileInputStream(new File(ClassLoader.getSystemResource("").getPath(), "jbossts-properties.xml"));

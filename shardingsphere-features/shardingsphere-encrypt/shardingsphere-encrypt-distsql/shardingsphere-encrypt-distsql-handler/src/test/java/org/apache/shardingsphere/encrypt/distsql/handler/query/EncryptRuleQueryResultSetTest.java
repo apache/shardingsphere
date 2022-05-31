@@ -54,12 +54,10 @@ public final class EncryptRuleQueryResultSetTest {
         assertTrue(actual.contains("user_cipher"));
         assertTrue(actual.contains("user_plain"));
         assertTrue(actual.contains("md5"));
-        assertTrue(actual.contains("varchar(10)"));
     }
     
     private RuleConfiguration getRuleConfiguration() {
-        EncryptColumnRuleConfiguration encryptColumnRuleConfig = new EncryptColumnRuleConfiguration("user_id", "varchar(10)", "user_cipher", "varchar(10)", null, null,
-                "user_plain", "varchar(10)", "test", null);
+        EncryptColumnRuleConfiguration encryptColumnRuleConfig = new EncryptColumnRuleConfiguration("user_id", "user_cipher", null, "user_plain", "test", null);
         EncryptTableRuleConfiguration encryptTableRuleConfig = new EncryptTableRuleConfiguration("t_encrypt", Collections.singleton(encryptColumnRuleConfig), null);
         ShardingSphereAlgorithmConfiguration shardingSphereAlgorithmConfig = new ShardingSphereAlgorithmConfiguration("md5", new Properties());
         return new EncryptRuleConfiguration(Collections.singleton(encryptTableRuleConfig), Collections.singletonMap("test", shardingSphereAlgorithmConfig));

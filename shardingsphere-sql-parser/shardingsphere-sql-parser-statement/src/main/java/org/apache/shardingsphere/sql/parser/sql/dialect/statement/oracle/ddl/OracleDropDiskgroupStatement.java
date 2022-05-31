@@ -15,21 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.lock;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDiskgroupStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
- * Lock judge engine.
+ * Drop diskgroup statement.
  */
-public interface LockJudgeEngine {
-    
-    /**
-     * Is locked.
-     *
-     * @param databaseName database name
-     * @param sqlStatement SQL statement
-     * @return is locked or not
-     */
-    boolean isLocked(String databaseName, SQLStatement sqlStatement);
+@ToString
+public class OracleDropDiskgroupStatement extends DropDiskgroupStatement implements OracleStatement {
 }
