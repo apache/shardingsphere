@@ -82,9 +82,14 @@ public final class ComputeNodeStatusService {
      * @param xaRecoveryIds collection of xa recovery id
      */
     public void persistInstanceXaRecoveryId(final String instanceId, final Collection<String> xaRecoveryIds) {
-        loadXaRecoveryIds(instanceId).forEach(each -> repository.delete(ComputeNode.getInstanceXaRecoveryIdNodePath(each, instanceId)));
-        for (String each : xaRecoveryIds) {
-            repository.persistEphemeral(ComputeNode.getInstanceXaRecoveryIdNodePath(each, instanceId), "");
+        Collection<String> originalXaRecoveryIds = loadXaRecoveryIds(instanceId);
+        if (originalXaRecoveryIds.isEmpty()) {
+            xaRecoveryIds.forEach(each -> repository.persistEphemeral(ComputeNode.getInstanceXaRecoveryIdNodePath(each, instanceId), ""));
+        } else {
+            originalXaRecoveryIds.stream().filter(each -> !xaRecoveryIds.contains(each)).forEach(each -> repository.delete(ComputeNode
+                    .getInstanceXaRecoveryIdNodePath(each, instanceId)));
+            xaRecoveryIds.stream().filter(each -> !originalXaRecoveryIds.contains(each)).forEach(each -> repository.persistEphemeral(ComputeNode
+                    .getInstanceXaRecoveryIdNodePath(each, instanceId), ""));
         }
     }
     
@@ -173,8 +178,8 @@ public final class ComputeNodeStatusService {
         ComputeNodeInstance result = new ComputeNodeInstance(instanceDefinition);
         result.setLabels(loadInstanceLabels(instanceDefinition.getInstanceId()));
         result.switchState(loadInstanceStatus(instanceDefinition.getInstanceId()));
+        result.getXaRecoveryIds().addAll(loadXaRecoveryIds(instanceDefinition.getInstanceId()));
         loadInstanceWorkerId(instanceDefinition.getInstanceId()).ifPresent(result::setWorkerId);
-        // TODO load xa recovery id list
         return result;
     }
 }

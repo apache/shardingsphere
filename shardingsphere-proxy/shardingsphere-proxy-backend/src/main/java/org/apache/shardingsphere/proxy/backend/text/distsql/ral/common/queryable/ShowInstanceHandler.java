@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable;
 
+import com.google.common.base.Joiner;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ShowInstanceStatement;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
@@ -75,7 +76,7 @@ public final class ShowInstanceHandler extends QueryableRALBackendHandler<ShowIn
     }
     
     private List<Object> buildRow(final ComputeNodeInstance instance, final String modeType) {
-        return buildRow(instance.getInstanceDefinition(), instance.getState().getCurrentState().name(), modeType, instance.getLabels(), instance.getXaRecoveryId());
+        return buildRow(instance.getInstanceDefinition(), instance.getState().getCurrentState().name(), modeType, instance.getLabels(), Joiner.on(",").join(instance.getXaRecoveryIds()));
     }
     
     private List<Object> buildRow(final InstanceDefinition instanceDefinition, final String status, final String modeType, final Collection<String> instanceLabels, final String xaRecoveryId) {

@@ -22,11 +22,11 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 
 /**
- * Xa recovery id event.
+ * Xa recovery id deleted event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class XaRecoveryIdEvent implements GovernanceEvent {
+public final class XaRecoveryIdDeletedEvent implements GovernanceEvent {
     
     private final String instanceId;
     

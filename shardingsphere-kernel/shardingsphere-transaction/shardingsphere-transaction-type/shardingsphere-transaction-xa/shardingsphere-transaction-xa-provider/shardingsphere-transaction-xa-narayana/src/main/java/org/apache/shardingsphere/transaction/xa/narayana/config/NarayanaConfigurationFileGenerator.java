@@ -25,6 +25,7 @@ import com.arjuna.ats.internal.jta.recovery.arjunacore.JTAActionStatusServiceXAR
 import com.arjuna.ats.internal.jta.recovery.arjunacore.JTANodeNameXAResourceOrphanFilter;
 import com.arjuna.ats.internal.jta.recovery.arjunacore.JTATransactionLogXAResourceOrphanFilter;
 import com.arjuna.ats.internal.jta.recovery.arjunacore.XARecoveryModule;
+import com.google.common.base.Joiner;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
@@ -55,7 +56,7 @@ public final class NarayanaConfigurationFileGenerator implements TransactionConf
     @Override
     public void generateFile(final Properties transactionProps, final InstanceContext instanceContext) {
         String instanceId = instanceContext.getInstance().getInstanceDefinition().getInstanceId();
-        String recoveryId = null == instanceContext.getInstance().getXaRecoveryId() ? instanceId : instanceContext.getInstance().getXaRecoveryId();
+        String recoveryId = instanceContext.getInstance().getXaRecoveryIds().isEmpty() ? instanceId : Joiner.on(",").join(instanceContext.getInstance().getXaRecoveryIds());
         NarayanaConfiguration config = createDefaultConfiguration(instanceId, recoveryId);
         if (!transactionProps.isEmpty()) {
             appendUserDefinedJdbcStoreConfiguration(transactionProps, config);
