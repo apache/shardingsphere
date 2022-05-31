@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable;
 
+import com.google.common.base.Splitter;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.AlterInstanceStatement;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
@@ -52,6 +53,6 @@ public final class AlterInstanceHandler extends UpdatableRALBackendHandler<Alter
             throw new UnsupportedOperationException(String.format("'%s' does not exist", sqlStatement.getInstanceId()));
         }
         // TODO need support standalone mode
-        ShardingSphereEventBus.getInstance().post(new XaRecoveryIdChangedEvent(sqlStatement.getInstanceId(), sqlStatement.getValue()));
+        ShardingSphereEventBus.getInstance().post(new XaRecoveryIdChangedEvent(sqlStatement.getInstanceId(), Splitter.on(",").splitToList(sqlStatement.getValue())));
     }
 }
