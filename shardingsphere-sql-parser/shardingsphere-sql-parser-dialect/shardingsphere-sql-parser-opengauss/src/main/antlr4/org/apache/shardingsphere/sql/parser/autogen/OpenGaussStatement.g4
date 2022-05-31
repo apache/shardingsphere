@@ -81,6 +81,7 @@ execute
     | alterSchema
     | dropSchema
     | createType
+    | dropType
     | createTextSearch
     | dropDatabase
     | dropFunction
