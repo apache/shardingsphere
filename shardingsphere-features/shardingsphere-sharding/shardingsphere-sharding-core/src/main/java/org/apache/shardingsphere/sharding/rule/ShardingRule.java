@@ -826,7 +826,7 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
     }
     
     private Map<String, String> getAlgorithmTablePrefixMap(final Collection<ShardingTableRuleConfiguration> tables, final Collection<ShardingAutoTableRuleConfiguration> autoTables) {
-        Map<String, String> result = new LinkedHashMap<>(tables.size() + autoTables.size());
+        Map<String, String> result = new LinkedHashMap<>(tables.size() + autoTables.size(), 1);
         for (ShardingTableRuleConfiguration each : tables) {
             if (null != each.getActualTablePrefix() && null != each.getTableShardingStrategy()) {
                 result.put(each.getTableShardingStrategy().getShardingAlgorithmName(), each.getActualTablePrefix());

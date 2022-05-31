@@ -108,7 +108,7 @@ public final class TableRule {
         List<String> dataNodes = new InlineExpressionParser(tableRuleConfig.getActualDataNodes()).splitAndEvaluate();
         dataNodeIndexMap = new HashMap<>(dataNodes.size(), 1);
         actualTablePrefix = tableRuleConfig.getActualTablePrefix();
-        actualDataNodes = isEmptyDataNodes(dataNodes) ? generateDataNodes(tableRuleConfig.getLogicTable(), dataSourceNames, actualTablePrefix) 
+        actualDataNodes = isEmptyDataNodes(dataNodes) ? generateDataNodes(tableRuleConfig.getLogicTable(), dataSourceNames, actualTablePrefix)
                 : generateDataNodes(dataNodes, dataSourceNames, actualTablePrefix);
         actualTables = getActualTables();
         databaseShardingStrategyConfig = tableRuleConfig.getDatabaseShardingStrategy();
@@ -129,7 +129,7 @@ public final class TableRule {
         List<String> dataNodes = getDataNodes(tableRuleConfig, shardingAutoTableAlgorithm, dataSourceNames);
         dataNodeIndexMap = new HashMap<>(dataNodes.size(), 1);
         actualTablePrefix = tableRuleConfig.getActualTablePrefix();
-        actualDataNodes = isEmptyDataNodes(dataNodes) ? generateDataNodes(tableRuleConfig.getLogicTable(), dataSourceNames, actualTablePrefix) 
+        actualDataNodes = isEmptyDataNodes(dataNodes) ? generateDataNodes(tableRuleConfig.getLogicTable(), dataSourceNames, actualTablePrefix)
                 : generateDataNodes(dataNodes, dataSourceNames, actualTablePrefix);
         actualTables = getActualTables();
         KeyGenerateStrategyConfiguration keyGeneratorConfig = tableRuleConfig.getKeyGenerateStrategy();
