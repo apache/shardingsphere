@@ -167,7 +167,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     private void registerOnline(final MetaDataPersistService metaDataPersistService, final ContextManagerBuilderParameter parameter, final ContextManager contextManager,
                                 final RegistryCenter registryCenter) {
         String instanceId = contextManager.getInstanceContext().getInstance().getCurrentInstanceId();
-        contextManager.getInstanceContext().getInstance().setXaRecoveryId(instanceId);
+        contextManager.getInstanceContext().getInstance().getXaRecoveryIds().add(instanceId);
         contextManager.getInstanceContext().getInstance().setLabels(parameter.getLabels());
         contextManager.getInstanceContext().getComputeNodeInstances().addAll(registryCenter.getComputeNodeStatusService().loadAllComputeNodeInstances());
         new ClusterContextManagerCoordinator(metaDataPersistService, contextManager, registryCenter);

@@ -26,7 +26,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.Gover
  */
 @RequiredArgsConstructor
 @Getter
-public final class XaRecoveryIdEvent implements GovernanceEvent {
+public final class XaRecoveryIdAddedEvent implements GovernanceEvent {
     
     private final String instanceId;
     
