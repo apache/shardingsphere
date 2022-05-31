@@ -49,7 +49,8 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.statu
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ShowProcessListUnitCompleteEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.StateEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.WorkerIdEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.XaRecoveryIdEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.XaRecoveryIdAddedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.XaRecoveryIdDeletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.PrimaryStateChangedEvent;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
@@ -226,7 +227,7 @@ public final class ClusterContextManagerCoordinator {
      */
     @Subscribe
     public synchronized void renew(final WorkerIdEvent event) {
-        if (contextManager.getInstanceContext().getInstance().getInstanceDefinition().getInstanceId().getId().equals(event.getInstanceId())) {
+        if (contextManager.getInstanceContext().getInstance().getInstanceDefinition().getInstanceId().equals(event.getInstanceId())) {
             contextManager.getInstanceContext().updateWorkerId(event.getWorkerId());
         }
     }
@@ -245,11 +246,23 @@ public final class ClusterContextManagerCoordinator {
     /**
      * Renew instance xa recovery id event.
      *
-     * @param event xa recovery id event
+     * @param event xa recovery id added event
      */
     @Subscribe
-    public synchronized void renew(final XaRecoveryIdEvent event) {
-        if (contextManager.getInstanceContext().updateXaRecoveryId(event.getInstanceId(), event.getXaRecoveryId())) {
+    public synchronized void renew(final XaRecoveryIdAddedEvent event) {
+        if (contextManager.getInstanceContext().addXaRecoveryId(event.getInstanceId(), event.getXaRecoveryId())) {
+            contextManager.renewAllTransactionContext();
+        }
+    }
+    
+    /**
+     * Renew instance xa recovery id event.
+     *
+     * @param event xa recovery id deleted event
+     */
+    @Subscribe
+    public synchronized void renew(final XaRecoveryIdDeletedEvent event) {
+        if (contextManager.getInstanceContext().deleteXaRecoveryId(event.getInstanceId(), event.getXaRecoveryId())) {
             contextManager.renewAllTransactionContext();
         }
     }
@@ -293,7 +306,7 @@ public final class ClusterContextManagerCoordinator {
      */
     @Subscribe
     public synchronized void triggerShowProcessList(final ShowProcessListTriggerEvent event) {
-        if (!event.getInstanceId().equals(contextManager.getInstanceContext().getInstance().getInstanceDefinition().getInstanceId().getId())) {
+        if (!event.getInstanceId().equals(contextManager.getInstanceContext().getInstance().getInstanceDefinition().getInstanceId())) {
             return;
         }
         Collection<YamlExecuteProcessContext> processContexts = ShowProcessListManager.getInstance().getAllProcessContext();

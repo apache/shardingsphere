@@ -29,7 +29,8 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.statu
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ShowProcessListUnitCompleteEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.StateEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.WorkerIdEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.XaRecoveryIdEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.XaRecoveryIdAddedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.XaRecoveryIdDeletedEvent;
 import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
@@ -71,7 +72,7 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<G
             }
         } else if (event.getKey().startsWith(ComputeNode.getOnlineInstanceNodePath())) {
             Optional<InstanceDefinition> instanceDefinition = ComputeNode.getInstanceDefinitionByInstanceOnlinePath(event.getKey());
-            return instanceDefinition.isPresent() ? createInstanceEvent(instanceDefinition.get(), event.getType()) : Optional.empty();
+            return instanceDefinition.isPresent() ? createInstanceEvent(instanceDefinition.get(), event.getType(), event.getValue()) : Optional.empty();
         } else if (event.getKey().startsWith(ComputeNode.getProcessTriggerNodePatch())) {
             return createShowProcessListTriggerEvent(event);
         } else if (event.getKey().startsWith(ComputeNode.getXaRecoveryIdNodePath())) {
@@ -98,8 +99,9 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<G
         return pattern.matcher(event.getKey());
     }
     
-    private Optional<GovernanceEvent> createInstanceEvent(final InstanceDefinition instanceDefinition, final Type type) {
+    private Optional<GovernanceEvent> createInstanceEvent(final InstanceDefinition instanceDefinition, final Type type, final String value) {
         if (Type.ADDED == type) {
+            instanceDefinition.setAttributes(value);
             return Optional.of(new InstanceOnlineEvent(instanceDefinition));
         } else if (Type.DELETED == type) {
             return Optional.of(new InstanceOfflineEvent(instanceDefinition));
@@ -110,7 +112,11 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<G
     private Optional<GovernanceEvent> createXaRecoveryIdEvent(final DataChangedEvent event) {
         Matcher matcher = Pattern.compile(ComputeNode.getXaRecoveryIdNodePath() + "/([\\S]+)/([\\S]+)$", Pattern.CASE_INSENSITIVE).matcher(event.getKey());
         if (matcher.find()) {
-            return Optional.of(new XaRecoveryIdEvent(matcher.group(2), matcher.group(1)));
+            if (Type.ADDED == event.getType()) {
+                return Optional.of(new XaRecoveryIdAddedEvent(matcher.group(2), matcher.group(1)));
+            } else if (Type.DELETED == event.getType()) {
+                return Optional.of(new XaRecoveryIdDeletedEvent(matcher.group(2), matcher.group(1)));
+            }
         }
         return Optional.empty();
     }

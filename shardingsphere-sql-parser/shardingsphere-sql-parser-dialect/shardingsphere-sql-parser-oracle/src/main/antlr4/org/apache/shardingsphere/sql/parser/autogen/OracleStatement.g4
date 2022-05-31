@@ -94,5 +94,8 @@ execute
     | createControlFile
     | createFlashbackArchive
     | alterFlashbackArchive
+    | dropFlashbackArchive
+    | createDiskgroup
+    | dropDiskgroup
     ) SEMI_?
     ;

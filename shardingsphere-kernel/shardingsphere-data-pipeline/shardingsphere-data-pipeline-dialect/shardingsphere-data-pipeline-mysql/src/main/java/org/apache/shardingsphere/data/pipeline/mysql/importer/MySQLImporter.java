@@ -22,8 +22,6 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChanne
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.importer.AbstractImporter;
 
-import java.util.Properties;
-
 /**
  * MySQL importer.
  */
@@ -31,9 +29,6 @@ public final class MySQLImporter extends AbstractImporter {
     
     public MySQLImporter(final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager, final PipelineChannel channel) {
         super(importerConfig, dataSourceManager, channel);
-        Properties queryProps = new Properties();
-        queryProps.setProperty("rewriteBatchedStatements", Boolean.TRUE.toString());
-        importerConfig.getDataSourceConfig().appendJDBCQueryProperties(queryProps);
     }
     
     @Override

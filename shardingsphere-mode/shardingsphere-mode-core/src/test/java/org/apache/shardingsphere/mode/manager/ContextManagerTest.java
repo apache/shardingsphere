@@ -276,5 +276,6 @@ public final class ContextManagerTest {
     public void assertClose() throws Exception {
         contextManager.close();
         verify(metaDataContexts).close();
+        verify(contextManager.getTransactionContexts()).close();
     }
 }

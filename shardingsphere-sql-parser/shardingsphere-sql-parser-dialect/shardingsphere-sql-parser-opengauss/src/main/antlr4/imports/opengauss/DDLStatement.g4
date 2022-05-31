@@ -1161,7 +1161,6 @@ alterTypeClauses
     | RENAME TO name
     | RENAME ATTRIBUTE name TO name dropBehavior?
     | SET SCHEMA name
-    | SET LP_ operatorDefList RP_
     | OWNER TO roleSpec
     ;
 
@@ -1171,8 +1170,7 @@ alterTypeCmds
 
 alterTypeCmd
     : ADD ATTRIBUTE tableFuncElement dropBehavior?
-    | DROP ATTRIBUTE existClause colId dropBehavior?
-    | DROP ATTRIBUTE colId dropBehavior?
+    | DROP ATTRIBUTE existClause? colId dropBehavior?
     | ALTER ATTRIBUTE colId setData? TYPE typeName collateClause? dropBehavior?
     ;
 

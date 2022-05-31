@@ -180,7 +180,7 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
     }
     
     private void initHeartBeatJobs(final InstanceContext instanceContext) {
-        Optional<ModeScheduleContext> modeScheduleContext = ModeScheduleContextFactory.getInstance().get(instanceContext.getInstance().getInstanceDefinition().getInstanceId().getId());
+        Optional<ModeScheduleContext> modeScheduleContext = ModeScheduleContextFactory.getInstance().get(instanceContext.getInstance().getInstanceDefinition().getInstanceId());
         if (modeScheduleContext.isPresent()) {
             for (Entry<String, DatabaseDiscoveryDataSourceRule> entry : dataSourceRules.entrySet()) {
                 DatabaseDiscoveryDataSourceRule rule = entry.getValue();

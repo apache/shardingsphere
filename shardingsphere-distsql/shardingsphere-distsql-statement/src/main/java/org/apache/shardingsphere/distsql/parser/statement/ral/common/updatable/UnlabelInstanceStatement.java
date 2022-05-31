@@ -30,9 +30,7 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public class UnlabelInstanceStatement extends UpdatableRALStatement {
     
-    private final String ip;
-    
-    private final String port;
+    private final String instanceId;
     
     private final Collection<String> labels;
 }

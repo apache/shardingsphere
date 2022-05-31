@@ -19,8 +19,6 @@ package org.apache.shardingsphere.encrypt.context;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.encrypt.rule.EncryptColumn;
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 
 /**
@@ -36,19 +34,9 @@ public final class EncryptContextBuilder {
      * @param schemaName schema name
      * @param tableName table name
      * @param columnName column name
-     * @param encryptRule encrypt rule
      * @return encrypt context
      */
-    public static EncryptContext build(final String databaseName, final String schemaName, final String tableName, final String columnName, final EncryptRule encryptRule) {
-        EncryptContext result = new EncryptContext(databaseName, schemaName, tableName, columnName);
-        encryptRule.findEncryptTable(tableName).flatMap(optional -> optional.findEncryptColumn(columnName)).ifPresent(optional -> setEncryptDataType(result, optional));
-        return result;
-    }
-    
-    private static void setEncryptDataType(final EncryptContext result, final EncryptColumn encryptColumn) {
-        result.setLogicDataType(encryptColumn.getLogicDataType());
-        result.setPlainDataType(encryptColumn.getPlainDataType());
-        result.setCipherDataType(encryptColumn.getCipherDataType());
-        result.setAssistedQueryDataType(encryptColumn.getAssistedQueryDataType());
+    public static EncryptContext build(final String databaseName, final String schemaName, final String tableName, final String columnName) {
+        return new EncryptContext(databaseName, schemaName, tableName, columnName);
     }
 }
