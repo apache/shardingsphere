@@ -73,7 +73,7 @@ public final class ComputeNodeStatusSubscriber {
      */
     @Subscribe
     public void update(final XaRecoveryIdChangedEvent event) {
-        registryCenter.getComputeNodeStatusService().persistInstanceXaRecoveryId(event.getInstanceId(), event.getXaRecoveryId());
+        registryCenter.getComputeNodeStatusService().persistInstanceXaRecoveryId(event.getInstanceId(), event.getXaRecoveryIds());
     }
     
     /**
