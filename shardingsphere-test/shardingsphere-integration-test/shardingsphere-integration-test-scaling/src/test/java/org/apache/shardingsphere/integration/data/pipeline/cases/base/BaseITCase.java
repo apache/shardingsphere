@@ -220,13 +220,13 @@ public abstract class BaseITCase {
     protected void executeWithLog(final Connection connection, final String sql) throws SQLException {
         log.info("connection execute:{}", sql);
         connection.createStatement().execute(sql);
-        ThreadUtil.sleep(TimeUnit.SECONDS, 1);
+        ThreadUtil.sleep(1, TimeUnit.SECONDS);
     }
     
     protected void executeWithLog(final String sql) {
         log.info("jdbcTemplate execute:{}", sql);
         jdbcTemplate.execute(sql);
-        ThreadUtil.sleep(TimeUnit.SECONDS, 2);
+        ThreadUtil.sleep(2, TimeUnit.SECONDS);
     }
     
     protected List<Map<String, Object>> queryForListWithLog(final String sql) {
@@ -237,7 +237,7 @@ public abstract class BaseITCase {
             } catch (final DataAccessException ex) {
                 log.error("data access error", ex);
             }
-            ThreadUtil.sleep(TimeUnit.SECONDS, 2);
+            ThreadUtil.sleep(2, TimeUnit.SECONDS);
             retryNumber++;
         }
         throw new RuntimeException("can't get result from proxy");
