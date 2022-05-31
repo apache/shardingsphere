@@ -342,6 +342,7 @@ public final class ClusterContextManagerCoordinator {
     }
     
     private void buildSpecialRules() {
+        contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findRules(InstanceAwareRule.class).forEach(each -> each.setInstanceContext(contextManager.getInstanceContext()));
         contextManager.getMetaDataContexts().getMetaData().getDatabases().forEach((key, value) -> value.getRuleMetaData().getRules().forEach(each -> {
             if (each instanceof StatusContainedRule) {
                 disableDataSources((StatusContainedRule) each);
