@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.encrypt.metadata;
 
-import org.apache.shardingsphere.encrypt.rule.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
-import org.apache.shardingsphere.encrypt.spi.context.EncryptColumnDataType;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi.RuleBasedSchemaMetaDataDecoratorFactory;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
@@ -38,8 +36,6 @@ import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -59,35 +55,6 @@ public final class EncryptSchemaMetaDataDecoratorTest {
         Iterator<ColumnMetaData> columnsIterator = actual.getColumns().iterator();
         assertThat(columnsIterator.next().getName(), is("id"));
         assertThat(columnsIterator.next().getName(), is("pwd"));
-    }
-    
-    @Test
-    public void assertDecorateWithConfigDataType() {
-        EncryptRule rule = createEncryptRuleWithDataTypeConfig();
-        EncryptSchemaMetaDataDecorator loader = getEncryptMetaDataBuilder(rule, Collections.singleton(rule));
-        Collection<TableMetaData> tableMetaDataList = new LinkedList<>();
-        tableMetaDataList.add(createTableMetaData());
-        GenericSchemaBuilderMaterials materials = mock(GenericSchemaBuilderMaterials.class, RETURNS_DEEP_STUBS);
-        TableMetaData actual = loader.decorate(Collections.singletonMap("logic_db",
-                new SchemaMetaData("logic_db", tableMetaDataList)), rule, materials).get("logic_db").getTables().iterator().next();
-        assertThat(actual.getColumns().size(), is(2));
-        Iterator<ColumnMetaData> columnsIterator = actual.getColumns().iterator();
-        assertThat(columnsIterator.next().getName(), is("id"));
-        ColumnMetaData columnMetaData = columnsIterator.next();
-        assertThat(columnMetaData.getName(), is("pwd"));
-        assertThat(columnMetaData.getDataType(), is(12));
-    }
-    
-    private EncryptRule createEncryptRuleWithDataTypeConfig() {
-        EncryptRule result = createEncryptRule();
-        assertTrue(result.findEncryptTable(TABLE_NAME).isPresent());
-        EncryptTable encryptTable = result.findEncryptTable(TABLE_NAME).get();
-        EncryptColumn encryptColumn = mock(EncryptColumn.class);
-        EncryptColumnDataType encryptColumnDataType = mock(EncryptColumnDataType.class);
-        when(encryptColumnDataType.getDataType()).thenReturn(12);
-        when(encryptColumn.getLogicDataType()).thenReturn(encryptColumnDataType);
-        when(encryptTable.findEncryptColumn("pwd")).thenReturn(Optional.of(encryptColumn));
-        return result;
     }
     
     private EncryptRule createEncryptRule() {
