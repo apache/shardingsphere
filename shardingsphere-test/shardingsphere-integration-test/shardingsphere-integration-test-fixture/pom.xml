@@ -156,7 +156,7 @@
             </build>
         </profile>
         <profile>
-            <id>it.env.docker.all.in.one</id>
+            <id>all.in.one</id>
             <properties>
                 <it.cluster.env.type>DOCKER</it.cluster.env.type>
             </properties>
