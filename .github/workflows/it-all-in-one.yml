@@ -22,6 +22,8 @@ on:
     branches: [ master, dev ]
   pull_request:
     branches: [ master ]
+  schedule:
+    - cron: '0 23 */1 * *'  # once a day. UTC time
 
 concurrency:
   group: it-${{ github.workflow }}-${{ github.ref }}
@@ -31,10 +33,11 @@ env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true
 
 jobs:
-  all-in-one-jar:
-    name: Test-all-in-one-jar
+  all-in-one-jar-daily-it-test:
+    if: (github.event_name == 'schedule' && github.repository == 'apache/shardingsphere')
+    name: all-in-one-jar-daily-it-test
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 60
     strategy:
       matrix:
         env: [ docker ]
