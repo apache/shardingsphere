@@ -155,13 +155,14 @@ public final class TestDecodingPlugin implements DecodingPlugin {
     }
     
     private Object readColumnData(final ByteBuffer data, final String columnType) {
-        if (columnType.startsWith("bit") || columnType.startsWith("bit varying")) {
-            return readNextSegment(data);
-        }
         String result;
         if (columnType.startsWith("numeric")) {
             result = readNextSegment(data);
             return checkStringIsNullOrEmpty(result) ? null : new BigDecimal(result);
+        }
+        if (columnType.startsWith("bit") || columnType.startsWith("bit varying")) {
+            result = readNextSegment(data);
+            return checkStringIsNullOrEmpty(result) ? null : result;
         }
         switch (columnType) {
             case "smallint":
