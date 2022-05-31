@@ -33,6 +33,7 @@ import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -101,9 +102,14 @@ public final class TestDecodingPluginTest {
     }
     
     @Test
-    public void assertDecodeInsertCharacterVaryingWithNullValue() {
-        ByteBuffer data = ByteBuffer.wrap("table public.test: INSERT: col1[character varying]:null col2[character varying]:'nonnull'".getBytes());
+    public void assertDecodeInsertWithNullValue() {
+        ByteBuffer data = ByteBuffer.wrap("table public.test: INSERT: id[integer]:123 col0[integer]:null col1[character varying]:null col2[character varying]:'nonnull'".getBytes());
         AbstractWalEvent actual = new TestDecodingPlugin(null).decode(data, logSequenceNumber);
         assertThat(actual, instanceOf(WriteRowEvent.class));
+        WriteRowEvent actualWriteRowEvent = (WriteRowEvent) actual;
+        assertThat(actualWriteRowEvent.getAfterRow().get(0), is(123));
+        assertNull(actualWriteRowEvent.getAfterRow().get(1));
+        assertNull(actualWriteRowEvent.getAfterRow().get(2));
+        assertThat(actualWriteRowEvent.getAfterRow().get(3), is("nonnull"));
     }
 }
