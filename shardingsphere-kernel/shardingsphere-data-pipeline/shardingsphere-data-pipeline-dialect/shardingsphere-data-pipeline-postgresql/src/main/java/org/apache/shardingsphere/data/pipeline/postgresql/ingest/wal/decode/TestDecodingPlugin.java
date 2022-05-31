@@ -183,7 +183,7 @@ public final class TestDecodingPlugin implements DecodingPlugin {
                 result = readNextSegment(data);
                 return checkStringIsNullOrEmpty(result) ? null : Boolean.parseBoolean(result);
             case "time without time zone":
-                result = readNextSegment(data);
+                result = readNextString(data);
                 try {
                     return checkStringIsNullOrEmpty(result) ? null : timestampUtils.toTime(null, result);
                 } catch (final SQLException ex) {
@@ -192,7 +192,7 @@ public final class TestDecodingPlugin implements DecodingPlugin {
             case "date":
                 return Date.valueOf(readNextString(data));
             case "timestamp without time zone":
-                result = readNextSegment(data);
+                result = readNextString(data);
                 try {
                     return checkStringIsNullOrEmpty(result) ? null : timestampUtils.toTimestamp(null, result);
                 } catch (final SQLException ex) {
