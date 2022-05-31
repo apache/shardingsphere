@@ -48,6 +48,7 @@ import org.apache.shardingsphere.elasticjob.lite.lifecycle.domain.JobBriefInfo;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.lock.LockContext;
+import org.apache.shardingsphere.infra.lock.LockMode;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingTaskFinishedEvent;
 import org.apache.shardingsphere.scaling.core.job.environment.ScalingEnvironmentManager;
@@ -189,7 +190,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
             log.info("stopClusterWriteDB, already stopped");
             return;
         }
-        if (lockContext.lockWrite(databaseName)) {
+        if (lockContext.tryLock(databaseName, LockMode.READ)) {
             log.info("stopClusterWriteDB, tryLockSuccess=true");
             return;
         }
@@ -212,7 +213,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
         if (lockContext.isLocked(databaseName)) {
             log.info("restoreClusterWriteDB, before releaseLock, databaseName={}, jobId={}", databaseName, jobId);
-            lockContext.releaseLockWrite(databaseName);
+            lockContext.releaseLock(databaseName);
             return;
         }
         log.info("restoreClusterWriteDB, isLocked false, databaseName={}", databaseName);

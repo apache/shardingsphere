@@ -50,6 +50,8 @@ public enum SQLVisitorRule {
     
     ALTER_TABLE("AlterTable", SQLStatementType.DDL),
     
+    ALTER_TYPE("AlterType", SQLStatementType.DDL),
+    
     ALTER_AGGREGATE("AlterAggregate", SQLStatementType.DDL),
     
     ALTER_COLLATION("AlterCollation", SQLStatementType.DDL),
@@ -529,6 +531,8 @@ public enum SQLVisitorRule {
     DROP_FLASHBACK_ARCHIVE("DropFlashbackArchive", SQLStatementType.DDL),
     
     CREATE_DISKGROUP("CreateDiskgroup", SQLStatementType.DDL),
+    
+    DROP_DISKGROUP("DropDiskgroup", SQLStatementType.DDL),
     
     CURSOR("Cursor", SQLStatementType.DDL),
     

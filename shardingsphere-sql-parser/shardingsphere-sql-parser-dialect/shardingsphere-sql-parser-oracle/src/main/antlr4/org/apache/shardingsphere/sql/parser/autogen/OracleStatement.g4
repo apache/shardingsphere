@@ -96,5 +96,6 @@ execute
     | alterFlashbackArchive
     | dropFlashbackArchive
     | createDiskgroup
+    | dropDiskgroup
     ) SEMI_?
     ;

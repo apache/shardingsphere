@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.node.MutexLockNodeService
+org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.distributed.node.DistributedLockNodeService
 org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.database.node.DatabaseLockNodeService

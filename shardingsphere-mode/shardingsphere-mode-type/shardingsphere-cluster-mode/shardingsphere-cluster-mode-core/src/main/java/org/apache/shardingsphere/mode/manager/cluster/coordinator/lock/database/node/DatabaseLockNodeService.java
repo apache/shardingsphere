@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.database.node;
 
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.AbstractDistributeLockNodeService;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.AbstractDistributedLockNodeService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeType;
 
 /**
  * Database lock node service.
  */
-public final class DatabaseLockNodeService extends AbstractDistributeLockNodeService {
+public final class DatabaseLockNodeService extends AbstractDistributedLockNodeService {
     
     @Override
     public String getSequenceNodePath() {

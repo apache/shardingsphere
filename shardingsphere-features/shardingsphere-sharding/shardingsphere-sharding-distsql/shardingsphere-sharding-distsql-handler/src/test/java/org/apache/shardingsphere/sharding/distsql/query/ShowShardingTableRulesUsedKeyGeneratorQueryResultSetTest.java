@@ -48,21 +48,18 @@ public final class ShowShardingTableRulesUsedKeyGeneratorQueryResultSetTest {
     public void assertGetRowData() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getRuleMetaData().findRuleConfigurations(ShardingRuleConfiguration.class)).thenReturn(Collections.singleton(createRuleConfiguration()));
-        when(database.getName()).thenReturn("sharding_db");
         DistSQLResultSet resultSet = new ShardingTableRulesUsedKeyGeneratorQueryResultSet();
         ShowShardingTableRulesUsedKeyGeneratorStatement statement = mock(ShowShardingTableRulesUsedKeyGeneratorStatement.class);
         when(statement.getKeyGeneratorName()).thenReturn(Optional.of("snowflake"));
         resultSet.init(database, statement);
         List<Object> actual = new ArrayList<>(resultSet.getRowData());
-        assertThat(actual.size(), is(3));
-        assertThat(actual.get(0), is("sharding_db"));
-        assertThat(actual.get(1), is("table"));
-        assertThat(actual.get(2), is("t_order"));
+        assertThat(actual.size(), is(2));
+        assertThat(actual.get(0), is("table"));
+        assertThat(actual.get(1), is("t_order"));
         actual = new ArrayList<>(resultSet.getRowData());
-        assertThat(actual.size(), is(3));
-        assertThat(actual.get(0), is("sharding_db"));
-        assertThat(actual.get(1), is("auto_table"));
-        assertThat(actual.get(2), is("t_order_auto"));
+        assertThat(actual.size(), is(2));
+        assertThat(actual.get(0), is("auto_table"));
+        assertThat(actual.get(1), is("t_order_auto"));
     }
     
     private ShardingRuleConfiguration createRuleConfiguration() {

@@ -21,8 +21,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
-import java.util.Optional;
-
 /**
  * Encrypt context.
  */
@@ -38,48 +36,4 @@ public final class EncryptContext {
     private final String tableName;
     
     private final String columnName;
-    
-    private EncryptColumnDataType logicDataType;
-    
-    private EncryptColumnDataType plainDataType;
-    
-    private EncryptColumnDataType cipherDataType;
-    
-    private EncryptColumnDataType assistedQueryDataType;
-    
-    /**
-     * Get logic data type.
-     * 
-     * @return logic data type
-     */
-    public Optional<EncryptColumnDataType> getLogicDataType() {
-        return Optional.ofNullable(logicDataType);
-    }
-    
-    /**
-     * Get plain data type.
-     *
-     * @return plain data type
-     */
-    public Optional<EncryptColumnDataType> getPlainDataType() {
-        return Optional.ofNullable(plainDataType);
-    }
-    
-    /**
-     * Get cipher data type.
-     *
-     * @return cipher data type
-     */
-    public Optional<EncryptColumnDataType> getCipherDataType() {
-        return Optional.ofNullable(cipherDataType);
-    }
-    
-    /**
-     * Get assisted query data type.
-     *
-     * @return assisted query data type
-     */
-    public Optional<EncryptColumnDataType> getAssistedQueryDataType() {
-        return Optional.ofNullable(assistedQueryDataType);
-    }
 }

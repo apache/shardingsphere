@@ -20,6 +20,8 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.stat
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Collection;
+
 /**
  * Xa recovery id changed event.
  */
@@ -29,5 +31,5 @@ public final class XaRecoveryIdChangedEvent {
     
     private final String instanceId;
     
-    private final String xaRecoveryId;
+    private final Collection<String> xaRecoveryIds;
 }
