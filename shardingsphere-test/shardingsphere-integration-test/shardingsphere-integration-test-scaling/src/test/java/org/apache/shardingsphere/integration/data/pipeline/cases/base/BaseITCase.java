@@ -109,7 +109,7 @@ public abstract class BaseITCase {
         Properties queryProps = ScalingCaseHelper.getQueryPropertiesByDatabaseType(databaseType);
         String defaultDatabaseName = DatabaseTypeUtil.isPostgreSQL(databaseType) ? "postgres" : "";
         try (Connection connection = DriverManager.getConnection(jdbcUrlAppender.appendQueryProperties(composedContainer.getProxyJdbcUrl(defaultDatabaseName), queryProps), "root", "root")) {
-            executeWithLogAndWait(connection, "CREATE DATABASE sharding_db");
+            executeWithLog(connection, "CREATE DATABASE sharding_db");
         }
         jdbcTemplate = new JdbcTemplate(getProxyDataSource("sharding_db"));
     }
@@ -164,7 +164,7 @@ public abstract class BaseITCase {
                 .replace("${password}", ScalingCaseHelper.getPassword(databaseType))
                 .replace("${ds0}", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_0"), queryProps))
                 .replace("${ds1}", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_1"), queryProps));
-        executeWithLogAndWait(connection, addSourceResource);
+        executeWithLog(connection, addSourceResource);
     }
     
     @SneakyThrows
@@ -175,7 +175,7 @@ public abstract class BaseITCase {
                 .replace("${ds2}", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_2"), queryProps))
                 .replace("${ds3}", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_3"), queryProps))
                 .replace("${ds4}", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_4"), queryProps));
-        executeWithLogAndWait(addTargetResource);
+        executeWithLog(addTargetResource);
         List<Map<String, Object>> resources = queryForListWithLog("SHOW DATABASE RESOURCES from sharding_db");
         assertThat(resources.size(), is(5));
         assertBeforeApplyScalingMetadataCorrectly();
@@ -191,39 +191,39 @@ public abstract class BaseITCase {
     }
     
     protected void initShardingAlgorithm() {
-        executeWithLogAndWait(getCommonSQLCommand().getCreateDatabaseShardingAlgorithm());
-        executeWithLogAndWait(getCommonSQLCommand().getCreateOrderShardingAlgorithm());
-        executeWithLogAndWait(getCommonSQLCommand().getCreateOrderItemShardingAlgorithm());
+        executeWithLog(getCommonSQLCommand().getCreateDatabaseShardingAlgorithm());
+        executeWithLog(getCommonSQLCommand().getCreateOrderShardingAlgorithm());
+        executeWithLog(getCommonSQLCommand().getCreateOrderItemShardingAlgorithm());
     }
     
     protected void getCreateOrderWithItemSharingTableRule() {
-        executeWithLogAndWait(commonSQLCommand.getCreateOrderWithItemSharingTableRule());
+        executeWithLog(commonSQLCommand.getCreateOrderWithItemSharingTableRule());
         assertBeforeApplyScalingMetadataCorrectly();
     }
     
     protected void createOrderSharingTableRule() {
-        executeWithLogAndWait(commonSQLCommand.getCreateOrderShardingTableRule());
+        executeWithLog(commonSQLCommand.getCreateOrderShardingTableRule());
     }
     
     protected void bindingShardingRule() {
-        executeWithLogAndWait("CREATE SHARDING BINDING TABLE RULES (t_order,t_order_item)");
+        executeWithLog("CREATE SHARDING BINDING TABLE RULES (t_order,t_order_item)");
     }
     
     protected void createScalingRule() {
-        executeWithLogAndWait("CREATE SHARDING SCALING RULE scaling_manual (INPUT(SHARDING_SIZE=1000), DATA_CONSISTENCY_CHECKER(TYPE(NAME=DATA_MATCH)))");
+        executeWithLog("CREATE SHARDING SCALING RULE scaling_manual (INPUT(SHARDING_SIZE=1000), DATA_CONSISTENCY_CHECKER(TYPE(NAME=DATA_MATCH)))");
     }
     
     protected void createSchema(final String schemaName) {
-        executeWithLogAndWait(String.format("CREATE SCHEMA %s", schemaName));
+        executeWithLog(String.format("CREATE SCHEMA %s", schemaName));
     }
     
-    protected void executeWithLogAndWait(final Connection connection, final String sql) throws SQLException {
+    protected void executeWithLog(final Connection connection, final String sql) throws SQLException {
         log.info("connection execute:{}", sql);
         connection.createStatement().execute(sql);
         ThreadUtil.sleep(TimeUnit.SECONDS, 1);
     }
     
-    protected void executeWithLogAndWait(final String sql) {
+    protected void executeWithLog(final String sql) {
         log.info("jdbcTemplate execute:{}", sql);
         jdbcTemplate.execute(sql);
         ThreadUtil.sleep(TimeUnit.SECONDS, 2);
@@ -297,7 +297,7 @@ public abstract class BaseITCase {
             TimeUnit.SECONDS.sleep(2);
         }
         assertThat(actualStatusMap.values().stream().filter(StringUtils::isNotBlank).collect(Collectors.toSet()).size(), is(1));
-        executeWithLogAndWait(String.format("STOP SCALING SOURCE WRITING %s", jobId));
+        executeWithLog(String.format("STOP SCALING SOURCE WRITING %s", jobId));
         assertBeforeApplyScalingMetadataCorrectly();
         List<Map<String, Object>> checkScalingResults = queryForListWithLog(String.format("CHECK SCALING %s BY TYPE (NAME=DATA_MATCH)", jobId));
         log.info("checkScalingResults: {}", checkScalingResults);
@@ -305,7 +305,7 @@ public abstract class BaseITCase {
             assertTrue(Boolean.parseBoolean(entry.get("records_content_matched").toString()));
         }
         assertBeforeApplyScalingMetadataCorrectly();
-        executeWithLogAndWait(String.format("APPLY SCALING %s", jobId));
+        executeWithLog(String.format("APPLY SCALING %s", jobId));
         // TODO make sure the scaling job was applied
         TimeUnit.SECONDS.sleep(2);
         List<Map<String, Object>> previewResults = queryForListWithLog("PREVIEW SELECT COUNT(1) FROM t_order");

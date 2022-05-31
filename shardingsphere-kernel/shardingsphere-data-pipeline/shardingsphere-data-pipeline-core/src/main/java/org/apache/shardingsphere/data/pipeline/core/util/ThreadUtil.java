@@ -31,7 +31,7 @@ public final class ThreadUtil {
     /**
      * Sleep ignored InterruptedException.
      *
-     * @param millis sleep time.
+     * @param millis sleep time
      */
     public static void sleep(final long millis) {
         try {
@@ -43,12 +43,12 @@ public final class ThreadUtil {
     /**
      * Sleep ignored InterruptedException.
      *
-     * @param timeUnit time unit.
-     * @param number sleep time.
+     * @param timeout timeout
+     * @param timeUnit time unit
      */
-    public static void sleep(final TimeUnit timeUnit, final int number) {
+    public static void sleep(final int timeout, final TimeUnit timeUnit) {
         try {
-            timeUnit.sleep(number);
+            timeUnit.sleep(timeout);
         } catch (final InterruptedException ignored) {
         }
     }

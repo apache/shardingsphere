@@ -74,7 +74,7 @@ public class TextPrimaryKeyScalingIT extends BaseExtraSQLITCase {
         createOrderTable();
         batchInsertOrder();
         addTargetResource();
-        executeWithLogAndWait(getCommonSQLCommand().getAutoAlterOrderShardingTableRule());
+        executeWithLog(getCommonSQLCommand().getAutoAlterOrderShardingTableRule());
         assertCheckMatchConsistencySuccess();
     }
     
