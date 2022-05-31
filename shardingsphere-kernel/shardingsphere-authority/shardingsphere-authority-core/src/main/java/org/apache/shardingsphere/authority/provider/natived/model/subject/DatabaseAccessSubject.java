@@ -22,11 +22,11 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.authority.model.AccessSubject;
 
 /**
- * Schema access subject.
+ * Database access subject.
  */
 @RequiredArgsConstructor
 @Getter
-public final class SchemaAccessSubject implements AccessSubject {
+public final class DatabaseAccessSubject implements AccessSubject {
     
-    private final String schema;
+    private final String database;
 }

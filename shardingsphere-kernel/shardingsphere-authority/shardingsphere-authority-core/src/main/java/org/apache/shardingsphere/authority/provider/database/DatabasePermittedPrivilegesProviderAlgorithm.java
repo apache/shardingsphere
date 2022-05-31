@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.provider.schema;
+package org.apache.shardingsphere.authority.provider.database;
 
 import lombok.Getter;
 import org.apache.shardingsphere.authority.model.AuthorityRegistry;
-import org.apache.shardingsphere.authority.provider.schema.builder.SchemaPrivilegeBuilder;
+import org.apache.shardingsphere.authority.provider.database.builder.DatabasePrivilegeBuilder;
 import org.apache.shardingsphere.authority.registry.UserPrivilegeMapAuthorityRegistry;
 import org.apache.shardingsphere.authority.spi.AuthorityProviderAlgorithm;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -31,11 +31,11 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * Schema permitted privileges provider algorithm.
+ * Database permitted privileges provider algorithm.
  */
-public final class SchemaPermittedPrivilegesProviderAlgorithm implements AuthorityProviderAlgorithm {
+public final class DatabasePermittedPrivilegesProviderAlgorithm implements AuthorityProviderAlgorithm {
     
-    public static final String PROP_USER_SCHEMA_MAPPINGS = "user-schema-mappings";
+    public static final String PROP_USER_DATABASE_MAPPINGS = "user-database-mappings";
     
     @Getter
     private Properties props;
@@ -47,12 +47,12 @@ public final class SchemaPermittedPrivilegesProviderAlgorithm implements Authori
     
     @Override
     public AuthorityRegistry buildAuthorityRegistry(final Map<String, ShardingSphereDatabase> databases, final Collection<ShardingSphereUser> users) {
-        return new UserPrivilegeMapAuthorityRegistry(SchemaPrivilegeBuilder.build(users, props));
+        return new UserPrivilegeMapAuthorityRegistry(DatabasePrivilegeBuilder.build(users, props));
     }
     
     @Override
     public String getType() {
-        return "SCHEMA_PERMITTED";
+        return "DATABASE_PERMITTED";
     }
     
     @Override
