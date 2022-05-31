@@ -131,5 +131,6 @@ execute
     | dropCast
     | alterRule
     | checkpoint
+    | alterType
     ) SEMI_? EOF
     ;
