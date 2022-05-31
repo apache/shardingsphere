@@ -31,7 +31,6 @@ import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
-import org.apache.shardingsphere.infra.lock.LockJudgeEngine;
 import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -82,7 +81,7 @@ public abstract class DatabaseCommunicationEngine<T> {
     
     private final BackendConnection<?> backendConnection;
     
-    private final LockJudgeEngine lockJudgeEngine;
+    private final ShardingSphereLockJudgeEngine lockJudgeEngine;
     
     public DatabaseCommunicationEngine(final String driverType, final ShardingSphereDatabase database, final LogicSQL logicSQL, final BackendConnection<?> backendConnection) {
         this.driverType = driverType;

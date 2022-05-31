@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mode.manager.lock;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.lock.LockContext;
-import org.apache.shardingsphere.infra.lock.LockJudgeEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
@@ -29,11 +28,17 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectState
  * Lock judge engine for ShardingSphere.
  */
 @RequiredArgsConstructor
-public final class ShardingSphereLockJudgeEngine implements LockJudgeEngine {
+public final class ShardingSphereLockJudgeEngine {
     
     private final LockContext lockContext;
     
-    @Override
+    /**
+     * Is locked.
+     *
+     * @param databaseName database name
+     * @param sqlStatement sql statement
+     * @return is locked or not
+     */
     public boolean isLocked(final String databaseName, final SQLStatement sqlStatement) {
         if (sqlStatement instanceof DMLStatement) {
             if (sqlStatement instanceof SelectStatement) {
