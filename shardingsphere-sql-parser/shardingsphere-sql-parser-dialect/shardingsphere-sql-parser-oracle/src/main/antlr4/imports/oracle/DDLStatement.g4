@@ -2446,3 +2446,11 @@ attribute
 attributeNameAndValue
     : SQ_ attributeName SQ_ EQ_ SQ_ attributeValue SQ_
     ;
+
+dropDiskgroup
+    : DROP DISKGROUP diskgroupName contentsClause?
+    ;
+
+contentsClause
+    : ((FORCE? INCLUDING) | EXCLUDING) CONTENTS
+    ;

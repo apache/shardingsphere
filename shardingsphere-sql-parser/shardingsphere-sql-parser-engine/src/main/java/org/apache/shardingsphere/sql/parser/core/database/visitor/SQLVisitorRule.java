@@ -530,6 +530,8 @@ public enum SQLVisitorRule {
     
     CREATE_DISKGROUP("CreateDiskgroup", SQLStatementType.DDL),
     
+    DROP_DISKGROUP("DropDiskgroup", SQLStatementType.DDL),
+    
     CURSOR("Cursor", SQLStatementType.DDL),
     
     CLOSE("Close", SQLStatementType.DDL),
