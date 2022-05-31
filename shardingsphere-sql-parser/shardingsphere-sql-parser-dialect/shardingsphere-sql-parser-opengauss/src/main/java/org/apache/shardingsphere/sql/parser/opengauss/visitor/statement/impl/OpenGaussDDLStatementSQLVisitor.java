@@ -93,6 +93,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Dro
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropSchemaContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropSequenceContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropSynonymContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropDirectoryContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropTablespaceContext;
@@ -203,6 +204,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropSchemaStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropSequenceStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropSynonymStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropTypeStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropDirectoryStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropTablespaceStatement;
@@ -676,6 +678,11 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
     @Override
     public ASTNode visitDropSynonym(final DropSynonymContext ctx) {
         return new OpenGaussDropSynonymStatement();
+    }
+    
+    @Override
+    public ASTNode visitDropType(final DropTypeContext ctx) {
+        return new OpenGaussDropTypeStatement();
     }
     
     @Override
