@@ -146,7 +146,7 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
         return false;
     }
     
-    private String findTableName(Collection<SimpleTableSegment> allTables, String tableName) throws SQLException {
+    private String findTableName(final Collection<SimpleTableSegment> allTables, final String tableName) throws SQLException {
         return allTables.stream()
                 .filter(tb -> tb.getTableName().getIdentifier().getValue().equalsIgnoreCase(tableName) || tableName.equalsIgnoreCase(tb.getAlias().orElse(null)))
                 .findFirst()
