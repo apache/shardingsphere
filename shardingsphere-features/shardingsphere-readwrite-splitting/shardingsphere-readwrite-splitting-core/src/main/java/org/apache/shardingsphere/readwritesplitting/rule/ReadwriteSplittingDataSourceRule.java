@@ -26,7 +26,6 @@ import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgo
 import org.apache.shardingsphere.readwritesplitting.strategy.ReadwriteSplittingStrategy;
 import org.apache.shardingsphere.readwritesplitting.strategy.ReadwriteSplittingStrategyFactory;
 import org.apache.shardingsphere.readwritesplitting.strategy.type.DynamicReadwriteSplittingStrategy;
-import org.apache.shardingsphere.readwritesplitting.strategy.type.StaticReadwriteSplittingStrategy;
 
 import java.util.Collection;
 import java.util.HashSet;
