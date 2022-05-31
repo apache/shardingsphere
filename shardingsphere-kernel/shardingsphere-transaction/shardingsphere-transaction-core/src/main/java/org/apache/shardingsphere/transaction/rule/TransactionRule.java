@@ -50,7 +50,7 @@ public final class TransactionRule implements GlobalRule, InstanceAwareRule, Res
     
     private final Map<String, ShardingSphereDatabase> databases;
     
-    private volatile Map<String, ShardingSphereTransactionManagerEngine> resources;
+    private volatile Map<String, ShardingSphereTransactionManagerEngine> resources = new HashMap<>();
     
     public TransactionRule(final TransactionRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases) {
         defaultType = TransactionType.valueOf(ruleConfig.getDefaultType().toUpperCase());
@@ -60,7 +60,7 @@ public final class TransactionRule implements GlobalRule, InstanceAwareRule, Res
     }
     
     @Override
-    public void setInstanceContext(final InstanceContext instanceContext) {
+    public synchronized void setInstanceContext(final InstanceContext instanceContext) {
         resources = createTransactionManagerEngines(databases, instanceContext);
     }
     
