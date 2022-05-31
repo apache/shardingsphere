@@ -532,6 +532,8 @@ public enum SQLVisitorRule {
     
     DROP_DISKGROUP("DropDiskgroup", SQLStatementType.DDL),
     
+    CREATE_ROLLBACK_SEGMENT("CreateRollbackSegment", SQLStatementType.DDL),
+    
     CURSOR("Cursor", SQLStatementType.DDL),
     
     CLOSE("Close", SQLStatementType.DDL),
