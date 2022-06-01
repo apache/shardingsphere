@@ -162,14 +162,6 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         }
     }
     
-    private void verifySourceWritingStopped(final RuleAlteredJobConfiguration jobConfig) {
-        LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
-        String databaseName = jobConfig.getDatabaseName();
-        if (!lockContext.isLocked(databaseName)) {
-            throw new PipelineVerifyFailedException("Source writing is not stopped. You could run `STOP SCALING SOURCE WRITING {jobId}` to stop it.");
-        }
-    }
-    
     @Override
     public void stopClusterWriteDB(final String jobId) {
         checkModeConfig();
@@ -286,7 +278,6 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     
     private void verifyDataConsistencyCheck(final RuleAlteredJobConfiguration jobConfig) {
         verifyManualMode(jobConfig);
-        verifySourceWritingStopped(jobConfig);
     }
     
     @Override
