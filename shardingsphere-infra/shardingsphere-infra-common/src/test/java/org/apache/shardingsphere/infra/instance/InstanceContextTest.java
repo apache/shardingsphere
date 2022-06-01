@@ -33,8 +33,10 @@ import java.util.Random;
 import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -110,5 +112,14 @@ public final class InstanceContextTest {
         InstanceContext context = new InstanceContext(new ComputeNodeInstance(mock(InstanceDefinition.class)), new WorkerIdGeneratorFixture(Long.MIN_VALUE), modeConfig, lockContext);
         ModeConfiguration actual = context.getModeConfiguration();
         assertThat(actual, is(modeConfig));
+    }
+    
+    @Test
+    public void assertIsCluster() {
+        InstanceContext context = new InstanceContext(new ComputeNodeInstance(mock(InstanceDefinition.class)), new WorkerIdGeneratorFixture(Long.MIN_VALUE), modeConfig, lockContext);
+        assertFalse(context.isCluster());
+        InstanceContext clusterContext = new InstanceContext(new ComputeNodeInstance(mock(InstanceDefinition.class)), new WorkerIdGeneratorFixture(Long.MIN_VALUE), 
+                new ModeConfiguration("Cluster", null, false), lockContext);
+        assertTrue(clusterContext.isCluster());
     }
 }

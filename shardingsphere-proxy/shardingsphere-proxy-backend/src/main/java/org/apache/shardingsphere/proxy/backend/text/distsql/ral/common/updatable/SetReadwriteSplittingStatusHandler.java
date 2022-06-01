@@ -97,7 +97,7 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
     }
     
     private void checkModeAndPersistRepository(final ContextManager contextManager) {
-        if (!"Cluster".equals(contextManager.getInstanceContext().getModeConfiguration().getType())) {
+        if (!contextManager.getInstanceContext().isCluster()) {
             throw new UnsupportedOperationException("Mode must be `Cluster`.");
         }
         if (!contextManager.getMetaDataContexts().getPersistService().isPresent()) {
