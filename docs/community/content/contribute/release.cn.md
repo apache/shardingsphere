@@ -41,8 +41,9 @@ Release Note 需提供中文/英文两种版本，确认中文描述是否明确
 
 **5. 发送讨论邮件**
 
-1. 发送邮件至 [dev@shardingsphere.apache.org](mailto:dev@shardingsphere.apache.org)，在邮件正文中描述或链接 Release Note；
-2. 关注邮件列表，确认社区开发者对 Release Note 没有任何疑问。
+1. 创建 [GitHub Discussion](https://github.com/apache/shardingsphere/discussions) 并在讨论内容中列出 Release Note；
+2. 发送邮件至 [dev@shardingsphere.apache.org](mailto:dev@shardingsphere.apache.org)，在邮件正文中链接 GitHub Discussion；
+3. 关注邮件列表，确认社区开发者对 Release Note 没有任何疑问。
 
 ## GPG 设置
 
