@@ -55,10 +55,23 @@ public final class ShardingTableRulesUsedAlgorithmQueryResultSet implements Dist
         boolean matchDefaultTableShardingStrategy = null != shardingRuleConfig.getDefaultTableShardingStrategy()
                 && algorithmName.equals(shardingRuleConfig.getDefaultTableShardingStrategy().getShardingAlgorithmName());
         shardingRuleConfig.getTables().forEach(each -> {
-            if (((null != each.getDatabaseShardingStrategy() && algorithmName.equals(each.getDatabaseShardingStrategy().getShardingAlgorithmName())))
-                    || (null != each.getTableShardingStrategy() && algorithmName.equals(each.getTableShardingStrategy().getShardingAlgorithmName()))
-                    || (null == each.getDatabaseShardingStrategy() && null == each.getTableShardingStrategy() && (matchDefaultDatabaseShardingStrategy || matchDefaultTableShardingStrategy))) {
-                data.add(Arrays.asList("table", each.getLogicTable()));
+            if (null == each.getDatabaseShardingStrategy()) {
+                if (matchDefaultDatabaseShardingStrategy) {
+                    data.add(Arrays.asList("table", each.getLogicTable()));
+                }
+            } else {
+                if (algorithmName.equals(each.getDatabaseShardingStrategy().getShardingAlgorithmName())) {
+                    data.add(Arrays.asList("table", each.getLogicTable()));
+                }
+            }
+            if (null == each.getTableShardingStrategy()) {
+                if (matchDefaultTableShardingStrategy) {
+                    data.add(Arrays.asList("table", each.getLogicTable()));
+                }
+            } else {
+                if (algorithmName.equals(each.getTableShardingStrategy().getShardingAlgorithmName())) {
+                    data.add(Arrays.asList("table", each.getLogicTable()));
+                }
             }
         });
         shardingRuleConfig.getAutoTables().forEach(each -> {
