@@ -50,13 +50,13 @@ public final class TableExtractorTest {
     
     @Test
     public void assertExtractTablesFromSelectProjects() {
-        MySQLSelectStatement selectStatement = new MySQLSelectStatement();
-        AggregationProjectionSegment aggregationProjection = new AggregationProjectionSegment(10,20, AggregationType.SUM, "t_order.id");
+        AggregationProjectionSegment aggregationProjection = new AggregationProjectionSegment(10, 20, AggregationType.SUM, "t_order.id");
         ColumnSegment columnSegment = new ColumnSegment(133, 136, new IdentifierValue("id"));
         columnSegment.setOwner(new OwnerSegment(130, 132, new IdentifierValue("t_order")));
         aggregationProjection.getParameters().add(columnSegment);
-        ProjectionsSegment projectionsSegment = new ProjectionsSegment(10,20);
+        ProjectionsSegment projectionsSegment = new ProjectionsSegment(10, 20);
         projectionsSegment.getProjections().add(aggregationProjection);
+        MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setProjections(projectionsSegment);
         tableExtractor.extractTablesFromSelect(selectStatement);
         assertThat(tableExtractor.getRewriteTables().size(), is(1));
