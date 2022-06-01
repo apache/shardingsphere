@@ -504,14 +504,14 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
         AggregationType type = AggregationType.valueOf(aggregationType.toUpperCase());
         String innerExpression = ctx.start.getInputStream().getText(new Interval(ctx.LP_().get(0).getSymbol().getStartIndex(), ctx.stop.getStopIndex()));
         if (null != ctx.DISTINCT()) {
-            AggregationDistinctProjectionSegment distinctProjectionSegment = new AggregationDistinctProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
+            AggregationDistinctProjectionSegment result = new AggregationDistinctProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
                     type, innerExpression, getDistinctExpression(ctx));
-            distinctProjectionSegment.getParameters().addAll(getExpressions(ctx));
-            return distinctProjectionSegment;
+            result.getParameters().addAll(getExpressions(ctx));
+            return result;
         }
-        AggregationProjectionSegment projectionSegment = new AggregationProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpression);
-        projectionSegment.getParameters().addAll(getExpressions(ctx));
-        return projectionSegment;
+        AggregationProjectionSegment result = new AggregationProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpression);
+        result.getParameters().addAll(getExpressions(ctx));
+        return result;
     }
     
     private Collection<ExpressionSegment> getExpressions(final AggregationFunctionContext ctx) {
