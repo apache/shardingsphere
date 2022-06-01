@@ -97,5 +97,6 @@ execute
     | dropFlashbackArchive
     | createDiskgroup
     | dropDiskgroup
+    | createRollbackSegment
     ) SEMI_?
     ;
