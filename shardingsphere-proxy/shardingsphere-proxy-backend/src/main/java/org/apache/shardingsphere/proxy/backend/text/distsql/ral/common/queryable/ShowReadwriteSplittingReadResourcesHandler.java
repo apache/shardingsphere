@@ -119,14 +119,15 @@ public final class ShowReadwriteSplittingReadResourcesHandler extends QueryableR
         return result;
     }
     
-    private Collection<List<Object>> buildRows(final Collection<String> allReadResources, final Map<String, StorageNodeDataSource> persistentReadResources) {
-        Map<String, StorageNodeDataSource> disabledStorageNodes = persistentReadResources.entrySet().stream()
-                .filter(each -> StorageNodeStatus.DISABLED.name().equalsIgnoreCase(each.getValue().getStatus())).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
-        disabledStorageNodes.keySet().forEach(persistentReadResources::remove);
-        allReadResources.removeIf(disabledStorageNodes::containsKey);
-        allReadResources.addAll(persistentReadResources.keySet());
-        allReadResources.addAll(disabledStorageNodes.keySet());
-        return allReadResources.stream().map(each -> buildRow(each, disabledStorageNodes.get(each))).collect(Collectors.toCollection(LinkedList::new));
+    private Collection<List<Object>> buildRows(final Collection<String> readResources, final Map<String, StorageNodeDataSource> persistentReadResources) {
+        Map<String, Map<String, StorageNodeDataSource>> persistentReadResourceGroup = persistentReadResources.entrySet().stream()
+                .collect(Collectors.groupingBy(each -> each.getValue().getStatus().toUpperCase(), Collectors.toMap(Entry::getKey, Entry::getValue)));
+        Map<String, StorageNodeDataSource> disabledReadResources = persistentReadResourceGroup.getOrDefault(StorageNodeStatus.DISABLED.name(), Collections.emptyMap());
+        Map<String, StorageNodeDataSource> enabledReadResources = persistentReadResourceGroup.getOrDefault(StorageNodeStatus.ENABLED.name(), Collections.emptyMap());
+        readResources.removeIf(disabledReadResources::containsKey);
+        readResources.addAll(enabledReadResources.keySet());
+        readResources.addAll(disabledReadResources.keySet());
+        return readResources.stream().map(each -> buildRow(each, disabledReadResources.get(each))).collect(Collectors.toCollection(LinkedList::new));
     }
     
     private LinkedList<String> deconstructString(final String str) {
