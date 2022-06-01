@@ -134,9 +134,6 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
         for (SimpleTableSegment each : allTables) {
             String tableName = each.getTableName().getIdentifier().getValue();
             ShardingSphereTable table = schema.get(tableName);
-            if (Objects.isNull(table)) {
-                table = schema.get(findTableName(allTables, tableName));
-            }
             Map<String, ShardingSphereColumn> columns = table.getColumns();
             String columnName = queryResult.getMetaData().getColumnName(columnIndex);
             if (columns.containsKey(columnName)) {
@@ -145,17 +142,7 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
         }
         return false;
     }
-    
-    private String findTableName(final Collection<SimpleTableSegment> allTables, final String tableName) throws SQLException {
-        return allTables.stream()
-                .filter(tb -> tb.getTableName().getIdentifier().getValue().equalsIgnoreCase(tableName) || tableName.equalsIgnoreCase(tb.getAlias().orElse(null)))
-                .findFirst()
-                .orElseThrow(() -> new SQLException("The sql syntax error, can not find name or alias is [" + tableName + "]"))
-                .getTableName()
-                .getIdentifier()
-                .getValue();
-    }
-    
+
     private List<MemoryQueryResultRow> getMemoryResultSetRows(final SelectStatementContext selectStatementContext,
                                                               final Map<GroupByValue, MemoryQueryResultRow> dataMap, final List<Boolean> valueCaseSensitive) {
         if (dataMap.isEmpty()) {
