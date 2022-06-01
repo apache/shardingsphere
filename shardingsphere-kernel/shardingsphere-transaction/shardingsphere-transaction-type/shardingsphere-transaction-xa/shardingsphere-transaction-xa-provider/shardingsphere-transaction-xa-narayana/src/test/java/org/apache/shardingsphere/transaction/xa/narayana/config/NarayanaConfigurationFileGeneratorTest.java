@@ -226,7 +226,7 @@ public final class NarayanaConfigurationFileGeneratorTest {
         Optional<NarayanaConfigEntry> entry = narayanaConfig.getEntries().stream().filter(each -> "ObjectStoreEnvironmentBean.dropTable".equals(each.getKey())).findFirst();
         assertTrue(entry.isPresent());
         assertThat(entry.get().getValue().size(), is(1));
-        assertTrue(entry.get().getValue().contains(Boolean.TRUE.toString()));
+        assertTrue(entry.get().getValue().contains(Boolean.FALSE.toString()));
     }
     
     private void assertStateStoreJdbcAccess(final NarayanaConfiguration narayanaConfig) {
@@ -254,7 +254,7 @@ public final class NarayanaConfigurationFileGeneratorTest {
         Optional<NarayanaConfigEntry> entry = narayanaConfig.getEntries().stream().filter(each -> "ObjectStoreEnvironmentBean.stateStore.dropTable".equals(each.getKey())).findFirst();
         assertTrue(entry.isPresent());
         assertThat(entry.get().getValue().size(), is(1));
-        assertTrue(entry.get().getValue().contains(Boolean.TRUE.toString()));
+        assertTrue(entry.get().getValue().contains(Boolean.FALSE.toString()));
     }
     
     private void assertCommunicationStoreObjectStoreType(final NarayanaConfiguration narayanaConfig) {
@@ -282,6 +282,6 @@ public final class NarayanaConfigurationFileGeneratorTest {
         Optional<NarayanaConfigEntry> entry = narayanaConfig.getEntries().stream().filter(each -> "ObjectStoreEnvironmentBean.communicationStore.dropTable".equals(each.getKey())).findFirst();
         assertTrue(entry.isPresent());
         assertThat(entry.get().getValue().size(), is(1));
-        assertTrue(entry.get().getValue().contains(Boolean.TRUE.toString()));
+        assertTrue(entry.get().getValue().contains(Boolean.FALSE.toString()));
     }
 }
