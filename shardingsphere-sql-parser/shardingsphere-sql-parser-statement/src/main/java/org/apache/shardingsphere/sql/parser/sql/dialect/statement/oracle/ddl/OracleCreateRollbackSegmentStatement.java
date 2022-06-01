@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateRollbackSegmentStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
  * Create rollback segment statement.
  */
 @ToString
-public class OracleCreateRollbackSegmentStatement extends CreateRollbackSegmentStatement implements OracleStatement {
+public final class OracleCreateRollbackSegmentStatement extends AbstractSQLStatement implements OracleStatement {
 }
