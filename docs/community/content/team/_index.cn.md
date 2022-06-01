@@ -370,7 +370,7 @@ chapter = true
             </a>
         </td>
         <td>
-            <a href="https://github.com/cheese8" target="_blank">
+            <a href="https://github.com/soulasuna" target="_blank">
                 <img src="https://avatars.githubusercontent.com/u/33794770?v=4" style="border-radius:50%; overflow:hidden">
             </a>
         </td>
