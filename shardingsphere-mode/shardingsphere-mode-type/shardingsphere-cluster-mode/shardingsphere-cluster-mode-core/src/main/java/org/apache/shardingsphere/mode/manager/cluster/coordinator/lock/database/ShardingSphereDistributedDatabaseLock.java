@@ -36,13 +36,13 @@ import java.util.Optional;
 /**
  * Distribute database lock of ShardingSphere.
  */
-public final class ShardingSphereDistributeDatabaseLock implements ShardingSphereLock {
+public final class ShardingSphereDistributedDatabaseLock implements ShardingSphereLock {
     
     private final LockNodeService lockNodeService = LockNodeServiceFactory.getInstance().getLockNodeService(LockNodeType.DATABASE);
     
     private final ShardingSphereInterMutexLockHolder lockHolder;
     
-    public ShardingSphereDistributeDatabaseLock(final ShardingSphereInterMutexLockHolder lockHolder) {
+    public ShardingSphereDistributedDatabaseLock(final ShardingSphereInterMutexLockHolder lockHolder) {
         this.lockHolder = lockHolder;
         ShardingSphereEventBus.getInstance().register(this);
         lockHolder.synchronizeMutexLock(lockNodeService);
