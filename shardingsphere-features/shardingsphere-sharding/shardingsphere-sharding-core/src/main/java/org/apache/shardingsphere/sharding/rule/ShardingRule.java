@@ -266,7 +266,7 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
         return result;
     }
     
-    private Map<String, String> getLogicTableReplaceTablePrefixMap(final Collection<ShardingTableRuleConfiguration> tables, 
+    private Map<String, String> getLogicTableReplaceTablePrefixMap(final Collection<ShardingTableRuleConfiguration> tables,
                                                                    final Collection<ShardingAutoTableRuleConfiguration> autoTables) {
         Map<String, String> result = new LinkedHashMap<>(tables.size() + autoTables.size(), 1);
         for (ShardingTableRuleConfiguration each : tables) {
@@ -282,7 +282,7 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
         return result;
     }
     
-    private BindingTableRule createBindingTableRule(final String bindingTableGroup, final Map<String, TableRule> tableRules, 
+    private BindingTableRule createBindingTableRule(final String bindingTableGroup, final Map<String, TableRule> tableRules,
                                                     final Map<String, String> logicTableReplaceTablePrefixMap) {
         BindingTableRule result = new BindingTableRule();
         for (String each : Splitter.on(",").trimResults().splitToList(bindingTableGroup)) {
