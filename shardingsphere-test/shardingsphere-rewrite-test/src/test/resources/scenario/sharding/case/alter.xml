@@ -96,4 +96,9 @@
         <output sql="ALTER TABLE t_account_0 DROP CONSTRAINT t_account_fk_t_account_0 CASCADE" />
         <output sql="ALTER TABLE t_account_1 DROP CONSTRAINT t_account_fk_t_account_1 CASCADE" />
     </rewrite-assertion>
+    <rewrite-assertion id="alter_view_with_sharding_table" db-types="PostgreSQL,openGauss">
+        <input sql="ALTER VIEW t_account_view ALTER COLUMN status SET DEFAULT 'OK'" />
+        <output sql="ALTER VIEW t_account_view_0 ALTER COLUMN status SET DEFAULT 'OK'" />
+        <output sql="ALTER VIEW t_account_view_1 ALTER COLUMN status SET DEFAULT 'OK'" />
+    </rewrite-assertion>
 </rewrite-assertions>
