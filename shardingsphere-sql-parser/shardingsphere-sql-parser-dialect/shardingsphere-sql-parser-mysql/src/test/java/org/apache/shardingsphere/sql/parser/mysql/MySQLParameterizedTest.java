@@ -119,7 +119,7 @@ public final class MySQLParameterizedTest {
                         + "FROM table1\n"
                         + "WHERE \n"
                         + "\tid = ?;"});
-        }
+    }
     
     private final String caseId;
     
