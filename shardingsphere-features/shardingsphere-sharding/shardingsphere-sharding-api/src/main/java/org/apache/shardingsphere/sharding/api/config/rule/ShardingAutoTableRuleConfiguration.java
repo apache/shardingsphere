@@ -35,7 +35,7 @@ public final class ShardingAutoTableRuleConfiguration {
     
     private final String actualDataSources;
     
-    private String actualTablePrefix;
+    private String replaceTablePrefix;
     
     private ShardingStrategyConfiguration shardingStrategy;
     
