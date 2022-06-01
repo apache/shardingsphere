@@ -28,7 +28,7 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * Memory mutex lock of ShardingSphere.
  */
-public final class ShardingSphereMemoryMutexLock implements ShardingSphereLock {
+public final class ShardingSphereMemoryLock implements ShardingSphereLock {
     
     private static final long DEFAULT_TRY_LOCK_TIMEOUT_MILLISECONDS = 3 * 60 * 1000;
     

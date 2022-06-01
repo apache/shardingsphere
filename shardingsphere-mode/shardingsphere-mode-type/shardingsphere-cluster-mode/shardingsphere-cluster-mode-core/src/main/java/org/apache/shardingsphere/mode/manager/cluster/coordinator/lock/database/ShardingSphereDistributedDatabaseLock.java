@@ -63,7 +63,7 @@ public final class ShardingSphereDistributedDatabaseLock implements ShardingSphe
     }
     
     private Optional<InterMutexLock> getInterMutexLock(final String lockName) {
-        return Optional.ofNullable(lockHolder.getInterMutexLock(lockNodeService.generateLocksName(lockName)));
+        return lockHolder.getInterMutexLock(lockNodeService.generateLocksName(lockName));
     }
     
     @Override
