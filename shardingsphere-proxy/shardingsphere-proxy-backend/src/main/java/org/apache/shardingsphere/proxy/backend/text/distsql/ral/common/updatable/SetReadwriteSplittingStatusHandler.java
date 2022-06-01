@@ -76,13 +76,14 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
         checkReadwriteSplittingRule(contextManager, databaseName);
         Map<String, String> replicaResources = getReplicaResources(contextManager, databaseName);
         Map<String, String> disabledResources = getDisabledResources(contextManager, databaseName);
+        Map<String, String> autoAwareResources = getAutoAwareResources(contextManager, databaseName);
         boolean isDisable = DISABLE.equals(sqlStatement.getStatus());
         if (isDisable) {
             checkDisable(contextManager, databaseName, disabledResources.keySet(), toBeUpdatedResource, replicaResources);
         } else {
             checkEnable(contextManager, databaseName, disabledResources, toBeUpdatedResource);
         }
-        Collection<String> groupNames = getGroupNames(toBeUpdatedResource, replicaResources, disabledResources);
+        Collection<String> groupNames = getGroupNames(toBeUpdatedResource, replicaResources, disabledResources, autoAwareResources);
         updateStatus(databaseName, groupNames, toBeUpdatedResource, isDisable);
     }
     
@@ -117,6 +118,14 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
         Map<String, Map<String, String>> readwriteSplittingRules = getExportedReadwriteSplittingRules(contextManager, databaseName);
         Map<String, String> result = new HashMap<>();
         readwriteSplittingRules.entrySet().stream().filter(entry -> !entry.getValue().isEmpty()).forEach(entry -> addReplicaResource(result, entry));
+        return result;
+    }
+    
+    private Map<String, String> getAutoAwareResources(final ContextManager contextManager, final String databaseName) {
+        Map<String, Map<String, String>> readwriteSplittingRules = getExportedReadwriteSplittingRules(contextManager, databaseName);
+        Map<String, String> result = new HashMap<>();
+        readwriteSplittingRules.values().stream().filter(each -> each.containsKey(ExportableItemConstants.AUTO_AWARE_DATA_SOURCE_NAME)).forEach(each -> Splitter.on(",")
+                .splitToList(each.get(ExportableItemConstants.REPLICA_DATA_SOURCE_NAMES)).forEach(each1 -> put(result, each1, each.get(ExportableItemConstants.AUTO_AWARE_DATA_SOURCE_NAME))));
         return result;
     }
     
@@ -178,8 +187,9 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
         }
     }
     
-    private Collection<String> getGroupNames(final String toBeDisableResource, final Map<String, String> replicaResources, final Map<String, String> disabledResources) {
-        String groupNames = replicaResources.getOrDefault(toBeDisableResource, disabledResources.get(toBeDisableResource));
+    private Collection<String> getGroupNames(final String toBeDisableResource, final Map<String, String> replicaResources,
+                                             final Map<String, String> disabledResources, final Map<String, String> autoAwareResources) {
+        String groupNames = autoAwareResources.getOrDefault(toBeDisableResource, replicaResources.getOrDefault(toBeDisableResource, disabledResources.get(toBeDisableResource)));
         return Splitter.on(",").splitToList(groupNames);
     }
     
