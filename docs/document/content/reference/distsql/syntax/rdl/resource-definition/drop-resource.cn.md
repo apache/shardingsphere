@@ -1,6 +1,6 @@
 +++
 title = "DROP RESOURCE"
-weight = 3
+weight = 4
 +++
 
 ### 描述

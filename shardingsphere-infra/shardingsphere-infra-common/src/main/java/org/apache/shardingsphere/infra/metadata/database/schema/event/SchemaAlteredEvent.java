@@ -27,7 +27,7 @@ import java.util.Collection;
  * Schema altered event.
  */
 @Getter
-public final class SchemaAlteredEvent {
+public final class SchemaAlteredEvent implements MetaDataRefreshedEvent {
     
     private final String databaseName;
     

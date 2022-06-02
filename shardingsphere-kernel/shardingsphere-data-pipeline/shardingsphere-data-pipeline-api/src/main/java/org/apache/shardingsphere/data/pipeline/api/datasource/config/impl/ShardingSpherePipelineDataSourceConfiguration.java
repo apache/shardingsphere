@@ -34,6 +34,7 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -62,6 +63,7 @@ public final class ShardingSpherePipelineDataSourceConfiguration implements Pipe
         Map<String, Object> props = rootConfig.getDataSources().values().iterator().next();
         databaseType = DatabaseTypeEngine.getDatabaseType(getJdbcUrl(props));
         appendJdbcQueryProperties(databaseType.getType());
+        adjustDataSourceProperties(rootConfig.getDataSources());
     }
     
     public ShardingSpherePipelineDataSourceConfiguration(final YamlRootConfiguration rootConfig) {
@@ -71,6 +73,7 @@ public final class ShardingSpherePipelineDataSourceConfiguration implements Pipe
         Map<String, Object> props = rootConfig.getDataSources().values().iterator().next();
         databaseType = DatabaseTypeEngine.getDatabaseType(getJdbcUrl(props));
         appendJdbcQueryProperties(databaseType.getType());
+        adjustDataSourceProperties(rootConfig.getDataSources());
     }
     
     private String getJdbcUrl(final Map<String, Object> props) {
@@ -93,6 +96,14 @@ public final class ShardingSpherePipelineDataSourceConfiguration implements Pipe
                     String jdbcUrlKey = value.containsKey("url") ? "url" : "jdbcUrl";
                     value.replace(jdbcUrlKey, new JdbcUrlAppender().appendQueryProperties(value.get(jdbcUrlKey).toString(), queryProps));
                 });
+    }
+    
+    private void adjustDataSourceProperties(final Map<String, Map<String, Object>> dataSources) {
+        for (Map<String, Object> queryProps : dataSources.values()) {
+            for (String each : Arrays.asList("minPoolSize", "minimumIdle")) {
+                queryProps.put(each, "1");
+            }
+        }
     }
     
     @Override

@@ -95,7 +95,7 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<G
     }
     
     private static Matcher getShowProcessTriggerMatcher(final DataChangedEvent event) {
-        Pattern pattern = Pattern.compile(ComputeNode.getProcessTriggerNodePatch() + "/([0-9.@]+):([\\S]+)$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(ComputeNode.getProcessTriggerNodePatch() + "/([\\S]+):([\\S]+)$", Pattern.CASE_INSENSITIVE);
         return pattern.matcher(event.getKey());
     }
     

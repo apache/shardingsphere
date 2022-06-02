@@ -2454,3 +2454,11 @@ dropDiskgroup
 contentsClause
     : ((FORCE? INCLUDING) | EXCLUDING) CONTENTS
     ;
+
+createRollbackSegment
+    : CREATE PUBLIC? ROLLBACK SEGMENT rollbackSegment ((TABLESPACE tablespaceName) | storageClause)*
+    ;
+
+dropRollbackSegment
+    : DROP ROLLBACK SEGMENT rollbackSegment
+    ;

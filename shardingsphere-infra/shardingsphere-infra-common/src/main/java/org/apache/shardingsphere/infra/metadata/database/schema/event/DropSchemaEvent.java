@@ -27,7 +27,7 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Getter
-public final class DropSchemaEvent {
+public final class DropSchemaEvent implements MetaDataRefreshedEvent {
     
     private final String databaseName;
     

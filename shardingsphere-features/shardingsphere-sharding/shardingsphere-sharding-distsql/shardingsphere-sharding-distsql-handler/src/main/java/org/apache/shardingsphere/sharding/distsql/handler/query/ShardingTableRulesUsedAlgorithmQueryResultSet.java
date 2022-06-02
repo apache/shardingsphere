@@ -49,14 +49,21 @@ public final class ShardingTableRulesUsedAlgorithmQueryResultSet implements Dist
         if (!statement.getAlgorithmName().isPresent()) {
             return;
         }
+        String algorithmName = statement.getAlgorithmName().get();
+        boolean matchDefaultDatabaseShardingStrategy = null != shardingRuleConfig.getDefaultDatabaseShardingStrategy()
+                && algorithmName.equals(shardingRuleConfig.getDefaultDatabaseShardingStrategy().getShardingAlgorithmName());
+        boolean matchDefaultTableShardingStrategy = null != shardingRuleConfig.getDefaultTableShardingStrategy()
+                && algorithmName.equals(shardingRuleConfig.getDefaultTableShardingStrategy().getShardingAlgorithmName());
         shardingRuleConfig.getTables().forEach(each -> {
-            if (((null != each.getDatabaseShardingStrategy() && statement.getAlgorithmName().get().equals(each.getDatabaseShardingStrategy().getShardingAlgorithmName())))
-                    || (null != each.getTableShardingStrategy() && statement.getAlgorithmName().get().equals(each.getTableShardingStrategy().getShardingAlgorithmName()))) {
+            if (((null == each.getDatabaseShardingStrategy() && matchDefaultDatabaseShardingStrategy)
+                    || (null != each.getDatabaseShardingStrategy() && algorithmName.equals(each.getDatabaseShardingStrategy().getShardingAlgorithmName())))
+                    || ((null == each.getTableShardingStrategy() && matchDefaultTableShardingStrategy)
+                    || (null != each.getTableShardingStrategy() && algorithmName.equals(each.getTableShardingStrategy().getShardingAlgorithmName())))) {
                 data.add(Arrays.asList("table", each.getLogicTable()));
             }
         });
         shardingRuleConfig.getAutoTables().forEach(each -> {
-            if (null != each.getShardingStrategy() && statement.getAlgorithmName().get().equals(each.getShardingStrategy().getShardingAlgorithmName())) {
+            if (null != each.getShardingStrategy() && algorithmName.equals(each.getShardingStrategy().getShardingAlgorithmName())) {
                 data.add(Arrays.asList("auto_table", each.getLogicTable()));
             }
         });

@@ -18,7 +18,7 @@ ShardingSphere 社区遵循 [Apache Community’s process](http://community.apac
  - 解答问题；
  - 维护文档和代码示例；
  - 改进流程和工具；
- - 定期检查 [CI Scheduled Workflow]( https://github.com/apache/shardingsphere/actions/workflows/ci.yml?query=event%3Aschedule ) 是否正常运行；
+ - 定期检查 [CI Scheduled Workflow]( https://github.com/apache/shardingsphere/actions?query=event%3Aschedule ) 是否正常运行；
  - 引导新的参与者融入社区。
 
 ## 日常工作

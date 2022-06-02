@@ -200,4 +200,13 @@ public final class InstanceContext {
     public void initLockContext() {
         lockContext.initLockState(this);
     }
+    
+    /**
+     * Is cluster instance or not.
+     * 
+     * @return true if is cluster, else false
+     */
+    public boolean isCluster() {
+        return "Cluster".equalsIgnoreCase(modeConfiguration.getType());
+    }
 }

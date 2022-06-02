@@ -64,7 +64,6 @@ public final class RuleAlteredJobScheduler implements Runnable {
             each.stop();
             each.close();
         }
-        jobContext.close();
     }
     
     @Override

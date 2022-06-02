@@ -17,20 +17,36 @@
 <command>
     <create-table-order>
         CREATE TABLE `t_order` (
-        `id` BIGINT NOT NULL COMMENT 'pk id',
-        `order_id` INT NOT NULL,
-        `user_id` INT NOT NULL,
-        `status` VARCHAR ( 255 ) NULL,
-        `t_tinyint` TINYINT ( 1 ) NULL,
-        `t_timestamp` TIMESTAMP NULL,
-        `t_datetime` datetime NULL ON UPDATE CURRENT_TIMESTAMP,
-        `t_binary` BINARY(255) NULL,
-        `t_blob` BLOB NULL,
-        `t_decimal` DECIMAL ( 10, 2 ) NULL,
-        `t_char` CHAR ( 128 ) NULL,
-        `t_double` DOUBLE NULL,
-        `t_json` json NULL COMMENT 'json test',
+        `id` bigint NOT NULL COMMENT 'pk id',
+        `order_id` int NOT NULL,
+        `user_id` int NOT NULL,
+        `status` varchar ( 255 ) NULL,
+        `t_mediumint` mediumint NULL,
+        `t_smallint` smallint NULL,
+        `t_tinyint` tinyint ( 1 ) NULL,
         `t_unsigned_int` int UNSIGNED NULL,
+        `t_unsigned_mediumint` mediumint UNSIGNED NULL,
+        `t_unsigned_smallint` smallint UNSIGNED NULL,
+        `t_unsigned_tinyint` tinyint UNSIGNED NULL,
+        `t_float` float NULL,
+        `t_double` double NULL,
+        `t_decimal` decimal ( 10, 2 ) NULL,
+        `t_timestamp` timestamp NULL,
+        `t_datetime` datetime NULL,
+        `t_date` date NULL,
+        `t_time` time NULL,
+        `t_year` year NULL,
+        `t_bit` bit(32) NULL,
+        `t_binary` binary(128) NULL,
+        `t_varbinary` varbinary(255) NULL,
+        `t_blob` blob NULL,
+        `t_mediumblob` mediumblob NULL,
+        `t_char` char ( 128 ) NULL,
+        `t_text` text NULL,
+        `t_mediumtext` mediumtext NULL,
+        `t_enum` enum ('1', '2', '3') NULL,
+        `t_set` set ('1', '2', '3') NULL,
+        `t_json` json NULL COMMENT 'json test',
         PRIMARY KEY ( `id` ),
         INDEX ( `order_id` )
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -47,7 +63,12 @@
     </create-table-order-item>
     
     <full-insert-order>
-        INSERT INTO t_order ( id, order_id, user_id, status, t_tinyint, t_timestamp, t_datetime, t_binary, t_blob, t_decimal, t_char, t_double, t_json, t_unsigned_int ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+        INSERT INTO
+        t_order(id,order_id,user_id,status,t_mediumint,t_smallint,t_tinyint,t_unsigned_int,t_unsigned_mediumint,
+        t_unsigned_smallint,t_unsigned_tinyint,t_float,t_double,t_decimal, t_timestamp,t_datetime,t_date,t_time,t_year,
+        t_bit,t_binary,t_varbinary,t_blob,t_mediumblob,t_char,t_text,t_mediumtext,t_enum,t_set, t_json) 
+        VALUES
+        (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
     </full-insert-order>
     
     <full-insert-order-item>

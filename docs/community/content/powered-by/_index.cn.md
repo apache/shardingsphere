@@ -13,7 +13,7 @@ chapter = true
 
 ## 谁在使用 ShardingSphere?
 
-共计 206 家公司。
+共计 208 家公司。
 
 ### 基础软件
 <ul>
@@ -124,6 +124,7 @@ chapter = true
     <li><a href="https://www.teddymobile.cn/" rel="nofollow">泰迪熊移动</a></li>
     <li><a href="https://www.ecopiatech.com/" rel="nofollow">Ecopia</a></li>
     <li><a href="https://xiaoman.cn/" rel="nofollow">小满科技</a></li>
+    <li><a href="https://www.xforceplus.com/" rel="nofollow">上海票易通</a></li>
 </ul>
 
 ### 出行
@@ -196,6 +197,11 @@ chapter = true
     <li><a href="https://www.codemao.cn/" rel="nofollow">编程猫</a></li>
     <li><a href="https://www.yxt.com/" rel="nofollow">云学堂</a></li>
     <li><a href="https://www.weixiaotong.com.cn/" rel="nofollow">光海微校通</a></li>
+</ul>
+
+### 互联网安全
+<ul>
+    <li><a href="http://www.ncs-cyber.com.cn" rel="nofollow">天津市国瑞数码安全系统股份有限公司</a></li>
 </ul>
 
 ### 新闻资讯

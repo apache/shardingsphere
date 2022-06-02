@@ -25,12 +25,12 @@ import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingD
 import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.strategy.ReadwriteSplittingStrategy;
 import org.apache.shardingsphere.readwritesplitting.strategy.ReadwriteSplittingStrategyFactory;
+import org.apache.shardingsphere.readwritesplitting.strategy.type.DynamicReadwriteSplittingStrategy;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Readwrite-splitting data source rule.
@@ -64,15 +64,6 @@ public final class ReadwriteSplittingDataSourceRule {
     }
     
     /**
-     * Get read data source names.
-     *
-     * @return available read data source names
-     */
-    public List<String> getReadDataSourceNames() {
-        return readwriteSplittingStrategy.getReadDataSources().stream().filter(each -> !disabledDataSourceNames.contains(each)).collect(Collectors.toList());
-    }
-    
-    /**
      * Update disabled data source names.
      *
      * @param dataSourceName data source name
@@ -91,8 +82,11 @@ public final class ReadwriteSplittingDataSourceRule {
      *
      * @return enabled replica data sources
      */
-    public Collection<String> getEnabledReplicaDataSources() {
-        Collection<String> result = readwriteSplittingStrategy.getReadDataSources();
+    public List<String> getEnabledReplicaDataSources() {
+        List<String> result = readwriteSplittingStrategy.getReadDataSources();
+        if (readwriteSplittingStrategy instanceof DynamicReadwriteSplittingStrategy) {
+            return result;
+        }
         if (!disabledDataSourceNames.isEmpty()) {
             result = new LinkedList<>(result);
             result.removeIf(disabledDataSourceNames::contains);

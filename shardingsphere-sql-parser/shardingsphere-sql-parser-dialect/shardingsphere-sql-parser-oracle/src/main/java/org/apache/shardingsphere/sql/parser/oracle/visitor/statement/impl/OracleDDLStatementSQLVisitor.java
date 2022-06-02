@@ -102,6 +102,8 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterF
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropFlashbackArchiveContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateDiskgroupContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropDiskgroupContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateRollbackSegmentContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropRollbackSegmentContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.AlterDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.CreateDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.ColumnDefinitionSegment;
@@ -145,6 +147,8 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.Ora
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropFlashbackArchiveStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateDiskgroupStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropDiskgroupStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateRollbackSegmentStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropRollbackSegmentStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropEditionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropOutlineStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterOutlineStatement;
@@ -796,5 +800,15 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
     @Override
     public ASTNode visitDropDiskgroup(final DropDiskgroupContext ctx) {
         return new OracleDropDiskgroupStatement();
+    }
+    
+    @Override
+    public ASTNode visitCreateRollbackSegment(final CreateRollbackSegmentContext ctx) {
+        return new OracleCreateRollbackSegmentStatement();
+    }
+    
+    @Override
+    public ASTNode visitDropRollbackSegment(final DropRollbackSegmentContext ctx) {
+        return new OracleDropRollbackSegmentStatement();
     }
 }

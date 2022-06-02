@@ -568,10 +568,26 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
     private ASTNode createAggregationSegment(final AggregationFunctionContext ctx, final String aggregationType) {
         AggregationType type = AggregationType.valueOf(aggregationType.toUpperCase());
         String innerExpression = ctx.start.getInputStream().getText(new Interval(ctx.LP_().getSymbol().getStartIndex(), ctx.stop.getStopIndex()));
-        if (null == ctx.distinct()) {
-            return new AggregationProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpression);
+        if (null != ctx.distinct()) {
+            AggregationDistinctProjectionSegment result = new AggregationDistinctProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
+                    type, innerExpression, getDistinctExpression(ctx));
+            result.getParameters().addAll(getExpressions(ctx));
+            return result;
         }
-        return new AggregationDistinctProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpression, getDistinctExpression(ctx));
+        AggregationProjectionSegment result = new AggregationProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpression);
+        result.getParameters().addAll(getExpressions(ctx));
+        return result;
+    }
+    
+    private Collection<ExpressionSegment> getExpressions(final AggregationFunctionContext ctx) {
+        if (null == ctx.expr()) {
+            return Collections.emptyList();
+        }
+        Collection<ExpressionSegment> result = new LinkedList<>();
+        for (ExprContext each : ctx.expr()) {
+            result.add((ExpressionSegment) visit(each));
+        }
+        return result;
     }
     
     private String getDistinctExpression(final AggregationFunctionContext ctx) {

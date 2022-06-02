@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.type.CursorAvailable;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
@@ -90,7 +91,7 @@ public final class ShardingRouteEngineFactory {
             return new ShardingDatabaseBroadcastRoutingEngine();
         }
         if (sqlStatement instanceof DDLStatement) {
-            return getDDLRoutingEngine(shardingRule, database, sqlStatementContext);
+            return getDDLRoutingEngine(shardingRule, database, sqlStatementContext, shardingConditions, props);
         }
         if (sqlStatement instanceof DALStatement) {
             return getDALRoutingEngine(shardingRule, database, sqlStatementContext);
@@ -101,7 +102,8 @@ public final class ShardingRouteEngineFactory {
         return getDQLRoutingEngine(shardingRule, database, sqlStatementContext, shardingConditions, props);
     }
     
-    private static ShardingRouteEngine getDDLRoutingEngine(final ShardingRule shardingRule, final ShardingSphereDatabase database, final SQLStatementContext<?> sqlStatementContext) {
+    private static ShardingRouteEngine getDDLRoutingEngine(final ShardingRule shardingRule, final ShardingSphereDatabase database,
+                                                           final SQLStatementContext<?> sqlStatementContext, final ShardingConditions shardingConditions, final ConfigurationProperties props) {
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         boolean functionStatement = sqlStatement instanceof CreateFunctionStatement || sqlStatement instanceof AlterFunctionStatement || sqlStatement instanceof DropFunctionStatement;
         boolean procedureStatement = sqlStatement instanceof CreateProcedureStatement || sqlStatement instanceof AlterProcedureStatement || sqlStatement instanceof DropProcedureStatement;
@@ -117,6 +119,9 @@ public final class ShardingRouteEngineFactory {
         Collection<String> shardingRuleTableNames = shardingRule.getShardingRuleTableNames(tableNames);
         if (!tableNames.isEmpty() && shardingRuleTableNames.isEmpty()) {
             return new ShardingIgnoreRoutingEngine();
+        }
+        if (sqlStatementContext instanceof CursorAvailable) {
+            return new ShardingStandardRoutingEngine(tableNames.iterator().next(), shardingConditions, props);
         }
         return new ShardingTableBroadcastRoutingEngine(database, sqlStatementContext, shardingRuleTableNames);
     }

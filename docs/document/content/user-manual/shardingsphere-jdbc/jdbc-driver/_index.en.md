@@ -42,7 +42,7 @@ try (
 }
 ```
 
-#### 方式 2. 使用数据库连接池
+#### Database Connection Pool Usage
 
 ```java
 String driverClassName = "org.apache.shardingsphere.driver.ShardingSphereDriver";
