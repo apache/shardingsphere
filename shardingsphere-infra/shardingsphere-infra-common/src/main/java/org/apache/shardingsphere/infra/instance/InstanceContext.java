@@ -52,6 +52,9 @@ public final class InstanceContext {
         this.workerIdGenerator = workerIdGenerator;
         this.modeConfiguration = modeConfiguration;
         this.lockContext = lockContext;
+        if (!isCluster()) {
+            addComputeNodeInstance(this.instance);
+        }
         initLockContext();
         getWorkerId();
     }
