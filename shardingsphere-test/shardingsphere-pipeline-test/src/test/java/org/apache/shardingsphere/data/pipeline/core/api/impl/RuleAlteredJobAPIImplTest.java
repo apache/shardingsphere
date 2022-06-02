@@ -151,7 +151,7 @@ public final class RuleAlteredJobAPIImplTest {
         initTableData(jobConfig);
         String databaseName = jobConfig.getDatabaseName();
         ruleAlteredJobAPI.stopClusterWriteDB(databaseName, jobId.get());
-        Map<String, DataConsistencyCheckResult> checkResultMap = ruleAlteredJobAPI.dataConsistencyCheck(jobId.get(), "FIXTURE");
+        Map<String, DataConsistencyCheckResult> checkResultMap = ruleAlteredJobAPI.dataConsistencyCheck(jobId.get(), "FIXTURE", null);
         ruleAlteredJobAPI.restoreClusterWriteDB(databaseName, jobId.get());
         assertThat(checkResultMap.size(), is(1));
         assertTrue(checkResultMap.get("t_order").getCountCheckResult().isMatched());
