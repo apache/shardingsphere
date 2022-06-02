@@ -125,7 +125,7 @@ public abstract class BaseITCase {
         return result;
     }
     
-    protected boolean waitShardingAlgorithmEffect(final int maxWaitTimes) throws InterruptedException {
+    protected boolean waitShardingAlgorithmEffect(final int maxWaitTimes) {
         long startTime = System.currentTimeMillis();
         int waitTimes = 0;
         do {
@@ -134,7 +134,7 @@ public abstract class BaseITCase {
                 log.info("waitShardingAlgorithmEffect time consume: {}", System.currentTimeMillis() - startTime);
                 return true;
             }
-            TimeUnit.SECONDS.sleep(2);
+            ThreadUtil.sleep(2, TimeUnit.SECONDS);
             waitTimes++;
         } while (waitTimes <= maxWaitTimes);
         return false;

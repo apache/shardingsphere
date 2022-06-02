@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.event.MetaDataRefreshedEvent;
 import org.apache.shardingsphere.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -28,6 +29,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Meta data refresher.
@@ -47,8 +49,9 @@ public interface MetaDataRefresher<T extends SQLStatement> extends TypedSPI {
      * @param schemaName schema name
      * @param sqlStatement SQL statement
      * @param props configuration properties
+     * @return meta data refreshed event
      * @throws SQLException SQL exception
      */
-    void refresh(ShardingSphereDatabase database, FederationDatabaseMetaData federationDatabaseMetaData, Map<String, OptimizerPlannerContext> optimizerPlanners,
-                 Collection<String> logicDataSourceNames, String schemaName, T sqlStatement, ConfigurationProperties props) throws SQLException;
+    Optional<MetaDataRefreshedEvent> refresh(ShardingSphereDatabase database, FederationDatabaseMetaData federationDatabaseMetaData, Map<String, OptimizerPlannerContext> optimizerPlanners,
+                                             Collection<String> logicDataSourceNames, String schemaName, T sqlStatement, ConfigurationProperties props) throws SQLException;
 }

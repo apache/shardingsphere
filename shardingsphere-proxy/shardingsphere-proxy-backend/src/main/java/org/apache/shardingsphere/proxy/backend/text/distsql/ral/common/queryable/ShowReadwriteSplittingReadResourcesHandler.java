@@ -42,6 +42,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -100,7 +101,7 @@ public final class ShowReadwriteSplittingReadResourcesHandler extends QueryableR
         Map<String, Map<String, String>> allReadwriteRuleMap = exportMap.values().stream().map(each -> ((Map<String, Map<String, String>>) each).entrySet())
                 .flatMap(Collection::stream).collect(Collectors.toMap(Entry::getKey, Entry::getValue, (v1, v2) -> v2, LinkedHashMap::new));
         return allReadwriteRuleMap.values().stream().map(each -> each.getOrDefault(ExportableItemConstants.REPLICA_DATA_SOURCE_NAMES, ""))
-                .map(this::deconstructString).flatMap(Collection::stream).collect(Collectors.toCollection(LinkedList::new));
+                .map(this::deconstructString).flatMap(Collection::stream).collect(Collectors.toCollection(LinkedHashSet::new));
     }
     
     private Map<String, StorageNodeDataSource> getPersistentReadResources(final String databaseName, final MetaDataPersistService persistService) {
@@ -118,8 +119,15 @@ public final class ShowReadwriteSplittingReadResourcesHandler extends QueryableR
         return result;
     }
     
-    private Collection<List<Object>> buildRows(final Collection<String> allReadResources, final Map<String, StorageNodeDataSource> disabledResources) {
-        return allReadResources.stream().map(each -> buildRow(each, disabledResources.get(each))).collect(Collectors.toList());
+    private Collection<List<Object>> buildRows(final Collection<String> readResources, final Map<String, StorageNodeDataSource> persistentReadResources) {
+        Map<String, Map<String, StorageNodeDataSource>> persistentReadResourceGroup = persistentReadResources.entrySet().stream()
+                .collect(Collectors.groupingBy(each -> each.getValue().getStatus().toUpperCase(), Collectors.toMap(Entry::getKey, Entry::getValue)));
+        Map<String, StorageNodeDataSource> disabledReadResources = persistentReadResourceGroup.getOrDefault(StorageNodeStatus.DISABLED.name(), Collections.emptyMap());
+        Map<String, StorageNodeDataSource> enabledReadResources = persistentReadResourceGroup.getOrDefault(StorageNodeStatus.ENABLED.name(), Collections.emptyMap());
+        readResources.removeIf(disabledReadResources::containsKey);
+        readResources.addAll(enabledReadResources.keySet());
+        readResources.addAll(disabledReadResources.keySet());
+        return readResources.stream().map(each -> buildRow(each, disabledReadResources.get(each))).collect(Collectors.toCollection(LinkedList::new));
     }
     
     private LinkedList<String> deconstructString(final String str) {

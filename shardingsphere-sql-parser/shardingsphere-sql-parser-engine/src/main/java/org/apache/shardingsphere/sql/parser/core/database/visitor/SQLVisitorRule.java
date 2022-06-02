@@ -534,6 +534,10 @@ public enum SQLVisitorRule {
     
     DROP_DISKGROUP("DropDiskgroup", SQLStatementType.DDL),
     
+    CREATE_ROLLBACK_SEGMENT("CreateRollbackSegment", SQLStatementType.DDL),
+    
+    DROP_ROLLBACK_SEGMENT("DropRollbackSegment", SQLStatementType.DDL),
+    
     CURSOR("Cursor", SQLStatementType.DDL),
     
     CLOSE("Close", SQLStatementType.DDL),
@@ -542,7 +546,9 @@ public enum SQLVisitorRule {
     
     FETCH("Fetch", SQLStatementType.DDL),
     
-    CHECKPOINT("Checkpoint", SQLStatementType.DML);
+    CHECKPOINT("Checkpoint", SQLStatementType.DML),
+    
+    CLUSTER("Cluster", SQLStatementType.DDL);
     
     private final String name;
     

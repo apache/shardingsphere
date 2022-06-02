@@ -129,15 +129,15 @@ public final class NarayanaConfigurationFileGenerator implements TransactionConf
         config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.objectStoreType", JDBCStore.class.getName()));
         config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.jdbcAccess", jdbcAccess));
         config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.tablePrefix", "Action"));
-        config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.dropTable", Boolean.TRUE.toString()));
+        config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.dropTable", Boolean.FALSE.toString()));
         config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.stateStore.objectStoreType", JDBCStore.class.getName()));
         config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.stateStore.jdbcAccess", jdbcAccess));
         config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.stateStore.tablePrefix", "stateStore"));
-        config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.stateStore.dropTable", Boolean.TRUE.toString()));
+        config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.stateStore.dropTable", Boolean.FALSE.toString()));
         config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.communicationStore.objectStoreType", JDBCStore.class.getName()));
         config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.communicationStore.jdbcAccess", jdbcAccess));
         config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.communicationStore.tablePrefix", "Communication"));
-        config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.communicationStore.dropTable", Boolean.TRUE.toString()));
+        config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.communicationStore.dropTable", Boolean.FALSE.toString()));
     }
     
     @Override

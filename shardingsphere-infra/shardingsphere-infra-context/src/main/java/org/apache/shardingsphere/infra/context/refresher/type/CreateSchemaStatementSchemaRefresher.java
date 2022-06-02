@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.context.refresher.type;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.refresher.MetaDataRefresher;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContextFactory;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
@@ -27,6 +26,7 @@ import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationS
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.event.AddSchemaEvent;
+import org.apache.shardingsphere.infra.metadata.database.schema.event.MetaDataRefreshedEvent;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateSchemaStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.CreateSchemaStatementHandler;
@@ -45,18 +45,20 @@ public final class CreateSchemaStatementSchemaRefresher implements MetaDataRefre
     private static final String TYPE = CreateSchemaStatement.class.getName();
     
     @Override
-    public void refresh(final ShardingSphereDatabase database, final FederationDatabaseMetaData federationDatabaseMetaData, final Map<String, OptimizerPlannerContext> optimizerPlanners,
-                        final Collection<String> logicDataSourceNames, final String schemaName, final CreateSchemaStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
+    public Optional<MetaDataRefreshedEvent> refresh(final ShardingSphereDatabase database, final FederationDatabaseMetaData federationDatabaseMetaData,
+                                                    final Map<String, OptimizerPlannerContext> optimizerPlanners,
+                                                    final Collection<String> logicDataSourceNames, final String schemaName, final CreateSchemaStatement sqlStatement,
+                                                    final ConfigurationProperties props) throws SQLException {
         Optional<IdentifierValue> schema = sqlStatement.getSchemaName().isPresent() ? sqlStatement.getSchemaName() : CreateSchemaStatementHandler.getUsername(sqlStatement);
         if (!schema.isPresent()) {
-            return;
+            return Optional.empty();
         }
         String actualSchemaName = schema.get().getValue();
         database.getSchemas().put(actualSchemaName, new ShardingSphereSchema());
         federationDatabaseMetaData.putSchemaMetadata(actualSchemaName, new FederationSchemaMetaData(actualSchemaName, new LinkedHashMap<>()));
         optimizerPlanners.put(federationDatabaseMetaData.getName(), OptimizerPlannerContextFactory.create(federationDatabaseMetaData));
         AddSchemaEvent event = new AddSchemaEvent(database.getName(), actualSchemaName);
-        ShardingSphereEventBus.getInstance().post(event);
+        return Optional.of(event);
     }
     
     @Override

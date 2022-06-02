@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.api.datasource.config.impl;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -43,14 +44,23 @@ public final class ShardingSpherePipelineDataSourceConfigurationTest {
         assertThat(dataSources.size(), is(2));
         assertTrue(dataSources.containsKey("ds_0"));
         assertTrue(dataSources.containsKey("ds_1"));
+        for (Map<String, Object> queryProps : dataSources.values()) {
+            for (String each : Arrays.asList("minPoolSize", "minimumIdle")) {
+                assertThat(queryProps.get(each), is("1"));
+            }
+        }
     }
     
     private String getDataSourceYaml() {
         return "dataSources:\n"
                 + "  ds_1:\n"
+                + "    minPoolSize: 20\n"
+                + "    minimumIdle: 20\n"
                 + "    dataSourceClassName: com.zaxxer.hikari.HikariDataSource\n"
                 + "    url: jdbc:mysql://192.168.0.2:3306/scaling?serverTimezone=UTC&useSSL=false\n"
                 + "  ds_0:\n"
+                + "    minPoolSize: 20\n"
+                + "    minimumIdle: 20\n"
                 + "    dataSourceClassName: com.zaxxer.hikari.HikariDataSource\n"
                 + "    url: jdbc:mysql://192.168.0.1:3306/scaling?serverTimezone=UTC&useSSL=false\n";
     }

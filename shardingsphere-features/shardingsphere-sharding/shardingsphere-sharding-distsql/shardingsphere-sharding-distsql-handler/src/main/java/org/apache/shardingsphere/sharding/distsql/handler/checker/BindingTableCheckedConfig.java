@@ -36,8 +36,6 @@ public final class BindingTableCheckedConfig {
     
     private final Map<String, ShardingAlgorithm> shardingAlgorithms;
     
-    private final Collection<String> bindingTableGroups;
-    
     private final Collection<String> broadcastTables;
     
     private final ShardingStrategyConfiguration defaultDatabaseShardingStrategyConfig;
