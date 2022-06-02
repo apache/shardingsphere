@@ -52,9 +52,6 @@
 #      recoveryStorePassword: 12345678
 #      commitOnePhase: true
 #      transactionSync: false
-#      nodeIdentifier: 127.0.0.1@3307
-#      xaRecoveryNodes:
-#        - 127.0.0.1@3307
 #      recoveryBackoffPeriod: 1
 #      defaultTimeout: 180
 #      expiryScanInterval: 12
