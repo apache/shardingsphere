@@ -47,6 +47,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
+import org.apache.shardingsphere.transaction.utils.AutoCommitUtils;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -70,8 +71,14 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
     public MySQLComQueryPacketExecutor(final MySQLComQueryPacket packet, final ConnectionSession connectionSession) throws SQLException {
         DatabaseType databaseType = DatabaseTypeFactory.getInstance("MySQL");
         SQLStatement sqlStatement = parseSql(packet.getSql(), databaseType);
-        textProtocolBackendHandler = areMultiStatements(connectionSession, sqlStatement, packet.getSql()) ? new MySQLMultiStatementsHandler(connectionSession, sqlStatement, packet.getSql())
-                : TextProtocolBackendHandlerFactory.newInstance(databaseType, packet.getSql(), () -> Optional.of(sqlStatement), connectionSession);
+        if (areMultiStatements(connectionSession, sqlStatement, packet.getSql())) {
+            if (AutoCommitUtils.needOpenTransaction(sqlStatement)) {
+                connectionSession.getBackendConnection().prepareForTaskExecution();
+            }
+            textProtocolBackendHandler = new MySQLMultiStatementsHandler(connectionSession, sqlStatement, packet.getSql());
+        } else {
+            textProtocolBackendHandler = TextProtocolBackendHandlerFactory.newInstance(databaseType, packet.getSql(), () -> Optional.of(sqlStatement), connectionSession);
+        }
         characterSet = connectionSession.getAttributeMap().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).get().getId();
     }
     
