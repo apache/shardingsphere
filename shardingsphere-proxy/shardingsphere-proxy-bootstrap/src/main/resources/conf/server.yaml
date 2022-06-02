@@ -50,6 +50,7 @@
 #      recoveryStoreDataSource: com.mysql.jdbc.jdbc2.optional.MysqlDataSource
 #      recoveryStoreUser: root
 #      recoveryStorePassword: 12345678
+#      # The following properties can be configured or not
 #      commitOnePhase: true
 #      transactionSync: false
 #      recoveryBackoffPeriod: 1
