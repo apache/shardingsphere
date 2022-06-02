@@ -118,7 +118,7 @@ public final class InstanceContextTest {
     public void assertIsCluster() {
         InstanceContext context = new InstanceContext(new ComputeNodeInstance(mock(InstanceDefinition.class)), new WorkerIdGeneratorFixture(Long.MIN_VALUE), modeConfig, lockContext);
         assertFalse(context.isCluster());
-        InstanceContext clusterContext = new InstanceContext(new ComputeNodeInstance(mock(InstanceDefinition.class)), new WorkerIdGeneratorFixture(Long.MIN_VALUE), 
+        InstanceContext clusterContext = new InstanceContext(new ComputeNodeInstance(mock(InstanceDefinition.class)), new WorkerIdGeneratorFixture(Long.MIN_VALUE),
                 new ModeConfiguration("Cluster", null, false), lockContext);
         assertTrue(clusterContext.isCluster());
     }
