@@ -18,23 +18,55 @@
 package org.apache.shardingsphere.infra.binder.statement.ddl;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.binder.aware.CursorDefinitionAware;
+import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.CursorAvailable;
+import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
+import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.cursor.CursorNameSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CloseStatement;
+
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Close statement context.
  */
 @Getter
-public final class CloseStatementContext extends CommonSQLStatementContext<CloseStatement> implements CursorAvailable {
+public final class CloseStatementContext extends CommonSQLStatementContext<CloseStatement> implements CursorAvailable, WhereAvailable, CursorDefinitionAware {
+    
+    private CursorStatementContext cursorStatementContext;
+    
+    private TablesContext tablesContext;
     
     public CloseStatementContext(final CloseStatement sqlStatement) {
         super(sqlStatement);
+        tablesContext = new TablesContext(Collections.emptyList(), getDatabaseType());
     }
     
     @Override
     public CursorNameSegment getCursorName() {
         return getSqlStatement().getCursorName();
+    }
+    
+    @Override
+    public void setUpCursorDefinition(final CursorStatementContext cursorStatementContext) {
+        this.cursorStatementContext = cursorStatementContext;
+        TableExtractor tableExtractor = new TableExtractor();
+        tableExtractor.extractTablesFromSelect(cursorStatementContext.getSqlStatement().getSelect());
+        tablesContext = new TablesContext(tableExtractor.getRewriteTables(), getDatabaseType());
+    }
+    
+    @Override
+    public Collection<WhereSegment> getWhereSegments() {
+        return null != cursorStatementContext ? cursorStatementContext.getWhereSegments() : Collections.emptyList();
+    }
+    
+    @Override
+    public Collection<ColumnSegment> getColumnSegments() {
+        return null != cursorStatementContext ? cursorStatementContext.getColumnSegments() : Collections.emptyList();
     }
 }
