@@ -98,5 +98,6 @@ execute
     | createDiskgroup
     | dropDiskgroup
     | createRollbackSegment
+    | dropRollbackSegment
     ) SEMI_?
     ;

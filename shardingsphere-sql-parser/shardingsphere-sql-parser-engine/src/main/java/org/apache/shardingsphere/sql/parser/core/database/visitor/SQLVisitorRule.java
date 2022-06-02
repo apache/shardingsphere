@@ -536,6 +536,8 @@ public enum SQLVisitorRule {
     
     CREATE_ROLLBACK_SEGMENT("CreateRollbackSegment", SQLStatementType.DDL),
     
+    DROP_ROLLBACK_SEGMENT("DropRollbackSegment", SQLStatementType.DDL),
+    
     CURSOR("Cursor", SQLStatementType.DDL),
     
     CLOSE("Close", SQLStatementType.DDL),
