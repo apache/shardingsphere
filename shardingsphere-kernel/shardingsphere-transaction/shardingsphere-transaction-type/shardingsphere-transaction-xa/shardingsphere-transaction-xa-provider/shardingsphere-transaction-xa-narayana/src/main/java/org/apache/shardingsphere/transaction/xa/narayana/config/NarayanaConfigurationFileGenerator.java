@@ -55,20 +55,21 @@ public final class NarayanaConfigurationFileGenerator implements TransactionConf
     
     @Override
     public void generateFile(final Properties transactionProps, final InstanceContext instanceContext) {
-        NarayanaConfiguration config = createDefaultConfiguration(transactionProps, instanceContext);
+        String instanceId = instanceContext.getInstance().getInstanceDefinition().getInstanceId();
+        String recoveryId = instanceContext.getInstance().getXaRecoveryIds().isEmpty() ? instanceId : Joiner.on(",").join(instanceContext.getInstance().getXaRecoveryIds());
+        NarayanaConfiguration config = createDefaultConfiguration(instanceId, recoveryId, transactionProps);
         if (!transactionProps.isEmpty()) {
             appendUserDefinedJdbcStoreConfiguration(transactionProps, config);
         }
         JAXB.marshal(config, new File(ClassLoader.getSystemResource("").getPath(), "jbossts-properties.xml"));
     }
     
-    private NarayanaConfiguration createDefaultConfiguration(final Properties transactionProps, final InstanceContext instanceContext) {
+    private NarayanaConfiguration createDefaultConfiguration(final String instanceId, final String recoverId, final Properties transactionProps) {
         NarayanaConfiguration result = new NarayanaConfiguration();
         result.getEntries().add(createEntry("CoordinatorEnvironmentBean.commitOnePhase", transactionProps.getOrDefault("commitOnePhase", Boolean.TRUE).toString()));
         result.getEntries().add(createEntry("ObjectStoreEnvironmentBean.transactionSync", transactionProps.getOrDefault("transactionSync", Boolean.FALSE).toString()));
-        result.getEntries().add(createEntry("CoreEnvironmentBean.nodeIdentifier",
-                transactionProps.getOrDefault("nodeIdentifier", instanceContext.getInstance().getInstanceDefinition().getInstanceId()).toString()));
-        result.getEntries().add(createEntry("JTAEnvironmentBean.xaRecoveryNodes", getRecoveryId(transactionProps, instanceContext)));
+        result.getEntries().add(createEntry("CoreEnvironmentBean.nodeIdentifier", instanceId));
+        result.getEntries().add(createEntry("JTAEnvironmentBean.xaRecoveryNodes", recoverId));
         result.getEntries().add(createEntry("JTAEnvironmentBean.xaResourceOrphanFilterClassNames", createXAResourceOrphanFilterClassNames()));
         result.getEntries().add(createEntry("CoreEnvironmentBean.socketProcessIdPort", "0"));
         result.getEntries().add(createEntry("RecoveryEnvironmentBean.recoveryModuleClassNames", getRecoveryModuleClassNames()));
@@ -82,7 +83,6 @@ public final class NarayanaConfigurationFileGenerator implements TransactionConf
         result.getEntries().add(createEntry("CoordinatorEnvironmentBean.defaultTimeout", transactionProps.getOrDefault("defaultTimeout", "180").toString()));
         result.getEntries().add(createEntry("RecoveryEnvironmentBean.expiryScanInterval", transactionProps.getOrDefault("expiryScanInterval", "12").toString()));
         result.getEntries().add(createEntry("RecoveryEnvironmentBean.periodicRecoveryPeriod", transactionProps.getOrDefault("periodicRecoveryPeriod", "120").toString()));
-        
         return result;
     }
     
