@@ -1297,3 +1297,7 @@ searchString
 attributeValue
     : identifier
     ;
+
+profileName
+    : identifier
+    ;

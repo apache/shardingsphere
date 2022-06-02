@@ -2462,3 +2462,16 @@ createRollbackSegment
 dropRollbackSegment
     : DROP ROLLBACK SEGMENT rollbackSegment
     ;
+
+createLockdownProfile
+    : CREATE LOCKDOWN PROFILE profileName (staticBaseProfile | dynamicBaseProfile)?
+    ;
+
+staticBaseProfile
+    : FROM profileName
+    ;
+
+dynamicBaseProfile
+    : INCLUDING profileName
+    ;
+

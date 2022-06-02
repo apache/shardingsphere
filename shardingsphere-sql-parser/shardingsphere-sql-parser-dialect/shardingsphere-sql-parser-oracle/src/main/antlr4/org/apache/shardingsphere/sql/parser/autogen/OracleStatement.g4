@@ -99,5 +99,6 @@ execute
     | dropDiskgroup
     | createRollbackSegment
     | dropRollbackSegment
+    | createLockdownProfile
     ) SEMI_?
     ;
