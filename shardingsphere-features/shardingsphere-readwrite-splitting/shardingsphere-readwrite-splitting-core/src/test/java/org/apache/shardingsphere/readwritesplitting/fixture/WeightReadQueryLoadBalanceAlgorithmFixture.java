@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
+package org.apache.shardingsphere.readwritesplitting.fixture;
 
 import lombok.Getter;
 import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
@@ -28,10 +28,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * Fixed replica weight load-balance algorithm.
+ * Replica weight load-balance algorithm fixture.
  */
 @Getter
-public final class FixedReplicaWeightLoadBalanceAlgorithm implements ReadQueryLoadBalanceAlgorithm {
+public final class WeightReadQueryLoadBalanceAlgorithmFixture implements ReadQueryLoadBalanceAlgorithm {
     
     private static final double ACCURACY_THRESHOLD = 0.0001;
     
@@ -122,6 +122,6 @@ public final class FixedReplicaWeightLoadBalanceAlgorithm implements ReadQueryLo
     
     @Override
     public String getType() {
-        return "FIXED_REPLICA_WEIGHT";
+        return "WEIGHT_READ_QUERY.FIXTURE";
     }
 }

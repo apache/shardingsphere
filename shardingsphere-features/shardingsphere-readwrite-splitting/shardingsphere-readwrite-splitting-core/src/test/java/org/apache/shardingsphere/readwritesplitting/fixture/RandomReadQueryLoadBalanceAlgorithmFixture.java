@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
+package org.apache.shardingsphere.readwritesplitting.fixture;
 
 import lombok.Getter;
 import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
@@ -26,10 +26,10 @@ import java.util.Properties;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * Fixed replica random load-balance algorithm.
+ * Replica random load-balance algorithm fixture.
  */
 @Getter
-public final class FixedReplicaRandomLoadBalanceAlgorithm implements ReadQueryLoadBalanceAlgorithm {
+public final class RandomReadQueryLoadBalanceAlgorithmFixture implements ReadQueryLoadBalanceAlgorithm {
     
     private Properties props = new Properties();
     
@@ -48,6 +48,6 @@ public final class FixedReplicaRandomLoadBalanceAlgorithm implements ReadQueryLo
     
     @Override
     public String getType() {
-        return "FIXED_REPLICA_RANDOM";
+        return "RANDOM_READ_QUERY.FIXTURE";
     }
 }

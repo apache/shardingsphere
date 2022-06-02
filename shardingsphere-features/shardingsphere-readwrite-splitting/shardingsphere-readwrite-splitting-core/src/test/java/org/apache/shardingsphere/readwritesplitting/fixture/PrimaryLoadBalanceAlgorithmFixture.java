@@ -15,22 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
+package org.apache.shardingsphere.readwritesplitting.fixture;
 
 import lombok.Getter;
 import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
-import org.apache.shardingsphere.transaction.TransactionHolder;
 
 import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Fixed replica round-robin load-balance algorithm.
+ * Primary load-balance algorithm fixture.
  */
-public final class FixedReplicaRoundRobinLoadBalanceAlgorithm implements ReadQueryLoadBalanceAlgorithm {
-    
-    private final AtomicInteger count = new AtomicInteger(0);
+public final class PrimaryLoadBalanceAlgorithmFixture implements ReadQueryLoadBalanceAlgorithm {
     
     @Getter
     private Properties props;
@@ -42,14 +38,11 @@ public final class FixedReplicaRoundRobinLoadBalanceAlgorithm implements ReadQue
     
     @Override
     public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames) {
-        if (null == TransactionHolder.getReadWriteSplitRoutedReplica()) {
-            TransactionHolder.setReadWriteSplitRoutedReplica(readDataSourceNames.get(Math.abs(count.getAndIncrement()) % readDataSourceNames.size()));
-        }
-        return TransactionHolder.getReadWriteSplitRoutedReplica();
+        return writeDataSourceName;
     }
     
     @Override
     public String getType() {
-        return "FIXED_REPLICA_ROUND_ROBIN";
+        return "PRIMARY.FIXTURE";
     }
 }

@@ -17,28 +17,33 @@
 
 package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
 
+import org.apache.shardingsphere.readwritesplitting.fixture.RoundRobinReadQueryLoadBalanceAlgorithmFixture;
 import org.apache.shardingsphere.transaction.TransactionHolder;
 import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class TransactionRandomReplicaLoadBalanceAlgorithmTest {
+public final class RoundRobinReadQueryLoadBalanceAlgorithmFixtureTest {
     
-    private final TransactionRandomReplicaLoadBalanceAlgorithm transactionRandomReplicaLoadBalanceAlgorithm = new TransactionRandomReplicaLoadBalanceAlgorithm();
+    private final RoundRobinReadQueryLoadBalanceAlgorithmFixture fixedReplicaRoundRobinLoadBalanceAlgorithm = new RoundRobinReadQueryLoadBalanceAlgorithmFixture();
     
     @Test
-    public void assertGetDataSourceInTransaction() {
+    public void assertGetDataSource() {
         String writeDataSourceName = "test_write_ds";
         String readDataSourceName1 = "test_replica_ds_1";
         String readDataSourceName2 = "test_replica_ds_2";
         List<String> readDataSourceNames = Arrays.asList(readDataSourceName1, readDataSourceName2);
         TransactionHolder.setInTransaction();
-        assertTrue(readDataSourceNames.contains(transactionRandomReplicaLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames)));
-        assertTrue(readDataSourceNames.contains(transactionRandomReplicaLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames)));
-        assertTrue(readDataSourceNames.contains(transactionRandomReplicaLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames)));
+        String routeDatasource = fixedReplicaRoundRobinLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames);
+        assertTrue(readDataSourceNames.contains(fixedReplicaRoundRobinLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames)));
+        assertThat(fixedReplicaRoundRobinLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), is(routeDatasource));
+        assertThat(fixedReplicaRoundRobinLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), is(routeDatasource));
+        assertThat(fixedReplicaRoundRobinLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), is(routeDatasource));
         TransactionHolder.clear();
     }
 }

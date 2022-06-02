@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
 
+import org.apache.shardingsphere.readwritesplitting.fixture.PrimaryLoadBalanceAlgorithmFixture;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -25,9 +26,9 @@ import java.util.List;
 import static org.junit.Assert.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 
-public final class FixedPrimaryLoadBalanceAlgorithmTest {
+public final class PrimaryLoadBalanceAlgorithmFixtureTest {
     
-    private final FixedPrimaryLoadBalanceAlgorithm fixedPrimaryLoadBalanceAlgorithm = new FixedPrimaryLoadBalanceAlgorithm();
+    private final PrimaryLoadBalanceAlgorithmFixture fixedPrimaryLoadBalanceAlgorithm = new PrimaryLoadBalanceAlgorithmFixture();
     
     @Test
     public void assertGetDataSource() {

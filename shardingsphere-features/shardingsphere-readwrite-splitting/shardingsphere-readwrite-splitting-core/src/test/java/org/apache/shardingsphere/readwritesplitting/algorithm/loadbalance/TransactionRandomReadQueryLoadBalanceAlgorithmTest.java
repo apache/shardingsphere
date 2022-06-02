@@ -23,26 +23,22 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class FixedReplicaRoundRobinLoadBalanceAlgorithmTest {
+public final class TransactionRandomReadQueryLoadBalanceAlgorithmTest {
     
-    private final FixedReplicaRoundRobinLoadBalanceAlgorithm fixedReplicaRoundRobinLoadBalanceAlgorithm = new FixedReplicaRoundRobinLoadBalanceAlgorithm();
+    private final TransactionRandomReadQueryLoadBalanceAlgorithm transactionRandomReplicaLoadBalanceAlgorithm = new TransactionRandomReadQueryLoadBalanceAlgorithm();
     
     @Test
-    public void assertGetDataSource() {
+    public void assertGetDataSourceInTransaction() {
         String writeDataSourceName = "test_write_ds";
         String readDataSourceName1 = "test_replica_ds_1";
         String readDataSourceName2 = "test_replica_ds_2";
         List<String> readDataSourceNames = Arrays.asList(readDataSourceName1, readDataSourceName2);
         TransactionHolder.setInTransaction();
-        String routeDatasource = fixedReplicaRoundRobinLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames);
-        assertTrue(readDataSourceNames.contains(fixedReplicaRoundRobinLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames)));
-        assertThat(fixedReplicaRoundRobinLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), is(routeDatasource));
-        assertThat(fixedReplicaRoundRobinLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), is(routeDatasource));
-        assertThat(fixedReplicaRoundRobinLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), is(routeDatasource));
+        assertTrue(readDataSourceNames.contains(transactionRandomReplicaLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames)));
+        assertTrue(readDataSourceNames.contains(transactionRandomReplicaLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames)));
+        assertTrue(readDataSourceNames.contains(transactionRandomReplicaLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames)));
         TransactionHolder.clear();
     }
 }

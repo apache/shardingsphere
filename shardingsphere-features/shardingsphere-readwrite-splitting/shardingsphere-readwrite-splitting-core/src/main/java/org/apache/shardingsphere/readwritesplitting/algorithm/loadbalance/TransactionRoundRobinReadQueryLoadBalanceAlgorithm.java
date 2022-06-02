@@ -22,11 +22,14 @@ import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgo
 
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Fixed primary load-balance algorithm.
+ * Transaction round-robin read query load-balance algorithm.
  */
-public final class FixedPrimaryLoadBalanceAlgorithm implements ReadQueryLoadBalanceAlgorithm {
+public final class TransactionRoundRobinReadQueryLoadBalanceAlgorithm implements ReadQueryLoadBalanceAlgorithm {
+    
+    private final AtomicInteger count = new AtomicInteger(0);
     
     @Getter
     private Properties props;
@@ -38,11 +41,11 @@ public final class FixedPrimaryLoadBalanceAlgorithm implements ReadQueryLoadBala
     
     @Override
     public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames) {
-        return writeDataSourceName;
+        return readDataSourceNames.get(Math.abs(count.getAndIncrement()) % readDataSourceNames.size());
     }
     
     @Override
     public String getType() {
-        return "FIXED_PRIMARY";
+        return "TRANSACTION_ROUND_ROBIN";
     }
 }

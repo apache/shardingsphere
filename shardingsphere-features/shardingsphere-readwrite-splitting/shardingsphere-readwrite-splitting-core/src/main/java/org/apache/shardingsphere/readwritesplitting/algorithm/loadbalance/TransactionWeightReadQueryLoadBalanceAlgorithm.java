@@ -27,10 +27,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * Transaction weight replica load-balance algorithm.
+ * Transaction weight read query load-balance algorithm.
  */
 @Getter
-public final class TransactionWeightReplicaLoadBalanceAlgorithm implements ReadQueryLoadBalanceAlgorithm {
+public final class TransactionWeightReadQueryLoadBalanceAlgorithm implements ReadQueryLoadBalanceAlgorithm {
     
     private static final double ACCURACY_THRESHOLD = 0.0001;
     

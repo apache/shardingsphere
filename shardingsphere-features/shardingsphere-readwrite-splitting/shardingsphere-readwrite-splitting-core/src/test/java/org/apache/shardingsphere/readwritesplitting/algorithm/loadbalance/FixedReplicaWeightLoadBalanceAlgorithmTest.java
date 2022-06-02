@@ -19,6 +19,7 @@ package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
 
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.readwritesplitting.factory.ReplicaLoadBalanceAlgorithmFactory;
+import org.apache.shardingsphere.readwritesplitting.fixture.WeightReadQueryLoadBalanceAlgorithmFixture;
 import org.apache.shardingsphere.transaction.TransactionHolder;
 import org.junit.After;
 import org.junit.Before;
@@ -40,14 +41,14 @@ public final class FixedReplicaWeightLoadBalanceAlgorithmTest {
     @Before
     @After
     public void reset() throws NoSuchFieldException, IllegalAccessException {
-        Field accuracyThresholdField = FixedReplicaWeightLoadBalanceAlgorithm.class.getDeclaredField("WEIGHT_MAP");
+        Field accuracyThresholdField = WeightReadQueryLoadBalanceAlgorithmFixture.class.getDeclaredField("WEIGHT_MAP");
         accuracyThresholdField.setAccessible(true);
-        ((Map) accuracyThresholdField.get(FixedReplicaWeightLoadBalanceAlgorithm.class)).clear();
+        ((Map) accuracyThresholdField.get(WeightReadQueryLoadBalanceAlgorithmFixture.class)).clear();
     }
     
     @Test
     public void assertGetSingleReadDataSource() {
-        FixedReplicaWeightLoadBalanceAlgorithm fixedReplicaWeightLoadBalanceAlgorithm = createReplicaLoadBalanceAlgorithm(createSingleDataSourceProperties());
+        WeightReadQueryLoadBalanceAlgorithmFixture fixedReplicaWeightLoadBalanceAlgorithm = createReplicaLoadBalanceAlgorithm(createSingleDataSourceProperties());
         TransactionHolder.isTransaction();
         String routeDatasource = fixedReplicaWeightLoadBalanceAlgorithm.getDataSource("ds", "test_write_ds", Collections.singletonList("test_read_ds_1"));
         assertThat(routeDatasource, is("test_read_ds_1"));
@@ -63,7 +64,7 @@ public final class FixedReplicaWeightLoadBalanceAlgorithmTest {
     
     @Test
     public void assertGetMultipleReadDataSources() {
-        FixedReplicaWeightLoadBalanceAlgorithm fixedReplicaWeightLoadBalanceAlgorithm = createReplicaLoadBalanceAlgorithm(createMultipleDataSourcesProperties());
+        WeightReadQueryLoadBalanceAlgorithmFixture fixedReplicaWeightLoadBalanceAlgorithm = createReplicaLoadBalanceAlgorithm(createMultipleDataSourcesProperties());
         String writeDataSourceName = "test_write_ds";
         String readDataSourceName1 = "test_read_ds_1";
         String readDataSourceName2 = "test_read_ds_2";
@@ -83,7 +84,7 @@ public final class FixedReplicaWeightLoadBalanceAlgorithmTest {
         return result;
     }
     
-    private FixedReplicaWeightLoadBalanceAlgorithm createReplicaLoadBalanceAlgorithm(final Properties props) {
-        return (FixedReplicaWeightLoadBalanceAlgorithm) ReplicaLoadBalanceAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("FIXED_REPLICA_WEIGHT", props));
+    private WeightReadQueryLoadBalanceAlgorithmFixture createReplicaLoadBalanceAlgorithm(final Properties props) {
+        return (WeightReadQueryLoadBalanceAlgorithmFixture) ReplicaLoadBalanceAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("WEIGHT_READ_QUERY.FIXTURE", props));
     }
 }

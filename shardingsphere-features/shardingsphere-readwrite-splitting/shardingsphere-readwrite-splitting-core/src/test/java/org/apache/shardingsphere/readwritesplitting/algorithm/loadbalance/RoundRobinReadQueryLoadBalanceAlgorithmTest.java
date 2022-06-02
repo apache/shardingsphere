@@ -26,18 +26,18 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class TransactionRoundRobinReplicaLoadBalanceAlgorithmTest {
+public final class RoundRobinReadQueryLoadBalanceAlgorithmTest {
     
     @Test
     public void assertGetDataSource() {
         String writeDataSourceName = "test_write_ds";
         String readDataSourceName1 = "test_read_ds_1";
         String readDataSourceName2 = "test_read_ds_2";
-        TransactionRoundRobinReplicaLoadBalanceAlgorithm transactionRoundRobinReplicaLoadBalanceAlgorithm = new TransactionRoundRobinReplicaLoadBalanceAlgorithm();
+        RoundRobinReadQueryLoadBalanceAlgorithm roundRobinReplicaLoadBalanceAlgorithm = new RoundRobinReadQueryLoadBalanceAlgorithm();
         List<String> readDataSourceNames = Arrays.asList(readDataSourceName1, readDataSourceName2);
-        assertThat(transactionRoundRobinReplicaLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), is(readDataSourceName1));
-        assertThat(transactionRoundRobinReplicaLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), is(readDataSourceName2));
-        assertThat(transactionRoundRobinReplicaLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), is(readDataSourceName1));
+        assertThat(roundRobinReplicaLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), is(readDataSourceName1));
+        assertThat(roundRobinReplicaLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), is(readDataSourceName2));
+        assertThat(roundRobinReplicaLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), is(readDataSourceName1));
     }
     
     @Test
@@ -45,12 +45,10 @@ public final class TransactionRoundRobinReplicaLoadBalanceAlgorithmTest {
         String writeDataSourceName = "test_write_ds";
         String readDataSourceName1 = "test_read_ds_1";
         String readDataSourceName2 = "test_read_ds_2";
-        TransactionRoundRobinReplicaLoadBalanceAlgorithm transactionRoundRobinReplicaLoadBalanceAlgorithm = new TransactionRoundRobinReplicaLoadBalanceAlgorithm();
+        RoundRobinReadQueryLoadBalanceAlgorithm roundRobinReplicaLoadBalanceAlgorithm = new RoundRobinReadQueryLoadBalanceAlgorithm();
         List<String> readDataSourceNames = Arrays.asList(readDataSourceName1, readDataSourceName2);
         TransactionHolder.setInTransaction();
-        assertThat(transactionRoundRobinReplicaLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), is(readDataSourceName1));
-        assertThat(transactionRoundRobinReplicaLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), is(readDataSourceName2));
-        assertThat(transactionRoundRobinReplicaLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), is(readDataSourceName1));
+        assertThat(roundRobinReplicaLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), is(writeDataSourceName));
         TransactionHolder.clear();
     }
 }
