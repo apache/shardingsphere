@@ -104,9 +104,9 @@ public final class MySQLParameterizedTest {
                         + "\t`submission_date` DATE,\n"
                         + "\tPRIMARY KEY (`runoob_id`)\n"
                         + ") ENGINE = InnoDB DEFAULT CHARSET = utf8"});
-        testUnits.add(new String[]{"select_with_column", 
-                "select id, name, age, count(table1.id) as n, (select id, name, age, sex from table2 where id=2) as sid, yyyy from table1 where id=1",        
-                "SELECT id ," 
+        testUnits.add(new String[]{"select_with_column",
+                "select id, name, age, count(table1.id) as n, (select id, name, age, sex from table2 where id=2) as sid, yyyy from table1 where id=1",
+                "SELECT id ,"
                         + " name , age , \n"
                         + "\tCOUNT(table1.id) AS n, \n"
                         + "\t(\n"
