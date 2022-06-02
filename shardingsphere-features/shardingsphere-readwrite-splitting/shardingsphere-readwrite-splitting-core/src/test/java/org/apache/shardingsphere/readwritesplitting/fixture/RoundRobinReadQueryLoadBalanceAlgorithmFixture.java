@@ -26,7 +26,7 @@ import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Replica round-robin load-balance algorithm fixture.
+ * Round-robin read query load-balance algorithm fixture.
  */
 public final class RoundRobinReadQueryLoadBalanceAlgorithmFixture implements ReadQueryLoadBalanceAlgorithm {
     

@@ -26,7 +26,7 @@ import java.util.Properties;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * Replica random load-balance algorithm fixture.
+ * Random read query load-balance algorithm fixture.
  */
 @Getter
 public final class RandomReadQueryLoadBalanceAlgorithmFixture implements ReadQueryLoadBalanceAlgorithm {

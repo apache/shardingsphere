@@ -28,7 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * Replica weight load-balance algorithm fixture.
+ * Weight read query load-balance algorithm fixture.
  */
 @Getter
 public final class WeightReadQueryLoadBalanceAlgorithmFixture implements ReadQueryLoadBalanceAlgorithm {
