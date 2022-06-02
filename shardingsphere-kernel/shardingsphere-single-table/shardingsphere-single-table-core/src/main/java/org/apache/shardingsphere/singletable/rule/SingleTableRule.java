@@ -66,7 +66,7 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
     public SingleTableRule(final SingleTableRuleConfiguration config, final String databaseName, final DatabaseType databaseType,
                            final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules, final ConfigurationProperties props) {
         Map<String, DataSource> aggregateDataSourceMap = getAggregateDataSourceMap(dataSourceMap, builtRules);
-        dataSourceNames = aggregateDataSourceMap.keySet();
+        dataSourceNames = new LinkedHashSet<>(aggregateDataSourceMap.keySet());
         singleTableDataNodes = SingleTableDataNodeLoader.load(databaseName, databaseType, aggregateDataSourceMap, getExcludedTables(builtRules), props);
         tableNames = singleTableDataNodes.entrySet().stream().collect(Collectors.toConcurrentMap(Entry::getKey, entry -> entry.getValue().iterator().next().getTableName()));
         config.getDefaultDataSource().ifPresent(optional -> defaultDataSource = optional);
