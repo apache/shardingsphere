@@ -17,9 +17,13 @@
 
 package org.apache.shardingsphere.proxy.backend.text.data.impl;
 
+import com.google.common.base.Preconditions;
 import io.vertx.core.Future;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.binder.aware.CursorDefinitionAware;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.ddl.CursorStatementContext;
+import org.apache.shardingsphere.infra.binder.type.CursorAvailable;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.SystemSchemaUtil;
@@ -70,15 +74,30 @@ public final class SchemaAssignedDatabaseBackendHandler implements DatabaseBacke
     }
     
     private void prepareDatabaseCommunicationEngine() throws RequiredResourceMissedException {
-        ShardingSphereDatabase databaseMetaData = ProxyContext.getInstance().getDatabase(connectionSession.getDatabaseName());
-        boolean isSystemSchema = SystemSchemaUtil.containsSystemSchema(sqlStatementContext.getDatabaseType(), sqlStatementContext.getTablesContext().getSchemaNames(), databaseMetaData);
-        if (!isSystemSchema && !databaseMetaData.hasDataSource()) {
+        ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(connectionSession.getDatabaseName());
+        boolean isSystemSchema = SystemSchemaUtil.containsSystemSchema(sqlStatementContext.getDatabaseType(), sqlStatementContext.getTablesContext().getSchemaNames(), database);
+        if (!isSystemSchema && !database.hasDataSource()) {
             throw new RequiredResourceMissedException(connectionSession.getDatabaseName());
         }
-        if (!isSystemSchema && !databaseMetaData.isComplete()) {
+        if (!isSystemSchema && !database.isComplete()) {
             throw new RuleNotExistedException();
         }
+        if (sqlStatementContext instanceof CursorAvailable) {
+            prepareCursorStatementContext((CursorAvailable) sqlStatementContext, connectionSession);
+        }
         databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatementContext, sql, connectionSession.getBackendConnection());
+    }
+    
+    private void prepareCursorStatementContext(final CursorAvailable statementContext, final ConnectionSession connectionSession) {
+        String cursorName = statementContext.getCursorName().getIdentifier().getValue().toLowerCase();
+        if (statementContext instanceof CursorStatementContext) {
+            connectionSession.getCursorDefinitions().put(cursorName, (CursorStatementContext) statementContext);
+        }
+        if (statementContext instanceof CursorDefinitionAware) {
+            CursorStatementContext cursorStatementContext = connectionSession.getCursorDefinitions().get(cursorName);
+            Preconditions.checkArgument(null != cursorStatementContext, "Cursor %s does not exist.", cursorName);
+            ((CursorDefinitionAware) statementContext).setUpCursorDefinition(cursorStatementContext);
+        }
     }
     
     @Override
