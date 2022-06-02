@@ -1194,11 +1194,27 @@ close
     ;
 
 cluster
-    : CLUSTER VERBOSE? (qualifiedName clusterIndexSpecification? | name ON qualifiedName)?
+    : CLUSTER clusterVerboseSpecification? tableName? clusterIndexSpecification?
+    ;
+
+clusterVerboseSpecification
+    : VERBOSE | clusterVerboseOptionList
     ;
 
 clusterIndexSpecification
-    : USING name
+    : USING indexName
+    ;
+
+clusterVerboseOptionList
+    : LP_ clusterVerboseOption (COMMA_ clusterVerboseOption)* RP_
+    ;
+
+clusterVerboseOption
+    : VERBOSE booleanValue?
+    ;
+
+booleanValue
+    : TRUE | ON | FALSE | OFF | NUMBER_
     ;
 
 comment

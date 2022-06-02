@@ -544,7 +544,9 @@ public enum SQLVisitorRule {
     
     FETCH("Fetch", SQLStatementType.DDL),
     
-    CHECKPOINT("Checkpoint", SQLStatementType.DML);
+    CHECKPOINT("Checkpoint", SQLStatementType.DML),
+    
+    CLUSTER("Cluster", SQLStatementType.DDL);
     
     private final String name;
     

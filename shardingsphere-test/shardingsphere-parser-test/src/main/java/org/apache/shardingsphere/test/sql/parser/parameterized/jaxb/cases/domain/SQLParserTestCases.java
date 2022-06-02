@@ -130,6 +130,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AssociateStatisticsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AuditStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CloseStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.ClusterStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CommentStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateContextStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateConversionStatementTestCase;
@@ -1408,6 +1409,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "checkpoint")
     private final List<CheckpointStatementTestCase> checkpointTestCases = new LinkedList<>();
     
+    @XmlElement(name = "cluster")
+    private final List<ClusterStatementTestCase> clusterStatementTestCases = new LinkedList<>();
+    
     /**
      * Get all SQL parser test cases.
      *
@@ -1759,6 +1763,7 @@ public final class SQLParserTestCases {
         putAll(moveTestCases, result);
         putAll(fetchTestCases, result);
         putAll(checkpointTestCases, result);
+        putAll(clusterStatementTestCases, result);
         return result;
     }
     // CHECKSTYLE:ON
