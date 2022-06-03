@@ -69,6 +69,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Cre
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CreateSchemaContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CreateSequenceContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CreateSynonymContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CreatePublicationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CreateDirectoryContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CreateTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CreateTablespaceContext;
@@ -184,6 +185,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateSchemaStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateSequenceStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateSynonymStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreatePublicationStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateDirectoryStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateTablespaceStatement;
@@ -718,6 +720,11 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
     @Override
     public ASTNode visitCreateSynonym(final CreateSynonymContext ctx) {
         return new OpenGaussCreateSynonymStatement();
+    }
+    
+    @Override
+    public ASTNode visitCreatePublication(final CreatePublicationContext ctx) {
+        return new OpenGaussCreatePublicationStatement();
     }
     
     @Override

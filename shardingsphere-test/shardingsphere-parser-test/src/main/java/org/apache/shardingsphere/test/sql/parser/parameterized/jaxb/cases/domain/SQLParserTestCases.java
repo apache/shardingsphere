@@ -154,6 +154,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateServerStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateServiceStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateSynonymStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreatePublicationStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateTablespaceStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateTextSearchStatementTestCase;
@@ -644,6 +645,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "create-synonym")
     private final List<CreateSynonymStatementTestCase> createSynonymTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "create-publication")
+    private final List<CreatePublicationStatementTestCase> createPublicationTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-synonym")
     private final List<DropSynonymStatementTestCase> dropSynonymTestCases = new LinkedList<>();
@@ -1494,6 +1498,7 @@ public final class SQLParserTestCases {
         putAll(alterDimensionTestCases, result);
         putAll(createViewTestCases, result);
         putAll(createSynonymTestCases, result);
+        putAll(createPublicationTestCases, result);
         putAll(dropSynonymTestCases, result);
         putAll(createDirectoryTestCases, result);
         putAll(createTriggerTestCases, result);

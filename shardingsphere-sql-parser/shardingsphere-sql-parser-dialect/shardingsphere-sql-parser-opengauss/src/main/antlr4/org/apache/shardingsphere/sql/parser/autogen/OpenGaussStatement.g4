@@ -133,5 +133,6 @@ execute
     | alterRule
     | checkpoint
     | alterType
+    | createPublication
     ) SEMI_? EOF
     ;
