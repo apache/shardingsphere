@@ -103,7 +103,6 @@ Total: 207 companies.
     <li>JD’s Big Data and Intelligent Supply Chain Department
     <li><a href="https://aifanfan.baidu.com/" rel="nofollow">Baidu aifanfan</a></li>
     <li><a href="https://www.tuya.com/" rel="nofollow">tuya</a></li>
-    <li><a href="https://www.itrus.com.cn/" rel="nofollow">ITrusChina</a></li>
     <li><a href="https://www.advancegroup.com/" rel="nofollow">Advance Intelligence Group</a></li>
     <li><a href="http://www.zhenxinsafe.com/" rel="nofollow">ZhenXin Safe</a></li>
     <li><a href="http://www.cloudansys.com/" rel="nofollow">YUNLU</a></li>
