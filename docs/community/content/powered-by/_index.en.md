@@ -13,7 +13,7 @@ Please register [here](https://github.com/apache/shardingsphere/discussions/1225
 
 ## Who is Using ShardingSphere?
 
-Total: 208 companies.
+Total: 207 companies.
 
 ### Infra Software
 <ul>
@@ -113,7 +113,7 @@ Total: 208 companies.
     <li><a href="https://www.shebaotong.com/" rel="nofollow">SheBaoTong</a></li>
     <li><a href="http://www.dtchuxing.com/" rel="nofollow">Bus Cloud</a></li>
     <li><a href="http://www.ushareit.com/" rel="nofollow">Shareit</a></li>
-    <li><a href="https://www.xforceplus.com/" rel="nofollow">Xforceplus</a></li>
+    <li><a href="https://www.xforceplus.com/" rel="nofollow">XForcePlus</a></li>
     <li><a href="http://www.meicloud.com/" rel="nofollow">Midea Cloud</a></li>
     <li><a href="http://www.shangquanquan.com/" rel="nofollow">shangquanquan</a></li>
     <li><a href="https://www.glodon.com/" rel="nofollow">Glodon</a></li>
@@ -124,7 +124,6 @@ Total: 208 companies.
     <li><a href="https://www.teddymobile.cn/" rel="nofollow">Teddy Mobile</a></li>
     <li><a href="https://www.ecopiatech.com/" rel="nofollow">Ecopia</a></li>
     <li><a href="https://xiaoman.cn/" rel="nofollow">OKKI CRM</a></li>
-    <li><a href="https://www.xforceplus.com/" rel="nofollow">XForcePlus</a></li>
 </ul>
 
 ### Transportation
@@ -201,6 +200,7 @@ Total: 208 companies.
 
 ### E-Security
 <ul>
+    <li><a href="https://www.itrus.com.cn/" rel="nofollow">ITrusChina</a></li>
     <li><a href="http://www.ncs-cyber.com.cn" rel="nofollow">EncryptCyber</a></li>
 </ul>
 

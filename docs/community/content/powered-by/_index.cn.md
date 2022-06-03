@@ -13,7 +13,7 @@ chapter = true
 
 ## 谁在使用 ShardingSphere?
 
-共计 208 家公司。
+共计 207 家公司。
 
 ### 基础软件
 <ul>
@@ -103,7 +103,6 @@ chapter = true
     <li>京东大数据与智能供应链</li>
     <li><a href="https://aifanfan.baidu.com/" rel="nofollow">百度爱番番</a></li>
     <li><a href="https://www.tuya.com/cn" rel="nofollow">涂鸦</a></li>
-    <li><a href="https://www.itrus.com.cn/" rel="nofollow">天威诚信</a></li>
     <li><a href="https://www.advancegroup.com.cn/" rel="nofollow">领创集团</a>：<a href="https://mp.weixin.qq.com/s/4iSewGT6-bOmDH56ukyBsQ" rel="nofollow">用户案例</a></li>
     <li><a href="http://www.zhenxinsafe.com/" rel="nofollow">真信认知科技</a></li>
     <li><a href="http://www.cloudansys.com/" rel="nofollow">云庐科技</a></li>
@@ -124,7 +123,6 @@ chapter = true
     <li><a href="https://www.teddymobile.cn/" rel="nofollow">泰迪熊移动</a></li>
     <li><a href="https://www.ecopiatech.com/" rel="nofollow">Ecopia</a></li>
     <li><a href="https://xiaoman.cn/" rel="nofollow">小满科技</a></li>
-    <li><a href="https://www.xforceplus.com/" rel="nofollow">上海票易通</a></li>
 </ul>
 
 ### 出行
@@ -201,6 +199,7 @@ chapter = true
 
 ### 互联网安全
 <ul>
+    <li><a href="https://www.itrus.com.cn/" rel="nofollow">天威诚信</a></li>
     <li><a href="http://www.ncs-cyber.com.cn" rel="nofollow">天津市国瑞数码安全系统股份有限公司</a></li>
 </ul>
 
