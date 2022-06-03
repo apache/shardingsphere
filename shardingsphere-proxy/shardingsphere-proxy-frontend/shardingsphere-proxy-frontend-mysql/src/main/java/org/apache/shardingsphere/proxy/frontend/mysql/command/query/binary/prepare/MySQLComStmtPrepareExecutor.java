@@ -73,7 +73,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         Preconditions.checkState(sqlParserRule.isPresent());
         SQLStatement sqlStatement = sqlParserRule.get().getSQLParserEngine(
                 DatabaseTypeEngine.getTrunkDatabaseTypeName(metaDataContexts.getMetaData().getDatabases().get(connectionSession.getDatabaseName()).getProtocolType())).parse(packet.getSql(), true);
-        connectionSession.getBackendConnection().prepareForTaskExecution();
+        connectionSession.getBackendConnection().handleAutoCommit();
         if (!MySQLComStmtPrepareChecker.isStatementAllowed(sqlStatement)) {
             throw new UnsupportedPreparedStatementException();
         }

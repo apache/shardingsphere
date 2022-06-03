@@ -88,7 +88,7 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
         SQLStatement sqlStatement = sqlParserRule.get().getSQLParserEngine(
                 DatabaseTypeEngine.getTrunkDatabaseTypeName(metaDataContexts.getMetaData().getDatabases().get(databaseName).getProtocolType())).parse(packet.getSql(), true);
         if (AutoCommitUtils.needOpenTransaction(sqlStatement)) {
-            connectionSession.getBackendConnection().prepareForTaskExecution();
+            connectionSession.getBackendConnection().handleAutoCommit();
         }
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getMetaData().getDatabases(), packet.getParameters(),
                 sqlStatement, connectionSession.getDefaultDatabaseName());

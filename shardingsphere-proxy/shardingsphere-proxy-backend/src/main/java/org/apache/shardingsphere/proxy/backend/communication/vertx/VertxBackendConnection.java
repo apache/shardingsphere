@@ -34,6 +34,7 @@ import org.apache.shardingsphere.proxy.backend.reactive.context.ReactiveProxyCon
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -115,6 +116,11 @@ public final class VertxBackendConnection implements BackendConnection<Future<Vo
     
     @Override
     public Future<Void> prepareForTaskExecution() {
+        return Future.succeededFuture();
+    }
+    
+    @Override
+    public Future<Void> handleAutoCommit() {
         if (!connectionSession.isAutoCommit() && !connectionSession.getTransactionStatus().isInTransaction()) {
             VertxLocalTransactionManager transactionManager = new VertxLocalTransactionManager(this);
             return transactionManager.begin();

@@ -47,7 +47,7 @@ public final class PostgreSQLComBindExecutor implements CommandExecutor {
     
     @Override
     public Collection<DatabasePacket<?>> execute() throws SQLException {
-        connectionSession.getBackendConnection().prepareForTaskExecution();
+        connectionSession.getBackendConnection().handleAutoCommit();
         PostgreSQLPreparedStatement preparedStatement = PostgreSQLPreparedStatementRegistry.getInstance().get(connectionSession.getConnectionId(), packet.getStatementId());
         JDBCBackendConnection backendConnection = (JDBCBackendConnection) connectionSession.getBackendConnection();
         JDBCPortal portal = new JDBCPortal(packet.getPortal(), preparedStatement, packet.readParameters(preparedStatement.getParameterTypes()), packet.readResultFormats(), backendConnection);
