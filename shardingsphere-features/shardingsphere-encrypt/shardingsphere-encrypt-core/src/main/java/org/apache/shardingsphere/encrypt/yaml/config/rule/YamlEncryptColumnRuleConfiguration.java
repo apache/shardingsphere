@@ -38,5 +38,7 @@ public final class YamlEncryptColumnRuleConfiguration implements YamlConfigurati
     
     private String encryptorName;
     
+    private String assistEncryptorName;
+    
     private Boolean queryWithCipherColumn;
 }

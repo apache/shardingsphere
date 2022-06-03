@@ -37,5 +37,7 @@ public final class EncryptColumnRuleConfiguration {
     
     private final String encryptorName;
     
+    private final String assistEncryptorName;
+    
     private final Boolean queryWithCipherColumn;
 }
