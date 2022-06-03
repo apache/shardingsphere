@@ -23,10 +23,9 @@ import java.util.Arrays;
 import java.util.Collection;
 
 public final class XADataSourceDefinitionFixTure implements XADataSourceDefinition {
-
+    
     @Override
     public Collection<String> getXADriverClassName() {
         return Arrays.asList("com.mysql.jdbc.jdbc2.optional.MysqlXADataSource", "com.mysql.cj.jdbc.MysqlXADataSource");
     }
 }
-

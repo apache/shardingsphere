@@ -39,21 +39,21 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class XAConnectionWrapperFactoryTest {
-
+    
     @Test
     public void assertGetInstance() throws SQLException {
         XAConnectionWrapper xaConnectionWrapperFixTrue = new XAConnectionWrapperFixTure();
         XAConnection actual = xaConnectionWrapperFixTrue.wrap(createXADataSource(), mockConnection());
         assertThat(actual.getXAResource(), instanceOf(JDBC4MysqlXAConnection.class));
     }
-
+    
     private XADataSource createXADataSource() {
         DatabaseType databaseType = DatabaseTypeFactory.getInstance("FIXTURE");
         DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, databaseType, "foo_ds");
         XADataSourceDefinitionFixTure xaDataSourceDefinitionFixTure = new XADataSourceDefinitionFixTure();
         return new DataSourceSwapper(xaDataSourceDefinitionFixTure).swap(dataSource);
     }
-
+    
     private Connection mockConnection() throws SQLException {
         Connection result = mock(Connection.class);
         when(result.unwrap(com.mysql.jdbc.Connection.class)).thenReturn(mock(com.mysql.jdbc.Connection.class));
