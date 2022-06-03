@@ -34,7 +34,6 @@ import org.apache.shardingsphere.proxy.backend.reactive.context.ReactiveProxyCon
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;

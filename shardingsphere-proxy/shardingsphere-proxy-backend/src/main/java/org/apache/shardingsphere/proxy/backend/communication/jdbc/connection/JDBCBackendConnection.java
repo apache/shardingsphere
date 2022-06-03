@@ -175,7 +175,7 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
     }
     
     @Override
-    public Void prepareForTaskExecution() throws SQLException {
+    public Void prepareForTaskExecution() {
         synchronized (this) {
             connectionReferenceCount++;
             return null;
