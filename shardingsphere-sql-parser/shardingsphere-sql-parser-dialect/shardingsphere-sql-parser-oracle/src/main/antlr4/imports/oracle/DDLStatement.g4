@@ -2475,3 +2475,6 @@ dynamicBaseProfile
     : INCLUDING profileName
     ;
 
+dropLockdownProfile
+    : DROP LOCKDOWN PROFILE profileName
+    ;
