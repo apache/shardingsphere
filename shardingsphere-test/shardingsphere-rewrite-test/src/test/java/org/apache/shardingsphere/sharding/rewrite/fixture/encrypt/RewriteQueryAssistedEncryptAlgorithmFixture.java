@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.sharding.rewrite.fixture.encrypt;
 
 import lombok.Getter;
-import org.apache.shardingsphere.encrypt.spi.QueryAssistedEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 
 import java.util.Properties;
 
 @Getter
-public final class RewriteQueryAssistedEncryptAlgorithmFixture implements QueryAssistedEncryptAlgorithm<Object, String> {
+public final class RewriteQueryAssistedEncryptAlgorithmFixture implements EncryptAlgorithm<Object, String> {
     
     private Properties props;
     
@@ -41,11 +41,6 @@ public final class RewriteQueryAssistedEncryptAlgorithmFixture implements QueryA
     @Override
     public Object decrypt(final String cipherValue, final EncryptContext encryptContext) {
         return cipherValue.replaceAll("encrypt_", "");
-    }
-    
-    @Override
-    public String queryAssistedEncrypt(final Object plainValue, final EncryptContext encryptContext) {
-        return "assisted_query_" + plainValue;
     }
     
     @Override

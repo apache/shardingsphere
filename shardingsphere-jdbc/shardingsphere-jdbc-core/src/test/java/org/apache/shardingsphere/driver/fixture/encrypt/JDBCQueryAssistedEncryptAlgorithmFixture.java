@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.driver.fixture.encrypt;
 
 import lombok.Getter;
-import org.apache.shardingsphere.encrypt.spi.QueryAssistedEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 
 import java.util.Properties;
 
 @Getter
-public final class JDBCQueryAssistedEncryptAlgorithmFixture implements QueryAssistedEncryptAlgorithm<Object, String> {
+public final class JDBCQueryAssistedEncryptAlgorithmFixture implements EncryptAlgorithm<Object, String> {
     
     private Properties props;
     
@@ -41,11 +41,6 @@ public final class JDBCQueryAssistedEncryptAlgorithmFixture implements QueryAssi
     @Override
     public Object decrypt(final String cipherValue, final EncryptContext encryptContext) {
         return "decryptValue";
-    }
-    
-    @Override
-    public String queryAssistedEncrypt(final Object plainValue, final EncryptContext encryptContext) {
-        return "assistedEncryptValue";
     }
     
     @Override
