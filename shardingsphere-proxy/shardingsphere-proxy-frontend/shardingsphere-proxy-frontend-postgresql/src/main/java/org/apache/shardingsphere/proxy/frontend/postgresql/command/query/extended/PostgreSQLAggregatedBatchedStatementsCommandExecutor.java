@@ -51,6 +51,7 @@ public final class PostgreSQLAggregatedBatchedStatementsCommandExecutor implemen
     
     @Override
     public Collection<DatabasePacket<?>> execute() throws SQLException {
+        connectionSession.getBackendConnection().handleAutoCommit();
         PostgreSQLPreparedStatement preparedStatement = getPreparedStatement();
         PostgreSQLBatchedStatementsExecutor executor = new PostgreSQLBatchedStatementsExecutor(connectionSession, preparedStatement, readParameterSets(preparedStatement.getParameterTypes()));
         List<DatabasePacket<?>> result = new ArrayList<>(packets.size());
