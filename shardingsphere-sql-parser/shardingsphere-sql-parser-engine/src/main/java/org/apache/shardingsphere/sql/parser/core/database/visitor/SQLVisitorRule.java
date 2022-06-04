@@ -542,6 +542,8 @@ public enum SQLVisitorRule {
     
     CREATE_LOCKDOWN_PROFILE("CreateLockdownProfile", SQLStatementType.DDL),
     
+    DROP_LOCKDOWN_PROFILE("DropLockdownProfile", SQLStatementType.DDL),
+    
     CURSOR("Cursor", SQLStatementType.DDL),
     
     CLOSE("Close", SQLStatementType.DDL),

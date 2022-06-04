@@ -100,5 +100,6 @@ execute
     | createRollbackSegment
     | dropRollbackSegment
     | createLockdownProfile
+    | dropLockdownProfile
     ) SEMI_?
     ;
