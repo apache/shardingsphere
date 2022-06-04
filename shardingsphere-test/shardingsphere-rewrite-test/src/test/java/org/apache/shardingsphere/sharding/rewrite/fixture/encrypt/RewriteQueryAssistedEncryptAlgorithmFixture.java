@@ -35,7 +35,7 @@ public final class RewriteQueryAssistedEncryptAlgorithmFixture implements QueryA
     
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
-        return "encrypt_" + plainValue;
+        return "assisted_query_" + plainValue;
     }
     
     @Override
