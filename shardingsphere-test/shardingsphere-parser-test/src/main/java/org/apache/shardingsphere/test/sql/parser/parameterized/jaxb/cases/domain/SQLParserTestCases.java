@@ -1413,7 +1413,7 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "create-inmemory-join-group")
     private final List<CreateInmemoryJoinGroupStatementTestCase> createInmemoryJoinGroupTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "cursor")
     private final List<CursorStatementTestCase> cursorTestCases = new LinkedList<>();
     
