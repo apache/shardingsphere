@@ -36,7 +36,7 @@ import java.util.Queue;
 /**
  * Stream merged result for order by.
  */
-public class FetchStreamMergedResult extends StreamMergedResult {
+public final class FetchStreamMergedResult extends StreamMergedResult {
     
     private final Collection<OrderByItem> orderByItems;
     

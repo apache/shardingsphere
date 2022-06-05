@@ -34,7 +34,7 @@ import java.util.Optional;
 /**
  * Merged result for show index.
  */
-public class ShowIndexMergedResult extends MemoryMergedResult<ShardingRule> {
+public final class ShowIndexMergedResult extends MemoryMergedResult<ShardingRule> {
     
     public ShowIndexMergedResult(final ShardingRule shardingRule,
                                  final SQLStatementContext<?> sqlStatementContext, final ShardingSphereSchema schema, final List<QueryResult> queryResults) throws SQLException {
