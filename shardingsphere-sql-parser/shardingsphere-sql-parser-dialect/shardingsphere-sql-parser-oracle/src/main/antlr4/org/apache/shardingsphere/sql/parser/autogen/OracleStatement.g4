@@ -99,5 +99,8 @@ execute
     | dropDiskgroup
     | createRollbackSegment
     | dropRollbackSegment
+    | createLockdownProfile
+    | dropLockdownProfile
+    | createInmemoryJoinGroup
     ) SEMI_?
     ;

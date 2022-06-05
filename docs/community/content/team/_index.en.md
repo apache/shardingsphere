@@ -374,6 +374,11 @@ chapter = true
                 <img src="https://avatars.githubusercontent.com/u/33794770?v=4" style="border-radius:50%; overflow:hidden">
             </a>
         </td>
+        <td>
+            <a href="https://github.com/galaxylqx" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/9473278?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
     </tr>
     <tr align="center">
         <td>
@@ -393,6 +398,9 @@ chapter = true
         </td>
         <td>
             <b>Yang Hou</b>
+        </td>
+        <td>
+            <b>Qunxing Lei</b>
         </td>
     </tr>
 </table>

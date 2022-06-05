@@ -80,6 +80,8 @@ public enum SQLVisitorRule {
     
     CREATE_PROCEDURE("CreateProcedure", SQLStatementType.DDL),
     
+    CREATE_PUBLICATION("CreatePublication", SQLStatementType.DDL),
+    
     ALTER_PROCEDURE("AlterProcedure", SQLStatementType.DDL),
     
     ALTER_STATEMENT("AlterStatement", SQLStatementType.DDL),
@@ -537,6 +539,12 @@ public enum SQLVisitorRule {
     CREATE_ROLLBACK_SEGMENT("CreateRollbackSegment", SQLStatementType.DDL),
     
     DROP_ROLLBACK_SEGMENT("DropRollbackSegment", SQLStatementType.DDL),
+    
+    CREATE_LOCKDOWN_PROFILE("CreateLockdownProfile", SQLStatementType.DDL),
+    
+    DROP_LOCKDOWN_PROFILE("DropLockdownProfile", SQLStatementType.DDL),
+    
+    CREATE_INMEMORY_JOIN_GROUP("CreateInmemoryJoinGroup", SQLStatementType.DDL),
     
     CURSOR("Cursor", SQLStatementType.DDL),
     
