@@ -20,9 +20,11 @@ package org.apache.shardingsphere.infra.binder.statement.ddl;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.type.CursorAvailable;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.cursor.CursorNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
@@ -35,6 +37,8 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Cursor statement context.
@@ -48,11 +52,15 @@ public final class CursorStatementContext extends CommonSQLStatementContext<Open
     
     private final TablesContext tablesContext;
     
-    public CursorStatementContext(final OpenGaussCursorStatement sqlStatement) {
+    private final SelectStatementContext selectStatementContext;
+    
+    public CursorStatementContext(final Map<String, ShardingSphereDatabase> databases, final List<Object> parameters,
+                                  final OpenGaussCursorStatement sqlStatement, final String defaultDatabaseName) {
         super(sqlStatement);
         tablesContext = new TablesContext(getSimpleTableSegments(), getDatabaseType());
         extractWhereSegments(whereSegments, sqlStatement.getSelect());
         ColumnExtractor.extractColumnSegments(columnSegments, whereSegments);
+        selectStatementContext = new SelectStatementContext(databases, parameters, sqlStatement.getSelect(), defaultDatabaseName);
     }
     
     private Collection<SimpleTableSegment> getSimpleTableSegments() {
