@@ -2478,3 +2478,12 @@ dynamicBaseProfile
 dropLockdownProfile
     : DROP LOCKDOWN PROFILE profileName
     ;
+
+createInmemoryJoinGroup
+    : CREATE INMEMORY JOIN GROUP (schemaName DOT_)? joinGroupName
+     LP_ tableColumnClause COMMA_ tableColumnClause (COMMA_ tableColumnClause)* RP_
+    ;
+
+tableColumnClause
+    : (schemaName DOT_)? tableName LP_ columnName RP_
+    ;
