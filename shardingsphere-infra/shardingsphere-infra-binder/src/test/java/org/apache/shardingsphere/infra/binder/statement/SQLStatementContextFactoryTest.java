@@ -117,9 +117,11 @@ public final class SQLStatementContextFactoryTest {
     
     @Test
     public void assertNewInstanceForCursorStatement() {
-        OpenGaussCursorStatement sqlStatement = mock(OpenGaussCursorStatement.class);
-        when(sqlStatement.getSelect()).thenReturn(mock(MySQLSelectStatement.class));
-        SQLStatementContext<?> actual = SQLStatementContextFactory.newInstance(mockDatabases(), Collections.emptyList(), sqlStatement, DefaultDatabase.LOGIC_NAME);
+        OpenGaussCursorStatement cursorStatement = mock(OpenGaussCursorStatement.class, RETURNS_DEEP_STUBS);
+        MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class, RETURNS_DEEP_STUBS);
+        when(selectStatement.getProjections().isDistinctRow()).thenReturn(false);
+        when(cursorStatement.getSelect()).thenReturn(selectStatement);
+        SQLStatementContext<?> actual = SQLStatementContextFactory.newInstance(mockDatabases(), Collections.emptyList(), cursorStatement, DefaultDatabase.LOGIC_NAME);
         assertThat(actual, instanceOf(CursorStatementContext.class));
     }
     

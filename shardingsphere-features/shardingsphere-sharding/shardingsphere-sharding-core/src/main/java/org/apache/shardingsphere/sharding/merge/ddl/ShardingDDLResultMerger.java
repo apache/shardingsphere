@@ -44,16 +44,16 @@ public final class ShardingDDLResultMerger implements ResultMerger {
     
     @Override
     public MergedResult merge(final List<QueryResult> queryResults, final SQLStatementContext<?> sqlStatementContext, final ShardingSphereDatabase database) throws SQLException {
+        if (!(sqlStatementContext instanceof FetchStatementContext)) {
+            return new TransparentMergedResult(queryResults.get(0));    
+        }
         if (1 == queryResults.size()) {
             return new IteratorStreamMergedResult(queryResults);
         }
-        if (sqlStatementContext instanceof FetchStatementContext) {
-            Map<String, Integer> columnLabelIndexMap = getColumnLabelIndexMap(queryResults.get(0));
-            FetchStatementContext statementContext = (FetchStatementContext) sqlStatementContext;
-            statementContext.getCursorStatementContext().getSelectStatementContext().setIndexes(columnLabelIndexMap);
-            return new FetchStreamMergedResult(queryResults, statementContext, getSchema(sqlStatementContext, database));
-        }
-        return new TransparentMergedResult(queryResults.get(0));
+        Map<String, Integer> columnLabelIndexMap = getColumnLabelIndexMap(queryResults.get(0));
+        FetchStatementContext statementContext = (FetchStatementContext) sqlStatementContext;
+        statementContext.getCursorStatementContext().getSelectStatementContext().setIndexes(columnLabelIndexMap);
+        return new FetchStreamMergedResult(queryResults, statementContext, getSchema(sqlStatementContext, database));
     }
     
     private ShardingSphereSchema getSchema(final SQLStatementContext<?> sqlStatementContext, final ShardingSphereDatabase database) {
