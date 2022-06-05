@@ -36,7 +36,7 @@ public final class EncryptRuleBuilder implements SchemaRuleBuilder<EncryptRuleCo
     @Override
     public EncryptRule build(final EncryptRuleConfiguration config, final String databaseName,
                              final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules, final ConfigurationProperties props) {
-        return new EncryptRule(config, dataSources);
+        return new EncryptRule(config);
     }
     
     @Override

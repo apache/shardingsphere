@@ -19,13 +19,14 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: shardingsphere-proxy
-  name: shardingsphere-proxy
+    app: {{ template "common.names.fullname" . }}
+  name: {{ template "common.names.fullname" . }}
 spec:
   ports:
     - name: tcp
-      port: {{.Values.proxyport}}
+      targetPort: {{.Values.compute.startPort}}
+      port: {{ .Values.compute.service.port }}
       protocol: TCP
   selector:
-    app: shardingsphere-proxy
-  type: {{.Values.service.type}}
+    app: {{ template "common.names.fullname" . }}
+  type: {{.Values.compute.service.type}}

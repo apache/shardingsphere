@@ -17,13 +17,15 @@
 
 package org.apache.shardingsphere.infra.merge.engine;
 
-import org.apache.shardingsphere.spi.type.ordered.OrderedSPI;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.spi.type.ordered.OrderedSPI;
 
 /**
  * Result process engine.
  * 
  * @param <T> type of rule
  */
+@SingletonSPI
 public interface ResultProcessEngine<T extends ShardingSphereRule> extends OrderedSPI<T> {
 }

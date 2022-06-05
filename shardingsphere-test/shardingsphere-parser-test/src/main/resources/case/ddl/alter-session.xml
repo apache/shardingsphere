@@ -17,11 +17,11 @@
   -->
 
 <sql-parser-test-cases>
-    <alter-session sql-case-id="alter_session_enable_parallel_dml"/>
-    <alter-session sql-case-id="alter_session_advise_commit"/>
-    <alter-session sql-case-id="alter_session_advise_rollback"/>
-    <alter-session sql-case-id="alter_session_close_database_link"/>
-    <alter-session sql-case-id="alter_session_change_parameter"/>
-    <alter-session sql-case-id="alter_session_set_container"/>
-    <alter-session sql-case-id="alter_session_set_container_service"/>
+    <alter-session sql-case-id="alter_session_enable_parallel_dml" />
+    <alter-session sql-case-id="alter_session_advise_commit" />
+    <alter-session sql-case-id="alter_session_advise_rollback" />
+    <alter-session sql-case-id="alter_session_close_database_link" />
+    <alter-session sql-case-id="alter_session_change_parameter" />
+    <alter-session sql-case-id="alter_session_set_container" />
+    <alter-session sql-case-id="alter_session_set_container_service" />
 </sql-parser-test-cases>

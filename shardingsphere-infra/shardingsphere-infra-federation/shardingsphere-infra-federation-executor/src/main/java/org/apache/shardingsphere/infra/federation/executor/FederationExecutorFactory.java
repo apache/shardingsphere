@@ -35,10 +35,10 @@ public final class FederationExecutorFactory {
      * 
      * @param databaseName database name
      * @param schemaName schema name
-     * @param optimizerContext filterable optimizer context 
+     * @param optimizerContext filterable optimizer context
      * @param props configuration properties
      * @param jdbcExecutor jdbc executor
-     * @return new instance of federation executor
+     * @return created instance
      */
     public static FederationExecutor newInstance(final String databaseName, final String schemaName, final OptimizerContext optimizerContext,
                                                  final ConfigurationProperties props, final JDBCExecutor jdbcExecutor) {

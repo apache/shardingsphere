@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.rewrite.sql.token.generator;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -77,7 +76,8 @@ public final class SQLTokenGeneratorsTest {
         sqlTokenGenerators.addAll(Collections.singleton(optionalSQLTokenGenerator));
         SQLToken expectedToken = mock(SQLToken.class);
         when(optionalSQLTokenGenerator.generateSQLToken(any(SQLStatementContext.class))).thenReturn(expectedToken);
-        Collection<SQLToken> actualSqlTokens = sqlTokenGenerators.generateSQLTokens("sharding_db", mockSchemaMap(), mock(SQLStatementContext.class), Collections.emptyList());
+        Collection<SQLToken> actualSqlTokens = sqlTokenGenerators.generateSQLTokens(
+                "sharding_db", Collections.singletonMap("test", mock(ShardingSphereSchema.class)), mock(SQLStatementContext.class), Collections.emptyList());
         assertThat(actualSqlTokens.size(), is(1));
         assertThat(actualSqlTokens.iterator().next(), is(expectedToken));
     }
@@ -90,7 +90,8 @@ public final class SQLTokenGeneratorsTest {
         sqlTokenGenerators.addAll(Collections.singleton(collectionSQLTokenGenerator));
         Collection<SQLToken> expectedSQLTokens = Arrays.asList(mock(SQLToken.class), mock(SQLToken.class));
         doReturn(expectedSQLTokens).when(collectionSQLTokenGenerator).generateSQLTokens(any());
-        Collection<SQLToken> actualSQLTokens = sqlTokenGenerators.generateSQLTokens("sharding_db", mockSchemaMap(), mock(SQLStatementContext.class), Collections.emptyList());
+        Collection<SQLToken> actualSQLTokens = sqlTokenGenerators.generateSQLTokens(
+                "sharding_db", Collections.singletonMap("test", mock(ShardingSphereSchema.class)), mock(SQLStatementContext.class), Collections.emptyList());
         assertThat(actualSQLTokens.size(), is(2));
         assertThat(actualSQLTokens, is(expectedSQLTokens));
     }
@@ -100,11 +101,5 @@ public final class SQLTokenGeneratorsTest {
         Field field = sqlTokenGenerators.getClass().getDeclaredField("sqlTokenGenerators");
         field.setAccessible(true);
         return (Map<Class<?>, SQLTokenGenerator>) field.get(sqlTokenGenerators);
-    }
-    
-    private Map<String, ShardingSphereSchema> mockSchemaMap() {
-        Map<String, ShardingSphereSchema> result = new HashMap<>(1, 1);
-        result.put("test", mock(ShardingSphereSchema.class));
-        return result;
     }
 }

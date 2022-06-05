@@ -19,22 +19,19 @@ package org.apache.shardingsphere.transaction.xa.manager;
 
 import org.apache.shardingsphere.transaction.xa.atomikos.manager.AtomikosTransactionManagerProvider;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class XATransactionManagerProviderFactoryTest {
     
     @Test
-    public void assertNewDefaultInstance() {
-        assertThat(XATransactionManagerProviderFactory.newInstance(null), instanceOf(AtomikosTransactionManagerProvider.class));
+    public void assertGetDefaultInstance() {
+        assertThat(XATransactionManagerProviderFactory.getInstance(null), instanceOf(AtomikosTransactionManagerProvider.class));
     }
     
     @Test
-    public void assertNewInstance() {
-        assertThat(XATransactionManagerProviderFactory.newInstance("Atomikos"), instanceOf(AtomikosTransactionManagerProvider.class));
+    public void assertGetInstance() {
+        assertThat(XATransactionManagerProviderFactory.getInstance("Atomikos"), instanceOf(AtomikosTransactionManagerProvider.class));
     }
 }

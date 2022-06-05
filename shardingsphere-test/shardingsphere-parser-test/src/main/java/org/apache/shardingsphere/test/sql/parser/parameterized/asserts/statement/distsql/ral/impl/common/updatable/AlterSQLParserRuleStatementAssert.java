@@ -60,6 +60,5 @@ public final class AlterSQLParserRuleStatementAssert {
         assertNotNull(actual);
         assertThat(actual.getInitialCapacity(), is(expected.getInitialCapacity()));
         assertThat(actual.getMaximumSize(), is(expected.getMaximumSize()));
-        assertThat(actual.getConcurrencyLevel(), is(expected.getConcurrencyLevel()));
     }
 }

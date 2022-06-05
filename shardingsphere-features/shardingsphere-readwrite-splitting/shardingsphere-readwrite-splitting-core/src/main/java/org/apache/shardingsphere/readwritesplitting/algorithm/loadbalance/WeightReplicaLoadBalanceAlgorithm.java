@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
+import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
+import org.apache.shardingsphere.transaction.TransactionHolder;
 
 import java.util.Arrays;
 import java.util.List;
@@ -31,19 +31,26 @@ import java.util.concurrent.ThreadLocalRandom;
  * Weight replica load-balance algorithm.
  */
 @Getter
-@Setter
-public final class WeightReplicaLoadBalanceAlgorithm implements ReplicaLoadBalanceAlgorithm {
+public final class WeightReplicaLoadBalanceAlgorithm implements ReadQueryLoadBalanceAlgorithm {
     
     private static final double ACCURACY_THRESHOLD = 0.0001;
     
     private final ConcurrentHashMap<String, double[]> weightMap = new ConcurrentHashMap<>();
     
-    private Properties props = new Properties();
+    private Properties props;
+    
+    @Override
+    public void init(final Properties props) {
+        this.props = props;
+    }
     
     @Override
     public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames) {
-        double[] weight = weightMap.containsKey(name) ? weightMap.get(name) : initWeight(readDataSourceNames);
-        weightMap.putIfAbsent(name, weight);
+        if (TransactionHolder.isTransaction()) {
+            return writeDataSourceName;
+        }
+        double[] weight = WEIGHT_MAP.containsKey(name) ? WEIGHT_MAP.get(name) : initWeight(readDataSourceNames);
+        WEIGHT_MAP.putIfAbsent(name, weight);
         return getDataSourceName(readDataSourceNames, weight);
     }
     
@@ -95,14 +102,14 @@ public final class WeightReplicaLoadBalanceAlgorithm implements ReplicaLoadBalan
     
     private double getWeightValue(final String readDataSourceName) {
         Object weightObject = props.get(readDataSourceName);
-        if (weightObject == null) {
+        if (null == weightObject) {
             throw new IllegalStateException("Read database access weight is not configured：" + readDataSourceName);
         }
         double result;
         try {
             result = Double.parseDouble(weightObject.toString());
-        } catch (NumberFormatException e) {
-            throw new NumberFormatException("Read database weight configuration error, configuration parameters:" + weightObject.toString());
+        } catch (final NumberFormatException ex) {
+            throw new NumberFormatException("Read database weight configuration error, configuration parameters:" + weightObject);
         }
         if (Double.isInfinite(result)) {
             result = 10000.0D;

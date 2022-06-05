@@ -263,7 +263,7 @@
                             </left>
                             <operator>IS</operator>
                             <right>
-                                <literal-expression value="43..51" start-index="43" stop-index="51" />
+                                <literal-expression value="NOT NULL" start-index="43" stop-index="51" />
                             </right>
                         </binary-operation-expression>
                         <common-expression text="item_id IS NOT NULL" start-index="33" stop-index="51" />
@@ -315,7 +315,7 @@
                             <operator>IS</operator>
                             <right>
                                 <!-- TODO: literal value should be 'NOT NULL' -->
-                                <literal-expression value="43..51" start-index="43" stop-index="51" />
+                                <literal-expression value="NOT NULL" start-index="43" stop-index="51" />
                             </right>
                         </binary-operation-expression>
                         <common-expression text="item_id IS NOT NULL" start-index="33" stop-index="51" />

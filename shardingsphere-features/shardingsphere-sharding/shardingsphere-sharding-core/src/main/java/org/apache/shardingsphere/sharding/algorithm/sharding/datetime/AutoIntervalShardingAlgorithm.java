@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sharding.algorithm.sharding.datetime;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Range;
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
@@ -51,18 +50,18 @@ public final class AutoIntervalShardingAlgorithm implements StandardShardingAlgo
     private static final DateTimeFormatter DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     
     @Getter
-    @Setter
     private Properties props;
     
-    private volatile LocalDateTime dateTimeLower;
+    private LocalDateTime dateTimeLower;
     
-    private volatile long shardingSeconds;
+    private long shardingSeconds;
     
     @Getter
-    private volatile int autoTablesAmount;
+    private int autoTablesAmount;
     
     @Override
     public void init(final Properties props) {
+        this.props = props;
         dateTimeLower = getDateTime(props);
         shardingSeconds = getShardingSeconds(props);
         autoTablesAmount = (int) (Math.ceil((double) (parseDate(props.getProperty(DATE_TIME_UPPER_KEY)) / shardingSeconds)) + 2);

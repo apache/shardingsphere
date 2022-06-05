@@ -45,9 +45,17 @@ public final class YamlOnRuleAlteredActionConfiguration implements YamlConfigura
     @Data
     public static final class YamlInputConfiguration implements YamlConfiguration {
         
-        private Integer workerThread;
+        private static final Integer DEFAULT_WORKER_THREAD = 40;
         
-        private Integer batchSize;
+        private static final Integer DEFAULT_BATCH_SIZE = 1000;
+        
+        private static final Integer DEFAULT_SHARDING_SIZE = 1000_0000;
+        
+        private Integer workerThread = DEFAULT_WORKER_THREAD;
+        
+        private Integer batchSize = DEFAULT_BATCH_SIZE;
+        
+        private Integer shardingSize = DEFAULT_SHARDING_SIZE;
         
         private YamlShardingSphereAlgorithmConfiguration rateLimiter;
         
@@ -57,19 +65,35 @@ public final class YamlOnRuleAlteredActionConfiguration implements YamlConfigura
          * @return input configuration
          */
         public static YamlInputConfiguration buildWithDefaultValue() {
-            YamlInputConfiguration result = new YamlInputConfiguration();
-            result.setWorkerThread(40);
-            result.setBatchSize(1000);
-            return result;
+            return new YamlInputConfiguration();
+        }
+        
+        /**
+         * Fill in null fields with default value.
+         */
+        public void fillInNullFieldsWithDefaultValue() {
+            if (null == workerThread) {
+                workerThread = DEFAULT_WORKER_THREAD;
+            }
+            if (null == batchSize) {
+                batchSize = DEFAULT_BATCH_SIZE;
+            }
+            if (null == shardingSize) {
+                shardingSize = DEFAULT_SHARDING_SIZE;
+            }
         }
     }
     
     @Data
     public static final class YamlOutputConfiguration implements YamlConfiguration {
         
-        private Integer workerThread;
+        private static final Integer DEFAULT_WORKER_THREAD = 40;
         
-        private Integer batchSize;
+        private static final Integer DEFAULT_BATCH_SIZE = 1000;
+        
+        private Integer workerThread = DEFAULT_WORKER_THREAD;
+        
+        private Integer batchSize = DEFAULT_BATCH_SIZE;
         
         private YamlShardingSphereAlgorithmConfiguration rateLimiter;
         
@@ -79,10 +103,19 @@ public final class YamlOnRuleAlteredActionConfiguration implements YamlConfigura
          * @return output configuration
          */
         public static YamlOutputConfiguration buildWithDefaultValue() {
-            YamlOutputConfiguration result = new YamlOutputConfiguration();
-            result.setWorkerThread(40);
-            result.setBatchSize(1000);
-            return result;
+            return new YamlOutputConfiguration();
+        }
+        
+        /**
+         * Fill in null fields with default value.
+         */
+        public void fillInNullFieldsWithDefaultValue() {
+            if (null == workerThread) {
+                workerThread = DEFAULT_WORKER_THREAD;
+            }
+            if (null == batchSize) {
+                batchSize = DEFAULT_BATCH_SIZE;
+            }
         }
     }
 }

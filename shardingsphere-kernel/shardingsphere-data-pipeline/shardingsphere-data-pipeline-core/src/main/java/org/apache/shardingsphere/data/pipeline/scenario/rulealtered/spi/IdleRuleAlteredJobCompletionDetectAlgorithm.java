@@ -35,27 +35,25 @@ import java.util.stream.Collectors;
  */
 public final class IdleRuleAlteredJobCompletionDetectAlgorithm implements JobCompletionDetectAlgorithm<RuleAlteredJobAlmostCompletedParameter> {
     
-    public static final String IDLE_MINUTE_THRESHOLD_KEY = "incremental-task-idle-minute-threshold";
+    private static final String IDLE_SECOND_THRESHOLD_KEY = "incremental-task-idle-seconds-threshold";
     
-    public static final String IDLE_SECOND_THRESHOLD_KEY = "incremental-task-idle-second-threshold";
-    
-    public static final long DEFAULT_IDLE_SECOND_THRESHOLD = TimeUnit.MINUTES.toSeconds(30);
-    
-    private Properties props;
+    private static final long DEFAULT_IDLE_SECONDS_THRESHOLD = 1800L;
     
     @Getter
-    private long incrementalTaskIdleSecondThreshold = DEFAULT_IDLE_SECOND_THRESHOLD;
+    private Properties props;
+    
+    private volatile long incrementalTaskIdleSecondsThreshold;
     
     @Override
     public void init(final Properties props) {
         this.props = props;
-        Preconditions.checkArgument(props.containsKey(IDLE_MINUTE_THRESHOLD_KEY) || props.containsKey(IDLE_SECOND_THRESHOLD_KEY), "incremental task idle threshold can not be null.");
-        if (props.containsKey(IDLE_SECOND_THRESHOLD_KEY)) {
-            incrementalTaskIdleSecondThreshold = Long.parseLong(props.getProperty(IDLE_SECOND_THRESHOLD_KEY));
-        } else {
-            incrementalTaskIdleSecondThreshold = TimeUnit.MINUTES.toSeconds(Long.parseLong(props.getProperty(IDLE_MINUTE_THRESHOLD_KEY)));
-        }
-        Preconditions.checkArgument(incrementalTaskIdleSecondThreshold > 0, "incremental task idle threshold must be positive.");
+        incrementalTaskIdleSecondsThreshold = getIncrementalTaskIdleSecondsThreshold(props);
+    }
+    
+    private long getIncrementalTaskIdleSecondsThreshold(final Properties props) {
+        long result = Long.parseLong(props.getOrDefault(IDLE_SECOND_THRESHOLD_KEY, DEFAULT_IDLE_SECONDS_THRESHOLD).toString());
+        Preconditions.checkArgument(result > 0, "Incremental task idle threshold seconds must be positive.");
+        return result;
     }
     
     @Override
@@ -69,12 +67,11 @@ public final class IdleRuleAlteredJobCompletionDetectAlgorithm implements JobCom
             return false;
         }
         Collection<Long> incrementalTasksIdleSeconds = getIncrementalTasksIdleSeconds(jobProgresses);
-        return incrementalTasksIdleSeconds.stream().allMatch(each -> each >= incrementalTaskIdleSecondThreshold);
+        return incrementalTasksIdleSeconds.stream().allMatch(each -> each >= incrementalTaskIdleSecondsThreshold);
     }
     
     private static boolean isAllProgressesFilled(final int jobShardingCount, final Collection<JobProgress> jobProgresses) {
-        return jobShardingCount == jobProgresses.size()
-                && jobProgresses.stream().allMatch(Objects::nonNull);
+        return jobShardingCount == jobProgresses.size() && jobProgresses.stream().allMatch(Objects::nonNull);
     }
     
     private static boolean isAllInventoryTasksCompleted(final Collection<JobProgress> jobProgresses) {

@@ -47,6 +47,55 @@
             <version>${r'${project.version}'}</version>
         </dependency>
     </#if>
+    <#if transaction=="xa-narayana">
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-transaction-xa-narayana</artifactId>
+            <version>${r'${project.version}'}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.narayana.jta</groupId>
+            <artifactId>jta</artifactId>
+            <version>5.9.1.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.narayana.jts</groupId>
+            <artifactId>narayana-jts-integration</artifactId>
+            <version>5.9.1.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss</groupId>
+            <artifactId>jboss-transaction-spi</artifactId>
+            <version>7.6.0.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.logging</groupId>
+            <artifactId>jboss-logging</artifactId>
+            <version>3.2.1.Final</version>
+        </dependency>
+    <#elseif transaction=="xa-bitronix">
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-transaction-xa-bitronix</artifactId>
+            <version>${r'${project.version}'}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.btm</groupId>
+            <artifactId>btm</artifactId>
+            <version>2.1.3</version>
+        </dependency>
+    <#elseif transaction=="base-seata">
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-transaction-base-seata-at</artifactId>
+            <version>${r'${project.version}'}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.seata</groupId>
+            <artifactId>seata-all</artifactId>
+            <version>1.4.2</version>
+        </dependency>
+    </#if>
     <#if framework?contains("jpa")>
         <dependency>
             <groupId>org.hibernate.javax.persistence</groupId>

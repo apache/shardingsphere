@@ -26,7 +26,8 @@ import org.apache.shardingsphere.spi.type.required.fixture.single.SingleRequired
 import org.apache.shardingsphere.spi.type.required.fixture.single.SingleRequiredSPIFixtureImpl;
 import org.junit.Test;
 
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
 
 public final class RequiredSPIRegistryTest {
     
@@ -43,11 +44,11 @@ public final class RequiredSPIRegistryTest {
     
     @Test
     public void assertRegisteredServiceWithOneImplementation() {
-        assertTrue(RequiredSPIRegistry.getRegisteredService(SingleRequiredSPIFixture.class) instanceof SingleRequiredSPIFixtureImpl);
+        assertThat(RequiredSPIRegistry.getRegisteredService(SingleRequiredSPIFixture.class), instanceOf(SingleRequiredSPIFixtureImpl.class));
     }
     
     @Test
     public void assertRegisteredServiceWithMoreImplementations() {
-        assertTrue(RequiredSPIRegistry.getRegisteredService(MultipleRequiredSPIFixture.class) instanceof DefaultMultipleRequiredSPIFixtureImpl);
+        assertThat(RequiredSPIRegistry.getRegisteredService(MultipleRequiredSPIFixture.class), instanceOf(DefaultMultipleRequiredSPIFixtureImpl.class));
     }
 }

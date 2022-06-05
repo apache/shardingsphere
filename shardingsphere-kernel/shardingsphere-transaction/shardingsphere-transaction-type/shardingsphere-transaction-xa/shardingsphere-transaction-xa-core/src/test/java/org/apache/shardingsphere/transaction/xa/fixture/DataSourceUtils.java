@@ -70,7 +70,7 @@ public final class DataSourceUtils {
     }
     
     private static String getURL(final DatabaseType databaseType, final String databaseName) {
-        switch (databaseType.getName()) {
+        switch (databaseType.getType()) {
             case "MySQL":
                 return String.format("jdbc:mysql://localhost:3306/%s", databaseName);
             case "MariaDB":
@@ -86,7 +86,7 @@ public final class DataSourceUtils {
             case "H2":
                 return String.format("jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL", databaseName);
             default:
-                throw new UnsupportedOperationException(databaseType.getName());
+                throw new UnsupportedOperationException(databaseType.getType());
         }
     }
 }

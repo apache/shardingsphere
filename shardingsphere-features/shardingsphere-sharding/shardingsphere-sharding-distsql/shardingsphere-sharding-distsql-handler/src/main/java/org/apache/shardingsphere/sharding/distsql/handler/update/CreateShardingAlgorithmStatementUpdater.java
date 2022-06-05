@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.converter.ShardingTableRuleStatementConverter;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.ShardingAlgorithmSegment;
@@ -41,9 +41,9 @@ import java.util.stream.Collectors;
 public final class CreateShardingAlgorithmStatementUpdater implements RuleDefinitionCreateUpdater<CreateShardingAlgorithmStatement, ShardingRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final CreateShardingAlgorithmStatement sqlStatement,
+    public void checkSQLStatement(final ShardingSphereDatabase database, final CreateShardingAlgorithmStatement sqlStatement,
                                   final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String databaseName = shardingSphereMetaData.getDatabaseName();
+        String databaseName = database.getName();
         checkDuplicate(databaseName, sqlStatement, currentRuleConfig);
         checkAlgorithm(sqlStatement);
     }
@@ -76,9 +76,9 @@ public final class CreateShardingAlgorithmStatementUpdater implements RuleDefini
     @Override
     public ShardingRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateShardingAlgorithmStatement sqlStatement) {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        Map<String, ShardingSphereAlgorithmConfiguration> algorithmConfigurationMap = sqlStatement.getAlgorithmSegments().stream()
+        Map<String, ShardingSphereAlgorithmConfiguration> algorithmConfigMap = sqlStatement.getAlgorithmSegments().stream()
                 .collect(Collectors.toMap(ShardingAlgorithmSegment::getShardingAlgorithmName, each -> ShardingTableRuleStatementConverter.createAlgorithmConfiguration(each.getAlgorithmSegment())));
-        result.setShardingAlgorithms(algorithmConfigurationMap);
+        result.setShardingAlgorithms(algorithmConfigMap);
         return result;
     }
     

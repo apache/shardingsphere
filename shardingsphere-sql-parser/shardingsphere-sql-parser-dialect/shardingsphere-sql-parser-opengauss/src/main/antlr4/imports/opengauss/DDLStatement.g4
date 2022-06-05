@@ -128,6 +128,10 @@ dropDatabase
     : DROP DATABASE existClause? name
     ;
 
+dropDirectory
+    : DROP DIRECTORY existClause? directoryName
+    ;
+
 createDatabaseSpecification
     :  createdbOptName EQ_? (signedIconst | booleanOrString | DEFAULT)
     ;
@@ -724,6 +728,14 @@ alterCollationClause
     | SET SCHEMA schemaName
     ;
 
+alterSynonym
+    : ALTER SYNONYM synonymName OWNER TO owner
+    ;
+
+alterDirectory
+    : ALTER DIRECTORY directoryName OWNER TO owner
+    ;
+
 alterConversion
     : ALTER CONVERSION anyName alterConversionClause
     ;
@@ -832,6 +844,10 @@ alterExtension
     : ALTER EXTENSION name alterExtensionClauses
     ;
 
+createSynonym
+    : CREATE (OR REPLACE)? SYNONYM synonymName FOR objectName
+    ;
+    
 alterExtensionClauses
     : UPDATE alterExtensionOptList
     | (ADD | DROP) ACCESS METHOD name
@@ -953,18 +969,20 @@ alterMaterializedViewClauses
     ;
 
 declare
-    : DECLARE name cursorOptions CURSOR (WITH HOLD | WITHOUT HOLD)? FOR select
+    : DECLARE cursorName cursorOptions CURSOR (WITH HOLD | WITHOUT HOLD)? FOR select
     ;
 
+cursor
+    : CURSOR cursorName cursorOptions (WITH HOLD | WITHOUT HOLD)? FOR select
+    ;
+    
 cursorOptions
     : cursorOption*
     ;
 
 cursorOption
-    : NO SCROLL
-    | SCROLL
-    | BINARY
-    | INSENSITIVE
+    : BINARY
+    | NO SCROLL
     ;
 
 executeStmt
@@ -1033,7 +1051,7 @@ alterRoutine
     ;
 
 alterRule
-    : ALTER RULE ON qualifiedName RENAME TO name
+    : ALTER RULE name ON tableName RENAME TO name
     ;
 
 alterSequence
@@ -1143,7 +1161,6 @@ alterTypeClauses
     | RENAME TO name
     | RENAME ATTRIBUTE name TO name dropBehavior?
     | SET SCHEMA name
-    | SET LP_ operatorDefList RP_
     | OWNER TO roleSpec
     ;
 
@@ -1153,8 +1170,7 @@ alterTypeCmds
 
 alterTypeCmd
     : ADD ATTRIBUTE tableFuncElement dropBehavior?
-    | DROP ATTRIBUTE existClause colId dropBehavior?
-    | DROP ATTRIBUTE colId dropBehavior?
+    | DROP ATTRIBUTE existClause? colId dropBehavior?
     | ALTER ATTRIBUTE colId setData? TYPE typeName collateClause? dropBehavior?
     ;
 
@@ -1278,14 +1294,15 @@ oldAggrElem
     ;
 
 createCast
-    : CREATE CAST LP_ typeName AS typeName RP_
-    ( WITH FUNCTION functionWithArgtypes castContext?
-    | WITHOUT FUNCTION castContext?
-    | WITH INOUT castContext?)
+    : CREATE CAST LP_ typeName AS typeName RP_ (
+    | WITH FUNCTION (funcName | dataTypeName) funcArgs
+    | WITHOUT FUNCTION
+    | WITH INOUT 
+    ) castContext?
     ;
 
 castContext
-    : AS IMPLICIT | AS ASSIGNMENT
+    : AS (ASSIGNMENT | IMPLICIT)
     ;
 
 createCollation
@@ -1692,7 +1709,7 @@ dropProcedure
     ;
 
 dropPublication
-    : DROP PUBLICATION existClause? anyNameList dropBehavior?
+    : DROP PUBLICATION existClause? name dropBehavior?
     ;
 
 dropRoutine
@@ -1705,6 +1722,10 @@ dropRule
 
 dropSequence
     : DROP SEQUENCE existClause? qualifiedNameList dropBehavior?
+    ;
+
+dropSynonym
+    : DROP SYNONYM existClause? synonymName dropBehavior?
     ;
 
 dropServer
@@ -1764,7 +1785,7 @@ listen
     ;
 
 move
-    : MOVE fetchArgs
+    : MOVE (direction (FROM | IN)?)? cursorName
     ;
 
 prepare
@@ -1869,7 +1890,78 @@ schemaEltList
 
 schemaStmt
     : createTable | createIndex | createSequence | createTrigger | grant | createView
-    ;    
+    ;
+
+grant
+    : GRANT (privilegeClause | roleClause)
+    ;
+    
+privilegeClause
+    : privilegeTypes ON onObjectClause (FROM | TO) granteeList (WITH GRANT OPTION)?
+    ;
+    
+roleClause
+    : privilegeList (FROM | TO) roleList (WITH ADMIN OPTION)? (GRANTED BY roleSpec)?
+    ;
+
+privilegeTypes
+    : privilegeType columnNames? (COMMA_ privilegeType columnNames?)*
+    ;
+    
+onObjectClause
+    : DATABASE nameList
+    | SCHEMA nameList
+    | DOMAIN anyNameList
+    | FUNCTION functionWithArgtypesList
+    | PROCEDURE functionWithArgtypesList
+    | ROUTINE functionWithArgtypesList
+    | LANGUAGE nameList
+    | LARGE OBJECT numericOnlyList
+    | TABLESPACE nameList
+    | TYPE anyNameList
+    | SEQUENCE qualifiedNameList
+    | TABLE? privilegeLevel
+    | FOREIGN DATA WRAPPER nameList
+    | FOREIGN SERVER nameList
+    | ALL TABLES IN SCHEMA nameList
+    | ALL SEQUENCES IN SCHEMA nameList
+    | ALL FUNCTIONS IN SCHEMA nameList
+    | ALL PROCEDURES IN SCHEMA nameList
+    | ALL ROUTINES IN SCHEMA nameList
+    ;
+    
+numericOnlyList
+    : numericOnly (COMMA_ numericOnly)*
+    ;
+    
+privilegeLevel
+    : ASTERISK_ | ASTERISK_ DOT_ASTERISK_ | identifier DOT_ASTERISK_ | tableNames | schemaName DOT_ routineName
+    ;
+
+routineName
+    : identifier
+    ;
+
+privilegeType
+    : SELECT
+    | INSERT
+    | UPDATE
+    | DELETE
+    | TRUNCATE
+    | REFERENCES
+    | TRIGGER
+    | CREATE
+    | CONNECT
+    | TEMPORARY
+    | TEMP
+    | EXECUTE
+    | USAGE
+    | ALL PRIVILEGES?
+    ;
+
+createDirectory
+    : CREATE (OR REPLACE)? DIRECTORY directoryName AS pathString
+    ;
 
 alterSchema
     : ALTER SCHEMA name (RENAME TO name | OWNER TO roleSpec)
@@ -1877,4 +1969,25 @@ alterSchema
 
 dropSchema
     : DROP SCHEMA existClause? nameList dropBehavior?
+    ;
+
+fetch
+    : FETCH (direction (FROM | IN))? cursorName
+    ;
+
+direction
+    : NEXT
+    | PRIOR
+    | FIRST
+    | LAST
+    | ABSOLUTE signedIconst
+    | RELATIVE signedIconst
+    | signedIconst
+    | ALL
+    | FORWARD
+    | FORWARD signedIconst
+    | FORWARD ALL
+    | BACKWARD
+    | BACKWARD signedIconst
+    | BACKWARD ALL
     ;

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.config.yaml.swapper;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceGeneratedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.datasource.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
@@ -48,14 +49,14 @@ public final class YamlProxyConfigurationSwapper {
      * @return proxy configuration
      */
     public ProxyConfiguration swap(final YamlProxyConfiguration yamlConfig) {
-        Map<String, DataSourceGeneratedDatabaseConfiguration> databaseConfigs = swapDatabaseConfigurations(yamlConfig);
+        Map<String, DatabaseConfiguration> databaseConfigs = swapDatabaseConfigurations(yamlConfig);
         ProxyGlobalConfiguration globalConfig = new ProxyGlobalConfiguration(ruleConfigSwapperEngine.swapToRuleConfigurations(yamlConfig.getServerConfiguration().getRules()),
                 yamlConfig.getServerConfiguration().getProps(), yamlConfig.getServerConfiguration().getLabels());
         return new ProxyConfiguration(databaseConfigs, globalConfig);
     }
     
-    private Map<String, DataSourceGeneratedDatabaseConfiguration> swapDatabaseConfigurations(final YamlProxyConfiguration yamlConfig) {
-        Map<String, DataSourceGeneratedDatabaseConfiguration> result = new LinkedHashMap<>(yamlConfig.getDatabaseConfigurations().size(), 1);
+    private Map<String, DatabaseConfiguration> swapDatabaseConfigurations(final YamlProxyConfiguration yamlConfig) {
+        Map<String, DatabaseConfiguration> result = new LinkedHashMap<>(yamlConfig.getDatabaseConfigurations().size(), 1);
         for (Entry<String, YamlProxyDatabaseConfiguration> entry : yamlConfig.getDatabaseConfigurations().entrySet()) {
             Map<String, DataSourceConfiguration> databaseDataSourceConfigs =
                     swapDataSourceConfigurations(entry.getValue().getDataSources(), entry.getValue().getDatabaseName());

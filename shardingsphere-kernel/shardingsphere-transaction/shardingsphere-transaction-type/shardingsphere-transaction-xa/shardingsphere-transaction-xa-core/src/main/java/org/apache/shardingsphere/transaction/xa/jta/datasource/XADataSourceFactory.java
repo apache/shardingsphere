@@ -40,6 +40,6 @@ public final class XADataSourceFactory {
      * @return XA data source
      */
     public static XADataSource build(final DatabaseType databaseType, final DataSource dataSource) {
-        return new DataSourceSwapper(XADataSourceDefinitionFactory.getXADataSourceDefinition(databaseType)).swap(dataSource);
+        return new DataSourceSwapper(XADataSourceDefinitionFactory.getInstance(databaseType)).swap(dataSource);
     }
 }

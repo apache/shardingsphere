@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -31,5 +32,5 @@ import java.util.LinkedList;
 @ToString
 public abstract class DropSchemaStatement extends AbstractSQLStatement implements DDLStatement {
     
-    private final Collection<String> schemaNames = new LinkedList<>();
+    private final Collection<IdentifierValue> schemaNames = new LinkedList<>();
 }

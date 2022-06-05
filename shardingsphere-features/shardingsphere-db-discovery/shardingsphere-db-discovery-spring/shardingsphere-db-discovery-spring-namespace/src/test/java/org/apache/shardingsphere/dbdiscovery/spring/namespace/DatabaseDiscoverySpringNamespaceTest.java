@@ -51,13 +51,13 @@ public final class DatabaseDiscoverySpringNamespaceTest extends AbstractJUnit4Sp
     private void assertDiscoveryTypes(final Map<String, DatabaseDiscoveryProviderAlgorithm> discoveryTypes) {
         assertThat(discoveryTypes.size(), is(1));
         assertThat(discoveryTypes.get("mgr"), instanceOf(MGRMySQLDatabaseDiscoveryProviderAlgorithm.class));
-        assertThat(discoveryTypes.get("mgr").getProps().get("group-name"), is("92504d5b-6dec-11e8-91ea-246e9612aaf1"));
+        assertThat(discoveryTypes.get("mgr").getProps().getProperty("group-name"), is("92504d5b-6dec-11e8-91ea-246e9612aaf1"));
     }
     
     private void assertHeartbeats(final Map<String, DatabaseDiscoveryHeartBeatConfiguration> heartbeats) {
         assertThat(heartbeats.size(), is(1));
         assertThat(heartbeats.get("mgr-heartbeat"), instanceOf(DatabaseDiscoveryHeartBeatConfiguration.class));
-        assertThat(heartbeats.get("mgr-heartbeat").getProps().get("keep-alive-cron"), is("0/5 * * * * ?"));
+        assertThat(heartbeats.get("mgr-heartbeat").getProps().getProperty("keep-alive-cron"), is("0/5 * * * * ?"));
     }
     
     private void assertDefaultDataSourceRule(final DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig) {

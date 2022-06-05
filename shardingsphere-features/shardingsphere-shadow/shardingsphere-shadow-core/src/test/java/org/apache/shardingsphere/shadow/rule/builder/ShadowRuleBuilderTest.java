@@ -36,7 +36,7 @@ public final class ShadowRuleBuilderTest {
     @Test
     public void assertBuild() {
         ShadowRuleConfiguration ruleConfig = new ShadowRuleConfiguration();
-        SchemaRuleBuilder builder = SchemaRuleBuilderFactory.newInstance(Collections.singletonList(ruleConfig)).get(ruleConfig);
+        SchemaRuleBuilder builder = SchemaRuleBuilderFactory.getInstanceMap(Collections.singletonList(ruleConfig)).get(ruleConfig);
         assertThat(builder.build(ruleConfig, "", Collections.emptyMap(), Collections.emptyList(), new ConfigurationProperties(new Properties())), instanceOf(ShadowRule.class));
     }
 }

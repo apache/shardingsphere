@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.driver.jdbc.adapter;
 
+import org.apache.shardingsphere.driver.jdbc.context.JDBCContext;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.Test;
@@ -80,7 +81,7 @@ public final class ConnectionAdapterTest {
     
     private Connection createConnectionAdaptor() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findSingleRule(TransactionRule.class)).thenReturn(Optional.empty());
-        return new ShardingSphereConnection(DefaultSchema.LOGIC_NAME, contextManager);
+        when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(TransactionRule.class)).thenReturn(Optional.empty());
+        return new ShardingSphereConnection(DefaultDatabase.LOGIC_NAME, contextManager, mock(JDBCContext.class));
     }
 }

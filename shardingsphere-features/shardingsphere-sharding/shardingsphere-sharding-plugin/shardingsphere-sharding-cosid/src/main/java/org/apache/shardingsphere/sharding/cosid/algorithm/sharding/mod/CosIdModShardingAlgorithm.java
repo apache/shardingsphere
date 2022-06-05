@@ -19,12 +19,11 @@ package org.apache.shardingsphere.sharding.cosid.algorithm.sharding.mod;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import lombok.Setter;
 import me.ahoo.cosid.sharding.ModCycle;
-import org.apache.shardingsphere.sharding.cosid.algorithm.CosIdAlgorithmConstants;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
+import org.apache.shardingsphere.sharding.cosid.algorithm.CosIdAlgorithmConstants;
 
 import java.util.Collection;
 import java.util.Properties;
@@ -39,13 +38,13 @@ public final class CosIdModShardingAlgorithm<T extends Number & Comparable<T>> i
     public static final String MODULO_KEY = "mod";
     
     @Getter
-    @Setter
     private Properties props;
     
-    private volatile ModCycle<T> modCycle;
+    private ModCycle<T> modCycle;
     
     @Override
     public void init(final Properties props) {
+        this.props = props;
         String divisorStr = getRequiredValue(props, MODULO_KEY);
         int divisor = Integer.parseInt(divisorStr);
         String logicNamePrefix = getRequiredValue(props, CosIdAlgorithmConstants.LOGIC_NAME_PREFIX_KEY);
@@ -54,7 +53,7 @@ public final class CosIdModShardingAlgorithm<T extends Number & Comparable<T>> i
     
     private String getRequiredValue(final Properties props, final String key) {
         Preconditions.checkArgument(props.containsKey(key), "%s can not be null.", key);
-        return props.get(key).toString();
+        return props.getProperty(key);
     }
     
     @Override

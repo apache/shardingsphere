@@ -17,19 +17,19 @@
 
 package org.apache.shardingsphere.integration.data.pipeline.framework.param;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
+@Getter
+@RequiredArgsConstructor
+@ToString
 public final class ScalingParameterized {
     
-    private DatabaseType databaseType;
+    private final DatabaseType databaseType;
     
-    private String dockerImageName;
+    private final String dockerImageName;
     
-    private String parentPath;
+    private final String scenario;
 }

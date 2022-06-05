@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.encrypt.algorithm;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
@@ -40,7 +39,6 @@ public final class RC4EncryptAlgorithm implements EncryptAlgorithm<Object, Strin
     private static final int KEY_MIN_LENGTH = 5;
     
     @Getter
-    @Setter
     private Properties props;
     
     private volatile byte[] key = new byte[SBOX_LENGTH - 1];
@@ -49,6 +47,7 @@ public final class RC4EncryptAlgorithm implements EncryptAlgorithm<Object, Strin
     
     @Override
     public void init(final Properties props) {
+        this.props = props;
         reset();
         setKey(props.getProperty(RC4_KEY, "").getBytes(StandardCharsets.UTF_8));
     }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.scaling.distsql.handler.query;
 
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingCheckAlgorithmsStatement;
 import org.apache.shardingsphere.scaling.distsql.util.PipelineContextUtil;
 import org.junit.BeforeClass;
@@ -29,7 +29,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
-import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -39,7 +38,7 @@ import static org.junit.Assert.assertTrue;
 public final class ShowScalingCheckAlgorithmsQueryResultSetTest {
     
     @Mock
-    private ShardingSphereMetaData shardingSphereMetaData;
+    private ShardingSphereDatabase database;
     
     @Mock
     private ShowScalingCheckAlgorithmsStatement showScalingCheckAlgorithmsStatement;
@@ -52,8 +51,8 @@ public final class ShowScalingCheckAlgorithmsQueryResultSetTest {
     @Test
     public void assertGetRowData() {
         ShowScalingCheckAlgorithmsQueryResultSet resultSet = new ShowScalingCheckAlgorithmsQueryResultSet();
-        resultSet.init(shardingSphereMetaData, showScalingCheckAlgorithmsStatement);
-        Set<Object> algorithmTypes = new LinkedHashSet<>();
+        resultSet.init(database, showScalingCheckAlgorithmsStatement);
+        Collection<Object> algorithmTypes = new LinkedHashSet<>();
         while (resultSet.next()) {
             Collection<Object> actual = resultSet.getRowData();
             assertThat(actual.size(), is(3));

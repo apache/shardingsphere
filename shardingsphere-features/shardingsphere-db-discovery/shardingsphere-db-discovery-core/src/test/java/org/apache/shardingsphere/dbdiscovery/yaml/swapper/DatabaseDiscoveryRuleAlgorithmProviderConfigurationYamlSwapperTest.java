@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.dbdiscovery.yaml.swapper;
 
-import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.dbdiscovery.algorithm.config.AlgorithmProvidedDatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHeartBeatConfiguration;
@@ -60,6 +59,6 @@ public final class DatabaseDiscoveryRuleAlgorithmProviderConfigurationYamlSwappe
         Map<String, DatabaseDiscoveryHeartBeatConfiguration> heartBeatConfig = new LinkedHashMap<>();
         heartBeatConfig.put("mgr_heartbeat", new DatabaseDiscoveryHeartBeatConfiguration(new Properties()));
         return swapper.swapToYamlConfiguration(new AlgorithmProvidedDatabaseDiscoveryRuleConfiguration(
-                Collections.singletonList(ruleConfig), heartBeatConfig, ImmutableMap.of("mgr", new MGRMySQLDatabaseDiscoveryProviderAlgorithm())));
+                Collections.singletonList(ruleConfig), heartBeatConfig, Collections.singletonMap("mgr", new MGRMySQLDatabaseDiscoveryProviderAlgorithm())));
     }
 }

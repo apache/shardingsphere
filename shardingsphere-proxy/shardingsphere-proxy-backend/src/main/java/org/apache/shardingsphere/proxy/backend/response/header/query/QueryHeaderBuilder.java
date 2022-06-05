@@ -19,23 +19,25 @@ package org.apache.shardingsphere.proxy.backend.response.header.query;
 
 import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.spi.type.required.RequiredSPI;
-import org.apache.shardingsphere.spi.type.typed.StatelessTypedSPI;
+import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 
 import java.sql.SQLException;
 
 /**
  * Query header builder.
  */
-public interface QueryHeaderBuilder extends StatelessTypedSPI, RequiredSPI {
+@SingletonSPI
+public interface QueryHeaderBuilder extends TypedSPI, RequiredSPI {
     
     /**
      * Build query header.
      * 
      * @param queryResultMetaData query result meta data
-     * @param metaData ShardingSphere meta data
+     * @param database database
      * @param columnName column name
      * @param columnLabel column label
      * @param columnIndex column index
@@ -43,6 +45,6 @@ public interface QueryHeaderBuilder extends StatelessTypedSPI, RequiredSPI {
      * @return query header
      * @throws SQLException SQL exception
      */
-    QueryHeader build(QueryResultMetaData queryResultMetaData, ShardingSphereMetaData metaData,
+    QueryHeader build(QueryResultMetaData queryResultMetaData, ShardingSphereDatabase database,
                       String columnName, String columnLabel, int columnIndex, LazyInitializer<DataNodeContainedRule> dataNodeContainedRule) throws SQLException;
 }

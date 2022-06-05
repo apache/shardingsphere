@@ -36,13 +36,13 @@ public final class RuleDefinitionAlterPreprocessorFactory {
     }
     
     /**
-     * Create new instance of rule definition alter preprocessor.
+     * Find instance of rule definition alter preprocessor.
      *
      * @param sqlStatement SQL statement
-     * @return new instance of rule definition alter preprocessor
+     * @return found instance
      */
     @SuppressWarnings("rawtypes")
-    public static Optional<RuleDefinitionAlterPreprocessor> newInstance(final SQLStatement sqlStatement) {
+    public static Optional<RuleDefinitionAlterPreprocessor> findInstance(final SQLStatement sqlStatement) {
         return TypedSPIRegistry.findRegisteredService(RuleDefinitionAlterPreprocessor.class, sqlStatement.getClass().getCanonicalName());
     }
 }

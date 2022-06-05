@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDLStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -38,7 +38,7 @@ public final class ShardingAlterViewStatementValidator extends ShardingDDLStatem
     
     @Override
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<AlterViewStatement> sqlStatementContext,
-                            final List<Object> parameters, final ShardingSphereMetaData metaData) {
+                            final List<Object> parameters, final ShardingSphereDatabase database) {
         Optional<SelectStatement> selectStatement = AlterViewStatementHandler.getSelectStatement(sqlStatementContext.getSqlStatement());
         if (selectStatement.isPresent()) {
             TableExtractor extractor = new TableExtractor();
@@ -49,6 +49,6 @@ public final class ShardingAlterViewStatementValidator extends ShardingDDLStatem
     
     @Override
     public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<AlterViewStatement> sqlStatementContext, final List<Object> parameters,
-                             final ShardingSphereMetaData metaData, final ConfigurationProperties props, final RouteContext routeContext) {
+                             final ShardingSphereDatabase database, final ConfigurationProperties props, final RouteContext routeContext) {
     }
 }

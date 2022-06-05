@@ -54,7 +54,7 @@ public final class AlterTrafficRuleHandler extends UpdatableRALBackendHandler<Al
     }
     
     private Optional<TrafficRuleConfiguration> findCurrentConfiguration() {
-        return ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(TrafficRuleConfiguration.class).stream().findAny();
+        return ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findRuleConfigurations(TrafficRuleConfiguration.class).stream().findAny();
     }
     
     private void check(final AlterTrafficRuleStatement sqlStatement, final TrafficRuleConfiguration currentConfig) throws DistSQLException {
@@ -86,8 +86,8 @@ public final class AlterTrafficRuleHandler extends UpdatableRALBackendHandler<Al
         currentConfig.getLoadBalancers().putAll(toBeAlteredConfig.getLoadBalancers());
         getUnusedLoadBalancer(currentConfig).forEach(each -> currentConfig.getLoadBalancers().remove(each));
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        Optional<MetaDataPersistService> metaDataPersistService = metaDataContexts.getMetaDataPersistService();
-        metaDataPersistService.ifPresent(optional -> optional.getGlobalRuleService().persist(metaDataContexts.getGlobalRuleMetaData().getConfigurations(), true));
+        Optional<MetaDataPersistService> metaDataPersistService = metaDataContexts.getPersistService();
+        metaDataPersistService.ifPresent(optional -> optional.getGlobalRuleService().persist(metaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations(), true));
     }
     
     private Collection<String> getUnusedLoadBalancer(final TrafficRuleConfiguration currentConfig) {

@@ -60,6 +60,7 @@
         <shade.package>org.apache.shardingsphere.dependencies</shade.package>
         
         <guava.version>30.0-jre</guava.version>
+        <guava-listenablefuture.version>1.0</guava-listenablefuture.version>
         <commons-lang3.version>3.8</commons-lang3.version>
         <commons-collections4.version>4.4</commons-collections4.version>
         <commons-codec.version>1.15</commons-codec.version>
@@ -67,7 +68,7 @@
         <antlr4.version>4.9.2</antlr4.version>
         <snakeyaml.version>1.30</snakeyaml.version>
         <gson.version>2.8.6</gson.version>
-        <groovy.version>4.0.1</groovy.version>
+        <groovy.version>4.0.2</groovy.version>
         
         <jaxb.version>2.3.0</jaxb.version>
         <annotation-api.version>1.3.2</annotation-api.version>
@@ -78,12 +79,6 @@
         <netty.version>4.1.73.Final</netty.version>
         
         <javax.transaction.version>1.1</javax.transaction.version>
-        <atomikos.version>5.0.8</atomikos.version>
-        <narayana.version>5.12.4.Final</narayana.version>
-        <jboss-transaction-spi.version>7.6.0.Final</jboss-transaction-spi.version>
-        <jboss-logging.version>3.2.1.Final</jboss-logging.version>
-        <btm.version>2.1.3</btm.version>
-        <seata.version>1.4.2</seata.version>
         
         <zookeeper.version>3.6.0</zookeeper.version>
         <curator.version>5.1.0</curator.version>
@@ -94,7 +89,7 @@
         <springframework.version>[4.3.6.RELEASE,5.0.0.M1)</springframework.version>
         <spring-boot.version>[1.5.20.RELEASE,2.0.0.M1)</spring-boot.version>
         
-        <bytebuddy.version>1.11.18</bytebuddy.version>
+        <bytebuddy.version>1.12.10</bytebuddy.version>
         <prometheus.version>0.11.0</prometheus.version>
         <prometheus.jmx.version>0.16.1</prometheus.jmx.version>
         <opentracing.version>0.31.0</opentracing.version>
@@ -121,7 +116,7 @@
         
         <junit.version>4.12</junit.version>
         <hamcrest.version>1.3</hamcrest.version>
-        <mockito.version>3.4.2</mockito.version>
+        <mockito.version>4.5.1</mockito.version>
         
         <!-- Plugin versions -->
         <takari-maven-plugin.version>0.6.1</takari-maven-plugin.version>
@@ -159,6 +154,7 @@
         <apache-rat-plugin.version>0.12</apache-rat-plugin.version>
         <freemarker.version>2.3.31</freemarker.version>
         <spotless-maven-plugin.version>2.22.1</spotless-maven-plugin.version>
+        <caffeine.version>2.9.2</caffeine.version>
     </properties>
     
     <dependencyManagement>
@@ -327,62 +323,15 @@
                 <classifier>linux-aarch_64</classifier>
                 <scope>runtime</scope>
             </dependency>
-            
+            <dependency>
+                <groupId>org.apache.calcite</groupId>
+                <artifactId>calcite-linq4j</artifactId>
+                <version>${calcite.version}</version>
+            </dependency>
             <dependency>
                 <groupId>javax.transaction</groupId>
                 <artifactId>jta</artifactId>
                 <version>${javax.transaction.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.atomikos</groupId>
-                <artifactId>transactions</artifactId>
-                <version>${atomikos.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.atomikos</groupId>
-                <artifactId>transactions-jta</artifactId>
-                <version>${atomikos.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.atomikos</groupId>
-                <artifactId>transactions-jdbc</artifactId>
-                <version>${atomikos.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss.narayana.jta</groupId>
-                <artifactId>jta</artifactId>
-                <version>${narayana.version}</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss.narayana.jts</groupId>
-                <artifactId>narayana-jts-integration</artifactId>
-                <version>${narayana.version}</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss</groupId>
-                <artifactId>jboss-transaction-spi</artifactId>
-                <version>${jboss-transaction-spi.version}</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss.logging</groupId>
-                <artifactId>jboss-logging</artifactId>
-                <version>${jboss-logging.version}</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.codehaus.btm</groupId>
-                <artifactId>btm</artifactId>
-                <version>${btm.version}</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>io.seata</groupId>
-                <artifactId>seata-all</artifactId>
-                <version>${seata.version}</version>
-                <scope>test</scope>
             </dependency>
             
             <dependency>
@@ -453,6 +402,18 @@
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-context-support</artifactId>
+                <version>${springframework.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-jdbc</artifactId>
+                <version>${springframework.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-tx</artifactId>
                 <version>${springframework.version}</version>
                 <scope>provided</scope>
             </dependency>
@@ -723,6 +684,18 @@
                 <artifactId>freemarker</artifactId>
                 <version>${freemarker.version}</version>
             </dependency>
+            
+            <dependency>
+                <groupId>com.github.ben-manes.caffeine</groupId>
+                <artifactId>caffeine</artifactId>
+                <version>${caffeine.version}</version>
+            </dependency>
+            
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>listenablefuture</artifactId>
+                <version>${guava-listenablefuture.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
     
@@ -761,6 +734,10 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jul-to-slf4j</artifactId>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
@@ -1037,7 +1014,7 @@
                 <configuration>
                     <java>
                         <eclipse>
-                            <file>${maven.multiModuleProjectDirectory}/src/resources/shardingsphere_eclipse_formatter.xml</file>
+                            <file>${maven.multiModuleProjectDirectory}/src/resources/spotless_shardingsphere_formatter.xml</file>
                         </eclipse>
                         <licenseHeader>
                             <file>${maven.multiModuleProjectDirectory}/src/resources/license-header</file>

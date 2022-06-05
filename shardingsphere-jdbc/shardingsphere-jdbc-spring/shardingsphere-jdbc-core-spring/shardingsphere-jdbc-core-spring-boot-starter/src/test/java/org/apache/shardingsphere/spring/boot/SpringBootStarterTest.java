@@ -17,8 +17,7 @@
 
 package org.apache.shardingsphere.spring.boot;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Sets;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
@@ -26,6 +25,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datanode.DataNodeUtil;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.RandomReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceRule;
@@ -49,10 +49,14 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.annotation.Resource;
 import javax.sql.DataSource;
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -69,7 +73,7 @@ public class SpringBootStarterTest {
     
     @Test
     public void assertDataSources() {
-        Map<String, DataSource> dataSources = dataSource.getContextManager().getMetaDataContexts().getMetaData("foo_db").getResource().getDataSources();
+        Map<String, DataSource> dataSources = getContextManager(dataSource).getMetaDataContexts().getMetaData().getDatabases().get("foo_db").getResource().getDataSources();
         assertThat(dataSources.size(), is(2));
         assertTrue(dataSources.containsKey("ds0"));
         assertTrue(dataSources.containsKey("ds1"));
@@ -77,7 +81,7 @@ public class SpringBootStarterTest {
     
     @Test
     public void assertRules() {
-        Collection<ShardingSphereRule> rules = dataSource.getContextManager().getMetaDataContexts().getMetaData("foo_db").getRuleMetaData().getRules();
+        Collection<ShardingSphereRule> rules = getContextManager(dataSource).getMetaDataContexts().getMetaData().getDatabases().get("foo_db").getRuleMetaData().getRules();
         assertThat(rules.size(), is(5));
         for (ShardingSphereRule each : rules) {
             if (each instanceof ShardingRule) {
@@ -94,8 +98,15 @@ public class SpringBootStarterTest {
         }
     }
     
+    @SneakyThrows(ReflectiveOperationException.class)
+    private ContextManager getContextManager(final ShardingSphereDataSource dataSource) {
+        Field field = ShardingSphereDataSource.class.getDeclaredField("contextManager");
+        field.setAccessible(true);
+        return (ContextManager) field.get(dataSource);
+    }
+    
     private void assertShardingRule(final ShardingRule actual) {
-        assertThat(actual.getDataSourceNames(), is(Sets.newHashSet("ds0", "ds1")));
+        assertThat(actual.getDataSourceNames(), is(new HashSet<>(Arrays.asList("ds0", "ds1"))));
         InlineShardingAlgorithm databaseShardingAlgorithm = (InlineShardingAlgorithm) actual.getShardingAlgorithms().get("databaseShardingAlgorithm");
         assertThat(databaseShardingAlgorithm.getProps().getProperty("algorithm-expression"), is("ds$->{user_id % 2}"));
         InlineShardingAlgorithm orderTableShardingAlgorithm = (InlineShardingAlgorithm) actual.getShardingAlgorithms().get("orderTableShardingAlgorithm");
@@ -114,9 +125,16 @@ public class SpringBootStarterTest {
         assertThat(actual.getLogicTable(), is("t_order"));
         Collection<DataNode> dataNodes = Arrays.asList(new DataNode("ds0.t_order_0"), new DataNode("ds0.t_order_1"), new DataNode("ds1.t_order_0"), new DataNode("ds1.t_order_1"));
         assertThat(actual.getActualDataNodes(), is(dataNodes));
-        assertThat(actual.getActualDatasourceNames(), is(Sets.newHashSet("ds0", "ds1")));
+        assertThat(actual.getActualDatasourceNames(), is(new HashSet<>(Arrays.asList("ds0", "ds1"))));
         assertThat(actual.getDataNodeGroups(), is(DataNodeUtil.getDataNodeGroups(dataNodes)));
-        assertThat(actual.getDatasourceToTablesMap(), is(ImmutableMap.of("ds1", Sets.newHashSet("t_order_0", "t_order_1"), "ds0", Sets.newHashSet("t_order_0", "t_order_1"))));
+        assertThat(actual.getDatasourceToTablesMap(), is(getExpectedDatasourceToTablesMap()));
+    }
+    
+    private Map<String, Set<String>> getExpectedDatasourceToTablesMap() {
+        Map<String, Set<String>> result = new HashMap<>(2, 1);
+        result.put("ds0", new HashSet<>(Arrays.asList("t_order_0", "t_order_1")));
+        result.put("ds1", new HashSet<>(Arrays.asList("t_order_0", "t_order_1")));
+        return result;
     }
     
     private void assertReadwriteSplittingRule(final ReadwriteSplittingRule actual) {
@@ -184,12 +202,11 @@ public class SpringBootStarterTest {
     private void assertCacheOption(final CacheOption actual) {
         assertThat(actual.getInitialCapacity(), is(1024));
         assertThat(actual.getMaximumSize(), is(1024L));
-        assertThat(actual.getConcurrencyLevel(), is(4));
     }
     
     @Test
     public void assertProperties() {
-        assertTrue(dataSource.getContextManager().getMetaDataContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
-        assertThat(dataSource.getContextManager().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE), is(10));
+        assertTrue(getContextManager(dataSource).getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
+        assertThat(getContextManager(dataSource).getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE), is(10));
     }
 }

@@ -120,11 +120,9 @@ public final class RowNumberPaginationContextEngineTest {
         BinaryOperationExpression expression = new BinaryOperationExpression(0, 0, left, right, operator, null);
         PaginationContext paginationContext = new RowNumberPaginationContextEngine().createPaginationContext(Collections.singletonList(expression), projectionsContext, Collections.emptyList());
         assertFalse(paginationContext.getOffsetSegment().isPresent());
-        Optional<PaginationValueSegment> paginationValueSegmentOptional = paginationContext.getRowCountSegment();
-        assertTrue(paginationValueSegmentOptional.isPresent());
-        PaginationValueSegment paginationValueSegment = paginationValueSegmentOptional.get();
-        assertTrue(paginationValueSegment instanceof NumberLiteralRowNumberValueSegment);
-        NumberLiteralRowNumberValueSegment numberLiteralRowNumberValueSegment = (NumberLiteralRowNumberValueSegment) paginationValueSegment;
+        Optional<PaginationValueSegment> paginationValueSegment = paginationContext.getRowCountSegment();
+        assertTrue(paginationValueSegment.isPresent());
+        NumberLiteralRowNumberValueSegment numberLiteralRowNumberValueSegment = (NumberLiteralRowNumberValueSegment) paginationValueSegment.get();
         assertThat(numberLiteralRowNumberValueSegment.getStartIndex(), is(0));
         assertThat(numberLiteralRowNumberValueSegment.getStopIndex(), is(10));
         assertThat(numberLiteralRowNumberValueSegment.getValue(), is(100L));
@@ -145,7 +143,6 @@ public final class RowNumberPaginationContextEngineTest {
         assertThat(actualPaginationValueSegment.getStartIndex(), is(0));
         assertThat(actualPaginationValueSegment.getStopIndex(), is(10));
         assertThat(((NumberLiteralRowNumberValueSegment) actualPaginationValueSegment).getValue(), is(100L));
-        Optional<PaginationValueSegment> rowCountSegment = rowNumberPaginationContextEngine.getRowCountSegment();
-        assertFalse(rowCountSegment.isPresent());
+        assertFalse(rowNumberPaginationContextEngine.getRowCountSegment().isPresent());
     }
 }

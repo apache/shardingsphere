@@ -22,6 +22,8 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterSystemStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CloseStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.ClusterStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
@@ -29,6 +31,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropIndexSt
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.RenameTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.TruncateStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCursorStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussFetchStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussMoveStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterSessionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterSynonymStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAnalyzeStatement;
@@ -45,11 +50,16 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.ddl.impl.AnalyzeStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.ddl.impl.AssociateStatisticsStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.ddl.impl.AuditStatementAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.ddl.impl.CloseStatementAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.ddl.impl.ClusterStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.ddl.impl.CreateIndexStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.ddl.impl.CreateTableStatementAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.ddl.impl.CursorStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.ddl.impl.DisassociateStatisticsStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.ddl.impl.DropIndexStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.ddl.impl.DropTableStatementAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.ddl.impl.FetchStatementAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.ddl.impl.MoveStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.ddl.impl.NoAuditStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.ddl.impl.RenameTableStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.ddl.impl.TruncateStatementAssert;
@@ -62,11 +72,16 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AnalyzeStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AssociateStatisticsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AuditStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CloseStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.ClusterStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateIndexStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateTableStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CursorStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DisassociateStatisticsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropIndexStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropTableStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.FetchStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.MoveStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.NoAuditStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.RenameTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.TruncateStatementTestCase;
@@ -117,6 +132,16 @@ public final class DDLStatementAssert {
             AuditStatementAssert.assertIs(assertContext, (OracleAuditStatement) actual, (AuditStatementTestCase) expected);
         } else if (actual instanceof OracleNoAuditStatement) {
             NoAuditStatementAssert.assertIs(assertContext, (OracleNoAuditStatement) actual, (NoAuditStatementTestCase) expected);
+        } else if (actual instanceof OpenGaussCursorStatement) {
+            CursorStatementAssert.assertIs(assertContext, (OpenGaussCursorStatement) actual, (CursorStatementTestCase) expected);
+        } else if (actual instanceof CloseStatement) {
+            CloseStatementAssert.assertIs(assertContext, (CloseStatement) actual, (CloseStatementTestCase) expected);
+        } else if (actual instanceof OpenGaussMoveStatement) {
+            MoveStatementAssert.assertIs(assertContext, (OpenGaussMoveStatement) actual, (MoveStatementTestCase) expected);
+        } else if (actual instanceof OpenGaussFetchStatement) {
+            FetchStatementAssert.assertIs(assertContext, (OpenGaussFetchStatement) actual, (FetchStatementTestCase) expected);
+        } else if (actual instanceof ClusterStatement) {
+            ClusterStatementAssert.assertIs(assertContext, (ClusterStatement) actual, (ClusterStatementTestCase) expected);
         }
     }
 }

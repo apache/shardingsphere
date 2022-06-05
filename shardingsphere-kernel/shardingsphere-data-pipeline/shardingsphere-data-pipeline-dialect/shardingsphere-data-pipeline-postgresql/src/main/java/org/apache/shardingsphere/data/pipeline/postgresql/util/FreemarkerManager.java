@@ -25,13 +25,11 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -72,23 +70,23 @@ public final class FreemarkerManager {
     @SneakyThrows
     private Configuration createTemplateConfiguration() {
         Configuration result = new Configuration(Configuration.VERSION_2_3_31);
-        result.setDirectoryForTemplateLoading(new File(Objects.requireNonNull(FreemarkerManager.class.getClassLoader().getResource("template")).getFile()));
+        result.setClassForTemplateLoading(getClass(), "/template");
         result.setDefaultEncoding("UTF-8");
         return result;
     }
     
     /**
-     * Get sql by postgres version.
+     * Get SQL by postgres version.
      * 
      * @param data data
      * @param pathFormat path format
      * @param majorVersion major version
      * @param minorVersion minor version
-     * @return sql
+     * @return SQL
      */
     @SneakyThrows
-    public static String getSqlByPgVersion(final Map<String, Object> data, final String pathFormat, final int majorVersion, final int minorVersion) {
-        int version = majorVersion * 10000 + minorVersion * 100;
+    public static String getSQLByPgVersion(final Map<String, Object> data, final String pathFormat, final int majorVersion, final int minorVersion) {
+        int version = majorVersion * 10000 + minorVersion;
         try (StringWriter result = new StringWriter()) {
             findTemplate(pathFormat, version).orElseThrow(() -> new ShardingSphereException("Failed to get template, path:%s, version:%s", pathFormat, version)).process(data, result);
             return result.toString();

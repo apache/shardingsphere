@@ -29,25 +29,5 @@ public interface SPIPostProcessor {
      * 
      * @param props properties to be initialized
      */
-    default void init(Properties props) {
-    }
-    
-    /**
-     * Get properties.
-     * 
-     * @return properties
-     */
-    // TODO consider about to remove it, for spring algorithm only for now
-    default Properties getProps() {
-        return new Properties();
-    }
-    
-    /**
-     * Set properties.
-     *
-     * @param props properties
-     */
-    // TODO consider about to remove it, for spring algorithm only for now
-    default void setProps(Properties props) {
-    }
+    void init(Properties props);
 }

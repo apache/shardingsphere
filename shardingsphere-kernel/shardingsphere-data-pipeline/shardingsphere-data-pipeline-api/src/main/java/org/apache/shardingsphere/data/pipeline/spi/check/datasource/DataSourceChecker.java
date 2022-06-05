@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.data.pipeline.spi.check.datasource;
 
 import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
-import org.apache.shardingsphere.spi.type.typed.StatelessTypedSPI;
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -26,7 +27,8 @@ import java.util.Collection;
 /**
  * Data source checker.
  */
-public interface DataSourceChecker extends StatelessTypedSPI {
+@SingletonSPI
+public interface DataSourceChecker extends TypedSPI {
     
     /**
      * Check data source connections.

@@ -28,10 +28,6 @@ public abstract class ShardingSphereSPIException extends RuntimeException {
         super(createErrorMessage(errorCode, message));
     }
     
-    public ShardingSphereSPIException(final int errorCode, final String message, final Exception cause) {
-        super(createErrorMessage(errorCode, message), cause);
-    }
-    
     private static String createErrorMessage(final int errorCode, final String message) {
         return String.format("SPI-%05d: %s", errorCode, message);
     }

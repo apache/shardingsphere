@@ -1,7 +1,7 @@
 +++
-pre = "<b>4.3. </b>"
+pre = "<b>4.4. </b>"
 title = "Sharding"
-weight = 3
+weight = 4
 chapter = true
 +++
 
@@ -52,3 +52,5 @@ Troubles brought by distributed transactions can be avoided by the wise use of d
 ## Goal
 
 **The main design goal of the data sharding modular of Apache ShardingSphere is to try to reduce the influence of sharding, in order to let users use horizontal sharding database group like one database.**
+
+**Source Codes: https://github.com/apache/shardingsphere/tree/master/shardingsphere-features/shardingsphere-sharding**

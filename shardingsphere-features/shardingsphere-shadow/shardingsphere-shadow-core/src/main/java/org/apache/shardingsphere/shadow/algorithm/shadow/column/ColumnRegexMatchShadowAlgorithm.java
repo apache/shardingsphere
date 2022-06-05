@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.shadow.algorithm.shadow.column;
 
 import com.google.common.base.Preconditions;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.util.Properties;
 import java.util.regex.Pattern;
@@ -30,10 +28,6 @@ import java.util.regex.Pattern;
 public final class ColumnRegexMatchShadowAlgorithm extends AbstractColumnMatchShadowAlgorithm {
     
     private static final String REGEX_PROPS_KEY = "regex";
-    
-    @Getter
-    @Setter
-    private Properties props;
     
     private Pattern regex;
     

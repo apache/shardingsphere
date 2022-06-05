@@ -25,7 +25,7 @@ import static org.junit.Assert.assertFalse;
 public final class DynamicDataSourceStrategyFactoryTest {
     
     @Test
-    public void assertGetInstance() {
-        assertFalse(DynamicDataSourceStrategyFactory.newInstance().isPresent());
+    public void assertFindInstance() {
+        assertFalse(DynamicDataSourceStrategyFactory.findInstance().isPresent());
     }
 }

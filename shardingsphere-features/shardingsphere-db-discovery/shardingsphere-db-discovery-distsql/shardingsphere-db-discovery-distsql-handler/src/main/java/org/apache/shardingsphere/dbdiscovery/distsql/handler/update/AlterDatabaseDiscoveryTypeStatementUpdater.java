@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleExcep
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionAlterUpdater;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
 import java.util.Collection;
 import java.util.Map.Entry;
@@ -42,17 +42,17 @@ public final class AlterDatabaseDiscoveryTypeStatementUpdater implements RuleDef
     private static final String RULE_TYPE = "database discovery";
     
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final AlterDatabaseDiscoveryTypeStatement sqlStatement,
-                                  final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String databaseName = shardingSphereMetaData.getDatabaseName();
+    public void checkSQLStatement(final ShardingSphereDatabase database,
+                                  final AlterDatabaseDiscoveryTypeStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
+        String databaseName = database.getName();
         checkCurrentRuleConfiguration(databaseName, currentRuleConfig);
         checkDuplicateDiscoveryType(databaseName, sqlStatement);
         checkNotExistDiscoveryType(databaseName, sqlStatement, currentRuleConfig);
         checkInvalidDiscoverType(sqlStatement);
     }
     
-    private void checkNotExistDiscoveryType(final String databaseName, final AlterDatabaseDiscoveryTypeStatement sqlStatement,
-                                            final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
+    private void checkNotExistDiscoveryType(final String databaseName,
+                                            final AlterDatabaseDiscoveryTypeStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
         Collection<String> existTypes = currentRuleConfig.getDiscoveryTypes().keySet();
         Collection<String> notExistTypes = sqlStatement.getProviders().stream().map(DatabaseDiscoveryProviderAlgorithmSegment::getDiscoveryProviderName)
                 .filter(each -> !existTypes.contains(each)).collect(Collectors.toSet());

@@ -21,8 +21,8 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryMergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 
@@ -69,7 +69,7 @@ public class LogicTablesMergedResult extends MemoryMergedResult<ShardingRule> {
         return result;
     }
     
-    protected void setCellValue(final MemoryQueryResultRow memoryResultSetRow, final String logicTableName, final String actualTableName,
-                                final TableMetaData tableMetaData, final ShardingRule shardingRule) {
+    protected void setCellValue(final MemoryQueryResultRow memoryResultSetRow,
+                                final String logicTableName, final String actualTableName, final ShardingSphereTable table, final ShardingRule shardingRule) {
     }
 }

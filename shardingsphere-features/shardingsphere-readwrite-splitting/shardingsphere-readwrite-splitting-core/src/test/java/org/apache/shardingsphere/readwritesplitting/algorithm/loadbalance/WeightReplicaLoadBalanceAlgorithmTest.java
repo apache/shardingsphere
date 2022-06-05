@@ -19,6 +19,7 @@ package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
 
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.readwritesplitting.factory.ReplicaLoadBalanceAlgorithmFactory;
+import org.apache.shardingsphere.transaction.TransactionHolder;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -78,5 +79,17 @@ public final class WeightReplicaLoadBalanceAlgorithmTest {
     
     private WeightReplicaLoadBalanceAlgorithm createReplicaLoadBalanceAlgorithm(final Properties props) {
         return (WeightReplicaLoadBalanceAlgorithm) ReplicaLoadBalanceAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("WEIGHT", props));
+    }
+    
+    @Test
+    public void assertGetReadDataSourceInTransaction() {
+        WeightReplicaLoadBalanceAlgorithm weightReplicaLoadBalanceAlgorithm = createReplicaLoadBalanceAlgorithm(createMultipleDataSourcesProperties());
+        String writeDataSourceName = "test_write_ds";
+        String readDataSourceName1 = "test_read_ds_1";
+        String readDataSourceName2 = "test_read_ds_2";
+        List<String> readDataSourceNames = Arrays.asList(readDataSourceName1, readDataSourceName2);
+        TransactionHolder.setInTransaction();
+        assertThat(weightReplicaLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), is(writeDataSourceName));
+        TransactionHolder.clear();
     }
 }

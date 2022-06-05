@@ -182,7 +182,7 @@ intValue:
 ```
 - `ENABLE` 用于设置启用哪个弹性伸缩配置；
 - `DISABLE` 将禁用当前正在使用的配置；
-- 创建 schema 中第一个弹性伸缩配置时，默认启用。
+- 创建逻辑库中第一个弹性伸缩配置时，默认启用。
 
 ## 示例
 
@@ -300,7 +300,7 @@ OUTPUT(
   BATCH_SIZE=1000
 ),
 STREAM_CHANNEL(TYPE(NAME=MEMORY, PROPERTIES("block-queue-size"=10000))),
-COMPLETION_DETECTOR(TYPE(NAME=IDLE, PROPERTIES("incremental-task-idle-minute-threshold"=30))),
+COMPLETION_DETECTOR(TYPE(NAME=IDLE, PROPERTIES("incremental-task-idle-seconds-threshold"=1800))),
 DATA_CONSISTENCY_CHECKER(TYPE(NAME=DATA_MATCH, PROPERTIES("chunk-size"=1000)))
 );
 

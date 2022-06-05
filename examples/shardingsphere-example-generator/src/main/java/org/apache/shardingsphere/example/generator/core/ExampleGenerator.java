@@ -21,6 +21,7 @@ import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
 import org.apache.shardingsphere.example.generator.core.yaml.config.YamlExampleConfiguration;
 import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
+import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -30,7 +31,7 @@ import java.util.Properties;
 /**
  * Example generator.
  */
-public interface ExampleGenerator {
+public interface ExampleGenerator extends TypedSPI {
     
     String OUTPUT_PATH = "./examples/shardingsphere-example-generator/target/generated-sources/shardingsphere-${product}-sample/${feature?replace(',', '-')}--${framework}--${mode}--${transaction}/";
     
@@ -41,7 +42,7 @@ public interface ExampleGenerator {
             for (String eachTransaction : exampleConfig.getTransactions()) {
                 for (String eachFramework : exampleConfig.getFrameworks()) {
                     for (String eachFeature : GenerateUtil.generateCombination(exampleConfig.getFeatures())) {
-                        generate(templateConfig, buildDataModel(exampleConfig.getProps(), eachMode, eachTransaction, eachFramework, eachFeature), eachFramework, eachFeature);
+                        generate(templateConfig, buildDataModel(exampleConfig.getProps(), eachMode, eachTransaction, eachFramework, eachFeature), eachFeature, eachFramework, eachTransaction);
                     }
                 }
             }
@@ -69,12 +70,5 @@ public interface ExampleGenerator {
      * @throws IOException IO exception
      * @throws TemplateException template exception
      */
-    void generate(final Configuration templateConfig, final Map<String, String> dataModel, final String framework, final String feature) throws IOException, TemplateException;
-    
-    /**
-     * Get generator type.
-     *
-     * @return generator type
-     */
-    String getType();
+    void generate(final Configuration templateConfig, final Map<String, String> dataModel, final String framework, final String feature, String transaction) throws IOException, TemplateException;
 }

@@ -26,14 +26,15 @@ import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.DuplicateResourceException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourcesException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,13 +49,14 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Properties;
 
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class AlterResourceBackendHandlerTest {
+public final class AlterResourceBackendHandlerTest extends ProxyContextRestorer {
     
     @Mock
     private DataSourcePropertiesValidator validator;
@@ -69,7 +71,7 @@ public final class AlterResourceBackendHandlerTest {
     private MetaDataContexts metaDataContexts;
     
     @Mock
-    private ShardingSphereMetaData metaData;
+    private ShardingSphereDatabase database;
     
     @Mock
     private ShardingSphereResource resource;
@@ -92,13 +94,11 @@ public final class AlterResourceBackendHandlerTest {
     public void assertExecute() throws Exception {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        ProxyContext.getInstance().init(contextManager);
-        when(metaDataContexts.getAllDatabaseNames()).thenReturn(Collections.singleton("test_db"));
-        when(metaDataContexts.getMetaData("test_db")).thenReturn(metaData);
-        when(metaData.getResource()).thenReturn(resource);
+        ProxyContext.init(contextManager);
+        when(metaDataContexts.getMetaData().getDatabases()).thenReturn(Collections.singletonMap("test_db", database));
+        when(database.getResource()).thenReturn(resource);
         when(resource.getDataSources()).thenReturn(Collections.singletonMap("ds_0", mockHikariDataSource("ds_0")));
-        ResponseHeader responseHeader = alterResourceBackendHandler.execute("test_db", createAlterResourceStatement("ds_0"));
-        assertTrue(responseHeader instanceof UpdateResponseHeader);
+        assertThat(alterResourceBackendHandler.execute("test_db", createAlterResourceStatement("ds_0")), instanceOf(UpdateResponseHeader.class));
     }
     
     @Test(expected = DuplicateResourceException.class)
@@ -110,10 +110,9 @@ public final class AlterResourceBackendHandlerTest {
     public void assertExecuteWithNotExistedResourceNames() throws DistSQLException {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        ProxyContext.getInstance().init(contextManager);
-        when(metaDataContexts.getAllDatabaseNames()).thenReturn(Collections.singleton("test_db"));
-        when(metaDataContexts.getMetaData("test_db")).thenReturn(metaData);
-        when(metaData.getResource()).thenReturn(resource);
+        ProxyContext.init(contextManager);
+        when(metaDataContexts.getMetaData().getDatabases()).thenReturn(Collections.singletonMap("test_db", database));
+        when(database.getResource()).thenReturn(resource);
         when(resource.getDataSources()).thenReturn(Collections.singletonMap("ds_0", dataSource));
         alterResourceBackendHandler.execute("test_db", createAlterResourceStatement("not_existed"));
     }
@@ -122,13 +121,12 @@ public final class AlterResourceBackendHandlerTest {
     public void assertExecuteWithAlterDatabase() throws Exception {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        ProxyContext.getInstance().init(contextManager);
-        when(metaDataContexts.getAllDatabaseNames()).thenReturn(Collections.singleton("test_db"));
-        when(metaDataContexts.getMetaData("test_db")).thenReturn(metaData);
-        when(metaData.getResource()).thenReturn(resource);
+        ProxyContext.init(contextManager);
+        when(metaDataContexts.getMetaData().getDatabases()).thenReturn(Collections.singletonMap("test_db", database));
+        when(database.getResource()).thenReturn(resource);
         when(resource.getDataSources()).thenReturn(Collections.singletonMap("ds_0", mockHikariDataSource("ds_1")));
         ResponseHeader responseHeader = alterResourceBackendHandler.execute("test_db", createAlterResourceStatement("ds_0"));
-        assertTrue(responseHeader instanceof UpdateResponseHeader);
+        assertThat(responseHeader, instanceOf(UpdateResponseHeader.class));
     }
     
     private AlterResourceStatement createAlterResourceStatement(final String resourceName) {

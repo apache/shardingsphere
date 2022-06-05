@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
 import java.util.Collection;
 import java.util.Map.Entry;
@@ -41,15 +41,15 @@ public final class CreateDatabaseDiscoveryTypeStatementUpdater implements RuleDe
     private static final String RULE_TYPE = "database discovery";
     
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final CreateDatabaseDiscoveryTypeStatement sqlStatement,
-                                  final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String databaseName = shardingSphereMetaData.getDatabaseName();
+    public void checkSQLStatement(final ShardingSphereDatabase database,
+                                  final CreateDatabaseDiscoveryTypeStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
+        String databaseName = database.getName();
         checkDuplicateDiscoveryType(databaseName, sqlStatement, currentRuleConfig);
         checkInvalidDiscoverType(sqlStatement);
     }
     
-    private void checkDuplicateDiscoveryType(final String databaseName, final CreateDatabaseDiscoveryTypeStatement sqlStatement,
-                                             final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
+    private void checkDuplicateDiscoveryType(final String databaseName,
+                                             final CreateDatabaseDiscoveryTypeStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
         if (null == currentRuleConfig) {
             return;
         }

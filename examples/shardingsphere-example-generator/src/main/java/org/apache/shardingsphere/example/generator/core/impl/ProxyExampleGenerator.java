@@ -31,14 +31,10 @@ import java.util.Map;
  */
 public final class ProxyExampleGenerator implements ExampleGenerator {
     
-    public void generate(final Configuration templateConfig, final Map<String, String> dataModel, final String framework, final String feature) throws IOException, TemplateException {
+    public void generate(final Configuration templateConfig, final Map<String, String> dataModel, final String framework, final String feature, final String transaction) throws IOException, TemplateException {
         GenerateUtil.generateDirs(templateConfig, dataModel, Collections.singleton("conf"), OUTPUT_PATH + RESOURCES_PATH);
         String outputPath = GenerateUtil.generatePath(templateConfig, dataModel, OUTPUT_PATH);
         processFile(templateConfig, dataModel, outputPath);
-    }
-    
-    public String getType() {
-        return "proxy";
     }
     
     private void processFile(final Configuration templateConfig, final Map<String, String> dataModel,
@@ -47,5 +43,9 @@ public final class ProxyExampleGenerator implements ExampleGenerator {
         GenerateUtil.processFile(templateConfig, dataModel, getType() + "/config-example_db.ftl", outputPath + "config-example_db.yaml");
         GenerateUtil.processFile(templateConfig, dataModel, getType() + "/server.ftl", outputPath + "server.yaml");
         GenerateUtil.processFile(templateConfig, dataModel, getType() + "/pom.ftl", baseOutputPath + "pom.xml");
+    }
+    
+    public String getType() {
+        return "proxy";
     }
 }

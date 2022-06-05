@@ -17,7 +17,8 @@
   -->
 
 <sql-parser-test-cases>
-    <alter-synonym sql-case-id="alter_synonym_compile"/>
-    <alter-synonym sql-case-id="alter_public_synonym_compile"/>
-    <alter-synonym sql-case-id="alter_synonym_noneditionable"/>
+    <alter-synonym sql-case-id="alter_synonym_compile" />
+    <alter-synonym sql-case-id="alter_public_synonym_compile" />
+    <alter-synonym sql-case-id="alter_synonym_noneditionable" />
+    <alter-synonym sql-case-id="alter_synonym_new_owner" />
 </sql-parser-test-cases>

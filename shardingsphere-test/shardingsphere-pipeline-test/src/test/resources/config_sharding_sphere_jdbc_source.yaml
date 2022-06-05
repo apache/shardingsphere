@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-schemaName: logic_db
+databaseName: logic_db
 
 dataSources:
   ds_0:
@@ -55,6 +55,7 @@ rules:
       input:
         workerThread: 40
         batchSize: 1000
+        shardingSize: 10
       output:
         workerThread: 40
         batchSize: 1000

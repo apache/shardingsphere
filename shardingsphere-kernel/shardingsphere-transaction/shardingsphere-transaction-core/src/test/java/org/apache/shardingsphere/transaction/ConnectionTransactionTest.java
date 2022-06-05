@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.transaction;
 
-import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.transaction.ConnectionTransaction.DistributedTransactionOperationType;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
@@ -40,42 +40,42 @@ public final class ConnectionTransactionTest {
     
     @Test
     public void assertDistributedTransactionOperationTypeCommit() {
-        Map<String, ShardingSphereTransactionManagerEngine> actualEngines = Collections.singletonMap(DefaultSchema.LOGIC_NAME, new ShardingSphereTransactionManagerEngine());
+        Map<String, ShardingSphereTransactionManagerEngine> actualEngines = Collections.singletonMap(DefaultDatabase.LOGIC_NAME, new ShardingSphereTransactionManagerEngine());
         TransactionContexts transactionContexts = new TransactionContexts(actualEngines);
-        connectionTransaction = new ConnectionTransaction(DefaultSchema.LOGIC_NAME, getXATransactionRule(), transactionContexts);
+        connectionTransaction = new ConnectionTransaction(DefaultDatabase.LOGIC_NAME, getXATransactionRule(), transactionContexts);
         DistributedTransactionOperationType operationType = connectionTransaction.getDistributedTransactionOperationType(true);
         assertThat(operationType, is(DistributedTransactionOperationType.COMMIT));
     }
     
     @Test
     public void assertDistributedTransactionOperationTypeIgnore() {
-        Map<String, ShardingSphereTransactionManagerEngine> actualEngines = Collections.singletonMap(DefaultSchema.LOGIC_NAME, new ShardingSphereTransactionManagerEngine());
+        Map<String, ShardingSphereTransactionManagerEngine> actualEngines = Collections.singletonMap(DefaultDatabase.LOGIC_NAME, new ShardingSphereTransactionManagerEngine());
         TransactionContexts transactionContexts = new TransactionContexts(actualEngines);
-        connectionTransaction = new ConnectionTransaction(DefaultSchema.LOGIC_NAME, getXATransactionRule(), transactionContexts);
+        connectionTransaction = new ConnectionTransaction(DefaultDatabase.LOGIC_NAME, getXATransactionRule(), transactionContexts);
         DistributedTransactionOperationType operationType = connectionTransaction.getDistributedTransactionOperationType(false);
         assertThat(operationType, is(DistributedTransactionOperationType.IGNORE));
     }
     
     @Test
     public void assertIsLocalTransaction() {
-        Map<String, ShardingSphereTransactionManagerEngine> actualEngines = Collections.singletonMap(DefaultSchema.LOGIC_NAME, new ShardingSphereTransactionManagerEngine());
+        Map<String, ShardingSphereTransactionManagerEngine> actualEngines = Collections.singletonMap(DefaultDatabase.LOGIC_NAME, new ShardingSphereTransactionManagerEngine());
         TransactionContexts transactionContexts = new TransactionContexts(actualEngines);
-        connectionTransaction = new ConnectionTransaction(DefaultSchema.LOGIC_NAME, getLocalTransactionRule(), transactionContexts);
+        connectionTransaction = new ConnectionTransaction(DefaultDatabase.LOGIC_NAME, getLocalTransactionRule(), transactionContexts);
         assertTrue(connectionTransaction.isLocalTransaction());
-        connectionTransaction = new ConnectionTransaction(DefaultSchema.LOGIC_NAME, getXATransactionRule(), transactionContexts);
+        connectionTransaction = new ConnectionTransaction(DefaultDatabase.LOGIC_NAME, getXATransactionRule(), transactionContexts);
         assertFalse(connectionTransaction.isLocalTransaction());
     }
     
     @Test
     public void assertIsHoldTransaction() {
-        Map<String, ShardingSphereTransactionManagerEngine> actualEngines = Collections.singletonMap(DefaultSchema.LOGIC_NAME, new ShardingSphereTransactionManagerEngine());
+        Map<String, ShardingSphereTransactionManagerEngine> actualEngines = Collections.singletonMap(DefaultDatabase.LOGIC_NAME, new ShardingSphereTransactionManagerEngine());
         TransactionContexts transactionContexts = new TransactionContexts(actualEngines);
-        connectionTransaction = new ConnectionTransaction(DefaultSchema.LOGIC_NAME, getLocalTransactionRule(), transactionContexts);
+        connectionTransaction = new ConnectionTransaction(DefaultDatabase.LOGIC_NAME, getLocalTransactionRule(), transactionContexts);
         assertTrue(connectionTransaction.isHoldTransaction(false));
-        connectionTransaction = new ConnectionTransaction(DefaultSchema.LOGIC_NAME, getXATransactionRule(), transactionContexts);
+        connectionTransaction = new ConnectionTransaction(DefaultDatabase.LOGIC_NAME, getXATransactionRule(), transactionContexts);
         assertTrue(connectionTransaction.isInTransaction());
         assertTrue(connectionTransaction.isHoldTransaction(true));
-        connectionTransaction = new ConnectionTransaction(DefaultSchema.LOGIC_NAME, getLocalTransactionRule(), transactionContexts);
+        connectionTransaction = new ConnectionTransaction(DefaultDatabase.LOGIC_NAME, getLocalTransactionRule(), transactionContexts);
         assertFalse(connectionTransaction.isHoldTransaction(true));
     }
     

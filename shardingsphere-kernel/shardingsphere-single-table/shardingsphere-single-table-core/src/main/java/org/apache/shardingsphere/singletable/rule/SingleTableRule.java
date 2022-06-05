@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
-import org.apache.shardingsphere.infra.metadata.schema.QualifiedTable;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -38,7 +38,6 @@ import org.apache.shardingsphere.singletable.datanode.SingleTableDataNodeLoader;
 import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -161,7 +160,7 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
     public Collection<QualifiedTable> getSingleTableNames(final Collection<QualifiedTable> qualifiedTables) {
         Collection<QualifiedTable> result = new LinkedList<>();
         for (QualifiedTable each : qualifiedTables) {
-            Collection<DataNode> dataNodes = singleTableDataNodes.getOrDefault(each.getTableName(), new LinkedList<>());
+            Collection<DataNode> dataNodes = singleTableDataNodes.getOrDefault(each.getTableName().toLowerCase(), new LinkedList<>());
             if (!dataNodes.isEmpty() && containsDataNode(each, dataNodes)) {
                 result.add(each);
             }
@@ -270,8 +269,6 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
     
     @Override
     public Map<String, Supplier<Object>> getExportedMethods() {
-        Map<String, Supplier<Object>> result = new HashMap<>(1, 1);
-        result.put(ExportableConstants.EXPORTABLE_KEY_SINGLE_TABLES, tableNames::keySet);
-        return result;
+        return Collections.singletonMap(ExportableConstants.EXPORT_SINGLE_TABLES, tableNames::keySet);
     }
 }

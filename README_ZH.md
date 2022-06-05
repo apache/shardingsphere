@@ -111,6 +111,7 @@ Apache ShardingSphere 由 JDBC、Proxy 和 Sidecar（规划中）这 3 款既能
 
 <hr>
 
+[![Nightly-Download](https://img.shields.io/static/v1?label=nightly-builds&message=download&color=orange)](https://nightlies.apache.org/shardingsphere/)
 [![Download](https://img.shields.io/badge/release-download-orange.svg)](https://www.apache.org/dyn/closer.lua/shardingsphere/5.1.1/apache-shardingsphere-5.1.1-shardingsphere-proxy-bin.tar.gz)
 [![Docker Pulls](https://img.shields.io/docker/pulls/apache/shardingsphere-proxy.svg)](https://store.docker.com/community/images/apache/shardingsphere-proxy)
 
@@ -180,7 +181,7 @@ Apache ShardingSphere 是多接入端共同组成的生态圈。
 <br/><br/>
 <img src="https://landscape.cncf.io/images/left-logo.svg" width="150"/>&nbsp;&nbsp;<img src="https://landscape.cncf.io/images/right-logo.svg" width="200"/>
 <br/><br/>
-ShardingSphere 进入了<a href="https://landscape.cncf.io/landscape=observability-and-analysis&license=apache-license-2-0">CNCF 云原生全景图</a>。
+ShardingSphere 进入了<a href="https://landscape.cncf.io/?category=app-definition-and-development&grouping=category">CNCF 云原生全景图</a>。
 </p>
 
 ##

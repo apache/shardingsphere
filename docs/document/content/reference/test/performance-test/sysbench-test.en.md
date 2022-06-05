@@ -281,7 +281,7 @@ rules:
       - root@%:root
       - sharding@:sharding
     provider:
-      type: ALL_PRIVILEGES_PERMITTED
+      type: ALL_PERMITTED
 props:
   max-connections-size-per-query: 1
   kernel-executor-size: 16  # Infinite by default.

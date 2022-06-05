@@ -42,7 +42,7 @@ public final class DatabaseBackendHandlerFactory {
      * @param sqlStatementContext SQL statement context
      * @param sql SQL
      * @param connectionSession connection session
-     * @return database backend handler
+     * @return created instance
      */
     public static DatabaseBackendHandler newInstance(final SQLStatementContext<?> sqlStatementContext, final String sql, final ConnectionSession connectionSession) {
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();

@@ -38,7 +38,7 @@ public final class H2RepositoryTest {
         props.setProperty("user", "sa");
         props.setProperty("password", "");
         props.setProperty("driver_class", "org.h2.Driver");
-        h2Repository.setProps(props);
+        h2Repository.init(props);
     }
     
     @Test

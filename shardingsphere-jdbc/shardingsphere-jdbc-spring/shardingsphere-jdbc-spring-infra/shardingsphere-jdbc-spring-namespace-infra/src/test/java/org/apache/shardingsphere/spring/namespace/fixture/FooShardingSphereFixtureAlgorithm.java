@@ -24,10 +24,13 @@ import java.util.Properties;
 @Getter
 public final class FooShardingSphereFixtureAlgorithm implements ShardingSphereFixtureAlgorithm {
     
+    private Properties props;
+    
     private String value;
     
     @Override
     public void init(final Properties props) {
+        this.props = props;
         value = props.getProperty("fixture-value");
     }
     

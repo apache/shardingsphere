@@ -30,6 +30,7 @@ import org.junit.Before;
 
 @RequiredArgsConstructor
 public abstract class AbstractRangeShardingValueParameterizedTest<T extends Comparable<?>> {
+    
     private final Range<T> input;
     
     private final Collection<String> expected;

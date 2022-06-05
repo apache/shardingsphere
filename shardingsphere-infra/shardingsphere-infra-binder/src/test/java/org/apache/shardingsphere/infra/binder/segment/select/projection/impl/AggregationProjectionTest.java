@@ -29,6 +29,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 public final class AggregationProjectionTest {
+    
     private final AggregationType aggregationType = AggregationType.COUNT;
     
     private final String innerExpression = "( A.\"DIRECTION\" )";

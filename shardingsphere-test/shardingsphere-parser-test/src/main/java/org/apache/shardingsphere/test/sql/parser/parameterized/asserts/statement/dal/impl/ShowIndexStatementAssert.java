@@ -57,10 +57,10 @@ public final class ShowIndexStatementAssert {
     
     private static void assertSchema(final SQLCaseAssertContext assertContext, final MySQLShowIndexStatement actual, final ShowIndexStatementTestCase expected) {
         if (null != expected.getSchema()) {
-            assertTrue(assertContext.getText("Actual schema segment should exist."), actual.getFromSchema().isPresent());
+            assertTrue(assertContext.getText("Actual database segment should exist."), actual.getFromSchema().isPresent());
             SQLSegmentAssert.assertIs(assertContext, actual.getFromSchema().get(), expected.getSchema());
         } else {
-            assertFalse(assertContext.getText("Actual schema segment should not exist."), actual.getFromSchema().isPresent());
+            assertFalse(assertContext.getText("Actual database segment should not exist."), actual.getFromSchema().isPresent());
         }
     }
 }

@@ -17,20 +17,30 @@
 
 package org.apache.shardingsphere.traffic.algorithm.loadbalance;
 
-import org.apache.shardingsphere.infra.instance.definition.InstanceId;
+import lombok.Getter;
+import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.traffic.spi.TrafficLoadBalanceAlgorithm;
 
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Random traffic load balance algorithm.
  */
+@Getter
 public final class RandomTrafficLoadBalanceAlgorithm implements TrafficLoadBalanceAlgorithm {
     
+    private Properties props;
+    
     @Override
-    public InstanceId getInstanceId(final String name, final List<InstanceId> instanceIds) {
-        return instanceIds.get(ThreadLocalRandom.current().nextInt(instanceIds.size()));
+    public void init(final Properties props) {
+        this.props = props;
+    }
+    
+    @Override
+    public InstanceDefinition getInstanceId(final String name, final List<InstanceDefinition> instances) {
+        return instances.get(ThreadLocalRandom.current().nextInt(instances.size()));
     }
     
     @Override

@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleExcep
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.api.config.TrafficStrategyConfiguration;
 import org.junit.Test;
@@ -40,13 +41,13 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class CreateTrafficRuleHandlerTest {
+public final class CreateTrafficRuleHandlerTest extends ProxyContextRestorer {
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
     public void assertCheckWithEmptyRuleAndInvalidAlgorithmType() throws SQLException {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(any())).thenReturn(Collections.emptyList());
-        ProxyContext.getInstance().init(contextManager);
+        when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findRuleConfigurations(any())).thenReturn(Collections.emptyList());
+        ProxyContext.init(contextManager);
         TrafficRuleSegment trafficRuleSegment = new TrafficRuleSegment("input_rule_name", Arrays.asList("olap", "order_by"),
                 new AlgorithmSegment("invalid", new Properties()), new AlgorithmSegment("invalid", new Properties()));
         new CreateTrafficRuleHandler().initStatement(new CreateTrafficRuleStatement(Collections.singletonList(trafficRuleSegment))).execute();
@@ -55,8 +56,8 @@ public final class CreateTrafficRuleHandlerTest {
     @Test(expected = InvalidAlgorithmConfigurationException.class)
     public void assertCheckWithInvalidAlgorithmType() throws SQLException {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(any())).thenReturn(Collections.singleton(createTrafficRuleConfiguration()));
-        ProxyContext.getInstance().init(contextManager);
+        when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findRuleConfigurations(any())).thenReturn(Collections.singleton(createTrafficRuleConfiguration()));
+        ProxyContext.init(contextManager);
         TrafficRuleSegment trafficRuleSegment = new TrafficRuleSegment("input_rule_name", Arrays.asList("olap", "order_by"),
                 new AlgorithmSegment("invalid", new Properties()), new AlgorithmSegment("invalid", new Properties()));
         new CreateTrafficRuleHandler().initStatement(new CreateTrafficRuleStatement(Collections.singletonList(trafficRuleSegment))).execute();
@@ -65,22 +66,22 @@ public final class CreateTrafficRuleHandlerTest {
     @Test(expected = DuplicateRuleException.class)
     public void assertCheckWithDuplicatedRuleName() throws SQLException {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(any())).thenReturn(Collections.singleton(createTrafficRuleConfiguration()));
-        ProxyContext.getInstance().init(contextManager);
+        when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findRuleConfigurations(any())).thenReturn(Collections.singleton(createTrafficRuleConfiguration()));
+        ProxyContext.init(contextManager);
         TrafficRuleSegment trafficRuleSegment = new TrafficRuleSegment("rule_name_1", Arrays.asList("olap", "order_by"),
-                new AlgorithmSegment("TEST", new Properties()), new AlgorithmSegment("TEST", new Properties()));
+                new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()), new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()));
         new CreateTrafficRuleHandler().initStatement(new CreateTrafficRuleStatement(Collections.singletonList(trafficRuleSegment))).execute();
     }
     
     @Test
     public void assertCheckSuccess() throws SQLException {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(any())).thenReturn(Collections.singleton(createTrafficRuleConfiguration()));
-        ProxyContext.getInstance().init(contextManager);
+        when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findRuleConfigurations(any())).thenReturn(Collections.singleton(createTrafficRuleConfiguration()));
+        ProxyContext.init(contextManager);
         TrafficRuleSegment trafficRuleSegment1 = new TrafficRuleSegment("rule_name_3", Arrays.asList("olap", "order_by"),
-                new AlgorithmSegment("TEST", new Properties()), new AlgorithmSegment("TEST", new Properties()));
+                new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()), new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()));
         TrafficRuleSegment trafficRuleSegment2 = new TrafficRuleSegment("rule_name_4", Collections.emptyList(),
-                new AlgorithmSegment("TEST", new Properties()), null);
+                new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()), null);
         new CreateTrafficRuleHandler().initStatement(new CreateTrafficRuleStatement(Arrays.asList(trafficRuleSegment1, trafficRuleSegment2))).execute();
     }
     

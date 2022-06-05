@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.transaction.context;
 
-import org.apache.shardingsphere.infra.database.DefaultSchema;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -50,19 +51,19 @@ public final class TransactionContextsBuilderTest {
     
     @Test
     public void assertGetDefaultTransactionManagerEngine() {
-        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        when(metaData.getResource().getDataSources()).thenReturn(createDataSourceMap());
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getResource().getDataSources()).thenReturn(createDataSourceMap());
         Collection<ShardingSphereRule> globalRules = Collections.singleton(new TransactionRule(new TransactionRuleConfiguration(TransactionType.LOCAL.name(), null, new Properties())));
-        TransactionContexts transactionContexts = new TransactionContextsBuilder(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), globalRules).build();
+        TransactionContexts transactionContexts = new TransactionContextsBuilder(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), globalRules).build();
         Map<String, ShardingSphereTransactionManagerEngine> engines = transactionContexts.getEngines();
         assertThat(engines.size(), is(1));
-        assertNotNull(transactionContexts.getEngines().get(DefaultSchema.LOGIC_NAME));
+        assertNotNull(transactionContexts.getEngines().get(DefaultDatabase.LOGIC_NAME));
     }
     
     private Map<String, DataSource> createDataSourceMap() {
         Map<String, DataSource> result = new HashMap<>(2, 1);
-        result.put("ds_0", mock(DataSource.class));
-        result.put("ds_1", mock(DataSource.class));
+        result.put("ds_0", new MockedDataSource());
+        result.put("ds_1", new MockedDataSource());
         return result;
     }
 }

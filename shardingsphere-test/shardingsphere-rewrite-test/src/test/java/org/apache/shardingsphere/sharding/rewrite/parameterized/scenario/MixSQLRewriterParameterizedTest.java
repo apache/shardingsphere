@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.sharding.rewrite.parameterized.scenario;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereIndex;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
@@ -34,12 +34,10 @@ import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -71,18 +69,16 @@ public final class MixSQLRewriterParameterizedTest extends AbstractSQLRewriterPa
     protected Map<String, ShardingSphereSchema> mockSchemas(final String schemaName) {
         ShardingSphereSchema result = mock(ShardingSphereSchema.class);
         when(result.getAllTableNames()).thenReturn(Arrays.asList("t_account", "t_account_bak", "t_account_detail"));
-        TableMetaData accountTableMetaData = mock(TableMetaData.class);
-        when(accountTableMetaData.getColumns()).thenReturn(createColumnMetaDataMap());
-        Map<String, IndexMetaData> indexMetaDataMap = new HashMap<>(1, 1);
-        indexMetaDataMap.put("index_name", new IndexMetaData("index_name"));
-        when(accountTableMetaData.getIndexes()).thenReturn(indexMetaDataMap);
+        ShardingSphereTable accountTable = mock(ShardingSphereTable.class);
+        when(accountTable.getColumns()).thenReturn(createColumns());
+        when(accountTable.getIndexes()).thenReturn(Collections.singletonMap("index_name", new ShardingSphereIndex("index_name")));
         when(result.containsTable("t_account")).thenReturn(true);
-        when(result.get("t_account")).thenReturn(accountTableMetaData);
-        TableMetaData accountBakTableMetaData = mock(TableMetaData.class);
-        when(accountBakTableMetaData.getColumns()).thenReturn(createColumnMetaDataMap());
+        when(result.get("t_account")).thenReturn(accountTable);
+        ShardingSphereTable accountBakTable = mock(ShardingSphereTable.class);
+        when(accountBakTable.getColumns()).thenReturn(createColumns());
         when(result.containsTable("t_account_bak")).thenReturn(true);
-        when(result.get("t_account_bak")).thenReturn(accountBakTableMetaData);
-        when(result.get("t_account_detail")).thenReturn(mock(TableMetaData.class));
+        when(result.get("t_account_bak")).thenReturn(accountBakTable);
+        when(result.get("t_account_detail")).thenReturn(mock(ShardingSphereTable.class));
         when(result.getAllColumnNames("t_account")).thenReturn(Arrays.asList("account_id", "password", "amount", "status"));
         when(result.getAllColumnNames("t_account_bak")).thenReturn(Arrays.asList("account_id", "password", "amount", "status"));
         return Collections.singletonMap(schemaName, result);
@@ -93,15 +89,15 @@ public final class MixSQLRewriterParameterizedTest extends AbstractSQLRewriterPa
     }
     
     @Override
-    protected void mockDataSource(final Map<String, DataSource> dataSources) throws SQLException {
+    protected void mockDataSource(final Map<String, DataSource> dataSources) {
     }
     
-    private Map<String, ColumnMetaData> createColumnMetaDataMap() {
-        Map<String, ColumnMetaData> result = new LinkedHashMap<>(4, 1);
-        result.put("account_id", new ColumnMetaData("account_id", Types.INTEGER, true, true, false));
-        result.put("password", mock(ColumnMetaData.class));
-        result.put("amount", mock(ColumnMetaData.class));
-        result.put("status", mock(ColumnMetaData.class));
+    private Map<String, ShardingSphereColumn> createColumns() {
+        Map<String, ShardingSphereColumn> result = new LinkedHashMap<>(4, 1);
+        result.put("account_id", new ShardingSphereColumn("account_id", Types.INTEGER, true, true, false));
+        result.put("password", mock(ShardingSphereColumn.class));
+        result.put("amount", mock(ShardingSphereColumn.class));
+        result.put("status", mock(ShardingSphereColumn.class));
         return result;
     }
 }

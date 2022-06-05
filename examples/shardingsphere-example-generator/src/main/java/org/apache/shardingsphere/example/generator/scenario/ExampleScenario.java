@@ -17,13 +17,15 @@
 
 package org.apache.shardingsphere.example.generator.scenario;
 
+import org.apache.shardingsphere.spi.type.typed.TypedSPI;
+
 import java.util.Collection;
 import java.util.Map;
 
 /**
  * Example scenario.
  */
-public interface ExampleScenario {
+public interface ExampleScenario extends TypedSPI {
     
     /**
      * Get java class template map.
@@ -52,11 +54,4 @@ public interface ExampleScenario {
      * @return resource paths
      */
     Collection<String> getResourcePaths();
-    
-    /**
-     * Get scenario type.
-     * 
-     * @return scenario type
-     */
-    String getType();
 }

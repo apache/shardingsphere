@@ -24,7 +24,7 @@
     <sql-case id="analyze_table_partition_extension_for_keys" value="ANALYZE TABLE orders PARTITION FOR (1, 2) VALIDATE STRUCTURE CASCADE COMPLETE OFFLINE" db-types="Oracle" />
     <sql-case id="analyze_table_subpartition_extension" value="ANALYZE TABLE orders SUBPARTITION (list_p_order) VALIDATE STRUCTURE CASCADE COMPLETE ONLINE" db-types="Oracle" />
     <sql-case id="analyze_table_subpartition_extension_for_keys" value="ANALYZE TABLE orders SUBPARTITION FOR (2, 5) DELETE SYSTEM STATISTICS" db-types="Oracle" />
-    <sql-case id="analyze_table_list_chained_rows_into" value="ANALYZE TABLE orders LIST CHAINED ROWS INTO chained_rows" db-types="Oracle" /> 
+    <sql-case id="analyze_table_list_chained_rows_into" value="ANALYZE TABLE orders LIST CHAINED ROWS INTO chained_rows" db-types="Oracle" />
     <sql-case id="analyze_index" value="ANALYZE INDEX order_index VALIDATE STRUCTURE; " db-types="Oracle" />
-    <sql-case id="analyze_cluster" value="ANALYZE CLUSTER personnel VALIDATE STRUCTURE" db-types="Oracle" /> 
+    <sql-case id="analyze_cluster" value="ANALYZE CLUSTER personnel VALIDATE STRUCTURE" db-types="Oracle" />
 </sql-cases>

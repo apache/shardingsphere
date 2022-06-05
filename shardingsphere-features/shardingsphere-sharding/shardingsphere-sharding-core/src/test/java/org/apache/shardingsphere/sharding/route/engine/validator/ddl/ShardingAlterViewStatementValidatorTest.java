@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.route.engine.validator.ddl;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingAlterViewStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -52,9 +52,9 @@ public final class ShardingAlterViewStatementValidatorTest {
         MySQLAlterViewStatement sqlStatement = new MySQLAlterViewStatement();
         sqlStatement.setSelect(selectStatement);
         SQLStatementContext<AlterViewStatement> sqlStatementContext = new CommonSQLStatementContext<>(sqlStatement);
-        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(shardingRule.isShardingTable("t_order")).thenReturn(false);
-        new ShardingAlterViewStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), metaData);
+        new ShardingAlterViewStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), database);
     }
     
     @Test(expected = ShardingSphereException.class)
@@ -63,9 +63,9 @@ public final class ShardingAlterViewStatementValidatorTest {
         selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         MySQLAlterViewStatement sqlStatement = new MySQLAlterViewStatement();
         sqlStatement.setSelect(selectStatement);
-        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         SQLStatementContext<AlterViewStatement> sqlStatementContext = new CommonSQLStatementContext<>(sqlStatement);
         when(shardingRule.isShardingTable("t_order")).thenReturn(true);
-        new ShardingAlterViewStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), metaData);
+        new ShardingAlterViewStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), database);
     }
 }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.binder.statement.dal;
 
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.FromSchemaSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
@@ -44,7 +44,7 @@ public final class ShowColumnsStatementContextTest {
         String tableName = "tbl_1";
         String databaseName = "sharding_db";
         SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue(tableName)));
-        FromSchemaSegment fromSchema = new FromSchemaSegment(0, 0, new SchemaSegment(0, 0, new IdentifierValue(databaseName)));
+        FromSchemaSegment fromSchema = new FromSchemaSegment(0, 0, new DatabaseSegment(0, 0, new IdentifierValue(databaseName)));
         when(mySQLShowColumnsStatement.getTable()).thenReturn(table);
         when(mySQLShowColumnsStatement.getFromSchema()).thenReturn(Optional.of(fromSchema));
         ShowColumnsStatementContext actual = new ShowColumnsStatementContext(mySQLShowColumnsStatement);

@@ -54,7 +54,7 @@ public final class ShowInstanceModeHandler extends QueryableRALBackendHandler<Sh
     protected Collection<List<Object>> getRows(final ContextManager contextManager) {
         InstanceContext instanceContext = ProxyContext.getInstance().getContextManager().getInstanceContext();
         PersistRepositoryConfiguration repositoryConfig = instanceContext.getModeConfiguration().getRepository();
-        String instanceId = instanceContext.getInstance().getInstanceDefinition().getInstanceId().getId();
+        String instanceId = instanceContext.getInstance().getInstanceDefinition().getInstanceId();
         String modeType = instanceContext.getModeConfiguration().getType();
         String repositoryType = null == repositoryConfig ? "" : repositoryConfig.getType();
         String props = null == repositoryConfig || null == repositoryConfig.getProps() ? "" : new Gson().toJson(repositoryConfig.getProps());

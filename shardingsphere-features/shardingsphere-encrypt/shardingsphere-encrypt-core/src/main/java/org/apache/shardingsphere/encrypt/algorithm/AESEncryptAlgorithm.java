@@ -19,7 +19,6 @@ package org.apache.shardingsphere.encrypt.algorithm;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.SneakyThrows;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
@@ -44,13 +43,13 @@ public final class AESEncryptAlgorithm implements EncryptAlgorithm<Object, Strin
     private static final String AES_KEY = "aes-key-value";
     
     @Getter
-    @Setter
     private Properties props;
     
-    private volatile byte[] secretKey;
+    private byte[] secretKey;
     
     @Override
     public void init(final Properties props) {
+        this.props = props;
         secretKey = createSecretKey(props);
     }
     

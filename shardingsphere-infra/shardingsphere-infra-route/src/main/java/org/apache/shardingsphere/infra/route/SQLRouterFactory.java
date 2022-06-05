@@ -37,13 +37,13 @@ public final class SQLRouterFactory {
     }
     
     /**
-     * Create new instance of SQL router.
+     * Get instances of SQL router.
      * 
      * @param rules rules
-     * @return new instance of SQL router
+     * @return got instances
      */
     @SuppressWarnings("rawtypes")
-    public static Map<ShardingSphereRule, SQLRouter> newInstance(final Collection<ShardingSphereRule> rules) {
+    public static Map<ShardingSphereRule, SQLRouter> getInstances(final Collection<ShardingSphereRule> rules) {
         return OrderedSPIRegistry.getRegisteredServices(SQLRouter.class, rules);
     }
 }

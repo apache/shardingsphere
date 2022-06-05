@@ -61,7 +61,6 @@ public final class AlterDatabaseDiscoveryRuleStatementAssert {
         } else {
             assertNotNull(assertContext.getText("Actual statement should exist."), actual);
             assertDatabaseDiscoveryRules(assertContext, actual.getRules(), expected);
-            
         }
     }
     

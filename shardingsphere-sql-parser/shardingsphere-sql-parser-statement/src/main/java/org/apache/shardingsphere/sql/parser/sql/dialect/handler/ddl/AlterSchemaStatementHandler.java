@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterSchemaStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.SQLStatementHandler;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussAlterSchemaStatement;
@@ -40,7 +41,7 @@ public final class AlterSchemaStatementHandler implements SQLStatementHandler {
      * @param alterSchemaStatement alter schema statement
      * @return rename schema
      */
-    public static Optional<String> getRenameSchema(final AlterSchemaStatement alterSchemaStatement) {
+    public static Optional<IdentifierValue> getRenameSchema(final AlterSchemaStatement alterSchemaStatement) {
         if (alterSchemaStatement instanceof PostgreSQLStatement) {
             return ((PostgreSQLAlterSchemaStatement) alterSchemaStatement).getRenameSchema();
         }

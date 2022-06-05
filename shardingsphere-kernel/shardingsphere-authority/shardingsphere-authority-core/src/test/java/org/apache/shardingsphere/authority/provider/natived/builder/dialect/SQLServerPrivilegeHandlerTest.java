@@ -54,7 +54,7 @@ public final class SQLServerPrivilegeHandlerTest {
         Collection<ShardingSphereUser> newUsers = createUsers();
         newUsers.add(new ShardingSphereUser("testUser2", "", ""));
         DataSource dataSource = mockDataSourceForUsers(newUsers);
-        Optional<StoragePrivilegeHandler> storagePrivilegeHandler = StoragePrivilegeHandlerFactory.newInstance("SQLServer");
+        Optional<StoragePrivilegeHandler> storagePrivilegeHandler = StoragePrivilegeHandlerFactory.findInstance("SQLServer");
         assertTrue(storagePrivilegeHandler.isPresent());
         assertDiffUsers(storagePrivilegeHandler.get().diff(newUsers, dataSource));
     }
@@ -63,7 +63,7 @@ public final class SQLServerPrivilegeHandlerTest {
     public void assertCreate() throws SQLException {
         Collection<ShardingSphereUser> users = createUsers();
         DataSource dataSource = mockDataSourceForUsers(users);
-        Optional<StoragePrivilegeHandler> storagePrivilegeHandler = StoragePrivilegeHandlerFactory.newInstance("SQLServer");
+        Optional<StoragePrivilegeHandler> storagePrivilegeHandler = StoragePrivilegeHandlerFactory.findInstance("SQLServer");
         assertTrue(storagePrivilegeHandler.isPresent());
         storagePrivilegeHandler.get().create(users, dataSource);
         assertCreateUsers(users, dataSource.getConnection().createStatement());
@@ -73,7 +73,7 @@ public final class SQLServerPrivilegeHandlerTest {
     public void assertGrantAll() throws SQLException {
         Collection<ShardingSphereUser> users = createUsers();
         DataSource dataSource = mockDataSourceForUsers(users);
-        Optional<StoragePrivilegeHandler> storagePrivilegeHandler = StoragePrivilegeHandlerFactory.newInstance("SQLServer");
+        Optional<StoragePrivilegeHandler> storagePrivilegeHandler = StoragePrivilegeHandlerFactory.findInstance("SQLServer");
         assertTrue(storagePrivilegeHandler.isPresent());
         storagePrivilegeHandler.get().grantAll(users, dataSource);
         assertGrantUsersAll(users, dataSource.getConnection().createStatement());
@@ -83,7 +83,7 @@ public final class SQLServerPrivilegeHandlerTest {
     public void assertLoad() throws SQLException {
         Collection<ShardingSphereUser> users = createUsers();
         DataSource dataSource = mockDataSource(users);
-        Optional<StoragePrivilegeHandler> storagePrivilegeHandler = StoragePrivilegeHandlerFactory.newInstance("SQLServer");
+        Optional<StoragePrivilegeHandler> storagePrivilegeHandler = StoragePrivilegeHandlerFactory.findInstance("SQLServer");
         assertTrue(storagePrivilegeHandler.isPresent());
         assertPrivileges(storagePrivilegeHandler.get().load(users, dataSource));
     }

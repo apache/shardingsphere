@@ -27,6 +27,10 @@
     <artifactId>shardingsphere-transaction-xa-atomikos</artifactId>
     <name>${project.artifactId}</name>
     
+    <properties>
+        <atomikos.version>5.0.8</atomikos.version>
+    </properties>
+    
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
@@ -37,14 +41,17 @@
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>transactions</artifactId>
+            <version>${atomikos.version}</version>
         </dependency>
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>transactions-jta</artifactId>
+            <version>${atomikos.version}</version>
         </dependency>
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>transactions-jdbc</artifactId>
+            <version>${atomikos.version}</version>
         </dependency>
     </dependencies>
 </project>

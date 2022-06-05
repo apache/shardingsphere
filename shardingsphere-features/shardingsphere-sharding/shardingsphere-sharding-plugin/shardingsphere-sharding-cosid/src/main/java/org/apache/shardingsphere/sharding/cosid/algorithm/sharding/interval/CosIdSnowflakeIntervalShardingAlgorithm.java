@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.sharding.cosid.algorithm.sharding.interval;
 
 import com.google.common.base.Strings;
-import lombok.Getter;
-import lombok.Setter;
 import me.ahoo.cosid.converter.Radix62IdConverter;
 import me.ahoo.cosid.snowflake.MillisecondSnowflakeId;
 import me.ahoo.cosid.snowflake.MillisecondSnowflakeIdStateParser;
@@ -39,11 +37,7 @@ public final class CosIdSnowflakeIntervalShardingAlgorithm extends AbstractCosId
     
     public static final String EPOCH_KEY = "epoch";
     
-    @Getter
-    @Setter
-    private Properties props;
-    
-    private volatile SnowflakeIdStateParser snowflakeIdStateParser;
+    private SnowflakeIdStateParser snowflakeIdStateParser;
     
     @Override
     public void init(final Properties props) {
@@ -52,7 +46,7 @@ public final class CosIdSnowflakeIntervalShardingAlgorithm extends AbstractCosId
     }
     
     private SnowflakeIdStateParser getSnowflakeIdStateParser(final Properties props) {
-        long epoch = props.containsKey(EPOCH_KEY) ? Long.parseLong(props.get(EPOCH_KEY).toString()) : CosIdSnowflakeKeyGenerateAlgorithm.DEFAULT_EPOCH;
+        long epoch = Long.parseLong(props.getProperty(EPOCH_KEY, CosIdSnowflakeKeyGenerateAlgorithm.DEFAULT_EPOCH + ""));
         return new MillisecondSnowflakeIdStateParser(
                 epoch, MillisecondSnowflakeId.DEFAULT_TIMESTAMP_BIT, MillisecondSnowflakeId.DEFAULT_MACHINE_BIT, MillisecondSnowflakeId.DEFAULT_SEQUENCE_BIT, getZoneId());
     }

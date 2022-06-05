@@ -32,11 +32,6 @@ import java.util.Optional;
 public final class SQL92DatabaseType implements DatabaseType {
     
     @Override
-    public String getName() {
-        return "SQL92";
-    }
-    
-    @Override
     public QuoteCharacter getQuoteCharacter() {
         return QuoteCharacter.QUOTE;
     }
@@ -64,5 +59,10 @@ public final class SQL92DatabaseType implements DatabaseType {
     @Override
     public Collection<String> getSystemSchemas() {
         return Collections.emptyList();
+    }
+    
+    @Override
+    public String getType() {
+        return "SQL92";
     }
 }

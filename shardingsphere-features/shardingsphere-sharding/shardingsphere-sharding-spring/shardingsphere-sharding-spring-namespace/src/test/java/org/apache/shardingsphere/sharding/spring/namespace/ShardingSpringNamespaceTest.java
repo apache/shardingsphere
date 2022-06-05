@@ -39,6 +39,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -250,7 +251,7 @@ public final class ShardingSpringNamespaceTest extends AbstractJUnit4SpringConte
     @Test
     public void assertShardingRule() {
         assertThat(shardingRule.getDefaultShardingColumn(), is("order_id"));
-        assertTrue(shardingRule.getDefaultDatabaseShardingStrategy() instanceof StandardShardingStrategyConfiguration);
+        assertThat(shardingRule.getDefaultDatabaseShardingStrategy(), instanceOf(StandardShardingStrategyConfiguration.class));
         assertNull(((StandardShardingStrategyConfiguration) shardingRule.getDefaultDatabaseShardingStrategy()).getShardingColumn());
     }
 }

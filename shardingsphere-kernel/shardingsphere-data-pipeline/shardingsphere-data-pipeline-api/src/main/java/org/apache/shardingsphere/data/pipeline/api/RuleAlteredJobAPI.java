@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Properties;
 
 /**
  * Rule altered job API.
@@ -139,9 +140,10 @@ public interface RuleAlteredJobAPI extends PipelineJobAPI, RequiredSPI {
      *
      * @param jobId job id
      * @param algorithmType algorithm type
+     * @param algorithmProps algorithm props. Nullable
      * @return each logic table check result
      */
-    Map<String, DataConsistencyCheckResult> dataConsistencyCheck(String jobId, String algorithmType);
+    Map<String, DataConsistencyCheckResult> dataConsistencyCheck(String jobId, String algorithmType, Properties algorithmProps);
     
     /**
      * Aggregate data consistency check results.

@@ -17,6 +17,6 @@
   -->
 
 <sql-cases>
-    <sql-case id="alter_materialized_view_alter" value="ALTER MATERIALIZED VIEW compressmv ALTER COLUMN x SET COMPRESSION lz4;" db-types="PostgreSQL"/>
-    <sql-case id="alter_materialized_view_set" value="ALTER MATERIALIZED VIEW mvtest_tvm SET SCHEMA mvtest_mvschema;" db-types="PostgreSQL,openGauss"/>
+    <sql-case id="alter_materialized_view_alter" value="ALTER MATERIALIZED VIEW compressmv ALTER COLUMN x SET COMPRESSION lz4;" db-types="PostgreSQL" />
+    <sql-case id="alter_materialized_view_set" value="ALTER MATERIALIZED VIEW mvtest_tvm SET SCHEMA mvtest_mvschema;" db-types="PostgreSQL,openGauss" />
 </sql-cases>

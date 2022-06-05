@@ -24,7 +24,7 @@ import org.apache.shardingsphere.agent.metrics.api.fixture.FixtureWrapper;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingListStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowDatabasesStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl.MySQLCreateUserStatement;
@@ -88,7 +88,7 @@ public final class SQLParserEngineAdviceTest extends MetricsAdviceBaseTest {
     
     @Test
     public void assertParseRQL() {
-        assertParse(MetricIds.PARSE_DIST_SQL_RQL, new ShowResourcesStatement(new SchemaSegment(0, 0, null)));
+        assertParse(MetricIds.PARSE_DIST_SQL_RQL, new ShowResourcesStatement(new DatabaseSegment(0, 0, null)));
     }
     
     @Test

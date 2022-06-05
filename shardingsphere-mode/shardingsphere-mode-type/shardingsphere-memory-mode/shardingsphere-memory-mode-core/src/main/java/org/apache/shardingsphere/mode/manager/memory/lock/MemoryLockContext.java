@@ -17,64 +17,39 @@
 
 package org.apache.shardingsphere.mode.manager.memory.lock;
 
-import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.lock.LockContext;
+import org.apache.shardingsphere.infra.lock.LockMode;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Memory lock context.
  */
 public final class MemoryLockContext implements LockContext {
     
-    private final Map<String, ShardingSphereLock> locks = new ConcurrentHashMap<>();
+    private final ShardingSphereLock memoryLock = new ShardingSphereMemoryLock();
     
     @Override
-    public void initLockState(final InstanceContext instanceContext) {
-        throw new UnsupportedOperationException("Lock context init lock state not supported in memory mode");
+    public ShardingSphereLock getLock() {
+        return memoryLock;
     }
     
     @Override
-    public boolean tryLockWriteDatabase(final String databaseName) {
-        return getGlobalLock(databaseName).tryLock(databaseName);
+    public boolean tryLock(final String databaseName, final LockMode lockMode) {
+        return memoryLock.tryLock(databaseName);
     }
     
     @Override
-    public void releaseLockWriteDatabase(final String databaseName) {
-        getGlobalLock(databaseName).releaseLock(databaseName);
+    public boolean tryLock(final String databaseName, final LockMode lockMode, final long timeoutMilliseconds) {
+        return memoryLock.tryLock(databaseName, timeoutMilliseconds);
     }
     
     @Override
-    public boolean isLockedDatabase(final String databaseName) {
-        Preconditions.checkNotNull(databaseName, "Is locked database args database name can not be null.");
-        ShardingSphereLock shardingSphereLock = locks.get(databaseName);
-        return null != shardingSphereLock && shardingSphereLock.isLocked();
+    public void releaseLock(final String databaseName) {
+        memoryLock.releaseLock(databaseName);
     }
     
     @Override
-    public ShardingSphereLock getGlobalLock(final String lockName) {
-        Preconditions.checkNotNull(lockName, "Get or create global lock args lock name can not be null.");
-        ShardingSphereLock result = locks.get(lockName);
-        if (null != result) {
-            return result;
-        }
-        synchronized (locks) {
-            result = locks.get(lockName);
-            if (null != result) {
-                return result;
-            }
-            result = new ShardingSphereNonReentrantLock(new ReentrantLock());
-            locks.put(lockName, result);
-            return result;
-        }
-    }
-    
-    @Override
-    public ShardingSphereLock getStandardLock(final String lockName) {
-        return getGlobalLock(lockName);
+    public boolean isLocked(final String databaseName) {
+        return memoryLock.isLocked(databaseName);
     }
 }

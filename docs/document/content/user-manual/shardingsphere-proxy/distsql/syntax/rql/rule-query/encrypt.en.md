@@ -6,9 +6,9 @@ weight = 5
 ## Syntax
 
 ```sql
-SHOW ENCRYPT RULES [FROM schemaName]
+SHOW ENCRYPT RULES [FROM databaseName]
 
-SHOW ENCRYPT TABLE RULE tableName [from schemaName]
+SHOW ENCRYPT TABLE RULE tableName [from databaseName]
 ```
 - Support to query all data encryption rules and specify logical table name query
 

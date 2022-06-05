@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.job.progress;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
-import org.apache.shardingsphere.data.pipeline.api.ingest.position.PrimaryKeyPosition;
+import org.apache.shardingsphere.data.pipeline.api.ingest.position.IntegerPrimaryKeyPosition;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.JobProgressYamlSwapper;
@@ -31,6 +31,7 @@ import org.junit.Test;
 
 import java.util.Optional;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -38,10 +39,6 @@ import static org.junit.Assert.assertTrue;
 public final class JobProgressTest {
     
     private static final JobProgressYamlSwapper JOB_PROGRESS_YAML_SWAPPER = new JobProgressYamlSwapper();
-    
-    private JobProgress getJobProgress(final String data) {
-        return JOB_PROGRESS_YAML_SWAPPER.swapToObject(YamlEngine.unmarshal(data, YamlJobProgress.class));
-    }
     
     @Test
     public void assertInit() {
@@ -55,18 +52,18 @@ public final class JobProgressTest {
     @Test
     public void assertGetIncrementalPosition() {
         JobProgress jobProgress = getJobProgress(ConfigurationFileUtil.readFile("job-progress.yaml"));
-        Optional<IngestPosition<?>> positionOptional = jobProgress.getIncrementalPosition("ds0");
-        assertTrue(positionOptional.isPresent());
-        assertTrue(positionOptional.get() instanceof PlaceholderPosition);
+        Optional<IngestPosition<?>> position = jobProgress.getIncrementalPosition("ds0");
+        assertTrue(position.isPresent());
+        assertThat(position.get(), instanceOf(PlaceholderPosition.class));
     }
     
     @Test
     public void assertGetInventoryPosition() {
         JobProgress jobProgress = getJobProgress(ConfigurationFileUtil.readFile("job-progress.yaml"));
         assertThat(jobProgress.getInventoryPosition("ds0").size(), is(2));
-        assertTrue(jobProgress.getInventoryPosition("ds0").get("ds0.t_1") instanceof FinishedPosition);
-        assertTrue(jobProgress.getInventoryPosition("ds1").get("ds1.t_1") instanceof PlaceholderPosition);
-        assertTrue(jobProgress.getInventoryPosition("ds1").get("ds1.t_2") instanceof PrimaryKeyPosition);
+        assertThat(jobProgress.getInventoryPosition("ds0").get("ds0.t_1"), instanceOf(FinishedPosition.class));
+        assertThat(jobProgress.getInventoryPosition("ds1").get("ds1.t_1"), instanceOf(PlaceholderPosition.class));
+        assertThat(jobProgress.getInventoryPosition("ds1").get("ds1.t_2"), instanceOf(IntegerPrimaryKeyPosition.class));
     }
     
     @Test
@@ -77,31 +74,30 @@ public final class JobProgressTest {
     
     @Test
     public void assertGetNoFinishedInventoryFinishedPercentage() {
-        JobProgress jobProgress = getJobProgress(ConfigurationFileUtil.readFile("job-progress-no-finished.yaml"));
-        assertThat(jobProgress.getInventoryFinishedPercentage(), is(0));
+        assertThat(getJobProgress(ConfigurationFileUtil.readFile("job-progress-no-finished.yaml")).getInventoryFinishedPercentage(), is(0));
     }
     
     @Test
     public void assertGetAllFinishedInventoryFinishedPercentage() {
-        JobProgress jobProgress = getJobProgress(ConfigurationFileUtil.readFile("job-progress-all-finished.yaml"));
-        assertThat(jobProgress.getInventoryFinishedPercentage(), is(100));
+        assertThat(getJobProgress(ConfigurationFileUtil.readFile("job-progress-all-finished.yaml")).getInventoryFinishedPercentage(), is(100));
     }
     
     @Test
     public void assertGetIncrementalLatestActiveTimeMillis() {
-        JobProgress jobProgress = getJobProgress(ConfigurationFileUtil.readFile("job-progress.yaml"));
-        assertThat(jobProgress.getIncrementalLatestActiveTimeMillis(), is(0L));
+        assertThat(getJobProgress(ConfigurationFileUtil.readFile("job-progress.yaml")).getIncrementalLatestActiveTimeMillis(), is(0L));
     }
     
     @Test
     public void assertGetIncrementalDataLatestActiveTimeMillis() {
-        JobProgress jobProgress = getJobProgress(ConfigurationFileUtil.readFile("job-progress-all-finished.yaml"));
-        assertThat(jobProgress.getIncrementalLatestActiveTimeMillis(), is(50L));
+        assertThat(getJobProgress(ConfigurationFileUtil.readFile("job-progress-all-finished.yaml")).getIncrementalLatestActiveTimeMillis(), is(50L));
     }
     
     @Test
     public void assertGetNoIncrementalDataLatestActiveTimeMillis() {
-        JobProgress jobProgress = getJobProgress(ConfigurationFileUtil.readFile("job-progress-no-finished.yaml"));
-        assertThat(jobProgress.getIncrementalLatestActiveTimeMillis(), is(0L));
+        assertThat(getJobProgress(ConfigurationFileUtil.readFile("job-progress-no-finished.yaml")).getIncrementalLatestActiveTimeMillis(), is(0L));
+    }
+    
+    private JobProgress getJobProgress(final String data) {
+        return JOB_PROGRESS_YAML_SWAPPER.swapToObject(YamlEngine.unmarshal(data, YamlJobProgress.class));
     }
 }

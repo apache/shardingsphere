@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql.ddlgenerator;
 
-import lombok.SneakyThrows;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -29,7 +27,7 @@ import java.util.Map;
 /**
  * Postgres table properties loader.
  */
-public final class PostgresTablePropertiesLoader extends PostgresAbstractLoader {
+public final class PostgresTablePropertiesLoader extends AbstractPostgresDDLAdapter {
     
     private final String tableName;
     
@@ -44,10 +42,10 @@ public final class PostgresTablePropertiesLoader extends PostgresAbstractLoader 
     /**
      * Load table properties.
      *
-     * @return table properties
+     * @return loaded table properties
+     * @throws SQLException SQL exception
      */
-    @SneakyThrows
-    public Map<String, Object> loadTableProperties() {
+    public Map<String, Object> load() throws SQLException {
         Map<String, Object> result = new LinkedHashMap<>();
         fetchDataBaseId(result);
         fetchSchemaId(result);
@@ -75,10 +73,11 @@ public final class PostgresTablePropertiesLoader extends PostgresAbstractLoader 
         appendFirstRow(executeByTemplate(parameters, "table/%s/get_schema_id.ftl"), context);
     }
     
-    private void fetchTableProperties(final Map<String, Object> context) {
+    private void fetchTableProperties(final Map<String, Object> context) throws SQLException {
         appendFirstRow(executeByTemplate(context, "table/%s/properties.ftl"), context);
         updateAutovacuumProperties(context);
         checkRlspolicySupport(context);
+        formatSecurityLabels(context);
     }
     
     private void updateAutovacuumProperties(final Map<String, Object> context) {

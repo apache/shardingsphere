@@ -854,7 +854,8 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
         String result = defaultResult();
         int childCount = node.getChildCount();
         for (int i = 0; i < childCount; i++) {
-            if (i != 0 && !"(".equals(node.getChild(i - 1).getText()) && !")".equals(node.getChild(i).getText()) && !"(".equals(node.getChild(i).getText())) {
+            if (i != 0 && !"(".equals(node.getChild(i - 1).getText()) && !".".equals(node.getChild(i - 1).getText())
+                    && !")".equals(node.getChild(i).getText()) && !"(".equals(node.getChild(i).getText()) && !".".equals(node.getChild(i).getText())) {
                 formatPrint(" ");
             }
             if (!shouldVisitNextChild(node, result)) {

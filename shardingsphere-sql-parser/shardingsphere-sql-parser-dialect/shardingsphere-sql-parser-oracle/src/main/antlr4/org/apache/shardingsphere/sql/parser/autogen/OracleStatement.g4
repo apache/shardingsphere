@@ -79,5 +79,28 @@ execute
     | createSynonym
     | createDirectory
     | dropSynonym
+    | dropPackage
+    | dropEdition
+    | dropOutline
+    | alterOutline
+    | alterAnalyticView
+    | alterAttributeDimension
+    | createSequence
+    | alterSequence
+    | alterPackage
+    | createContext
+    | createSPFile
+    | createPFile
+    | createControlFile
+    | createFlashbackArchive
+    | alterFlashbackArchive
+    | dropFlashbackArchive
+    | createDiskgroup
+    | dropDiskgroup
+    | createRollbackSegment
+    | dropRollbackSegment
+    | createLockdownProfile
+    | dropLockdownProfile
+    | createInmemoryJoinGroup
     ) SEMI_?
     ;

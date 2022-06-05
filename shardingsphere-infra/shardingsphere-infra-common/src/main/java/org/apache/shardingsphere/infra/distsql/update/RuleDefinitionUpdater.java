@@ -19,8 +19,9 @@ package org.apache.shardingsphere.infra.distsql.update;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.spi.type.typed.StatelessTypedSPI;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
@@ -29,17 +30,18 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
  * @param <T> type of SQL statement
  * @param <R> type of rule configuration
  */
-public interface RuleDefinitionUpdater<T extends SQLStatement, R extends RuleConfiguration> extends StatelessTypedSPI {
+@SingletonSPI
+public interface RuleDefinitionUpdater<T extends SQLStatement, R extends RuleConfiguration> extends TypedSPI {
     
     /**
      * Check SQL statement.
      *
-     * @param shardingSphereMetaData ShardingSphere meta data
+     * @param database database
      * @param sqlStatement SQL statement
      * @param currentRuleConfig current rule configuration
      * @throws DistSQLException definition violation exception
      */
-    void checkSQLStatement(ShardingSphereMetaData shardingSphereMetaData, T sqlStatement, R currentRuleConfig) throws DistSQLException;
+    void checkSQLStatement(ShardingSphereDatabase database, T sqlStatement, R currentRuleConfig) throws DistSQLException;
     
     /**
      * Get rule configuration class.

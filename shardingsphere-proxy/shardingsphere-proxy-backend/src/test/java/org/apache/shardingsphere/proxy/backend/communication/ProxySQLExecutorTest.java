@@ -20,16 +20,22 @@ package org.apache.shardingsphere.proxy.backend.communication;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CreateTableStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.JDBCDatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.TableModifyInTransactionException;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
@@ -37,6 +43,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLInsertStatement;
+import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,11 +54,12 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
 
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class ProxySQLExecutorTest {
+public final class ProxySQLExecutorTest extends ProxyContextRestorer {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ConnectionSession connectionSession;
@@ -65,6 +73,7 @@ public final class ProxySQLExecutorTest {
         when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(true);
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
         when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
+        ProxyContext.init(new ContextManager(new MetaDataContexts(mock(MetaDataPersistService.class)), mock(TransactionContexts.class), mock(InstanceContext.class)));
     }
     
     @Test(expected = TableModifyInTransactionException.class)
@@ -139,9 +148,9 @@ public final class ProxySQLExecutorTest {
     private InsertStatementContext createMySQLInsertStatementContext() {
         MySQLInsertStatement sqlStatement = new MySQLInsertStatement();
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
-        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-        when(metaData.getSchemaByName(DefaultSchema.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
-        return new InsertStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), Collections.emptyList(), sqlStatement, DefaultSchema.LOGIC_NAME);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getSchemas().get(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
+        return new InsertStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), Collections.emptyList(), sqlStatement, DefaultDatabase.LOGIC_NAME);
     }
     
     private CreateTableStatementContext createPostgreSQLCreateTableStatementContext() {
@@ -153,8 +162,8 @@ public final class ProxySQLExecutorTest {
     private InsertStatementContext createPostgreSQLInsertStatementContext() {
         PostgreSQLInsertStatement sqlStatement = new PostgreSQLInsertStatement();
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
-        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-        when(metaData.getSchemaByName("public")).thenReturn(mock(ShardingSphereSchema.class));
-        return new InsertStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), Collections.emptyList(), sqlStatement, DefaultSchema.LOGIC_NAME);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getSchemas().get("public")).thenReturn(mock(ShardingSphereSchema.class));
+        return new InsertStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), Collections.emptyList(), sqlStatement, DefaultDatabase.LOGIC_NAME);
     }
 }
