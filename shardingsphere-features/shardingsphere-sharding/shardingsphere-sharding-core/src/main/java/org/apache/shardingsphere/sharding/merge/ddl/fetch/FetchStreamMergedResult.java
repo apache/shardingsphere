@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.sharding.merge.ddl.fetch;
 
-import lombok.AccessLevel;
-import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.infra.binder.statement.ddl.FetchStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
@@ -34,16 +32,14 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 
 /**
- * Stream merged result for order by.
+ * Stream merged result for fetch.
  */
 public final class FetchStreamMergedResult extends StreamMergedResult {
     
     private final Collection<OrderByItem> orderByItems;
     
-    @Getter(AccessLevel.PROTECTED)
     private final Queue<OrderByValue> orderByValuesQueue;
     
-    @Getter(AccessLevel.PROTECTED)
     private boolean isFirstNext;
     
     public FetchStreamMergedResult(final List<QueryResult> queryResults, final FetchStatementContext fetchStatementContext, final ShardingSphereSchema schema) throws SQLException {
