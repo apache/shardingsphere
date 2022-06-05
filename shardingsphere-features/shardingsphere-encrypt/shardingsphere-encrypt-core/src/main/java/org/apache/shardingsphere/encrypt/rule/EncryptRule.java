@@ -91,7 +91,8 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
         if (Strings.isNullOrEmpty(column.getAssistedQueryColumn()) && Strings.isNullOrEmpty(column.getAssistEncryptorName())) {
             return true;
         }
-        return !Strings.isNullOrEmpty(column.getAssistedQueryColumn()) && !Strings.isNullOrEmpty(column.getAssistEncryptorName()) && containsEncryptors(encryptRuleConfig, column.getAssistEncryptorName());
+        return !Strings.isNullOrEmpty(column.getAssistedQueryColumn()) && !Strings.isNullOrEmpty(column.getAssistEncryptorName()) 
+                && containsEncryptors(encryptRuleConfig, column.getAssistEncryptorName());
     }
     
     private boolean containsEncryptors(final EncryptRuleConfiguration encryptRuleConfig, final String encryptorName) {
