@@ -1709,7 +1709,7 @@ dropProcedure
     ;
 
 dropPublication
-    : DROP PUBLICATION existClause? anyNameList dropBehavior?
+    : DROP PUBLICATION existClause? name dropBehavior?
     ;
 
 dropRoutine
