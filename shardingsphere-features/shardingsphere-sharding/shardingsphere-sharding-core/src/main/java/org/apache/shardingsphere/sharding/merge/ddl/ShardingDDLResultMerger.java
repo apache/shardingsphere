@@ -64,7 +64,7 @@ public final class ShardingDDLResultMerger implements ResultMerger {
     private Map<String, Integer> getColumnLabelIndexMap(final QueryResult queryResult) throws SQLException {
         Map<String, Integer> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         for (int i = 0; i < queryResult.getMetaData().getColumnCount(); i++) {
-            result.put(SQLUtil.getExactlyValue(queryResult.getMetaData().getColumnLabel(i)), i);
+            result.put(SQLUtil.getExactlyValue(queryResult.getMetaData().getColumnLabel(i + 1)), i + 1);
         }
         return result;
     }
