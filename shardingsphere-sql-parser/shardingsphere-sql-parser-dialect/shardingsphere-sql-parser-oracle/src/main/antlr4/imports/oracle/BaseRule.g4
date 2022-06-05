@@ -1301,3 +1301,7 @@ attributeValue
 profileName
     : identifier
     ;
+
+joinGroupName
+    : identifier
+    ;

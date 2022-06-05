@@ -15,24 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.constant;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.cursor;
 
-import java.util.Arrays;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedSQLSegment;
+
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * Aggregation function enum.
+ * Expected direction segment.
  */
-public enum AggregationType {
+@Getter
+@Setter
+public final class ExpectedDirectionSegment extends AbstractExpectedSQLSegment {
     
-    MAX, MIN, SUM, COUNT, AVG, BIT_XOR;
+    @XmlAttribute(name = "direction-type")
+    private String directionType;
     
-    /**
-     * Is aggregation type.
-     * 
-     * @param aggregationType aggregation type
-     * @return is aggregation type or not
-     */
-    public static boolean isAggregationType(final String aggregationType) {
-        return Arrays.stream(values()).anyMatch(each -> aggregationType.equalsIgnoreCase(each.name()));
-    }
+    @XmlAttribute(name = "count")
+    private Long count;
 }

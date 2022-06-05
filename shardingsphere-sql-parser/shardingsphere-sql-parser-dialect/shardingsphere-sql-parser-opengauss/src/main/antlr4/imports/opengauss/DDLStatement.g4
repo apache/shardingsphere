@@ -1709,7 +1709,7 @@ dropProcedure
     ;
 
 dropPublication
-    : DROP PUBLICATION existClause? anyNameList dropBehavior?
+    : DROP PUBLICATION existClause? name dropBehavior?
     ;
 
 dropRoutine
@@ -1976,18 +1976,18 @@ fetch
     ;
 
 direction
-    : NEXT
-    | PRIOR
-    | FIRST
-    | LAST
-    | ABSOLUTE signedIconst
-    | RELATIVE signedIconst
-    | signedIconst
-    | ALL
-    | FORWARD
-    | FORWARD signedIconst
-    | FORWARD ALL
-    | BACKWARD
-    | BACKWARD signedIconst
-    | BACKWARD ALL
+    : NEXT #next
+    | PRIOR #prior
+    | FIRST #first
+    | LAST #last
+    | ABSOLUTE signedIconst #absoluteCount
+    | RELATIVE signedIconst #relativeCount
+    | signedIconst #count
+    | ALL #all
+    | FORWARD #forward
+    | FORWARD signedIconst #forwardCount
+    | FORWARD ALL #forwardAll
+    | BACKWARD #backward
+    | BACKWARD signedIconst #backwardCount
+    | BACKWARD ALL #backwardAll
     ;

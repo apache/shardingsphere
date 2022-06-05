@@ -17,35 +17,13 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl;
 
-import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.cursor.CursorNameSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.cursor.DirectionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropPublicationStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 
-import java.util.Optional;
-
 /**
- * OpenGauss fetch statement.
+ * OpenGauss drop publication statement.
  */
-@Getter
-@Setter
 @ToString
-public final class OpenGaussFetchStatement extends AbstractSQLStatement implements DDLStatement, OpenGaussStatement {
-    
-    private CursorNameSegment cursorName;
-    
-    private DirectionSegment direction;
-    
-    /**
-     * Get direction.
-     * 
-     * @return direction
-     */
-    public Optional<DirectionSegment> getDirection() {
-        return Optional.ofNullable(direction);
-    }
+public final class OpenGaussDropPublicationStatement extends DropPublicationStatement implements OpenGaussStatement {
 }

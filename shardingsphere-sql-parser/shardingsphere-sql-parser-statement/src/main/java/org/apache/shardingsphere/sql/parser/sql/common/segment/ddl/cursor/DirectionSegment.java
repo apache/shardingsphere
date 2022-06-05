@@ -15,37 +15,40 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.cursor;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.cursor.CursorNameSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.cursor.DirectionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.DirectionType;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 
 import java.util.Optional;
 
 /**
- * OpenGauss fetch statement.
+ * Direction segment.
  */
+@RequiredArgsConstructor
 @Getter
 @Setter
 @ToString
-public final class OpenGaussFetchStatement extends AbstractSQLStatement implements DDLStatement, OpenGaussStatement {
+public final class DirectionSegment implements SQLSegment {
     
-    private CursorNameSegment cursorName;
+    private final int startIndex;
     
-    private DirectionSegment direction;
+    private final int stopIndex;
+    
+    private final DirectionType directionType;
+    
+    private Long count;
     
     /**
-     * Get direction.
+     * Get count.
      * 
-     * @return direction
+     * @return count
      */
-    public Optional<DirectionSegment> getDirection() {
-        return Optional.ofNullable(direction);
+    public Optional<Long> getCount() {
+        return Optional.ofNullable(count);
     }
 }

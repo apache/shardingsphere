@@ -101,5 +101,6 @@ execute
     | dropRollbackSegment
     | createLockdownProfile
     | dropLockdownProfile
+    | createInmemoryJoinGroup
     ) SEMI_?
     ;

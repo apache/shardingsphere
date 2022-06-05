@@ -15,24 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.constant;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import java.util.Arrays;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Aggregation function enum.
+ * Create inmemory join group statement test case.
  */
-public enum AggregationType {
-    
-    MAX, MIN, SUM, COUNT, AVG, BIT_XOR;
-    
-    /**
-     * Is aggregation type.
-     * 
-     * @param aggregationType aggregation type
-     * @return is aggregation type or not
-     */
-    public static boolean isAggregationType(final String aggregationType) {
-        return Arrays.stream(values()).anyMatch(each -> aggregationType.equalsIgnoreCase(each.name()));
-    }
+public final class CreateInmemoryJoinGroupStatementTestCase extends SQLParserTestCase {
 }

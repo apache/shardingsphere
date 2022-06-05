@@ -15,24 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.constant;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import java.util.Arrays;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
- * Aggregation function enum.
+ * Oracle create inmemory join group statement.
  */
-public enum AggregationType {
-    
-    MAX, MIN, SUM, COUNT, AVG, BIT_XOR;
-    
-    /**
-     * Is aggregation type.
-     * 
-     * @param aggregationType aggregation type
-     * @return is aggregation type or not
-     */
-    public static boolean isAggregationType(final String aggregationType) {
-        return Arrays.stream(values()).anyMatch(each -> aggregationType.equalsIgnoreCase(each.name()));
-    }
+@ToString
+public final class OracleCreateInmemoryJoinGroupStatement extends AbstractSQLStatement implements OracleStatement {
 }
