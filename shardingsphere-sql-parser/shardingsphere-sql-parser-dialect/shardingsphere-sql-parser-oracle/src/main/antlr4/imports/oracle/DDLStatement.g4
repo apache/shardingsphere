@@ -2487,3 +2487,7 @@ createInmemoryJoinGroup
 tableColumnClause
     : (schemaName DOT_)? tableName LP_ columnName RP_
     ;
+
+dropInmemoryJoinGroup
+    : DROP INMEMORY JOIN GROUP (schemaName DOT_)? joinGroupName
+    ;
