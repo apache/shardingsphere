@@ -19,6 +19,7 @@ package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
 
 import lombok.Getter;
 import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
+import org.apache.shardingsphere.transaction.TransactionHolder;
 
 import java.util.Arrays;
 import java.util.List;
