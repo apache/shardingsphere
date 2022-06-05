@@ -42,6 +42,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseS
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -80,6 +82,10 @@ public final class EncryptDistSQLStatementVisitor extends EncryptDistSQLStatemen
     
     @Override
     public ASTNode visitEncryptColumnDefinition(final EncryptColumnDefinitionContext ctx) {
+        List<AlgorithmSegment> algorithmSegments = new ArrayList<>();
+        for (AlgorithmDefinitionContext each : ctx.algorithmDefinition()) {
+            algorithmSegments.add((AlgorithmSegment) visit(each));
+        }
         return new EncryptColumnSegment(getIdentifierValue(ctx.columnDefinition().columnName()),
                 getIdentifierValue(ctx.cipherColumnDefinition().cipherColumnName()),
                 null == ctx.plainColumnDefinition() ? null : getIdentifierValue(ctx.plainColumnDefinition().plainColumnName()),
@@ -88,7 +94,7 @@ public final class EncryptDistSQLStatementVisitor extends EncryptDistSQLStatemen
                 getIdentifierValue(ctx.cipherColumnDefinition().dataType()),
                 null == ctx.plainColumnDefinition() ? null : getIdentifierValue(ctx.plainColumnDefinition().dataType()),
                 null == ctx.assistedQueryColumnDefinition() ? null : getIdentifierValue(ctx.assistedQueryColumnDefinition().dataType()),
-                (AlgorithmSegment) visit(ctx.algorithmDefinition()));
+                algorithmSegments.get(0), 1 == algorithmSegments.size() ? null : algorithmSegments.get(1));
     }
     
     @Override
