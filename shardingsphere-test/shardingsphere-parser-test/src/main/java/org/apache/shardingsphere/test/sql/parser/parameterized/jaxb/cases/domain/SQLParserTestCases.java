@@ -1404,16 +1404,16 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "drop-rollback-segment")
     private final List<DropRollbackSegmentStatementTestCase> dropRollbackSegmentTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "create-lockdown-profile")
     private final List<CreateLockdownProfileStatementTestCase> createLockdownProfileTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "drop-lockdown-profile")
     private final List<DropLockdownProfileStatementTestCase> dropLockdownProfileTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "create-inmemory-join-group")
     private final List<CreateInmemoryJoinGroupStatementTestCase> createInmemoryJoinGroupTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "cursor")
     private final List<CursorStatementTestCase> cursorTestCases = new LinkedList<>();
     
