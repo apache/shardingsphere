@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.merge.ddl.fetch;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.PriorityQueue;
@@ -25,6 +26,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public final class FetchOrderByValueQueuesHolderTest {
+    
+    @Before
+    public void setUp() {
+        FetchOrderByValueQueuesHolder.remove();
+    }
     
     @Test
     public void assertTrafficContextHolder() {
