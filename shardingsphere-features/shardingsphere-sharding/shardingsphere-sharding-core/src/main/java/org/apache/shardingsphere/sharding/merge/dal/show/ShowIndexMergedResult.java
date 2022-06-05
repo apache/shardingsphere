@@ -42,8 +42,8 @@ public final class ShowIndexMergedResult extends MemoryMergedResult<ShardingRule
     }
     
     @Override
-    protected final List<MemoryQueryResultRow> init(final ShardingRule shardingRule, final ShardingSphereSchema schema,
-                                                    final SQLStatementContext<?> sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
+    protected List<MemoryQueryResultRow> init(final ShardingRule shardingRule, final ShardingSphereSchema schema,
+                                              final SQLStatementContext<?> sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
         List<MemoryQueryResultRow> result = new LinkedList<>();
         for (QueryResult each : queryResults) {
             while (each.next()) {
