@@ -32,17 +32,17 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Constraint definition assert.
+ * Direction segment assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DirectionSegmentAssert {
     
     /**
-     * Assert actual constraint definition segment is correct with expected constraint definition.
+     * Assert actual direction segment is correct with expected direction segment.
      * 
      * @param assertContext assert context
-     * @param actual actual constraint definition segment
-     * @param expected expected constraint definition
+     * @param actual actual direction segment
+     * @param expected expected direction segment
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DirectionSegment actual, final ExpectedDirectionSegment expected) {
         assertDirectionType(assertContext, actual, expected);
