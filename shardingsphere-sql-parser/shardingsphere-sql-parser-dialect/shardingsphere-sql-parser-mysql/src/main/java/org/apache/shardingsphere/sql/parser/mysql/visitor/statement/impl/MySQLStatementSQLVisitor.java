@@ -136,7 +136,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.JoinType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.ParameterMarkerType;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.CombiningType;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.CombineType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
@@ -183,7 +183,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.li
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.HavingSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.union.UnionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.union.CombineSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeLengthSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
@@ -683,19 +683,19 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         }
         if (null != ctx.queryExpressionBody()) {
             MySQLSelectStatement result = (MySQLSelectStatement) visit(ctx.queryExpressionBody());
-            result.getUnions().add((UnionSegment) visitUnionClause(ctx.unionClause()));
+            result.getCombines().add((CombineSegment) visitUnionClause(ctx.unionClause()));
             return result;
         }
         MySQLSelectStatement result = (MySQLSelectStatement) visit(ctx.queryExpressionParens());
-        result.getUnions().add((UnionSegment) visitUnionClause(ctx.unionClause()));
+        result.getCombines().add((CombineSegment) visitUnionClause(ctx.unionClause()));
         return result;
     }
     
     @Override
     public ASTNode visitUnionClause(final UnionClauseContext ctx) {
-        CombiningType combiningType = (null != ctx.unionOption() && null != ctx.unionOption().ALL()) ? CombiningType.UNION_ALL : CombiningType.UNION_DISTINCT;
+        CombineType combineType = (null != ctx.unionOption() && null != ctx.unionOption().ALL()) ? CombineType.UNION_ALL : CombineType.UNION;
         MySQLSelectStatement statement = null != ctx.queryPrimary() ? (MySQLSelectStatement) visit(ctx.queryPrimary()) : (MySQLSelectStatement) visit(ctx.queryExpressionParens());
-        return new UnionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), combiningType, statement);
+        return new CombineSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), combineType, statement);
     }
     
     @Override

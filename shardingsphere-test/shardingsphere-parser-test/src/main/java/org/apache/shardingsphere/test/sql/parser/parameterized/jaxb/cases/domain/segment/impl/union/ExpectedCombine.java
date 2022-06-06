@@ -15,23 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.union;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.union;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.CombiningType;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedSQLSegment;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.SelectStatementTestCase;
 
-@RequiredArgsConstructor
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+
+/**
+ * Expected combine clause.
+ */
 @Getter
-public class UnionSegment implements SQLSegment {
+@Setter
+public final class ExpectedCombine extends AbstractExpectedSQLSegment {
     
-    private final int startIndex;
+    @XmlElement(name = "select")
+    private SelectStatementTestCase selectClause;
     
-    private final int stopIndex;
-    
-    private final CombiningType combiningType;
-    
-    private final SelectStatement selectStatement;
+    @XmlAttribute(name = "combine-type")
+    private String combineType;
 }

@@ -15,26 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.union;
-
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedSQLSegment;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.SelectStatementTestCase;
-
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
+package org.apache.shardingsphere.sql.parser.sql.common.constant;
 
 /**
- * Expected union clause.
+ * Combine type.
  */
-@Getter
-@Setter
-public final class ExpectedUnion extends AbstractExpectedSQLSegment {
+public enum CombineType {
     
-    @XmlElement(name = "select")
-    private SelectStatementTestCase selectClause;
-    
-    @XmlAttribute(name = "combining-type")
-    private String combiningType;
+    UNION_ALL,
+    UNION,
+    INTERSECT_ALL,
+    INTERSECT,
+    EXCEPT_ALL,
+    EXCEPT,
+    MINUS_ALL,
+    MINUS
 }

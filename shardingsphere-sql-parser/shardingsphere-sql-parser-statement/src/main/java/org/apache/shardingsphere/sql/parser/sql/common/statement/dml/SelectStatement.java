@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.GroupBy
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.HavingSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.union.UnionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.union.CombineSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
@@ -53,7 +53,7 @@ public abstract class SelectStatement extends AbstractSQLStatement implements DM
     
     private OrderBySegment orderBy;
     
-    private Collection<UnionSegment> unions = new LinkedList<>();
+    private Collection<CombineSegment> combines = new LinkedList<>();
     
     /**
      * Get where.

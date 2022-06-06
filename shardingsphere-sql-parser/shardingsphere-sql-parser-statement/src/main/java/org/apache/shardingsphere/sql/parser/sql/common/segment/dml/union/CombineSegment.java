@@ -15,19 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.constant;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.union;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.CombineType;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
 /**
- * Combining type.
+ * Combine segment.
  */
-public enum CombiningType {
+@RequiredArgsConstructor
+@Getter
+public final class CombineSegment implements SQLSegment {
     
-    UNION_ALL,
-    UNION_DISTINCT,
-    INTERSECT_ALL,
-    INTERSECT_DISTINCT,
-    EXCEPT_ALL,
-    EXCEPT_DISTINCT,
-    MINUS_ALL,
-    MINUS_DISTINCT
+    private final int startIndex;
+    
+    private final int stopIndex;
+    
+    private final CombineType combineType;
+    
+    private final SelectStatement selectStatement;
 }

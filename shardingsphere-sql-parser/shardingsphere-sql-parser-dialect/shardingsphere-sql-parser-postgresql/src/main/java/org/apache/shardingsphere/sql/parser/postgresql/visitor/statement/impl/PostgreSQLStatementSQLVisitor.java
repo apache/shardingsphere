@@ -103,7 +103,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParserBas
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.ParameterMarkerType;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.CombiningType;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.CombineType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
@@ -146,7 +146,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.li
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.HavingSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.union.UnionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.union.CombineSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeLengthSegment;
@@ -831,22 +831,22 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
         }
         if (null != ctx.selectClauseN() && !ctx.selectClauseN().isEmpty()) {
             PostgreSQLSelectStatement result = (PostgreSQLSelectStatement) visit(ctx.selectClauseN(0));
-            result.getUnions().add(new UnionSegment(
-                    ((TerminalNode) ctx.getChild(1)).getSymbol().getStartIndex(), ctx.getStop().getStopIndex(), getCombiningType(ctx), (PostgreSQLSelectStatement) visit(ctx.selectClauseN(1))));
+            result.getCombines().add(new CombineSegment(
+                    ((TerminalNode) ctx.getChild(1)).getSymbol().getStartIndex(), ctx.getStop().getStopIndex(), getCombineType(ctx), (PostgreSQLSelectStatement) visit(ctx.selectClauseN(1))));
             return result;
         }
         return visit(ctx.selectWithParens());
     }
     
-    private CombiningType getCombiningType(final SelectClauseNContext ctx) {
+    private CombineType getCombineType(final SelectClauseNContext ctx) {
         boolean isDistinct = null == ctx.allOrDistinct() || null != ctx.allOrDistinct().DISTINCT();
         if (null != ctx.UNION()) {
-            return isDistinct ? CombiningType.UNION_DISTINCT : CombiningType.UNION_ALL;
+            return isDistinct ? CombineType.UNION : CombineType.UNION_ALL;
         }
         if (null != ctx.INTERSECT()) {
-            return isDistinct ? CombiningType.INTERSECT_DISTINCT : CombiningType.INTERSECT_ALL;
+            return isDistinct ? CombineType.INTERSECT : CombineType.INTERSECT_ALL;
         }
-        return isDistinct ? CombiningType.EXCEPT_DISTINCT : CombiningType.EXCEPT_ALL;
+        return isDistinct ? CombineType.EXCEPT : CombineType.EXCEPT_ALL;
     }
     
     @Override
