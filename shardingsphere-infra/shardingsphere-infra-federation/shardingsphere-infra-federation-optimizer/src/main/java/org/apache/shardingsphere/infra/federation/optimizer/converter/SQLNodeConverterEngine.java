@@ -29,7 +29,7 @@ import org.apache.calcite.sql.SqlSelect;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.federation.optimizer.converter.statement.SelectStatementConverter;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.CombiningType;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.CombineType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.union.CombineSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
@@ -43,15 +43,15 @@ import java.util.TreeMap;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLNodeConverterEngine {
     
-    private static final Map<CombiningType, SqlOperator> REGISTRY = new TreeMap<>();
+    private static final Map<CombineType, SqlOperator> REGISTRY = new TreeMap<>();
     
     static {
         registerUnion();
     }
     
     private static void registerUnion() {
-        REGISTRY.put(CombiningType.UNION, SqlStdOperatorTable.UNION);
-        REGISTRY.put(CombiningType.UNION_ALL, SqlStdOperatorTable.UNION_ALL);
+        REGISTRY.put(CombineType.UNION, SqlStdOperatorTable.UNION);
+        REGISTRY.put(CombineType.UNION_ALL, SqlStdOperatorTable.UNION_ALL);
     }
     
     /**
@@ -65,7 +65,7 @@ public final class SQLNodeConverterEngine {
             SqlNode sqlNode = new SelectStatementConverter().convertToSQLNode((SelectStatement) statement);
             for (CombineSegment each : ((SelectStatement) statement).getCombines()) {
                 SqlNode unionSqlNode = convertToSQLNode(each.getSelectStatement());
-                return new SqlBasicCall(convertCombiningOperator(each.getCombiningType()), new SqlNode[]{sqlNode, unionSqlNode}, SqlParserPos.ZERO);
+                return new SqlBasicCall(convertCombiningOperator(each.getCombineType()), new SqlNode[]{sqlNode, unionSqlNode}, SqlParserPos.ZERO);
             }
             return sqlNode;
         }
@@ -88,14 +88,14 @@ public final class SQLNodeConverterEngine {
             SelectStatement leftSelectStatement = (SelectStatement) convertToSQLStatement(leftSqlNode);
             SelectStatement rightSelectStatement = (SelectStatement) convertToSQLStatement(rightSqlNode);
             leftSelectStatement.getCombines().add(
-                    new CombineSegment(rightSqlNode.getParserPosition().getColumnNum() - 7, rightSqlNode.getParserPosition().getEndColumnNum() - 1, CombiningType.UNION, rightSelectStatement));
+                    new CombineSegment(rightSqlNode.getParserPosition().getColumnNum() - 7, rightSqlNode.getParserPosition().getEndColumnNum() - 1, CombineType.UNION, rightSelectStatement));
             return leftSelectStatement;
         }
         throw new UnsupportedOperationException("Unsupported SQL statement conversion.");
     }
     
-    private static SqlOperator convertCombiningOperator(final CombiningType combiningType) {
-        Preconditions.checkState(REGISTRY.containsKey(combiningType), "Unsupported combining type: `%s`", combiningType);
-        return REGISTRY.get(combiningType);
+    private static SqlOperator convertCombiningOperator(final CombineType combineType) {
+        Preconditions.checkState(REGISTRY.containsKey(combineType), "Unsupported combining type: `%s`", combineType);
+        return REGISTRY.get(combineType);
     }
 }

@@ -136,7 +136,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.JoinType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.ParameterMarkerType;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.CombiningType;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.CombineType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
@@ -693,9 +693,9 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
     
     @Override
     public ASTNode visitUnionClause(final UnionClauseContext ctx) {
-        CombiningType combiningType = (null != ctx.unionOption() && null != ctx.unionOption().ALL()) ? CombiningType.UNION_ALL : CombiningType.UNION;
+        CombineType combineType = (null != ctx.unionOption() && null != ctx.unionOption().ALL()) ? CombineType.UNION_ALL : CombineType.UNION;
         MySQLSelectStatement statement = null != ctx.queryPrimary() ? (MySQLSelectStatement) visit(ctx.queryPrimary()) : (MySQLSelectStatement) visit(ctx.queryExpressionParens());
-        return new CombineSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), combiningType, statement);
+        return new CombineSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), combineType, statement);
     }
     
     @Override

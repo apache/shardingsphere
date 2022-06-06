@@ -190,7 +190,7 @@ public final class SelectStatementAssert {
         assertThat(assertContext.getText("Combining size assertion error: "), combineSegments.size(), is(expected.getUnions().size()));
         int count = 0;
         for (CombineSegment each : combineSegments) {
-            assertThat(assertContext.getText("Combining type assertion error: "), each.getCombiningType().name(), is(expected.getUnions().get(count).getCombiningType()));
+            assertThat(assertContext.getText("Combining type assertion error: "), each.getCombineType().name(), is(expected.getUnions().get(count).getCombiningType()));
             SQLSegmentAssert.assertIs(assertContext, each, expected.getUnions().get(count));
             assertIs(assertContext, each.getSelectStatement(), expected.getUnions().get(count).getSelectClause());
             count++;

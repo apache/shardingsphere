@@ -103,7 +103,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParserBas
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.ParameterMarkerType;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.CombiningType;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.CombineType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
@@ -838,15 +838,15 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
         return visit(ctx.selectWithParens());
     }
     
-    private CombiningType getCombiningType(final SelectClauseNContext ctx) {
+    private CombineType getCombiningType(final SelectClauseNContext ctx) {
         boolean isDistinct = null == ctx.allOrDistinct() || null != ctx.allOrDistinct().DISTINCT();
         if (null != ctx.UNION()) {
-            return isDistinct ? CombiningType.UNION : CombiningType.UNION_ALL;
+            return isDistinct ? CombineType.UNION : CombineType.UNION_ALL;
         }
         if (null != ctx.INTERSECT()) {
-            return isDistinct ? CombiningType.INTERSECT : CombiningType.INTERSECT_ALL;
+            return isDistinct ? CombineType.INTERSECT : CombineType.INTERSECT_ALL;
         }
-        return isDistinct ? CombiningType.EXCEPT : CombiningType.EXCEPT_ALL;
+        return isDistinct ? CombineType.EXCEPT : CombineType.EXCEPT_ALL;
     }
     
     @Override

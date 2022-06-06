@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.sql.parser.sql.common.constant;
 
 /**
- * Combining type.
+ * Combine type.
  */
-public enum CombiningType {
+public enum CombineType {
     
     UNION_ALL,
     UNION,
