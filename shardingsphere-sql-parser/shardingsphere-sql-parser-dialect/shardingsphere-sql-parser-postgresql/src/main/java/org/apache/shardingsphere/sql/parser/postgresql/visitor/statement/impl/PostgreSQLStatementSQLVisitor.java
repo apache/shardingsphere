@@ -103,7 +103,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParserBas
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.ParameterMarkerType;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.UnionType;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.CombiningType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
@@ -832,21 +832,21 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
         if (null != ctx.selectClauseN() && !ctx.selectClauseN().isEmpty()) {
             PostgreSQLSelectStatement result = (PostgreSQLSelectStatement) visit(ctx.selectClauseN(0));
             result.getUnions().add(new UnionSegment(
-                    ((TerminalNode) ctx.getChild(1)).getSymbol().getStartIndex(), ctx.getStop().getStopIndex(), getUnionType(ctx), (PostgreSQLSelectStatement) visit(ctx.selectClauseN(1))));
+                    ((TerminalNode) ctx.getChild(1)).getSymbol().getStartIndex(), ctx.getStop().getStopIndex(), getCombiningType(ctx), (PostgreSQLSelectStatement) visit(ctx.selectClauseN(1))));
             return result;
         }
         return visit(ctx.selectWithParens());
     }
     
-    private UnionType getUnionType(final SelectClauseNContext ctx) {
+    private CombiningType getCombiningType(final SelectClauseNContext ctx) {
         boolean isDistinct = null == ctx.allOrDistinct() || null != ctx.allOrDistinct().DISTINCT();
         if (null != ctx.UNION()) {
-            return isDistinct ? UnionType.UNION_DISTINCT : UnionType.UNION_ALL;
+            return isDistinct ? CombiningType.UNION_DISTINCT : CombiningType.UNION_ALL;
         }
         if (null != ctx.INTERSECT()) {
-            return isDistinct ? UnionType.INTERSECT_DISTINCT : UnionType.INTERSECT_ALL;
+            return isDistinct ? CombiningType.INTERSECT_DISTINCT : CombiningType.INTERSECT_ALL;
         }
-        return isDistinct ? UnionType.EXCEPT_DISTINCT : UnionType.EXCEPT_ALL;
+        return isDistinct ? CombiningType.EXCEPT_DISTINCT : CombiningType.EXCEPT_ALL;
     }
     
     @Override

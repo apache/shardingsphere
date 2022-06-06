@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.union;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.UnionType;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.CombiningType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
@@ -31,7 +31,7 @@ public class UnionSegment implements SQLSegment {
     
     private final int stopIndex;
     
-    private final UnionType unionType;
+    private final CombiningType combiningType;
     
     private final SelectStatement selectStatement;
 }

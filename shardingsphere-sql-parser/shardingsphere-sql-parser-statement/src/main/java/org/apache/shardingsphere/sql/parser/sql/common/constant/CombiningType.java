@@ -18,9 +18,10 @@
 package org.apache.shardingsphere.sql.parser.sql.common.constant;
 
 /**
- * Union type enum.
+ * Combining type.
  */
-public enum UnionType {
+public enum CombiningType {
+    
     UNION_ALL,
     UNION_DISTINCT,
     INTERSECT_ALL,
@@ -28,5 +29,5 @@ public enum UnionType {
     EXCEPT_ALL,
     EXCEPT_DISTINCT,
     MINUS_ALL,
-    MINUS_DISTINCT;
+    MINUS_DISTINCT
 }

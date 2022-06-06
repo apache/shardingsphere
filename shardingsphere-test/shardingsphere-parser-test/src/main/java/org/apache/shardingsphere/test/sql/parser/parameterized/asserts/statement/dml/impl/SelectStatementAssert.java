@@ -190,7 +190,7 @@ public final class SelectStatementAssert {
         assertThat(assertContext.getText("Union size assertion error: "), unionSegments.size(), is(expected.getUnions().size()));
         int count = 0;
         for (UnionSegment each : unionSegments) {
-            assertThat(assertContext.getText("Union type assertion error: "), each.getUnionType().name(), is(expected.getUnions().get(count).getUnionType()));
+            assertThat(assertContext.getText("Union type assertion error: "), each.getCombiningType().name(), is(expected.getUnions().get(count).getCombiningType()));
             SQLSegmentAssert.assertIs(assertContext, each, expected.getUnions().get(count));
             assertIs(assertContext, each.getSelectStatement(), expected.getUnions().get(count).getSelectClause());
             count++;
