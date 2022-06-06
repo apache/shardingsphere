@@ -73,6 +73,7 @@ public final class CommandExecutorTask implements Runnable {
             if (sqlShowEnabled) {
                 fillLogMDC();
             }
+            connectionSession.getBackendConnection().prepareForTaskExecution();
             isNeedFlush = executeCommand(context, payload);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
