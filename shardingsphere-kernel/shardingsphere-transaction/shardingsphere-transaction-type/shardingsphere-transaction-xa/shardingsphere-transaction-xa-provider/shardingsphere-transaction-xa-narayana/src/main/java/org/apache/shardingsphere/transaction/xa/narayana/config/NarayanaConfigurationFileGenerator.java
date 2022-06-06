@@ -100,17 +100,6 @@ public final class NarayanaConfigurationFileGenerator implements TransactionConf
         return result;
     }
     
-    private String getRecoveryId(final Properties transactionProps, final InstanceContext instanceContext) {
-        if (transactionProps.containsKey("xaRecoveryNodes")) {
-            Collection<?> xaRecoveryNodes = (Collection<?>) transactionProps.get("xaRecoveryNodes");
-            return Joiner.on(",").join(xaRecoveryNodes);
-        } else {
-            return instanceContext.getInstance().getXaRecoveryIds().isEmpty()
-                    ? instanceContext.getInstance().getInstanceDefinition().getInstanceId()
-                    : Joiner.on(",").join(instanceContext.getInstance().getXaRecoveryIds());
-        }
-    }
-    
     private Collection<String> createXAResourceOrphanFilterClassNames() {
         Collection<String> result = new LinkedList<>();
         result.add(JTATransactionLogXAResourceOrphanFilter.class.getName());
