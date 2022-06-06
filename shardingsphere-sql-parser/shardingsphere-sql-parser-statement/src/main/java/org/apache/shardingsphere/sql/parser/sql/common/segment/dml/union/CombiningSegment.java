@@ -24,11 +24,11 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
 /**
- * Union segment.
+ * Combining segment.
  */
 @RequiredArgsConstructor
 @Getter
-public final class UnionSegment implements SQLSegment {
+public final class CombiningSegment implements SQLSegment {
     
     private final int startIndex;
     
