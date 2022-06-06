@@ -77,8 +77,8 @@ public final class SelectStatementTestCase extends SQLParserTestCase {
     @XmlElement(name = "with")
     private ExpectedWithClause withClause;
     
-    @XmlElement(name = "union")
-    private List<ExpectedCombine> unions = new LinkedList<>();
+    @XmlElement(name = "combine")
+    private List<ExpectedCombine> combine = new LinkedList<>();
     
     @XmlElement(name = "model")
     private ExpectedModelClause modelClause;

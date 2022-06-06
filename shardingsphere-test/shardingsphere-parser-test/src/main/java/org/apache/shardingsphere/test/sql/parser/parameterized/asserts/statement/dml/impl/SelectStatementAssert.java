@@ -182,17 +182,17 @@ public final class SelectStatementAssert {
     }
     
     private static void assertCombines(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
-        if (expected.getUnions().isEmpty()) {
+        if (expected.getCombine().isEmpty()) {
             return;
         }
         Collection<CombineSegment> combineSegments = actual.getCombines();
         assertFalse(assertContext.getText("Actual union segment should exist."), combineSegments.isEmpty());
-        assertThat(assertContext.getText("Combine size assertion error: "), combineSegments.size(), is(expected.getUnions().size()));
+        assertThat(assertContext.getText("Combine size assertion error: "), combineSegments.size(), is(expected.getCombine().size()));
         int count = 0;
         for (CombineSegment each : combineSegments) {
-            assertThat(assertContext.getText("Combine type assertion error: "), each.getCombineType().name(), is(expected.getUnions().get(count).getCombineType()));
-            SQLSegmentAssert.assertIs(assertContext, each, expected.getUnions().get(count));
-            assertIs(assertContext, each.getSelectStatement(), expected.getUnions().get(count).getSelectClause());
+            assertThat(assertContext.getText("Combine type assertion error: "), each.getCombineType().name(), is(expected.getCombine().get(count).getCombineType()));
+            SQLSegmentAssert.assertIs(assertContext, each, expected.getCombine().get(count));
+            assertIs(assertContext, each.getSelectStatement(), expected.getCombine().get(count).getSelectClause());
             count++;
         }
     }
