@@ -3,8 +3,6 @@ title = "使用 Helm"
 weight = 3
 +++
 
-# 使用 Helm
-
 使用 [Helm](https://helm.sh/) 在 Kubernetes 集群中引导 ShardingSphere-Proxy 实例进行安装。
 
 ## 快速入门
@@ -18,11 +16,11 @@ helm install shardingsphere-proxy shardingsphere/shardingsphere-proxy
 
 ### 必要条件
 
-kubernetes 1.18+
+1. kubernetes 1.18+
 
-kubectl
+2. kubectl
 
-helm 3.2.0+
+3. helm 3.2.0+
 
 可以动态申请 PV(Persistent Volumes) 的 StorageClass 已持久化数据。
 
