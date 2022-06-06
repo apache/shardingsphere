@@ -864,13 +864,13 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
         if (null != ctx.selectClauseN() && !ctx.selectClauseN().isEmpty()) {
             OpenGaussSelectStatement result = (OpenGaussSelectStatement) visit(ctx.selectClauseN(0));
             result.getCombines().add(new CombineSegment(
-                    ((TerminalNode) ctx.getChild(1)).getSymbol().getStartIndex(), ctx.getStop().getStopIndex(), getCombiningType(ctx), (OpenGaussSelectStatement) visit(ctx.selectClauseN(1))));
+                    ((TerminalNode) ctx.getChild(1)).getSymbol().getStartIndex(), ctx.getStop().getStopIndex(), getCombineType(ctx), (OpenGaussSelectStatement) visit(ctx.selectClauseN(1))));
             return result;
         }
         return visit(ctx.selectWithParens());
     }
     
-    private CombineType getCombiningType(final SelectClauseNContext ctx) {
+    private CombineType getCombineType(final SelectClauseNContext ctx) {
         boolean isDistinct = null == ctx.allOrDistinct() || null != ctx.allOrDistinct().DISTINCT();
         if (null != ctx.UNION()) {
             return isDistinct ? CombineType.UNION : CombineType.UNION_ALL;

@@ -187,10 +187,10 @@ public final class SelectStatementAssert {
         }
         Collection<CombineSegment> combineSegments = actual.getCombines();
         assertFalse(assertContext.getText("Actual union segment should exist."), combineSegments.isEmpty());
-        assertThat(assertContext.getText("Combining size assertion error: "), combineSegments.size(), is(expected.getUnions().size()));
+        assertThat(assertContext.getText("Combine size assertion error: "), combineSegments.size(), is(expected.getUnions().size()));
         int count = 0;
         for (CombineSegment each : combineSegments) {
-            assertThat(assertContext.getText("Combining type assertion error: "), each.getCombineType().name(), is(expected.getUnions().get(count).getCombineType()));
+            assertThat(assertContext.getText("Combine type assertion error: "), each.getCombineType().name(), is(expected.getUnions().get(count).getCombineType()));
             SQLSegmentAssert.assertIs(assertContext, each, expected.getUnions().get(count));
             assertIs(assertContext, each.getSelectStatement(), expected.getUnions().get(count).getSelectClause());
             count++;

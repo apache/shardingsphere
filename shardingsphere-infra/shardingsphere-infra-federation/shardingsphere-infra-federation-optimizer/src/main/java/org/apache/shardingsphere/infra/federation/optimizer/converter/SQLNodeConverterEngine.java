@@ -95,7 +95,7 @@ public final class SQLNodeConverterEngine {
     }
     
     private static SqlOperator convertCombineOperator(final CombineType combineType) {
-        Preconditions.checkState(REGISTRY.containsKey(combineType), "Unsupported combining type: `%s`", combineType);
+        Preconditions.checkState(REGISTRY.containsKey(combineType), "Unsupported combine type: `%s`", combineType);
         return REGISTRY.get(combineType);
     }
 }
