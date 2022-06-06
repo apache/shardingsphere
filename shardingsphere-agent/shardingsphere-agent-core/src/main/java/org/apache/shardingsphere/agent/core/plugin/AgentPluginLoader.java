@@ -58,16 +58,16 @@ import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 
 /**
- * Plugin loader.
+ * Agent plugin loader.
  */
 @Slf4j
-public final class ApmPluginLoader extends ClassLoader implements Closeable, PluginLoader {
+public final class AgentPluginLoader extends ClassLoader implements Closeable, PluginLoader {
     
     static {
         registerAsParallelCapable();
     }
     
-    private static volatile ApmPluginLoader pluginLoader;
+    private static volatile AgentPluginLoader pluginLoader;
     
     private final ConcurrentHashMap<String, Object> objectPool = new ConcurrentHashMap<>();
     
@@ -77,8 +77,8 @@ public final class ApmPluginLoader extends ClassLoader implements Closeable, Plu
     
     private Map<String, PluginInterceptorPoint> interceptorPointMap;
     
-    private ApmPluginLoader() {
-        super(ApmPluginLoader.class.getClassLoader());
+    private AgentPluginLoader() {
+        super(AgentPluginLoader.class.getClassLoader());
     }
     
     /**
@@ -86,11 +86,11 @@ public final class ApmPluginLoader extends ClassLoader implements Closeable, Plu
      *
      * @return plugin loader instance
      */
-    public static ApmPluginLoader getInstance() {
+    public static AgentPluginLoader getInstance() {
         if (null == pluginLoader) {
-            synchronized (ApmPluginLoader.class) {
+            synchronized (AgentPluginLoader.class) {
                 if (null == pluginLoader) {
-                    pluginLoader = new ApmPluginLoader();
+                    pluginLoader = new AgentPluginLoader();
                 }
             }
         }
