@@ -172,7 +172,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
      * @return whether contains union or not
      */
     public boolean isContainsUnion() {
-        return !getSqlStatement().getUnionSegments().isEmpty();
+        return !getSqlStatement().getUnions().isEmpty();
     }
     
     /**

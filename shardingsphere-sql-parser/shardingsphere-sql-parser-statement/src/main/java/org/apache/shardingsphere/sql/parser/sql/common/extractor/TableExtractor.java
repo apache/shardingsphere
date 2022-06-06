@@ -91,8 +91,8 @@ public final class TableExtractor {
         if (SelectStatementHandler.getLockSegment(selectStatement).isPresent()) {
             extractTablesFromLock(SelectStatementHandler.getLockSegment(selectStatement).get());
         }
-        if (!selectStatement.getUnionSegments().isEmpty()) {
-            selectStatement.getUnionSegments().forEach(each -> extractTablesFromSelect(each.getSelectStatement()));
+        if (!selectStatement.getUnions().isEmpty()) {
+            selectStatement.getUnions().forEach(each -> extractTablesFromSelect(each.getSelectStatement()));
         }
     }
     
@@ -171,7 +171,7 @@ public final class TableExtractor {
                     rewriteTables.add(createSimpleTableSegment(ownerSegment));
                 }
             } else if (each instanceof AggregationProjectionSegment) {
-                ((AggregationProjectionSegment) each).getParameters().forEach(expression -> extractTablesFromExpression(expression));
+                ((AggregationProjectionSegment) each).getParameters().forEach(this::extractTablesFromExpression);
             }
         }
     }
