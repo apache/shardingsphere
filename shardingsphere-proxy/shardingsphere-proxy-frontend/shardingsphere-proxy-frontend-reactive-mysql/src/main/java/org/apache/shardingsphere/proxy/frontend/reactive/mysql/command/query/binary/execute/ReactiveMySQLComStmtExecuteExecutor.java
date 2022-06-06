@@ -107,9 +107,9 @@ public final class ReactiveMySQLComStmtExecuteExecutor implements ReactiveComman
                 .newBinaryProtocolInstance(sqlStatementContext, packet.getSql(), packet.getParameters(), connectionSession.getBackendConnection());
     }
     
-    private static Collection<ShardingSphereRule> getRules(final String schemaName) {
+    private static Collection<ShardingSphereRule> getRules(final String databaseName) {
         Collection<ShardingSphereRule> result;
-        result = new LinkedList<>(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases().get(schemaName).getRuleMetaData().getRules());
+        result = new LinkedList<>(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases().get(databaseName).getRuleMetaData().getRules());
         result.addAll(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules());
         return result;
     }
