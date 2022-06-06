@@ -695,7 +695,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
     public ASTNode visitUnionClause(final UnionClauseContext ctx) {
         UnionType unionType = (null != ctx.unionOption() && null != ctx.unionOption().ALL()) ? UnionType.UNION_ALL : UnionType.UNION_DISTINCT;
         MySQLSelectStatement statement = null != ctx.queryPrimary() ? (MySQLSelectStatement) visit(ctx.queryPrimary()) : (MySQLSelectStatement) visit(ctx.queryExpressionParens());
-        return new UnionSegment(unionType, statement, ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+        return new UnionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), unionType, statement);
     }
     
     @Override
