@@ -50,6 +50,12 @@
 #      recoveryStoreDataSource: com.mysql.jdbc.jdbc2.optional.MysqlDataSource
 #      recoveryStoreUser: root
 #      recoveryStorePassword: 12345678
+#      commitOnePhase: true
+#      transactionSync: false
+#      recoveryBackoffPeriod: 1
+#      defaultTimeout: 180
+#      expiryScanInterval: 12
+#      periodicRecoveryPeriod: 120
 #  - !SQL_PARSER
 #    sqlCommentParseEnabled: true
 #    sqlStatementCache:

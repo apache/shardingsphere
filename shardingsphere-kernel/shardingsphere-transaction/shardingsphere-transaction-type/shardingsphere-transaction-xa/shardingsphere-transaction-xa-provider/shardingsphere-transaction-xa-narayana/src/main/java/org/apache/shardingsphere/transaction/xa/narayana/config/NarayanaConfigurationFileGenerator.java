@@ -57,19 +57,19 @@ public final class NarayanaConfigurationFileGenerator implements TransactionConf
     public void generateFile(final Properties transactionProps, final InstanceContext instanceContext) {
         String instanceId = instanceContext.getInstance().getInstanceDefinition().getInstanceId();
         String recoveryId = instanceContext.getInstance().getXaRecoveryIds().isEmpty() ? instanceId : Joiner.on(",").join(instanceContext.getInstance().getXaRecoveryIds());
-        NarayanaConfiguration config = createDefaultConfiguration(instanceId, recoveryId);
+        NarayanaConfiguration config = createDefaultConfiguration(instanceId, recoveryId, transactionProps);
         if (!transactionProps.isEmpty()) {
             appendUserDefinedJdbcStoreConfiguration(transactionProps, config);
         }
         JAXB.marshal(config, new File(ClassLoader.getSystemResource("").getPath(), "jbossts-properties.xml"));
     }
     
-    private NarayanaConfiguration createDefaultConfiguration(final String instanceId, final String recoveryId) {
+    private NarayanaConfiguration createDefaultConfiguration(final String instanceId, final String recoverId, final Properties transactionProps) {
         NarayanaConfiguration result = new NarayanaConfiguration();
-        result.getEntries().add(createEntry("CoordinatorEnvironmentBean.commitOnePhase", "YES"));
-        result.getEntries().add(createEntry("ObjectStoreEnvironmentBean.transactionSync", "NO"));
+        result.getEntries().add(createEntry("CoordinatorEnvironmentBean.commitOnePhase", transactionProps.getOrDefault("commitOnePhase", Boolean.TRUE).toString()));
+        result.getEntries().add(createEntry("ObjectStoreEnvironmentBean.transactionSync", transactionProps.getOrDefault("transactionSync", Boolean.FALSE).toString()));
         result.getEntries().add(createEntry("CoreEnvironmentBean.nodeIdentifier", instanceId));
-        result.getEntries().add(createEntry("JTAEnvironmentBean.xaRecoveryNodes", recoveryId));
+        result.getEntries().add(createEntry("JTAEnvironmentBean.xaRecoveryNodes", recoverId));
         result.getEntries().add(createEntry("JTAEnvironmentBean.xaResourceOrphanFilterClassNames", createXAResourceOrphanFilterClassNames()));
         result.getEntries().add(createEntry("CoreEnvironmentBean.socketProcessIdPort", "0"));
         result.getEntries().add(createEntry("RecoveryEnvironmentBean.recoveryModuleClassNames", getRecoveryModuleClassNames()));
@@ -78,9 +78,11 @@ public final class NarayanaConfigurationFileGenerator implements TransactionConf
         result.getEntries().add(createEntry("RecoveryEnvironmentBean.recoveryAddress", ""));
         result.getEntries().add(createEntry("RecoveryEnvironmentBean.transactionStatusManagerPort", "0"));
         result.getEntries().add(createEntry("RecoveryEnvironmentBean.transactionStatusManagerAddress", ""));
-        result.getEntries().add(createEntry("RecoveryEnvironmentBean.recoveryListener", "NO"));
-        result.getEntries().add(createEntry("RecoveryEnvironmentBean.recoveryBackoffPeriod", "1"));
-        result.getEntries().add(createEntry("CoordinatorEnvironmentBean.defaultTimeout", "180"));
+        result.getEntries().add(createEntry("RecoveryEnvironmentBean.recoveryListener", Boolean.FALSE.toString()));
+        result.getEntries().add(createEntry("RecoveryEnvironmentBean.recoveryBackoffPeriod", transactionProps.getOrDefault("recoveryBackoffPeriod", "1").toString()));
+        result.getEntries().add(createEntry("CoordinatorEnvironmentBean.defaultTimeout", transactionProps.getOrDefault("defaultTimeout", "180").toString()));
+        result.getEntries().add(createEntry("RecoveryEnvironmentBean.expiryScanInterval", transactionProps.getOrDefault("expiryScanInterval", "12").toString()));
+        result.getEntries().add(createEntry("RecoveryEnvironmentBean.periodicRecoveryPeriod", transactionProps.getOrDefault("periodicRecoveryPeriod", "120").toString()));
         return result;
     }
     
