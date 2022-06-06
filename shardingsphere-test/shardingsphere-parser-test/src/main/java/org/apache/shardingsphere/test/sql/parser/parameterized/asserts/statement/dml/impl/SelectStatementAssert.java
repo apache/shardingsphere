@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.LockSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.union.CombiningSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.union.CombineSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.ModelSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WindowSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
@@ -185,11 +185,11 @@ public final class SelectStatementAssert {
         if (expected.getUnions().isEmpty()) {
             return;
         }
-        Collection<CombiningSegment> combiningSegments = actual.getCombines();
-        assertFalse(assertContext.getText("Actual union segment should exist."), combiningSegments.isEmpty());
-        assertThat(assertContext.getText("Combining size assertion error: "), combiningSegments.size(), is(expected.getUnions().size()));
+        Collection<CombineSegment> combineSegments = actual.getCombines();
+        assertFalse(assertContext.getText("Actual union segment should exist."), combineSegments.isEmpty());
+        assertThat(assertContext.getText("Combining size assertion error: "), combineSegments.size(), is(expected.getUnions().size()));
         int count = 0;
-        for (CombiningSegment each : combiningSegments) {
+        for (CombineSegment each : combineSegments) {
             assertThat(assertContext.getText("Combining type assertion error: "), each.getCombiningType().name(), is(expected.getUnions().get(count).getCombiningType()));
             SQLSegmentAssert.assertIs(assertContext, each, expected.getUnions().get(count));
             assertIs(assertContext, each.getSelectStatement(), expected.getUnions().get(count).getSelectClause());

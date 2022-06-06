@@ -30,7 +30,7 @@ import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.federation.optimizer.converter.statement.SelectStatementConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.CombiningType;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.union.CombiningSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.union.CombineSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
@@ -63,7 +63,7 @@ public final class SQLNodeConverterEngine {
     public static SqlNode convertToSQLNode(final SQLStatement statement) {
         if (statement instanceof SelectStatement) {
             SqlNode sqlNode = new SelectStatementConverter().convertToSQLNode((SelectStatement) statement);
-            for (CombiningSegment each : ((SelectStatement) statement).getCombines()) {
+            for (CombineSegment each : ((SelectStatement) statement).getCombines()) {
                 SqlNode unionSqlNode = convertToSQLNode(each.getSelectStatement());
                 return new SqlBasicCall(convertCombiningOperator(each.getCombiningType()), new SqlNode[]{sqlNode, unionSqlNode}, SqlParserPos.ZERO);
             }
@@ -88,7 +88,7 @@ public final class SQLNodeConverterEngine {
             SelectStatement leftSelectStatement = (SelectStatement) convertToSQLStatement(leftSqlNode);
             SelectStatement rightSelectStatement = (SelectStatement) convertToSQLStatement(rightSqlNode);
             leftSelectStatement.getCombines().add(
-                    new CombiningSegment(rightSqlNode.getParserPosition().getColumnNum() - 7, rightSqlNode.getParserPosition().getEndColumnNum() - 1, CombiningType.UNION, rightSelectStatement));
+                    new CombineSegment(rightSqlNode.getParserPosition().getColumnNum() - 7, rightSqlNode.getParserPosition().getEndColumnNum() - 1, CombiningType.UNION, rightSelectStatement));
             return leftSelectStatement;
         }
         throw new UnsupportedOperationException("Unsupported SQL statement conversion.");
