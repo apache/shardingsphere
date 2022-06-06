@@ -3,8 +3,6 @@ title = "Use Helm"
 weight = 3
 +++
 
-# Use Helm
-
 Use [Helm](https://helm.sh/) to provide guidance for the installation of ShardingSphere-Proxy instance in Kubernetes cluster.
 
 ## Quick Start
@@ -18,24 +16,24 @@ helm install shardingsphere-proxy shardingsphere/shardingsphere-proxy
 
 ### Requirements
 
-Kubernetes 1.18+
+1. Kubernetes 1.18+
 
-kubectl
+2. kubectl
 
-Helm 3.2.0+
+3. Helm 3.2.0+
 
 Use StorageClass to allow dynamic provisioning of Persistent Volumes (PV) for data persistent.
 
 ### Install
 
 #### Online installation     
-Add ShardingSphere-Proxy to the local helm repo:
+1. Add ShardingSphere-Proxy to the local helm repo:
 
 ```shell
 helm repo add shardingsphere https://shardingsphere.apache.org/charts
 ```
 
-Install ShardingSphere-Proxy charts:
+2. Install ShardingSphere-Proxy charts:
 
 ```shell
 helm install shardingsphere-proxy shardingsphere/shardingsphere-proxy
