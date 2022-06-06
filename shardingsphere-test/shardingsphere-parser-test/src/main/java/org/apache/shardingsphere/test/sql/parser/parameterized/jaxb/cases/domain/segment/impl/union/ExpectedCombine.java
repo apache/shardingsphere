@@ -26,11 +26,11 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Expected union clause.
+ * Expected combine clause.
  */
 @Getter
 @Setter
-public final class ExpectedUnion extends AbstractExpectedSQLSegment {
+public final class ExpectedCombine extends AbstractExpectedSQLSegment {
     
     @XmlElement(name = "select")
     private SelectStatementTestCase selectClause;

@@ -27,7 +27,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.projection.ExpectedProjections;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.table.ExpectedSimpleTable;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.table.ExpectedTable;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.union.ExpectedUnion;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.union.ExpectedCombine;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.where.ExpectedWhereClause;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.window.ExpectedWindowClause;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.with.ExpectedWithClause;
@@ -78,7 +78,7 @@ public final class SelectStatementTestCase extends SQLParserTestCase {
     private ExpectedWithClause withClause;
     
     @XmlElement(name = "union")
-    private List<ExpectedUnion> unions = new LinkedList<>();
+    private List<ExpectedCombine> unions = new LinkedList<>();
     
     @XmlElement(name = "model")
     private ExpectedModelClause modelClause;
