@@ -91,8 +91,8 @@ public final class TableExtractor {
         if (SelectStatementHandler.getLockSegment(selectStatement).isPresent()) {
             extractTablesFromLock(SelectStatementHandler.getLockSegment(selectStatement).get());
         }
-        if (!selectStatement.getUnions().isEmpty()) {
-            selectStatement.getUnions().forEach(each -> extractTablesFromSelect(each.getSelectStatement()));
+        if (!selectStatement.getCombines().isEmpty()) {
+            selectStatement.getCombines().forEach(each -> extractTablesFromSelect(each.getSelectStatement()));
         }
     }
     

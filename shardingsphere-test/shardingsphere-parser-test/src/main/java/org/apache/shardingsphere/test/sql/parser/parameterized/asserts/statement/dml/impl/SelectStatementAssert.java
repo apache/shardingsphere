@@ -76,7 +76,7 @@ public final class SelectStatementAssert {
         assertTable(assertContext, actual, expected);
         assertLockClause(assertContext, actual, expected);
         assertWithClause(assertContext, actual, expected);
-        assertUnions(assertContext, actual, expected);
+        assertCombines(assertContext, actual, expected);
         assertModelClause(assertContext, actual, expected);
     }
     
@@ -181,11 +181,11 @@ public final class SelectStatementAssert {
         }
     }
     
-    private static void assertUnions(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
+    private static void assertCombines(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
         if (expected.getUnions().isEmpty()) {
             return;
         }
-        Collection<CombiningSegment> combiningSegments = actual.getUnions();
+        Collection<CombiningSegment> combiningSegments = actual.getCombines();
         assertFalse(assertContext.getText("Actual union segment should exist."), combiningSegments.isEmpty());
         assertThat(assertContext.getText("Combining size assertion error: "), combiningSegments.size(), is(expected.getUnions().size()));
         int count = 0;

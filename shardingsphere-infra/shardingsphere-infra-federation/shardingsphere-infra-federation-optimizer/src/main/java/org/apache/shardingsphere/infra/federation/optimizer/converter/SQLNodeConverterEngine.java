@@ -63,7 +63,7 @@ public final class SQLNodeConverterEngine {
     public static SqlNode convertToSQLNode(final SQLStatement statement) {
         if (statement instanceof SelectStatement) {
             SqlNode sqlNode = new SelectStatementConverter().convertToSQLNode((SelectStatement) statement);
-            for (CombiningSegment each : ((SelectStatement) statement).getUnions()) {
+            for (CombiningSegment each : ((SelectStatement) statement).getCombines()) {
                 SqlNode unionSqlNode = convertToSQLNode(each.getSelectStatement());
                 return new SqlBasicCall(convertCombiningOperator(each.getCombiningType()), new SqlNode[]{sqlNode, unionSqlNode}, SqlParserPos.ZERO);
             }
@@ -87,7 +87,7 @@ public final class SQLNodeConverterEngine {
             SqlNode rightSqlNode = ((SqlBasicCall) sqlNode).getOperandList().get(1);
             SelectStatement leftSelectStatement = (SelectStatement) convertToSQLStatement(leftSqlNode);
             SelectStatement rightSelectStatement = (SelectStatement) convertToSQLStatement(rightSqlNode);
-            leftSelectStatement.getUnions().add(
+            leftSelectStatement.getCombines().add(
                     new CombiningSegment(rightSqlNode.getParserPosition().getColumnNum() - 7, rightSqlNode.getParserPosition().getEndColumnNum() - 1, CombiningType.UNION, rightSelectStatement));
             return leftSelectStatement;
         }

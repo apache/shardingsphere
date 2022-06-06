@@ -53,7 +53,7 @@ public abstract class SelectStatement extends AbstractSQLStatement implements DM
     
     private OrderBySegment orderBy;
     
-    private Collection<CombiningSegment> unions = new LinkedList<>();
+    private Collection<CombiningSegment> combines = new LinkedList<>();
     
     /**
      * Get where.
