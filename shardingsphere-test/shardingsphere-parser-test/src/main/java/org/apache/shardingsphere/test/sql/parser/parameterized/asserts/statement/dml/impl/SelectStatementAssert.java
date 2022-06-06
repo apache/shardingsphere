@@ -185,7 +185,7 @@ public final class SelectStatementAssert {
         if (expected.getUnions().isEmpty()) {
             return;
         }
-        Collection<UnionSegment> unionSegments = actual.getUnionSegments();
+        Collection<UnionSegment> unionSegments = actual.getUnions();
         assertFalse(assertContext.getText("Actual union segment should exist."), unionSegments.isEmpty());
         assertThat(assertContext.getText("Union size assertion error: "), unionSegments.size(), is(expected.getUnions().size()));
         int count = 0;
