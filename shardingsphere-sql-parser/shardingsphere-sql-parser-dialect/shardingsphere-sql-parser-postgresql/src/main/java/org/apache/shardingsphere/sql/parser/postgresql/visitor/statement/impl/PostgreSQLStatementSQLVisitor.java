@@ -828,26 +828,25 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
     public ASTNode visitSelectClauseN(final SelectClauseNContext ctx) {
         if (null != ctx.simpleSelect()) {
             return visit(ctx.simpleSelect());
-        } else if (null != ctx.selectClauseN() && !ctx.selectClauseN().isEmpty()) {
-            PostgreSQLSelectStatement result = (PostgreSQLSelectStatement) visit(ctx.selectClauseN(0));
-            UnionSegment unionSegment = new UnionSegment(getUnionType(ctx), (PostgreSQLSelectStatement) visit(ctx.selectClauseN(1)),
-                    ((TerminalNode) ctx.getChild(1)).getSymbol().getStartIndex(), ctx.getStop().getStopIndex());
-            result.getUnionSegments().add(unionSegment);
-            return result;
-        } else {
-            return visit(ctx.selectWithParens());
         }
+        if (null != ctx.selectClauseN() && !ctx.selectClauseN().isEmpty()) {
+            PostgreSQLSelectStatement result = (PostgreSQLSelectStatement) visit(ctx.selectClauseN(0));
+            result.getUnionSegments().add(new UnionSegment(
+                    ((TerminalNode) ctx.getChild(1)).getSymbol().getStartIndex(), ctx.getStop().getStopIndex(), getUnionType(ctx), (PostgreSQLSelectStatement) visit(ctx.selectClauseN(1))));
+            return result;
+        }
+        return visit(ctx.selectWithParens());
     }
     
     private UnionType getUnionType(final SelectClauseNContext ctx) {
         boolean isDistinct = null == ctx.allOrDistinct() || null != ctx.allOrDistinct().DISTINCT();
         if (null != ctx.UNION()) {
             return isDistinct ? UnionType.UNION_DISTINCT : UnionType.UNION_ALL;
-        } else if (null != ctx.INTERSECT()) {
-            return isDistinct ? UnionType.INTERSECT_DISTINCT : UnionType.INTERSECT_ALL;
-        } else {
-            return isDistinct ? UnionType.EXCEPT_DISTINCT : UnionType.EXCEPT_ALL;
         }
+        if (null != ctx.INTERSECT()) {
+            return isDistinct ? UnionType.INTERSECT_DISTINCT : UnionType.INTERSECT_ALL;
+        }
+        return isDistinct ? UnionType.EXCEPT_DISTINCT : UnionType.EXCEPT_ALL;
     }
     
     @Override

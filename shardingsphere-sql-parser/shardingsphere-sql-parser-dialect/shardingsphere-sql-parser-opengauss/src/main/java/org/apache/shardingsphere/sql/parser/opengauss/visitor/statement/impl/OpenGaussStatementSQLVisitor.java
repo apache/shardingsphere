@@ -716,9 +716,8 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
                     new IdentifierValue(ctx.optIndirection().indirectionEl().attrName().getText()));
             result.setOwner(new OwnerSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), new IdentifierValue(ctx.colId().getText())));
             return result;
-        } else {
-            return new ColumnSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), new IdentifierValue(ctx.colId().getText()));
         }
+        return new ColumnSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), new IdentifierValue(ctx.colId().getText()));
     }
     
     private Collection<InsertValuesSegment> createInsertValuesSegments(final ValuesClauseContext ctx) {
@@ -861,28 +860,28 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
     public ASTNode visitSelectClauseN(final SelectClauseNContext ctx) {
         if (null != ctx.simpleSelect()) {
             return visit(ctx.simpleSelect());
-        } else if (null != ctx.selectClauseN() && !ctx.selectClauseN().isEmpty()) {
-            OpenGaussSelectStatement result = (OpenGaussSelectStatement) visit(ctx.selectClauseN(0));
-            UnionSegment unionSegment = new UnionSegment(getUnionType(ctx), (OpenGaussSelectStatement) visit(ctx.selectClauseN(1)),
-                    ((TerminalNode) ctx.getChild(1)).getSymbol().getStartIndex(), ctx.getStop().getStopIndex());
-            result.getUnionSegments().add(unionSegment);
-            return result;
-        } else {
-            return visit(ctx.selectWithParens());
         }
+        if (null != ctx.selectClauseN() && !ctx.selectClauseN().isEmpty()) {
+            OpenGaussSelectStatement result = (OpenGaussSelectStatement) visit(ctx.selectClauseN(0));
+            result.getUnionSegments().add(new UnionSegment(
+                    ((TerminalNode) ctx.getChild(1)).getSymbol().getStartIndex(), ctx.getStop().getStopIndex(), getUnionType(ctx), (OpenGaussSelectStatement) visit(ctx.selectClauseN(1))));
+            return result;
+        }
+        return visit(ctx.selectWithParens());
     }
     
     private UnionType getUnionType(final SelectClauseNContext ctx) {
         boolean isDistinct = null == ctx.allOrDistinct() || null != ctx.allOrDistinct().DISTINCT();
         if (null != ctx.UNION()) {
             return isDistinct ? UnionType.UNION_DISTINCT : UnionType.UNION_ALL;
-        } else if (null != ctx.INTERSECT()) {
-            return isDistinct ? UnionType.INTERSECT_DISTINCT : UnionType.INTERSECT_ALL;
-        } else if (null != ctx.MINUS()) {
-            return isDistinct ? UnionType.MINUS_DISTINCT : UnionType.MINUS_ALL;
-        } else {
-            return isDistinct ? UnionType.EXCEPT_DISTINCT : UnionType.EXCEPT_ALL;
         }
+        if (null != ctx.INTERSECT()) {
+            return isDistinct ? UnionType.INTERSECT_DISTINCT : UnionType.INTERSECT_ALL;
+        }
+        if (null != ctx.MINUS()) {
+            return isDistinct ? UnionType.MINUS_DISTINCT : UnionType.MINUS_ALL;
+        }
+        return isDistinct ? UnionType.EXCEPT_DISTINCT : UnionType.EXCEPT_ALL;
     }
     
     @Override
