@@ -65,7 +65,7 @@ public final class SQLNodeConverterEngine {
             SqlNode sqlNode = new SelectStatementConverter().convertToSQLNode((SelectStatement) statement);
             for (CombineSegment each : ((SelectStatement) statement).getCombines()) {
                 SqlNode unionSqlNode = convertToSQLNode(each.getSelectStatement());
-                return new SqlBasicCall(convertCombiningOperator(each.getCombineType()), new SqlNode[]{sqlNode, unionSqlNode}, SqlParserPos.ZERO);
+                return new SqlBasicCall(convertCombineOperator(each.getCombineType()), new SqlNode[]{sqlNode, unionSqlNode}, SqlParserPos.ZERO);
             }
             return sqlNode;
         }
@@ -94,7 +94,7 @@ public final class SQLNodeConverterEngine {
         throw new UnsupportedOperationException("Unsupported SQL statement conversion.");
     }
     
-    private static SqlOperator convertCombiningOperator(final CombineType combineType) {
+    private static SqlOperator convertCombineOperator(final CombineType combineType) {
         Preconditions.checkState(REGISTRY.containsKey(combineType), "Unsupported combining type: `%s`", combineType);
         return REGISTRY.get(combineType);
     }

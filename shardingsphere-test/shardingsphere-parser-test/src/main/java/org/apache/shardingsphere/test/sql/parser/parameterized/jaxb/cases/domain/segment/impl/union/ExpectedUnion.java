@@ -35,6 +35,6 @@ public final class ExpectedUnion extends AbstractExpectedSQLSegment {
     @XmlElement(name = "select")
     private SelectStatementTestCase selectClause;
     
-    @XmlAttribute(name = "combining-type")
-    private String combiningType;
+    @XmlAttribute(name = "combine-type")
+    private String combineType;
 }
