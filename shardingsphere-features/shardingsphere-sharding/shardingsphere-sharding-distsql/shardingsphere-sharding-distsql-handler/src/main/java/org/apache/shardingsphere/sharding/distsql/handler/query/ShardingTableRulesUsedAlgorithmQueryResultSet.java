@@ -58,7 +58,7 @@ public final class ShardingTableRulesUsedAlgorithmQueryResultSet implements Dist
             if (((null == each.getDatabaseShardingStrategy() && matchDefaultDatabaseShardingStrategy)
                     || (null != each.getDatabaseShardingStrategy() && algorithmName.equals(each.getDatabaseShardingStrategy().getShardingAlgorithmName())))
                     || ((null == each.getTableShardingStrategy() && matchDefaultTableShardingStrategy)
-                    || (null != each.getTableShardingStrategy() && algorithmName.equals(each.getTableShardingStrategy().getShardingAlgorithmName())))) {
+                            || (null != each.getTableShardingStrategy() && algorithmName.equals(each.getTableShardingStrategy().getShardingAlgorithmName())))) {
                 data.add(Arrays.asList("table", each.getLogicTable()));
             }
         });

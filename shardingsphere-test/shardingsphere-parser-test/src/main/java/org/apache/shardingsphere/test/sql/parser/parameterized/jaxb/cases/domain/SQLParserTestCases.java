@@ -1418,6 +1418,7 @@ public final class SQLParserTestCases {
     @XmlElement(name = "drop-inmemory-join-group")
     private final List<DropInmemoryJoinGroupStatementTestCase> dropInmemoryJoinGroupTestCases = new LinkedList<>();
 
+
     @XmlElement(name = "cursor")
     private final List<CursorStatementTestCase> cursorTestCases = new LinkedList<>();
     

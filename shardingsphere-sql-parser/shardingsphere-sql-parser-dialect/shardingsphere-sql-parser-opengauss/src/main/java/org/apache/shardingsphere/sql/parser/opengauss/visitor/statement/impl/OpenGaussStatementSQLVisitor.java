@@ -87,6 +87,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Sel
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.SetClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.SetClauseListContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.SetTargetContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.SignedIconstContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.SimpleSelectContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.SortClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.SortbyContext;
@@ -1212,5 +1213,10 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
             result.combine((CollectionValue<NameSegment>) visit(ctx.attrs()));
         }
         return result;
+    }
+    
+    @Override
+    public ASTNode visitSignedIconst(final SignedIconstContext ctx) {
+        return new NumberLiteralValue(ctx.getText());
     }
 }

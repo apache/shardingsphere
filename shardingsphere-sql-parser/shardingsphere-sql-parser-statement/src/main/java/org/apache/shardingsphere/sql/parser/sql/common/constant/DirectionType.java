@@ -20,19 +20,19 @@ package org.apache.shardingsphere.sql.parser.sql.common.constant;
 import java.util.Arrays;
 
 /**
- * Aggregation function enum.
+ * Direction type enum.
  */
-public enum AggregationType {
+public enum DirectionType {
     
-    MAX, MIN, SUM, COUNT, AVG, BIT_XOR;
+    NEXT, PRIOR, FIRST, LAST, ABSOLUTE_COUNT, RELATIVE_COUNT, COUNT, ALL, FORWARD, FORWARD_COUNT, FORWARD_ALL, BACKWARD, BACKWARD_COUNT, BACKWARD_ALL;
     
     /**
-     * Is aggregation type.
+     * Is direction type.
      * 
-     * @param aggregationType aggregation type
-     * @return is aggregation type or not
+     * @param directionType direction type
+     * @return is direction type or not
      */
-    public static boolean isAggregationType(final String aggregationType) {
-        return Arrays.stream(values()).anyMatch(each -> aggregationType.equalsIgnoreCase(each.name()));
+    public static boolean isAggregationType(final String directionType) {
+        return Arrays.stream(values()).anyMatch(each -> directionType.equalsIgnoreCase(each.name()));
     }
 }
