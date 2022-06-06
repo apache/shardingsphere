@@ -693,7 +693,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
     
     @Override
     public ASTNode visitUnionClause(final UnionClauseContext ctx) {
-        CombiningType combiningType = (null != ctx.unionOption() && null != ctx.unionOption().ALL()) ? CombiningType.UNION_ALL : CombiningType.UNION_DISTINCT;
+        CombiningType combiningType = (null != ctx.unionOption() && null != ctx.unionOption().ALL()) ? CombiningType.UNION_ALL : CombiningType.UNION;
         MySQLSelectStatement statement = null != ctx.queryPrimary() ? (MySQLSelectStatement) visit(ctx.queryPrimary()) : (MySQLSelectStatement) visit(ctx.queryExpressionParens());
         return new UnionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), combiningType, statement);
     }

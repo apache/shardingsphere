@@ -873,15 +873,15 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
     private CombiningType getCombiningType(final SelectClauseNContext ctx) {
         boolean isDistinct = null == ctx.allOrDistinct() || null != ctx.allOrDistinct().DISTINCT();
         if (null != ctx.UNION()) {
-            return isDistinct ? CombiningType.UNION_DISTINCT : CombiningType.UNION_ALL;
+            return isDistinct ? CombiningType.UNION : CombiningType.UNION_ALL;
         }
         if (null != ctx.INTERSECT()) {
-            return isDistinct ? CombiningType.INTERSECT_DISTINCT : CombiningType.INTERSECT_ALL;
+            return isDistinct ? CombiningType.INTERSECT : CombiningType.INTERSECT_ALL;
         }
         if (null != ctx.MINUS()) {
-            return isDistinct ? CombiningType.MINUS_DISTINCT : CombiningType.MINUS_ALL;
+            return isDistinct ? CombiningType.MINUS : CombiningType.MINUS_ALL;
         }
-        return isDistinct ? CombiningType.EXCEPT_DISTINCT : CombiningType.EXCEPT_ALL;
+        return isDistinct ? CombiningType.EXCEPT : CombiningType.EXCEPT_ALL;
     }
     
     @Override

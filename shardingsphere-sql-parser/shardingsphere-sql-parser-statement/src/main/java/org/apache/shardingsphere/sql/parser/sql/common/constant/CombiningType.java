@@ -23,11 +23,11 @@ package org.apache.shardingsphere.sql.parser.sql.common.constant;
 public enum CombiningType {
     
     UNION_ALL,
-    UNION_DISTINCT,
+    UNION,
     INTERSECT_ALL,
-    INTERSECT_DISTINCT,
+    INTERSECT,
     EXCEPT_ALL,
-    EXCEPT_DISTINCT,
+    EXCEPT,
     MINUS_ALL,
-    MINUS_DISTINCT
+    MINUS
 }
