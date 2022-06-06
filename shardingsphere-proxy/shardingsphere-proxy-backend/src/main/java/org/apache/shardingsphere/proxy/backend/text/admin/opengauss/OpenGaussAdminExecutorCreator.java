@@ -39,11 +39,11 @@ public final class OpenGaussAdminExecutorCreator implements DatabaseAdminExecuto
     }
     
     @Override
-    public Optional<DatabaseAdminExecutor> create(final SQLStatementContext<?> sqlStatementContext, final String sql, final String schemaName) {
+    public Optional<DatabaseAdminExecutor> create(final SQLStatementContext<?> sqlStatementContext, final String sql, final String databaseName) {
         if (sqlStatementContext.getTablesContext().getTableNames().contains(OG_DATABASE)) {
             return Optional.of(new OpenGaussSelectDatabaseExecutor(sql));
         }
-        return delegated.create(sqlStatementContext, sql, schemaName);
+        return delegated.create(sqlStatementContext, sql, databaseName);
     }
     
     @Override
