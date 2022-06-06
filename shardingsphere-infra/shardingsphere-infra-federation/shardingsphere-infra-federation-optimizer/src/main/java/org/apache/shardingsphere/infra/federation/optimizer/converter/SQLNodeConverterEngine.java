@@ -62,11 +62,9 @@ public final class SQLNodeConverterEngine {
     public static SqlNode convertToSQLNode(final SQLStatement statement) {
         if (statement instanceof SelectStatement) {
             SqlNode sqlNode = new SelectStatementConverter().convertToSQLNode((SelectStatement) statement);
-            if (null != ((SelectStatement) statement).getUnions()) {
-                for (final UnionSegment unionSegment : ((SelectStatement) statement).getUnions()) {
-                    SqlNode unionSqlNode = convertToSQLNode(unionSegment.getSelectStatement());
-                    return new SqlBasicCall(convertUnionOperator(unionSegment.getUnionType()), new SqlNode[]{sqlNode, unionSqlNode}, SqlParserPos.ZERO);
-                }
+            for (UnionSegment each : ((SelectStatement) statement).getUnions()) {
+                SqlNode unionSqlNode = convertToSQLNode(each.getSelectStatement());
+                return new SqlBasicCall(convertUnionOperator(each.getUnionType()), new SqlNode[]{sqlNode, unionSqlNode}, SqlParserPos.ZERO);
             }
             return sqlNode;
         }
