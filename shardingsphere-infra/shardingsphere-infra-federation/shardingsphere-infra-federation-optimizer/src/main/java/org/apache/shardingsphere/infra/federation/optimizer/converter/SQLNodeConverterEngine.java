@@ -51,6 +51,7 @@ public final class SQLNodeConverterEngine {
     
     private static void registerUnion() {
         REGISTRY.put(UnionType.UNION_DISTINCT, SqlStdOperatorTable.UNION);
+        REGISTRY.put(UnionType.UNION_ALL, SqlStdOperatorTable.UNION_ALL);
     }
     
     /**
