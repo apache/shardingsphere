@@ -22,7 +22,7 @@ helm install shardingsphere-proxy shardingsphere/shardingsphere-proxy
 
 3. Helm 3.2.0+
 
-Use StorageClass to allow dynamic provisioning of Persistent Volumes (PV) for data persistent.
+Use StorageClass to allow dynamic provisioning of Persistent Volumes (PV) for data persistent (optional).
 
 ### Install
 
