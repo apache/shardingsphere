@@ -31,12 +31,20 @@ createIndex
     : CREATE createIndexSpecification INDEX indexName ON createIndexDefinitionClause usableSpecification? invalidationSpecification?
     ;
 
+createProcedure
+    : CREATE PROCEDURE procedureName LP_ columnName dataType RP_ AS procedureParameter BEGIN exprs END
+    ;
+
 alterTable
     : ALTER TABLE tableName memOptimizeClause alterDefinitionClause enableDisableClauses
     ;
 
 alterIndex
     : ALTER INDEX indexName alterIndexInformationClause
+    ;
+
+alterProcedure
+    : ALTER PROCEDURE username DOT_ procedureName COMPILE
     ;
 
 alterTrigger
@@ -2192,6 +2200,10 @@ plsqlFunctionSource
 
 parameterDeclaration
     : parameterName (IN? dataType ((COLON_ EQ_ | DEFAULT) expr)? | IN? OUT NOCOPY? dataType)?
+    ;
+
+procedureParameter
+    : identifier dataType
     ;
 
 sharingClause

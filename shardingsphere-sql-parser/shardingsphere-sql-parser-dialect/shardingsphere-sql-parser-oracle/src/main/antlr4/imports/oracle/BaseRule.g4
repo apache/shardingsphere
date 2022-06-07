@@ -184,6 +184,10 @@ synonymName
     : identifier
     ;
 
+procedureName
+    : identifier
+    ;
+
 owner
     : identifier
     ;
