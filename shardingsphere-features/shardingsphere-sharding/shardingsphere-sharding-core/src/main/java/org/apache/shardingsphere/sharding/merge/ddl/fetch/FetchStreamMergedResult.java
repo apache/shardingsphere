@@ -17,9 +17,13 @@
 
 package org.apache.shardingsphere.sharding.merge.ddl.fetch;
 
+import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.infra.binder.statement.ddl.FetchStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.memory.JDBCMemoryQueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.stream.JDBCStreamQueryResult;
 import org.apache.shardingsphere.infra.merge.result.impl.stream.StreamMergedResult;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sharding.merge.dql.orderby.OrderByValue;
@@ -27,6 +31,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.constant.DirectionType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.cursor.DirectionSegment;
 
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
@@ -55,14 +60,22 @@ public final class FetchStreamMergedResult extends StreamMergedResult {
     }
     
     private void orderResultSetsToQueue(final List<QueryResult> queryResults, final SelectStatementContext selectStatementContext, final ShardingSphereSchema schema) throws SQLException {
-        
+        Collection<OrderByItem> items = selectStatementContext.getOrderByContext().getItems();
         for (QueryResult each : queryResults) {
-            OrderByValue orderByValue = new OrderByValue(each, selectStatementContext.getOrderByContext().getItems(), selectStatementContext, schema);
+            QueryResult queryResult = decorate(each, selectStatementContext.getDatabaseType());
+            OrderByValue orderByValue = new OrderByValue(queryResult, items, selectStatementContext, schema);
             if (orderByValue.next()) {
                 orderByValuesQueue.offer(orderByValue);
             }
         }
         setCurrentQueryResult(orderByValuesQueue.isEmpty() ? queryResults.get(0) : orderByValuesQueue.peek().getQueryResult());
+    }
+    
+    private QueryResult decorate(final QueryResult queryResult, final DatabaseType databaseType) throws SQLException {
+        if (!DirectionType.isAllDirectionType(directionType) && queryResult instanceof JDBCStreamQueryResult) {
+            return new JDBCMemoryQueryResult(((JDBCStreamQueryResult) queryResult).getResultSet(), databaseType);
+        }
+        return queryResult;
     }
     
     @Override
