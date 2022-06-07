@@ -46,6 +46,8 @@ public enum SQLVisitorRule {
     
     CREATE_TABLE("CreateTable", SQLStatementType.DDL),
     
+    CREATE_AGGREGATE("CreateAggregate", SQLStatementType.DDL),
+    
     RENAME_TABLE("RenameTable", SQLStatementType.DDL),
     
     ALTER_TABLE("AlterTable", SQLStatementType.DDL),
