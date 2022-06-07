@@ -548,6 +548,8 @@ public enum SQLVisitorRule {
     
     DROP_INMEMORY_JOIN_GROUP("DropInmemoryJoinGroup", SQLStatementType.DDL),
     
+    CREATE_RESTORE_POINT("CreateRestorePoint", SQLStatementType.DDL),
+    
     CURSOR("Cursor", SQLStatementType.DDL),
     
     CLOSE("Close", SQLStatementType.DDL),
