@@ -92,7 +92,7 @@ public final class OrderByValue implements Comparable<OrderByValue> {
     }
     
     /**
-     * iterate next data.
+     * Iterate next data.
      *
      * @return has next data
      * @throws SQLException SQL exception
