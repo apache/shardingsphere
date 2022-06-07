@@ -20,8 +20,9 @@ package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -57,13 +58,13 @@ public final class ShowDatabasesExecutorTest extends ProxyContextRestorer {
     public void setUp() throws IllegalAccessException, NoSuchFieldException {
         showDatabasesExecutor = new ShowDatabasesExecutor(new MySQLShowDatabasesStatement());
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), getDatabaseMap(), mock(ShardingSphereRuleMetaData.class),
-                mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
+        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
+                new ShardingSphereMetaData(getDatabases(), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())), mock(OptimizerContext.class));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
     }
     
-    private Map<String, ShardingSphereDatabase> getDatabaseMap() {
+    private Map<String, ShardingSphereDatabase> getDatabases() {
         Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(10, 1);
         for (int i = 0; i < 10; i++) {
             ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);

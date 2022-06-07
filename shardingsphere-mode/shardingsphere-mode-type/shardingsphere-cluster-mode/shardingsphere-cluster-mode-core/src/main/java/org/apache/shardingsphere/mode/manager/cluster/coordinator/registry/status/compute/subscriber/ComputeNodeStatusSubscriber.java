@@ -20,24 +20,30 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.stat
 import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.instance.definition.InstanceId;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.ComputeNodeStatus;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ComputeNodeStatusChangedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsChangedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.XaRecoveryIdChangedEvent;
 import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Compute node status subscriber.
  */
 public final class ComputeNodeStatusSubscriber {
     
+    private final RegistryCenter registryCenter;
+    
     private final ClusterPersistRepository repository;
     
-    public ComputeNodeStatusSubscriber(final ClusterPersistRepository repository) {
+    public ComputeNodeStatusSubscriber(final RegistryCenter registryCenter, final ClusterPersistRepository repository) {
+        this.registryCenter = registryCenter;
         this.repository = repository;
         ShardingSphereEventBus.getInstance().register(this);
     }
@@ -49,7 +55,7 @@ public final class ComputeNodeStatusSubscriber {
      */
     @Subscribe
     public void update(final ComputeNodeStatusChangedEvent event) {
-        String computeStatusNodePath = ComputeNode.getInstanceStatusNodePath(new InstanceId(event.getIp(), String.valueOf(event.getPort())).getId());
+        String computeStatusNodePath = ComputeNode.getInstanceStatusNodePath(event.getInstanceId());
         String yamlContext = repository.get(computeStatusNodePath);
         Collection<String> status = Strings.isNullOrEmpty(yamlContext) ? new ArrayList<>() : YamlEngine.unmarshal(yamlContext, Collection.class);
         if (event.getStatus() == ComputeNodeStatus.CIRCUIT_BREAK) {
@@ -57,6 +63,30 @@ public final class ComputeNodeStatusSubscriber {
         } else {
             status.remove(ComputeNodeStatus.CIRCUIT_BREAK.name());
         }
-        repository.persist(computeStatusNodePath, YamlEngine.marshal(status));
+        repository.persistEphemeral(computeStatusNodePath, YamlEngine.marshal(status));
+    }
+    
+    /**
+     * Update compute node xa recovery id.
+     * 
+     * @param event xa recovery id changed event
+     */
+    @Subscribe
+    public void update(final XaRecoveryIdChangedEvent event) {
+        registryCenter.getComputeNodeStatusService().persistInstanceXaRecoveryId(event.getInstanceId(), event.getXaRecoveryIds());
+    }
+    
+    /**
+     * Update compute node labels.
+     * 
+     * @param event labels changed event
+     */
+    @Subscribe
+    public void update(final LabelsChangedEvent event) {
+        if (event.getLabels().isEmpty()) {
+            registryCenter.getComputeNodeStatusService().persistInstanceLabels(event.getInstanceId(), Collections.EMPTY_LIST);
+        } else {
+            registryCenter.getComputeNodeStatusService().persistInstanceLabels(event.getInstanceId(), event.getLabels());
+        }
     }
 }

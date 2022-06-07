@@ -302,9 +302,9 @@ CREATE DATABASE scaling_ds_1 DEFAULT CHARSET utf8;
 mysql -h127.0.0.1 -P3307 -uroot -proot
 ```
 
-#### Create and configure schema
+#### Create and configure logical database
 
-Create schema:
+Create logical database:
 ```sql
 CREATE DATABASE scaling_db;
 

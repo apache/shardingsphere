@@ -18,10 +18,14 @@
 package org.apache.shardingsphere.infra.binder.statement;
 
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
+import org.apache.shardingsphere.infra.binder.statement.ddl.CloseStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.ddl.CursorStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.ddl.FetchStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.ddl.MoveStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
@@ -35,6 +39,10 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.Identifi
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCloseStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCursorStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussFetchStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussMoveStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleInsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLInsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL92InsertStatement;
@@ -50,6 +58,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public final class SQLStatementContextFactoryTest {
     
@@ -59,7 +68,7 @@ public final class SQLStatementContextFactoryTest {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setLimit(new LimitSegment(0, 10, null, null));
         selectStatement.setProjections(projectionsSegment);
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(mockDatabaseMap(), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(mockDatabases(), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
         assertThat(sqlStatementContext, instanceOf(SelectStatementContext.class));
     }
     
@@ -96,17 +105,45 @@ public final class SQLStatementContextFactoryTest {
     
     private void assertSQLStatementContextCreatedWhenSQLStatementInstanceOfInsertStatement(final InsertStatement insertStatement) {
         insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(mockDatabaseMap(), Collections.emptyList(), insertStatement, DefaultDatabase.LOGIC_NAME);
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(mockDatabases(), Collections.emptyList(), insertStatement, DefaultDatabase.LOGIC_NAME);
         assertThat(sqlStatementContext, instanceOf(InsertStatementContext.class));
     }
     
     @Test
     public void assertSQLStatementContextCreatedWhenSQLStatementNotInstanceOfSelectStatementAndInsertStatement() {
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(mockDatabaseMap(), Collections.emptyList(), mock(MySQLStatement.class), DefaultDatabase.LOGIC_NAME);
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(mockDatabases(), Collections.emptyList(), mock(MySQLStatement.class), DefaultDatabase.LOGIC_NAME);
         assertThat(sqlStatementContext, instanceOf(CommonSQLStatementContext.class));
     }
     
-    private Map<String, ShardingSphereDatabase> mockDatabaseMap() {
+    @Test
+    public void assertNewInstanceForCursorStatement() {
+        OpenGaussCursorStatement cursorStatement = mock(OpenGaussCursorStatement.class, RETURNS_DEEP_STUBS);
+        MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class, RETURNS_DEEP_STUBS);
+        when(selectStatement.getProjections().isDistinctRow()).thenReturn(false);
+        when(cursorStatement.getSelect()).thenReturn(selectStatement);
+        SQLStatementContext<?> actual = SQLStatementContextFactory.newInstance(mockDatabases(), Collections.emptyList(), cursorStatement, DefaultDatabase.LOGIC_NAME);
+        assertThat(actual, instanceOf(CursorStatementContext.class));
+    }
+    
+    @Test
+    public void assertNewInstanceForCloseStatement() {
+        SQLStatementContext<?> actual = SQLStatementContextFactory.newInstance(mockDatabases(), Collections.emptyList(), mock(OpenGaussCloseStatement.class), DefaultDatabase.LOGIC_NAME);
+        assertThat(actual, instanceOf(CloseStatementContext.class));
+    }
+    
+    @Test
+    public void assertNewInstanceForMoveStatement() {
+        SQLStatementContext<?> actual = SQLStatementContextFactory.newInstance(mockDatabases(), Collections.emptyList(), mock(OpenGaussMoveStatement.class), DefaultDatabase.LOGIC_NAME);
+        assertThat(actual, instanceOf(MoveStatementContext.class));
+    }
+    
+    @Test
+    public void assertNewInstanceForFetchStatement() {
+        SQLStatementContext<?> actual = SQLStatementContextFactory.newInstance(mockDatabases(), Collections.emptyList(), mock(OpenGaussFetchStatement.class), DefaultDatabase.LOGIC_NAME);
+        assertThat(actual, instanceOf(FetchStatementContext.class));
+    }
+    
+    private Map<String, ShardingSphereDatabase> mockDatabases() {
         return Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS));
     }
 }

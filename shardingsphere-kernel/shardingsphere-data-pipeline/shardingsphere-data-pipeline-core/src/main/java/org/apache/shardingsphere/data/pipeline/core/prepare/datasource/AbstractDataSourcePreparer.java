@@ -29,6 +29,7 @@ import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepare
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 
 import java.sql.Connection;
@@ -67,7 +68,7 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
             return;
         }
         Set<String> schemaNames = getSchemaNames(parameter);
-        String defaultSchema = targetDatabaseType.getDefaultSchema(parameter.getTaskConfig().getJobConfig().getDatabaseName());
+        String defaultSchema = DatabaseTypeEngine.getDefaultSchemaName(targetDatabaseType, parameter.getTaskConfig().getJobConfig().getDatabaseName());
         log.info("prepareTargetSchemas, schemaNames={}, defaultSchema={}", schemaNames, defaultSchema);
         PipelineSQLBuilder pipelineSQLBuilder = PipelineSQLBuilderFactory.getInstance(targetDatabaseType.getType());
         try (Connection targetConnection = getTargetCachedDataSource(parameter.getTaskConfig(), parameter.getDataSourceManager()).getConnection()) {
@@ -99,6 +100,7 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
         return result;
     }
     
+    // TODO the invocation is disabled for now, it might be used again for next new feature
     protected final PipelineDataSourceWrapper getSourceCachedDataSource(final RuleAlteredJobConfiguration jobConfig, final PipelineDataSourceManager dataSourceManager) {
         return dataSourceManager.getDataSource(PipelineDataSourceConfigurationFactory.newInstance(jobConfig.getSource().getType(), jobConfig.getSource().getParameter()));
     }

@@ -22,27 +22,38 @@ import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResour
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidRuleConfigurationException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.rule.identifier.type.ExportableRule;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.distsql.handler.fixture.DatabaseDiscoveryRuleExportableFixture;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.segment.ReadwriteSplittingRuleSegment;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.CreateReadwriteSplittingRuleStatement;
+import org.apache.shardingsphere.readwritesplitting.factory.ReplicaLoadBalanceAlgorithmFactory;
+import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -82,10 +93,33 @@ public final class CreateReadwriteSplittingRuleStatementUpdaterTest {
         updater.checkSQLStatement(database, createSQLStatement("TEST"), null);
     }
     
+    @Test(expected = RequiredResourceMissedException.class)
+    public void assertCheckSQLStatementWithoutExistedAutoAwareResources() throws DistSQLException {
+        when(database.getRuleMetaData().findRules(ExportableRule.class)).thenReturn(Collections.singleton(new DatabaseDiscoveryRuleExportableFixture()));
+        ReadwriteSplittingRuleSegment ruleSegment = new ReadwriteSplittingRuleSegment("dynamic_rule", "ha_group", "TEST", new Properties());
+        updater.checkSQLStatement(database, new CreateReadwriteSplittingRuleStatement(Collections.singleton(ruleSegment)), null);
+    }
+    
     @Test(expected = InvalidAlgorithmConfigurationException.class)
     public void assertCheckSQLStatementWithoutToBeCreatedLoadBalancers() throws DistSQLException {
         when(database.getRuleMetaData().findRules(any())).thenReturn(Collections.emptyList());
         updater.checkSQLStatement(database, createSQLStatement("INVALID_TYPE"), null);
+    }
+    
+    @Test
+    public void assertUpdateSuccess() throws DistSQLException {
+        when(database.getRuleMetaData().findRules(ExportableRule.class)).thenReturn(Collections.singleton(new DatabaseDiscoveryRuleExportableFixture()));
+        MockedStatic<ReplicaLoadBalanceAlgorithmFactory> mockedFactory = mockStatic(ReplicaLoadBalanceAlgorithmFactory.class);
+        mockedFactory.when(() -> ReplicaLoadBalanceAlgorithmFactory.contains("TEST")).thenReturn(true);
+        ReadwriteSplittingRuleSegment dynamicSegment = new ReadwriteSplittingRuleSegment("dynamic_rule", "ms_group", "TEST", new Properties());
+        ReadwriteSplittingRuleSegment staticSegment = new ReadwriteSplittingRuleSegment("static_rule", "write_ds_0", Arrays.asList("read_ds_0", "read_ds_1"), "TEST", new Properties());
+        ShardingSphereServiceLoader.register(ReadQueryLoadBalanceAlgorithm.class);
+        CreateReadwriteSplittingRuleStatement statement = new CreateReadwriteSplittingRuleStatement(Arrays.asList(dynamicSegment, staticSegment));
+        updater.checkSQLStatement(database, statement, null);
+        ReadwriteSplittingRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(statement);
+        ReadwriteSplittingRuleConfiguration currentRuleConfig = new ReadwriteSplittingRuleConfiguration(new ArrayList<>(), new HashMap<>());
+        updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
+        assertThat(currentRuleConfig.getDataSources().size(), is(2));
     }
     
     private CreateReadwriteSplittingRuleStatement createSQLStatement(final String loadBalancerName) {

@@ -28,7 +28,9 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidRuleConfigu
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredAlgorithmMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.expr.InlineExpressionParser;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.CheckableRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
@@ -44,7 +46,6 @@ import org.apache.shardingsphere.sharding.factory.ShardingAlgorithmFactory;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -239,11 +240,13 @@ public final class ShardingTableRuleStatementChecker {
     /**
      * Check binding table rules.
      *
+     * @param database database
      * @param currentRuleConfig current rule configuration
      * @param toBeAlteredRuleConfig to be altered rule configuration
      * @throws DistSQLException definition violation exception
      */
-    public static void checkBindingTableRules(final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeAlteredRuleConfig) throws DistSQLException {
+    public static void checkBindingTableRules(final ShardingSphereDatabase database, final ShardingRuleConfiguration currentRuleConfig,
+                                              final ShardingRuleConfiguration toBeAlteredRuleConfig) throws DistSQLException {
         if (null == currentRuleConfig || currentRuleConfig.getBindingTableGroups().isEmpty()) {
             return;
         }
@@ -256,20 +259,44 @@ public final class ShardingTableRuleStatementChecker {
         if (toBeAlteredBindingTableNames.isEmpty()) {
             return;
         }
-        Map<String, String> currentBindingTableType = getBindingTablesType(bindingTables, currentRuleConfig);
-        Map<String, String> toBeAlteredBindingTableType = getBindingTablesType(toBeAlteredBindingTableNames, toBeAlteredRuleConfig);
-        Collection<String> invalidToBeAlteredBindingTableNames = toBeAlteredBindingTableNames.stream()
-                .filter(each -> !currentBindingTableType.get(each).equalsIgnoreCase(toBeAlteredBindingTableType.get(each))).collect(Collectors.toSet());
-        DistSQLException.predictionThrow(invalidToBeAlteredBindingTableNames.isEmpty(),
-                () -> new InvalidRuleConfigurationException("sharding table", invalidToBeAlteredBindingTableNames, Collections.singleton("invalid binding table configuration")));
-        // TODO check actualDataNodes
-        // TODO check algorithm-expression
+        ShardingRuleConfiguration toBeCheckedRuleConfig = new ShardingRuleConfiguration();
+        toBeCheckedRuleConfig.setTables(currentRuleConfig.getTables());
+        toBeCheckedRuleConfig.setAutoTables(currentRuleConfig.getAutoTables());
+        toBeCheckedRuleConfig.setBindingTableGroups(currentRuleConfig.getBindingTableGroups());
+        toBeCheckedRuleConfig.setBroadcastTables(currentRuleConfig.getBroadcastTables());
+        toBeCheckedRuleConfig.setDefaultTableShardingStrategy(currentRuleConfig.getDefaultTableShardingStrategy());
+        toBeCheckedRuleConfig.setDefaultDatabaseShardingStrategy(currentRuleConfig.getDefaultDatabaseShardingStrategy());
+        toBeCheckedRuleConfig.setDefaultKeyGenerateStrategy(currentRuleConfig.getDefaultKeyGenerateStrategy());
+        toBeCheckedRuleConfig.setDefaultShardingColumn(currentRuleConfig.getDefaultShardingColumn());
+        toBeCheckedRuleConfig.setShardingAlgorithms(currentRuleConfig.getShardingAlgorithms());
+        toBeCheckedRuleConfig.setKeyGenerators(currentRuleConfig.getKeyGenerators());
+        toBeCheckedRuleConfig.setScalingName(currentRuleConfig.getScalingName());
+        toBeCheckedRuleConfig.setScaling(currentRuleConfig.getScaling());
+        removeRuleConfiguration(toBeCheckedRuleConfig, toBeAlteredRuleConfig);
+        addRuleConfiguration(toBeCheckedRuleConfig, toBeAlteredRuleConfig);
+        Collection<String> dataSourceNames = toBeCheckedRuleConfig.getRequiredResource();
+        dataSourceNames.addAll(toBeAlteredRuleConfig.getRequiredResource());
+        for (ShardingSphereRule each : database.getRuleMetaData().getRules()) {
+            if (each instanceof CheckableRule) {
+                DistSQLException.predictionThrow(((CheckableRule) each).check(toBeCheckedRuleConfig, dataSourceNames),
+                        () -> new InvalidRuleConfigurationException("sharding table", toBeAlteredLogicTableNames, Collections.singleton("invalid binding table configuration")));
+            }
+        }
     }
     
-    private static Collection<String> getCurrentBindingTables(final ShardingRuleConfiguration currentRuleConfig) {
-        Collection<String> result = new LinkedHashSet<>();
-        currentRuleConfig.getBindingTableGroups().forEach(each -> result.addAll(Splitter.on(",").trimResults().splitToList(each)));
-        return result;
+    private static void removeRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeAlteredRuleConfig) {
+        Collection<String> toBeAlteredLogicTableNames = getAlteredLogicalTableNames(toBeAlteredRuleConfig);
+        toBeAlteredLogicTableNames.forEach(each -> {
+            currentRuleConfig.getTables().removeIf(table -> table.getLogicTable().equalsIgnoreCase(each));
+            currentRuleConfig.getAutoTables().removeIf(table -> table.getLogicTable().equalsIgnoreCase(each));
+        });
+    }
+    
+    private static void addRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeAlteredRuleConfig) {
+        currentRuleConfig.getTables().addAll(toBeAlteredRuleConfig.getTables());
+        currentRuleConfig.getAutoTables().addAll(toBeAlteredRuleConfig.getAutoTables());
+        currentRuleConfig.getShardingAlgorithms().putAll(toBeAlteredRuleConfig.getShardingAlgorithms());
+        currentRuleConfig.getKeyGenerators().putAll(toBeAlteredRuleConfig.getKeyGenerators());
     }
     
     private static Collection<String> getAlteredLogicalTableNames(final ShardingRuleConfiguration toBeAlteredRuleConfig) {
@@ -278,18 +305,9 @@ public final class ShardingTableRuleStatementChecker {
         return result;
     }
     
-    private static Map<String, String> getBindingTablesType(final Collection<String> toBeAlteredBindingTableNames, final ShardingRuleConfiguration currentRuleConfig) {
-        Map<String, String> result = new HashMap<>(toBeAlteredBindingTableNames.size(), 1);
-        currentRuleConfig.getTables().forEach(each -> {
-            if (toBeAlteredBindingTableNames.contains(each.getLogicTable())) {
-                result.put(each.getLogicTable(), "tables");
-            }
-        });
-        currentRuleConfig.getAutoTables().forEach(each -> {
-            if (toBeAlteredBindingTableNames.contains(each.getLogicTable())) {
-                result.put(each.getLogicTable(), "autoTables");
-            }
-        });
+    private static Collection<String> getCurrentBindingTables(final ShardingRuleConfiguration currentRuleConfig) {
+        Collection<String> result = new LinkedHashSet<>();
+        currentRuleConfig.getBindingTableGroups().forEach(each -> result.addAll(Splitter.on(",").trimResults().splitToList(each)));
         return result;
     }
 }

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.readwritesplitting.rule;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
+import org.apache.shardingsphere.infra.distsql.constant.ExportableItemConstants;
 import org.apache.shardingsphere.infra.rule.event.DataSourceStatusChangedEvent;
 import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
@@ -30,7 +31,7 @@ import org.apache.shardingsphere.readwritesplitting.algorithm.config.AlgorithmPr
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.factory.ReplicaLoadBalanceAlgorithmFactory;
-import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
+import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.strategy.type.DynamicReadwriteSplittingStrategy;
 import org.apache.shardingsphere.readwritesplitting.strategy.type.StaticReadwriteSplittingStrategy;
 
@@ -41,14 +42,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 /**
  * Readwrite-splitting rule.
  */
 public final class ReadwriteSplittingRule implements SchemaRule, DataSourceContainedRule, StatusContainedRule, ExportableRule {
     
-    private final Map<String, ReplicaLoadBalanceAlgorithm> loadBalancers = new LinkedHashMap<>();
+    private final Map<String, ReadQueryLoadBalanceAlgorithm> loadBalancers = new LinkedHashMap<>();
     
     private final Map<String, ReadwriteSplittingDataSourceRule> dataSourceRules;
     
@@ -58,7 +58,7 @@ public final class ReadwriteSplittingRule implements SchemaRule, DataSourceConta
         dataSourceRules = new HashMap<>(ruleConfig.getDataSources().size(), 1);
         for (ReadwriteSplittingDataSourceRuleConfiguration each : ruleConfig.getDataSources()) {
             // TODO check if can not find load balancer should throw exception.
-            ReplicaLoadBalanceAlgorithm loadBalanceAlgorithm = Strings.isNullOrEmpty(each.getLoadBalancerName()) || !loadBalancers.containsKey(each.getLoadBalancerName())
+            ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = Strings.isNullOrEmpty(each.getLoadBalancerName()) || !loadBalancers.containsKey(each.getLoadBalancerName())
                     ? ReplicaLoadBalanceAlgorithmFactory.newInstance()
                     : loadBalancers.get(each.getLoadBalancerName());
             dataSourceRules.put(each.getName(), new ReadwriteSplittingDataSourceRule(each, loadBalanceAlgorithm));
@@ -71,7 +71,7 @@ public final class ReadwriteSplittingRule implements SchemaRule, DataSourceConta
         dataSourceRules = new HashMap<>(ruleConfig.getDataSources().size(), 1);
         for (ReadwriteSplittingDataSourceRuleConfiguration each : ruleConfig.getDataSources()) {
             // TODO check if can not find load balancer should throw exception.
-            ReplicaLoadBalanceAlgorithm loadBalanceAlgorithm = Strings.isNullOrEmpty(each.getLoadBalancerName()) || !loadBalancers.containsKey(each.getLoadBalancerName())
+            ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = Strings.isNullOrEmpty(each.getLoadBalancerName()) || !loadBalancers.containsKey(each.getLoadBalancerName())
                     ? ReplicaLoadBalanceAlgorithmFactory.newInstance()
                     : loadBalancers.get(each.getLoadBalancerName());
             dataSourceRules.put(each.getName(), new ReadwriteSplittingDataSourceRule(each, loadBalanceAlgorithm));
@@ -118,11 +118,9 @@ public final class ReadwriteSplittingRule implements SchemaRule, DataSourceConta
     
     @Override
     public Map<String, Supplier<Object>> getExportedMethods() {
-        Map<String, Supplier<Object>> result = new HashMap<>(4, 1);
-        result.put(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE, this::exportDynamicDataSources);
-        result.put(ExportableConstants.EXPORTABLE_KEY_AUTO_AWARE_DATA_SOURCE_NAME, this::exportAutoAwareDataSourceNames);
-        result.put(ExportableConstants.EXPORTABLE_KEY_ENABLED_DATA_SOURCE, this::exportStaticDataSources);
-        result.put(ExportableConstants.EXPORTABLE_KEY_DATA_SOURCE, this::exportAllDataSources);
+        Map<String, Supplier<Object>> result = new HashMap<>(2, 1);
+        result.put(ExportableConstants.EXPORT_DYNAMIC_READWRITE_SPLITTING_RULE, this::exportDynamicDataSources);
+        result.put(ExportableConstants.EXPORT_STATIC_READWRITE_SPLITTING_RULE, this::exportStaticDataSources);
         return result;
     }
     
@@ -131,17 +129,13 @@ public final class ReadwriteSplittingRule implements SchemaRule, DataSourceConta
         for (ReadwriteSplittingDataSourceRule each : dataSourceRules.values()) {
             if (each.getReadwriteSplittingStrategy() instanceof DynamicReadwriteSplittingStrategy) {
                 Map<String, String> exportedDataSources = new LinkedHashMap<>(2, 1);
-                exportedDataSources.put(ExportableConstants.PRIMARY_DATA_SOURCE_NAME, each.getWriteDataSource());
-                exportedDataSources.put(ExportableConstants.REPLICA_DATA_SOURCE_NAMES, String.join(",", each.getReadDataSourceNames()));
+                exportedDataSources.put(ExportableItemConstants.AUTO_AWARE_DATA_SOURCE_NAME, ((DynamicReadwriteSplittingStrategy) each.getReadwriteSplittingStrategy()).getAutoAwareDataSourceName());
+                exportedDataSources.put(ExportableItemConstants.PRIMARY_DATA_SOURCE_NAME, each.getWriteDataSource());
+                exportedDataSources.put(ExportableItemConstants.REPLICA_DATA_SOURCE_NAMES, String.join(",", each.getReadwriteSplittingStrategy().getReadDataSources()));
                 result.put(each.getName(), exportedDataSources);
             }
         }
         return result;
-    }
-    
-    private Collection<String> exportAutoAwareDataSourceNames() {
-        return dataSourceRules.values().stream().filter(each -> each.getReadwriteSplittingStrategy() instanceof DynamicReadwriteSplittingStrategy)
-                .map(each -> ((DynamicReadwriteSplittingStrategy) each.getReadwriteSplittingStrategy()).getAutoAwareDataSourceName()).collect(Collectors.toList());
     }
     
     private Map<String, Map<String, String>> exportStaticDataSources() {
@@ -149,21 +143,10 @@ public final class ReadwriteSplittingRule implements SchemaRule, DataSourceConta
         for (ReadwriteSplittingDataSourceRule each : dataSourceRules.values()) {
             if (each.getReadwriteSplittingStrategy() instanceof StaticReadwriteSplittingStrategy) {
                 Map<String, String> exportedDataSources = new LinkedHashMap<>(2, 1);
-                exportedDataSources.put(ExportableConstants.PRIMARY_DATA_SOURCE_NAME, each.getWriteDataSource());
-                exportedDataSources.put(ExportableConstants.REPLICA_DATA_SOURCE_NAMES, String.join(",", each.getEnabledReplicaDataSources()));
+                exportedDataSources.put(ExportableItemConstants.PRIMARY_DATA_SOURCE_NAME, each.getWriteDataSource());
+                exportedDataSources.put(ExportableItemConstants.REPLICA_DATA_SOURCE_NAMES, String.join(",", each.getReadwriteSplittingStrategy().getReadDataSources()));
                 result.put(each.getName(), exportedDataSources);
             }
-        }
-        return result;
-    }
-    
-    private Map<String, Map<String, String>> exportAllDataSources() {
-        Map<String, Map<String, String>> result = new LinkedHashMap<>(dataSourceRules.size(), 1);
-        for (ReadwriteSplittingDataSourceRule each : dataSourceRules.values()) {
-            Map<String, String> exportedDataSources = new LinkedHashMap<>(2, 1);
-            exportedDataSources.put(ExportableConstants.PRIMARY_DATA_SOURCE_NAME, each.getWriteDataSource());
-            exportedDataSources.put(ExportableConstants.REPLICA_DATA_SOURCE_NAMES, String.join(",", each.getReadDataSourceNames()));
-            result.put(each.getName(), exportedDataSources);
         }
         return result;
     }

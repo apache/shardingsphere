@@ -22,7 +22,7 @@ import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfigu
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.ShowEncryptRulesStatement;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.properties.PropertiesConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -58,10 +58,10 @@ public final class EncryptRuleQueryResultSet implements DistSQLResultSet {
         Collection<Collection<Object>> result = new LinkedList<>();
         tableRuleConfig.getColumns().forEach(each -> {
             ShardingSphereAlgorithmConfiguration algorithmConfig = algorithmMap.get(each.getEncryptorName());
-            result.add(Arrays.asList(tableRuleConfig.getName(), each.getLogicColumn(), nullToEmptyString(each.getLogicDataType()),
-                    each.getCipherColumn(), nullToEmptyString(each.getCipherDataType()),
-                    nullToEmptyString(each.getPlainColumn()), nullToEmptyString(each.getPlainDataType()),
-                    nullToEmptyString(each.getAssistedQueryColumn()), nullToEmptyString(each.getAssistedQueryDataType()),
+            result.add(Arrays.asList(tableRuleConfig.getName(), each.getLogicColumn(), nullToEmptyString(null),
+                    each.getCipherColumn(), nullToEmptyString(null),
+                    nullToEmptyString(each.getPlainColumn()), nullToEmptyString(null),
+                    nullToEmptyString(each.getAssistedQueryColumn()), nullToEmptyString(null),
                     algorithmConfig.getType(), PropertiesConverter.convert(algorithmConfig.getProps()),
                     Objects.isNull(tableRuleConfig.getQueryWithCipherColumn()) ? Boolean.TRUE.toString() : tableRuleConfig.getQueryWithCipherColumn().toString()));
         });

@@ -48,6 +48,8 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Al
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterTextSearchParserContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterTextSearchTemplateContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterViewContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CloseContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ClusterContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ColumnConstraintContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ColumnDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CommentContext;
@@ -69,6 +71,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Cr
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CreateTextSearchContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CreateTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CreateViewContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CursorNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DeallocateContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DeclareContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DiscardContext;
@@ -140,6 +143,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.al
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.DropConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.ModifyConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.ValidateConstraintDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.cursor.CursorNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.RenameTableDefinitionSegment;
@@ -175,6 +179,8 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLAlterTablespaceStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLAlterTextSearchStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLAlterViewStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLCloseStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLClusterStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLCommentStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLCreateConversionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLCreateDatabaseStatement;
@@ -973,6 +979,8 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
             return commentOnTable(ctx);
         } else if (null != ctx.commentClauses().COLUMN()) {
             return commentOnColumn(ctx);
+        } else if (null != ctx.commentClauses().objectTypeNameOnAnyName()) {
+            return getTableFromComment(ctx);
         }
         return new PostgreSQLCommentStatement();
     }
@@ -1005,6 +1013,12 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
                 .ifPresent(owner -> owner.setOwner(new OwnerSegment(optional.getStartIndex(), optional.getStopIndex(), optional.getIdentifier()))));
     }
     
+    private PostgreSQLCommentStatement getTableFromComment(final CommentContext ctx) {
+        PostgreSQLCommentStatement result = new PostgreSQLCommentStatement();
+        result.setTable((SimpleTableSegment) visit(ctx.commentClauses().tableName()));
+        return result;
+    }
+    
     @Override
     public ASTNode visitDropOperatorClass(final DropOperatorClassContext ctx) {
         return new PostgreSQLDropOperatorClassStatement();
@@ -1023,5 +1037,31 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     @Override
     public ASTNode visitDropServer(final DropServerContext ctx) {
         return new PostgreSQLDropServerStatement();
+    }
+    
+    @Override
+    public ASTNode visitClose(final CloseContext ctx) {
+        PostgreSQLCloseStatement result = new PostgreSQLCloseStatement();
+        if (null != ctx.cursorName()) {
+            result.setCursorName((CursorNameSegment) visit(ctx.cursorName()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitCursorName(final CursorNameContext ctx) {
+        return new CursorNameSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (IdentifierValue) visit(ctx.name()));
+    }
+    
+    @Override
+    public ASTNode visitCluster(final ClusterContext ctx) {
+        PostgreSQLClusterStatement result = new PostgreSQLClusterStatement();
+        if (null != ctx.tableName()) {
+            result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        }
+        if (null != ctx.clusterIndexSpecification()) {
+            result.setIndex((IndexSegment) visit(ctx.clusterIndexSpecification().indexName()));
+        }
+        return result;
     }
 }

@@ -25,8 +25,8 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleExcep
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.rule.identifier.type.ExportableRule;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
@@ -42,7 +42,6 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -92,7 +91,7 @@ public final class CreateReadwriteSplittingRuleStatementUpdater implements RuleD
         Collection<String> notExistResources = database.getResource().getNotExistedResources(requireResources);
         DistSQLException.predictionThrow(notExistResources.isEmpty(), () -> new RequiredResourceMissedException(databaseName, notExistResources));
         Collection<String> logicResources = getLogicResources(database);
-        Set<String> notExistLogicResources = requireDiscoverableResources.stream().filter(each -> !logicResources.contains(each)).collect(Collectors.toSet());
+        Collection<String> notExistLogicResources = requireDiscoverableResources.stream().filter(each -> !logicResources.contains(each)).collect(Collectors.toSet());
         DistSQLException.predictionThrow(notExistLogicResources.isEmpty(), () -> new RequiredResourceMissedException(databaseName, notExistLogicResources));
     }
     
@@ -100,10 +99,10 @@ public final class CreateReadwriteSplittingRuleStatementUpdater implements RuleD
     private Collection<String> getLogicResources(final ShardingSphereDatabase database) {
         Collection<String> result = new LinkedHashSet<>();
         Optional<ExportableRule> exportableRule = database.getRuleMetaData().findRules(ExportableRule.class).stream()
-                .filter(each -> each.containExportableKey(Collections.singletonList(ExportableConstants.EXPORTABLE_KEY_PRIMARY_DATA_SOURCE))).findAny();
+                .filter(each -> each.containExportableKey(Collections.singletonList(ExportableConstants.EXPORT_DB_DISCOVERY_PRIMARY_DATA_SOURCES))).findAny();
         exportableRule.ifPresent(optional -> {
-            Map<String, Object> exportData = optional.export(Collections.singletonList(ExportableConstants.EXPORTABLE_KEY_PRIMARY_DATA_SOURCE));
-            Set<String> logicResources = ((Map<String, String>) exportData.getOrDefault(ExportableConstants.EXPORTABLE_KEY_PRIMARY_DATA_SOURCE, Collections.emptyMap())).keySet();
+            Map<String, Object> exportData = optional.export(Collections.singletonList(ExportableConstants.EXPORT_DB_DISCOVERY_PRIMARY_DATA_SOURCES));
+            Collection<String> logicResources = ((Map<String, String>) exportData.getOrDefault(ExportableConstants.EXPORT_DB_DISCOVERY_PRIMARY_DATA_SOURCES, Collections.emptyMap())).keySet();
             result.addAll(logicResources);
         });
         return result;

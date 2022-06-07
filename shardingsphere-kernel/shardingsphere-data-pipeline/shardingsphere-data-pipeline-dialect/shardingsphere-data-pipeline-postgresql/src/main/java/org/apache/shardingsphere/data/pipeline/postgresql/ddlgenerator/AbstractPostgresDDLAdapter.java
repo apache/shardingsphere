@@ -58,7 +58,7 @@ public abstract class AbstractPostgresDDLAdapter {
     protected Collection<Map<String, Object>> executeByTemplate(final Map<String, Object> parameters, final String path) {
         try (
                 Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(FreemarkerManager.getSqlByPgVersion(parameters, path, majorVersion, minorVersion))) {
+                ResultSet resultSet = statement.executeQuery(FreemarkerManager.getSQLByPgVersion(parameters, path, majorVersion, minorVersion))) {
             return getRows(resultSet);
         }
     }

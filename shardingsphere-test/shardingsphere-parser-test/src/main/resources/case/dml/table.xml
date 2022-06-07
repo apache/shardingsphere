@@ -30,11 +30,11 @@
     
     <select sql-case-id="table_union">
         <simple-table name="T1" start-index="6" stop-index="7" />
-        <union union-type="UNION_DISTINCT" start-index="9" stop-index="22">
+        <combine combine-type="UNION" start-index="9" stop-index="22">
             <select>
                 <simple-table name="T2" start-index="21" stop-index="22" />
             </select>
-        </union>
+        </combine>
     </select>
     
     <select sql-case-id="select_from_with_table">

@@ -181,7 +181,7 @@ Apache ShardingSphere 是多接入端共同组成的生态圈。
 <br/><br/>
 <img src="https://landscape.cncf.io/images/left-logo.svg" width="150"/>&nbsp;&nbsp;<img src="https://landscape.cncf.io/images/right-logo.svg" width="200"/>
 <br/><br/>
-ShardingSphere 进入了<a href="https://landscape.cncf.io/landscape=observability-and-analysis&license=apache-license-2-0">CNCF 云原生全景图</a>。
+ShardingSphere 进入了<a href="https://landscape.cncf.io/?category=app-definition-and-development&grouping=category">CNCF 云原生全景图</a>。
 </p>
 
 ##

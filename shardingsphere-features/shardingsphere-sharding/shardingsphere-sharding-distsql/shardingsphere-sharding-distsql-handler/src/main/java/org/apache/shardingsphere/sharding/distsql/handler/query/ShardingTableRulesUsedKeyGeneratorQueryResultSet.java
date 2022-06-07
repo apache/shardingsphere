@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableRulesUsedKeyGeneratorStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -42,30 +42,29 @@ public final class ShardingTableRulesUsedKeyGeneratorQueryResultSet implements D
         ShowShardingTableRulesUsedKeyGeneratorStatement statement = (ShowShardingTableRulesUsedKeyGeneratorStatement) sqlStatement;
         List<Collection<Object>> result = new ArrayList<>();
         Collection<ShardingRuleConfiguration> shardingTableRules = database.getRuleMetaData().findRuleConfigurations(ShardingRuleConfiguration.class);
-        shardingTableRules.forEach(each -> requireResult(statement, database.getName(), result, each));
+        shardingTableRules.forEach(each -> requireResult(statement, result, each));
         data = result.iterator();
     }
     
-    private void requireResult(final ShowShardingTableRulesUsedKeyGeneratorStatement statement, final String databaseName, final List<Collection<Object>> result,
-                               final ShardingRuleConfiguration shardingRuleConfig) {
+    private void requireResult(final ShowShardingTableRulesUsedKeyGeneratorStatement statement, final List<Collection<Object>> result, final ShardingRuleConfiguration shardingRuleConfig) {
         if (!statement.getKeyGeneratorName().isPresent()) {
             return;
         }
         shardingRuleConfig.getTables().forEach(each -> {
             if (null != each.getKeyGenerateStrategy() && statement.getKeyGeneratorName().get().equals(each.getKeyGenerateStrategy().getKeyGeneratorName())) {
-                result.add(Arrays.asList(databaseName, "table", each.getLogicTable()));
+                result.add(Arrays.asList("table", each.getLogicTable()));
             }
         });
         shardingRuleConfig.getAutoTables().forEach(each -> {
             if (null != each.getKeyGenerateStrategy() && statement.getKeyGeneratorName().get().equals(each.getKeyGenerateStrategy().getKeyGeneratorName())) {
-                result.add(Arrays.asList(databaseName, "auto_table", each.getLogicTable()));
+                result.add(Arrays.asList("auto_table", each.getLogicTable()));
             }
         });
     }
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("schema", "type", "name");
+        return Arrays.asList("type", "name");
     }
     
     @Override

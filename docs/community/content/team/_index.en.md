@@ -364,6 +364,21 @@ chapter = true
                 <img src="https://avatars.githubusercontent.com/u/66914151?v=4" style="border-radius:50%; overflow:hidden">
             </a>
          </td>
+        <td>
+            <a href="https://github.com/cheese8" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/25882819?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/soulasuna" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/33794770?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/galaxylqx" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/9473278?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
     </tr>
     <tr align="center">
         <td>
@@ -378,6 +393,15 @@ chapter = true
          <td>
             <b>Liangda Wang</b>
          </td>
+        <td>
+            <b>cheese8</b>
+        </td>
+        <td>
+            <b>Yang Hou</b>
+        </td>
+        <td>
+            <b>Qunxing Lei</b>
+        </td>
     </tr>
 </table>
 

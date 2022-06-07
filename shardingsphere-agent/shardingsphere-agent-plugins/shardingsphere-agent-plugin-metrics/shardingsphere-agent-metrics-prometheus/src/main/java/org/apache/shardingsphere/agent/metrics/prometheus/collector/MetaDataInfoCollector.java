@@ -24,7 +24,7 @@ import org.apache.shardingsphere.agent.metrics.api.constant.MetricIds;
 import org.apache.shardingsphere.agent.metrics.api.util.MetricsUtil;
 import org.apache.shardingsphere.agent.metrics.prometheus.wrapper.PrometheusWrapperFactory;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
@@ -65,13 +65,13 @@ public final class MetaDataInfoCollector extends Collector {
     
     private void collectProxy(final GaugeMetricFamily metricFamily) {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        metricFamily.addMetric(Collections.singletonList(LOGIC_DB_COUNT), metaDataContexts.getDatabaseMap().size());
+        metricFamily.addMetric(Collections.singletonList(LOGIC_DB_COUNT), metaDataContexts.getMetaData().getDatabases().size());
         metricFamily.addMetric(Collections.singletonList(ACTUAL_DB_COUNT), getDatabaseNames(metaDataContexts).size());
     }
     
     private Collection<String> getDatabaseNames(final MetaDataContexts metaDataContexts) {
         Collection<String> result = new HashSet<>();
-        for (ShardingSphereDatabase each : metaDataContexts.getDatabaseMap().values()) {
+        for (ShardingSphereDatabase each : metaDataContexts.getMetaData().getDatabases().values()) {
             result.addAll(getDatabaseNames(each));
         }
         return result;

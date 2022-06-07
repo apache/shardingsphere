@@ -17,7 +17,7 @@
 
 apiVersion: v2
 name: governance
-description: A Helm chart for ShardingSphere-Proxy  governance node
+description: A Helm chart for ShardingSphere-Proxy governance node
 
 # A chart can be either an 'application' or a 'library' chart.
 #

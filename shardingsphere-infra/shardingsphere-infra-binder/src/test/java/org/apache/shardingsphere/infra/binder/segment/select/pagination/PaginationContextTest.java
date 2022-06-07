@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.binder.segment.select.pagination;
 
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.GroupBySegment;
@@ -161,8 +161,8 @@ public final class PaginationContextTest {
     
     private void getRevisedRowCount(final SelectStatement selectStatement) {
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
-        Map<String, ShardingSphereDatabase> databaseMap = Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mock(ShardingSphereDatabase.class));
-        SelectStatementContext selectStatementContext = new SelectStatementContext(databaseMap, Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
+        Map<String, ShardingSphereDatabase> databases = Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mock(ShardingSphereDatabase.class));
+        SelectStatementContext selectStatementContext = new SelectStatementContext(databases, Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
         assertThat(new PaginationContext(getOffsetSegment(), getRowCountSegment(), getParameters()).getRevisedRowCount(selectStatementContext), is(50L));
     }
     
@@ -195,8 +195,8 @@ public final class PaginationContextTest {
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         selectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.DESC))));
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.DESC))));
-        Map<String, ShardingSphereDatabase> databaseMap = Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mock(ShardingSphereDatabase.class));
-        SelectStatementContext selectStatementContext = new SelectStatementContext(databaseMap, Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
+        Map<String, ShardingSphereDatabase> databases = Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mock(ShardingSphereDatabase.class));
+        SelectStatementContext selectStatementContext = new SelectStatementContext(databases, Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
         assertThat(new PaginationContext(getOffsetSegment(), getRowCountSegment(), getParameters()).getRevisedRowCount(selectStatementContext), is((long) Integer.MAX_VALUE));
     }
 }

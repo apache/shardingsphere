@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatabl
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.RefreshTableMetadataStatement;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -44,16 +45,20 @@ public final class RefreshTableMetadataHandler extends UpdatableRALBackendHandle
     @Override
     protected void update(final ContextManager contextManager, final RefreshTableMetadataStatement sqlStatement) throws DistSQLException {
         String databaseName = getDatabaseName();
-        String schemaName = connectionSession.getDatabaseType().getDefaultSchema(databaseName);
+        String schemaName = getSchemaName(sqlStatement, databaseName);
         if (sqlStatement.getResourceName().isPresent()) {
-            contextManager.reloadMetaData(databaseName, schemaName, sqlStatement.getTableName().get(), sqlStatement.getResourceName().get());
+            if (sqlStatement.getTableName().isPresent()) {
+                contextManager.reloadMetaData(databaseName, schemaName, sqlStatement.getResourceName().get(), sqlStatement.getTableName().get());
+            } else {
+                contextManager.reloadSchemaMetaData(databaseName, schemaName, sqlStatement.getResourceName().get());
+            }
             return;
         }
         if (sqlStatement.getTableName().isPresent()) {
             contextManager.reloadMetaData(databaseName, schemaName, sqlStatement.getTableName().get());
             return;
         }
-        contextManager.reloadMetaData(databaseName, schemaName);
+        contextManager.reloadMetaData(databaseName);
     }
     
     private String getDatabaseName() {
@@ -65,5 +70,12 @@ public final class RefreshTableMetadataHandler extends UpdatableRALBackendHandle
             throw new UnknownDatabaseException(result);
         }
         return result;
+    }
+    
+    private String getSchemaName(final RefreshTableMetadataStatement sqlStatement, final String databaseName) {
+        if (sqlStatement.getSchemaName().isPresent()) {
+            return sqlStatement.getSchemaName().get();
+        }
+        return DatabaseTypeEngine.getDefaultSchemaName(connectionSession.getDatabaseType(), databaseName);
     }
 }

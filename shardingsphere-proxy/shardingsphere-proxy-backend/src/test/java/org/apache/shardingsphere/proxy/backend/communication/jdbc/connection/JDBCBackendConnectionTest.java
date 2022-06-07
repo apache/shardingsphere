@@ -23,8 +23,9 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
@@ -103,8 +104,8 @@ public final class JDBCBackendConnectionTest extends ProxyContextRestorer {
     
     private void setContextManager() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), createDatabaseMap(),
-                mock(ShardingSphereRuleMetaData.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
+        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
+                new ShardingSphereMetaData(createDatabases(), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())), mock(OptimizerContext.class));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         TransactionContexts transactionContexts = createTransactionContexts();
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
@@ -112,7 +113,7 @@ public final class JDBCBackendConnectionTest extends ProxyContextRestorer {
         ProxyContext.init(contextManager);
     }
     
-    private Map<String, ShardingSphereDatabase> createDatabaseMap() {
+    private Map<String, ShardingSphereDatabase> createDatabases() {
         Map<String, ShardingSphereDatabase> result = new HashMap<>(10, 1);
         for (int i = 0; i < 10; i++) {
             String name = String.format(SCHEMA_PATTERN, i);
@@ -382,10 +383,8 @@ public final class JDBCBackendConnectionTest extends ProxyContextRestorer {
     }
     
     @Test
-    public void assertPrepareForTaskExecution() throws BackendConnectionException {
+    public void assertPrepareForTaskExecution() {
         backendConnection.prepareForTaskExecution();
-        verify(backendConnection).closeDatabaseCommunicationEngines(true);
-        verify(backendConnection).closeConnections(false);
     }
     
     @Test

@@ -36,11 +36,11 @@ alterInstance
     ;
 
 enableInstance
-    : ENABLE INSTANCE (instanceId | instanceDefination)
+    : ENABLE INSTANCE instanceId
     ;
 
 disableInstance
-    : DISABLE INSTANCE (instanceId | instanceDefination)
+    : DISABLE INSTANCE instanceId
     ;
 
 showInstance
@@ -56,7 +56,7 @@ refreshTableMetadata
     ;
 
 showTableMetadata
-    : SHOW TABLE METADATA tableName (COMMA tableName*)? (FROM schemaName)?
+    : SHOW TABLE METADATA tableName (COMMA tableName*)? (FROM databaseName)?
     ;
 
 showAuthorityRule
@@ -100,15 +100,15 @@ dropTrafficRule
     ;
 
 labelInstance
-    : (LABEL | RELABEL) INSTANCE (instanceDefination | instanceId) WITH label (COMMA label)*
+    : (LABEL | RELABEL) INSTANCE instanceId WITH label (COMMA label)*
     ;
 
 unlabelInstance
-    : UNLABEL INSTANCE (instanceDefination | instanceId) (WITH label (COMMA label)*)?
+    : UNLABEL INSTANCE instanceId (WITH label (COMMA label)*)?
     ;
 
 countInstanceRules
-    : COUNT INSTANCE RULES (FROM schemaName)?
+    : COUNT INSTANCE RULES (FROM databaseName)?
     ;
 
 trafficRuleDefinition
@@ -176,19 +176,19 @@ variableValues
     ;
 
 variableValue
-    : IDENTIFIER | STRING | (MINUS)? INT | TRUE | FALSE | instanceId
-    ;
-
-instanceDefination
-    : IP EQ ip COMMA PORT EQ port
+    : IDENTIFIER | STRING | (MINUS)? INT | TRUE | FALSE
     ;
 
 instanceId
-    : ip AT port
+    : IDENTIFIER | STRING
     ;
 
 refreshScope
-    : tableName | tableName FROM RESOURCE resourceName
+    : tableName? fromSegment?
+    ;
+
+fromSegment
+    : FROM RESOURCE resourceName (SCHEMA schemaName)?
     ;
 
 sqlCommentParseEnable

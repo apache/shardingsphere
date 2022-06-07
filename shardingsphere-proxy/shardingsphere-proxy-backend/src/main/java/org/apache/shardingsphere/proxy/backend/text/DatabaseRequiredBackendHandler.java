@@ -24,9 +24,9 @@ import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedExcep
 import org.apache.shardingsphere.proxy.backend.exception.UnknownDatabaseException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.available.FromSchemaAvailable;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.available.FromDatabaseAvailable;
 
 import java.sql.SQLException;
 import java.util.Optional;
@@ -54,7 +54,7 @@ public abstract class DatabaseRequiredBackendHandler<T extends SQLStatement> imp
     protected abstract ResponseHeader execute(String databaseName, T sqlStatement) throws SQLException;
     
     private String getDatabaseName(final ConnectionSession connectionSession, final T sqlStatement) {
-        Optional<SchemaSegment> schemaFromSQL = sqlStatement instanceof FromSchemaAvailable ? ((FromSchemaAvailable) sqlStatement).getSchema() : Optional.empty();
+        Optional<DatabaseSegment> schemaFromSQL = sqlStatement instanceof FromDatabaseAvailable ? ((FromDatabaseAvailable) sqlStatement).getDatabase() : Optional.empty();
         return schemaFromSQL.isPresent() ? schemaFromSQL.get().getIdentifier().getValue() : connectionSession.getDatabaseName();
     }
     

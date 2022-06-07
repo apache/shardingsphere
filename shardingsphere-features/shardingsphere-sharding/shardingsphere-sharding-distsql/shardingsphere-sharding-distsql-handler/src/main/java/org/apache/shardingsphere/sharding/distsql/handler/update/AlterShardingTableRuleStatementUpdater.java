@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.distsql.handler.update;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionAlterUpdater;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -41,7 +41,7 @@ public final class AlterShardingTableRuleStatementUpdater implements RuleDefinit
                                   final AlterShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
         DistSQLException.predictionThrow(null != currentRuleConfig, () -> new RequiredRuleMissedException("Sharding", database.getName()));
         ShardingTableRuleStatementChecker.checkAlteration(database, sqlStatement.getRules(), currentRuleConfig);
-        ShardingTableRuleStatementChecker.checkBindingTableRules(currentRuleConfig, buildToBeAlteredRuleConfiguration(sqlStatement));
+        ShardingTableRuleStatementChecker.checkBindingTableRules(database, currentRuleConfig, buildToBeAlteredRuleConfiguration(sqlStatement));
     }
     
     @Override

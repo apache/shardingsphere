@@ -91,5 +91,18 @@ execute
     | createContext
     | createSPFile
     | createPFile
+    | createControlFile
+    | createFlashbackArchive
+    | alterFlashbackArchive
+    | dropFlashbackArchive
+    | createDiskgroup
+    | dropDiskgroup
+    | createRollbackSegment
+    | dropRollbackSegment
+    | createLockdownProfile
+    | dropLockdownProfile
+    | createInmemoryJoinGroup
+    | dropInmemoryJoinGroup
+    | createRestorePoint
     ) SEMI_?
     ;

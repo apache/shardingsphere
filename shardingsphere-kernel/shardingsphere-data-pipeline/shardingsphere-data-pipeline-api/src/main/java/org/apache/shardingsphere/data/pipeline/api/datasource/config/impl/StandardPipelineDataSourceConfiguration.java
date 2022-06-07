@@ -21,6 +21,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlJdbcConfiguration;
+import org.apache.shardingsphere.data.pipeline.spi.datasource.JdbcQueryPropertiesExtension;
+import org.apache.shardingsphere.data.pipeline.spi.datasource.JdbcQueryPropertiesExtensionFactory;
 import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrlAppender;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
@@ -29,8 +31,10 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -68,10 +72,14 @@ public final class StandardPipelineDataSourceConfiguration implements PipelineDa
         if (!yamlConfig.containsKey(DATA_SOURCE_CLASS_NAME)) {
             yamlConfig.put(DATA_SOURCE_CLASS_NAME, "com.zaxxer.hikari.HikariDataSource");
         }
+        for (String each : Arrays.asList("minPoolSize", "minimumIdle")) {
+            yamlConfig.put(each, "1");
+        }
         dataSourceProperties = new YamlDataSourceConfigurationSwapper().swapToDataSourceProperties(yamlConfig);
         yamlConfig.remove(DATA_SOURCE_CLASS_NAME);
         jdbcConfig = YamlEngine.unmarshal(YamlEngine.marshal(yamlConfig), YamlJdbcConfiguration.class, true);
         databaseType = DatabaseTypeEngine.getDatabaseType(jdbcConfig.getJdbcUrl());
+        appendJdbcQueryProperties(databaseType.getType());
     }
     
     public StandardPipelineDataSourceConfiguration(final String jdbcUrl, final String username, final String password) {
@@ -87,6 +95,18 @@ public final class StandardPipelineDataSourceConfiguration implements PipelineDa
         return result;
     }
     
+    private void appendJdbcQueryProperties(final String databaseType) {
+        Optional<JdbcQueryPropertiesExtension> extension = JdbcQueryPropertiesExtensionFactory.getInstance(databaseType);
+        if (!extension.isPresent()) {
+            return;
+        }
+        Properties queryProps = extension.get().extendQueryProperties();
+        if (queryProps.isEmpty()) {
+            return;
+        }
+        jdbcConfig.setJdbcUrl(new JdbcUrlAppender().appendQueryProperties(jdbcConfig.getJdbcUrl(), queryProps));
+    }
+    
     @Override
     public String getType() {
         return TYPE;
@@ -95,11 +115,6 @@ public final class StandardPipelineDataSourceConfiguration implements PipelineDa
     @Override
     public Object getDataSourceConfiguration() {
         return dataSourceProperties;
-    }
-    
-    @Override
-    public void appendJDBCQueryProperties(final Properties queryProps) {
-        jdbcConfig.setJdbcUrl(new JdbcUrlAppender().appendQueryProperties(jdbcConfig.getJdbcUrl(), queryProps));
     }
     
     // TODO toShardingSphereJDBCDataSource(final String actualDataSourceName, final String logicTableName, final String actualTableName)

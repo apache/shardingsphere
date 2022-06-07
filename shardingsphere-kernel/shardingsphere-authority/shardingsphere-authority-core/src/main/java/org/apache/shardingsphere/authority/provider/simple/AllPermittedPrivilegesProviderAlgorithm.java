@@ -21,7 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.authority.model.AuthorityRegistry;
 import org.apache.shardingsphere.authority.registry.AllPermittedAuthorityRegistry;
 import org.apache.shardingsphere.authority.spi.AuthorityProviderAlgorithm;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 
 import java.util.Collection;
@@ -43,7 +43,7 @@ public final class AllPermittedPrivilegesProviderAlgorithm implements AuthorityP
     }
     
     @Override
-    public AuthorityRegistry buildAuthorityRegistry(final Map<String, ShardingSphereDatabase> databaseMap, final Collection<ShardingSphereUser> users) {
+    public AuthorityRegistry buildAuthorityRegistry(final Map<String, ShardingSphereDatabase> databases, final Collection<ShardingSphereUser> users) {
         return new AllPermittedAuthorityRegistry();
     }
     

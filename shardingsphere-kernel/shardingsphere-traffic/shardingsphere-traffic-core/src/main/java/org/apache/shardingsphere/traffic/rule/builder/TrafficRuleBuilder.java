@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.traffic.rule.builder;
 
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRuleBuilder;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
@@ -32,7 +32,7 @@ import java.util.Map;
 public final class TrafficRuleBuilder implements GlobalRuleBuilder<TrafficRuleConfiguration> {
     
     @Override
-    public GlobalRule build(final TrafficRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databaseMap) {
+    public GlobalRule build(final TrafficRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases) {
         return new TrafficRule(ruleConfig);
     }
     

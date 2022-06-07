@@ -19,7 +19,7 @@ grammar BaseRule;
 
 import Symbol, Keyword, Literals;
 
-schemaName
+databaseName
     : IDENTIFIER
     ;
     

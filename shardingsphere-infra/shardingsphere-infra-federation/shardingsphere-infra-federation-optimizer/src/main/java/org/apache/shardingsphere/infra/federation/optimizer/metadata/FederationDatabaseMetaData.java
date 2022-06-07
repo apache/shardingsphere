@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.infra.federation.optimizer.metadata;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -56,14 +56,14 @@ public final class FederationDatabaseMetaData {
     }
     
     /**
-     * Put table meta data.
+     * Put table.
      *
      * @param schemaName schema name
-     * @param tableMetaData table meta data
+     * @param table table
      */
-    public void putTableMetadata(final String schemaName, final TableMetaData tableMetaData) {
+    public void putTable(final String schemaName, final ShardingSphereTable table) {
         FederationSchemaMetaData schemaMetaData = schemas.computeIfAbsent(schemaName.toLowerCase(), key -> new FederationSchemaMetaData(schemaName, new LinkedHashMap<>()));
-        schemaMetaData.put(tableMetaData);
+        schemaMetaData.put(table);
     }
     
     /**

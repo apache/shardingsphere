@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager;
 
+import org.apache.shardingsphere.infra.lock.LockMode;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.ShardingSphereInterMutexLockHolder;
 import org.apache.shardingsphere.spi.annotation.SingletonSPI;
@@ -38,66 +39,70 @@ public interface ShardingSphereLockManager extends RequiredSPI {
     void init(ShardingSphereInterMutexLockHolder lockHolder);
     
     /**
-     * Get mutex lock.
+     * Get distributed lock.
      *
-     * @return mutex lock
+     * @return distributed lock
      */
-    ShardingSphereLock getMutexLock();
+    ShardingSphereLock getDistributedLock();
     
     /**
-     * Lock write for database.
+     * Try lock for database.
      *
      * @param databaseName database name
+     * @param lockMode lock mode
      * @return is locked or not
      */
-    boolean lockWrite(String databaseName);
-    
-    /**
-     * Lock write for schemas.
-     *
-     * @param databaseName database name
-     * @param schemaNames schema names
-     * @return is locked or not
-     */
-    default boolean lockWrite(String databaseName, Set<String> schemaNames) {
-        throw new UnsupportedOperationException();
-    }
+    boolean tryLock(String databaseName, LockMode lockMode);
     
     /**
      * Try lock write for database.
      *
      * @param databaseName database name
+     * @param lockMode lock mode
      * @param timeoutMilliseconds timeout milliseconds
      * @return is locked or not
      */
-    boolean tryLockWrite(String databaseName, long timeoutMilliseconds);
+    boolean tryLock(String databaseName, LockMode lockMode, long timeoutMilliseconds);
     
     /**
-     * Try lock write for schemas.
+     * Try lock for schemas.
      *
      * @param databaseName database name
      * @param schemaNames schema names
-     * @param timeoutMilliseconds timeout milliseconds
+     * @param lockMode lock mode
      * @return is locked or not
      */
-    default boolean tryLockWrite(String databaseName, Set<String> schemaNames, long timeoutMilliseconds) {
+    default boolean tryLock(String databaseName, Set<String> schemaNames, LockMode lockMode) {
         throw new UnsupportedOperationException();
     }
     
     /**
-     * Release lock write for database.
+     * Try lock for schemas.
+     *
+     * @param databaseName database name
+     * @param schemaNames schema names
+     * @param lockMode lock mode
+     * @param timeoutMilliseconds timeout milliseconds
+     * @return is locked or not
+     */
+    default boolean tryLock(String databaseName, Set<String> schemaNames, LockMode lockMode, long timeoutMilliseconds) {
+        throw new UnsupportedOperationException();
+    }
+    
+    /**
+     * Release lock for database.
      *
      * @param databaseName database name
      */
-    void releaseLockWrite(String databaseName);
+    void releaseLock(String databaseName);
     
     /**
-     * Try lock write for schemas.
+     * Release lock for schemas.
      *
      * @param databaseName database name
      * @param schemaName schema name
      */
-    default void releaseLockWrite(String databaseName, String schemaName) {
+    default void releaseLock(String databaseName, String schemaName) {
         throw new UnsupportedOperationException();
     }
     

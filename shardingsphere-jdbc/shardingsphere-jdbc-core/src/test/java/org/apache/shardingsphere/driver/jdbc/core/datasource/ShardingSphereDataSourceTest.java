@@ -55,7 +55,7 @@ public final class ShardingSphereDataSourceTest {
     @Test
     public void assertNewConstructorWithModeConfigurationOnly() throws SQLException {
         ShardingSphereDataSource actual = new ShardingSphereDataSource(DefaultDatabase.LOGIC_NAME, null);
-        assertTrue(getContextManager(actual).getMetaDataContexts().getDatabaseMap().containsKey(DefaultDatabase.LOGIC_NAME));
+        assertTrue(getContextManager(actual).getMetaDataContexts().getMetaData().getDatabases().containsKey(DefaultDatabase.LOGIC_NAME));
         assertTrue(getContextManager(actual).getTransactionContexts().getEngines().containsKey(DefaultDatabase.LOGIC_NAME));
         assertThat(getContextManager(actual).getInstanceContext().getInstance().getState().getCurrentState(), is(StateType.OK));
         assertTrue(getContextManager(actual).getDataSourceMap(DefaultDatabase.LOGIC_NAME).isEmpty());
@@ -66,7 +66,7 @@ public final class ShardingSphereDataSourceTest {
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.getMetaData().getURL()).thenReturn("jdbc:mock://127.0.0.1/foo_ds");
         ShardingSphereDataSource actual = createShardingSphereDataSource(new MockedDataSource(connection));
-        assertTrue(getContextManager(actual).getMetaDataContexts().getDatabaseMap().containsKey(DefaultDatabase.LOGIC_NAME));
+        assertTrue(getContextManager(actual).getMetaDataContexts().getMetaData().getDatabases().containsKey(DefaultDatabase.LOGIC_NAME));
         assertTrue(getContextManager(actual).getTransactionContexts().getEngines().containsKey(DefaultDatabase.LOGIC_NAME));
         assertThat(getContextManager(actual).getInstanceContext().getInstance().getState().getCurrentState(), is(StateType.OK));
         assertThat(getContextManager(actual).getDataSourceMap(DefaultDatabase.LOGIC_NAME).size(), is(1));

@@ -69,7 +69,7 @@ import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerCon
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationTableMetaData;
 import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -137,25 +137,24 @@ public final class FilterableTableScanExecutor {
         SqlString sqlString = createSQLString(tableMetaData, scanContext, databaseType);
         // TODO replace sql parse with sql convert
         FederationContext federationContext = executorContext.getFederationContext();
-        LogicSQL logicSQL = createLogicSQL(federationContext.getDatabaseMap(), sqlString, databaseType);
-        ShardingSphereDatabase database = federationContext.getDatabaseMap().get(databaseName);
+        LogicSQL logicSQL = createLogicSQL(federationContext.getDatabases(), sqlString, databaseType);
+        ShardingSphereDatabase database = federationContext.getDatabases().get(databaseName);
         ExecutionContext context = new KernelProcessor().generateExecutionContext(logicSQL, database, executorContext.getProps());
         if (federationContext.isPreview() || databaseType.getSystemSchemas().contains(schemaName)) {
             federationContext.getExecutionUnits().addAll(context.getExecutionUnits());
             return createEmptyEnumerable();
         }
-        return execute(schemaName, databaseType, logicSQL, database, context);
+        return execute(databaseType, logicSQL, database, context);
     }
     
-    private AbstractEnumerable<Object[]> execute(final String schemaName, final DatabaseType databaseType, final LogicSQL logicSQL,
-                                                 final ShardingSphereDatabase database, final ExecutionContext context) {
+    private AbstractEnumerable<Object[]> execute(final DatabaseType databaseType, final LogicSQL logicSQL, final ShardingSphereDatabase database, final ExecutionContext context) {
         try {
             ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = prepareEngine.prepare(context.getRouteContext(), context.getExecutionUnits());
             setParameters(executionGroupContext.getInputGroups());
             ExecuteProcessEngine.initialize(context.getLogicSQL(), executionGroupContext, executorContext.getProps());
             List<QueryResult> queryResults = execute(executionGroupContext, databaseType);
             ExecuteProcessEngine.finish(executionGroupContext.getExecutionID());
-            MergeEngine mergeEngine = new MergeEngine(schemaName, databaseType, database, executorContext.getProps(), database.getRuleMetaData().getRules());
+            MergeEngine mergeEngine = new MergeEngine(database, executorContext.getProps());
             MergedResult mergedResult = mergeEngine.merge(queryResults, logicSQL.getSqlStatementContext());
             Collection<Statement> statements = getStatements(executionGroupContext.getInputGroups());
             return createEnumerable(mergedResult, queryResults.get(0).getMetaData(), statements);
@@ -254,13 +253,13 @@ public final class FilterableTableScanExecutor {
         };
     }
     
-    private LogicSQL createLogicSQL(final Map<String, ShardingSphereDatabase> databaseMap, final SqlString sqlString, final DatabaseType databaseType) {
+    private LogicSQL createLogicSQL(final Map<String, ShardingSphereDatabase> databases, final SqlString sqlString, final DatabaseType databaseType) {
         String sql = sqlString.getSql().replace("\n", " ");
         SQLStatement sqlStatement = new SQLStatementParserEngine(databaseType.getType(),
                 optimizerContext.getSqlParserRule().getSqlStatementCache(), optimizerContext.getSqlParserRule().getParseTreeCache(),
                 optimizerContext.getSqlParserRule().isSqlCommentParseEnabled()).parse(sql, false);
         List<Object> parameters = getParameters(sqlString.getDynamicParameters());
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(databaseMap, parameters, sqlStatement, executorContext.getDatabaseName());
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(databases, parameters, sqlStatement, executorContext.getDatabaseName());
         return new LogicSQL(sqlStatementContext, sql, parameters);
     }
     

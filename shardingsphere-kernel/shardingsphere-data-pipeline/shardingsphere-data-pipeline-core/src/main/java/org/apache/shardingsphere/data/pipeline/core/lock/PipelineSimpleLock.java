@@ -68,7 +68,7 @@ public final class PipelineSimpleLock {
      */
     public boolean tryLock(final String lockName, final long timeoutMills) {
         String realLockName = decorateLockName(lockName);
-        boolean result = lockContext.getMutexLock().tryLock(realLockName, timeoutMills);
+        boolean result = lockContext.getLock().tryLock(realLockName, timeoutMills);
         if (result) {
             lockNameLockedMap.put(realLockName, true);
         }
@@ -86,7 +86,7 @@ public final class PipelineSimpleLock {
         log.info("releaseLock, lockName={}", realLockName);
         if (lockNameLockedMap.getOrDefault(realLockName, false)) {
             lockNameLockedMap.remove(realLockName);
-            lockContext.getMutexLock().releaseLock(realLockName);
+            lockContext.getLock().releaseLock(realLockName);
         }
     }
     

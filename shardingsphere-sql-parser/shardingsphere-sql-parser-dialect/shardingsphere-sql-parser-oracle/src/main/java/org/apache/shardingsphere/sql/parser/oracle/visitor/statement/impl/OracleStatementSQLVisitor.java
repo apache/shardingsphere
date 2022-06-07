@@ -503,10 +503,22 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
     private ASTNode createAggregationSegment(final AggregationFunctionContext ctx, final String aggregationType) {
         AggregationType type = AggregationType.valueOf(aggregationType.toUpperCase());
         String innerExpression = ctx.start.getInputStream().getText(new Interval(ctx.LP_().get(0).getSymbol().getStartIndex(), ctx.stop.getStopIndex()));
-        if (null == ctx.DISTINCT()) {
-            return new AggregationProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpression);
+        if (null != ctx.DISTINCT()) {
+            AggregationDistinctProjectionSegment result = new AggregationDistinctProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
+                    type, innerExpression, getDistinctExpression(ctx));
+            result.getParameters().addAll(getExpressions(ctx));
+            return result;
         }
-        return new AggregationDistinctProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpression, getDistinctExpression(ctx));
+        AggregationProjectionSegment result = new AggregationProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpression);
+        result.getParameters().addAll(getExpressions(ctx));
+        return result;
+    }
+    
+    private Collection<ExpressionSegment> getExpressions(final AggregationFunctionContext ctx) {
+        if (null == ctx.expr()) {
+            return Collections.emptyList();
+        }
+        return Collections.singletonList((ExpressionSegment) visit(ctx.expr()));
     }
     
     private String getDistinctExpression(final AggregationFunctionContext ctx) {

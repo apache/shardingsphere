@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissed
 import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RuleInUsedException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -76,7 +76,7 @@ public final class DropShardingTableRuleStatementUpdater implements RuleDefiniti
         }
     }
     
-    private static boolean containsIgnoreCase(final Collection<String> collection, final String str) {
+    private boolean containsIgnoreCase(final Collection<String> collection, final String str) {
         return collection.stream().anyMatch(each -> each.equalsIgnoreCase(str));
     }
     

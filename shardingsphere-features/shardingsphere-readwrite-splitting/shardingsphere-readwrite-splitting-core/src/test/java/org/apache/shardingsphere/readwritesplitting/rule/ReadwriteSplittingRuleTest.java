@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.readwritesplitting.rule;
 
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.metadata.schema.QualifiedDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
 import org.apache.shardingsphere.mode.metadata.storage.event.DataSourceNameDisabledEvent;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
@@ -79,23 +79,23 @@ public final class ReadwriteSplittingRuleTest {
     public void assertUpdateRuleStatusWithNotExistDataSource() {
         ReadwriteSplittingRule readwriteSplittingRule = createReadwriteSplittingRule();
         readwriteSplittingRule.updateStatus(new DataSourceNameDisabledEvent(new QualifiedDatabase("readwrite_splitting_db.readwrite.read_ds"), true));
-        assertThat(readwriteSplittingRule.getSingleDataSourceRule().getReadDataSourceNames(), is(Arrays.asList("read_ds_0", "read_ds_1")));
+        assertThat(readwriteSplittingRule.getSingleDataSourceRule().getEnabledReplicaDataSources(), is(Arrays.asList("read_ds_0", "read_ds_1")));
     }
     
     @Test
     public void assertUpdateRuleStatus() {
         ReadwriteSplittingRule readwriteSplittingRule = createReadwriteSplittingRule();
         readwriteSplittingRule.updateStatus(new DataSourceNameDisabledEvent(new QualifiedDatabase("readwrite_splitting_db.readwrite.read_ds_0"), true));
-        assertThat(readwriteSplittingRule.getSingleDataSourceRule().getReadDataSourceNames(), is(Collections.singletonList("read_ds_1")));
+        assertThat(readwriteSplittingRule.getSingleDataSourceRule().getEnabledReplicaDataSources(), is(Collections.singletonList("read_ds_1")));
     }
     
     @Test
     public void assertUpdateRuleStatusWithEnable() {
         ReadwriteSplittingRule readwriteSplittingRule = createReadwriteSplittingRule();
         readwriteSplittingRule.updateStatus(new DataSourceNameDisabledEvent(new QualifiedDatabase("readwrite_splitting_db.readwrite.read_ds_0"), true));
-        assertThat(readwriteSplittingRule.getSingleDataSourceRule().getReadDataSourceNames(), is(Collections.singletonList("read_ds_1")));
+        assertThat(readwriteSplittingRule.getSingleDataSourceRule().getEnabledReplicaDataSources(), is(Collections.singletonList("read_ds_1")));
         readwriteSplittingRule.updateStatus(new DataSourceNameDisabledEvent(new QualifiedDatabase("readwrite_splitting_db.readwrite.read_ds_0"), false));
-        assertThat(readwriteSplittingRule.getSingleDataSourceRule().getReadDataSourceNames(), is(Arrays.asList("read_ds_0", "read_ds_1")));
+        assertThat(readwriteSplittingRule.getSingleDataSourceRule().getEnabledReplicaDataSources(), is(Arrays.asList("read_ds_0", "read_ds_1")));
     }
     
     @Test

@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.mode.metadata.persist.service;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlTableMetaData;
 import org.apache.shardingsphere.infra.yaml.schema.swapper.TableMetaDataYamlSwapper;
@@ -55,17 +55,11 @@ public final class SchemaMetaDataPersistServiceTest {
     
     @Test
     public void assertPersist() {
-        TableMetaData tableMetaData = new TableMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(readYAML(), YamlTableMetaData.class));
+        ShardingSphereTable table = new TableMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(readYAML(), YamlTableMetaData.class));
         ShardingSphereSchema schema = new ShardingSphereSchema();
-        schema.getTables().put("t_order", tableMetaData);
-        new SchemaMetaDataPersistService(repository).persistTables("foo_db", "foo_schema", schema);
+        schema.getTables().put("t_order", table);
+        new SchemaMetaDataPersistService(repository).persistMetaData("foo_db", "foo_schema", schema);
         verify(repository).persist(eq("/metadata/foo_db/schemas/foo_schema/tables/t_order"), anyString());
-    }
-    
-    @Test
-    public void assertPersistDatabase() {
-        new SchemaMetaDataPersistService(repository).persistDatabase("foo_db");
-        verify(repository).persist(eq("/metadata/foo_db"), anyString());
     }
     
     @Test
@@ -99,8 +93,8 @@ public final class SchemaMetaDataPersistServiceTest {
     
     @Test
     public void assertPersistTableMetaData() {
-        TableMetaData tableMetaData = new TableMetaData("FOO_TABLE", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-        new SchemaMetaDataPersistService(repository).persistTable("foo_db", "foo_schema", tableMetaData);
+        ShardingSphereTable table = new ShardingSphereTable("FOO_TABLE", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        new SchemaMetaDataPersistService(repository).persistTable("foo_db", "foo_schema", table);
         verify(repository).persist(eq("/metadata/foo_db/schemas/foo_schema/tables/foo_table"), anyString());
     }
     
