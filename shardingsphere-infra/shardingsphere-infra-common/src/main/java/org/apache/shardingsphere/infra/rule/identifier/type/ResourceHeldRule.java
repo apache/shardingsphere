@@ -15,27 +15,43 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.context;
+package org.apache.shardingsphere.infra.rule.identifier.type;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import java.util.Map;
 
 /**
- * Transaction contexts.
+ * Resource held rule.
+ * 
+ * @param <T> type of resource
  */
-@RequiredArgsConstructor
-@Getter
-public final class TransactionContexts implements AutoCloseable {
+public interface ResourceHeldRule<T> extends ShardingSphereRule {
     
-    private final Map<String, ShardingSphereTransactionManagerEngine> engines;
+    /**
+     * Get resources.
+     * 
+     * @return got resources
+     */
+    Map<String, T> getResources();
     
-    @Override
-    public void close() throws Exception {
-        for (ShardingSphereTransactionManagerEngine each : engines.values()) {
-            each.close();
-        }
-    }
+    /**
+     * Add resource.
+     *
+     * @param database database
+     */
+    void addResource(ShardingSphereDatabase database);
+    
+    /**
+     * Close stale resource.
+     * 
+     * @param databaseName database name
+     */
+    void closeStaleResource(String databaseName);
+    
+    /**
+     * Close stale resources.
+     */
+    void closeStaleResources();
 }

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.transaction;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
@@ -42,17 +41,13 @@ public final class ConnectionTransaction {
     
     private final ShardingSphereTransactionManager transactionManager;
     
-    public ConnectionTransaction(final String databaseName, final TransactionContexts transactionContexts) {
-        this(databaseName, TransactionType.LOCAL, transactionContexts);
+    public ConnectionTransaction(final String databaseName, final TransactionRule rule) {
+        this(databaseName, rule.getDefaultType(), rule);
     }
     
-    public ConnectionTransaction(final String databaseName, final TransactionRule rule, final TransactionContexts transactionContexts) {
-        this(databaseName, rule.getDefaultType(), transactionContexts);
-    }
-    
-    public ConnectionTransaction(final String databaseName, final TransactionType transactionType, final TransactionContexts transactionContexts) {
+    public ConnectionTransaction(final String databaseName, final TransactionType transactionType, final TransactionRule rule) {
         this.transactionType = transactionType;
-        transactionManager = transactionContexts.getEngines().get(databaseName).getTransactionManager(transactionType);
+        transactionManager = rule.getResources().get(databaseName).getTransactionManager(transactionType);
         TransactionTypeHolder.set(transactionType);
     }
     

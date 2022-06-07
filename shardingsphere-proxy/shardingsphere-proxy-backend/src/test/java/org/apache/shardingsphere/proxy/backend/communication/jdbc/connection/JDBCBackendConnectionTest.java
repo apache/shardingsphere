@@ -38,8 +38,8 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
-import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -57,6 +57,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -105,11 +106,8 @@ public final class JDBCBackendConnectionTest extends ProxyContextRestorer {
     private void setContextManager() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
-                new ShardingSphereMetaData(createDatabases(), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())), mock(OptimizerContext.class));
+                new ShardingSphereMetaData(createDatabases(), mockGlobalRuleMetaData(), new ConfigurationProperties(new Properties())), mock(OptimizerContext.class));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        TransactionContexts transactionContexts = createTransactionContexts();
-        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        when(contextManager.getTransactionContexts()).thenReturn(transactionContexts);
         ProxyContext.init(contextManager);
     }
     
@@ -124,11 +122,18 @@ public final class JDBCBackendConnectionTest extends ProxyContextRestorer {
         return result;
     }
     
-    private TransactionContexts createTransactionContexts() {
-        TransactionContexts result = mock(TransactionContexts.class, RETURNS_DEEP_STUBS);
+    private ShardingSphereRuleMetaData mockGlobalRuleMetaData() {
+        ShardingSphereRuleMetaData result = mock(ShardingSphereRuleMetaData.class, RETURNS_DEEP_STUBS);
+        TransactionRule transactionRule = mock(TransactionRule.class);
+        when(transactionRule.getResources()).thenReturn(createTransactionManagerEngines());
+        when(result.findSingleRule(TransactionRule.class)).thenReturn(Optional.of(transactionRule));
+        return result;
+    }
+    
+    private Map<String, ShardingSphereTransactionManagerEngine> createTransactionManagerEngines() {
+        Map<String, ShardingSphereTransactionManagerEngine> result = new HashMap<>(10, 1);
         for (int i = 0; i < 10; i++) {
-            String name = String.format(SCHEMA_PATTERN, i);
-            when(result.getEngines().get(name)).thenReturn(new ShardingSphereTransactionManagerEngine());
+            result.put(String.format(SCHEMA_PATTERN, i), new ShardingSphereTransactionManagerEngine());
         }
         return result;
     }
@@ -192,9 +197,9 @@ public final class JDBCBackendConnectionTest extends ProxyContextRestorer {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void setConnectionPostProcessors() {
-        ConnectionPostProcessor invocation = mock(ConnectionPostProcessor.class);
-        Collection<ConnectionPostProcessor> connectionPostProcessors = new LinkedList<>();
-        connectionPostProcessors.add(invocation);
+        ConnectionPostProcessor<?> connectionPostProcessor = mock(ConnectionPostProcessor.class);
+        Collection<ConnectionPostProcessor<?>> connectionPostProcessors = new LinkedList<>();
+        connectionPostProcessors.add(connectionPostProcessor);
         Field field = JDBCBackendConnection.class.getDeclaredField("connectionPostProcessors");
         field.setAccessible(true);
         field.set(backendConnection, connectionPostProcessors);
@@ -227,6 +232,7 @@ public final class JDBCBackendConnectionTest extends ProxyContextRestorer {
         assertTrue(backendConnection.isSerialExecute());
     }
     
+    @SuppressWarnings("unchecked")
     @Test
     public void assertCloseConnectionsCorrectlyWhenNotForceRollback() throws NoSuchFieldException, IllegalAccessException, SQLException {
         Field field = JDBCBackendConnection.class.getDeclaredField("cachedConnections");
@@ -311,7 +317,7 @@ public final class JDBCBackendConnectionTest extends ProxyContextRestorer {
     private void verifyConnectionPostProcessorsEmpty() {
         Field field = JDBCBackendConnection.class.getDeclaredField("connectionPostProcessors");
         field.setAccessible(true);
-        Collection<ConnectionPostProcessor> connectionPostProcessors = (Collection<ConnectionPostProcessor>) field.get(backendConnection);
+        Collection<ConnectionPostProcessor<?>> connectionPostProcessors = (Collection<ConnectionPostProcessor<?>>) field.get(backendConnection);
         assertTrue(connectionPostProcessors.isEmpty());
     }
     
