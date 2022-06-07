@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.federation.optimizer;
 
-import com.google.common.collect.ImmutableList;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.calcite.adapter.enumerable.EnumerableConvention;
@@ -41,6 +40,7 @@ import org.apache.shardingsphere.infra.federation.optimizer.converter.SQLNodeCon
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -64,19 +64,18 @@ public final class ShardingSphereOptimizer {
         try {
             SqlToRelConverter converter = context.getPlannerContexts().get(databaseName).getConverters().get(schemaName);
             SqlNode sqlNode = SQLNodeConverterEngine.convertToSQLNode(sqlStatement);
-            RelNode relNode = converter.convertQuery(sqlNode, true, true).rel;
-            RelDataType resultType = context.getPlannerContexts().get(databaseName).getValidators().get(schemaName).getValidatedNodeType(sqlNode);
-            return optimize(converter, relNode, resultType);
+            RelRoot relRoot = converter.convertQuery(sqlNode, true, true);
+            return optimize(converter, relRoot);
         } catch (final UnsupportedOperationException ex) {
             throw new ShardingSphereException(ex);
         }
     }
     
-    private RelNode optimize(final SqlToRelConverter converter, final RelNode relNode, final RelDataType resultType) {
+    private RelNode optimize(final SqlToRelConverter converter, final RelRoot relRoot) {
         RelOptPlanner planner = converter.getCluster().getPlanner();
-        RelNode changedRelNode = planner.changeTraits(relNode, converter.getCluster().traitSet().replace(EnumerableConvention.INSTANCE));
-        RelRoot relRoot = createRelRoot(changedRelNode, resultType);
-        return Programs.standard().run(planner, relRoot.rel, getDesireRootTraitSet(relRoot), ImmutableList.of(), ImmutableList.of());
+        RelNode optimizedRelNode = planner.changeTraits(relRoot.rel, converter.getCluster().traitSet().replace(EnumerableConvention.INSTANCE));
+        RelRoot optimizedRelRoot = createRelRoot(optimizedRelNode, relRoot.validatedRowType);
+        return Programs.standard().run(planner, optimizedRelRoot.rel, getDesireRootTraitSet(optimizedRelRoot), Collections.emptyList(), Collections.emptyList());
     }
     
     private RelRoot createRelRoot(final RelNode relNode, final RelDataType resultType) {
