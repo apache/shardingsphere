@@ -32,7 +32,7 @@ public final class SetInstanceStatusHandler extends UpdatableRALBackendHandler<S
     
     @Override
     protected void update(final ContextManager contextManager, final SetInstanceStatusStatement sqlStatement) {
-        if (!"Cluster".equals(contextManager.getInstanceContext().getModeConfiguration().getType())) {
+        if (!contextManager.getInstanceContext().isCluster()) {
             throw new UnsupportedOperationException("Only allowed in cluster mode");
         }
         String instanceId = sqlStatement.getInstanceId();

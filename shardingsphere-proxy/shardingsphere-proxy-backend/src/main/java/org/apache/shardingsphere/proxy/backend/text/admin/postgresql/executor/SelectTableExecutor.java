@@ -61,8 +61,8 @@ public final class SelectTableExecutor extends DefaultDatabaseMetadataExecutor {
     
     @Override
     protected List<String> getDatabaseNames(final ConnectionSession connectionSession) {
-        Collection<String> schemaNames = ProxyContext.getInstance().getAllDatabaseNames().stream().filter(each -> hasAuthority(each, connectionSession.getGrantee())).collect(Collectors.toList());
-        return schemaNames.stream().filter(AbstractDatabaseMetadataExecutor::hasDatasource).collect(Collectors.toList());
+        Collection<String> databaseNames = ProxyContext.getInstance().getAllDatabaseNames().stream().filter(each -> hasAuthority(each, connectionSession.getGrantee())).collect(Collectors.toList());
+        return databaseNames.stream().filter(AbstractDatabaseMetadataExecutor::hasDatasource).collect(Collectors.toList());
     }
     
     @Override

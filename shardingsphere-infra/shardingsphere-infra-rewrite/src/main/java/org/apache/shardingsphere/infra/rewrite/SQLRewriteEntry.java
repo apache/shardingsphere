@@ -65,7 +65,7 @@ public final class SQLRewriteEntry {
      */
     public SQLRewriteResult rewrite(final String sql, final List<Object> parameters, final SQLStatementContext<?> sqlStatementContext, final RouteContext routeContext) {
         SQLRewriteContext sqlRewriteContext = createSQLRewriteContext(sql, parameters, sqlStatementContext, routeContext);
-        SQLTranslatorRule rule = database.getRuleMetaData().findSingleRule(SQLTranslatorRule.class).orElse(new SQLTranslatorRule(new SQLTranslatorRuleConfiguration()));
+        SQLTranslatorRule rule = database.getRuleMetaData().findSingleRule(SQLTranslatorRule.class).orElseGet(() -> new SQLTranslatorRule(new SQLTranslatorRuleConfiguration()));
         DatabaseType protocolType = database.getProtocolType();
         DatabaseType storageType = database.getResource().getDatabaseType();
         return routeContext.getRouteUnits().isEmpty()

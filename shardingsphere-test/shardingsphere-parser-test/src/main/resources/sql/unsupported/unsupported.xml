@@ -4202,24 +4202,6 @@
     <sql-case id="alter_by_postgresql_source_test_case459" value="ALTER TYPE test_typex DROP ATTRIBUTE a;" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case460" value="ALTER TYPE tt_t0 DROP ATTRIBUTE z;" db-types="PostgreSQL" />
     <sql-case id="analyze_by_postgresql_source_test_case1" value="ANALYZE (nonexistent-arg) does_not_exist;" db-types="PostgreSQL" />
-    <sql-case id="cluster_by_postgresql_source_test_case1" value="CLUSTER abbrev_abort_uuids USING abbrev_abort_uuids__abort_decreasing_idx;" db-types="PostgreSQL" />
-    <sql-case id="cluster_by_postgresql_source_test_case2" value="CLUSTER abbrev_abort_uuids USING abbrev_abort_uuids__abort_increasing_idx;" db-types="PostgreSQL" />
-    <sql-case id="cluster_by_postgresql_source_test_case3" value="CLUSTER abbrev_abort_uuids USING abbrev_abort_uuids__noabort_decreasing_idx;" db-types="PostgreSQL" />
-    <sql-case id="cluster_by_postgresql_source_test_case4" value="CLUSTER abbrev_abort_uuids USING abbrev_abort_uuids__noabort_increasing_idx;" db-types="PostgreSQL" />
-    <sql-case id="cluster_by_postgresql_source_test_case5" value="CLUSTER clstr_1;" db-types="PostgreSQL" />
-    <sql-case id="cluster_by_postgresql_source_test_case6" value="CLUSTER clstr_1_pkey ON clstr_1;" db-types="PostgreSQL" />
-    <sql-case id="cluster_by_postgresql_source_test_case7" value="CLUSTER clstr_2 USING clstr_2_pkey;" db-types="PostgreSQL" />
-    <sql-case id="cluster_by_postgresql_source_test_case8" value="CLUSTER clstr_2;" db-types="PostgreSQL" />
-    <sql-case id="cluster_by_postgresql_source_test_case9" value="CLUSTER clstr_expression USING clstr_expression_minus_a;" db-types="PostgreSQL" />
-    <sql-case id="cluster_by_postgresql_source_test_case10" value="CLUSTER clstr_expression USING clstr_expression_upper_b;" db-types="PostgreSQL" />
-    <sql-case id="cluster_by_postgresql_source_test_case11" value="CLUSTER clstr_tst_c ON clstr_tst;" db-types="PostgreSQL" />
-    <sql-case id="cluster_by_postgresql_source_test_case12" value="CLUSTER clstrpart USING clstrpart_idx;" db-types="PostgreSQL" />
-    <sql-case id="cluster_by_postgresql_source_test_case13" value="CLUSTER clustertest USING clustertest_pkey;" db-types="PostgreSQL" />
-    <sql-case id="cluster_by_postgresql_source_test_case14" value="CLUSTER clustertest;" db-types="PostgreSQL" />
-    <sql-case id="cluster_by_postgresql_source_test_case15" value="CLUSTER clustertest_pkey ON clustertest;" db-types="PostgreSQL" />
-    <sql-case id="cluster_by_postgresql_source_test_case16" value="CLUSTER hs2 using hs1_pkey;" db-types="PostgreSQL" />
-    <sql-case id="cluster_by_postgresql_source_test_case17" value="CLUSTER vaccluster;" db-types="PostgreSQL" />
-    <sql-case id="cluster;_by_postgresql_source_test_case1" value="CLUSTER;" db-types="PostgreSQL" />
     <sql-case id="copy_by_postgresql_source_test_case1" value="COPY testnull FROM stdin WITH NULL AS E&apos;\\0&apos;;" db-types="PostgreSQL" />
     <sql-case id="copy_by_postgresql_source_test_case2" value="COPY testnull TO stdout WITH NULL AS E&apos;\\0&apos;;" db-types="PostgreSQL" />
     <sql-case id="copy_by_postgresql_source_test_case3" value="COPY x from stdin WITH DELIMITER AS &apos;:&apos; NULL AS E&apos;\\X&apos; ENCODING &apos;sql_ascii&apos;;" db-types="PostgreSQL" />
@@ -7145,8 +7127,6 @@
     <sql-case id="low_alter_by_postgresql_source_test_case105" value="alter type rewritetype alter attribute a type varchar cascade;" db-types="PostgreSQL" />
     <sql-case id="low_alter_by_postgresql_source_test_case106" value="alter type testdomain2 rename to testdomain3;" db-types="PostgreSQL" />
     <sql-case id="low_alter_by_postgresql_source_test_case107" value="alter type two_ints add attribute c two_ints_range;" db-types="PostgreSQL" />
-    <sql-case id="low_cluster_by_postgresql_source_test_case1" value="cluster clstr_4 using cluster_sort;" db-types="PostgreSQL" />
-    <sql-case id="low_cluster_by_postgresql_source_test_case2" value="cluster clstr_temp using clstr_temp_pkey;" db-types="PostgreSQL" />
     <sql-case id="low_copy_by_postgresql_source_test_case1" value="copy (select * from test1) (t,id) to stdout;" db-types="PostgreSQL" />
     <sql-case id="low_copy_by_postgresql_source_test_case2" value="copy (select * from test1) from stdin;" db-types="PostgreSQL" />
     <sql-case id="low_copy_by_postgresql_source_test_case3" value="copy (select 1) to stdout\; copy (select 2) to stdout\; select 0\; select 3;" db-types="PostgreSQL" />

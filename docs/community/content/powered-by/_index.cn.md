@@ -13,7 +13,7 @@ chapter = true
 
 ## 谁在使用 ShardingSphere?
 
-共计 206 家公司。
+共计 207 家公司。
 
 ### 基础软件
 <ul>
@@ -103,7 +103,6 @@ chapter = true
     <li>京东大数据与智能供应链</li>
     <li><a href="https://aifanfan.baidu.com/" rel="nofollow">百度爱番番</a></li>
     <li><a href="https://www.tuya.com/cn" rel="nofollow">涂鸦</a></li>
-    <li><a href="https://www.itrus.com.cn/" rel="nofollow">天威诚信</a></li>
     <li><a href="https://www.advancegroup.com.cn/" rel="nofollow">领创集团</a>：<a href="https://mp.weixin.qq.com/s/4iSewGT6-bOmDH56ukyBsQ" rel="nofollow">用户案例</a></li>
     <li><a href="http://www.zhenxinsafe.com/" rel="nofollow">真信认知科技</a></li>
     <li><a href="http://www.cloudansys.com/" rel="nofollow">云庐科技</a></li>
@@ -196,6 +195,12 @@ chapter = true
     <li><a href="https://www.codemao.cn/" rel="nofollow">编程猫</a></li>
     <li><a href="https://www.yxt.com/" rel="nofollow">云学堂</a></li>
     <li><a href="https://www.weixiaotong.com.cn/" rel="nofollow">光海微校通</a></li>
+</ul>
+
+### 互联网安全
+<ul>
+    <li><a href="https://www.itrus.com.cn/" rel="nofollow">天威诚信</a></li>
+    <li><a href="http://www.ncs-cyber.com.cn" rel="nofollow">天津市国瑞数码安全系统股份有限公司</a></li>
 </ul>
 
 ### 新闻资讯

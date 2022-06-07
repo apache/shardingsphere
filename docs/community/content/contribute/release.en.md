@@ -4,7 +4,7 @@ weight = 8
 chapter = true
 +++
 
-##Prepare
+## Prepare
 
 **1. Confirm release notes**
 
@@ -42,8 +42,9 @@ Open [GitHub milestone](https://github.com/apache/shardingsphere/milestones)
 
 **5. Call for a discussion**
 
-1. Send email to [dev@shardingsphere.apache.org](mailto:dev@shardingsphere.apache.org), describe or link the release note in the message body
-2. Follow the mailing list and confirm that the community developers have no questions about the release note
+1. Create a [GitHub Discussion](https://github.com/apache/shardingsphere/discussions) contains all the release notes
+2. Send email to [dev@shardingsphere.apache.org](mailto:dev@shardingsphere.apache.org) with the GitHub Discussion in the message body
+3. Follow the mailing list and confirm that the community developers have no questions about the release note
 
 ## GPG Settings
 
