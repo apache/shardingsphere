@@ -64,8 +64,8 @@ public final class SQLNodeConverterEngine {
         if (statement instanceof SelectStatement) {
             SqlNode sqlNode = new SelectStatementConverter().convertToSQLNode((SelectStatement) statement);
             for (CombineSegment each : ((SelectStatement) statement).getCombines()) {
-                SqlNode unionSqlNode = convertToSQLNode(each.getSelectStatement());
-                return new SqlBasicCall(convertCombineOperator(each.getCombineType()), new SqlNode[]{sqlNode, unionSqlNode}, SqlParserPos.ZERO);
+                SqlNode combineSqlNode = convertToSQLNode(each.getSelectStatement());
+                return new SqlBasicCall(convertCombineOperator(each.getCombineType()), new SqlNode[]{sqlNode, combineSqlNode}, SqlParserPos.ZERO);
             }
             return sqlNode;
         }

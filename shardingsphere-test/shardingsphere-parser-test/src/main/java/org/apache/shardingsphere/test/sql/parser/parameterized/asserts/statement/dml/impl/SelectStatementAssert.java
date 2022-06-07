@@ -186,7 +186,7 @@ public final class SelectStatementAssert {
             return;
         }
         Collection<CombineSegment> combineSegments = actual.getCombines();
-        assertFalse(assertContext.getText("Actual union segment should exist."), combineSegments.isEmpty());
+        assertFalse(assertContext.getText("Actual combine segment should exist."), combineSegments.isEmpty());
         assertThat(assertContext.getText("Combine size assertion error: "), combineSegments.size(), is(expected.getCombine().size()));
         int count = 0;
         for (CombineSegment each : combineSegments) {
