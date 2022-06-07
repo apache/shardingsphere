@@ -51,6 +51,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropOu
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterOutlineContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterAnalyticViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterAttributeDimensionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterProcedureContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateSequenceContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterSequenceContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateContextContext;
@@ -133,6 +134,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.collection.Collecti
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterDimensionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterProcedureStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterSessionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterSynonymStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterSystemStatement;
@@ -758,7 +760,12 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
     public ASTNode visitAlterAttributeDimension(final AlterAttributeDimensionContext ctx) {
         return new OracleAlterAttributeDimensionStatement();
     }
-    
+
+    @Override
+    public ASTNode visitAlterProcedure(final AlterProcedureContext ctx) {
+        return new OracleAlterProcedureStatement();
+    }
+
     @Override
     public ASTNode visitCreateSequence(final CreateSequenceContext ctx) {
         return new OracleCreateSequenceStatement();
@@ -783,72 +790,72 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
     public ASTNode visitCreatePFile(final CreatePFileContext ctx) {
         return new OracleCreatePFileStatement();
     }
-
+    
     @Override
     public ASTNode visitCreateControlFile(final CreateControlFileContext ctx) {
         return new OracleCreateControlFileStatement();
     }
-
+    
     @Override
     public ASTNode visitCreateFlashbackArchive(final CreateFlashbackArchiveContext ctx) {
         return new OracleCreateFlashbackArchiveStatement();
     }
-
+    
     @Override
     public ASTNode visitAlterFlashbackArchive(final AlterFlashbackArchiveContext ctx) {
         return new OracleAlterFlashbackArchiveStatement();
     }
-
+    
     @Override
     public ASTNode visitDropFlashbackArchive(final DropFlashbackArchiveContext ctx) {
         return new OracleDropFlashbackArchiveStatement();
     }
-
+    
     @Override
     public ASTNode visitCreateDiskgroup(final CreateDiskgroupContext ctx) {
         return new OracleCreateDiskgroupStatement();
     }
-
+    
     @Override
     public ASTNode visitDropDiskgroup(final DropDiskgroupContext ctx) {
         return new OracleDropDiskgroupStatement();
     }
-
+    
     @Override
     public ASTNode visitCreateRollbackSegment(final CreateRollbackSegmentContext ctx) {
         return new OracleCreateRollbackSegmentStatement();
     }
-
+    
     @Override
     public ASTNode visitDropRollbackSegment(final DropRollbackSegmentContext ctx) {
         return new OracleDropRollbackSegmentStatement();
     }
-
+    
     @Override
     public ASTNode visitCreateLockdownProfile(final CreateLockdownProfileContext ctx) {
         return new OracleCreateLockdownProfileStatement();
     }
-
+    
     @Override
     public ASTNode visitDropLockdownProfile(final DropLockdownProfileContext ctx) {
         return new OracleDropLockdownProfileStatement();
     }
-
+    
     @Override
     public ASTNode visitCreateInmemoryJoinGroup(final CreateInmemoryJoinGroupContext ctx) {
         return new OracleCreateInmemoryJoinGroupStatement();
     }
-
+    
     @Override
     public ASTNode visitDropInmemoryJoinGroup(final DropInmemoryJoinGroupContext ctx) {
         return new OracleDropInmemoryJoinGroupStatement();
     }
-
+    
     @Override
     public ASTNode visitCreateRestorePoint(final CreateRestorePointContext ctx) {
         return new OracleCreateRestorePointStatement();
     }
-
+    
     @Override
     public ASTNode visitCreateProcedure(final CreateProcedureContext ctx) {
         return new OracleCreateProcedureContext();
