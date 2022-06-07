@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.federation.optimizer.converter.statement;
+package org.apache.shardingsphere.infra.federation.optimizer.converter.statement.select;
 
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlNodeList;
@@ -32,6 +32,7 @@ import org.apache.shardingsphere.infra.federation.optimizer.converter.segment.or
 import org.apache.shardingsphere.infra.federation.optimizer.converter.segment.projection.DistinctConverter;
 import org.apache.shardingsphere.infra.federation.optimizer.converter.segment.projection.ProjectionsConverter;
 import org.apache.shardingsphere.infra.federation.optimizer.converter.segment.where.WhereConverter;
+import org.apache.shardingsphere.infra.federation.optimizer.converter.statement.SQLStatementConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.PaginationValueSegment;

@@ -17,42 +17,26 @@
 
 package org.apache.shardingsphere.infra.federation.optimizer.converter;
 
-import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlNode;
-import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.SqlOrderBy;
 import org.apache.calcite.sql.SqlSelect;
-import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.shardingsphere.infra.federation.optimizer.converter.statement.SelectStatementConverter;
+import org.apache.shardingsphere.infra.federation.optimizer.converter.statement.select.SelectStatementConverter;
+import org.apache.shardingsphere.infra.federation.optimizer.converter.type.CombineOperatorConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.CombineType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-
-import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * SQL node converter engine.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLNodeConverterEngine {
-    
-    private static final Map<CombineType, SqlOperator> REGISTRY = new TreeMap<>();
-    
-    static {
-        registerUnion();
-    }
-    
-    private static void registerUnion() {
-        REGISTRY.put(CombineType.UNION, SqlStdOperatorTable.UNION);
-        REGISTRY.put(CombineType.UNION_ALL, SqlStdOperatorTable.UNION_ALL);
-    }
     
     /**
      * Convert SQL statement to SQL node.
@@ -65,7 +49,7 @@ public final class SQLNodeConverterEngine {
             SqlNode sqlNode = new SelectStatementConverter().convertToSQLNode((SelectStatement) statement);
             for (CombineSegment each : ((SelectStatement) statement).getCombines()) {
                 SqlNode combineSqlNode = convertToSQLNode(each.getSelectStatement());
-                return new SqlBasicCall(convertCombineOperator(each.getCombineType()), new SqlNode[]{sqlNode, combineSqlNode}, SqlParserPos.ZERO);
+                return new SqlBasicCall(CombineOperatorConverter.convert(each.getCombineType()), new SqlNode[]{sqlNode, combineSqlNode}, SqlParserPos.ZERO);
             }
             return sqlNode;
         }
@@ -92,10 +76,5 @@ public final class SQLNodeConverterEngine {
             return leftSelectStatement;
         }
         throw new UnsupportedOperationException("Unsupported SQL statement conversion.");
-    }
-    
-    private static SqlOperator convertCombineOperator(final CombineType combineType) {
-        Preconditions.checkState(REGISTRY.containsKey(combineType), "Unsupported combine type: `%s`", combineType);
-        return REGISTRY.get(combineType);
     }
 }
