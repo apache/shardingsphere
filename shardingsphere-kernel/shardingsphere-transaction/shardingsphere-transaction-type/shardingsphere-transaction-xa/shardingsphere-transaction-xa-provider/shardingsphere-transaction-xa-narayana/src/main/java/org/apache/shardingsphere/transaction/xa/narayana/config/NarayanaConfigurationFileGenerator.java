@@ -121,24 +121,28 @@ public final class NarayanaConfigurationFileGenerator implements TransactionConf
         String password = String.valueOf(transactionProps.get("recoveryStorePassword"));
         String dataSourceClass = transactionProps.getProperty("recoveryStoreDataSource");
         if (null != url && null != user && null != password && null != dataSourceClass) {
-            appendJdbcStoreConfiguration(url, user, password, dataSourceClass, config);
+            appendJdbcStoreConfiguration(url, user, password, dataSourceClass, transactionProps, config);
         }
     }
     
-    private void appendJdbcStoreConfiguration(final String jdbcUrl, final String user, final String password, final String dataSourceClassName, final NarayanaConfiguration config) {
+    private void appendJdbcStoreConfiguration(final String jdbcUrl, final String user, final String password, final String dataSourceClassName,
+                                              final Properties transactionProps, final NarayanaConfiguration config) {
         String jdbcAccessPatten = DynamicDataSourceJDBCAccess.class.getName() + ";ClassName=%s;URL=%s;User=%s;Password=%s";
         String jdbcAccess = String.format(jdbcAccessPatten, dataSourceClassName, jdbcUrl, user, password);
         config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.objectStoreType", JDBCStore.class.getName()));
         config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.jdbcAccess", jdbcAccess));
         config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.tablePrefix", "Action"));
+        config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.createTable", transactionProps.getProperty("createTable", Boolean.TRUE.toString())));
         config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.dropTable", Boolean.FALSE.toString()));
         config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.stateStore.objectStoreType", JDBCStore.class.getName()));
         config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.stateStore.jdbcAccess", jdbcAccess));
         config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.stateStore.tablePrefix", "stateStore"));
+        config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.stateStore.createTable", transactionProps.getProperty("stateStoreCreateTable", Boolean.TRUE.toString())));
         config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.stateStore.dropTable", Boolean.FALSE.toString()));
         config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.communicationStore.objectStoreType", JDBCStore.class.getName()));
         config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.communicationStore.jdbcAccess", jdbcAccess));
         config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.communicationStore.tablePrefix", "Communication"));
+        config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.communicationStore.createTable", transactionProps.getProperty("communicationStoreCreateTable", Boolean.TRUE.toString())));
         config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.communicationStore.dropTable", Boolean.FALSE.toString()));
     }
     
