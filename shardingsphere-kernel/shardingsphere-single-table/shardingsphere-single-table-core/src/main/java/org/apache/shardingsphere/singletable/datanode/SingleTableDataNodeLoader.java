@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.metadata.schema.loader.common.SchemaMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.common.SchemaTableNamesLoader;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -46,19 +46,20 @@ public final class SingleTableDataNodeLoader {
     
     /**
      * Load single table data nodes.
-     * 
+     *
+     * @param databaseName database name
      * @param databaseType database type
      * @param dataSourceMap data source map
      * @param excludedTables excluded tables
      * @param props configuration properties
      * @return single table data node map
      */
-    public static Map<String, Collection<DataNode>> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
+    public static Map<String, Collection<DataNode>> load(final String databaseName, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
                                                          final Collection<String> excludedTables, final ConfigurationProperties props) {
         Map<String, Collection<DataNode>> result = new ConcurrentHashMap<>();
         boolean checkDuplicateTable = props.getValue(ConfigurationPropertyKey.CHECK_DUPLICATE_TABLE_ENABLED);
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            Map<String, Collection<DataNode>> dataNodeMap = load(databaseType, entry.getKey(), entry.getValue(), excludedTables);
+            Map<String, Collection<DataNode>> dataNodeMap = load(databaseName, databaseType, entry.getKey(), entry.getValue(), excludedTables);
             for (String each : dataNodeMap.keySet()) {
                 Collection<DataNode> addedDataNodes = dataNodeMap.get(each);
                 Collection<DataNode> existDataNodes = result.getOrDefault(each.toLowerCase(), new LinkedHashSet<>(addedDataNodes.size(), 1));
@@ -72,8 +73,9 @@ public final class SingleTableDataNodeLoader {
         return result;
     }
     
-    private static Map<String, Collection<DataNode>> load(final DatabaseType databaseType, final String dataSourceName, final DataSource dataSource, final Collection<String> excludedTables) {
-        Map<String, Collection<String>> schemaTableNames = loadSchemaTableNames(databaseType, dataSource);
+    private static Map<String, Collection<DataNode>> load(final String databaseName, final DatabaseType databaseType, final String dataSourceName,
+                                                          final DataSource dataSource, final Collection<String> excludedTables) {
+        Map<String, Collection<String>> schemaTableNames = loadSchemaTableNames(databaseName, databaseType, dataSource, dataSourceName);
         Map<String, Collection<DataNode>> result = new LinkedHashMap<>();
         for (Entry<String, Collection<String>> entry : schemaTableNames.entrySet()) {
             for (String each : entry.getValue()) {
@@ -100,11 +102,11 @@ public final class SingleTableDataNodeLoader {
         return false;
     }
     
-    private static Map<String, Collection<String>> loadSchemaTableNames(final DatabaseType databaseType, final DataSource dataSource) {
+    private static Map<String, Collection<String>> loadSchemaTableNames(final String databaseName, final DatabaseType databaseType, final DataSource dataSource, final String dataSourceName) {
         try {
-            return SchemaMetaDataLoader.loadSchemaTableNames(databaseType, dataSource);
+            return SchemaTableNamesLoader.loadSchemaTableNames(databaseName, databaseType, dataSource);
         } catch (final SQLException ex) {
-            throw new ShardingSphereConfigurationException("Can not load table: %s", ex.getMessage());
+            throw new ShardingSphereConfigurationException(String.format("Can not load table, databaseName: %s, dataSourceName: %s", databaseName, dataSourceName), ex);
         }
     }
 }

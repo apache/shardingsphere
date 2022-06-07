@@ -17,12 +17,12 @@
   -->
 
 <sql-cases>
-    <sql-case id="drop_cast_if_exists_integer_as_no_such_schema" value="DROP CAST IF EXISTS (INTEGER AS no_such_schema.bar);" db-types="PostgreSQL"/>
-    <sql-case id="drop_cast_if_exists_integer_as_no_such_type2" value="DROP CAST IF EXISTS (INTEGER AS no_such_type2);" db-types="PostgreSQL"/>
-    <sql-case id="drop_cast_if_exists_no_such_schema_as_integer" value="DROP CAST IF EXISTS (no_such_schema.foo AS INTEGER);" db-types="PostgreSQL"/>
-    <sql-case id="drop_cast_if_exists_no_such_type1_as_integer" value="DROP CAST IF EXISTS (no_such_type1 AS INTEGER);" db-types="PostgreSQL"/>
-    <sql-case id="drop_cast_if_exists_text_as_text" value="DROP CAST IF EXISTS (text AS text);" db-types="PostgreSQL"/>
-    <sql-case id="drop_cast_int4_as_casttesttype" value="DROP CAST (int4 AS casttesttype);" db-types="PostgreSQL"/>
-    <sql-case id="drop_cast_text_as_casttesttype" value="DROP CAST (text AS casttesttype);" db-types="PostgreSQL"/>
-    <sql-case id="drop_cast_text_as_text" value="DROP CAST (text AS text);" db-types="PostgreSQL"/>
+    <sql-case id="drop_cast_if_exists_integer_as_no_such_schema" value="DROP CAST IF EXISTS (INTEGER AS no_such_schema.bar) CASCADE;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="drop_cast_if_exists_integer_as_no_such_type2" value="DROP CAST IF EXISTS (INTEGER AS no_such_type2) RESTRICT;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="drop_cast_if_exists_no_such_schema_as_integer" value="DROP CAST IF EXISTS (no_such_schema.foo AS INTEGER);" db-types="PostgreSQL,openGauss" />
+    <sql-case id="drop_cast_if_exists_no_such_type1_as_integer" value="DROP CAST IF EXISTS (no_such_type1 AS INTEGER);" db-types="PostgreSQL,openGauss" />
+    <sql-case id="drop_cast_if_exists_text_as_text" value="DROP CAST IF EXISTS (text AS text);" db-types="PostgreSQL,openGauss" />
+    <sql-case id="drop_cast_int4_as_casttesttype" value="DROP CAST (int4 AS casttesttype);" db-types="PostgreSQL,openGauss" />
+    <sql-case id="drop_cast_text_as_casttesttype" value="DROP CAST (text AS casttesttype);" db-types="PostgreSQL,openGauss" />
+    <sql-case id="drop_cast_text_as_text" value="DROP CAST (text AS text);" db-types="PostgreSQL,openGauss" />
 </sql-cases>

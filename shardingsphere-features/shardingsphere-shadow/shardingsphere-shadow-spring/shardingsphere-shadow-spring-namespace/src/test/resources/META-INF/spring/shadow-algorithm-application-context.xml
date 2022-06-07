@@ -16,10 +16,7 @@
   ~ limitations under the License.
   -->
 
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:shadow="http://shardingsphere.apache.org/schema/shardingsphere/shadow"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:shadow="http://shardingsphere.apache.org/schema/shardingsphere/shadow" xsi:schemaLocation="http://www.springframework.org/schema/beans 
                            http://www.springframework.org/schema/beans/spring-beans.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/shadow
                            http://shardingsphere.apache.org/schema/shardingsphere/shadow/shadow.xsd
@@ -46,15 +43,15 @@
     </shadow:shadow-algorithm>
 
     <shadow:rule id="shadowRule">
-        <shadow:data-source id="shadow-data-source-0" source-data-source-name="ds" shadow-data-source-name="ds-shadow"/>
-        <shadow:data-source id="shadow-data-source-1" source-data-source-name="ds1" shadow-data-source-name="ds1-shadow"/>
+        <shadow:data-source id="shadow-data-source-0" source-data-source-name="ds" shadow-data-source-name="ds-shadow" />
+        <shadow:data-source id="shadow-data-source-1" source-data-source-name="ds1" shadow-data-source-name="ds1-shadow" />
         <shadow:shadow-table name="t_order" data-sources="shadow-data-source-0,shadow-data-source-1">
-            <shadow:algorithm shadow-algorithm-ref= "user-id-regex-match-algorithm" />
-            <shadow:algorithm shadow-algorithm-ref= "simple-hint-algorithm" />
+            <shadow:algorithm shadow-algorithm-ref="user-id-regex-match-algorithm" />
+            <shadow:algorithm shadow-algorithm-ref="simple-hint-algorithm" />
         </shadow:shadow-table>
         <shadow:shadow-table name="t_user" data-sources="shadow-data-source-1">
-            <shadow:algorithm shadow-algorithm-ref= "user-id-value-match-algorithm" />
-            <shadow:algorithm shadow-algorithm-ref= "simple-hint-algorithm" />
+            <shadow:algorithm shadow-algorithm-ref="user-id-value-match-algorithm" />
+            <shadow:algorithm shadow-algorithm-ref="simple-hint-algorithm" />
         </shadow:shadow-table>
     </shadow:rule>
 </beans>

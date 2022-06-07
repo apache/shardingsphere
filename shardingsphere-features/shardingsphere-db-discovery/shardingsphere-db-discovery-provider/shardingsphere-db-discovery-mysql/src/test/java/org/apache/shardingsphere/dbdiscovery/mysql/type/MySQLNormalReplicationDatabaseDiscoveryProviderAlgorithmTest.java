@@ -22,6 +22,7 @@ import org.junit.Test;
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -32,7 +33,7 @@ public final class MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithmTest 
     
     @Test
     public void assertCheckEnvironment() throws SQLException {
-        new MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm().checkEnvironment("foo_db", mockDataSource());
+        new MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm().checkEnvironment("foo_db", Collections.singletonList(mockDataSource()));
     }
     
     @Test
@@ -43,10 +44,10 @@ public final class MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithmTest 
     private DataSource mockDataSource() throws SQLException {
         DataSource result = mock(DataSource.class, RETURNS_DEEP_STUBS);
         ResultSet resultSet = mock(ResultSet.class);
-        when(result.getConnection().createStatement().executeQuery("SHOW SLAVE STATUS")).thenReturn(resultSet);
+        when(result.getConnection().createStatement().executeQuery("SHOW SLAVE HOSTS")).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true, false);
-        when(resultSet.getString("Master_Host")).thenReturn("127.0.0.1");
-        when(resultSet.getString("Master_Port")).thenReturn("3306");
+        when(resultSet.getString("Host")).thenReturn("127.0.0.1");
+        when(resultSet.getString("Port")).thenReturn("3306");
         when(result.getConnection().getMetaData().getURL()).thenReturn("jdbc:mysql://127.0.0.1:3306/foo_ds");
         return result;
     }

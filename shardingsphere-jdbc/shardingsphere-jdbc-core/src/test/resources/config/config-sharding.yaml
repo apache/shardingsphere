@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-schemaName: logic_db
+databaseName: logic_db
 
 rules:
 - !SHARDING
@@ -26,7 +26,7 @@ rules:
       actualDataNodes: jdbc_${0..1}.t_order_item_${0..1}
       keyGenerateStrategy:
         column: item_id
-        keyGeneratorName: increment
+        keyGeneratorName: jdbc_increment_fixture
     t_config:
       actualDataNodes: jdbc_${0..1}.t_config
     t_user:
@@ -37,7 +37,7 @@ rules:
           shardingAlgorithmName: table_inline
       keyGenerateStrategy:
         column: id
-        keyGeneratorName: reset_increment
+        keyGeneratorName: jdbc_reset_increment_fixture
   autoTables:
     t_order_auto:
       actualDataSources: jdbc_0, jdbc_1
@@ -57,15 +57,15 @@ rules:
   defaultTableStrategy:
     standard:
       shardingColumn: order_id
-      shardingAlgorithmName: standard_test
+      shardingAlgorithmName: jdbc_standard_fixture
   defaultDatabaseStrategy:
     standard:
       shardingColumn: user_id
-      shardingAlgorithmName: standard_test
+      shardingAlgorithmName: jdbc_standard_fixture
   
   shardingAlgorithms:
-    standard_test:
-        type: STANDARD_TEST
+    jdbc_standard_fixture:
+        type: JDBC.STANDARD.FIXTURE
     table_inline:
       type: INLINE
       props:
@@ -76,7 +76,7 @@ rules:
         sharding-count: 2
   
   keyGenerators:
-    increment:
-      type: INCREMENT
-    reset_increment:
-      type: RESET_INCREMENT
+    jdbc_increment_fixture:
+      type: JDBC.INCREMENT.FIXTURE
+    jdbc_reset_increment_fixture:
+      type: JDBC.RESET_INCREMENT.FIXTURE

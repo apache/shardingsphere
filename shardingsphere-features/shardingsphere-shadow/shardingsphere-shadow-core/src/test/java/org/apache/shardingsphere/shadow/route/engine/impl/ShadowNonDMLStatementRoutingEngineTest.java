@@ -19,13 +19,14 @@ package org.apache.shardingsphere.shadow.route.engine.impl;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CreateTableStatementContext;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadowRuleConfiguration;
-import org.apache.shardingsphere.shadow.algorithm.shadow.hint.SimpleHintShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
+import org.apache.shardingsphere.shadow.factory.ShadowAlgorithmFactory;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.CommentSegment;
@@ -33,10 +34,13 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQ
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -59,15 +63,23 @@ public final class ShadowNonDMLStatementRoutingEngineTest {
     
     @Test
     public void assertRoute() {
-        shadowRouteEngine.route(createRouteContext(), new ShadowRule(createAlgorithmProvidedShadowRuleConfiguration()));
-        // TODO finish assert
+        RouteContext routeContext = createRouteContext();
+        shadowRouteEngine.route(routeContext, new ShadowRule(createAlgorithmProvidedShadowRuleConfiguration()));
+        Collection<RouteUnit> routeUnits = routeContext.getRouteUnits();
+        RouteMapper dataSourceMapper = routeUnits.iterator().next().getDataSourceMapper();
+        assertThat(dataSourceMapper.getLogicName(), is("logic_db"));
+        assertThat(dataSourceMapper.getActualName(), is("ds_shadow"));
     }
     
     private RouteContext createRouteContext() {
-        RouteContext result = mock(RouteContext.class);
-        when(result.getRouteUnits()).thenReturn(
-                Collections.singleton(new RouteUnit(new RouteMapper("ds", "ds"), Collections.singleton(new RouteMapper("t_order", "t_order")))));
+        RouteContext result = new RouteContext();
+        Collection<RouteUnit> routeUnits = result.getRouteUnits();
+        routeUnits.add(createRouteUnit());
         return result;
+    }
+    
+    private RouteUnit createRouteUnit() {
+        return new RouteUnit(new RouteMapper("logic_db", "shadow-data-source"), Collections.singleton(new RouteMapper("t_order", "t_order")));
     }
     
     private AlgorithmProvidedShadowRuleConfiguration createAlgorithmProvidedShadowRuleConfiguration() {
@@ -79,11 +91,12 @@ public final class ShadowNonDMLStatementRoutingEngineTest {
     }
     
     private Map<String, ShadowAlgorithm> createShadowAlgorithms() {
-        SimpleHintShadowAlgorithm simpleHintShadowAlgorithm = new SimpleHintShadowAlgorithm();
-        Properties props = new Properties();
-        props.setProperty("shadow", Boolean.TRUE.toString());
-        simpleHintShadowAlgorithm.setProps(props);
-        simpleHintShadowAlgorithm.init();
-        return Collections.singletonMap("simple-hint-algorithm", simpleHintShadowAlgorithm);
+        return Collections.singletonMap("simple-hint-algorithm", ShadowAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("SIMPLE_HINT", createProperties())));
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty("shadow", Boolean.TRUE.toString());
+        return result;
     }
 }

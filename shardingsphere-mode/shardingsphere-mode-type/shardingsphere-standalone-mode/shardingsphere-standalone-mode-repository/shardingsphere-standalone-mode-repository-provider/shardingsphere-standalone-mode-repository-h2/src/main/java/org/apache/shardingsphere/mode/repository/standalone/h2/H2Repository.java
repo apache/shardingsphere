@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mode.repository.standalone.h2;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepository;
@@ -30,6 +29,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -59,16 +59,16 @@ public final class H2Repository implements StandalonePersistRepository {
     private Connection connection;
     
     @Override
-    public void setProps(final Properties props) {
+    public void init(final Properties props) {
         H2RepositoryProperties localRepositoryProps = new H2RepositoryProperties(props);
         jdbcUrl = Optional.ofNullable(Strings.emptyToNull(localRepositoryProps.getValue(H2RepositoryPropertyKey.JDBC_URL))).orElse(DEFAULT_JDBC_URL);
         user = Optional.ofNullable(Strings.emptyToNull(localRepositoryProps.getValue(H2RepositoryPropertyKey.USER))).orElse(DEFAULT_USER);
         password = Optional.ofNullable(Strings.emptyToNull(localRepositoryProps.getValue(H2RepositoryPropertyKey.PASSWORD))).orElse(DEFAULT_PASSWORD);
-        init();
+        initTable();
     }
     
     @SneakyThrows
-    private void init() {
+    private void initTable() {
         connection = DriverManager.getConnection(jdbcUrl, user, password);
         try (Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS REPOSITORY");
@@ -95,16 +95,16 @@ public final class H2Repository implements StandalonePersistRepository {
         try (
                 PreparedStatement statement = connection.prepareStatement("SELECT key FROM REPOSITORY WHERE parent = '" + key + "'");
                 ResultSet resultSet = statement.executeQuery()) {
-            List<String> resultChildrenList = new ArrayList<>(10);
+            List<String> resultChildren = new ArrayList<>(10);
             while (resultSet.next()) {
                 String childrenKey = resultSet.getString("key");
                 if (Strings.isNullOrEmpty(childrenKey)) {
                     continue;
                 }
                 int lastIndexOf = childrenKey.lastIndexOf(SEPARATOR);
-                resultChildrenList.add(childrenKey.substring(lastIndexOf + 1));
+                resultChildren.add(childrenKey.substring(lastIndexOf + 1));
             }
-            return resultChildrenList;
+            return resultChildren;
         } catch (final SQLException ex) {
             log.error("Get children h2 data by key: {} failed", key, ex);
         }
@@ -115,8 +115,7 @@ public final class H2Repository implements StandalonePersistRepository {
     public void persist(final String key, final String value) {
         // Single quotation marks are the keywords executed by H2. Replace with double quotation marks.
         String insensitiveValue = value.replace("'", "\"");
-        String[] paths = Lists.newArrayList(key.split(SEPARATOR))
-                .stream().filter(each -> !Strings.isNullOrEmpty(each)).toArray(String[]::new);
+        String[] paths = Arrays.stream(key.split(SEPARATOR)).filter(each -> !Strings.isNullOrEmpty(each)).toArray(String[]::new);
         String tempPrefix = "";
         String parent = SEPARATOR;
         try {

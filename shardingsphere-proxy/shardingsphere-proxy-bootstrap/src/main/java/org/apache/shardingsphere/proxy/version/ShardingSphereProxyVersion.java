@@ -21,7 +21,7 @@ import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.database.DatabaseServerInfo;
 import org.apache.shardingsphere.proxy.frontend.protocol.DatabaseProtocolFrontendEngineFactory;
@@ -44,8 +44,7 @@ public final class ShardingSphereProxyVersion {
      */
     public static void setVersion(final ContextManager contextManager) {
         CommonConstants.PROXY_VERSION.set(ShardingSphereProxyVersion.getProxyVersion());
-        contextManager.getMetaDataContexts().getAllDatabaseNames()
-                .forEach(each -> setDatabaseVersion(each, contextManager.getDataSourceMap(each)));
+        contextManager.getMetaDataContexts().getMetaData().getDatabases().keySet().forEach(each -> setDatabaseVersion(each, contextManager.getDataSourceMap(each)));
     }
     
     private static String getProxyVersion() {
@@ -66,7 +65,7 @@ public final class ShardingSphereProxyVersion {
         DatabaseServerInfo databaseServerInfo = new DatabaseServerInfo(dataSource.get());
         log.info("{}, database name is `{}`", databaseServerInfo, databaseName);
         DatabaseProtocolFrontendEngineFactory
-                .newInstance(DatabaseTypeRegistry.getTrunkDatabaseType(databaseServerInfo.getDatabaseName()))
+                .newInstance(DatabaseTypeEngine.getTrunkDatabaseType(databaseServerInfo.getDatabaseName()))
                 .setDatabaseVersion(databaseName, databaseServerInfo.getDatabaseVersion());
     }
 }

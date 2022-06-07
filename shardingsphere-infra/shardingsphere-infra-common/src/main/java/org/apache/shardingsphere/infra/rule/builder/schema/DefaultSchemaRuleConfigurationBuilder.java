@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.rule.builder.schema;
 
 import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
 import org.apache.shardingsphere.infra.rule.builder.DefaultRuleConfigurationBuilder;
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
 
 /**
  * Default schema rule configuration builder.
@@ -26,5 +27,6 @@ import org.apache.shardingsphere.infra.rule.builder.DefaultRuleConfigurationBuil
  * @param <T> type of schema rule configuration
  * @param <B> type of schema rule builder
  */
+@SingletonSPI
 public interface DefaultSchemaRuleConfigurationBuilder<T extends SchemaRuleConfiguration, B extends SchemaRuleBuilder<?>> extends DefaultRuleConfigurationBuilder<T, B> {
 }

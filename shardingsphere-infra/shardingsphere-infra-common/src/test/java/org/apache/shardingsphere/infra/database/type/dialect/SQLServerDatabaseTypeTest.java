@@ -35,7 +35,7 @@ public final class SQLServerDatabaseTypeTest {
     
     @Test
     public void assertGetName() {
-        assertThat(new SQLServerDatabaseType().getName(), is("SQLServer"));
+        assertThat(new SQLServerDatabaseType().getType(), is("SQLServer"));
     }
     
     @Test

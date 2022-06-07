@@ -37,13 +37,13 @@ public final class SQLRewriteContextDecoratorFactory {
     }
     
     /**
-     * Create new instance of SQL rewrite context decorator.
+     * Get instance of SQL rewrite context decorator.
      * 
      * @param rules rules
-     * @return new instance of SQL rewrite context decorator
+     * @return got instance
      */
     @SuppressWarnings("rawtypes")
-    public static Map<ShardingSphereRule, SQLRewriteContextDecorator> newInstance(final Collection<ShardingSphereRule> rules) {
+    public static Map<ShardingSphereRule, SQLRewriteContextDecorator> getInstance(final Collection<ShardingSphereRule> rules) {
         return OrderedSPIRegistry.getRegisteredServices(SQLRewriteContextDecorator.class, rules);
     }
 }

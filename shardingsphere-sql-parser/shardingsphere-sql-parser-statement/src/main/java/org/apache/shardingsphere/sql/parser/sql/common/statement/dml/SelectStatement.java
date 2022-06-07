@@ -25,8 +25,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.GroupBy
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.HavingSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.union.UnionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
@@ -54,9 +53,7 @@ public abstract class SelectStatement extends AbstractSQLStatement implements DM
     
     private OrderBySegment orderBy;
     
-    private WithSegment withSegment;
-    
-    private Collection<UnionSegment> unionSegments = new LinkedList<>();
+    private Collection<CombineSegment> combines = new LinkedList<>();
     
     /**
      * Get where.
@@ -92,14 +89,5 @@ public abstract class SelectStatement extends AbstractSQLStatement implements DM
      */
     public Optional<OrderBySegment> getOrderBy() {
         return Optional.ofNullable(orderBy);
-    }
-    
-    /**
-     * Get with segment.
-     *
-     * @return with segment.
-     */
-    public Optional<WithSegment> getWithSegment() {
-        return Optional.ofNullable(withSegment);
     }
 }

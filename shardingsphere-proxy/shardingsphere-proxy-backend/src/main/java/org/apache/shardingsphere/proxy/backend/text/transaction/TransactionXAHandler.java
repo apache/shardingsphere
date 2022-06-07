@@ -23,6 +23,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.data.impl.SchemaAssignedDatabaseBackendHandler;
+import org.apache.shardingsphere.sharding.merge.ddl.fetch.FetchOrderByValueQueuesHolder;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.XAStatement;
 import org.apache.shardingsphere.transaction.TransactionHolder;
@@ -87,6 +88,7 @@ public final class TransactionXAHandler implements TextProtocolBackendHandler {
                 } finally {
                     connectionSession.getTransactionStatus().setManualXA(false);
                     TransactionHolder.clear();
+                    FetchOrderByValueQueuesHolder.remove();
                 }
             default:
                 throw new SQLException("unrecognized XA statement " + tclStatement.getOp());

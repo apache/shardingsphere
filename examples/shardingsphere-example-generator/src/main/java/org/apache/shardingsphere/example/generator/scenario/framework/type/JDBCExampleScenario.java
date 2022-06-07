@@ -48,7 +48,7 @@ public final class JDBCExampleScenario implements FrameworkExampleScenario {
     
     @Override
     public Collection<String> getJavaClassPaths() {
-        Collection<String> result = new HashSet<>();
+        Collection<String> result = new HashSet<>(2, 1);
         result.add("config");
         result.add("repository");
         return result;

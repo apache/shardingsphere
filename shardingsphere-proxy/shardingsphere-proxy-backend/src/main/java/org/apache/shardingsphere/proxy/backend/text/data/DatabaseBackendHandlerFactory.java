@@ -27,7 +27,6 @@ import org.apache.shardingsphere.proxy.backend.text.data.impl.UnicastDatabaseBac
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
 /**
@@ -42,11 +41,11 @@ public final class DatabaseBackendHandlerFactory {
      * @param sqlStatementContext SQL statement context
      * @param sql SQL
      * @param connectionSession connection session
-     * @return database backend handler
+     * @return created instance
      */
     public static DatabaseBackendHandler newInstance(final SQLStatementContext<?> sqlStatementContext, final String sql, final ConnectionSession connectionSession) {
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
-        if (sqlStatement instanceof SetStatement || sqlStatement instanceof DCLStatement) {
+        if (sqlStatement instanceof SetStatement) {
             return new BroadcastDatabaseBackendHandler(sqlStatementContext, sql, connectionSession);
         }
         if (sqlStatement instanceof DALStatement || (sqlStatement instanceof SelectStatement && null == ((SelectStatement) sqlStatement).getFrom())) {

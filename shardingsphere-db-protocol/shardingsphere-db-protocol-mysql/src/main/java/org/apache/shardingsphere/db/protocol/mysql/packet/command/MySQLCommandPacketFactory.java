@@ -46,7 +46,7 @@ public final class MySQLCommandPacketFactory {
      * @param commandPacketType command packet type for MySQL
      * @param payload packet payload for MySQL
      * @param connectionId connection ID
-     * @return command packet for MySQL
+     * @return created instance
      * @throws SQLException SQL exception
      */
     public static MySQLCommandPacket newInstance(final MySQLCommandPacketType commandPacketType, final MySQLPacketPayload payload, final int connectionId) throws SQLException {

@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable;
 
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ShowTableMetadataStatement;
-import org.apache.shardingsphere.infra.exception.SchemaNotExistedException;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.exception.DatabaseNotExistedException;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereIndex;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
@@ -62,24 +64,29 @@ public final class ShowTableMetadataHandler extends QueryableRALBackendHandler<S
     
     @Override
     protected Collection<List<Object>> getRows(final ContextManager contextManager) {
-        String databaseName = sqlStatement.getSchema().isPresent() ? sqlStatement.getSchema().get().getIdentifier().getValue() : connectionSession.getDatabaseName();
-        if (null == databaseName) {
-            throw new NoDatabaseSelectedException();
-        }
-        if (!ProxyContext.getInstance().getAllDatabaseNames().contains(databaseName)) {
-            throw new SchemaNotExistedException(databaseName);
-        }
-        String defaultSchema = connectionSession.getDatabaseType().getDefaultSchema(connectionSession.getDatabaseName());
-        ShardingSphereSchema schema = ProxyContext.getInstance().getMetaData(databaseName).getSchemaByName(defaultSchema);
+        String databaseName = getDatabaseName();
+        String defaultSchema = DatabaseTypeEngine.getDefaultSchemaName(connectionSession.getDatabaseType(), connectionSession.getDatabaseName());
+        ShardingSphereSchema schema = ProxyContext.getInstance().getDatabase(databaseName).getSchemas().get(defaultSchema);
         return schema.getAllTableNames().stream().filter(each -> sqlStatement.getTableNames().contains(each))
                 .map(each -> buildTableRows(databaseName, schema, each)).flatMap(Collection::stream).collect(Collectors.toList());
+    }
+    
+    private String getDatabaseName() {
+        String result = sqlStatement.getDatabase().isPresent() ? sqlStatement.getDatabase().get().getIdentifier().getValue() : connectionSession.getDatabaseName();
+        if (Strings.isNullOrEmpty(result)) {
+            throw new NoDatabaseSelectedException();
+        }
+        if (!ProxyContext.getInstance().getAllDatabaseNames().contains(result)) {
+            throw new DatabaseNotExistedException(result);
+        }
+        return result;
     }
     
     private Collection<List<Object>> buildTableRows(final String databaseName, final ShardingSphereSchema schema, final String tableName) {
         Collection<List<Object>> result = new LinkedList<>();
         Collection<List<Object>> columnRows = schema.getAllColumnNames(tableName).stream().map(each -> buildRow(databaseName, tableName, "COLUMN", each))
                 .collect(Collectors.toList());
-        Collection<List<Object>> indexRows = schema.getTables().get(tableName).getIndexes().values().stream().map(IndexMetaData::getName)
+        Collection<List<Object>> indexRows = schema.getTables().get(tableName).getIndexes().values().stream().map(ShardingSphereIndex::getName)
                 .map(each -> buildRow(databaseName, tableName, "INDEX", each)).collect(Collectors.toList());
         result.addAll(columnRows);
         result.addAll(indexRows);

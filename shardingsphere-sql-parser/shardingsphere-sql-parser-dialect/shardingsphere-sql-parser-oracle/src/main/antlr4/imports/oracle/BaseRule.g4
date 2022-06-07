@@ -284,6 +284,10 @@ editionName
     : identifier
     ;
 
+outlineName
+    : identifier
+    ;
+
 containerName
     : identifier
     ;
@@ -1252,4 +1256,56 @@ externalDatatype
     
 capacityUnit
     : ('K' | 'M' | 'G' | 'T' | 'P' | 'E')
+    ;
+
+attributeDimensionName
+    : identifier
+    ;
+
+sequenceName
+    : identifier
+    ;
+    
+spfileName
+    : STRING_
+    ;
+
+pfileName
+    : STRING_
+    ;
+
+characterSetName
+    : identifier
+    ;
+
+quotaUnit
+    : ('M' | 'G' | 'T' | 'P' | 'E')
+    ;
+
+siteName
+    : identifier
+    ;
+
+diskName
+    : identifier
+    ;
+
+searchString
+    : STRING_
+    ;
+
+attributeValue
+    : identifier
+    ;
+
+profileName
+    : identifier
+    ;
+
+joinGroupName
+    : identifier
+    ;
+
+restorePointName
+    : identifier
     ;

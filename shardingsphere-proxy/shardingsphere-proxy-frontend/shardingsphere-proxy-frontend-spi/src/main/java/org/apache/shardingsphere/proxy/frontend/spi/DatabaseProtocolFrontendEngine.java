@@ -22,20 +22,20 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.command.CommandExecuteEngine;
 import org.apache.shardingsphere.proxy.frontend.context.FrontendContext;
-import org.apache.shardingsphere.spi.type.typed.StatefulTypedSPI;
+import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 
 /**
  * Database protocol frontend engine.
  */
-public interface DatabaseProtocolFrontendEngine extends StatefulTypedSPI {
+public interface DatabaseProtocolFrontendEngine extends TypedSPI {
     
     /**
      * Set database version.
      * 
-     * @param schemaName schema name
+     * @param databaseName database name
      * @param databaseVersion database version
      */
-    default void setDatabaseVersion(String schemaName, String databaseVersion) {
+    default void setDatabaseVersion(String databaseName, String databaseVersion) {
     }
     
     /**

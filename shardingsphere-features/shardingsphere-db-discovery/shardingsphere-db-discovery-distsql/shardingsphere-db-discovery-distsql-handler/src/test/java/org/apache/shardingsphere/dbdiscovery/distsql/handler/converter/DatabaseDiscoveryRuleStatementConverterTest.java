@@ -28,7 +28,6 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -56,15 +55,17 @@ public final class DatabaseDiscoveryRuleStatementConverterTest {
     }
     
     private Collection<AbstractDatabaseDiscoverySegment> createDatabaseDiscoveryRuleSegments() {
-        Properties props = new Properties();
-        props.put("key", "value");
-        final Collection<AbstractDatabaseDiscoverySegment> result = new LinkedList<>();
+        Properties props = createProperties();
         DatabaseDiscoveryDefinitionSegment databaseDiscoveryDefinitionSegment =
                 new DatabaseDiscoveryDefinitionSegment("definition", Arrays.asList("resource0", "resource1"), new AlgorithmSegment("MySQL.MGR", props), props);
         DatabaseDiscoveryConstructionSegment databaseDiscoveryConstructionSegment =
                 new DatabaseDiscoveryConstructionSegment("construction", Arrays.asList("resource0", "resource1"), "type", "heartbeat");
-        result.add(databaseDiscoveryConstructionSegment);
-        result.add(databaseDiscoveryDefinitionSegment);
+        return Arrays.asList(databaseDiscoveryConstructionSegment, databaseDiscoveryDefinitionSegment);
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.put("key", "value");
         return result;
     }
 }

@@ -43,11 +43,6 @@ public final class MySQLDatabaseType implements DatabaseType {
     }
     
     @Override
-    public String getName() {
-        return "MySQL";
-    }
-    
-    @Override
     public QuoteCharacter getQuoteCharacter() {
         return QuoteCharacter.BACK_QUOTE;
     }
@@ -75,5 +70,10 @@ public final class MySQLDatabaseType implements DatabaseType {
     @Override
     public Collection<String> getSystemSchemas() {
         return SYSTEM_DATABASE_SCHEMA_MAP.keySet();
+    }
+    
+    @Override
+    public String getType() {
+        return "MySQL";
     }
 }

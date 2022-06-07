@@ -6,9 +6,9 @@ weight = 5
 ## 语法说明
 
 ```sql
-SHOW ENCRYPT RULES [FROM schemaName]
+SHOW ENCRYPT RULES [FROM databaseName]
 
-SHOW ENCRYPT TABLE RULE tableName [from schemaName]
+SHOW ENCRYPT TABLE RULE tableName [from databaseName]
 ```
 - 支持查询所有的数据加密规则和指定逻辑表名查询。
 

@@ -144,5 +144,8 @@ execute
     | dropOperatorFamily
     | dropAccessMethod
     | dropServer
+    | checkpoint
+    | close
+    | cluster
     ) SEMI_? EOF
     ;

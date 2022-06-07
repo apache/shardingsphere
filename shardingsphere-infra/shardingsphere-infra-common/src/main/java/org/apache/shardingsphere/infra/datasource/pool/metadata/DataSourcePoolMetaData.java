@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.infra.datasource.pool.metadata;
 
-import org.apache.shardingsphere.spi.type.typed.StatelessTypedSPI;
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 
 import java.util.Collection;
 import java.util.Map;
@@ -25,7 +26,8 @@ import java.util.Map;
 /**
  * Data source pool meta data.
  */
-public interface DataSourcePoolMetaData extends StatelessTypedSPI {
+@SingletonSPI
+public interface DataSourcePoolMetaData extends TypedSPI {
     
     /**
      * Get default properties.

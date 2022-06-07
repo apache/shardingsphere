@@ -31,7 +31,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.DatabaseRequiredBackendHandler;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 
 import javax.sql.DataSource;
@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
 /**
  * Drop resource backend handler.
  */
-public final class DropResourceBackendHandler extends SchemaRequiredBackendHandler<DropResourceStatement> {
+public final class DropResourceBackendHandler extends DatabaseRequiredBackendHandler<DropResourceStatement> {
     
     public DropResourceBackendHandler(final DropResourceStatement sqlStatement, final ConnectionSession connectionSession) {
         super(sqlStatement, connectionSession);
@@ -66,7 +66,7 @@ public final class DropResourceBackendHandler extends SchemaRequiredBackendHandl
     }
     
     private void checkResourceNameExisted(final String databaseName, final Collection<String> resourceNames) throws DistSQLException {
-        Map<String, DataSource> resources = ProxyContext.getInstance().getMetaData(databaseName).getResource().getDataSources();
+        Map<String, DataSource> resources = ProxyContext.getInstance().getDatabase(databaseName).getResource().getDataSources();
         Collection<String> notExistedResourceNames = resourceNames.stream().filter(each -> !resources.containsKey(each)).collect(Collectors.toList());
         DistSQLException.predictionThrow(notExistedResourceNames.isEmpty(), () -> new RequiredResourceMissedException(databaseName, notExistedResourceNames));
     }
@@ -95,7 +95,7 @@ public final class DropResourceBackendHandler extends SchemaRequiredBackendHandl
     
     private Multimap<String, String> getInUsedResources(final String databaseName) {
         Multimap<String, String> result = LinkedListMultimap.create();
-        for (ShardingSphereRule each : ProxyContext.getInstance().getMetaData(databaseName).getRuleMetaData().getRules()) {
+        for (ShardingSphereRule each : ProxyContext.getInstance().getDatabase(databaseName).getRuleMetaData().getRules()) {
             if (each instanceof DataSourceContainedRule) {
                 Collection<String> inUsedResourceNames = getInUsedResourceNames((DataSourceContainedRule) each);
                 inUsedResourceNames.forEach(eachResource -> result.put(eachResource, each.getType()));

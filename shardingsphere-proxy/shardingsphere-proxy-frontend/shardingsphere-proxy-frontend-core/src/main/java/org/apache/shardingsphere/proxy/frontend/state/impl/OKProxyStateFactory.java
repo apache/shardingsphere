@@ -33,12 +33,12 @@ public final class OKProxyStateFactory {
     }
     
     /**
-     * Create new instance of OK proxy state.
+     * Get instance of OK proxy state.
      * 
      * @param type type
-     * @return OK proxy state
+     * @return got instance
      */
-    public static OKProxyState newInstance(final String type) {
+    public static OKProxyState getInstance(final String type) {
         return TypedSPIRegistry.getRegisteredService(OKProxyState.class, type);
     }
 }

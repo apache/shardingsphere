@@ -42,15 +42,15 @@ public final class MySQLPipelineSQLBuilder extends AbstractPipelineSQLBuilder {
     }
     
     @Override
-    public String buildInsertSQL(final DataRecord dataRecord, final Map<LogicTableName, Set<String>> shardingColumnsMap) {
-        return super.buildInsertSQL(dataRecord, shardingColumnsMap) + buildDuplicateUpdateSQL(dataRecord, shardingColumnsMap);
+    public String buildInsertSQL(final String schemaName, final DataRecord dataRecord, final Map<LogicTableName, Set<String>> shardingColumnsMap) {
+        return super.buildInsertSQL(schemaName, dataRecord, shardingColumnsMap) + buildDuplicateUpdateSQL(dataRecord, shardingColumnsMap);
     }
     
     private String buildDuplicateUpdateSQL(final DataRecord dataRecord, final Map<LogicTableName, Set<String>> shardingColumnsMap) {
         StringBuilder result = new StringBuilder(" ON DUPLICATE KEY UPDATE ");
         for (int i = 0; i < dataRecord.getColumnCount(); i++) {
             Column column = dataRecord.getColumn(i);
-            if (column.isPrimaryKey() || isShardingColumn(shardingColumnsMap, dataRecord.getTableName(), column.getName())) {
+            if (column.isUniqueKey() || isShardingColumn(shardingColumnsMap, dataRecord.getTableName(), column.getName())) {
                 continue;
             }
             result.append(quote(column.getName())).append("=VALUES(").append(quote(column.getName())).append("),");
@@ -60,7 +60,7 @@ public final class MySQLPipelineSQLBuilder extends AbstractPipelineSQLBuilder {
     }
     
     @Override
-    public Optional<String> buildCRC32SQL(final String tableName, final String column) {
+    public Optional<String> buildCRC32SQL(final String schemaName, final String tableName, final String column) {
         return Optional.of(String.format("SELECT BIT_XOR(CAST(CRC32(%s) AS UNSIGNED)) AS checksum FROM %s", quote(column), quote(tableName)));
     }
     

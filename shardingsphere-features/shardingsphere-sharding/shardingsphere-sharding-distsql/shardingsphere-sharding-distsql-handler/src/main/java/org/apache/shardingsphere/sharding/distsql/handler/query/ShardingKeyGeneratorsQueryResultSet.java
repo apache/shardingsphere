@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.distsql.handler.query;
 
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingKeyGeneratorsStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -39,8 +39,8 @@ public final class ShardingKeyGeneratorsQueryResultSet implements DistSQLResultS
     private Iterator<Entry<String, ShardingSphereAlgorithmConfiguration>> data = Collections.emptyIterator();
     
     @Override
-    public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
-        metaData.getRuleMetaData().findRuleConfiguration(ShardingRuleConfiguration.class)
+    public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
+        database.getRuleMetaData().findRuleConfigurations(ShardingRuleConfiguration.class)
                 .forEach(each -> data = each.getKeyGenerators().entrySet().iterator());
     }
     

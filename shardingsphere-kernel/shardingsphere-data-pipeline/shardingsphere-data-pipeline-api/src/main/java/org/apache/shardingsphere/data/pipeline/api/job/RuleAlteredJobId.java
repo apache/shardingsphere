@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.api.job;
 
-import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import lombok.Getter;
@@ -58,7 +57,7 @@ public final class RuleAlteredJobId extends AbstractJobId {
     public String marshal() {
         List<String> subTypes = getSubTypes();
         Collections.sort(subTypes);
-        String text = getFormatVersion() + "|" + Joiner.on('-').join(subTypes) + "|" + getCurrentMetadataVersion() + "T" + getNewMetadataVersion() + "|" + getDatabaseName();
+        String text = getFormatVersion() + "|" + String.join("-", subTypes) + "|" + getCurrentMetadataVersion() + "T" + getNewMetadataVersion() + "|" + getDatabaseName();
         return getType() + Hex.encodeHexString(text.getBytes(StandardCharsets.UTF_8), true);
     }
     

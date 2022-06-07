@@ -20,8 +20,8 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rql;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowSingleTableStatement;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.rule.SingleTableQueryResultSet;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
@@ -50,7 +50,7 @@ import static org.mockito.Mockito.when;
 public final class SingleTableQueryResultSetTest {
     
     @Mock
-    private ShardingSphereMetaData shardingSphereMetaData;
+    private ShardingSphereDatabase database;
     
     @Before
     public void before() {
@@ -61,13 +61,13 @@ public final class SingleTableQueryResultSetTest {
         rules.add(mockSingleTableRule(singleTableDataNodeMap));
         ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class);
         when(ruleMetaData.getRules()).thenReturn(rules);
-        when(shardingSphereMetaData.getRuleMetaData()).thenReturn(ruleMetaData);
+        when(database.getRuleMetaData()).thenReturn(ruleMetaData);
     }
     
     @Test
     public void assertGetRowData() {
         DistSQLResultSet resultSet = new SingleTableQueryResultSet();
-        resultSet.init(shardingSphereMetaData, mock(ShowSingleTableStatement.class));
+        resultSet.init(database, mock(ShowSingleTableStatement.class));
         Collection<Object> actual = resultSet.getRowData();
         assertThat(actual.size(), is(2));
         Iterator<Object> rowData = actual.iterator();
@@ -87,7 +87,7 @@ public final class SingleTableQueryResultSetTest {
         singleTableDataNodeMap.put("t_order_item_multiple", Collections.singletonList(new DataNode("ds_2_multiple", "t_order_item_multiple")));
         addShardingSphereRule(mockSingleTableRule(singleTableDataNodeMap));
         DistSQLResultSet resultSet = new SingleTableQueryResultSet();
-        resultSet.init(shardingSphereMetaData, mock(ShowSingleTableStatement.class));
+        resultSet.init(database, mock(ShowSingleTableStatement.class));
         Collection<Object> actual = resultSet.getRowData();
         assertThat(actual.size(), is(2));
         Iterator<Object> rowData = actual.iterator();
@@ -114,7 +114,7 @@ public final class SingleTableQueryResultSetTest {
     public void assertGetRowDataWithOtherRules() {
         addShardingSphereRule(new ShadowRule(mock(ShadowRuleConfiguration.class)));
         DistSQLResultSet resultSet = new SingleTableQueryResultSet();
-        resultSet.init(shardingSphereMetaData, mock(ShowSingleTableStatement.class));
+        resultSet.init(database, mock(ShowSingleTableStatement.class));
         Collection<Object> actual = resultSet.getRowData();
         assertThat(actual.size(), is(2));
         Iterator<Object> rowData = actual.iterator();
@@ -134,6 +134,6 @@ public final class SingleTableQueryResultSetTest {
     }
     
     private void addShardingSphereRule(final ShardingSphereRule... rules) {
-        shardingSphereMetaData.getRuleMetaData().getRules().addAll(Arrays.asList(rules));
+        database.getRuleMetaData().getRules().addAll(Arrays.asList(rules));
     }
 }

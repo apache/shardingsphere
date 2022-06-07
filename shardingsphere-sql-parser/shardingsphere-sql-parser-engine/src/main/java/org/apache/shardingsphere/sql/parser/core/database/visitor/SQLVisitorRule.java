@@ -23,7 +23,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatementType;
 
 /**
- * SQL Visitor rule.
+ * SQL visitor rule.
  */
 @RequiredArgsConstructor
 public enum SQLVisitorRule {
@@ -49,6 +49,8 @@ public enum SQLVisitorRule {
     RENAME_TABLE("RenameTable", SQLStatementType.DDL),
     
     ALTER_TABLE("AlterTable", SQLStatementType.DDL),
+    
+    ALTER_TYPE("AlterType", SQLStatementType.DDL),
     
     ALTER_AGGREGATE("AlterAggregate", SQLStatementType.DDL),
     
@@ -77,6 +79,8 @@ public enum SQLVisitorRule {
     DROP_INDEX("DropIndex", SQLStatementType.DDL),
     
     CREATE_PROCEDURE("CreateProcedure", SQLStatementType.DDL),
+    
+    CREATE_PUBLICATION("CreatePublication", SQLStatementType.DDL),
     
     ALTER_PROCEDURE("AlterProcedure", SQLStatementType.DDL),
     
@@ -124,6 +128,8 @@ public enum SQLVisitorRule {
     
     DROP_DIMENSION("DropDimension", SQLStatementType.DDL),
     
+    ALTER_DIRECTORY("AlterDirectory", SQLStatementType.DDL),
+    
     DROP_DIRECTORY("DropDirectory", SQLStatementType.DDL),
     
     CREATE_EVENT("CreateEvent", SQLStatementType.DDL),
@@ -146,6 +152,10 @@ public enum SQLVisitorRule {
     
     CREATE_SYNONYM("CreateSynonym", SQLStatementType.DDL),
     
+    DROP_SYNONYM("DropSynonym", SQLStatementType.DDL),
+    
+    CREATE_DIRECTORY("CreateDirectory", SQLStatementType.DDL),
+    
     ALTER_SERVER("AlterServer", SQLStatementType.DDL),
     
     ALTER_SESSION("AlterSession", SQLStatementType.DDL),
@@ -165,6 +175,10 @@ public enum SQLVisitorRule {
     CREATE_VIEW("CreateView", SQLStatementType.DDL),
     
     ALTER_VIEW("AlterView", SQLStatementType.DDL),
+    
+    DROP_PACKAGE("DropPackage", SQLStatementType.DDL),
+    
+    ALTER_PACKAGE("AlterPackage", SQLStatementType.DDL),
     
     DROP_VIEW("DropView", SQLStatementType.DDL),
     
@@ -215,6 +229,8 @@ public enum SQLVisitorRule {
     ALTER_EXTENSION("AlterExtension", SQLStatementType.DDL),
     
     DROP_EXTENSION("DropExtension", SQLStatementType.DDL),
+    
+    ALTER_RULE("AlterRule", SQLStatementType.DDL),
     
     DECLARE("Declare", SQLStatementType.DDL),
     
@@ -452,6 +468,8 @@ public enum SQLVisitorRule {
     
     CREATE_CONVERSION("CreateConversion", SQLStatementType.DDL),
     
+    CREATE_CAST("CreateCast", SQLStatementType.DDL),
+    
     CREATE_TYPE("CreateType", SQLStatementType.DDL),
     
     DROP_CONVERSION("DropConversion", SQLStatementType.DDL),
@@ -488,7 +506,61 @@ public enum SQLVisitorRule {
     
     DROP_OPERATOR_FAMILY("DropOperatorFamily", SQLStatementType.DDL),
     
-    DROP_ACCESS_METHOD("DropAccessMethod", SQLStatementType.DDL);
+    DROP_ACCESS_METHOD("DropAccessMethod", SQLStatementType.DDL),
+    
+    DROP_OUTLINE("DropOutline", SQLStatementType.DDL),
+    
+    ALTER_OUTLINE("AlterOutline", SQLStatementType.DDL),
+    
+    ALTER_ANALYTIC_VIEW("AlterAnalyticView", SQLStatementType.DDL),
+    
+    DROP_EDITION("DropEdition", SQLStatementType.DDL),
+    
+    ALTER_ATTRIBUTE_DIMENSION("AlterAttributeDimension", SQLStatementType.DDL),
+    
+    CREATE_CONTEXT("CreateContext", SQLStatementType.DDL),
+    
+    CREATE_SPFILE("CreateSPFile", SQLStatementType.DDL),
+    
+    CREATE_PFILE("CreatePFile", SQLStatementType.DDL),
+    
+    CREATE_CONTROL_FILE("CreateControlFile", SQLStatementType.DDL),
+    
+    CREATE_FLASHBACK_ARCHIVE("CreateFlashbackArchive", SQLStatementType.DDL),
+    
+    ALTER_FLASHBACK_ARCHIVE("AlterFlashbackArchive", SQLStatementType.DDL),
+    
+    DROP_FLASHBACK_ARCHIVE("DropFlashbackArchive", SQLStatementType.DDL),
+    
+    CREATE_DISKGROUP("CreateDiskgroup", SQLStatementType.DDL),
+    
+    DROP_DISKGROUP("DropDiskgroup", SQLStatementType.DDL),
+    
+    CREATE_ROLLBACK_SEGMENT("CreateRollbackSegment", SQLStatementType.DDL),
+    
+    DROP_ROLLBACK_SEGMENT("DropRollbackSegment", SQLStatementType.DDL),
+    
+    CREATE_LOCKDOWN_PROFILE("CreateLockdownProfile", SQLStatementType.DDL),
+    
+    DROP_LOCKDOWN_PROFILE("DropLockdownProfile", SQLStatementType.DDL),
+    
+    CREATE_INMEMORY_JOIN_GROUP("CreateInmemoryJoinGroup", SQLStatementType.DDL),
+    
+    DROP_INMEMORY_JOIN_GROUP("DropInmemoryJoinGroup", SQLStatementType.DDL),
+    
+    CREATE_RESTORE_POINT("CreateRestorePoint", SQLStatementType.DDL),
+    
+    CURSOR("Cursor", SQLStatementType.DDL),
+    
+    CLOSE("Close", SQLStatementType.DDL),
+    
+    MOVE("Move", SQLStatementType.DDL),
+    
+    FETCH("Fetch", SQLStatementType.DDL),
+    
+    CHECKPOINT("Checkpoint", SQLStatementType.DML),
+    
+    CLUSTER("Cluster", SQLStatementType.DDL);
     
     private final String name;
     

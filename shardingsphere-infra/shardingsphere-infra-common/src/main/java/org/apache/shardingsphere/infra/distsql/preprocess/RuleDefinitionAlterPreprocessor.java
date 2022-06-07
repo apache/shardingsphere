@@ -18,16 +18,16 @@
 package org.apache.shardingsphere.infra.distsql.preprocess;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.spi.type.typed.StatelessTypedSPI;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 
 /**
  * Rule definition alter preprocessor.
  * 
- * @param <T> type of SQL statement
- * @param <R> type of rule configuration
+ * @param <T> type of rule configuration
  */
-public interface RuleDefinitionAlterPreprocessor<T extends SQLStatement, R extends RuleConfiguration> extends StatelessTypedSPI {
+@SingletonSPI
+public interface RuleDefinitionAlterPreprocessor<T extends RuleConfiguration> extends TypedSPI {
     
     /**
      * Preprocess current rule configuration.
@@ -36,5 +36,5 @@ public interface RuleDefinitionAlterPreprocessor<T extends SQLStatement, R exten
      * @param toBeAlteredRuleConfig to be altered rule configuration
      * @return altered current rule configuration
      */
-    R preprocess(R currentRuleConfig, R toBeAlteredRuleConfig);
+    T preprocess(T currentRuleConfig, T toBeAlteredRuleConfig);
 }

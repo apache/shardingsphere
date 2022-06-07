@@ -375,6 +375,10 @@ ROUTINE
     : R O U T I N E
     ;
 
+SYNONYM
+    : S Y N O N Y M
+    ;
+
 RULE
     : R U L E
     ;
@@ -957,6 +961,10 @@ DETACH
 
 DICTIONARY
     : D I C T I O N A R Y
+    ;
+
+DIRECTORY
+    : D I R E C T O R Y
     ;
 
 EXPRESSION

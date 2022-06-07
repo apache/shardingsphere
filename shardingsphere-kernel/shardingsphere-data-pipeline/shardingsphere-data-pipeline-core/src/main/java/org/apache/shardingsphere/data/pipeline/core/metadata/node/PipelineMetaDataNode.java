@@ -17,17 +17,15 @@
 
 package org.apache.shardingsphere.data.pipeline.core.metadata.node;
 
-import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
 
 /**
  * Scaling meta data node.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PipelineMetaDataNode {
-    
-    public static final String ROOT_NODE = "scaling";
     
     /**
      * Get job config path.
@@ -36,26 +34,57 @@ public final class PipelineMetaDataNode {
      * @return job config path.
      */
     public static String getJobConfigPath(final String jobId) {
-        return Joiner.on("/").join(getScalingRootPath(), jobId, "config");
+        return String.join("/", DataPipelineConstants.DATA_PIPELINE_ROOT, jobId, "config");
     }
     
     /**
      * Get scaling root path.
      *
+     * @param jobId job id.
      * @return root path
      */
-    public static String getScalingRootPath() {
-        return "/" + ROOT_NODE;
+    public static String getScalingJobPath(final String jobId) {
+        return String.join("/", DataPipelineConstants.DATA_PIPELINE_ROOT, jobId);
     }
     
     /**
-     * Get scaling job offset path.
+     * Get scaling job offset path, include job id and sharding item.
      *
      * @param jobId job id.
      * @param shardingItem sharding item.
      * @return job offset path.
      */
     public static String getScalingJobOffsetPath(final String jobId, final int shardingItem) {
-        return Joiner.on("/").join(getScalingRootPath(), jobId, "offset", shardingItem);
+        return String.join("/", getScalingJobOffsetPath(jobId), Integer.toString(shardingItem));
+    }
+    
+    /**
+     * Get scaling job offset path.
+     *
+     * @param jobId job id.
+     * @return job offset path.
+     */
+    public static String getScalingJobOffsetPath(final String jobId) {
+        return String.join("/", DataPipelineConstants.DATA_PIPELINE_ROOT, jobId, "offset");
+    }
+    
+    /**
+     * Get scaling job config path.
+     *
+     * @param jobId job id.
+     * @return job config path.
+     */
+    public static String getScalingJobConfigPath(final String jobId) {
+        return String.join("/", DataPipelineConstants.DATA_PIPELINE_ROOT, jobId, "config");
+    }
+    
+    /**
+     * Get scaling job config path.
+     *
+     * @param jobId job id.
+     * @return job config path.
+     */
+    public static String getScalingCheckResultPath(final String jobId) {
+        return String.join("/", DataPipelineConstants.DATA_PIPELINE_ROOT, jobId, "check", "result");
     }
 }

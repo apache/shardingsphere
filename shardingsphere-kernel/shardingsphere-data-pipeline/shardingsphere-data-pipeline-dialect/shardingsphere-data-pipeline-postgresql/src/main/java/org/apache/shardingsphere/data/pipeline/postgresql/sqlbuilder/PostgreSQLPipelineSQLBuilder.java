@@ -32,6 +32,11 @@ import java.util.Set;
 public final class PostgreSQLPipelineSQLBuilder extends AbstractPipelineSQLBuilder {
     
     @Override
+    public String buildCreateSchemaSQL(final String schemaName) {
+        return "CREATE SCHEMA IF NOT EXISTS " + quote(schemaName);
+    }
+    
+    @Override
     public String getLeftIdentifierQuoteString() {
         return "\"";
     }
@@ -42,8 +47,8 @@ public final class PostgreSQLPipelineSQLBuilder extends AbstractPipelineSQLBuild
     }
     
     @Override
-    public String buildInsertSQL(final DataRecord dataRecord, final Map<LogicTableName, Set<String>> shardingColumnsMap) {
-        return super.buildInsertSQL(dataRecord, shardingColumnsMap) + buildConflictSQL(dataRecord, shardingColumnsMap);
+    public String buildInsertSQL(final String schemaName, final DataRecord dataRecord, final Map<LogicTableName, Set<String>> shardingColumnsMap) {
+        return super.buildInsertSQL(schemaName, dataRecord, shardingColumnsMap) + buildConflictSQL(dataRecord, shardingColumnsMap);
     }
     
     // Refer to https://www.postgresql.org/docs/current/sql-insert.html
@@ -56,7 +61,7 @@ public final class PostgreSQLPipelineSQLBuilder extends AbstractPipelineSQLBuild
         result.append(") DO UPDATE SET ");
         for (int i = 0; i < dataRecord.getColumnCount(); i++) {
             Column column = dataRecord.getColumn(i);
-            if (column.isPrimaryKey() || isShardingColumn(shardingColumnsMap, dataRecord.getTableName(), column.getName())) {
+            if (column.isUniqueKey() || isShardingColumn(shardingColumnsMap, dataRecord.getTableName(), column.getName())) {
                 continue;
             }
             result.append(quote(column.getName())).append("=EXCLUDED.").append(quote(column.getName())).append(",");

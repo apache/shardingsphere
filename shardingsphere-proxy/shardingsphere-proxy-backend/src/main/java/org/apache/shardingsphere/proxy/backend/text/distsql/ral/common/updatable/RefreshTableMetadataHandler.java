@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable;
 
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.RefreshTableMetadataStatement;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -42,25 +44,38 @@ public final class RefreshTableMetadataHandler extends UpdatableRALBackendHandle
     
     @Override
     protected void update(final ContextManager contextManager, final RefreshTableMetadataStatement sqlStatement) throws DistSQLException {
-        String databaseName = connectionSession.getDatabaseName();
-        checkDatabase(databaseName);
+        String databaseName = getDatabaseName();
+        String schemaName = getSchemaName(sqlStatement, databaseName);
         if (sqlStatement.getResourceName().isPresent()) {
-            contextManager.reloadMetaData(databaseName, sqlStatement.getTableName().get(), sqlStatement.getResourceName().get());
+            if (sqlStatement.getTableName().isPresent()) {
+                contextManager.reloadMetaData(databaseName, schemaName, sqlStatement.getResourceName().get(), sqlStatement.getTableName().get());
+            } else {
+                contextManager.reloadSchemaMetaData(databaseName, schemaName, sqlStatement.getResourceName().get());
+            }
             return;
         }
         if (sqlStatement.getTableName().isPresent()) {
-            contextManager.reloadMetaData(databaseName, sqlStatement.getTableName().get());
+            contextManager.reloadMetaData(databaseName, schemaName, sqlStatement.getTableName().get());
             return;
         }
         contextManager.reloadMetaData(databaseName);
     }
     
-    private void checkDatabase(final String databaseName) {
-        if (null == databaseName) {
+    private String getDatabaseName() {
+        String result = connectionSession.getDatabaseName();
+        if (Strings.isNullOrEmpty(result)) {
             throw new NoDatabaseSelectedException();
         }
-        if (!ProxyContext.getInstance().databaseExists(databaseName)) {
-            throw new UnknownDatabaseException(databaseName);
+        if (!ProxyContext.getInstance().databaseExists(result)) {
+            throw new UnknownDatabaseException(result);
         }
+        return result;
+    }
+    
+    private String getSchemaName(final RefreshTableMetadataStatement sqlStatement, final String databaseName) {
+        if (sqlStatement.getSchemaName().isPresent()) {
+            return sqlStatement.getSchemaName().get();
+        }
+        return DatabaseTypeEngine.getDefaultSchemaName(connectionSession.getDatabaseType(), databaseName);
     }
 }

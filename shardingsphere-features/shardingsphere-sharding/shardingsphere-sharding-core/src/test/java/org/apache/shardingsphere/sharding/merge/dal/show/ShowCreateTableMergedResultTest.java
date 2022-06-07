@@ -19,9 +19,9 @@ package org.apache.shardingsphere.sharding.merge.dal.show;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.model.ConstraintMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereConstraint;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -29,10 +29,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -52,29 +50,22 @@ public final class ShowCreateTableMergedResultTest {
     @Before
     public void setUp() {
         shardingRule = buildShardingRule();
-        schema = buildSchema();
+        schema = createSchema();
     }
     
     private ShardingRule buildShardingRule() {
-        ShardingTableRuleConfiguration orderTableRuleConfig = new ShardingTableRuleConfiguration("t_order", "ds.t_order_${0..2}");
-        ShardingTableRuleConfiguration userTableRuleConfig = new ShardingTableRuleConfiguration("t_user", "ds.t_user_${0..2}");
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        shardingRuleConfig.getTables().add(orderTableRuleConfig);
-        shardingRuleConfig.getTables().add(userTableRuleConfig);
+        shardingRuleConfig.getTables().add(new ShardingTableRuleConfiguration("t_order", "ds.t_order_${0..2}"));
+        shardingRuleConfig.getTables().add(new ShardingTableRuleConfiguration("t_user", "ds.t_user_${0..2}"));
         return new ShardingRule(shardingRuleConfig, Collections.singletonList("ds"));
     }
     
-    private ShardingSphereSchema buildSchema() {
-        Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(1, 1);
-        tableMetaDataMap.put("t_order", new TableMetaData("t_order", Collections.emptyList(), Collections.emptyList(), buildConstraintMetaData()));
-        tableMetaDataMap.put("t_user", new TableMetaData("t_user", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
-        return new ShardingSphereSchema(tableMetaDataMap);
-    }
-    
-    private Collection<ConstraintMetaData> buildConstraintMetaData() {
-        Collection<ConstraintMetaData> result = new LinkedList<>();
-        result.add(new ConstraintMetaData("t_order_foreign_key", "t_user"));
-        return result;
+    private ShardingSphereSchema createSchema() {
+        Map<String, ShardingSphereTable> tables = new HashMap<>(2, 1);
+        tables.put("t_order",
+                new ShardingSphereTable("t_order", Collections.emptyList(), Collections.emptyList(), Collections.singleton(new ShardingSphereConstraint("t_order_foreign_key", "t_user"))));
+        tables.put("t_user", new ShardingSphereTable("t_user", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
+        return new ShardingSphereSchema(tables);
     }
     
     @Test

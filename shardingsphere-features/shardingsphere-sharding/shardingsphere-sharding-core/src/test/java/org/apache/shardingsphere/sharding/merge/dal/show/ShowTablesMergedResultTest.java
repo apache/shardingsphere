@@ -19,8 +19,8 @@ package org.apache.shardingsphere.sharding.merge.dal.show;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -29,8 +29,6 @@ import org.junit.Test;
 
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -46,21 +44,24 @@ public final class ShowTablesMergedResultTest {
     
     @Before
     public void setUp() {
-        shardingRule = buildShardingRule();
-        schema = buildSchema();
+        shardingRule = createShardingRule();
+        schema = new ShardingSphereSchema(Collections.singletonMap("table", new ShardingSphereTable("table", Collections.emptyList(), Collections.emptyList(), Collections.emptyList())));
     }
     
-    private ShardingRule buildShardingRule() {
-        ShardingTableRuleConfiguration tableRuleConfig = new ShardingTableRuleConfiguration("table", "ds.table_${0..2}");
+    private ShardingRule createShardingRule() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        shardingRuleConfig.getTables().add(tableRuleConfig);
-        return new ShardingRule(shardingRuleConfig, Collections.singletonList("ds"));
+        shardingRuleConfig.getTables().add(new ShardingTableRuleConfiguration("table", "ds.table_${0..2}"));
+        return new ShardingRule(shardingRuleConfig, Collections.singleton("ds"));
     }
     
-    private ShardingSphereSchema buildSchema() {
-        Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(1, 1);
-        tableMetaDataMap.put("table", new TableMetaData("table", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
-        return new ShardingSphereSchema(tableMetaDataMap);
+    @Test
+    public void assertNextForEmptyQueryResult() throws SQLException {
+        assertFalse(new LogicTablesMergedResult(shardingRule, mock(SQLStatementContext.class), schema, Collections.emptyList()).next());
+    }
+    
+    @Test
+    public void assertNextForActualTableNameInTableRule() throws SQLException {
+        assertTrue(new LogicTablesMergedResult(shardingRule, mock(SQLStatementContext.class), schema, Collections.singletonList(mockQueryResult("table_0"))).next());
     }
     
     private QueryResult mockQueryResult(final String value) throws SQLException {
@@ -69,17 +70,5 @@ public final class ShowTablesMergedResultTest {
         when(result.getValue(1, Object.class)).thenReturn(value);
         when(result.getMetaData().getColumnCount()).thenReturn(1);
         return result;
-    }
-    
-    @Test
-    public void assertNextForEmptyQueryResult() throws SQLException {
-        LogicTablesMergedResult actual = new LogicTablesMergedResult(shardingRule, mock(SQLStatementContext.class), schema, Collections.emptyList());
-        assertFalse(actual.next());
-    }
-    
-    @Test
-    public void assertNextForActualTableNameInTableRule() throws SQLException {
-        LogicTablesMergedResult actual = new LogicTablesMergedResult(shardingRule, mock(SQLStatementContext.class), schema, Collections.singletonList(mockQueryResult("table_0")));
-        assertTrue(actual.next());
     }
 }

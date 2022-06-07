@@ -30,12 +30,16 @@ public final class OpenTelemetryTracingPluginBootServiceTest {
     
     @Test
     public void assertStart() {
-        Properties props = new Properties();
-        props.setProperty("otel.resource.attributes", "service.name=shardingsphere-agent");
-        props.setProperty("otel.traces.exporter", "zipkin");
-        new OpenTelemetryTracingPluginBootService().start(new PluginConfiguration(null, 0, null, props));
+        new OpenTelemetryTracingPluginBootService().start(new PluginConfiguration(null, 0, null, createProperties()));
         assertNotNull(GlobalOpenTelemetry.getTracerProvider());
         assertNotNull(GlobalOpenTelemetry.getTracer("shardingsphere-agent"));
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty("otel.resource.attributes", "service.name=shardingsphere-agent");
+        result.setProperty("otel.traces.exporter", "zipkin");
+        return result;
     }
     
     @After

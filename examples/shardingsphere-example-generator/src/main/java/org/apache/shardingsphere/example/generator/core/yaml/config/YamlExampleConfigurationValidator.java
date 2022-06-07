@@ -18,9 +18,10 @@
 package org.apache.shardingsphere.example.generator.core.yaml.config;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -37,27 +38,27 @@ public final class YamlExampleConfigurationValidator {
      * @param config Yaml example configuration
      */
     public static void validate(final YamlExampleConfiguration config) {
-        Map<String, List<String>> configurationMap = Maps.newHashMap();
-        configurationMap.put("products", config.getProducts());
-        configurationMap.put("modes", config.getModes());
-        configurationMap.put("transactions", config.getTransactions());
-        configurationMap.put("features", config.getFeatures());
-        configurationMap.put("frameworks", config.getFrameworks());
-        validateConfigurationValues(configurationMap);
-        validateAccountConfigProps(config.getProps());
+        Map<String, List<String>> configMap = new HashMap<>(5, 1);
+        configMap.put("products", config.getProducts());
+        configMap.put("modes", config.getModes());
+        configMap.put("transactions", config.getTransactions());
+        configMap.put("features", config.getFeatures());
+        configMap.put("frameworks", config.getFrameworks());
+        validateConfigurationValues(configMap);
+        validateAccountConfigProperties(config.getProps());
     }
     
     private static void validateConfigurationValues(final Map<String, List<String>> configMap) {
-        configMap.forEach((configItem, configValues) -> {
-            YamlExampleConfigurationSupportedValue supportedValueEnum = YamlExampleConfigurationSupportedValue.of(configItem);
+        configMap.forEach((key, value) -> {
+            YamlExampleConfigurationSupportedValue supportedValueEnum = YamlExampleConfigurationSupportedValue.of(key);
             Set<String> supportedValues = supportedValueEnum.getSupportedValues();
-            configValues.forEach(v -> Preconditions.checkArgument(supportedValues.contains(v), getConfigValueErrorMessage(configItem, supportedValues, v)));
+            value.forEach(each -> Preconditions.checkArgument(supportedValues.contains(each), getConfigValueErrorMessage(key, supportedValues, each)));
         });
     }
     
-    private static void validateAccountConfigProps(final Properties props) {
-        List<String> accountConfigItemList = Lists.newArrayList("host", "port", "username", "password");
-        accountConfigItemList.forEach(each -> Preconditions.checkArgument(props.get(each) != null, getConfigItemErrorMessage(each)));
+    private static void validateAccountConfigProperties(final Properties props) {
+        Collection<String> accountConfigItems = Arrays.asList("host", "port", "username", "password");
+        accountConfigItems.forEach(each -> Preconditions.checkArgument(null != props.get(each), getConfigItemErrorMessage(each)));
     }
     
     private static String getConfigValueErrorMessage(final String configItem, final Set<String> supportedValues, final String errorValue) {

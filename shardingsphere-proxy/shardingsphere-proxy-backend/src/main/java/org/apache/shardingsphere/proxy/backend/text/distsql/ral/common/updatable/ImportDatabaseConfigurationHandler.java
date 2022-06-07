@@ -34,9 +34,9 @@ import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.ImportResourceNotExistedException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourcesException;
 import org.apache.shardingsphere.infra.exception.ImportDatabaseNotExistedException;
-import org.apache.shardingsphere.infra.exception.SchemaNotExistedException;
+import org.apache.shardingsphere.infra.exception.DatabaseNotExistedException;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -94,10 +94,10 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
         }
         try {
             validator.validate(toBeUpdatedResourcePropsMap);
-            Collection<String> currentResourceNames = new LinkedList<>(ProxyContext.getInstance().getMetaData(databaseName).getResource().getDataSources().keySet());
+            Collection<String> currentResourceNames = new LinkedList<>(ProxyContext.getInstance().getDatabase(databaseName).getResource().getDataSources().keySet());
             Collection<String> toBeDroppedResourceNames = currentResourceNames.stream().filter(each -> !toBeUpdatedResourcePropsMap.containsKey(each)).collect(Collectors.toSet());
             ProxyContext.getInstance().getContextManager().addResource(databaseName, toBeUpdatedResourcePropsMap);
-            if (toBeDroppedResourceNames.size() > 0) {
+            if (!toBeDroppedResourceNames.isEmpty()) {
                 ProxyContext.getInstance().getContextManager().dropResource(databaseName, toBeDroppedResourceNames);
             }
         } catch (final SQLException ex) {
@@ -111,20 +111,20 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
         }
         Collection<RuleConfiguration> toBeUpdatedRuleConfigs = new LinkedList<>();
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        ShardingSphereMetaData shardingSphereMetaData = metaDataContexts.getMetaData(databaseName);
+        ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabases().get(databaseName);
         for (YamlRuleConfiguration each : yamlRuleConfigs) {
             if (each instanceof YamlShardingRuleConfiguration) {
                 ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfigurationYamlSwapper().swapToObject((YamlShardingRuleConfiguration) each);
-                shardingRuleConfigurationImportChecker.check(shardingSphereMetaData, shardingRuleConfig);
+                shardingRuleConfigurationImportChecker.check(database, shardingRuleConfig);
                 toBeUpdatedRuleConfigs.add(shardingRuleConfig);
             } else if (each instanceof YamlReadwriteSplittingRuleConfiguration) {
                 ReadwriteSplittingRuleConfiguration readwriteSplittingRuleConfig = new ReadwriteSplittingRuleConfigurationYamlSwapper()
                         .swapToObject((YamlReadwriteSplittingRuleConfiguration) each);
-                readwriteSplittingRuleConfigurationImportChecker.check(shardingSphereMetaData, readwriteSplittingRuleConfig);
+                readwriteSplittingRuleConfigurationImportChecker.check(database, readwriteSplittingRuleConfig);
                 toBeUpdatedRuleConfigs.add(readwriteSplittingRuleConfig);
             } else if (each instanceof YamlDatabaseDiscoveryRuleConfiguration) {
                 DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfig = new DatabaseDiscoveryRuleConfigurationYamlSwapper().swapToObject((YamlDatabaseDiscoveryRuleConfiguration) each);
-                databaseDiscoveryRuleConfigurationImportChecker.check(shardingSphereMetaData, databaseDiscoveryRuleConfig);
+                databaseDiscoveryRuleConfigurationImportChecker.check(database, databaseDiscoveryRuleConfig);
                 toBeUpdatedRuleConfigs.add(databaseDiscoveryRuleConfig);
             } else if (each instanceof YamlEncryptRuleConfiguration) {
                 EncryptRuleConfiguration encryptRuleConfig = new EncryptRuleConfigurationYamlSwapper().swapToObject((YamlEncryptRuleConfiguration) each);
@@ -136,16 +136,16 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
                 toBeUpdatedRuleConfigs.add(shadowRuleConfig);
             }
         }
-        shardingSphereMetaData.getRuleMetaData().getConfigurations().clear();
-        shardingSphereMetaData.getRuleMetaData().getConfigurations().addAll(toBeUpdatedRuleConfigs);
+        database.getRuleMetaData().getConfigurations().clear();
+        database.getRuleMetaData().getConfigurations().addAll(toBeUpdatedRuleConfigs);
         ProxyContext.getInstance().getContextManager().renewMetaDataContexts(metaDataContexts);
-        Optional<MetaDataPersistService> metaDataPersistService = metaDataContexts.getMetaDataPersistService();
+        Optional<MetaDataPersistService> metaDataPersistService = metaDataContexts.getPersistService();
         metaDataPersistService.ifPresent(optional -> optional.getDatabaseRulePersistService().persist(databaseName, toBeUpdatedRuleConfigs));
     }
     
     private void checkDatabaseName(final String databaseName) {
         if (!ProxyContext.getInstance().getAllDatabaseNames().contains(databaseName)) {
-            throw new SchemaNotExistedException(databaseName);
+            throw new DatabaseNotExistedException(databaseName);
         }
     }
     

@@ -19,12 +19,13 @@ package org.apache.shardingsphere.dbdiscovery.mysql.type;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
 import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.database.metadata.dialect.MySQLDataSourceMetaData;
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -32,13 +33,17 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Properties;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
 
 /**
  * MGR database discovery provider algorithm for MySQL.
  */
 @Getter
-@Setter
 @Slf4j
 public final class MGRMySQLDatabaseDiscoveryProviderAlgorithm implements DatabaseDiscoveryProviderAlgorithm {
     
@@ -55,10 +60,38 @@ public final class MGRMySQLDatabaseDiscoveryProviderAlgorithm implements Databas
     
     private static final String QUERY_CURRENT_MEMBER_STATE = "SELECT MEMBER_STATE FROM performance_schema.replication_group_members WHERE MEMBER_HOST=? AND MEMBER_PORT=?";
     
-    private Properties props = new Properties();
+    private Properties props;
     
     @Override
-    public void checkEnvironment(final String databaseName, final DataSource dataSource) throws SQLException {
+    public void init(final Properties props) {
+        this.props = props;
+    }
+    
+    @Override
+    public void checkEnvironment(final String databaseName, final Collection<DataSource> dataSources) {
+        ExecutorService executorService = ExecutorEngine.createExecutorEngineWithCPUAndResources(dataSources.size()).getExecutorServiceManager().getExecutorService();
+        Collection<CompletableFuture<Void>> completableFutures = new LinkedList<>();
+        for (DataSource dataSource : dataSources) {
+            completableFutures.add(runAsyncCheckEnvironment(databaseName, dataSource, executorService));
+        }
+        CompletableFuture.allOf(completableFutures.toArray(new CompletableFuture[0]));
+        Iterator<CompletableFuture<Void>> mgrInstancesFuture = completableFutures.stream().iterator();
+        while (mgrInstancesFuture.hasNext()) {
+            mgrInstancesFuture.next().join();
+        }
+    }
+    
+    private CompletableFuture<Void> runAsyncCheckEnvironment(final String databaseName, final DataSource dataSource, final ExecutorService executorService) {
+        return CompletableFuture.runAsync(() -> {
+            try {
+                checkSingleDatasourceEnvironment(databaseName, dataSource);
+            } catch (SQLException ex) {
+                throw new ShardingSphereException(ex);
+            }
+        }, executorService);
+    }
+    
+    private void checkSingleDatasourceEnvironment(final String databaseName, final DataSource dataSource) throws SQLException {
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {

@@ -23,7 +23,6 @@ import io.etcd.jetcd.Client;
 import io.etcd.jetcd.KV;
 import io.etcd.jetcd.KeyValue;
 import io.etcd.jetcd.Lease;
-import io.etcd.jetcd.Lock;
 import io.etcd.jetcd.Watch;
 import io.etcd.jetcd.kv.GetResponse;
 import io.etcd.jetcd.lease.LeaseGrantResponse;
@@ -40,8 +39,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.internal.util.reflection.FieldSetter;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.plugins.MemberAccessor;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -51,7 +51,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -66,6 +65,8 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class EtcdRepositoryTest {
+    
+    private final EtcdRepository repository = new EtcdRepository();
     
     @Mock
     private Client client;
@@ -94,14 +95,6 @@ public final class EtcdRepositoryTest {
     @Mock
     private CompletableFuture putFuture;
     
-    @Mock
-    private CompletableFuture lockFuture;
-    
-    @Mock
-    private Lock etcdLock;
-    
-    private final EtcdRepository repository = new EtcdRepository();
-    
     @Before
     public void setUp() {
         setClient();
@@ -111,12 +104,14 @@ public final class EtcdRepositoryTest {
     @SneakyThrows(ReflectiveOperationException.class)
     private void setClient() {
         mockClient();
-        FieldSetter.setField(repository, repository.getClass().getDeclaredField("client"), client);
+        MemberAccessor accessor = Plugins.getMemberAccessor();
+        accessor.set(repository.getClass().getDeclaredField("client"), repository, client);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void setProperties() {
-        FieldSetter.setField(repository, repository.getClass().getDeclaredField("etcdProps"), new EtcdProperties(new Properties()));
+        MemberAccessor accessor = Plugins.getMemberAccessor();
+        accessor.set(repository.getClass().getDeclaredField("etcdProps"), repository, new EtcdProperties(new Properties()));
     }
     
     @SuppressWarnings("unchecked")
@@ -129,13 +124,10 @@ public final class EtcdRepositoryTest {
         when(kv.put(any(ByteSequence.class), any(ByteSequence.class), any(PutOption.class))).thenReturn(putFuture);
         when(getFuture.get()).thenReturn(getResponse);
         when(client.getLeaseClient()).thenReturn(lease);
-        when(client.getLockClient()).thenReturn(etcdLock);
         when(lease.grant(anyLong())).thenReturn(leaseFuture);
         when(leaseFuture.get()).thenReturn(leaseGrantResponse);
         when(leaseGrantResponse.getID()).thenReturn(123L);
         when(client.getWatchClient()).thenReturn(watch);
-        when(etcdLock.lock(any(ByteSequence.class), anyLong())).thenReturn(lockFuture);
-        when(etcdLock.unlock(any(ByteSequence.class))).thenReturn(lockFuture);
         return client;
     }
     
@@ -228,13 +220,6 @@ public final class EtcdRepositoryTest {
     }
     
     @Test
-    public void assertProperties() {
-        Properties props = new Properties();
-        repository.setProps(props);
-        assertThat(repository.getProps(), is(props));
-    }
-    
-    @Test
     public void assertGetKeyWhenThrowInterruptedException() throws ExecutionException, InterruptedException {
         doThrow(InterruptedException.class).when(getFuture).get();
         try {
@@ -282,7 +267,7 @@ public final class EtcdRepositoryTest {
         }
     }
     
-    @SneakyThrows({NoSuchFieldException.class, SecurityException.class})
+    @SneakyThrows({NoSuchFieldException.class, SecurityException.class, IllegalAccessException.class})
     private WatchResponse buildWatchResponse(final WatchEvent.EventType eventType) {
         WatchResponse result = new WatchResponse(mock(io.etcd.jetcd.api.WatchResponse.class), ByteSequence.EMPTY);
         List<WatchEvent> events = new LinkedList<>();
@@ -291,21 +276,8 @@ public final class EtcdRepositoryTest {
                 .setValue(ByteString.copyFromUtf8("value1")).build();
         KeyValue keyValue = new KeyValue(keyValue1, ByteSequence.EMPTY);
         events.add(new WatchEvent(keyValue, mock(KeyValue.class), eventType));
-        FieldSetter.setField(result, result.getClass().getDeclaredField("events"), events);
+        MemberAccessor accessor = Plugins.getMemberAccessor();
+        accessor.set(result.getClass().getDeclaredField("events"), result, events);
         return result;
-    }
-    
-    @Test
-    @SneakyThrows
-    public void assertTryLock() {
-        repository.tryLock("test", 5, TimeUnit.SECONDS);
-        verify(etcdLock).lock(ByteSequence.from("test", StandardCharsets.UTF_8), 123L);
-    }
-    
-    @Test
-    @SneakyThrows
-    public void assertReleaseLock() {
-        repository.releaseLock("test");
-        verify(etcdLock).unlock(ByteSequence.from("test", StandardCharsets.UTF_8));
     }
 }

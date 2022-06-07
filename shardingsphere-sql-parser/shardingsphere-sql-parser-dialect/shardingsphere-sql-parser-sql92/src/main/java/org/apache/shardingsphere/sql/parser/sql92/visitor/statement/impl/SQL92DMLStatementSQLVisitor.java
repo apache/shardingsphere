@@ -26,8 +26,8 @@ import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.AliasCo
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.AssignmentContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.AssignmentValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.AssignmentValuesContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.ColumnNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.ColumnNamesContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.CombineClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.DeleteContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.DuplicateSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.EscapedTableReferenceContext;
@@ -52,7 +52,6 @@ import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.Subquer
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.TableFactorContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.TableReferenceContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.TableReferencesContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.UnionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.UpdateContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.WhereClauseContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
@@ -100,6 +99,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 /**
  * DML Statement SQL visitor for SQL92.
@@ -218,14 +218,14 @@ public final class SQL92DMLStatementSQLVisitor extends SQL92StatementSQLVisitor 
     @Override
     public ASTNode visitSelect(final SelectContext ctx) {
         // TODO :Unsupported for withClause.
-        SQL92SelectStatement result = (SQL92SelectStatement) visit(ctx.unionClause());
+        SQL92SelectStatement result = (SQL92SelectStatement) visit(ctx.combineClause());
         result.setParameterCount(getCurrentParameterIndex());
         result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
     
     @Override
-    public ASTNode visitUnionClause(final UnionClauseContext ctx) {
+    public ASTNode visitCombineClause(final CombineClauseContext ctx) {
         // TODO :Unsupported for union SQL.
         return visit(ctx.selectClause(0));
     }
@@ -451,11 +451,7 @@ public final class SQL92DMLStatementSQLVisitor extends SQL92StatementSQLVisitor 
             joinTableSource.setCondition(condition);
         }
         if (null != ctx.USING()) {
-            List<ColumnSegment> columnSegmentList = new LinkedList<>();
-            for (ColumnNameContext cname : ctx.columnNames().columnName()) {
-                columnSegmentList.add((ColumnSegment) visit(cname));
-            }
-            joinTableSource.setUsing(columnSegmentList);
+            joinTableSource.setUsing(ctx.columnNames().columnName().stream().map(each -> (ColumnSegment) visit(each)).collect(Collectors.toList()));
         }
         return joinTableSource;
     }
@@ -477,6 +473,6 @@ public final class SQL92DMLStatementSQLVisitor extends SQL92StatementSQLVisitor 
     
     @Override
     public ASTNode visitSubquery(final SubqueryContext ctx) {
-        return visit(ctx.unionClause());
+        return visit(ctx.combineClause());
     }
 }

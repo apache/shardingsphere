@@ -93,13 +93,13 @@ public final class VertxBackendDataSource implements BackendDataSource {
     /**
      * Get Vert.x sql connection future.
      *
-     * @param schemaName schema name
+     * @param databaseName database name
      * @param dataSourceName data source name
      * @param connectionSize connection size
      * @return futures of sql connections
      */
-    public List<Future<SqlConnection>> getConnections(final String schemaName, final String dataSourceName, final int connectionSize) {
-        Pool pool = getPool(schemaName, dataSourceName);
+    public List<Future<SqlConnection>> getConnections(final String databaseName, final String dataSourceName, final int connectionSize) {
+        Pool pool = getPool(databaseName, dataSourceName);
         List<Future<SqlConnection>> result = new ArrayList<>(connectionSize);
         for (int i = 0; i < connectionSize; i++) {
             result.add(pool.getConnection());
@@ -110,24 +110,24 @@ public final class VertxBackendDataSource implements BackendDataSource {
     /**
      * Get Vert.x pool.
      *
-     * @param schemaName schema name
+     * @param databaseName database name
      * @param dataSourceName data source name
      * @return Vert.x pool
      */
-    public Pool getPool(final String schemaName, final String dataSourceName) {
-        Map<String, Pool> vertxPools = schemaVertxPools.get(schemaName);
+    public Pool getPool(final String databaseName, final String dataSourceName) {
+        Map<String, Pool> vertxPools = schemaVertxPools.get(databaseName);
         if (null == vertxPools) {
-            vertxPools = schemaVertxPools.computeIfAbsent(schemaName, unused -> new ConcurrentHashMap<>());
+            vertxPools = schemaVertxPools.computeIfAbsent(databaseName, unused -> new ConcurrentHashMap<>());
         }
         Pool result = vertxPools.get(dataSourceName);
         if (null == result) {
-            result = vertxPools.computeIfAbsent(dataSourceName, unused -> createPoolFromSchemaDataSource(schemaName, dataSourceName));
+            result = vertxPools.computeIfAbsent(dataSourceName, unused -> createPoolFromSchemaDataSource(databaseName, dataSourceName));
         }
         return result;
     }
     
-    private Pool createPoolFromSchemaDataSource(final String schemaName, final String dataSourceName) {
-        DataSource dataSource = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(schemaName).getResource().getDataSources().get(dataSourceName);
+    private Pool createPoolFromSchemaDataSource(final String databaseName, final String dataSourceName) {
+        DataSource dataSource = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases().get(databaseName).getResource().getDataSources().get(dataSourceName);
         Preconditions.checkNotNull(dataSource, "Can not get connection from datasource %s.", dataSourceName);
         HikariDataSource value = (HikariDataSource) dataSource;
         URI uri = URI.create(value.getJdbcUrl().replace("jdbc:", ""));

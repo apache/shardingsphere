@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.rewrite.token;
 import org.apache.shardingsphere.infra.binder.statement.ddl.AlterIndexStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CreateDatabaseStatementContext;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.IndexTokenGenerator;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.IndexToken;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -30,9 +30,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.Identifi
 import org.junit.Test;
 
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -48,44 +47,32 @@ public final class IndexTokenGeneratorTest {
     @Test
     public void assertIsGenerateSQLToken() {
         CreateDatabaseStatementContext createDatabaseStatementContext = mock(CreateDatabaseStatementContext.class);
-        IndexTokenGenerator indexTokenGenerator = new IndexTokenGenerator();
-        assertFalse(indexTokenGenerator.isGenerateSQLToken(createDatabaseStatementContext));
+        IndexTokenGenerator generator = new IndexTokenGenerator();
+        assertFalse(generator.isGenerateSQLToken(createDatabaseStatementContext));
         AlterIndexStatementContext alterIndexStatementContext = mock(AlterIndexStatementContext.class);
-        Collection<IndexSegment> indexSegmentCollection = new LinkedList<>();
-        when(alterIndexStatementContext.getIndexes()).thenReturn(indexSegmentCollection);
-        assertFalse(indexTokenGenerator.isGenerateSQLToken(alterIndexStatementContext));
-        indexSegmentCollection.add(mock(IndexSegment.class));
-        assertTrue(indexTokenGenerator.isGenerateSQLToken(alterIndexStatementContext));
+        Collection<IndexSegment> indexSegments = new LinkedList<>();
+        when(alterIndexStatementContext.getIndexes()).thenReturn(indexSegments);
+        assertFalse(generator.isGenerateSQLToken(alterIndexStatementContext));
+        indexSegments.add(mock(IndexSegment.class));
+        assertTrue(generator.isGenerateSQLToken(alterIndexStatementContext));
     }
     
     @Test
     public void assertGenerateSQLTokens() {
         IndexSegment indexSegment = mock(IndexSegment.class, RETURNS_DEEP_STUBS);
-        int testStartIndex = 1;
-        when(indexSegment.getStartIndex()).thenReturn(testStartIndex);
-        int testStopIndex = 3;
-        when(indexSegment.getStopIndex()).thenReturn(testStopIndex);
-        IndexNameSegment indexNameSegment = new IndexNameSegment(testStartIndex, testStopIndex, mock(IdentifierValue.class));
-        when(indexSegment.getIndexName()).thenReturn(indexNameSegment);
-        Collection<IndexSegment> indexSegments = new LinkedList<>();
-        indexSegments.add(indexSegment);
+        when(indexSegment.getStartIndex()).thenReturn(1);
+        when(indexSegment.getStopIndex()).thenReturn(3);
+        when(indexSegment.getIndexName()).thenReturn(new IndexNameSegment(1, 3, mock(IdentifierValue.class)));
         AlterIndexStatementContext alterIndexStatementContext = mock(AlterIndexStatementContext.class, RETURNS_DEEP_STUBS);
-        when(alterIndexStatementContext.getIndexes()).thenReturn(indexSegments);
+        when(alterIndexStatementContext.getIndexes()).thenReturn(Collections.singleton(indexSegment));
         when(alterIndexStatementContext.getDatabaseType()).thenReturn(new MySQLDatabaseType());
         when(alterIndexStatementContext.getTablesContext().getSchemaName()).thenReturn(Optional.empty());
-        IndexTokenGenerator indexTokenGenerator = new IndexTokenGenerator();
-        ShardingRule shardingRule = mock(ShardingRule.class);
-        indexTokenGenerator.setShardingRule(shardingRule);
-        indexTokenGenerator.setSchemas(mockSchemaMap());
-        indexTokenGenerator.setDatabaseName("test");
-        Collection<IndexToken> result = indexTokenGenerator.generateSQLTokens(alterIndexStatementContext);
-        assertThat(result.size(), is(1));
-        assertThat((new LinkedList<>(result)).get(0).getStartIndex(), is(testStartIndex));
-    }
-    
-    private Map<String, ShardingSphereSchema> mockSchemaMap() {
-        Map<String, ShardingSphereSchema> result = new HashMap<>(1, 1);
-        result.put("test", mock(ShardingSphereSchema.class));
-        return result;
+        IndexTokenGenerator generator = new IndexTokenGenerator();
+        generator.setShardingRule(mock(ShardingRule.class));
+        generator.setSchemas(Collections.singletonMap("test", mock(ShardingSphereSchema.class)));
+        generator.setDatabaseName("test");
+        Collection<IndexToken> actual = generator.generateSQLTokens(alterIndexStatementContext);
+        assertThat(actual.size(), is(1));
+        assertThat((new LinkedList<>(actual)).get(0).getStartIndex(), is(1));
     }
 }

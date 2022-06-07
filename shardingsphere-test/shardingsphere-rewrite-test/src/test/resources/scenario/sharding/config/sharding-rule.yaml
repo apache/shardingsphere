@@ -30,7 +30,7 @@ rules:
           shardingAlgorithmName: t_account_inline
       keyGenerateStrategy:
         column: account_id
-        keyGeneratorName: test
+        keyGeneratorName: rewrite_keygen_fixture
     t_account_detail:
       actualDataNodes: db.t_account_detail_${0..1}
       tableStrategy: 
@@ -59,8 +59,14 @@ rules:
       actualDataNodes: db.T_ROLE
     T_ROLE_ADMIN:
       actualDataNodes: db.T_ROLE_ADMIN
+    t_account_view:
+      actualDataNodes: db.t_account_view_${0..1}
+      tableStrategy:
+        standard:
+          shardingColumn: account_id
+          shardingAlgorithmName: t_account_view_inline
   bindingTables:
-    - t_account, t_account_detail
+    - t_account, t_account_detail, t_account_view
     - t_order, t_order_item
     - t_user, t_user_extend
     - T_ROLE, T_ROLE_ADMIN
@@ -84,10 +90,14 @@ rules:
       type: INLINE
       props:
         algorithm-expression: t_user_extend_${user_id % 2}
+    t_account_view_inline:
+      type: INLINE
+      props:
+        algorithm-expression: t_account_view_${account_id % 2}
   
   keyGenerators:
-    test:
-      type: TEST
+    rewrite_keygen_fixture:
+      type: REWRITE.FIXTURE
 
 props:
   sql-federation-enabled: true

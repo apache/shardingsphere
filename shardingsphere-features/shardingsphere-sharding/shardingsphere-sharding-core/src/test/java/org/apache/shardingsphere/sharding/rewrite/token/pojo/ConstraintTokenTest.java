@@ -19,15 +19,8 @@ public class ConstraintTokenTest {
 
     @Test
     public void assertConstraintToken() {
-        ConstraintToken constraintToken = new ConstraintToken(0, 1, new IdentifierValue("t_order"), mock(SQLStatementContext.class), mock(ShardingRule.class));
+        ConstraintToken constraintToken = new ConstraintToken(0, 1, new IdentifierValue("uc"), mock(SQLStatementContext.class), mock(ShardingRule.class));
         assertThat(constraintToken.toString(getRouteUnit()), is("uc_t_order_0"));
-        assertTokenGrid(constraintToken);
-    }
-
-    @Test
-    public void assertConstraintTokenWithNoRouteUnit() {
-        ConstraintToken constraintToken = new ConstraintToken(0, 1, new IdentifierValue("t_order"), mock(SQLStatementContext.class), mock(ShardingRule.class));
-        assertThat(constraintToken.toString(), is("uc_t_order_0"));
         assertTokenGrid(constraintToken);
     }
 
@@ -37,7 +30,7 @@ public class ConstraintTokenTest {
     }
 
     private RouteUnit getRouteUnit() {
-        return new RouteUnit(new RouteMapper("logic_db", "logic_db"), Collections.singletonList(new RouteMapper("t_order", "uc_t_order_0")));
+        return new RouteUnit(new RouteMapper("logic_db", "logic_db"), Collections.singletonList(new RouteMapper("t_order", "t_order_0")));
     }
 
 }

@@ -22,11 +22,11 @@ import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsist
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyContentCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCountCheckResult;
+import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
-import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.job.JobOperationType;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
@@ -36,10 +36,10 @@ import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJ
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import javax.sql.DataSource;
@@ -55,7 +55,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.Properties;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -73,9 +72,13 @@ public final class DataConsistencyChecker {
     
     private final Collection<String> logicTableNames;
     
+    private final TableNameSchemaNameMapping tableNameSchemaNameMapping;
+    
     public DataConsistencyChecker(final RuleAlteredJobConfiguration jobConfig) {
         this.jobConfig = jobConfig;
         logicTableNames = jobConfig.splitLogicTableNames();
+        ShardingSphereDatabase database = PipelineContext.getContextManager().getMetaDataContexts().getMetaData().getDatabases().get(jobConfig.getDatabaseName());
+        tableNameSchemaNameMapping = new TableNameSchemaNameMapping(TableNameSchemaNameMapping.convert(database.getSchemas()));
     }
     
     /**
@@ -135,21 +138,24 @@ public final class DataConsistencyChecker {
         return jobId.length() <= 6 ? jobId : jobId.substring(0, 6);
     }
     
-    private long count(final DataSource dataSource, final String table, final DatabaseType databaseType) {
+    private long count(final DataSource dataSource, final String tableName, final DatabaseType databaseType) {
+        String sql = PipelineSQLBuilderFactory.getInstance(databaseType.getType()).buildCountSQL(tableNameSchemaNameMapping.getSchemaName(tableName), tableName);
         try (
                 Connection connection = dataSource.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(PipelineSQLBuilderFactory.newInstance(databaseType.getName()).buildCountSQL(table));
+                PreparedStatement preparedStatement = connection.prepareStatement(sql);
                 ResultSet resultSet = preparedStatement.executeQuery()) {
             resultSet.next();
             return resultSet.getLong(1);
         } catch (final SQLException ex) {
-            throw new PipelineDataConsistencyCheckFailedException(String.format("Count for table '%s' failed", table), ex);
+            throw new PipelineDataConsistencyCheckFailedException(String.format("Count for table '%s' failed", tableName), ex);
         }
     }
     
     private Map<String, DataConsistencyContentCheckResult> checkData(final DataConsistencyCalculateAlgorithm calculator) {
-        PipelineDataSourceConfiguration sourceDataSourceConfig = getPipelineDataSourceConfiguration(calculator, jobConfig.getSource());
-        PipelineDataSourceConfiguration targetDataSourceConfig = getPipelineDataSourceConfiguration(calculator, jobConfig.getTarget());
+        decoratePipelineDataSourceConfiguration(calculator, jobConfig.getSource());
+        PipelineDataSourceConfiguration sourceDataSourceConfig = jobConfig.getSource();
+        decoratePipelineDataSourceConfiguration(calculator, jobConfig.getTarget());
+        PipelineDataSourceConfiguration targetDataSourceConfig = jobConfig.getTarget();
         ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("job-" + getJobIdDigest(jobConfig.getJobId()) + "-data-check-%d");
         ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 2, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(2), threadFactory);
         JobRateLimitAlgorithm inputRateLimitAlgorithm = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig).getInputRateLimitAlgorithm();
@@ -157,21 +163,17 @@ public final class DataConsistencyChecker {
         try (
                 PipelineDataSourceWrapper sourceDataSource = PipelineDataSourceFactory.newInstance(sourceDataSourceConfig);
                 PipelineDataSourceWrapper targetDataSource = PipelineDataSourceFactory.newInstance(targetDataSourceConfig)) {
-            Map<String, TableMetaData> tableMetaDataMap = getTableMetaDataMap(jobConfig.getDatabaseName());
-            logicTableNames.forEach(each -> {
-                // TODO put to preparer
-                if (!tableMetaDataMap.containsKey(each)) {
-                    throw new PipelineDataConsistencyCheckFailedException(String.format("Could not get metadata for table '%s', tableMetaDataMap.keySet=%s", each, tableMetaDataMap.keySet()));
-                }
-            });
-            String sourceDatabaseType = sourceDataSourceConfig.getDatabaseType().getName();
-            String targetDatabaseType = targetDataSourceConfig.getDatabaseType().getName();
+            String sourceDatabaseType = sourceDataSourceConfig.getDatabaseType().getType();
+            String targetDatabaseType = targetDataSourceConfig.getDatabaseType().getType();
             for (String each : logicTableNames) {
-                TableMetaData tableMetaData = tableMetaDataMap.get(each);
-                Collection<String> columnNames = tableMetaData.getColumns().keySet();
-                String uniqueKey = tableMetaData.getPrimaryKeyColumns().get(0);
-                DataConsistencyCalculateParameter sourceParameter = buildParameter(sourceDataSource, each, columnNames, sourceDatabaseType, targetDatabaseType, uniqueKey);
-                DataConsistencyCalculateParameter targetParameter = buildParameter(targetDataSource, each, columnNames, targetDatabaseType, sourceDatabaseType, uniqueKey);
+                ShardingSphereTable table = getTableMetaData(jobConfig.getDatabaseName(), each);
+                if (null == table) {
+                    throw new PipelineDataConsistencyCheckFailedException("Can not get metadata for table " + each);
+                }
+                Collection<String> columnNames = table.getColumns().keySet();
+                String uniqueKey = table.getPrimaryKeyColumns().get(0);
+                DataConsistencyCalculateParameter sourceParameter = buildParameter(sourceDataSource, tableNameSchemaNameMapping, each, columnNames, sourceDatabaseType, targetDatabaseType, uniqueKey);
+                DataConsistencyCalculateParameter targetParameter = buildParameter(targetDataSource, tableNameSchemaNameMapping, each, columnNames, targetDatabaseType, sourceDatabaseType, uniqueKey);
                 Iterator<Object> sourceCalculatedResults = calculator.calculate(sourceParameter).iterator();
                 Iterator<Object> targetCalculatedResults = calculator.calculate(targetParameter).iterator();
                 boolean contentMatched = true;
@@ -199,11 +201,8 @@ public final class DataConsistencyChecker {
         return result;
     }
     
-    private PipelineDataSourceConfiguration getPipelineDataSourceConfiguration(final DataConsistencyCalculateAlgorithm calculator, final YamlPipelineDataSourceConfiguration dataSourceConfig) {
-        PipelineDataSourceConfiguration result = PipelineDataSourceConfigurationFactory.newInstance(dataSourceConfig.getType(), dataSourceConfig.getParameter());
-        checkDatabaseTypeSupported(calculator.getSupportedDatabaseTypes(), result.getDatabaseType().getName());
-        addMySQLDataSourceConfig(result);
-        return result;
+    private void decoratePipelineDataSourceConfiguration(final DataConsistencyCalculateAlgorithm calculator, final PipelineDataSourceConfiguration dataSourceConfig) {
+        checkDatabaseTypeSupported(calculator.getSupportedDatabaseTypes(), dataSourceConfig.getDatabaseType().getType());
     }
     
     private void checkDatabaseTypeSupported(final Collection<String> supportedDatabaseTypes, final String databaseType) {
@@ -212,27 +211,23 @@ public final class DataConsistencyChecker {
         }
     }
     
-    private void addMySQLDataSourceConfig(final PipelineDataSourceConfiguration dataSourceConfig) {
-        if (dataSourceConfig.getDatabaseType().getName().equalsIgnoreCase(new MySQLDatabaseType().getName())) {
-            Properties queryProps = new Properties();
-            queryProps.setProperty("yearIsDateType", Boolean.FALSE.toString());
-            dataSourceConfig.appendJDBCQueryProperties(queryProps);
-        }
-    }
-    
-    private Map<String, TableMetaData> getTableMetaDataMap(final String databaseName) {
+    private ShardingSphereTable getTableMetaData(final String databaseName, final String logicTableName) {
         ContextManager contextManager = PipelineContext.getContextManager();
         Preconditions.checkNotNull(contextManager, "ContextManager null");
-        ShardingSphereMetaData metaData = contextManager.getMetaDataContexts().getMetaData(databaseName);
-        if (null == metaData) {
+        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(databaseName);
+        if (null == database) {
             throw new RuntimeException("Can not get meta data by database name " + databaseName);
         }
-        String schema = metaData.getResource().getDatabaseType().getDefaultSchema(databaseName);
-        return metaData.getSchemaByName(schema).getTables();
+        String schemaName = tableNameSchemaNameMapping.getSchemaName(logicTableName);
+        ShardingSphereSchema schema = database.getSchemas().get(schemaName);
+        if (null == schema) {
+            throw new RuntimeException("Can not get schema by schema name " + schemaName + ", logicTableName=" + logicTableName);
+        }
+        return schema.get(logicTableName);
     }
     
-    private DataConsistencyCalculateParameter buildParameter(final PipelineDataSourceWrapper sourceDataSource, final String tableName, final Collection<String> columnNames,
-                                                             final String sourceDatabaseType, final String targetDatabaseType, final String uniqueKey) {
-        return new DataConsistencyCalculateParameter(sourceDataSource, tableName, columnNames, sourceDatabaseType, targetDatabaseType, uniqueKey);
+    private DataConsistencyCalculateParameter buildParameter(final PipelineDataSourceWrapper sourceDataSource, final TableNameSchemaNameMapping tableNameSchemaNameMapping, final String tableName,
+                                                             final Collection<String> columnNames, final String sourceDatabaseType, final String targetDatabaseType, final String uniqueKey) {
+        return new DataConsistencyCalculateParameter(sourceDataSource, tableNameSchemaNameMapping, tableName, columnNames, sourceDatabaseType, targetDatabaseType, uniqueKey);
     }
 }

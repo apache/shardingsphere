@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-schemaName: logic_db
+databaseName: logic_db
 
 dataSources:
   db0:
@@ -43,20 +43,20 @@ rules:
       databaseStrategy: 
         standard:
           shardingColumn: user_id
-          shardingAlgorithmName: standard_test
+          shardingAlgorithmName: standard_sharding_fixture
       tableStrategy: 
         standard:
           shardingColumn: order_id
           shardingAlgorithmName: t_order_inline
       keyGenerateStrategy:
         column: order_id
-        keyGeneratorName: increment
+        keyGeneratorName: keygen_fixture
     t_order_item:
       actualDataNodes: db${0..1}.t_order_item_${0..1}
       databaseStrategy: 
         standard:
           shardingColumn: user_id
-          shardingAlgorithmName: standard_test
+          shardingAlgorithmName: standard_sharding_fixture
       tableStrategy: 
         standard:
           shardingColumn: order_id
@@ -68,13 +68,13 @@ rules:
   defaultTableStrategy:
     complex:
       shardingColumns: id, order_id
-      shardingAlgorithmName: complex_test
+      shardingAlgorithmName: complex_sharding_fixture
   
   shardingAlgorithms:
-    standard_test:
-      type: STANDARD_TEST
-    complex_test:
-      type: COMPLEX_TEST
+    standard_sharding_fixture:
+      type: DRIVER.STANDARD.FIXTURE
+    complex_sharding_fixture:
+      type: DRIVER.COMPLEX.FIXTURE
     t_order_inline:
       type: INLINE
       props:
@@ -85,8 +85,8 @@ rules:
         algorithm-expression: t_order_item_${order_id % 2}
   
   keyGenerators:
-    increment:
-      type: INCREMENT
+    keygen_fixture:
+      type: DRIVER.FIXTURE
 
 mode:
   type: Cluster

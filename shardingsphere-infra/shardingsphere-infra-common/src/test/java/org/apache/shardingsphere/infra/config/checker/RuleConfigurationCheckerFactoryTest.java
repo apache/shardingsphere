@@ -23,23 +23,25 @@ import org.junit.Test;
 
 import java.util.Optional;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class RuleConfigurationCheckerFactoryTest {
     
     @SuppressWarnings("rawtypes")
     @Test
-    public void assertNewInstance() {
-        Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.newInstance(new TestRuleConfiguration());
+    public void assertFindInstance() {
+        Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.findInstance(new TestRuleConfiguration());
         assertTrue(checker.isPresent());
-        assertTrue(checker.get() instanceof RuleConfigurationCheckerFixture);
+        assertThat(checker.get(), instanceOf(RuleConfigurationCheckerFixture.class));
     }
     
     @SuppressWarnings("rawtypes")
     @Test
-    public void assertNewInstanceWithoutChecker() {
-        Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.newInstance(new TestRuleConfigurationWithoutChecker());
+    public void assertFindInstanceWithoutChecker() {
+        Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.findInstance(new TestRuleConfigurationWithoutChecker());
         assertFalse(checker.isPresent());
     }
 }

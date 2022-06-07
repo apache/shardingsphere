@@ -17,62 +17,30 @@
 
 package org.apache.shardingsphere.shadow.checker;
 
-import org.apache.shardingsphere.infra.config.checker.RuleConfigurationChecker;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadowRuleConfiguration;
-import org.apache.shardingsphere.shadow.algorithm.shadow.column.ColumnRegexMatchShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
-import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
+import org.apache.shardingsphere.shadow.factory.ShadowAlgorithmFactory;
 import org.junit.Test;
 
-import java.util.Collection;
-import java.util.LinkedHashMap;
+import java.util.Collections;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Properties;
 
 public final class AlgorithmProvidedShadowRuleConfigurationCheckerTest {
     
-    private final RuleConfigurationChecker<AlgorithmProvidedShadowRuleConfiguration> checker = new AlgorithmProvidedShadowRuleConfigurationChecker();
-    
     @Test
     public void assertCheck() {
-        checker.check("", createAlgorithmProvidedShadowRuleConfiguration());
+        new AlgorithmProvidedShadowRuleConfigurationChecker().check("", createAlgorithmProvidedShadowRuleConfiguration());
     }
     
     private AlgorithmProvidedShadowRuleConfiguration createAlgorithmProvidedShadowRuleConfiguration() {
         AlgorithmProvidedShadowRuleConfiguration result = new AlgorithmProvidedShadowRuleConfiguration();
-        result.setShadowAlgorithms(createShadowAlgorithms());
-        result.setDataSources(createDataSources());
-        result.setTables(createTables());
-        return result;
-    }
-    
-    private Map<String, ShadowTableConfiguration> createTables() {
-        Map<String, ShadowTableConfiguration> result = new LinkedHashMap<>();
-        Collection<String> dataSourceNames = new LinkedList<>();
-        Collection<String> shadowAlgorithmNames = new LinkedList<>();
-        shadowAlgorithmNames.add("user-id-insert-match-algorithm");
-        result.put("t_order", new ShadowTableConfiguration(dataSourceNames, shadowAlgorithmNames));
-        return result;
-    }
-    
-    private Map<String, ShadowDataSourceConfiguration> createDataSources() {
-        Map<String, ShadowDataSourceConfiguration> result = new LinkedHashMap<>();
-        result.put("shadow-data-source", new ShadowDataSourceConfiguration("ds", "ds_shadow"));
-        return result;
-    }
-    
-    private Map<String, ShadowAlgorithm> createShadowAlgorithms() {
-        Map<String, ShadowAlgorithm> result = new LinkedHashMap<>();
-        result.put("user-id-insert-match-algorithm", createColumnRegexMatchShadowAlgorithm());
-        return result;
-    }
-    
-    private ShadowAlgorithm createColumnRegexMatchShadowAlgorithm() {
-        ColumnRegexMatchShadowAlgorithm result = new ColumnRegexMatchShadowAlgorithm();
-        result.setProps(createProperties());
-        result.init();
+        result.setShadowAlgorithms(Collections.singletonMap(
+                "user-id-insert-match-algorithm", ShadowAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("REGEX_MATCH", createProperties()))));
+        result.setDataSources(Collections.singletonMap("shadow-data-source", new ShadowDataSourceConfiguration("ds", "ds_shadow")));
+        result.setTables(Collections.singletonMap("t_order", new ShadowTableConfiguration(new LinkedList<>(), new LinkedList<>(Collections.singleton("user-id-insert-match-algorithm")))));
         return result;
     }
     

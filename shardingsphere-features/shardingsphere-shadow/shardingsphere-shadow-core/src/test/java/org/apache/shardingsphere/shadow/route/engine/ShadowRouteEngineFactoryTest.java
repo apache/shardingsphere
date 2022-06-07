@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shadow.route.engine;
 
-import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.DeleteStatementContext;
@@ -34,6 +33,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectState
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 import org.junit.Test;
 
+import java.util.Collections;
+
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
@@ -43,13 +44,13 @@ public final class ShadowRouteEngineFactoryTest {
     
     @Test
     public void assertNewInstance() {
-        ShadowRouteEngine shadowInsertRouteEngine = ShadowRouteEngineFactory.newInstance(new LogicSQL(createInsertSqlStatementContext(), "", Lists.newArrayList()));
+        ShadowRouteEngine shadowInsertRouteEngine = ShadowRouteEngineFactory.newInstance(new LogicSQL(createInsertSqlStatementContext(), "", Collections.emptyList()));
         assertThat(shadowInsertRouteEngine, instanceOf(ShadowInsertStatementRoutingEngine.class));
-        ShadowRouteEngine shadowUpdateRouteEngine = ShadowRouteEngineFactory.newInstance(new LogicSQL(createUpdateSqlStatementContext(), "", Lists.newArrayList()));
+        ShadowRouteEngine shadowUpdateRouteEngine = ShadowRouteEngineFactory.newInstance(new LogicSQL(createUpdateSqlStatementContext(), "", Collections.emptyList()));
         assertThat(shadowUpdateRouteEngine, instanceOf(ShadowUpdateStatementRoutingEngine.class));
-        ShadowRouteEngine shadowDeleteRouteEngine = ShadowRouteEngineFactory.newInstance(new LogicSQL(createDeleteSqlStatementContext(), "", Lists.newArrayList()));
+        ShadowRouteEngine shadowDeleteRouteEngine = ShadowRouteEngineFactory.newInstance(new LogicSQL(createDeleteSqlStatementContext(), "", Collections.emptyList()));
         assertThat(shadowDeleteRouteEngine, instanceOf(ShadowDeleteStatementRoutingEngine.class));
-        ShadowRouteEngine shadowSelectRouteEngine = ShadowRouteEngineFactory.newInstance(new LogicSQL(createSelectSqlStatementContext(), "", Lists.newArrayList()));
+        ShadowRouteEngine shadowSelectRouteEngine = ShadowRouteEngineFactory.newInstance(new LogicSQL(createSelectSqlStatementContext(), "", Collections.emptyList()));
         assertThat(shadowSelectRouteEngine, instanceOf(ShadowSelectStatementRoutingEngine.class));
     }
     

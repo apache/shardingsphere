@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.dbdiscovery.rule;
 
-import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.mysql.type.MGRMySQLDatabaseDiscoveryProviderAlgorithm;
 import org.junit.Test;
@@ -25,6 +24,7 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -62,8 +62,13 @@ public final class DatabaseDiscoveryDataSourceRuleTest {
     
     @Test
     public void assertGetDataSourceMapper() {
-        Map<String, Collection<String>> actual = databaseDiscoveryDataSourceRule.getDataSourceMapper();
-        Map<String, Collection<String>> expected = ImmutableMap.of("ds_0", Collections.singletonList("ds_0"), "ds_1", Collections.singletonList("ds_1"));
-        assertThat(actual, is(expected));
+        assertThat(databaseDiscoveryDataSourceRule.getDataSourceMapper(), is(getExpectedDataSourceMapper()));
+    }
+    
+    private Map<String, Collection<String>> getExpectedDataSourceMapper() {
+        Map<String, Collection<String>> result = new LinkedHashMap<>(2, 1);
+        result.put("ds_0", Collections.singletonList("ds_0"));
+        result.put("ds_1", Collections.singletonList("ds_1"));
+        return result;
     }
 }

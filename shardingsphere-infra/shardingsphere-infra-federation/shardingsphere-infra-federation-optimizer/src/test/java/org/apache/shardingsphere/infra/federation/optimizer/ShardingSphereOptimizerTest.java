@@ -17,16 +17,15 @@
 
 package org.apache.shardingsphere.infra.federation.optimizer;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContextFactory;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
-import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.infra.parser.ParserConfiguration;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
@@ -52,69 +51,60 @@ import static org.mockito.Mockito.when;
 
 public final class ShardingSphereOptimizerTest {
     
-    private static final String SELECT_CROSS_JOIN_CONDITION =
-            "SELECT t_order_federate.order_id, t_order_federate.user_id, t_user_info.user_id "
-                    + "FROM t_order_federate JOIN t_user_info ON t_order_federate.user_id = t_user_info.user_id "
-                    + "WHERE t_user_info.user_id = 13";
+    private static final String SELECT_CROSS_JOIN_CONDITION = "SELECT t_order_federate.order_id, t_order_federate.user_id, t_user_info.user_id "
+            + "FROM t_order_federate JOIN t_user_info ON t_order_federate.user_id = t_user_info.user_id "
+            + "WHERE t_user_info.user_id = 13";
     
-    private static final String SELECT_WHERE_ALL_FIELDS =
-            "SELECT user_id, information FROM t_user_info WHERE user_id = 12";
+    private static final String SELECT_WHERE_ALL_FIELDS = "SELECT user_id, information FROM t_user_info WHERE user_id = 12";
     
-    private static final String SELECT_WHERE_SINGLE_FIELD =
-            "SELECT user_id FROM t_user_info WHERE user_id = 12";
+    private static final String SELECT_WHERE_SINGLE_FIELD = "SELECT user_id FROM t_user_info WHERE user_id = 12";
     
-    private static final String SELECT_CROSS_WHERE =
-            "SELECT t_order_federate.order_id, t_order_federate.user_id, t_user_info.user_id "
-                    + "FROM t_order_federate , t_user_info "
-                    + "WHERE t_order_federate.user_id = t_user_info.user_id";
+    private static final String SELECT_CROSS_WHERE = "SELECT t_order_federate.order_id, t_order_federate.user_id, t_user_info.user_id "
+            + "FROM t_order_federate , t_user_info "
+            + "WHERE t_order_federate.user_id = t_user_info.user_id";
     
-    private static final String SELECT_CROSS_JOIN =
-            "SELECT t_order_federate.order_id, t_order_federate.user_id, t_user_info.user_id "
-                    + "FROM t_order_federate JOIN t_user_info "
-                    + "ON t_order_federate.user_id = t_user_info.user_id";
+    private static final String SELECT_CROSS_JOIN = "SELECT t_order_federate.order_id, t_order_federate.user_id, t_user_info.user_id "
+            + "FROM t_order_federate JOIN t_user_info "
+            + "ON t_order_federate.user_id = t_user_info.user_id";
     
-    private static final String SELECT_CROSS_WHERE_CONDITION =
-            "SELECT t_order_federate.order_id, t_order_federate.user_id, t_user_info.user_id "
-                    + "FROM t_order_federate ,t_user_info "
-                    + "WHERE t_order_federate.user_id = t_user_info.user_id AND t_user_info.user_id = 13";
+    private static final String SELECT_CROSS_WHERE_CONDITION = "SELECT t_order_federate.order_id, t_order_federate.user_id, t_user_info.user_id "
+            + "FROM t_order_federate ,t_user_info "
+            + "WHERE t_order_federate.user_id = t_user_info.user_id AND t_user_info.user_id = 13";
     
-    private static final String SELECT_SUBQUERY_FROM =
-            "SELECT user.user_id, user.information "
-                    + "FROM (SELECT * FROM t_user_info WHERE user_id > 1) as user ";
+    private static final String SELECT_SUBQUERY_FROM = "SELECT user.user_id, user.information "
+            + "FROM (SELECT * FROM t_user_info WHERE user_id > 1) as user ";
     
-    private static final String SELECT_SUBQUERY_WHERE_EXIST =
-            "SELECT t_order_federate.order_id, t_order_federate.user_id FROM t_order_federate "
-                    + "WHERE EXISTS (SELECT * FROM t_user_info WHERE t_order_federate.user_id = t_user_info.user_id)";
+    private static final String SELECT_SUBQUERY_WHERE_EXIST = "SELECT t_order_federate.order_id, t_order_federate.user_id FROM t_order_federate "
+            + "WHERE EXISTS (SELECT * FROM t_user_info WHERE t_order_federate.user_id = t_user_info.user_id)";
     
-    private static final String SELECT_SUBQUERY_WHERE_IN =
-            "SELECT t_order_federate.order_id, t_order_federate.user_id FROM t_order_federate "
-                    + "WHERE t_order_federate.user_id IN (SELECT t_user_info.user_id FROM t_user_info)";
+    private static final String SELECT_SUBQUERY_WHERE_IN = "SELECT t_order_federate.order_id, t_order_federate.user_id FROM t_order_federate "
+            + "WHERE t_order_federate.user_id IN (SELECT t_user_info.user_id FROM t_user_info)";
     
-    private static final String SELECT_SUBQUERY_WHERE_BETWEEN =
-            "SELECT t_order_federate.order_id, t_order_federate.user_id FROM t_order_federate "
-                    + "WHERE user_id BETWEEN (SELECT user_id FROM t_user_info WHERE information = 'before') "
-                    + "AND (SELECT user_id FROM t_user_info WHERE information = 'after')";
+    private static final String SELECT_SUBQUERY_WHERE_BETWEEN = "SELECT t_order_federate.order_id, t_order_federate.user_id FROM t_order_federate "
+            + "WHERE user_id BETWEEN (SELECT user_id FROM t_user_info WHERE information = 'before') "
+            + "AND (SELECT user_id FROM t_user_info WHERE information = 'after')";
     
     private final String databaseName = "sharding_db";
     
     private final String schemaName = "federate_jdbc";
     
-    private final ParserConfiguration parserConfig = new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build()).toParserConfiguration();
+    private final SQLParserRule sqlParserRule = new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build());
     
     private ShardingSphereOptimizer optimizer;
     
     @Before
     public void init() throws Exception {
-        Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(2, 1);
-        tableMetaDataMap.put("t_order_federate", createOrderTableMetaData());
-        tableMetaDataMap.put("t_user_info", createUserInfoTableMetaData());
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(databaseName, mockResource(), null, Collections.singletonMap(schemaName, new ShardingSphereSchema(tableMetaDataMap)));
-        optimizer = new ShardingSphereOptimizer(OptimizerContextFactory.create(Collections.singletonMap(databaseName, metaData), createGlobalRuleMetaData()));
+        Map<String, ShardingSphereTable> tables = new HashMap<>(2, 1);
+        tables.put("t_order_federate", createOrderTableMetaData());
+        tables.put("t_user_info", createUserInfoTableMetaData());
+        ShardingSphereDatabase database = new ShardingSphereDatabase(databaseName,
+                new H2DatabaseType(), mockResource(), null, Collections.singletonMap(schemaName, new ShardingSphereSchema(tables)));
+        optimizer = new ShardingSphereOptimizer(OptimizerContextFactory.create(Collections.singletonMap(databaseName, database), createGlobalRuleMetaData()));
     }
     
     private ShardingSphereRuleMetaData createGlobalRuleMetaData() {
         Collection<ShardingSphereRule> rules = new LinkedList<>();
-        CacheOption cacheOption = new CacheOption(128, 1024L, 4);
+        CacheOption cacheOption = new CacheOption(128, 1024L);
         rules.add(new SQLParserRule(new SQLParserRuleConfiguration(false, cacheOption, cacheOption)));
         return new ShardingSphereRuleMetaData(Collections.emptyList(), rules);
     }
@@ -125,22 +115,22 @@ public final class ShardingSphereOptimizerTest {
         return result;
     }
     
-    private TableMetaData createOrderTableMetaData() {
-        ColumnMetaData orderIdColumn = new ColumnMetaData("order_id", Types.VARCHAR, true, false, false);
-        ColumnMetaData userIdColumn = new ColumnMetaData("user_id", Types.VARCHAR, false, false, false);
-        ColumnMetaData statusColumn = new ColumnMetaData("status", Types.VARCHAR, false, false, false);
-        return new TableMetaData("t_order_federate", Arrays.asList(orderIdColumn, userIdColumn, statusColumn), Collections.emptyList(), Collections.emptyList());
+    private ShardingSphereTable createOrderTableMetaData() {
+        ShardingSphereColumn orderIdColumn = new ShardingSphereColumn("order_id", Types.VARCHAR, true, false, false);
+        ShardingSphereColumn userIdColumn = new ShardingSphereColumn("user_id", Types.VARCHAR, false, false, false);
+        ShardingSphereColumn statusColumn = new ShardingSphereColumn("status", Types.VARCHAR, false, false, false);
+        return new ShardingSphereTable("t_order_federate", Arrays.asList(orderIdColumn, userIdColumn, statusColumn), Collections.emptyList(), Collections.emptyList());
     }
     
-    private TableMetaData createUserInfoTableMetaData() {
-        ColumnMetaData userIdColumn = new ColumnMetaData("user_id", Types.VARCHAR, true, false, false);
-        ColumnMetaData informationColumn = new ColumnMetaData("information", Types.VARCHAR, false, false, false);
-        return new TableMetaData("t_user_info", Arrays.asList(userIdColumn, informationColumn), Collections.emptyList(), Collections.emptyList());
+    private ShardingSphereTable createUserInfoTableMetaData() {
+        ShardingSphereColumn userIdColumn = new ShardingSphereColumn("user_id", Types.VARCHAR, true, false, false);
+        ShardingSphereColumn informationColumn = new ShardingSphereColumn("information", Types.VARCHAR, false, false, false);
+        return new ShardingSphereTable("t_user_info", Arrays.asList(userIdColumn, informationColumn), Collections.emptyList(), Collections.emptyList());
     }
     
     @Test
     public void assertSelectCrossJoinCondition() {
-        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeRegistry.getTrunkDatabaseTypeName(new H2DatabaseType()), parserConfig);
+        ShardingSphereSQLParserEngine sqlParserEngine = sqlParserRule.getSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType()));
         SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_CROSS_JOIN_CONDITION, false);
         String actual = optimizer.optimize(databaseName, schemaName, sqlStatement).explain();
         String expected =
@@ -155,7 +145,7 @@ public final class ShardingSphereOptimizerTest {
     
     @Test
     public void assertSelectWhereAllFields() {
-        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeRegistry.getTrunkDatabaseTypeName(new H2DatabaseType()), parserConfig);
+        ShardingSphereSQLParserEngine sqlParserEngine = sqlParserRule.getSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType()));
         SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_WHERE_ALL_FIELDS, false);
         String actual = optimizer.optimize(databaseName, schemaName, sqlStatement).explain();
         String expected =
@@ -166,7 +156,7 @@ public final class ShardingSphereOptimizerTest {
     
     @Test
     public void assertSelectWhereSingleField() {
-        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeRegistry.getTrunkDatabaseTypeName(new H2DatabaseType()), parserConfig);
+        ShardingSphereSQLParserEngine sqlParserEngine = sqlParserRule.getSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType()));
         SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_WHERE_SINGLE_FIELD, false);
         String actual = optimizer.optimize(databaseName, schemaName, sqlStatement).explain();
         String expected =
@@ -177,7 +167,7 @@ public final class ShardingSphereOptimizerTest {
     
     @Test
     public void assertSelectCrossWhere() {
-        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeRegistry.getTrunkDatabaseTypeName(new H2DatabaseType()), parserConfig);
+        ShardingSphereSQLParserEngine sqlParserEngine = sqlParserRule.getSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType()));
         SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_CROSS_WHERE, false);
         String actual = optimizer.optimize(databaseName, schemaName, sqlStatement).explain();
         String expected =
@@ -194,7 +184,7 @@ public final class ShardingSphereOptimizerTest {
     
     @Test
     public void assertSelectCrossJoin() {
-        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeRegistry.getTrunkDatabaseTypeName(new H2DatabaseType()), parserConfig);
+        ShardingSphereSQLParserEngine sqlParserEngine = sqlParserRule.getSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType()));
         SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_CROSS_JOIN, false);
         String actual = optimizer.optimize(databaseName, schemaName, sqlStatement).explain();
         String expected =
@@ -211,7 +201,7 @@ public final class ShardingSphereOptimizerTest {
     
     @Test
     public void assertSelectJoinWhere() {
-        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeRegistry.getTrunkDatabaseTypeName(new H2DatabaseType()), parserConfig);
+        ShardingSphereSQLParserEngine sqlParserEngine = sqlParserRule.getSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType()));
         SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_CROSS_WHERE_CONDITION, false);
         String actual = optimizer.optimize(databaseName, schemaName, sqlStatement).explain();
         String expected =
@@ -224,7 +214,7 @@ public final class ShardingSphereOptimizerTest {
     
     @Test
     public void assertSelectSubQueryFrom() {
-        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeRegistry.getTrunkDatabaseTypeName(new H2DatabaseType()), parserConfig);
+        ShardingSphereSQLParserEngine sqlParserEngine = sqlParserRule.getSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType()));
         SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_SUBQUERY_FROM, false);
         String actual = optimizer.optimize(databaseName, schemaName, sqlStatement).explain();
         String expected =
@@ -235,7 +225,7 @@ public final class ShardingSphereOptimizerTest {
     
     @Test
     public void assertSelectSubQueryWhereExist() {
-        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeRegistry.getTrunkDatabaseTypeName(new H2DatabaseType()), parserConfig);
+        ShardingSphereSQLParserEngine sqlParserEngine = sqlParserRule.getSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType()));
         SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_SUBQUERY_WHERE_EXIST, false);
         String actual = optimizer.optimize(databaseName, schemaName, sqlStatement).explain();
         String expected =
@@ -250,7 +240,7 @@ public final class ShardingSphereOptimizerTest {
     
     @Test
     public void assertSelectSubQueryWhereIn() {
-        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeRegistry.getTrunkDatabaseTypeName(new H2DatabaseType()), parserConfig);
+        ShardingSphereSQLParserEngine sqlParserEngine = sqlParserRule.getSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType()));
         SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_SUBQUERY_WHERE_IN, false);
         String actual = optimizer.optimize(databaseName, schemaName, sqlStatement).explain();
         String expected =
@@ -264,7 +254,7 @@ public final class ShardingSphereOptimizerTest {
     
     @Test
     public void assertSelectSubQueryWhereBetween() {
-        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeRegistry.getTrunkDatabaseTypeName(new H2DatabaseType()), parserConfig);
+        ShardingSphereSQLParserEngine sqlParserEngine = sqlParserRule.getSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType()));
         SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_SUBQUERY_WHERE_BETWEEN, false);
         String actual = optimizer.optimize(databaseName, schemaName, sqlStatement).explain();
         String expected =

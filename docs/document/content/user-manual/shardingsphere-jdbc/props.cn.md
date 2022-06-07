@@ -1,6 +1,6 @@
 +++
 title = "属性配置"
-weight = 5
+weight = 6
 chapter = true
 +++
 

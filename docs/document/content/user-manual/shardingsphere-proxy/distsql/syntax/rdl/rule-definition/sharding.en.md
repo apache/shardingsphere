@@ -180,9 +180,9 @@ batchSize:
 intValue:
     INT
 ```
-- `ENABLE` is used to set which sharding scaling rule is enabled
-- `DISABLE` will disable the sharding scaling rule currently in use
-- Enabled by default when creating the first sharding scaling rule in a schema
+- `ENABLE` is used to set which sharding scaling rule is enabled;
+- `DISABLE` will disable the sharding scaling rule currently in use;
+- Enabled by default when creating the first sharding scaling rule in a logical database.
 
 ## Example
 
@@ -298,7 +298,7 @@ OUTPUT(
   BATCH_SIZE=1000
 ),
 STREAM_CHANNEL(TYPE(NAME=MEMORY, PROPERTIES("block-queue-size"=10000))),
-COMPLETION_DETECTOR(TYPE(NAME=IDLE, PROPERTIES("incremental-task-idle-minute-threshold"=30))),
+COMPLETION_DETECTOR(TYPE(NAME=IDLE, PROPERTIES("incremental-task-idle-seconds-threshold"=1800))),
 DATA_CONSISTENCY_CHECKER(TYPE(NAME=DATA_MATCH, PROPERTIES("chunk-size"=1000)))
 );
 

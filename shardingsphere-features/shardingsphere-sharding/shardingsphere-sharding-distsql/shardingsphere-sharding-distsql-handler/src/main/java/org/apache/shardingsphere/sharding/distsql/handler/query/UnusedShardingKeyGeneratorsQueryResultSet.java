@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.distsql.handler.query;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.properties.PropertiesConverter;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
@@ -56,8 +56,8 @@ public final class UnusedShardingKeyGeneratorsQueryResultSet implements DistSQLR
     private Iterator<Entry<String, ShardingSphereAlgorithmConfiguration>> data = Collections.emptyIterator();
     
     @Override
-    public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
-        Optional<ShardingRuleConfiguration> ruleConfig = metaData.getRuleMetaData().getConfigurations()
+    public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
+        Optional<ShardingRuleConfiguration> ruleConfig = database.getRuleMetaData().getConfigurations()
                 .stream().filter(each -> each instanceof ShardingRuleConfiguration).map(each -> (ShardingRuleConfiguration) each).findAny();
         ruleConfig.ifPresent(this::getUnusedKeyGenerators);
     }
@@ -95,10 +95,10 @@ public final class UnusedShardingKeyGeneratorsQueryResultSet implements DistSQLR
     }
     
     private void getUnusedKeyGenerators(final ShardingRuleConfiguration shardingRuleConfig) {
-        Collection<String> inUsedSet = getUsedKeyGenerators(shardingRuleConfig);
+        Collection<String> inUsedKeyGenerators = getUsedKeyGenerators(shardingRuleConfig);
         Map<String, ShardingSphereAlgorithmConfiguration> map = new HashMap<>();
         for (Entry<String, ShardingSphereAlgorithmConfiguration> each : shardingRuleConfig.getKeyGenerators().entrySet()) {
-            if (!inUsedSet.contains(each.getKey())) {
+            if (!inUsedKeyGenerators.contains(each.getKey())) {
                 map.put(each.getKey(), each.getValue());
             }
         }

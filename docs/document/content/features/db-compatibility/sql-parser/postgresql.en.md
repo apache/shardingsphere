@@ -22,3 +22,4 @@ The unsupported SQL list for PostgreSQL are as follows:
 | ALTER TABLE alterlock SET (toast.autovacuum_enabled = off)                                                |
 | CREATE PUBLICATION pub1 FOR TABLE alter1.t1, ALL TABLES IN SCHEMA alter2                                  |
 
+**Source Codes: https://github.com/apache/shardingsphere/tree/master/shardingsphere-sql-parser/shardingsphere-sql-parser-dialect/shardingsphere-sql-parser-postgresql**

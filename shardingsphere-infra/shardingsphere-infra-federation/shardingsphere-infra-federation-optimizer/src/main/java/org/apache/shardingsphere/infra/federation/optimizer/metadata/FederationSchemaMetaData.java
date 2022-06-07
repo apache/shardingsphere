@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.federation.optimizer.metadata;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 
 import java.util.Map;
 import java.util.Map.Entry;
@@ -34,10 +34,10 @@ public final class FederationSchemaMetaData {
     
     private final Map<String, FederationTableMetaData> tables;
     
-    public FederationSchemaMetaData(final String name, final Map<String, TableMetaData> metaData) {
+    public FederationSchemaMetaData(final String name, final Map<String, ShardingSphereTable> metaData) {
         this.name = name;
         this.tables = new ConcurrentHashMap<>(metaData.size(), 1);
-        for (Entry<String, TableMetaData> entry : metaData.entrySet()) {
+        for (Entry<String, ShardingSphereTable> entry : metaData.entrySet()) {
             tables.put(entry.getKey().toLowerCase(), new FederationTableMetaData(entry.getValue().getName(), entry.getValue()));
         }
     }
@@ -47,7 +47,7 @@ public final class FederationSchemaMetaData {
      * 
      * @param metaData table meta data to be updated
      */
-    public void put(final TableMetaData metaData) {
+    public void put(final ShardingSphereTable metaData) {
         tables.put(metaData.getName().toLowerCase(), new FederationTableMetaData(metaData.getName(), metaData));
     }
     

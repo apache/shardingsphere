@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.proxy.backend.text.distsql.fixture.TestTrafficAlgorithm
+org.apache.shardingsphere.proxy.backend.text.distsql.fixture.DistSQLTrafficAlgorithmFixture

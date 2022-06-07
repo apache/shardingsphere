@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResour
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.expr.InlineExpressionParser;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
@@ -63,17 +63,17 @@ public final class ShardingRuleConfigurationImportChecker {
     /**
      * Check sharding rule configuration.
      *
-     * @param shardingSphereMetaData ShardingSphere meta data
+     * @param database database
      * @param currentRuleConfig current rule configuration
      * @throws DistSQLException definition violation exception
      */
-    public void check(final ShardingSphereMetaData shardingSphereMetaData, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        if (null == shardingSphereMetaData || null == currentRuleConfig) {
+    public void check(final ShardingSphereDatabase database, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
+        if (null == database || null == currentRuleConfig) {
             return;
         }
-        String databaseName = shardingSphereMetaData.getDatabaseName();
+        String databaseName = database.getName();
         checkLogicTables(databaseName, currentRuleConfig);
-        checkResources(databaseName, shardingSphereMetaData, currentRuleConfig);
+        checkResources(databaseName, database, currentRuleConfig);
         checkKeyGenerators(currentRuleConfig);
         checkShardingAlgorithms(currentRuleConfig);
     }
@@ -121,16 +121,16 @@ public final class ShardingRuleConfigurationImportChecker {
         return actualDataNodes.stream().map(each -> new DataNode(each).getDataSourceName()).collect(Collectors.toList());
     }
     
-    private void checkResources(final String databaseName, final ShardingSphereMetaData shardingSphereMetaData, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
+    private void checkResources(final String databaseName, final ShardingSphereDatabase database, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
         Collection<String> requiredResource = getRequiredResources(currentRuleConfig);
-        Collection<String> notExistedResources = shardingSphereMetaData.getResource().getNotExistedResources(requiredResource);
-        Collection<String> logicResources = getLogicResources(shardingSphereMetaData);
+        Collection<String> notExistedResources = database.getResource().getNotExistedResources(requiredResource);
+        Collection<String> logicResources = getLogicResources(database);
         notExistedResources.removeIf(logicResources::contains);
         DistSQLException.predictionThrow(notExistedResources.isEmpty(), () -> new RequiredResourceMissedException(databaseName, notExistedResources));
     }
     
-    private Collection<String> getLogicResources(final ShardingSphereMetaData shardingSphereMetaData) {
-        return shardingSphereMetaData.getRuleMetaData().getRules().stream().filter(each -> each instanceof DataSourceContainedRule)
+    private Collection<String> getLogicResources(final ShardingSphereDatabase database) {
+        return database.getRuleMetaData().getRules().stream().filter(each -> each instanceof DataSourceContainedRule)
                 .map(each -> ((DataSourceContainedRule) each).getDataSourceMapper().keySet()).flatMap(Collection::stream).collect(Collectors.toCollection(LinkedHashSet::new));
     }
 }

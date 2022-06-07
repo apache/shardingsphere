@@ -18,9 +18,8 @@
 package org.apache.shardingsphere.infra.instance;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
-import org.apache.shardingsphere.infra.instance.definition.InstanceId;
+import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
 import org.apache.shardingsphere.infra.lock.LockContext;
@@ -36,7 +35,6 @@ import java.util.Optional;
  * Instance context.
  */
 @Getter
-@RequiredArgsConstructor
 public final class InstanceContext {
     
     private final ComputeNodeInstance instance;
@@ -49,14 +47,23 @@ public final class InstanceContext {
     
     private final Collection<ComputeNodeInstance> computeNodeInstances = new LinkedList<>();
     
+    public InstanceContext(final ComputeNodeInstance instance, final WorkerIdGenerator workerIdGenerator, final ModeConfiguration modeConfiguration, final LockContext lockContext) {
+        this.instance = instance;
+        this.workerIdGenerator = workerIdGenerator;
+        this.modeConfiguration = modeConfiguration;
+        this.lockContext = lockContext;
+        initLockContext();
+        getWorkerId();
+    }
+    
     /**
      * Update instance status.
      *
      * @param instanceId instance id
-     * @param status collection of status
+     * @param status status
      */
     public void updateInstanceStatus(final String instanceId, final Collection<String> status) {
-        if (instance.getInstanceDefinition().getInstanceId().getId().equals(instanceId)) {
+        if (instance.getInstanceDefinition().getInstanceId().equals(instanceId)) {
             instance.switchState(status);
         }
         updateRelatedComputeNodeInstancesStatus(instanceId, status);
@@ -64,7 +71,7 @@ public final class InstanceContext {
     
     private void updateRelatedComputeNodeInstancesStatus(final String instanceId, final Collection<String> status) {
         for (ComputeNodeInstance each : computeNodeInstances) {
-            if (each.getInstanceDefinition().getInstanceId().getId().equals(instanceId)) {
+            if (each.getInstanceDefinition().getInstanceId().equals(instanceId)) {
                 each.switchState(status);
             }
         }
@@ -88,21 +95,44 @@ public final class InstanceContext {
      * @param labels collection of label
      */
     public void updateLabel(final String instanceId, final Collection<String> labels) {
-        if (instance.getInstanceDefinition().getInstanceId().getId().equals(instanceId)) {
+        if (instance.getInstanceDefinition().getInstanceId().equals(instanceId)) {
             instance.setLabels(labels);
         }
-        computeNodeInstances.stream().filter(each -> each.getInstanceDefinition().getInstanceId().getId().equals(instanceId)).forEach(each -> each.setLabels(labels));
+        computeNodeInstances.stream().filter(each -> each.getInstanceDefinition().getInstanceId().equals(instanceId)).forEach(each -> each.setLabels(labels));
     }
     
     /**
-     * Update instance xa recovery id.
+     * Add instance XA recovery id.
      *
-     * @param xaRecoveryId xa recovery id
+     * @param instanceId instance id
+     * @param xaRecoveryId XA recovery id
+     * @return true if current instance updated, else false                    
      */
-    public void updateXaRecoveryId(final String xaRecoveryId) {
-        if (!Objects.equals(xaRecoveryId, instance.getXaRecoveryId())) {
-            instance.setXaRecoveryId(xaRecoveryId);
+    public boolean addXaRecoveryId(final String instanceId, final String xaRecoveryId) {
+        if (instanceId.equals(instance.getCurrentInstanceId()) && !instance.getXaRecoveryIds().contains(xaRecoveryId)) {
+            instance.getXaRecoveryIds().add(xaRecoveryId);
+            computeNodeInstances.stream().filter(each -> each.getInstanceDefinition().getInstanceId().equals(instanceId)).forEach(each -> each.getXaRecoveryIds().add(xaRecoveryId));
+            return true;
         }
+        computeNodeInstances.stream().filter(each -> each.getInstanceDefinition().getInstanceId().equals(instanceId)).forEach(each -> each.getXaRecoveryIds().add(xaRecoveryId));
+        return false;
+    }
+    
+    /**
+     * Delete instance XA recovery id.
+     *
+     * @param instanceId instance id
+     * @param xaRecoveryId XA recovery id
+     * @return true if current instance updated, else false                    
+     */
+    public boolean deleteXaRecoveryId(final String instanceId, final String xaRecoveryId) {
+        if (instanceId.equals(instance.getCurrentInstanceId()) && instance.getXaRecoveryIds().contains(xaRecoveryId)) {
+            instance.getXaRecoveryIds().remove(xaRecoveryId);
+            computeNodeInstances.stream().filter(each -> each.getInstanceDefinition().getInstanceId().equals(instanceId)).forEach(each -> each.getXaRecoveryIds().remove(xaRecoveryId));
+            return true;
+        }
+        computeNodeInstances.stream().filter(each -> each.getInstanceDefinition().getInstanceId().equals(instanceId)).forEach(each -> each.getXaRecoveryIds().remove(xaRecoveryId));
+        return false;
     }
     
     /**
@@ -124,7 +154,7 @@ public final class InstanceContext {
      * @param instance compute node instance
      */
     public void addComputeNodeInstance(final ComputeNodeInstance instance) {
-        computeNodeInstances.removeIf(each -> each.getInstanceDefinition().getInstanceId().getId().equalsIgnoreCase(instance.getInstanceDefinition().getInstanceId().getId()));
+        computeNodeInstances.removeIf(each -> each.getInstanceDefinition().getInstanceId().equalsIgnoreCase(instance.getInstanceDefinition().getInstanceId()));
         computeNodeInstances.add(instance);
     }
     
@@ -134,7 +164,7 @@ public final class InstanceContext {
      * @param instance compute node instance
      */
     public void deleteComputeNodeInstance(final ComputeNodeInstance instance) {
-        computeNodeInstances.removeIf(each -> each.getInstanceDefinition().getInstanceId().getId().equalsIgnoreCase(instance.getInstanceDefinition().getInstanceId().getId()));
+        computeNodeInstances.removeIf(each -> each.getInstanceDefinition().getInstanceId().equalsIgnoreCase(instance.getInstanceDefinition().getInstanceId()));
     }
     
     /**
@@ -144,14 +174,24 @@ public final class InstanceContext {
      * @param labels collection of contained label
      * @return compute node instances
      */
-    public List<InstanceId> getComputeNodeInstanceIds(final InstanceType instanceType, final Collection<String> labels) {
-        List<InstanceId> result = new ArrayList<>(computeNodeInstances.size());
+    public List<InstanceDefinition> getComputeNodeInstances(final InstanceType instanceType, final Collection<String> labels) {
+        List<InstanceDefinition> result = new ArrayList<>(computeNodeInstances.size());
         for (ComputeNodeInstance each : computeNodeInstances) {
             if (each.getInstanceDefinition().getInstanceType() == instanceType && labels.stream().anyMatch(((Collection<String>) each.getLabels())::contains)) {
-                result.add(each.getInstanceDefinition().getInstanceId());
+                result.add(each.getInstanceDefinition());
             }
         }
         return result;
+    }
+    
+    /**
+     * Get compute node instance by instance id.
+     * 
+     * @param instanceId instance id
+     * @return compute node instance
+     */
+    public Optional<ComputeNodeInstance> getComputeNodeInstanceById(final String instanceId) {
+        return computeNodeInstances.stream().filter(each -> instanceId.equals(each.getCurrentInstanceId())).findFirst();
     }
     
     /**
@@ -159,5 +199,14 @@ public final class InstanceContext {
      */
     public void initLockContext() {
         lockContext.initLockState(this);
+    }
+    
+    /**
+     * Is cluster instance or not.
+     * 
+     * @return true if is cluster, else false
+     */
+    public boolean isCluster() {
+        return "Cluster".equalsIgnoreCase(modeConfiguration.getType());
     }
 }

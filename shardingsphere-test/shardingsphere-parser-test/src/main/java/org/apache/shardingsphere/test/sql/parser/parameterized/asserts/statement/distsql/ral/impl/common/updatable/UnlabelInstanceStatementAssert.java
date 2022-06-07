@@ -46,9 +46,7 @@ public final class UnlabelInstanceStatementAssert {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual statement should exist."), actual);
-            assertThat(actual.getIp(), is(expected.getIp()));
-            assertThat(actual.getPort(), is(expected.getPort()));
-            assertThat(actual.getPort(), is(actual.getPort()));
+            assertThat(actual.getInstanceId(), is(expected.getInstanceId()));
         }
     }
 }

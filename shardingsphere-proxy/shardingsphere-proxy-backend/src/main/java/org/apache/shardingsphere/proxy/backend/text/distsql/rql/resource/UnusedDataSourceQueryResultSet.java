@@ -26,9 +26,9 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
-import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
@@ -70,11 +70,11 @@ public final class UnusedDataSourceQueryResultSet implements DistSQLResultSet {
     private Iterator<String> dataSourceNames;
     
     @Override
-    public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
-        resource = metaData.getResource();
-        dataSourcePropsMap = new LinkedHashMap<>(metaData.getResource().getDataSources().size(), 1);
-        Multimap<String, String> inUsedMultiMap = getInUsedResources(metaData.getRuleMetaData());
-        for (Entry<String, DataSource> entry : metaData.getResource().getDataSources().entrySet()) {
+    public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
+        resource = database.getResource();
+        dataSourcePropsMap = new LinkedHashMap<>(database.getResource().getDataSources().size(), 1);
+        Multimap<String, String> inUsedMultiMap = getInUsedResources(database.getRuleMetaData());
+        for (Entry<String, DataSource> entry : database.getResource().getDataSources().entrySet()) {
             if (inUsedMultiMap.containsKey(entry.getKey())) {
                 continue;
             }
@@ -128,10 +128,10 @@ public final class UnusedDataSourceQueryResultSet implements DistSQLResultSet {
     @Override
     public Collection<Object> getRowData() {
         String dataSourceName = dataSourceNames.next();
-        DataSourceMetaData metaData = resource.getDataSourcesMetaData().getDataSourceMetaData(dataSourceName);
+        DataSourceMetaData metaData = resource.getDataSourceMetaData(dataSourceName);
         Collection<Object> result = new LinkedList<>();
         result.add(dataSourceName);
-        result.add(resource.getDatabaseType().getName());
+        result.add(resource.getDatabaseType().getType());
         result.add(metaData.getHostname());
         result.add(metaData.getPort());
         result.add(metaData.getCatalog());

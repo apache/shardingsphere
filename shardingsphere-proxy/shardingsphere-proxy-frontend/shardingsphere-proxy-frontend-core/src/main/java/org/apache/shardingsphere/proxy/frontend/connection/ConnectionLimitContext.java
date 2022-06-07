@@ -74,6 +74,6 @@ public final class ConnectionLimitContext {
      * @return limit size.
      */
     public int getMaxConnections() {
-        return ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<Integer>getValue(ConfigurationPropertyKey.PROXY_FRONTEND_MAX_CONNECTIONS);
+        return ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.PROXY_FRONTEND_MAX_CONNECTIONS);
     }
 }

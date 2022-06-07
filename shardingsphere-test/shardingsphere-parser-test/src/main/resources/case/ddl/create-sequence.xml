@@ -20,5 +20,6 @@
     <create-sequence sql-case-id="create_sequence" />
     <create-sequence sql-case-id="create_sequence_with_option" />
     <create-sequence sql-case-id="create_sequence_complex" />
-    <create-sequence sql-case-id="create_sequence_with_all_arguments"/>
+    <create-sequence sql-case-id="create_sequence_with_all_arguments" />
+    <create-sequence sql-case-id="create_sequence_with_customers" />
 </sql-parser-test-cases>

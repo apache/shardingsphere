@@ -35,7 +35,9 @@ public final class InventoryDumperConfiguration extends DumperConfiguration {
     
     private String logicTableName;
     
-    private String primaryKey;
+    private String uniqueKey;
+    
+    private Integer uniqueKeyDataType;
     
     private Integer shardingItem;
     

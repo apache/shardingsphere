@@ -17,37 +17,26 @@
 
 package org.apache.shardingsphere.traffic.algorithm.loadbalance;
 
-import org.apache.shardingsphere.infra.instance.definition.InstanceId;
-import org.junit.After;
-import org.junit.Before;
+import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
+import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.junit.Test;
 
-import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class RoundRobinTrafficLoadBalanceAlgorithmTest {
     
-    @Before
-    @After
-    public void reset() throws NoSuchFieldException, IllegalAccessException {
-        Field field = RoundRobinTrafficLoadBalanceAlgorithm.class.getDeclaredField("COUNTS");
-        field.setAccessible(true);
-        ((ConcurrentHashMap<?, ?>) field.get(RoundRobinTrafficLoadBalanceAlgorithm.class)).clear();
-    }
-    
     @Test
     public void assertGetInstanceId() {
-        InstanceId instanceId1 = new InstanceId("127.0.0.1@3307");
-        InstanceId instanceId2 = new InstanceId("127.0.0.1@3308");
-        List<InstanceId> instanceIds = Arrays.asList(instanceId1, instanceId2);
+        InstanceDefinition instance1 = new InstanceDefinition(InstanceType.PROXY, "127.0.0.1@3307");
+        InstanceDefinition instance2 = new InstanceDefinition(InstanceType.PROXY, "127.0.0.1@3308");
+        List<InstanceDefinition> instances = Arrays.asList(instance1, instance2);
         RoundRobinTrafficLoadBalanceAlgorithm roundRobinAlgorithm = new RoundRobinTrafficLoadBalanceAlgorithm();
-        assertThat(roundRobinAlgorithm.getInstanceId("simple_traffic", instanceIds), is(instanceId1));
-        assertThat(roundRobinAlgorithm.getInstanceId("simple_traffic", instanceIds), is(instanceId2));
-        assertThat(roundRobinAlgorithm.getInstanceId("simple_traffic", instanceIds), is(instanceId1));
+        assertThat(roundRobinAlgorithm.getInstanceId("simple_traffic", instances), is(instance1));
+        assertThat(roundRobinAlgorithm.getInstanceId("simple_traffic", instances), is(instance2));
+        assertThat(roundRobinAlgorithm.getInstanceId("simple_traffic", instances), is(instance1));
     }
 }

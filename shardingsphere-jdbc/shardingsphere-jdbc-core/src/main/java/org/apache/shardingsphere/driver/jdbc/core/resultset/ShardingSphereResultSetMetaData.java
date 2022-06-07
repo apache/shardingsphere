@@ -26,8 +26,8 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.Agg
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 
@@ -44,7 +44,7 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
     
     private final ResultSetMetaData resultSetMetaData;
     
-    private final ShardingSphereMetaData shardingSphereMetaData;
+    private final ShardingSphereDatabase database;
     
     private final SQLStatementContext<?> sqlStatementContext;
     
@@ -135,7 +135,7 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
     
     @Override
     public String getSchemaName(final int column) {
-        return DefaultSchema.LOGIC_NAME;
+        return DefaultDatabase.LOGIC_NAME;
     }
     
     @Override
@@ -151,13 +151,13 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
     @Override
     public String getTableName(final int column) throws SQLException {
         String actualTableName = resultSetMetaData.getTableName(column);
-        Optional<ShardingSphereRule> rule = shardingSphereMetaData.getRuleMetaData().getRules().stream().filter(each -> each instanceof DataNodeContainedRule).findFirst();
+        Optional<ShardingSphereRule> rule = database.getRuleMetaData().getRules().stream().filter(each -> each instanceof DataNodeContainedRule).findFirst();
         return rule.isPresent() ? ((DataNodeContainedRule) rule.get()).findLogicTableByActualTable(actualTableName).orElse(actualTableName) : actualTableName;
     }
     
     @Override
     public String getCatalogName(final int column) {
-        return DefaultSchema.LOGIC_NAME;
+        return DefaultDatabase.LOGIC_NAME;
     }
     
     @Override

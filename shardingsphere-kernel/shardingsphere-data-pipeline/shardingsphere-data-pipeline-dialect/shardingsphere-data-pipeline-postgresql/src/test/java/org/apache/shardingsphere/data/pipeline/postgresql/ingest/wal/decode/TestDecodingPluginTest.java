@@ -31,9 +31,10 @@ import org.postgresql.replication.LogSequenceNumber;
 import java.nio.ByteBuffer;
 import java.sql.SQLException;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -82,8 +83,7 @@ public final class TestDecodingPluginTest {
     @Test
     public void assertDecodeUnknownTableType() {
         ByteBuffer data = ByteBuffer.wrap("unknown".getBytes());
-        AbstractWalEvent actual = new TestDecodingPlugin(null).decode(data, logSequenceNumber);
-        assertTrue(actual instanceof PlaceholderEvent);
+        assertThat(new TestDecodingPlugin(null).decode(data, logSequenceNumber), instanceOf(PlaceholderEvent.class));
     }
     
     @Test(expected = IngestException.class)
@@ -99,5 +99,17 @@ public final class TestDecodingPluginTest {
         when(timestampUtils.toTime(null, "1 2 3'")).thenThrow(new SQLException(""));
         ByteBuffer data = ByteBuffer.wrap("table public.test: INSERT: data[time without time zone]:'1 2 3'''".getBytes());
         new TestDecodingPlugin(new PostgreSQLTimestampUtils(timestampUtils)).decode(data, logSequenceNumber);
+    }
+    
+    @Test
+    public void assertDecodeInsertWithNullValue() {
+        ByteBuffer data = ByteBuffer.wrap("table public.test: INSERT: id[integer]:123 col0[integer]:null col1[character varying]:null col2[character varying]:'nonnull'".getBytes());
+        AbstractWalEvent actual = new TestDecodingPlugin(null).decode(data, logSequenceNumber);
+        assertThat(actual, instanceOf(WriteRowEvent.class));
+        WriteRowEvent actualWriteRowEvent = (WriteRowEvent) actual;
+        assertThat(actualWriteRowEvent.getAfterRow().get(0), is(123));
+        assertNull(actualWriteRowEvent.getAfterRow().get(1));
+        assertNull(actualWriteRowEvent.getAfterRow().get(2));
+        assertThat(actualWriteRowEvent.getAfterRow().get(3), is("nonnull"));
     }
 }

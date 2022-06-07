@@ -17,15 +17,17 @@
 
 package org.apache.shardingsphere.integration.data.pipeline.env;
 
-import com.google.common.base.Splitter;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.integration.data.pipeline.env.enums.ITEnvTypeEnum;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 @Getter
 @Slf4j
@@ -37,15 +39,18 @@ public final class IntegrationTestEnvironment {
     
     private final ITEnvTypeEnum itEnvType;
     
-    private final List<String> mysqlVersionList;
+    private final List<String> mysqlVersions;
     
-    private final List<String> postgresVersionList;
+    private final List<String> postgresVersions;
+    
+    private final List<String> openGaussVersions;
     
     private IntegrationTestEnvironment() {
         props = loadProperties();
-        itEnvType = ITEnvTypeEnum.valueOf(props.getProperty("it.env.type", ITEnvTypeEnum.DOCKER.name()).toUpperCase());
-        mysqlVersionList = Splitter.on(",").trimResults().splitToList(props.getOrDefault("it.env.mysql.version", "").toString());
-        postgresVersionList = Splitter.on(",").trimResults().splitToList(props.getOrDefault("it.env.postgresql.version", "").toString());
+        itEnvType = ITEnvTypeEnum.valueOf(props.getProperty("it.cluster.env.type", ITEnvTypeEnum.DOCKER.name()).toUpperCase());
+        mysqlVersions = Arrays.stream(props.getOrDefault("it.env.mysql.version", "").toString().split(",")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
+        postgresVersions = Arrays.stream(props.getOrDefault("it.env.postgresql.version", "").toString().split(",")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
+        openGaussVersions = Arrays.stream(props.getOrDefault("it.env.opengauss.version", "").toString().split(",")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
     }
     
     private Properties loadProperties() {

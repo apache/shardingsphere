@@ -62,4 +62,9 @@
         <input sql="DROP TABLE IF EXISTS t_single, t_single_extend" />
         <output sql="DROP TABLE IF EXISTS t_single, t_single_extend" />
     </rewrite-assertion>
+    <rewrite-assertion id="drop_view_with_sharding_table" db-types="MySQL,PostgreSQL,openGauss">
+        <input sql="DROP VIEW t_account_view" />
+        <output sql="DROP VIEW t_account_view_0" />
+        <output sql="DROP VIEW t_account_view_1" />
+    </rewrite-assertion>
 </rewrite-assertions>

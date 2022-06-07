@@ -25,11 +25,6 @@ import static org.junit.Assert.assertThat;
 public final class HikariCPPropertyProviderTest {
     
     @Test
-    public void assertGetDataSourceClassName() {
-        assertThat(new HikariCPPropertyProvider().getDataSourceClassName(), is("com.zaxxer.hikari.HikariDataSource"));
-    }
-    
-    @Test
     public void assertGetURLPropertyName() {
         assertThat(new HikariCPPropertyProvider().getURLPropertyName(), is("jdbcUrl"));
     }

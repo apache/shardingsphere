@@ -25,9 +25,9 @@ import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTaskProgress;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.InventoryTaskProgress;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
-import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.JobProgressYamlSwapper;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlJobProgress;
+import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
@@ -65,7 +65,7 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
         jobProgress.setIncrementalTaskProgressMap(getIncrementalTaskProgressMap(jobContext));
         jobProgress.setInventoryTaskProgressMap(getInventoryTaskProgressMap(jobContext));
         String value = YamlEngine.marshal(JOB_PROGRESS_YAML_SWAPPER.swapToYaml(jobProgress));
-        repository.persist(getOffsetPath(jobContext.getJobId(), jobContext.getShardingItem()), value);
+        repository.persist(PipelineMetaDataNode.getScalingJobOffsetPath(jobContext.getJobId(), jobContext.getShardingItem()), value);
     }
     
     private Map<String, IncrementalTaskProgress> getIncrementalTaskProgressMap(final RuleAlteredJobContext jobContext) {
@@ -86,7 +86,7 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     
     @Override
     public JobProgress getJobProgress(final String jobId, final int shardingItem) {
-        String data = repository.get(getOffsetPath(jobId, shardingItem));
+        String data = repository.get(PipelineMetaDataNode.getScalingJobOffsetPath(jobId, shardingItem));
         if (Strings.isNullOrEmpty(data)) {
             return null;
         }
@@ -96,23 +96,19 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     @Override
     public void persistJobCheckResult(final String jobId, final boolean checkSuccess) {
         log.info("persist job check result '{}' for job {}", checkSuccess, jobId);
-        repository.persist(getCheckResultPath(jobId), String.valueOf(checkSuccess));
-    }
-    
-    private String getCheckResultPath(final String jobId) {
-        return String.format("%s/%s/check/result", DataPipelineConstants.DATA_PIPELINE_ROOT, jobId);
+        repository.persist(PipelineMetaDataNode.getScalingCheckResultPath(jobId), String.valueOf(checkSuccess));
     }
     
     @Override
     public Optional<Boolean> getJobCheckResult(final String jobId) {
-        String data = repository.get(getCheckResultPath(jobId));
+        String data = repository.get(PipelineMetaDataNode.getScalingCheckResultPath(jobId));
         return Strings.isNullOrEmpty(data) ? Optional.empty() : Optional.of(Boolean.parseBoolean(data));
     }
     
     @Override
     public void deleteJob(final String jobId) {
         log.info("delete job {}", jobId);
-        repository.delete(String.format("%s/%s", DataPipelineConstants.DATA_PIPELINE_ROOT, jobId));
+        repository.delete(PipelineMetaDataNode.getScalingJobPath(jobId));
     }
     
     @Override
@@ -132,7 +128,7 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     
     @Override
     public List<Integer> getShardingItems(final String jobId) {
-        List<String> result = getChildrenKeys(getOffsetPath(jobId));
+        List<String> result = getChildrenKeys(PipelineMetaDataNode.getScalingJobOffsetPath(jobId));
         log.info("getShardingItems, jobId={}, offsetKeys={}", jobId, result);
         return result.stream().map(Integer::parseInt).collect(Collectors.toList());
     }
@@ -145,14 +141,6 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
             return;
         }
         jobProgress.setStatus(status);
-        persist(getOffsetPath(jobId, shardingItem), YamlEngine.marshal(JOB_PROGRESS_YAML_SWAPPER.swapToYaml(jobProgress)));
-    }
-    
-    private String getOffsetPath(final String jobId, final int shardingItem) {
-        return String.format("%s/%s/offset/%d", DataPipelineConstants.DATA_PIPELINE_ROOT, jobId, shardingItem);
-    }
-    
-    private String getOffsetPath(final String jobId) {
-        return String.format("%s/%s/offset", DataPipelineConstants.DATA_PIPELINE_ROOT, jobId);
+        persist(PipelineMetaDataNode.getScalingJobOffsetPath(jobId, shardingItem), YamlEngine.marshal(JOB_PROGRESS_YAML_SWAPPER.swapToYaml(jobProgress)));
     }
 }

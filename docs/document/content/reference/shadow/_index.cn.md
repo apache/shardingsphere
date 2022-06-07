@@ -56,36 +56,61 @@ Apache ShardingSphere 通过解析 SQL，对传入的 SQL 进行影子判定，�
 
 ### 影子库配置
 
-建议配置如下（YAML 格式展示）：
+建议 `config-shadow.yaml` 配置如下：
 
 ```yaml
-data-sources:
-  shadow-data-source:
-    source-data-source-name: ds
-    shadow-data-source-name: ds-shadow
-tables:
-  t_order:
-    data-source-names: shadow-data-source
-    shadow-algorithm-names:
-      - simple-hint-algorithm
-      - user-id-value-match-algorithm
-shadow-algorithms:
-  simple-hint-algorithm:
-    type: SIMPLE_HINT
-    props:
-      foo: bar
-  user-id-value-match-algorithm:
-    type: VALUE_MATCH
-    props:
-      operation: insert
-      column: user_id
-      value: 0
+databaseName: shadow_db
+
+dataSources:
+  ds:
+    url: jdbc:mysql://127.0.0.1:3306/ds?serverTimezone=UTC&useSSL=false
+    username: root
+    password:
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 50
+    minPoolSize: 1
+  shadow_ds:
+    url: jdbc:mysql://127.0.0.1:3306/shadow_ds?serverTimezone=UTC&useSSL=false
+    username: root
+    password:
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 50
+    minPoolSize: 1
+
+rules:
+- !SHADOW
+  dataSources:
+    shadowDataSource:
+      sourceDataSourceName: ds
+      shadowDataSourceName: shadow_ds
+  tables:
+    t_order:
+      dataSourceNames:
+        - shadowDataSource
+      shadowAlgorithmNames:
+        - simple-hint-algorithm
+        - user-id-value-match-algorithm
+  shadowAlgorithms:
+    simple-hint-algorithm:
+      type: SIMPLE_HINT
+      props:
+        foo: bar
+    user-id-insert-match-algorithm:
+      type: VALUE_MATCH
+      props:
+        operation: insert
+        column: user_id
+        regex: 0
       
-sql-parser:
-  sql-comment-parse-enabled: true
+- !SQL_PARSER
+  sqlCommentParseEnabled: true
 ```
 
-**注意**： 如果使用注解影子算法，需要开启解析 SQL 注释配置项 `sql-comment-parse-enabled: true`。默认关闭。 
+**注意**： 如果使用注解影子算法，需要开启解析 SQL 注释配置项 `sqlCommentParseEnabled: true`。默认关闭。 
 请参考 [SQL 解析配置](https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-jdbc/yaml-config/rules/sql-parser/)
 
 ### 影子库环境
@@ -134,16 +159,16 @@ INSERT INTO t_order (order_id, user_id, ...) VALUES (xxx..., 0, ...)
 
 无需修改任何 SQL 或者代码，只需要对压力测试的数据进行控制就可以实现在线的压力测试。
 
-算法配置如下（YAML 格式展示）：
+算法配置如下：
 
 ```yaml
-shadow-algorithms:
-  user-id-value-match-algorithm:
+shadowAlgorithms:
+  user-id-insert-match-algorithm:
     type: VALUE_MATCH
     props:
       operation: insert
       column: user_id
-      value: 0
+      regex: 0
 ```
 
 **注意**：影子表使用列影子算法时，相同类型操作（INSERT, UPDATE, DELETE, SELECT）目前仅支持单个字段。
@@ -158,10 +183,10 @@ SELECT * FROM t_order WHERE order_id = xxx /*foo:bar,...*/
 
 会执行到影子库，其他数据执行到生产库。
 
-算法配置如下（YAML 格式展示）：
+算法配置如下：
 
 ```yaml
-shadow-algorithms:
+shadowAlgorithms:
   simple-hint-algorithm:
     type: SIMPLE_HINT
     props:
@@ -180,10 +205,10 @@ SELECT * FROM t_order WHERE order_id = xxx /*foo:bar,...*/;
 
 都会执行到影子库，其他数据执行到生产库。
 
-算法配置如下（YAML 格式展示）：
+算法配置如下：
 
 ```yaml
-shadow-algorithms:
+shadowAlgorithms:
   user-id-value-match-algorithm:
     type: VALUE_MATCH
     props:
@@ -212,34 +237,35 @@ SELECT * FROM t_xxx_3 WHERE order_id = xxx /*foo:bar,...*/;
 
 都会执行到影子库，其他数据执行到生产库。
 
-配置如下（YAML 格式展示）：
+配置如下：
 
 ```yaml
-data-sources:
-  shadow-data-source:
-    source-data-source-name: ds
-    shadow-data-source-name: ds-shadow
+rules:
+- !SHADOW
+dataSources:
+  shadowDataSource:
+    sourceDataSourceName: ds
+    shadowDataSourceName: shadow_ds
 tables:
   t_order:
-    data-source-names: shadow-data-source
-    shadow-algorithm-names:
+    dataSourceNames:
+      - shadowDataSource
+    shadowAlgorithmNames:
       - simple-hint-algorithm
       - user-id-value-match-algorithm
-default-shadow-algorithm-name: simple-note-algorithm
-shadow-algorithms:
+shadowAlgorithms:
   simple-hint-algorithm:
     type: SIMPLE_HINT
     props:
       foo: bar
-  user-id-value-match-algorithm:
+  user-id-insert-match-algorithm:
     type: VALUE_MATCH
     props:
       operation: insert
       column: user_id
-      value: 0
-      
-sql-parser:
-  sql-comment-parse-enabled: true
+      regex: 0
+- !SQL_PARSER
+  sqlCommentParseEnabled: true
 ```
 
 **注意**
@@ -247,27 +273,29 @@ sql-parser:
 使用时必须确保配置文件中 `props` 的配置项小于等于 SQL 注释中的配置项，且配置文件的具体配置要和 SQL 注释中写的配置一样，配置文件中配置项越少，匹配条件越宽松
 
 ```yaml
-simple-note-algorithm:
-  type: SIMPLE_HINT
-  props:
-    foo: bar
-    foo1: bar1
+shadowAlgorithms:
+  simple-note-algorithm:
+    type: SIMPLE_HINT
+    props:
+      foo: bar
+      foo1: bar1
 ```
 
 如当前 `props` 项中配置了 `2` 条配置，在 SQL 中可以匹配的写法有如下：
 
 ```sql
-SELECT * FROM t_xxx_2 WHERE order_id = xxx /*foo:bar, foo1:bar1*/
+SELECT * FROM t_xxx_2 WHERE order_id = xxx /*foo:bar, foo1:bar1, ...*/
 ```
 ```sql
 SELECT * FROM t_xxx_2 WHERE order_id = xxx /*foo:bar, foo1:bar1, foo2:bar2, ...*/
 ```
 
 ```yaml
-simple-note-algorithm:
-  type: SIMPLE_HINT
-  props:
-    foo: bar
+shadowAlgorithms:
+  simple-note-algorithm:
+    type: SIMPLE_HINT
+    props:
+      foo: bar
 ```
 
 如当前 props 项中配置了 1 条配置，在 SQL 中可以匹配的写法有如下：

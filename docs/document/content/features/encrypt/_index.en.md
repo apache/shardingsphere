@@ -1,7 +1,7 @@
 +++
-pre = "<b>4.8. </b>"
+pre = "<b>4.9. </b>"
 title = "Encryption"
-weight = 8
+weight = 9
 chapter = true
 +++
 
@@ -32,3 +32,5 @@ In addition, for the online business system, it is relatively complex to realize
 ## Goal
 
 **Provides a security and transparent data encryption solution, which is the main design goal of Apache ShardingSphere data encryption module.**
+
+**Source Codes: https://github.com/apache/shardingsphere/tree/master/shardingsphere-features/shardingsphere-encrypt**

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.properties.PropertiesConverter;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -53,9 +53,9 @@ public final class ShardingTableRuleQueryResultSet implements DistSQLResultSet {
     private ShardingRuleConfiguration shardingRuleConfig;
     
     @Override
-    public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
+    public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
         String tableName = ((ShowShardingTableRulesStatement) sqlStatement).getTableName();
-        Optional<ShardingRuleConfiguration> ruleConfig = metaData.getRuleMetaData().getConfigurations()
+        Optional<ShardingRuleConfiguration> ruleConfig = database.getRuleMetaData().getConfigurations()
                 .stream().filter(each -> each instanceof ShardingRuleConfiguration).map(each -> (ShardingRuleConfiguration) each).findAny();
         if (Objects.isNull(tableName)) {
             tables = ruleConfig.map(optional -> optional.getTables().iterator()).orElseGet(Collections::emptyIterator);

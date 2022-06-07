@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.importer;
 
+import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
@@ -81,6 +82,11 @@ public final class AbstractImporterTest {
     @Before
     public void setUp() throws SQLException {
         jdbcImporter = new AbstractImporter(mockImporterConfiguration(), dataSourceManager, channel) {
+            
+            @Override
+            protected String getSchemaName(final String logicTableName) {
+                return null;
+            }
         };
         when(dataSourceManager.getDataSource(dataSourceConfig)).thenReturn(dataSource);
         when(dataSource.getConnection()).thenReturn(connection);
@@ -119,7 +125,7 @@ public final class AbstractImporterTest {
         verify(preparedStatement).setObject(2, "UPDATE");
         verify(preparedStatement).setObject(3, 1);
         verify(preparedStatement).setObject(4, 10);
-        verify(preparedStatement).execute();
+        verify(preparedStatement).executeUpdate();
     }
     
     @Test
@@ -134,7 +140,7 @@ public final class AbstractImporterTest {
         inOrder.verify(preparedStatement).setObject(3, "UPDATE");
         inOrder.verify(preparedStatement).setObject(4, 1);
         inOrder.verify(preparedStatement).setObject(5, 10);
-        inOrder.verify(preparedStatement).execute();
+        inOrder.verify(preparedStatement).executeUpdate();
     }
     
     private DataRecord getUpdatePrimaryKeyDataRecord() {
@@ -170,6 +176,6 @@ public final class AbstractImporterTest {
     
     private ImporterConfiguration mockImporterConfiguration() {
         Map<LogicTableName, Set<String>> shardingColumnsMap = Collections.singletonMap(new LogicTableName("test_table"), Collections.singleton("user"));
-        return new ImporterConfiguration(dataSourceConfig, shardingColumnsMap, 1000, 3);
+        return new ImporterConfiguration(dataSourceConfig, shardingColumnsMap, new TableNameSchemaNameMapping(Collections.emptyMap()), 1000, 3);
     }
 }

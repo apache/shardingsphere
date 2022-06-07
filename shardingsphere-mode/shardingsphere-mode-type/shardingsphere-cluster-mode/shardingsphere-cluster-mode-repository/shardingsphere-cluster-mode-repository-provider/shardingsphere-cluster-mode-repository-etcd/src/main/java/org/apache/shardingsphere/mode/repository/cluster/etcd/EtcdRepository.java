@@ -29,25 +29,21 @@ import io.etcd.jetcd.options.GetOption;
 import io.etcd.jetcd.options.PutOption;
 import io.etcd.jetcd.options.WatchOption;
 import io.etcd.jetcd.watch.WatchEvent;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.etcd.lock.EtcdInternalLockHolder;
 import org.apache.shardingsphere.mode.repository.cluster.etcd.props.EtcdProperties;
 import org.apache.shardingsphere.mode.repository.cluster.etcd.props.EtcdPropertyKey;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Properties;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.stream.Collectors;
 
@@ -59,17 +55,13 @@ public final class EtcdRepository implements ClusterPersistRepository {
     
     private Client client;
     
-    @Getter
-    @Setter
-    private Properties props = new Properties();
-    
     private EtcdProperties etcdProps;
     
     private EtcdInternalLockHolder etcdInternalLockHolder;
     
     @Override
     public void init(final ClusterPersistRepositoryConfiguration config) {
-        etcdProps = new EtcdProperties(props);
+        etcdProps = new EtcdProperties(config.getProps());
         client = Client.builder().endpoints(Util.toURIs(Splitter.on(",").trimResults().splitToList(config.getServerLists())))
                 .namespace(ByteSequence.from(config.getNamespace(), StandardCharsets.UTF_8))
                 .maxInboundMessageSize((int) 32e9)
@@ -154,43 +146,18 @@ public final class EtcdRepository implements ClusterPersistRepository {
     }
     
     @Override
-    public boolean tryLock(final String key, final long time, final TimeUnit unit) {
-        try {
-            long leaseId = client.getLeaseClient().grant(etcdProps.getValue(EtcdPropertyKey.TIME_TO_LIVE_SECONDS)).get().getID();
-            client.getLockClient().lock(ByteSequence.from(key, StandardCharsets.UTF_8), leaseId).get(time, unit);
-            return true;
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            log.error("EtcdRepository tryLock error, key:{}, time:{}, unit:{}", key, time, unit, ex);
-            return false;
-        }
-    }
-    
-    @Override
-    public void releaseLock(final String key) {
-        try {
-            client.getLockClient().unlock(ByteSequence.from(key, StandardCharsets.UTF_8)).get(etcdProps.getValue(EtcdPropertyKey.CONNECTION_TIMEOUT_SECONDS), TimeUnit.SECONDS);
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            log.error("EtcdRepository releaseLock error, key:{}", key, ex);
-        }
-    }
-    
-    @Override
     public void watchSessionConnection(final InstanceContext instanceContext) {
         // TODO
     }
     
     @Override
-    public Lock getGlobalLock(final String lockName) {
-        return etcdInternalLockHolder.getGlobalLock(lockName);
+    public Lock getInternalMutexLock(final String lockName) {
+        return etcdInternalLockHolder.getInternalMutexLock(lockName);
     }
     
     @Override
-    public Lock getStandardLock(final String lockName) {
-        return etcdInternalLockHolder.getStandardLock(lockName);
+    public Lock getInternalReentrantMutexLock(final String lockName) {
+        return etcdInternalLockHolder.getInternalReentrantMutexLock(lockName);
     }
     
     @Override

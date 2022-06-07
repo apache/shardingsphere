@@ -24,9 +24,9 @@ import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.apache.curator.framework.recipes.locks.InterProcessSemaphoreMutex;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.handler.CuratorZookeeperExceptionHandler;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -37,38 +37,38 @@ import java.util.concurrent.locks.Lock;
 @RequiredArgsConstructor
 public class ZookeeperInternalLockHolder {
     
-    private final Map<String, ZookeeperInternalLock> locks = new ConcurrentHashMap<>();
+    private final Map<String, ZookeeperInternalLock> locks = new LinkedHashMap<>();
     
     private final CuratorFramework client;
     
     /**
-     * Get global lock.
+     * Get internal mutex lock.
      *
      * @param lockName lock name
-     * @return global lock
+     * @return internal mutex lock
      */
-    public Lock getGlobalLock(final String lockName) {
-        ZookeeperInternalLock lock = locks.get(lockName);
-        if (Objects.isNull(lock)) {
-            lock = new ZookeeperInternalLock(new InterProcessSemaphoreMutex(client, lockName));
-            locks.put(lockName, lock);
+    public synchronized Lock getInternalMutexLock(final String lockName) {
+        ZookeeperInternalLock result = locks.get(lockName);
+        if (Objects.isNull(result)) {
+            result = new ZookeeperInternalLock(new InterProcessSemaphoreMutex(client, lockName));
+            locks.put(lockName, result);
         }
-        return lock;
+        return result;
     }
     
     /**
-     * Get standard lock.
+     * Get internal reentrant mutex lock.
      *
      * @param lockName lock name
-     * @return standard lock
+     * @return internal reentrant mutex lock
      */
-    public Lock getStandardLock(final String lockName) {
-        ZookeeperInternalLock lock = locks.get(lockName);
-        if (Objects.isNull(lock)) {
-            lock = new ZookeeperInternalLock(new InterProcessMutex(client, lockName));
-            locks.put(lockName, lock);
+    public synchronized Lock getInternalReentrantMutexLock(final String lockName) {
+        ZookeeperInternalLock result = locks.get(lockName);
+        if (Objects.isNull(result)) {
+            result = new ZookeeperInternalLock(new InterProcessMutex(client, lockName));
+            locks.put(lockName, result);
         }
-        return lock;
+        return result;
     }
     
     /**

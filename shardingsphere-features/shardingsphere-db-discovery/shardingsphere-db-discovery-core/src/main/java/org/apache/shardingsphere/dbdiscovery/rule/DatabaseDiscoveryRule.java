@@ -30,21 +30,22 @@ import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgori
 import org.apache.shardingsphere.infra.datasource.strategy.DynamicDataSourceStrategyFactory;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.rule.event.DataSourceStatusChangedEvent;
-import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
-import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceChangedEvent;
 import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.ExportableRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.InstanceAwareRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.StatusContainedRule;
-import org.apache.shardingsphere.infra.schedule.CronJob;
+import org.apache.shardingsphere.mode.metadata.storage.event.DataSourceNameDisabledEvent;
+import org.apache.shardingsphere.mode.metadata.storage.event.PrimaryDataSourceChangedEvent;
+import org.apache.shardingsphere.schedule.core.api.CronJob;
 import org.apache.shardingsphere.schedule.core.api.ModeScheduleContext;
 import org.apache.shardingsphere.schedule.core.api.ModeScheduleContextFactory;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -57,12 +58,16 @@ import java.util.stream.Collectors;
 /**
  * Database discovery rule.
  */
-public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContainedRule, StatusContainedRule, ExportableRule {
+public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContainedRule, StatusContainedRule, ExportableRule, InstanceAwareRule {
     
     private final Map<String, DatabaseDiscoveryProviderAlgorithm> discoveryTypes;
     
     @Getter
     private final Map<String, DatabaseDiscoveryDataSourceRule> dataSourceRules;
+    
+    private final String databaseName;
+    
+    private final Map<String, DataSource> dataSourceMap;
     
     public DatabaseDiscoveryRule(final String databaseName, final Map<String, DataSource> dataSourceMap, final DatabaseDiscoveryRuleConfiguration config) {
         this(databaseName, dataSourceMap, config.getDataSources(), config.getDiscoveryHeartbeats(), getDiscoveryProviderAlgorithms(config.getDiscoveryTypes()));
@@ -75,10 +80,11 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
     private DatabaseDiscoveryRule(final String databaseName, final Map<String, DataSource> dataSourceMap, final Collection<DatabaseDiscoveryDataSourceRuleConfiguration> dataSourceRuleConfigs,
                                   final Map<String, DatabaseDiscoveryHeartBeatConfiguration> heartBeatConfig, final Map<String, DatabaseDiscoveryProviderAlgorithm> discoveryTypes) {
         this.discoveryTypes = discoveryTypes;
+        this.databaseName = databaseName;
+        this.dataSourceMap = dataSourceMap;
         dataSourceRules = getDataSourceRules(dataSourceRuleConfigs, heartBeatConfig);
         findMasterSlaveRelation(databaseName, dataSourceMap);
         initAware();
-        initHeartBeatJobs(databaseName, dataSourceMap);
     }
     
     private static Map<String, DatabaseDiscoveryProviderAlgorithm> getDiscoveryProviderAlgorithms(final Map<String, ShardingSphereAlgorithmConfiguration> discoveryTypesConfig) {
@@ -105,18 +111,14 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
             DatabaseDiscoveryDataSourceRule dataSourceRule = entry.getValue();
             DatabaseDiscoveryEngine engine = new DatabaseDiscoveryEngine(dataSourceRule.getDatabaseDiscoveryProviderAlgorithm());
             Map<String, DataSource> originalDataSourceMap = new HashMap<>(dataSourceMap);
-            try {
-                engine.checkEnvironment(databaseName, originalDataSourceMap);
-            } catch (final SQLException ex) {
-                throw new ShardingSphereException(ex);
-            }
+            engine.checkEnvironment(databaseName, originalDataSourceMap);
             dataSourceRule.changePrimaryDataSourceName(engine.changePrimaryDataSource(
                     databaseName, groupName, entry.getValue().getPrimaryDataSourceName(), originalDataSourceMap, dataSourceRule.getDisabledDataSourceNames()));
         }
     }
     
     private void initAware() {
-        DynamicDataSourceStrategyFactory.newInstance().ifPresent(optional -> optional.init(this));
+        DynamicDataSourceStrategyFactory.findInstance().ifPresent(optional -> optional.init(this));
     }
     
     /**
@@ -168,9 +170,7 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
     
     @Override
     public Map<String, Supplier<Object>> getExportedMethods() {
-        Map<String, Supplier<Object>> result = new HashMap<>(1, 1);
-        result.put(ExportableConstants.EXPORTABLE_KEY_PRIMARY_DATA_SOURCE, this::exportPrimaryDataSourceMap);
-        return result;
+        return Collections.singletonMap(ExportableConstants.EXPORT_DB_DISCOVERY_PRIMARY_DATA_SOURCES, this::exportPrimaryDataSourceMap);
     }
     
     private Map<String, String> exportPrimaryDataSourceMap() {
@@ -179,8 +179,8 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
         return result;
     }
     
-    private void initHeartBeatJobs(final String databaseName, final Map<String, DataSource> dataSourceMap) {
-        Optional<ModeScheduleContext> modeScheduleContext = ModeScheduleContextFactory.getInstance().get();
+    private void initHeartBeatJobs(final InstanceContext instanceContext) {
+        Optional<ModeScheduleContext> modeScheduleContext = ModeScheduleContextFactory.getInstance().get(instanceContext.getInstance().getInstanceDefinition().getInstanceId());
         if (modeScheduleContext.isPresent()) {
             for (Entry<String, DatabaseDiscoveryDataSourceRule> entry : dataSourceRules.entrySet()) {
                 DatabaseDiscoveryDataSourceRule rule = entry.getValue();
@@ -197,5 +197,10 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
     @Override
     public String getType() {
         return DatabaseDiscoveryRule.class.getSimpleName();
+    }
+    
+    @Override
+    public void setInstanceContext(final InstanceContext instanceContext) {
+        initHeartBeatJobs(instanceContext);
     }
 }

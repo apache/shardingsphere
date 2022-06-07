@@ -101,8 +101,8 @@ public class ShardingSpringBootStarterTest {
     
     private void assertShardingConfigurationBindingTableGroups() {
         assertThat(shardingRuleConfig.getBindingTableGroups().size(), is(1));
-        List<String> bindingTableGroupsList = new ArrayList<>(shardingRuleConfig.getBindingTableGroups());
-        assertThat(bindingTableGroupsList.get(0), is("t_order,t_order_item"));
+        List<String> bindingTableGroups = new ArrayList<>(shardingRuleConfig.getBindingTableGroups());
+        assertThat(bindingTableGroups.get(0), is("t_order,t_order_item"));
     }
     
     private void assertShardingConfigurationBroadcastTables() {
