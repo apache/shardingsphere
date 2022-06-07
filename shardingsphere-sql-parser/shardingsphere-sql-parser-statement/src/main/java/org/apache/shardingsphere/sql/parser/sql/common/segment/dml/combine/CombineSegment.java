@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.union;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.combine;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

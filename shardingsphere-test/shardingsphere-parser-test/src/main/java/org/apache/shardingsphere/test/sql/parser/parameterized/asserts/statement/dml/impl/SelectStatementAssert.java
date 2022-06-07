@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.LockSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.union.CombineSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.ModelSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WindowSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
@@ -186,7 +186,7 @@ public final class SelectStatementAssert {
             return;
         }
         Collection<CombineSegment> combineSegments = actual.getCombines();
-        assertFalse(assertContext.getText("Actual union segment should exist."), combineSegments.isEmpty());
+        assertFalse(assertContext.getText("Actual combine segment should exist."), combineSegments.isEmpty());
         assertThat(assertContext.getText("Combine size assertion error: "), combineSegments.size(), is(expected.getCombine().size()));
         int count = 0;
         for (CombineSegment each : combineSegments) {
