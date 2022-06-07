@@ -5,7 +5,7 @@ weight = 4
 
 ## 配置项说明
 
-命名空间：[http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt-5.1.1.xsd](http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt-5.1.1.xsd)
+命名空间：[http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt-5.1.2.xsd](http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt-5.1.2.xsd)
 
 \<encrypt:rule />
 

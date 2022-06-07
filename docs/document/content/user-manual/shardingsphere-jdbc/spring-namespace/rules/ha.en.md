@@ -5,7 +5,7 @@ weight = 3
 
 ## Configuration Item Explanation
 
-Namespace：[http://shardingsphere.apache.org/schema/shardingsphere/database-discovery/database-discovery-5.1.1.xsd](http://shardingsphere.apache.org/schema/shardingsphere/database-discovery/database-discovery-5.1.1.xsd)
+Namespace：[http://shardingsphere.apache.org/schema/shardingsphere/database-discovery/database-discovery-5.1.2.xsd](http://shardingsphere.apache.org/schema/shardingsphere/database-discovery/database-discovery-5.1.2.xsd)
 
 \<database-discovery:rule />
 
