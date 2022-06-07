@@ -28,7 +28,7 @@ import org.apache.calcite.sql.SqlOrderBy;
 import org.apache.calcite.sql.SqlSelect;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.shardingsphere.infra.federation.optimizer.converter.statement.SelectStatementConverter;
+import org.apache.shardingsphere.infra.federation.optimizer.converter.statement.select.SelectStatementConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.CombineType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -46,10 +46,10 @@ public final class SQLNodeConverterEngine {
     private static final Map<CombineType, SqlOperator> REGISTRY = new TreeMap<>();
     
     static {
-        registerUnion();
+        registerCombine();
     }
     
-    private static void registerUnion() {
+    private static void registerCombine() {
         REGISTRY.put(CombineType.UNION, SqlStdOperatorTable.UNION);
         REGISTRY.put(CombineType.UNION_ALL, SqlStdOperatorTable.UNION_ALL);
     }
