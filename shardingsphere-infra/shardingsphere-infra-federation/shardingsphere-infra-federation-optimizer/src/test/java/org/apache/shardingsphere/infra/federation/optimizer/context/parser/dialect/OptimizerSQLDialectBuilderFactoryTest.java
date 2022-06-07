@@ -19,21 +19,18 @@ package org.apache.shardingsphere.infra.federation.optimizer.context.parser.dial
 
 import java.util.Properties;
 import org.apache.shardingsphere.infra.federation.optimizer.context.parser.fixture.OptimizerSQLDialectBuilderFixture;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
 
-import static org.junit.Assert.assertEquals;
-
-@RunWith(MockitoJUnitRunner.class)
 public final class OptimizerSQLDialectBuilderFactoryTest {
     
     @Test
     public void assertCreateOptimizerSQLDialectBuilder() {
         OptimizerSQLDialectBuilder optimizerSQLDialectBuilder = new OptimizerSQLDialectBuilderFixture();
-        assertEquals(optimizerSQLDialectBuilder.getType(), "FIXTURE");
+        assertThat(optimizerSQLDialectBuilder.getType(), is("FIXTURE"));
         Properties properties = optimizerSQLDialectBuilder.build();
-        assertEquals(properties, new Properties());
-        
+        assertThat(properties, equalTo(new Properties()));
     }
 }
