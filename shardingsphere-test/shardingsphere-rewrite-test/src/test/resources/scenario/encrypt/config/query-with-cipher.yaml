@@ -27,12 +27,12 @@ rules:
         certificate_number:
           cipherColumn: cipher_certificate_number
           assistedQueryColumn: assisted_query_certificate_number
-          encryptorName: rewrite_assisted_query_fixture
+          encryptorName: rewrite_normal_fixture
           assistedQueryEncryptorName: rewrite_assisted_query_fixture
         password:
           cipherColumn: cipher_password
           assistedQueryColumn: assisted_query_password
-          encryptorName: rewrite_assisted_query_fixture
+          encryptorName: rewrite_normal_fixture
           assistedQueryEncryptorName: rewrite_assisted_query_fixture
         amount:
           cipherColumn: cipher_amount
@@ -46,19 +46,19 @@ rules:
           cipherColumn: cipher_certificate_number
           assistedQueryColumn: assisted_query_certificate_number
           plainColumn: plain_certificate_number
-          encryptorName: rewrite_assisted_query_fixture
+          encryptorName: rewrite_normal_fixture
           assistedQueryEncryptorName: rewrite_assisted_query_fixture
         password:
           cipherColumn: cipher_password
           assistedQueryColumn: assisted_query_password
           plainColumn: plain_password
-          encryptorName: rewrite_assisted_query_fixture
+          encryptorName: rewrite_normal_fixture
           assistedQueryEncryptorName: rewrite_assisted_query_fixture
         password_new:
           cipherColumn: password_new_cipher
           assistedQueryColumn: password_new_assisted
           plainColumn: password_new_plain
-          encryptorName: rewrite_assisted_query_fixture
+          encryptorName: rewrite_normal_fixture
           assistedQueryEncryptorName: rewrite_assisted_query_fixture
         amount:
           cipherColumn: cipher_amount
@@ -70,13 +70,13 @@ rules:
           cipherColumn: cipher_certificate_number
           assistedQueryColumn: assisted_query_certificate_number
           plainColumn: plain_certificate_number
-          encryptorName: rewrite_assisted_query_fixture
+          encryptorName: rewrite_normal_fixture
           assistedQueryEncryptorName: rewrite_assisted_query_fixture
         password:
           cipherColumn: cipher_password
           assistedQueryColumn: assisted_query_password
           plainColumn: plain_password
-          encryptorName: rewrite_assisted_query_fixture
+          encryptorName: rewrite_normal_fixture
           assistedQueryEncryptorName: rewrite_assisted_query_fixture
         amount:
           cipherColumn: cipher_amount

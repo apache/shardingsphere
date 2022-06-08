@@ -35,7 +35,7 @@ public final class JDBCQueryAssistedEncryptAlgorithmFixture implements QueryAssi
     
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
-        return "encryptValue";
+        return "assistedEncryptValue";
     }
     
     @Override

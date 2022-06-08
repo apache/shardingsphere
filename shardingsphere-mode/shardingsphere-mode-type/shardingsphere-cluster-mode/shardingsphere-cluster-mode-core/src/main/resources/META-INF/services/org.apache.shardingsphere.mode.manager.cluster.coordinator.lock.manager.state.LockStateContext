@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.ShardingSphereDistributedLockManager
+org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.state.ShardingSphereLockStateContext

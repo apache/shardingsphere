@@ -62,7 +62,7 @@ public final class EncryptRuleStatementConverter {
     // FIXME: support assistedEncryptorName on EncryptColumnSegment later
     private static EncryptColumnRuleConfiguration createEncryptColumnRuleConfiguration(final String tableName, final EncryptColumnSegment columnSegment) {
         return new EncryptColumnRuleConfiguration(columnSegment.getName(), columnSegment.getCipherColumn(), columnSegment.getAssistedQueryColumn(),
-                columnSegment.getPlainColumn(), getEncryptorName(tableName, columnSegment.getName()), null);
+                columnSegment.getPlainColumn(), getEncryptorName(tableName, columnSegment.getName()), "", null);
     }
     
     private static Map<String, ShardingSphereAlgorithmConfiguration> createEncryptorConfigurations(final EncryptRuleSegment ruleSegment) {
