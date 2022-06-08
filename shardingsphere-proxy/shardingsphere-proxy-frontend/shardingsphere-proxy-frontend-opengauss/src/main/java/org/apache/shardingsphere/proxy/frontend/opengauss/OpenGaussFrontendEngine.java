@@ -49,7 +49,7 @@ public final class OpenGaussFrontendEngine implements DatabaseProtocolFrontendEn
     }
     
     @Override
-    public void setDatabaseVersion(final String schemaName, final String databaseVersion) {
+    public void setDatabaseVersion(final String databaseName, final String databaseVersion) {
         PostgreSQLServerInfo.setServerVersion(databaseVersion);
     }
     

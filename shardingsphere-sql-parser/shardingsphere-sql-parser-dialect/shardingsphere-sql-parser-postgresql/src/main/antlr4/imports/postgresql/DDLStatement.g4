@@ -1194,11 +1194,27 @@ close
     ;
 
 cluster
-    : CLUSTER VERBOSE? (qualifiedName clusterIndexSpecification? | name ON qualifiedName)?
+    : CLUSTER clusterVerboseSpecification? tableName? clusterIndexSpecification?
+    ;
+
+clusterVerboseSpecification
+    : VERBOSE | clusterVerboseOptionList
     ;
 
 clusterIndexSpecification
-    : USING name
+    : USING indexName
+    ;
+
+clusterVerboseOptionList
+    : LP_ clusterVerboseOption (COMMA_ clusterVerboseOption)* RP_
+    ;
+
+clusterVerboseOption
+    : VERBOSE booleanValue?
+    ;
+
+booleanValue
+    : TRUE | ON | FALSE | OFF | NUMBER_
     ;
 
 comment
@@ -1214,9 +1230,8 @@ commentClauses
     | AGGREGATE aggregateWithArgtypes IS commentText
     | FUNCTION functionWithArgtypes IS commentText
     | OPERATOR operatorWithArgtypes IS commentText
-    | CONSTRAINT name ON anyName IS commentText
     | CONSTRAINT name ON DOMAIN anyName IS commentText
-    | objectTypeNameOnAnyName name ON anyName IS commentText
+    | objectTypeNameOnAnyName name ON tableName IS commentText
     | PROCEDURE functionWithArgtypes IS commentText
     | ROUTINE functionWithArgtypes IS commentText
     | TRANSFORM FOR typeName LANGUAGE name IS commentText
@@ -1227,7 +1242,7 @@ commentClauses
     ;
 
 objectTypeNameOnAnyName
-    : POLICY | RULE	| TRIGGER
+    : POLICY | RULE	| TRIGGER | CONSTRAINT
     ;
 
 objectTypeName

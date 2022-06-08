@@ -22,5 +22,5 @@ package org.apache.shardingsphere.data.pipeline.api.job;
  */
 public enum JobOperationType {
     
-    INSERT, DELETE, UPDATE, SELECT, SYSTEM_LOAD, CPU_USAGE
+    INSERT, DELETE, UPDATE, SELECT,
 }

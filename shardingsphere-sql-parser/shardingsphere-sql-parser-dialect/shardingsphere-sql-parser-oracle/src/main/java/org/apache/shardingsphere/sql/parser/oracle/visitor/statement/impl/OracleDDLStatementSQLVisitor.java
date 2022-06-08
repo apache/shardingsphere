@@ -97,6 +97,18 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TableN
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TruncateTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TypeNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateControlFileContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateFlashbackArchiveContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterFlashbackArchiveContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropFlashbackArchiveContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateDiskgroupContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropDiskgroupContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateRollbackSegmentContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropRollbackSegmentContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateLockdownProfileContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropLockdownProfileContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateInmemoryJoinGroupContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropInmemoryJoinGroupContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateRestorePointContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.AlterDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.CreateDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.ColumnDefinitionSegment;
@@ -135,6 +147,18 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.Ora
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreatePFileStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateSPFileStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateControlFileStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateFlashbackArchiveStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterFlashbackArchiveStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropFlashbackArchiveStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateDiskgroupStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropDiskgroupStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateRollbackSegmentStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropRollbackSegmentStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateLockdownProfileStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropLockdownProfileStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateInmemoryJoinGroupStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropInmemoryJoinGroupStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateRestorePointStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropEditionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropOutlineStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterOutlineStatement;
@@ -761,5 +785,65 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
     @Override
     public ASTNode visitCreateControlFile(final CreateControlFileContext ctx) {
         return new OracleCreateControlFileStatement();
+    }
+    
+    @Override
+    public ASTNode visitCreateFlashbackArchive(final CreateFlashbackArchiveContext ctx) {
+        return new OracleCreateFlashbackArchiveStatement();
+    }
+    
+    @Override
+    public ASTNode visitAlterFlashbackArchive(final AlterFlashbackArchiveContext ctx) {
+        return new OracleAlterFlashbackArchiveStatement();
+    }
+    
+    @Override
+    public ASTNode visitDropFlashbackArchive(final DropFlashbackArchiveContext ctx) {
+        return new OracleDropFlashbackArchiveStatement();
+    }
+    
+    @Override
+    public ASTNode visitCreateDiskgroup(final CreateDiskgroupContext ctx) {
+        return new OracleCreateDiskgroupStatement();
+    }
+    
+    @Override
+    public ASTNode visitDropDiskgroup(final DropDiskgroupContext ctx) {
+        return new OracleDropDiskgroupStatement();
+    }
+    
+    @Override
+    public ASTNode visitCreateRollbackSegment(final CreateRollbackSegmentContext ctx) {
+        return new OracleCreateRollbackSegmentStatement();
+    }
+    
+    @Override
+    public ASTNode visitDropRollbackSegment(final DropRollbackSegmentContext ctx) {
+        return new OracleDropRollbackSegmentStatement();
+    }
+    
+    @Override
+    public ASTNode visitCreateLockdownProfile(final CreateLockdownProfileContext ctx) {
+        return new OracleCreateLockdownProfileStatement();
+    }
+    
+    @Override
+    public ASTNode visitDropLockdownProfile(final DropLockdownProfileContext ctx) {
+        return new OracleDropLockdownProfileStatement();
+    }
+    
+    @Override
+    public ASTNode visitCreateInmemoryJoinGroup(final CreateInmemoryJoinGroupContext ctx) {
+        return new OracleCreateInmemoryJoinGroupStatement();
+    }
+    
+    @Override
+    public ASTNode visitDropInmemoryJoinGroup(final DropInmemoryJoinGroupContext ctx) {
+        return new OracleDropInmemoryJoinGroupStatement();
+    }
+    
+    @Override
+    public ASTNode visitCreateRestorePoint(final CreateRestorePointContext ctx) {
+        return new OracleCreateRestorePointStatement();
     }
 }

@@ -35,8 +35,7 @@ public final class RuleAlteredContextManagerLifecycleListener implements Context
         if (null == modeConfig) {
             return;
         }
-        // TODO decouple "Cluster" to pluggable
-        if (!"Cluster".equals(modeConfig.getType())) {
+        if (!contextManager.getInstanceContext().isCluster()) {
             log.info("mode type is not Cluster, mode type='{}', ignore", modeConfig.getType());
             return;
         }

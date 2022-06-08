@@ -17,45 +17,51 @@
 
 package org.apache.shardingsphere.data.pipeline.api.datasource.config.impl;
 
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.junit.Test;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Arrays;
 import java.util.Map;
-import java.util.Properties;
-import java.util.LinkedHashMap;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class ShardingSpherePipelineDataSourceConfigurationTest {
     
     @Test
-    public void assertAppendJDBCParameters() {
-        ShardingSpherePipelineDataSourceConfiguration dataSourceConfig = new ShardingSpherePipelineDataSourceConfiguration(getDataSourceYaml());
-        Properties queryProps = new Properties();
-        queryProps.setProperty("rewriteBatchedStatements", Boolean.TRUE.toString());
-        dataSourceConfig.appendJDBCQueryProperties(queryProps);
-        List<DataSourceProperties> actual = new LinkedList<>(getDataSourcePropertiesMap(dataSourceConfig.getRootConfig().getDataSources()).values());
-        assertThat(actual.get(0).getAllLocalProperties().get("jdbcUrl"), is("jdbc:mysql://192.168.0.2:3306/scaling?serverTimezone=UTC&useSSL=false&rewriteBatchedStatements=true"));
-        assertThat(actual.get(1).getAllLocalProperties().get("jdbcUrl"), is("jdbc:mysql://192.168.0.1:3306/scaling?serverTimezone=UTC&useSSL=false&rewriteBatchedStatements=true"));
+    public void assertCreate() {
+        ShardingSpherePipelineDataSourceConfiguration actual = new ShardingSpherePipelineDataSourceConfiguration(getDataSourceYaml());
+        assertGetConfig(actual);
+    }
+    
+    private void assertGetConfig(final ShardingSpherePipelineDataSourceConfiguration actual) {
+        assertThat(actual.getDatabaseType().getType(), is("MySQL"));
+        assertThat(actual.getType(), is(ShardingSpherePipelineDataSourceConfiguration.TYPE));
+        assertThat(actual.getDataSourceConfiguration(), instanceOf(YamlRootConfiguration.class));
+        Map<String, Map<String, Object>> dataSources = actual.getRootConfig().getDataSources();
+        assertThat(dataSources.size(), is(2));
+        assertTrue(dataSources.containsKey("ds_0"));
+        assertTrue(dataSources.containsKey("ds_1"));
+        for (Map<String, Object> queryProps : dataSources.values()) {
+            for (String each : Arrays.asList("minPoolSize", "minimumIdle")) {
+                assertThat(queryProps.get(each), is("1"));
+            }
+        }
     }
     
     private String getDataSourceYaml() {
         return "dataSources:\n"
                 + "  ds_1:\n"
+                + "    minPoolSize: 20\n"
+                + "    minimumIdle: 20\n"
                 + "    dataSourceClassName: com.zaxxer.hikari.HikariDataSource\n"
                 + "    url: jdbc:mysql://192.168.0.2:3306/scaling?serverTimezone=UTC&useSSL=false\n"
                 + "  ds_0:\n"
+                + "    minPoolSize: 20\n"
+                + "    minimumIdle: 20\n"
                 + "    dataSourceClassName: com.zaxxer.hikari.HikariDataSource\n"
                 + "    url: jdbc:mysql://192.168.0.1:3306/scaling?serverTimezone=UTC&useSSL=false\n";
-    }
-    
-    private static Map<String, DataSourceProperties> getDataSourcePropertiesMap(final Map<String, Map<String, Object>> yamlDataSourceConfigs) {
-        Map<String, DataSourceProperties> result = new LinkedHashMap<>(yamlDataSourceConfigs.size());
-        yamlDataSourceConfigs.forEach((key, value) -> result.put(key, new YamlDataSourceConfigurationSwapper().swapToDataSourceProperties(value)));
-        return result;
     }
 }

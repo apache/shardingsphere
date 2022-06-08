@@ -1277,3 +1277,35 @@ pfileName
 characterSetName
     : identifier
     ;
+
+quotaUnit
+    : ('M' | 'G' | 'T' | 'P' | 'E')
+    ;
+
+siteName
+    : identifier
+    ;
+
+diskName
+    : identifier
+    ;
+
+searchString
+    : STRING_
+    ;
+
+attributeValue
+    : identifier
+    ;
+
+profileName
+    : identifier
+    ;
+
+joinGroupName
+    : identifier
+    ;
+
+restorePointName
+    : identifier
+    ;

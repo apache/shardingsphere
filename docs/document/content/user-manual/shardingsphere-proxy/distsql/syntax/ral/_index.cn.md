@@ -38,12 +38,12 @@ RAL (Resource & Rule Administration Language) 为 Apache ShardingSphere 的管�
 
 ## 熔断
 
-| 语句                                                           | 说明                                                | 示例                                            |
-|:------------------------------------------------------------- |:-------------------------------------------------- |:----------------------------------------------  |
-| [ENABLE / DISABLE] READWRITE_SPLITTING (READ)? resourceName [FROM databaseName] | 启用 / 禁用读库                                      | ENABLE READWRITE_SPLITTING READ resource_0      |
-| [ENABLE / DISABLE] INSTANCE [IP=xxx, PORT=xxx / instanceId]   | 启用 / 禁用 proxy 实例                               | DISABLE INSTANCE 127.0.0.1@3307            |
-| SHOW INSTANCE LIST                                            | 查询 proxy 实例信息                                  | SHOW INSTANCE LIST                              |
-| SHOW READWRITE_SPLITTING (READ)? resourceName [FROM databaseName]         | 查询所有读库的状态                                    | SHOW READWRITE_SPLITTING READ RESOURCES         |
+| 语句                                                                              | 说明                                                | 示例                                         |
+|:--------------------------------------------------------------------------------|:-------------------------------------------------- |:-------------------------------------------|
+| [ENABLE / DISABLE] READWRITE_SPLITTING (READ)? resourceName [FROM databaseName] | 启用 / 禁用读库                                      | ENABLE READWRITE_SPLITTING READ resource_0 |
+| [ENABLE / DISABLE] INSTANCE instanceId                                          | 启用 / 禁用 proxy 实例                               | DISABLE INSTANCE instance_1                |
+| SHOW INSTANCE LIST                                                              | 查询 proxy 实例信息                                  | SHOW INSTANCE LIST                         |
+| SHOW READWRITE_SPLITTING (READ)? resourceName [FROM databaseName]               | 查询所有读库的状态                                    | SHOW READWRITE_SPLITTING READ RESOURCES    |
 
 ## 全局规则
 

@@ -37,12 +37,12 @@ RAL (Resource & Rule Administration Language) responsible for the added-on featu
 
 ## Circuit Breaker
 
-| Statement                                                     | Function                           | Example                                    |
-|:------------------------------------------------------------- |:---------------------------------- |:------------------------------------------ |
+| Statement                                                                       | Function                           | Example                                    |
+|:--------------------------------------------------------------------------------|:---------------------------------- |:-------------------------------------------|
 | [ENABLE / DISABLE] READWRITE_SPLITTING (READ)? resourceName [FROM databaseName] | Enable or disable read data source | ENABLE READWRITE_SPLITTING READ resource_0 |
-| [ENABLE / DISABLE] INSTANCE [IP=xxx, PORT=xxx / instanceId]   | Enable or disable proxy instance   | DISABLE INSTANCE 127.0.0.1@3307            |
-| SHOW INSTANCE LIST                                            | Query proxy instance information   | SHOW INSTANCE LIST                         |
-| SHOW READWRITE_SPLITTING (READ)? resourceName [FROM databaseName]         | Query all read resources status    | SHOW READWRITE_SPLITTING READ RESOURCES    |
+| [ENABLE / DISABLE] INSTANCE instanceId                                          | Enable or disable proxy instance   | DISABLE INSTANCE instance_1                |
+| SHOW INSTANCE LIST                                                              | Query proxy instance information   | SHOW INSTANCE LIST                         |
+| SHOW READWRITE_SPLITTING (READ)? resourceName [FROM databaseName]               | Query all read resources status    | SHOW READWRITE_SPLITTING READ RESOURCES    |
 
 ## Global Rule
 

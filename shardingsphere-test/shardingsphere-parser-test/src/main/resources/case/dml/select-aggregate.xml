@@ -26,6 +26,21 @@
         </projections>
     </select>
 
+    <select sql-case-id="select_sum_column">
+        <from>
+            <simple-table name="t_order" start-index="48" stop-index="54" />
+        </from>
+        <projections start-index="7" stop-index="41">
+            <aggregation-projection type="SUM" inner-expression="(t_order.user_id)" alias="user_id_sum" start-index="7" stop-index="26">
+                <paramters>
+                    <column name="user_id" start-index="17" stop-index="25">
+                        <owner name="t_order" start-index="8" stop-index="16"/>
+                    </column>
+                </paramters>
+            </aggregation-projection>
+        </projections>
+    </select>
+
     <select sql-case-id="select_count">
         <from>
             <simple-table name="t_order" start-index="37" stop-index="43" />

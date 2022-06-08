@@ -25,7 +25,7 @@ ShardingSphere-JDBC provides JDBC driver, it permits user using ShardingSphere b
 #### Native Driver Usage
 
 ```java
-Class.forName("org.apache.shardingsphere.driver.ShardingSphereDriver"); // Or use SPI to register database driver
+Class.forName("org.apache.shardingsphere.driver.ShardingSphereDriver");
 String jdbcUrl = "jdbc:shardingsphere:classpath:config.yaml";
 
 String sql = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id WHERE o.user_id=? AND o.order_id=?";
@@ -42,7 +42,7 @@ try (
 }
 ```
 
-#### 方式 2. 使用数据库连接池
+#### Database Connection Pool Usage
 
 ```java
 String driverClassName = "org.apache.shardingsphere.driver.ShardingSphereDriver";

@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Properties;
 
 public final class RuleAlteredJobAPIFixture implements RuleAlteredJobAPI {
     
@@ -105,7 +106,7 @@ public final class RuleAlteredJobAPIFixture implements RuleAlteredJobAPI {
     }
     
     @Override
-    public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final String jobId, final String algorithmType) {
+    public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final String jobId, final String algorithmType, final Properties algorithmProps) {
         return null;
     }
     

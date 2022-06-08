@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.context.refresher.MetaDataRefreshEngine;
+import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
@@ -34,8 +35,10 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriv
 import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.event.MetaDataRefreshedEvent;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
+import org.apache.shardingsphere.mode.manager.lock.ShardingSphereLockJudgeEngine;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.DatabaseLockedException;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
@@ -46,10 +49,6 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeaderBuilderEngine;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -84,6 +83,8 @@ public abstract class DatabaseCommunicationEngine<T> {
     
     private final BackendConnection<?> backendConnection;
     
+    private final ShardingSphereLockJudgeEngine lockJudgeEngine;
+    
     public DatabaseCommunicationEngine(final String driverType, final ShardingSphereDatabase database, final LogicSQL logicSQL, final BackendConnection<?> backendConnection) {
         this.driverType = driverType;
         this.database = database;
@@ -94,6 +95,7 @@ public abstract class DatabaseCommunicationEngine<T> {
                 ProxyContext.getInstance().getContextManager().getMetaDataContexts().getOptimizerContext().getFederationMetaData().getDatabases().get(databaseName),
                 ProxyContext.getInstance().getContextManager().getMetaDataContexts().getOptimizerContext().getPlannerContexts(),
                 ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps());
+        lockJudgeEngine = new ShardingSphereLockJudgeEngine(ProxyContext.getInstance().getContextManager().getInstanceContext().getLockContext());
     }
     
     /**
@@ -104,8 +106,11 @@ public abstract class DatabaseCommunicationEngine<T> {
     public abstract T execute();
     
     protected void refreshMetaData(final ExecutionContext executionContext) throws SQLException {
-        metadataRefreshEngine.refresh(executionContext.getSqlStatementContext(), () -> executionContext.getRouteContext().getRouteUnits().stream()
+        Optional<MetaDataRefreshedEvent> event = metadataRefreshEngine.refresh(executionContext.getSqlStatementContext(), () -> executionContext.getRouteContext().getRouteUnits().stream()
                 .map(each -> each.getDataSourceMapper().getLogicName()).collect(Collectors.toList()));
+        if (ProxyContext.getInstance().getContextManager().getInstanceContext().isCluster() && event.isPresent()) {
+            ShardingSphereEventBus.getInstance().post(event.get());
+        }
     }
     
     protected QueryResponseHeader processExecuteQuery(final ExecutionContext executionContext, final List<QueryResult> queryResults, final QueryResult queryResultSample) throws SQLException {
@@ -219,23 +224,7 @@ public abstract class DatabaseCommunicationEngine<T> {
     }
     
     protected void checkLockedDatabase(final ExecutionContext executionContext) {
-        if (isLockedDatabase(backendConnection.getConnectionSession().getDatabaseName())) {
-            lockedWrite(executionContext.getSqlStatementContext().getSqlStatement());
-        }
-    }
-    
-    private boolean isLockedDatabase(final String databaseName) {
-        return ProxyContext.getInstance().getContextManager().getInstanceContext().getLockContext().isLocked(databaseName);
-    }
-    
-    private void lockedWrite(final SQLStatement sqlStatement) {
-        if (sqlStatement instanceof DMLStatement) {
-            if (sqlStatement instanceof SelectStatement) {
-                return;
-            }
-            throw new DatabaseLockedException(backendConnection.getConnectionSession().getDatabaseName());
-        }
-        if (sqlStatement instanceof DDLStatement) {
+        if (lockJudgeEngine.isLocked(backendConnection.getConnectionSession().getDatabaseName(), executionContext.getSqlStatementContext().getSqlStatement())) {
             throw new DatabaseLockedException(backendConnection.getConnectionSession().getDatabaseName());
         }
     }

@@ -146,5 +146,6 @@ execute
     | dropServer
     | checkpoint
     | close
+    | cluster
     ) SEMI_? EOF
     ;

@@ -19,16 +19,16 @@ package org.apache.shardingsphere.data.pipeline.api.datasource.config.impl;
 
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlJdbcConfiguration;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
 import org.junit.Test;
 
-import java.util.Properties;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class StandardPipelineDataSourceConfigurationTest {
-    
-    private static final String NEW_JDBC_URL = "jdbc:mysql://127.0.0.1:3306/demo_ds?serverTimezone=UTC&useSSL=true";
     
     private static final String JDBC_URL = "jdbc:mysql://127.0.0.1:3306/demo_ds?serverTimezone=UTC&useSSL=false";
     
@@ -37,19 +37,32 @@ public final class StandardPipelineDataSourceConfigurationTest {
     private static final String PASSWORD = "password";
     
     @Test
-    public void assertCreate() {
+    public void assertCreateWithSimpleParameters() {
         StandardPipelineDataSourceConfiguration actual = new StandardPipelineDataSourceConfiguration(JDBC_URL, USERNAME, PASSWORD);
         assertGetConfig(actual);
         actual = new StandardPipelineDataSourceConfiguration(actual.getParameter());
         assertGetConfig(actual);
-        assertAppendJDBCQueryProperties(actual);
+    }
+    
+    @Test
+    public void assertCreateWithYamlDataSourceConfiguration() {
+        Map<String, Object> yamlDataSourceConfig = new HashMap<>();
+        yamlDataSourceConfig.put("url", JDBC_URL);
+        yamlDataSourceConfig.put("username", USERNAME);
+        yamlDataSourceConfig.put("password", PASSWORD);
+        yamlDataSourceConfig.put("dataSourceClassName", "com.zaxxer.hikari.HikariDataSource");
+        yamlDataSourceConfig.put("minPoolSize", "20");
+        StandardPipelineDataSourceConfiguration actual = new StandardPipelineDataSourceConfiguration(yamlDataSourceConfig);
+        assertGetConfig(actual);
     }
     
     private void assertGetConfig(final StandardPipelineDataSourceConfiguration actual) {
         assertThat(actual.getDatabaseType().getType(), is("MySQL"));
-        assertThat(actual.getType(), is("JDBC"));
-        assertThat(((DataSourceProperties) actual.getDataSourceConfiguration()).getDataSourceClassName(), is("com.zaxxer.hikari.HikariDataSource"));
+        assertThat(actual.getType(), is(StandardPipelineDataSourceConfiguration.TYPE));
+        DataSourceProperties dataSourceProps = (DataSourceProperties) actual.getDataSourceConfiguration();
+        assertThat(dataSourceProps.getDataSourceClassName(), is("com.zaxxer.hikari.HikariDataSource"));
         assertGetJdbcConfig(actual.getJdbcConfig());
+        assertDataSourceProperties(dataSourceProps);
     }
     
     private void assertGetJdbcConfig(final YamlJdbcConfiguration actual) {
@@ -58,10 +71,8 @@ public final class StandardPipelineDataSourceConfigurationTest {
         assertThat(actual.getPassword(), is(PASSWORD));
     }
     
-    private void assertAppendJDBCQueryProperties(final StandardPipelineDataSourceConfiguration actual) {
-        Properties props = new Properties();
-        props.setProperty("useSSL", Boolean.TRUE.toString());
-        actual.appendJDBCQueryProperties(props);
-        assertThat(actual.getJdbcConfig().getJdbcUrl(), is(NEW_JDBC_URL));
+    private void assertDataSourceProperties(final DataSourceProperties dataSourceProps) {
+        Map<String, Object> actual = new YamlDataSourceConfigurationSwapper().swapToMap(dataSourceProps);
+        assertThat(actual.get("minPoolSize"), is("1"));
     }
 }

@@ -25,6 +25,7 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.JD
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,6 +34,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.SQLException;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -54,6 +56,7 @@ public final class ConnectionSessionTest extends ProxyContextRestorer {
     
     @Before
     public void setup() {
+        when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(TransactionRule.class)).thenReturn(Optional.of(mock(TransactionRule.class)));
         ProxyContext.init(contextManager);
         connectionSession = new ConnectionSession(mock(MySQLDatabaseType.class), TransactionType.LOCAL, null);
         when(backendConnection.getConnectionSession()).thenReturn(connectionSession);

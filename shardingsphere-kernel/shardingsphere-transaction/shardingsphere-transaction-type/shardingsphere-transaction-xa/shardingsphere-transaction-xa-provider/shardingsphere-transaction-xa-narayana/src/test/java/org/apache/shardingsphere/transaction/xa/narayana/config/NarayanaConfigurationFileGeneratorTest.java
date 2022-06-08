@@ -41,6 +41,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -52,7 +53,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class NarayanaConfigurationFileGeneratorTest {
     
-    private final NarayanaConfigurationFileGenerator narayanaConfigurationFileGenerator = new NarayanaConfigurationFileGenerator();
+    private final NarayanaConfigurationFileGenerator narayanaConfigFileGenerator = new NarayanaConfigurationFileGenerator();
     
     private TransactionRule transactionRule;
     
@@ -63,11 +64,11 @@ public final class NarayanaConfigurationFileGeneratorTest {
     
     @Before
     public void setUp() {
-        transactionRule = new TransactionRule(new TransactionRuleConfiguration("XA", "Narayana", createProperties()));
+        transactionRule = new TransactionRule(new TransactionRuleConfiguration("XA", "Narayana", createProperties()), Collections.emptyMap());
         jdbcAccess = "com.arjuna.ats.internal.arjuna.objectstore.jdbc.accessors.DynamicDataSourceJDBCAccess;ClassName=com.mysql.jdbc.jdbc2.optional.MysqlDataSource;"
                 + "URL=jdbc:mysql://127.0.0.1:3306/jbossts;User=root;Password=12345678";
-        when(instanceContext.getInstance().getInstanceDefinition().getInstanceId().getId()).thenReturn("127.0.0.1@3307");
-        when(instanceContext.getInstance().getXaRecoveryId()).thenReturn("127.0.0.1@3307");
+        when(instanceContext.getInstance().getInstanceDefinition().getInstanceId()).thenReturn("127.0.0.1@3307");
+        when(instanceContext.getInstance().getXaRecoveryIds()).thenReturn(Collections.singletonList("127.0.0.1@3307"));
     }
     
     private Properties createProperties() {
@@ -81,12 +82,12 @@ public final class NarayanaConfigurationFileGeneratorTest {
     
     @Test
     public void assertNarayanaConfigurationFileGenerator() throws JAXBException, FileNotFoundException {
-        narayanaConfigurationFileGenerator.generateFile(transactionRule.getProps(), instanceContext);
+        narayanaConfigFileGenerator.generateFile(transactionRule.getProps(), instanceContext);
         JAXBContext jaxbContext = JAXBContext.newInstance(NarayanaConfiguration.class);
         Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
         InputStream inputStream = new FileInputStream(new File(ClassLoader.getSystemResource("").getPath(), "jbossts-properties.xml"));
         NarayanaConfiguration narayanaConfig = (NarayanaConfiguration) unmarshaller.unmarshal(inputStream);
-        assertThat(narayanaConfig.getEntries().size(), is(27));
+        assertThat(narayanaConfig.getEntries().size(), is(32));
         assertCommitOnePhase(narayanaConfig);
         assertTransactionSync(narayanaConfig);
         assertNodeIdentifier(narayanaConfig);
@@ -99,17 +100,23 @@ public final class NarayanaConfigurationFileGeneratorTest {
         assertTransactionStatusManagerPort(narayanaConfig);
         assertRecoveryListener(narayanaConfig);
         assertRecoveryBackoffPeriod(narayanaConfig);
+        assertDefaultTimeout(narayanaConfig);
+        assertExpiryScanInterval(narayanaConfig);
+        assertPeriodicRecoveryPeriod(narayanaConfig);
         assertObjectStoreType(narayanaConfig);
         assertJdbcAccess(narayanaConfig);
         assertTablePrefix(narayanaConfig);
         assertDropTable(narayanaConfig);
+        assertCreateTable(narayanaConfig);
         assertStateStoreJdbcAccess(narayanaConfig);
         assertStateStoreObjectStoreType(narayanaConfig);
         assertStateStoreTablePrefix(narayanaConfig);
         assertStateStoreDropTable(narayanaConfig);
+        assertStateStoreCreateTable(narayanaConfig);
         assertCommunicationStoreObjectStoreType(narayanaConfig);
         assertCommunicationStoreJdbcAccess(narayanaConfig);
         assertCommunicationStoreTablePrefix(narayanaConfig);
+        assertCommunicationStoreCreateTable(narayanaConfig);
         assertCommunicationStoreDropTable(narayanaConfig);
     }
     
@@ -117,14 +124,14 @@ public final class NarayanaConfigurationFileGeneratorTest {
         Optional<NarayanaConfigEntry> entry = narayanaConfig.getEntries().stream().filter(each -> "CoordinatorEnvironmentBean.commitOnePhase".equals(each.getKey())).findFirst();
         assertTrue(entry.isPresent());
         assertThat(entry.get().getValue().size(), is(1));
-        assertTrue(entry.get().getValue().contains("YES"));
+        assertTrue(entry.get().getValue().contains(Boolean.TRUE.toString()));
     }
     
     private void assertTransactionSync(final NarayanaConfiguration narayanaConfig) {
         Optional<NarayanaConfigEntry> entry = narayanaConfig.getEntries().stream().filter(each -> "ObjectStoreEnvironmentBean.transactionSync".equals(each.getKey())).findFirst();
         assertTrue(entry.isPresent());
         assertThat(entry.get().getValue().size(), is(1));
-        assertTrue(entry.get().getValue().contains("NO"));
+        assertTrue(entry.get().getValue().contains(Boolean.FALSE.toString()));
     }
     
     private void assertNodeIdentifier(final NarayanaConfiguration narayanaConfig) {
@@ -190,7 +197,7 @@ public final class NarayanaConfigurationFileGeneratorTest {
         Optional<NarayanaConfigEntry> entry = narayanaConfig.getEntries().stream().filter(each -> "RecoveryEnvironmentBean.recoveryListener".equals(each.getKey())).findFirst();
         assertTrue(entry.isPresent());
         assertThat(entry.get().getValue().size(), is(1));
-        assertTrue(entry.get().getValue().contains("NO"));
+        assertTrue(entry.get().getValue().contains(Boolean.FALSE.toString()));
     }
     
     private void assertRecoveryBackoffPeriod(final NarayanaConfiguration narayanaConfig) {
@@ -198,6 +205,27 @@ public final class NarayanaConfigurationFileGeneratorTest {
         assertTrue(entry.isPresent());
         assertThat(entry.get().getValue().size(), is(1));
         assertTrue(entry.get().getValue().contains("1"));
+    }
+    
+    private void assertDefaultTimeout(final NarayanaConfiguration narayanaConfig) {
+        Optional<NarayanaConfigEntry> entry = narayanaConfig.getEntries().stream().filter(each -> "CoordinatorEnvironmentBean.defaultTimeout".equals(each.getKey())).findFirst();
+        assertTrue(entry.isPresent());
+        assertThat(entry.get().getValue().size(), is(1));
+        assertTrue(entry.get().getValue().contains("180"));
+    }
+    
+    private void assertExpiryScanInterval(final NarayanaConfiguration narayanaConfig) {
+        Optional<NarayanaConfigEntry> entry = narayanaConfig.getEntries().stream().filter(each -> "RecoveryEnvironmentBean.expiryScanInterval".equals(each.getKey())).findFirst();
+        assertTrue(entry.isPresent());
+        assertThat(entry.get().getValue().size(), is(1));
+        assertTrue(entry.get().getValue().contains("12"));
+    }
+    
+    private void assertPeriodicRecoveryPeriod(final NarayanaConfiguration narayanaConfig) {
+        Optional<NarayanaConfigEntry> entry = narayanaConfig.getEntries().stream().filter(each -> "RecoveryEnvironmentBean.periodicRecoveryPeriod".equals(each.getKey())).findFirst();
+        assertTrue(entry.isPresent());
+        assertThat(entry.get().getValue().size(), is(1));
+        assertTrue(entry.get().getValue().contains("120"));
     }
     
     private void assertObjectStoreType(final NarayanaConfiguration narayanaConfig) {
@@ -221,11 +249,18 @@ public final class NarayanaConfigurationFileGeneratorTest {
         assertTrue(entry.get().getValue().contains("Action"));
     }
     
+    private void assertCreateTable(final NarayanaConfiguration narayanaConfig) {
+        Optional<NarayanaConfigEntry> entry = narayanaConfig.getEntries().stream().filter(each -> "ObjectStoreEnvironmentBean.createTable".equals(each.getKey())).findFirst();
+        assertTrue(entry.isPresent());
+        assertThat(entry.get().getValue().size(), is(1));
+        assertTrue(entry.get().getValue().contains(Boolean.TRUE.toString()));
+    }
+    
     private void assertDropTable(final NarayanaConfiguration narayanaConfig) {
         Optional<NarayanaConfigEntry> entry = narayanaConfig.getEntries().stream().filter(each -> "ObjectStoreEnvironmentBean.dropTable".equals(each.getKey())).findFirst();
         assertTrue(entry.isPresent());
         assertThat(entry.get().getValue().size(), is(1));
-        assertTrue(entry.get().getValue().contains(Boolean.TRUE.toString()));
+        assertTrue(entry.get().getValue().contains(Boolean.FALSE.toString()));
     }
     
     private void assertStateStoreJdbcAccess(final NarayanaConfiguration narayanaConfig) {
@@ -249,11 +284,18 @@ public final class NarayanaConfigurationFileGeneratorTest {
         assertTrue(entry.get().getValue().contains("stateStore"));
     }
     
+    private void assertStateStoreCreateTable(final NarayanaConfiguration narayanaConfig) {
+        Optional<NarayanaConfigEntry> entry = narayanaConfig.getEntries().stream().filter(each -> "ObjectStoreEnvironmentBean.stateStore.createTable".equals(each.getKey())).findFirst();
+        assertTrue(entry.isPresent());
+        assertThat(entry.get().getValue().size(), is(1));
+        assertTrue(entry.get().getValue().contains(Boolean.TRUE.toString()));
+    }
+    
     private void assertStateStoreDropTable(final NarayanaConfiguration narayanaConfig) {
         Optional<NarayanaConfigEntry> entry = narayanaConfig.getEntries().stream().filter(each -> "ObjectStoreEnvironmentBean.stateStore.dropTable".equals(each.getKey())).findFirst();
         assertTrue(entry.isPresent());
         assertThat(entry.get().getValue().size(), is(1));
-        assertTrue(entry.get().getValue().contains(Boolean.TRUE.toString()));
+        assertTrue(entry.get().getValue().contains(Boolean.FALSE.toString()));
     }
     
     private void assertCommunicationStoreObjectStoreType(final NarayanaConfiguration narayanaConfig) {
@@ -277,10 +319,17 @@ public final class NarayanaConfigurationFileGeneratorTest {
         assertTrue(entry.get().getValue().contains("Communication"));
     }
     
+    private void assertCommunicationStoreCreateTable(final NarayanaConfiguration narayanaConfig) {
+        Optional<NarayanaConfigEntry> entry = narayanaConfig.getEntries().stream().filter(each -> "ObjectStoreEnvironmentBean.communicationStore.createTable".equals(each.getKey())).findFirst();
+        assertTrue(entry.isPresent());
+        assertThat(entry.get().getValue().size(), is(1));
+        assertTrue(entry.get().getValue().contains(Boolean.TRUE.toString()));
+    }
+    
     private void assertCommunicationStoreDropTable(final NarayanaConfiguration narayanaConfig) {
         Optional<NarayanaConfigEntry> entry = narayanaConfig.getEntries().stream().filter(each -> "ObjectStoreEnvironmentBean.communicationStore.dropTable".equals(each.getKey())).findFirst();
         assertTrue(entry.isPresent());
         assertThat(entry.get().getValue().size(), is(1));
-        assertTrue(entry.get().getValue().contains(Boolean.TRUE.toString()));
+        assertTrue(entry.get().getValue().contains(Boolean.FALSE.toString()));
     }
 }

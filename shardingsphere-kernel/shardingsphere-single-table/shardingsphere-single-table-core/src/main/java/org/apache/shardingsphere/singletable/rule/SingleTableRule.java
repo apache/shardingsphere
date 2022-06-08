@@ -160,7 +160,7 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
     public Collection<QualifiedTable> getSingleTableNames(final Collection<QualifiedTable> qualifiedTables) {
         Collection<QualifiedTable> result = new LinkedList<>();
         for (QualifiedTable each : qualifiedTables) {
-            Collection<DataNode> dataNodes = singleTableDataNodes.getOrDefault(each.getTableName(), new LinkedList<>());
+            Collection<DataNode> dataNodes = singleTableDataNodes.getOrDefault(each.getTableName().toLowerCase(), new LinkedList<>());
             if (!dataNodes.isEmpty() && containsDataNode(each, dataNodes)) {
                 result.add(each);
             }

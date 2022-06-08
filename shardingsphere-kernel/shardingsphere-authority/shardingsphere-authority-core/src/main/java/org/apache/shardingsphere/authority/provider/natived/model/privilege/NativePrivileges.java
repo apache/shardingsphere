@@ -24,7 +24,7 @@ import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.provider.natived.model.privilege.admin.AdministrativePrivileges;
 import org.apache.shardingsphere.authority.provider.natived.model.privilege.database.DatabasePrivileges;
 import org.apache.shardingsphere.authority.model.AccessSubject;
-import org.apache.shardingsphere.authority.provider.natived.model.subject.SchemaAccessSubject;
+import org.apache.shardingsphere.authority.provider.natived.model.subject.DatabaseAccessSubject;
 import org.apache.shardingsphere.authority.provider.natived.model.subject.TableAccessSubject;
 
 import java.util.Collection;
@@ -48,9 +48,9 @@ public final class NativePrivileges implements ShardingSpherePrivileges {
     }
     
     @Override
-    public boolean hasPrivileges(final String schema) {
+    public boolean hasPrivileges(final String database) {
         return administrativePrivileges.getPrivileges().contains(PrivilegeType.SUPER)
-                || !databasePrivileges.getGlobalPrivileges().isEmpty() || databasePrivileges.getSpecificPrivileges().containsKey(schema);
+                || !databasePrivileges.getGlobalPrivileges().isEmpty() || databasePrivileges.getSpecificPrivileges().containsKey(database);
     }
     
     @Override
@@ -60,8 +60,8 @@ public final class NativePrivileges implements ShardingSpherePrivileges {
     
     @Override
     public boolean hasPrivileges(final AccessSubject accessSubject, final Collection<PrivilegeType> privileges) {
-        if (accessSubject instanceof SchemaAccessSubject) {
-            return hasPrivileges(((SchemaAccessSubject) accessSubject).getSchema(), filterPrivileges(privileges));
+        if (accessSubject instanceof DatabaseAccessSubject) {
+            return hasPrivileges(((DatabaseAccessSubject) accessSubject).getDatabase(), filterPrivileges(privileges));
         }
         if (accessSubject instanceof TableAccessSubject) {
             return hasPrivileges(((TableAccessSubject) accessSubject).getSchema(), ((TableAccessSubject) accessSubject).getTable(), filterPrivileges(privileges));

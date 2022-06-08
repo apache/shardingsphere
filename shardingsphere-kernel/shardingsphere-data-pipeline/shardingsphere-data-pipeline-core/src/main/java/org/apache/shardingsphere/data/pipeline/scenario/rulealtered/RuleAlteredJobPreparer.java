@@ -75,8 +75,6 @@ public final class RuleAlteredJobPreparer {
      * @param jobContext job context
      */
     public void prepare(final RuleAlteredJobContext jobContext) {
-        // TODO Initialize source and target data source after tasks initialization, since dumper and importer constructor might call appendJDBCQueryProperties.
-        // But InventoryTaskSplitter need to check target tables. It need to do some refactoring for appendJDBCQueryProperties vocations.
         checkSourceDataSource(jobContext);
         if (jobContext.isStopping()) {
             throw new PipelineJobPrepareFailedException("Job stopping, jobId=" + jobContext.getJobId());
@@ -104,7 +102,7 @@ public final class RuleAlteredJobPreparer {
         RuleAlteredJobConfiguration jobConfig = jobContext.getJobConfig();
         // TODO the lock will be replaced
         String lockName = "prepare-" + jobConfig.getJobId();
-        ShardingSphereLock lock = PipelineContext.getContextManager().getInstanceContext().getLockContext().getMutexLock();
+        ShardingSphereLock lock = PipelineContext.getContextManager().getInstanceContext().getLockContext().getLock();
         if (lock.tryLock(lockName, 3000)) {
             try {
                 prepareAndCheckTarget(jobContext);

@@ -25,7 +25,7 @@ ShardingSphere-JDBC 提供了 JDBC 驱动，可以仅通过配置变更即可使
 #### 使用原生驱动
 
 ```java
-Class.forName("org.apache.shardingsphere.driver.ShardingSphereDriver"); // 或者使用标准 SPI 注册数据库驱动
+Class.forName("org.apache.shardingsphere.driver.ShardingSphereDriver");
 String jdbcUrl = "jdbc:shardingsphere:classpath:config.yaml";
 
 String sql = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id WHERE o.user_id=? AND o.order_id=?";

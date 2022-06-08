@@ -33,7 +33,7 @@ import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.ClusterContextManagerCoordinator;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.DistributeLockContext;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.DistributedLockContext;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.workerid.generator.ClusterWorkerIdGenerator;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsBuilder;
@@ -43,8 +43,6 @@ import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositor
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryFactory;
 import org.apache.shardingsphere.schedule.core.api.ModeScheduleContextFactory;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
-import org.apache.shardingsphere.transaction.context.TransactionContexts;
-import org.apache.shardingsphere.transaction.context.TransactionContextsBuilder;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.apache.shardingsphere.transaction.spi.TransactionConfigurationFileGenerator;
 import org.apache.shardingsphere.transaction.spi.TransactionConfigurationFileGeneratorFactory;
@@ -64,7 +62,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     
     @Override
     public ContextManager build(final ContextManagerBuilderParameter parameter) throws SQLException {
-        ModeScheduleContextFactory.getInstance().init(parameter.getInstanceDefinition().getInstanceId().getId(), parameter.getModeConfig());
+        ModeScheduleContextFactory.getInstance().init(parameter.getInstanceDefinition().getInstanceId(), parameter.getModeConfig());
         ClusterPersistRepository repository = ClusterPersistRepositoryFactory.getInstance((ClusterPersistRepositoryConfiguration) parameter.getModeConfig().getRepository());
         MetaDataPersistService metaDataPersistService = new MetaDataPersistService(repository);
         persistConfigurations(metaDataPersistService, parameter);
@@ -146,13 +144,11 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
                                                 final InstanceDefinition instanceDefinition, final MetaDataContexts metaDataContexts,
                                                 final Properties transactionProps, final ModeConfiguration modeConfig) {
         ClusterWorkerIdGenerator clusterWorkerIdGenerator = new ClusterWorkerIdGenerator(repository, registryCenter, instanceDefinition);
-        DistributeLockContext distributeLockContext = new DistributeLockContext(repository);
-        InstanceContext instanceContext = new InstanceContext(new ComputeNodeInstance(instanceDefinition), clusterWorkerIdGenerator, modeConfig, distributeLockContext);
+        DistributedLockContext distributedLockContext = new DistributedLockContext(repository);
+        InstanceContext instanceContext = new InstanceContext(new ComputeNodeInstance(instanceDefinition), clusterWorkerIdGenerator, modeConfig, distributedLockContext);
         repository.watchSessionConnection(instanceContext);
         generateTransactionConfigurationFile(instanceContext, metaDataContexts, transactionProps);
-        TransactionContexts transactionContexts = new TransactionContextsBuilder(
-                metaDataContexts.getMetaData().getDatabases(), metaDataContexts.getMetaData().getGlobalRuleMetaData().getRules()).build();
-        return new ContextManager(metaDataContexts, transactionContexts, instanceContext);
+        return new ContextManager(metaDataContexts, instanceContext);
     }
     
     private void generateTransactionConfigurationFile(final InstanceContext instanceContext, final MetaDataContexts metaDataContexts, final Properties transactionProps) {
@@ -167,7 +163,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     private void registerOnline(final MetaDataPersistService metaDataPersistService, final ContextManagerBuilderParameter parameter, final ContextManager contextManager,
                                 final RegistryCenter registryCenter) {
         String instanceId = contextManager.getInstanceContext().getInstance().getCurrentInstanceId();
-        contextManager.getInstanceContext().getInstance().setXaRecoveryId(instanceId);
+        contextManager.getInstanceContext().getInstance().getXaRecoveryIds().add(instanceId);
         contextManager.getInstanceContext().getInstance().setLabels(parameter.getLabels());
         contextManager.getInstanceContext().getComputeNodeInstances().addAll(registryCenter.getComputeNodeStatusService().loadAllComputeNodeInstances());
         new ClusterContextManagerCoordinator(metaDataPersistService, contextManager, registryCenter);

@@ -90,7 +90,7 @@ public final class ComputeNodeTest {
     public void assertGetInstanceDefinitionByProxyOnlinePath() {
         Optional<InstanceDefinition> actual = ComputeNode.getInstanceDefinitionByInstanceOnlinePath("/nodes/compute_nodes/online/proxy/127.0.0.1@3307");
         assertTrue(actual.isPresent());
-        assertThat(actual.get().getInstanceId().getId(), is("127.0.0.1@3307"));
+        assertThat(actual.get().getInstanceId(), is("127.0.0.1@3307"));
         assertThat(actual.get().getInstanceType(), is(InstanceType.PROXY));
     }
     
@@ -98,7 +98,7 @@ public final class ComputeNodeTest {
     public void assertGetInstanceDefinitionByJdbcOnlinePath() {
         Optional<InstanceDefinition> actual = ComputeNode.getInstanceDefinitionByInstanceOnlinePath("/nodes/compute_nodes/online/jdbc/127.0.0.1@3307");
         assertTrue(actual.isPresent());
-        assertThat(actual.get().getInstanceId().getId(), is("127.0.0.1@3307"));
+        assertThat(actual.get().getInstanceId(), is("127.0.0.1@3307"));
         assertThat(actual.get().getInstanceType(), is(InstanceType.JDBC));
     }
     

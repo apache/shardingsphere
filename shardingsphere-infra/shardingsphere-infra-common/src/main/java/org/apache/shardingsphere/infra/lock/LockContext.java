@@ -35,54 +35,62 @@ public interface LockContext {
     }
     
     /**
-     * Get or create mutex lock.
+     * Get lock.
      *
-     * @return mutex lock
+     * @return lock
      */
-    ShardingSphereLock getMutexLock();
+    ShardingSphereLock getLock();
     
     /**
-     * Lock write for database.
+     * Try lock for database.
      *
      * @param databaseName database name
+     * @param lockMode lock mode
      * @return is locked or not
      */
-    boolean lockWrite(String databaseName);
-    
-    /**
-     * Lock write for schemas.
-     *
-     * @param databaseName database name
-     * @param schemaNames schema names
-     * @return is locked or not
-     */
-    boolean lockWrite(String databaseName, Set<String> schemaNames);
+    boolean tryLock(String databaseName, LockMode lockMode);
     
     /**
      * Try Lock write for database.
      *
      * @param databaseName database name
+     * @param lockMode lock mode
      * @param timeoutMilliseconds timeout milliseconds
      * @return is locked or not
      */
-    boolean tryLockWrite(String databaseName, long timeoutMilliseconds);
+    boolean tryLock(String databaseName, LockMode lockMode, long timeoutMilliseconds);
     
     /**
-     * Try lock write for schemas.
+     * Try lock for schemas.
      *
      * @param databaseName database name
      * @param schemaNames schema names
+     * @param lockMode lock mode
+     * @return is locked or not
+     */
+    default boolean tryLock(String databaseName, Set<String> schemaNames, LockMode lockMode) {
+        throw new UnsupportedOperationException();
+    }
+    
+    /**
+     * Try lock for schemas.
+     *
+     * @param databaseName database name
+     * @param schemaNames schema names
+     * @param lockMode lock mode
      * @param timeoutMilliseconds timeout milliseconds
      * @return is locked or not
      */
-    boolean tryLockWrite(String databaseName, Set<String> schemaNames, long timeoutMilliseconds);
+    default boolean tryLock(String databaseName, Set<String> schemaNames, LockMode lockMode, long timeoutMilliseconds) {
+        throw new UnsupportedOperationException();
+    }
     
     /**
-     * Release lock write of database.
+     * Release lock for database.
      *
      * @param databaseName database name
      */
-    void releaseLockWrite(String databaseName);
+    void releaseLock(String databaseName);
     
     /**
      * Release lock write for schemas.
@@ -90,7 +98,9 @@ public interface LockContext {
      * @param databaseName database name
      * @param schemaName schema name
      */
-    void releaseLockWrite(String databaseName, String schemaName);
+    default void releaseLock(String databaseName, String schemaName) {
+        throw new UnsupportedOperationException();
+    }
     
     /**
      *  Is locked database.
@@ -107,5 +117,7 @@ public interface LockContext {
      * @param schemaName schema name
      * @return is locked or not
      */
-    boolean isLocked(String databaseName, String schemaName);
+    default boolean isLocked(String databaseName, String schemaName) {
+        throw new UnsupportedOperationException();
+    }
 }

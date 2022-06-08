@@ -30,6 +30,7 @@ import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEng
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResult;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResultBuilder;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
+import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,7 +40,7 @@ import org.mockito.MockedStatic;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
-import java.util.Collections;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -77,7 +78,8 @@ public final class FrontendChannelInboundHandlerTest {
         try (MockedStatic<ProxyContext> mocked = mockStatic(ProxyContext.class)) {
             ProxyContext mockedProxyContext = mock(ProxyContext.class, RETURNS_DEEP_STUBS);
             mocked.when(ProxyContext::getInstance).thenReturn(mockedProxyContext);
-            when(mockedProxyContext.getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules()).thenReturn(Collections.emptySet());
+            when(mockedProxyContext
+                    .getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(TransactionRule.class)).thenReturn(Optional.of(mock(TransactionRule.class)));
             frontendChannelInboundHandler = new FrontendChannelInboundHandler(frontendEngine, channel);
         }
         channel.pipeline().addLast(frontendChannelInboundHandler);
