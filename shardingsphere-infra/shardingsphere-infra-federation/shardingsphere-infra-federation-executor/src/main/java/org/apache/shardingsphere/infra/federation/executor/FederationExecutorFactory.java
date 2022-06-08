@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
-import org.apache.shardingsphere.infra.federation.executor.original.OriginalFederationExecutor;
+import org.apache.shardingsphere.infra.federation.executor.original.FilterableFederationExecutor;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 
 /**
@@ -43,6 +43,6 @@ public final class FederationExecutorFactory {
     public static FederationExecutor newInstance(final String databaseName, final String schemaName, final OptimizerContext optimizerContext,
                                                  final ConfigurationProperties props, final JDBCExecutor jdbcExecutor) {
         // TODO Consider about AdvancedFederationExecutor
-        return new OriginalFederationExecutor(databaseName, schemaName, optimizerContext, props, jdbcExecutor);
+        return new FilterableFederationExecutor(databaseName, schemaName, optimizerContext, props, jdbcExecutor);
     }
 }

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.federation.executor.original;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.calcite.jdbc.CalciteConnection;
-import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
@@ -42,10 +41,10 @@ import java.sql.Statement;
 import java.util.List;
 
 /**
- * Original federation executor.
+ * Filterable federation executor.
  */
 @RequiredArgsConstructor
-public final class OriginalFederationExecutor implements FederationExecutor {
+public final class FilterableFederationExecutor implements FederationExecutor {
     
     public static final String CONNECTION_URL = "jdbc:calcite:";
     
@@ -74,10 +73,9 @@ public final class OriginalFederationExecutor implements FederationExecutor {
     @Override
     public ResultSet executeQuery(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
                                   final JDBCExecutorCallback<? extends ExecuteResult> callback, final FederationContext federationContext) throws SQLException {
-        LogicSQL logicSQL = federationContext.getLogicSQL();
         Connection connection = createConnection(prepareEngine, callback, federationContext);
-        PreparedStatement preparedStatement = connection.prepareStatement(SQLUtil.trimSemicolon(logicSQL.getSql()));
-        setParameters(preparedStatement, logicSQL.getParameters());
+        PreparedStatement preparedStatement = connection.prepareStatement(SQLUtil.trimSemicolon(federationContext.getLogicSQL().getSql()));
+        setParameters(preparedStatement, federationContext.getLogicSQL().getParameters());
         this.statement = preparedStatement;
         return preparedStatement.executeQuery();
     }
