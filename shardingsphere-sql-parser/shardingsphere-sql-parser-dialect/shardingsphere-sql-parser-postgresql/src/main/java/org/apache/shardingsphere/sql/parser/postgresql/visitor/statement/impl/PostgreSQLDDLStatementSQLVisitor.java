@@ -979,6 +979,8 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
             return commentOnTable(ctx);
         } else if (null != ctx.commentClauses().COLUMN()) {
             return commentOnColumn(ctx);
+        } else if (null != ctx.commentClauses().objectTypeNameOnAnyName()) {
+            return getTableFromComment(ctx);
         }
         return new PostgreSQLCommentStatement();
     }
@@ -1009,6 +1011,12 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
         Optional<NameSegment> databaseName = nameSegmentIterator.hasNext() ? Optional.of(nameSegmentIterator.next()) : Optional.empty();
         databaseName.ifPresent(optional -> statement.getTable().getOwner()
                 .ifPresent(owner -> owner.setOwner(new OwnerSegment(optional.getStartIndex(), optional.getStopIndex(), optional.getIdentifier()))));
+    }
+    
+    private PostgreSQLCommentStatement getTableFromComment(final CommentContext ctx) {
+        PostgreSQLCommentStatement result = new PostgreSQLCommentStatement();
+        result.setTable((SimpleTableSegment) visit(ctx.commentClauses().tableName()));
+        return result;
     }
     
     @Override

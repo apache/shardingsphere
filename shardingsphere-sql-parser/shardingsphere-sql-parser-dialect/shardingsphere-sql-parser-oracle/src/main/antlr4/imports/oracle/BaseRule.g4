@@ -1297,3 +1297,15 @@ searchString
 attributeValue
     : identifier
     ;
+
+profileName
+    : identifier
+    ;
+
+joinGroupName
+    : identifier
+    ;
+
+restorePointName
+    : identifier
+    ;

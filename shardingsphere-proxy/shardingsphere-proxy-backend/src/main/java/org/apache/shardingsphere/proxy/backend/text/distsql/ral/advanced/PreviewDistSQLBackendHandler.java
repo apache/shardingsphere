@@ -22,7 +22,10 @@ import com.google.common.base.Strings;
 import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.PreviewStatement;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
+import org.apache.shardingsphere.infra.binder.aware.CursorDefinitionAware;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.ddl.CursorStatementContext;
+import org.apache.shardingsphere.infra.binder.type.CursorAvailable;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
@@ -107,6 +110,9 @@ public final class PreviewDistSQLBackendHandler extends QueryableRALBackendHandl
         if (sqlStatementContext instanceof TableAvailable) {
             ((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName().ifPresent(SQLStatementDatabaseHolder::set);
         }
+        if (sqlStatementContext instanceof CursorAvailable && sqlStatementContext instanceof CursorDefinitionAware) {
+            setUpCursorDefinition(sqlStatementContext);
+        }
         ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(connectionSession.getDatabaseName());
         if (!database.isComplete()) {
             throw new RuleNotExistedException();
@@ -117,6 +123,13 @@ public final class PreviewDistSQLBackendHandler extends QueryableRALBackendHandl
                 ? getFederationExecutionUnits(logicSQL, databaseName, metaDataContexts)
                 : executionContext.getExecutionUnits();
         return executionUnits.stream().map(this::buildRow).collect(Collectors.toList());
+    }
+    
+    private void setUpCursorDefinition(final SQLStatementContext<?> sqlStatementContext) {
+        String cursorName = ((CursorAvailable) sqlStatementContext).getCursorName().getIdentifier().getValue().toLowerCase();
+        CursorStatementContext cursorStatementContext = connectionSession.getCursorDefinitions().get(cursorName);
+        Preconditions.checkArgument(null != cursorStatementContext, "Cursor %s does not exist.", cursorName);
+        ((CursorDefinitionAware) sqlStatementContext).setUpCursorDefinition(cursorStatementContext);
     }
     
     private List<Object> buildRow(final ExecutionUnit unit) {

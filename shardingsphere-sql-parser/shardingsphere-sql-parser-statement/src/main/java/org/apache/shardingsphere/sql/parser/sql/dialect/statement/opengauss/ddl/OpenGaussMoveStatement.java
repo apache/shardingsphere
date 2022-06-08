@@ -21,9 +21,12 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.cursor.CursorNameSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.cursor.DirectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
+
+import java.util.Optional;
 
 /**
  * OpenGauss move statement.
@@ -34,4 +37,15 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.Open
 public final class OpenGaussMoveStatement extends AbstractSQLStatement implements DDLStatement, OpenGaussStatement {
     
     private CursorNameSegment cursorName;
+    
+    private DirectionSegment direction;
+    
+    /**
+     * Get direction.
+     *
+     * @return direction
+     */
+    public Optional<DirectionSegment> getDirection() {
+        return Optional.ofNullable(direction);
+    }
 }

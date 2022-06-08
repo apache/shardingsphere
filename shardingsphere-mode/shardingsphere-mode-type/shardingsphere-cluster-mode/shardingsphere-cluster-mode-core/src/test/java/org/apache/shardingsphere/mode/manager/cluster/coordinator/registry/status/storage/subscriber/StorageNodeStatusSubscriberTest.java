@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mode.metadata.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.mode.metadata.storage.StorageNodeRole;
 import org.apache.shardingsphere.mode.metadata.storage.StorageNodeStatus;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.node.StorageStatusNode;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.node.StorageNode;
 import org.apache.shardingsphere.mode.metadata.storage.event.DataSourceDisabledEvent;
 import org.apache.shardingsphere.mode.metadata.storage.event.PrimaryDataSourceChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
@@ -47,7 +47,7 @@ public final class StorageNodeStatusSubscriberTest {
         StorageNodeDataSource storageNodeDataSource = new StorageNodeDataSource(StorageNodeRole.MEMBER, StorageNodeStatus.DISABLED);
         DataSourceDisabledEvent dataSourceDisabledEvent = new DataSourceDisabledEvent(databaseName, groupName, dataSourceName, storageNodeDataSource);
         new StorageNodeStatusSubscriber(repository).update(dataSourceDisabledEvent);
-        verify(repository).persist(StorageStatusNode.getStatusPath(new QualifiedDatabase(databaseName, groupName, dataSourceName)), YamlEngine.marshal(storageNodeDataSource));
+        verify(repository).persist(StorageNode.getStatusPath(new QualifiedDatabase(databaseName, groupName, dataSourceName)), YamlEngine.marshal(storageNodeDataSource));
     }
     
     @Test
@@ -58,7 +58,7 @@ public final class StorageNodeStatusSubscriberTest {
         StorageNodeDataSource storageNodeDataSource = new StorageNodeDataSource(StorageNodeRole.MEMBER, StorageNodeStatus.ENABLED);
         DataSourceDisabledEvent dataSourceDisabledEvent = new DataSourceDisabledEvent(databaseName, groupName, dataSourceName, storageNodeDataSource);
         new StorageNodeStatusSubscriber(repository).update(dataSourceDisabledEvent);
-        verify(repository).persist(StorageStatusNode.getStatusPath(new QualifiedDatabase(databaseName, groupName, dataSourceName)), YamlEngine.marshal(storageNodeDataSource));
+        verify(repository).persist(StorageNode.getStatusPath(new QualifiedDatabase(databaseName, groupName, dataSourceName)), YamlEngine.marshal(storageNodeDataSource));
     }
     
     @Test
@@ -68,7 +68,7 @@ public final class StorageNodeStatusSubscriberTest {
         String dataSourceName = "replica_ds_0";
         PrimaryDataSourceChangedEvent event = new PrimaryDataSourceChangedEvent(new QualifiedDatabase(databaseName, groupName, dataSourceName));
         new StorageNodeStatusSubscriber(repository).update(event);
-        verify(repository).persist(StorageStatusNode.getStatusPath(new QualifiedDatabase(databaseName, groupName, dataSourceName)),
+        verify(repository).persist(StorageNode.getStatusPath(new QualifiedDatabase(databaseName, groupName, dataSourceName)),
                 YamlEngine.marshal(new StorageNodeDataSource(StorageNodeRole.PRIMARY, StorageNodeStatus.ENABLED)));
     }
 }

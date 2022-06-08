@@ -141,7 +141,7 @@ public final class SQLStatementContextFactory {
             return getDMLStatementContext(databases, parameters, (DMLStatement) sqlStatement, defaultDatabaseName);
         }
         if (sqlStatement instanceof DDLStatement) {
-            return getDDLStatementContext((DDLStatement) sqlStatement);
+            return getDDLStatementContext(databases, parameters, (DDLStatement) sqlStatement, defaultDatabaseName);
         }
         if (sqlStatement instanceof DCLStatement) {
             return getDCLStatementContext((DCLStatement) sqlStatement);
@@ -175,7 +175,8 @@ public final class SQLStatementContextFactory {
         throw new UnsupportedOperationException(String.format("Unsupported SQL statement `%s`", sqlStatement.getClass().getSimpleName()));
     }
     
-    private static SQLStatementContext<?> getDDLStatementContext(final DDLStatement sqlStatement) {
+    private static SQLStatementContext<?> getDDLStatementContext(final Map<String, ShardingSphereDatabase> databases, final List<Object> parameters,
+                                                                 final DDLStatement sqlStatement, final String defaultDatabaseName) {
         if (sqlStatement instanceof CreateSchemaStatement) {
             return new CreateSchemaStatementContext((CreateSchemaStatement) sqlStatement);
         }
@@ -225,7 +226,7 @@ public final class SQLStatementContextFactory {
             return new CommentStatementContext((CommentStatement) sqlStatement);
         }
         if (sqlStatement instanceof OpenGaussCursorStatement) {
-            return new CursorStatementContext((OpenGaussCursorStatement) sqlStatement);
+            return new CursorStatementContext(databases, parameters, (OpenGaussCursorStatement) sqlStatement, defaultDatabaseName);
         }
         if (sqlStatement instanceof CloseStatement) {
             return new CloseStatementContext((CloseStatement) sqlStatement);

@@ -6,14 +6,14 @@ weight = 1
 
 ## Scenarios
 
-Apache ShardingSphere can be configured by four methods, `Java`, `YAML`, `Spring namespace` and `Spring boot starter`. 
-Developers can choose the suitable method according to different situations. 
+There are four ways you can configure Apache ShardingSphere: `Java`, `YAML`, `Spring namespace` and `Spring boot starter`. 
+Developers can choose the preferred method according to their requirements. 
 
-## Restrictions
+## Limitations
 
 Currently only Java language is supported.
 
-## Prerequisites
+## Requirements
 
 The development environment requires Java JRE 8 or later.
 

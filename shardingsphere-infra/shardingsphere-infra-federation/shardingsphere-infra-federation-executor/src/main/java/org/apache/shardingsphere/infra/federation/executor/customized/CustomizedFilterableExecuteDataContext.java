@@ -17,27 +17,23 @@
 
 package org.apache.shardingsphere.infra.federation.executor.customized;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.calcite.DataContext;
 import org.apache.calcite.adapter.java.JavaTypeFactory;
 import org.apache.calcite.linq4j.QueryProvider;
 import org.apache.calcite.schema.SchemaPlus;
 import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
-import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 
 /**
  * Customized filterable execute data context.
  */
+@RequiredArgsConstructor
 public final class CustomizedFilterableExecuteDataContext implements DataContext {
     
     private final SqlValidator validator;
     
     private final SqlToRelConverter converter;
-    
-    public CustomizedFilterableExecuteDataContext(final String databaseName, final String schemaName, final OptimizerContext context) {
-        validator = context.getPlannerContexts().get(databaseName).getValidators().get(schemaName);
-        converter = context.getPlannerContexts().get(databaseName).getConverters().get(schemaName);
-    }
     
     @Override
     public SchemaPlus getRootSchema() {
