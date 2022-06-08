@@ -36,6 +36,25 @@
         </combine>
     </select>
 
+    <select sql-case-id="select_with_union_all">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="table1" start-index="14" stop-index="19" />
+        </from>
+        <union union-type="UNION_ALL" start-index="21" stop-index="50">
+            <select>
+                <projections start-index="38" stop-index="38">
+                    <shorthand-projection start-index="38" stop-index="38" />
+                </projections>
+                <from>
+                    <simple-table name="table2" start-index="45" stop-index="50" />
+                </from>
+            </select>
+        </union>
+    </select>
+
     <select sql-case-id="select_union">
         <projections start-index="7" stop-index="14">
             <column-projection name="order_id" start-index="7" stop-index="14" />
