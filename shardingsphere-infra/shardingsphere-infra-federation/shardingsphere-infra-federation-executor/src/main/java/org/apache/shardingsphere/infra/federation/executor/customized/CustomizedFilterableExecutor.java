@@ -86,7 +86,7 @@ public final class CustomizedFilterableExecutor implements FederationExecutor {
     }
     
     private Enumerable<Object[]> execute(final RelNode bestPlan) {
-        RelOptCluster cluster = optimizer.getContext().getPlannerContexts().get(databaseName).getConverters().get(schemaName).getCluster();
+        RelOptCluster cluster = bestPlan.getCluster();
         return new FederateInterpretableConverter(
                 cluster, cluster.traitSetOf(InterpretableConvention.INSTANCE), bestPlan).bind(new CustomizedFilterableExecuteDataContext(databaseName, schemaName, optimizer.getContext()));
     }
