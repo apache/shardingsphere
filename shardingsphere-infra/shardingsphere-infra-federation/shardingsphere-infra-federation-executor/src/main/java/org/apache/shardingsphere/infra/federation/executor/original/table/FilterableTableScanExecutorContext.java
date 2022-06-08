@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.federation.executor.filterable.table;
+package org.apache.shardingsphere.infra.federation.executor.original.table;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

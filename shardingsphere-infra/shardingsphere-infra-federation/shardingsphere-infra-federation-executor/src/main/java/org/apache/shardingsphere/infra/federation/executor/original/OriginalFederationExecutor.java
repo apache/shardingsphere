@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.federation.executor.filterable;
+package org.apache.shardingsphere.infra.federation.executor.original;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.calcite.jdbc.CalciteConnection;
@@ -27,8 +27,8 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.federation.executor.FederationContext;
 import org.apache.shardingsphere.infra.federation.executor.FederationExecutor;
-import org.apache.shardingsphere.infra.federation.executor.filterable.table.FilterableTableScanExecutor;
-import org.apache.shardingsphere.infra.federation.executor.filterable.table.FilterableTableScanExecutorContext;
+import org.apache.shardingsphere.infra.federation.executor.original.table.FilterableTableScanExecutor;
+import org.apache.shardingsphere.infra.federation.executor.original.table.FilterableTableScanExecutorContext;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 
@@ -41,10 +41,10 @@ import java.sql.Statement;
 import java.util.List;
 
 /**
- * Filterable federation executor.
+ * Original federation executor.
  */
 @RequiredArgsConstructor
-public final class FilterableFederationExecutor implements FederationExecutor {
+public final class OriginalFederationExecutor implements FederationExecutor {
     
     public static final String CONNECTION_URL = "jdbc:calcite:";
     
