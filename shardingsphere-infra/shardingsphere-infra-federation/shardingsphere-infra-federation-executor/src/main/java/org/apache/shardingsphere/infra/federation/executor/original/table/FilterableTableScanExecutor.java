@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.federation.executor.original.table;
 
-import com.google.common.collect.ImmutableList;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.calcite.linq4j.AbstractEnumerable;
@@ -160,7 +159,7 @@ public final class FilterableTableScanExecutor {
         return new RelToSqlConverter(sqlDialect).visitRoot(createRelNode(tableMetaData, scanContext)).asStatement().toSqlString(sqlDialect);
     }
     
-    @SneakyThrows
+    @SneakyThrows(SQLException.class)
     private void setParameters(final Collection<ExecutionGroup<JDBCExecutionUnit>> inputGroups) {
         for (ExecutionGroup<JDBCExecutionUnit> each : inputGroups) {
             for (JDBCExecutionUnit executionUnit : each.getInputs()) {
@@ -172,23 +171,12 @@ public final class FilterableTableScanExecutor {
         }
     }
     
-    @SneakyThrows
+    @SneakyThrows(SQLException.class)
     private void setParameters(final PreparedStatement preparedStatement, final List<Object> parameters) {
         for (int i = 0; i < parameters.size(); i++) {
             Object parameter = parameters.get(i);
             preparedStatement.setObject(i + 1, parameter);
         }
-    }
-    
-    private List<Object> getParameters(final ImmutableList<Integer> parameterIndices) {
-        if (null == parameterIndices) {
-            return Collections.emptyList();
-        }
-        List<Object> result = new ArrayList<>();
-        for (Integer each : parameterIndices) {
-            result.add(executorContext.getFederationContext().getLogicSQL().getParameters().get(each));
-        }
-        return result;
     }
     
     private RelNode createRelNode(final FederationTableMetaData tableMetaData, final FilterableTableScanContext scanContext) {
@@ -229,6 +217,17 @@ public final class FilterableTableScanExecutor {
         List<Object> parameters = getParameters(sqlString.getDynamicParameters());
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(databases, parameters, sqlStatement, executorContext.getDatabaseName());
         return new LogicSQL(sqlStatementContext, sql, parameters);
+    }
+    
+    private List<Object> getParameters(final List<Integer> parameterIndexes) {
+        if (null == parameterIndexes) {
+            return Collections.emptyList();
+        }
+        List<Object> result = new ArrayList<>();
+        for (Integer each : parameterIndexes) {
+            result.add(executorContext.getFederationContext().getLogicSQL().getParameters().get(each));
+        }
+        return result;
     }
     
     private AbstractEnumerable<Object[]> createEmptyEnumerable() {
