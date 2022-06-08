@@ -56,6 +56,9 @@
 #      defaultTimeout: 180
 #      expiryScanInterval: 12
 #      periodicRecoveryPeriod: 120
+#      createTable: true
+#      stateStoreCreateTable: true
+#      communicationStoreCreateTable: true
 #  - !SQL_PARSER
 #    sqlCommentParseEnabled: true
 #    sqlStatementCache:

@@ -15,23 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.union;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.UnionType;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
-@RequiredArgsConstructor
-@Getter
-public class UnionSegment implements SQLSegment {
-    
-    private final int startIndex;
-    
-    private final int stopIndex;
-    
-    private final UnionType unionType;
-    
-    private final SelectStatement selectStatement;
+/**
+ * Create aggregate statement.
+ */
+@ToString
+public abstract class CreateAggregateStatement extends AbstractSQLStatement implements DDLStatement {
 }

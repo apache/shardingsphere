@@ -15,18 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.constant;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
+
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Union type enum.
+ * Create aggregate statement test case.
  */
-public enum UnionType {
-    UNION_ALL,
-    UNION_DISTINCT,
-    INTERSECT_ALL,
-    INTERSECT_DISTINCT,
-    EXCEPT_ALL,
-    EXCEPT_DISTINCT,
-    MINUS_ALL,
-    MINUS_DISTINCT;
+public final class CreateAggregateStatementTestCase extends SQLParserTestCase {
 }

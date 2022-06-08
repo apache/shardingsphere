@@ -233,7 +233,7 @@ public final class ShardingRouteEngineFactory {
         if (select.getPaginationContext().isHasPagination() || (shardingConditions.isNeedMerge() && shardingConditions.isSameShardingCondition())) {
             return false;
         }
-        if (select.isContainsSubquery() || select.isContainsHaving() || select.isContainsUnion() || select.isContainsPartialDistinctAggregation()) {
+        if (select.isContainsSubquery() || select.isContainsHaving() || select.isContainsCombine() || select.isContainsPartialDistinctAggregation()) {
             return true;
         }
         if (!select.isContainsJoinQuery() || shardingRule.isAllTablesInSameDataSource(tableNames)) {

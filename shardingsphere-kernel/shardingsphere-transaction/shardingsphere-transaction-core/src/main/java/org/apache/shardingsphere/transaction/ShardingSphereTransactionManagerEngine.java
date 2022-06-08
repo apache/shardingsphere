@@ -22,7 +22,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.transaction.core.ResourceDataSource;
 import org.apache.shardingsphere.transaction.core.TransactionType;
-import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManager;
 import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManagerFactory;
 
@@ -61,10 +60,10 @@ public final class ShardingSphereTransactionManagerEngine {
      *
      * @param databaseType database type
      * @param dataSourceMap data source map
-     * @param transactionRule transaction rule
+     * @param providerType transaction manager provider type
      */
-    public void init(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final TransactionRule transactionRule) {
-        transactionManagers.forEach((key, value) -> value.init(databaseType, getResourceDataSources(dataSourceMap), transactionRule));
+    public void init(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final String providerType) {
+        transactionManagers.forEach((key, value) -> value.init(databaseType, getResourceDataSources(dataSourceMap), providerType));
     }
     
     private Collection<ResourceDataSource> getResourceDataSources(final Map<String, DataSource> dataSourceMap) {

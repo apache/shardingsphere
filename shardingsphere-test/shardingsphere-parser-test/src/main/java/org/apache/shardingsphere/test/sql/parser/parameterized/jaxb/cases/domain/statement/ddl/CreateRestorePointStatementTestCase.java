@@ -15,26 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.union;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedSQLSegment;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.SelectStatementTestCase;
-
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Expected union clause.
+ * Create restore point statement test case.
  */
-@Getter
-@Setter
-public final class ExpectedUnion extends AbstractExpectedSQLSegment {
-    
-    @XmlElement(name = "select")
-    private SelectStatementTestCase selectClause;
-    
-    @XmlAttribute(name = "union-type")
-    private String unionType;
+public final class CreateRestorePointStatementTestCase extends SQLParserTestCase {
 }

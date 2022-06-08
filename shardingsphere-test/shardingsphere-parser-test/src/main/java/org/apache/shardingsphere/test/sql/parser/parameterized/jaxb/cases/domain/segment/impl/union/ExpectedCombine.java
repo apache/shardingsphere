@@ -15,27 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.context;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.union;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedSQLSegment;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.SelectStatementTestCase;
 
-import java.util.Map;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Transaction contexts.
+ * Expected combine clause.
  */
-@RequiredArgsConstructor
 @Getter
-public final class TransactionContexts implements AutoCloseable {
+@Setter
+public final class ExpectedCombine extends AbstractExpectedSQLSegment {
     
-    private final Map<String, ShardingSphereTransactionManagerEngine> engines;
+    @XmlElement(name = "select")
+    private SelectStatementTestCase selectClause;
     
-    @Override
-    public void close() throws Exception {
-        for (ShardingSphereTransactionManagerEngine each : engines.values()) {
-            each.close();
-        }
-    }
+    @XmlAttribute(name = "combine-type")
+    private String combineType;
 }

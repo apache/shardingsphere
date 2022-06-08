@@ -167,12 +167,12 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     }
     
     /**
-     * Judge whether contains union or not.
+     * Judge whether contains combine or not.
      *
-     * @return whether contains union or not
+     * @return whether contains combine or not
      */
-    public boolean isContainsUnion() {
-        return !getSqlStatement().getUnions().isEmpty();
+    public boolean isContainsCombine() {
+        return !getSqlStatement().getCombines().isEmpty();
     }
     
     /**
