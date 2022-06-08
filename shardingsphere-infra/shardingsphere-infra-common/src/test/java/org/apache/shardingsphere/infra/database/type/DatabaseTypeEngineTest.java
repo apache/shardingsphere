@@ -193,7 +193,7 @@ public final class DatabaseTypeEngineTest {
     public void assertGetTrunkDatabaseTypeNameWithBranchDatabaseType() {
         assertThat(DatabaseTypeEngine.getTrunkDatabaseTypeName(new MariaDBDatabaseType()), is("MySQL"));
     }
-
+    
     @Test
     public void assertGetProtocolType() {
         Properties trunkDatabaseProps = new Properties();
@@ -204,14 +204,14 @@ public final class DatabaseTypeEngineTest {
         noTrunkDatabaseProps.setProperty(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE.getKey(), "Oracle");
         assertThat(DatabaseTypeEngine.getProtocolType(Collections.singletonMap("logic_db", databaseConfig), new ConfigurationProperties(noTrunkDatabaseProps)), instanceOf(OracleDatabaseType.class));
     }
-
+    
     @Test
     public void assertGetStorageType() throws SQLException {
         DataSource datasource = mockDataSource(DatabaseTypeFactory.getInstance("FIXTURE"));
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.singletonMap("", datasource), Collections.singletonList(new FixtureRuleConfiguration()));
         assertThat(DatabaseTypeEngine.getStorageType(Collections.singletonMap("logic_db", databaseConfig)), instanceOf(FixtureDatabaseType.class));
     }
-
+    
     @Test
     public void assertGetDefaultSchemaName() {
         DatabaseType schemaSupportDatabaseType = DatabaseTypeFactory.getInstance("OpenGauss");
