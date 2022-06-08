@@ -15,8 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service;
 
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.distributed.node.DistributedLockNodeService;
 import org.junit.Test;
 
@@ -26,9 +27,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class AbstractDistributedLockNodeServiceTest {
+public final class LockNodeServiceTest {
     
-    private static final AbstractDistributedLockNodeService SERVICE = new DistributedLockNodeService();
+    private static final LockNodeService SERVICE = new DistributedLockNodeService();
     
     @Test
     public void assertGetLocksNodePath() {
@@ -40,6 +41,12 @@ public final class AbstractDistributedLockNodeServiceTest {
     public void assertGenerateLocksName() {
         String locksName = SERVICE.generateLocksName("sharding_db");
         assertThat(locksName, is("/lock/distributed/locks/sharding_db"));
+    }
+    
+    @Test
+    public void assertGenerateFreezeLockName() {
+        String locksName = SERVICE.generateFreezeLockName("sharding_db");
+        assertThat(locksName, is("/lock/distributed/locks/sharding_db/freeze"));
     }
     
     @Test

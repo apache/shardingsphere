@@ -21,7 +21,8 @@ import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeService;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeServiceFactory;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.state.LockStateContext;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.LockNodeServiceFactory;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.database.event.DatabaseAckLockReleasedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.database.event.DatabaseAckLockedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.database.event.DatabaseLockReleasedEvent;
@@ -42,10 +43,13 @@ public final class ShardingSphereDistributedDatabaseLock implements ShardingSphe
     
     private final ShardingSphereInterMutexLockHolder lockHolder;
     
-    public ShardingSphereDistributedDatabaseLock(final ShardingSphereInterMutexLockHolder lockHolder) {
+    private final LockStateContext lockStateContext;
+    
+    public ShardingSphereDistributedDatabaseLock(final ShardingSphereInterMutexLockHolder lockHolder, final LockStateContext lockStateContext) {
         this.lockHolder = lockHolder;
+        this.lockStateContext = lockStateContext;
         ShardingSphereEventBus.getInstance().register(this);
-        lockHolder.synchronizeMutexLock(lockNodeService);
+        lockHolder.synchronizeLock(lockNodeService);
     }
     
     @Override
@@ -59,7 +63,11 @@ public final class ShardingSphereDistributedDatabaseLock implements ShardingSphe
     }
     
     private boolean innerTryLock(final String lockName, final long timeoutMillis) {
-        return lockHolder.getOrCreateInterMutexLock(lockNodeService.generateLocksName(lockName)).tryLock(timeoutMillis);
+        if (lockHolder.getOrCreateInterMutexLock(lockNodeService.generateLocksName(lockName)).tryLock(timeoutMillis)) {
+            lockStateContext.register(lockName);
+            return true;
+        }
+        return false;
     }
     
     private Optional<InterMutexLock> getInterMutexLock(final String lockName) {
@@ -68,7 +76,11 @@ public final class ShardingSphereDistributedDatabaseLock implements ShardingSphe
     
     @Override
     public void releaseLock(final String lockName) {
-        getInterMutexLock(lockName).ifPresent(InterMutexLock::unlock);
+        Optional<InterMutexLock> interMutexLock = getInterMutexLock(lockName);
+        if (interMutexLock.isPresent()) {
+            interMutexLock.get().unlock();
+            lockStateContext.unregister(lockName);
+        }
     }
     
     @Override
@@ -87,6 +99,7 @@ public final class ShardingSphereDistributedDatabaseLock implements ShardingSphe
         String lockedInstanceId = lockHolder.getCurrentInstanceId();
         InterMutexLock interMutexLock = lockHolder.getOrCreateInterMutexLock(lockNodeService.generateLocksName(database));
         interMutexLock.ackLock(lockNodeService.generateAckLockName(database, lockedInstanceId), lockedInstanceId);
+        lockStateContext.register(database);
     }
     
     /**
@@ -98,7 +111,11 @@ public final class ShardingSphereDistributedDatabaseLock implements ShardingSphe
     public synchronized void lockReleased(final DatabaseLockReleasedEvent event) {
         String database = event.getDatabase();
         String lockedInstanceId = lockHolder.getCurrentInstanceId();
-        getInterMutexLock(database).ifPresent(mutexLock -> mutexLock.releaseAckLock(lockNodeService.generateAckLockName(database, lockedInstanceId), lockedInstanceId));
+        Optional<InterMutexLock> interMutexLock = getInterMutexLock(database);
+        if (interMutexLock.isPresent()) {
+            interMutexLock.get().releaseAckLock(lockNodeService.generateAckLockName(database, lockedInstanceId), lockedInstanceId);
+            lockStateContext.unregister(database);
+        }
     }
     
     /**
