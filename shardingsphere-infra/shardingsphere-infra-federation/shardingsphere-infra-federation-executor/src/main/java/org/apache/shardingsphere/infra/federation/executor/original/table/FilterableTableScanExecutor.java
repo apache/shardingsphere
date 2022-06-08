@@ -159,7 +159,6 @@ public final class FilterableTableScanExecutor {
         return new RelToSqlConverter(sqlDialect).visitRoot(createRelNode(tableMetaData, scanContext)).asStatement().toSqlString(sqlDialect);
     }
     
-    @SneakyThrows(SQLException.class)
     private void setParameters(final Collection<ExecutionGroup<JDBCExecutionUnit>> inputGroups) {
         for (ExecutionGroup<JDBCExecutionUnit> each : inputGroups) {
             for (JDBCExecutionUnit executionUnit : each.getInputs()) {
