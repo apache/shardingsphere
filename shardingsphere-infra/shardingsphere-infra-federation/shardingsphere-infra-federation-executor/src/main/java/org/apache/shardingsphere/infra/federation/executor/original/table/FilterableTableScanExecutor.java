@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.federation.executor.original.table;
 
 import com.google.common.collect.ImmutableList;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.calcite.linq4j.AbstractEnumerable;
 import org.apache.calcite.linq4j.Enumerable;
@@ -89,6 +90,7 @@ import java.util.stream.Collectors;
 /**
  * Filterable table scan executor.
  */
+@RequiredArgsConstructor
 public final class FilterableTableScanExecutor {
     
     private static final Map<Class<? extends DatabaseType>, SqlDialect> SQL_DIALECTS = new HashMap<>();
@@ -112,16 +114,6 @@ public final class FilterableTableScanExecutor {
     private final OptimizerContext optimizerContext;
     
     private final FilterableTableScanExecutorContext executorContext;
-    
-    public FilterableTableScanExecutor(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
-                                       final JDBCExecutor jdbcExecutor, final JDBCExecutorCallback<? extends ExecuteResult> callback,
-                                       final OptimizerContext optimizerContext, final FilterableTableScanExecutorContext executorContext) {
-        this.jdbcExecutor = jdbcExecutor;
-        this.callback = callback;
-        this.prepareEngine = prepareEngine;
-        this.optimizerContext = optimizerContext;
-        this.executorContext = executorContext;
-    }
     
     /**
      * Execute.
