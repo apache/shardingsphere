@@ -15,23 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.distributed.node;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.state;
 
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeService;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeType;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.type.required.RequiredSPIRegistry;
 
 /**
- * Distributed lock node service.
+ * Lock state context factory.
  */
-public final class DistributedLockNodeService implements LockNodeService {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class LockStateContextFactory {
     
-    @Override
-    public String getLockTypeName() {
-        return "distributed";
+    static {
+        ShardingSphereServiceLoader.register(LockStateContext.class);
     }
     
-    @Override
-    public LockNodeType getType() {
-        return LockNodeType.DISTRIBUTED;
+    /**
+     * Get lock state context.
+     *
+     * @return lock state context
+     */
+    public static LockStateContext getLockStateContext() {
+        return RequiredSPIRegistry.getRegisteredService(LockStateContext.class);
     }
 }

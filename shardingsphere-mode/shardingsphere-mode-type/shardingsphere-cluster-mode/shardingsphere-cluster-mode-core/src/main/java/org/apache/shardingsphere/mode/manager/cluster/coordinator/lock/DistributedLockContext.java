@@ -93,4 +93,9 @@ public final class DistributedLockContext implements LockContext {
     public boolean isLocked(final String databaseName) {
         return lockManager.isLocked(databaseName);
     }
+    
+    @Override
+    public boolean isLocked(final String databaseName, final String schemaName) {
+        return lockManager.isLocked(databaseName, schemaName);
+    }
 }
