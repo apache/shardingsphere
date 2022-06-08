@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.federation.executor.translatable;
+package org.apache.shardingsphere.infra.federation.executor.advanced.resultset;
 
 import java.sql.SQLException;
 import java.sql.Wrapper;

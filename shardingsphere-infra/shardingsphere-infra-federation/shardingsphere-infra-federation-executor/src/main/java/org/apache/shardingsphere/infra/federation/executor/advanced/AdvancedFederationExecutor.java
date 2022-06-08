@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.federation.executor.translatable;
+package org.apache.shardingsphere.infra.federation.executor.advanced;
 
 import org.apache.calcite.interpreter.InterpretableConvention;
 import org.apache.calcite.interpreter.InterpretableConverter;
@@ -31,7 +31,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.federation.executor.FederationContext;
 import org.apache.shardingsphere.infra.federation.executor.FederationExecutor;
-import org.apache.shardingsphere.infra.federation.executor.translatable.resultset.FederationResultSet;
+import org.apache.shardingsphere.infra.federation.executor.advanced.resultset.FederationResultSet;
 import org.apache.shardingsphere.infra.federation.optimizer.ShardingSphereOptimizer;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
@@ -45,9 +45,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * Translatable federation executor.
+ * Advanced federation executor.
  */
-public final class TranslatableFederationExecutor implements FederationExecutor {
+public final class AdvancedFederationExecutor implements FederationExecutor {
     
     private final String databaseName;
     
@@ -59,7 +59,7 @@ public final class TranslatableFederationExecutor implements FederationExecutor 
     
     private ResultSet federationResultSet;
     
-    public TranslatableFederationExecutor(final String databaseName, final String schemaName, final OptimizerContext optimizerContext) {
+    public AdvancedFederationExecutor(final String databaseName, final String schemaName, final OptimizerContext optimizerContext) {
         this.databaseName = databaseName;
         this.schemaName = schemaName;
         this.optimizerContext = optimizerContext;
@@ -89,7 +89,7 @@ public final class TranslatableFederationExecutor implements FederationExecutor 
         SqlValidator validator = optimizerContext.getPlannerContexts().get(databaseName).getValidators().get(schemaName);
         SqlToRelConverter converter = optimizerContext.getPlannerContexts().get(databaseName).getConverters().get(schemaName);
         return new FederateInterpretableConverter(
-                cluster, cluster.traitSetOf(InterpretableConvention.INSTANCE), bestPlan).bind(new TranslatableExecuteDataContext(validator, converter));
+                cluster, cluster.traitSetOf(InterpretableConvention.INSTANCE), bestPlan).bind(new AdvancedExecuteDataContext(validator, converter));
     }
     
     @Override

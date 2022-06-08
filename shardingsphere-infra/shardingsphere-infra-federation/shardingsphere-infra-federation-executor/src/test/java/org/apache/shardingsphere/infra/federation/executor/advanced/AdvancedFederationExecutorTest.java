@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.federation.executor.translatable;
+package org.apache.shardingsphere.infra.federation.executor.advanced;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
@@ -42,9 +42,9 @@ import java.util.Map;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class TranslatableFederationExecutorTest {
+public class AdvancedFederationExecutorTest {
     
-    private TranslatableFederationExecutor executor;
+    private AdvancedFederationExecutor executor;
     
     @Before
     public void init() throws Exception {
@@ -56,7 +56,7 @@ public class TranslatableFederationExecutorTest {
         Map<String, ShardingSphereSchema> schemas = Collections.singletonMap(databaseName, new ShardingSphereSchema(tables));
         ShardingSphereDatabase metaData = new ShardingSphereDatabase(schemaName, new H2DatabaseType(), mockResource(), null, schemas);
         OptimizerContext optimizerContext = OptimizerContextFactory.create(Collections.singletonMap(schemaName, metaData), createGlobalRuleMetaData());
-        executor = new TranslatableFederationExecutor(databaseName, schemaName, optimizerContext);
+        executor = new AdvancedFederationExecutor(databaseName, schemaName, optimizerContext);
     }
     
     private ShardingSphereRuleMetaData createGlobalRuleMetaData() {

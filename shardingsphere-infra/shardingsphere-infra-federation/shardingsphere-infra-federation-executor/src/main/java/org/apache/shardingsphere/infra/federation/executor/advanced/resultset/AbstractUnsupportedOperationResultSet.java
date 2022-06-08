@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.federation.executor.translatable.resultset;
+package org.apache.shardingsphere.infra.federation.executor.advanced.resultset;
 
 import java.io.Reader;
 import java.sql.NClob;

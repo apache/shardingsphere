@@ -15,9 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.federation.executor.translatable.resultset;
-
-import org.apache.shardingsphere.infra.federation.executor.translatable.WrapperAdapter;
+package org.apache.shardingsphere.infra.federation.executor.advanced.resultset;
 
 import java.io.InputStream;
 import java.io.Reader;

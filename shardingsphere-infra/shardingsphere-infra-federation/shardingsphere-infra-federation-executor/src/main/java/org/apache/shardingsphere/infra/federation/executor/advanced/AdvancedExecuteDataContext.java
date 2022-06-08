@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.federation.executor.translatable;
+package org.apache.shardingsphere.infra.federation.executor.advanced;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.calcite.DataContext;
@@ -26,10 +26,10 @@ import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
 
 /**
- * Translatable execute data context.
+ * Advanced execute data context.
  */
 @RequiredArgsConstructor
-public final class TranslatableExecuteDataContext implements DataContext {
+public final class AdvancedExecuteDataContext implements DataContext {
     
     private final SqlValidator validator;
     
