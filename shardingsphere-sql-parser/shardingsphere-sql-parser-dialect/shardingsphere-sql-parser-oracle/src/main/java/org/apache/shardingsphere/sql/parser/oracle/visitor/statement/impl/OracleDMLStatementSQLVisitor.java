@@ -76,6 +76,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.QueryT
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.QueryTableExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ReferenceModelContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.RollupCubeClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SelectCombineClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SelectContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SelectFromClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SelectJoinOptionContext;
@@ -85,7 +86,6 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Select
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SelectProjectionExprClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SelectSubqueryContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SelectTableReferenceContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SelectUnionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ShardsClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SingleColumnForLoopContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SubqueryContext;
@@ -463,8 +463,8 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
         OracleSelectStatement result;
         if (null != ctx.queryBlock()) {
             result = (OracleSelectStatement) visit(ctx.queryBlock());
-        } else if (null != ctx.selectUnionClause()) {
-            result = (OracleSelectStatement) visit(ctx.selectUnionClause());
+        } else if (null != ctx.selectCombineClause()) {
+            result = (OracleSelectStatement) visit(ctx.selectCombineClause());
         } else {
             result = (OracleSelectStatement) visit(ctx.parenthesisSelectSubquery());
         }
@@ -576,7 +576,7 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
     }
     
     @Override
-    public ASTNode visitSelectUnionClause(final SelectUnionClauseContext ctx) {
+    public ASTNode visitSelectCombineClause(final SelectCombineClauseContext ctx) {
         OracleSelectStatement result;
         if (null != ctx.queryBlock()) {
             result = (OracleSelectStatement) visit(ctx.queryBlock());

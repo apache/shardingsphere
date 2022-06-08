@@ -34,7 +34,7 @@ import java.util.Optional;
 /**
  * Merged result for show index.
  */
-public class ShowIndexMergedResult extends MemoryMergedResult<ShardingRule> {
+public final class ShowIndexMergedResult extends MemoryMergedResult<ShardingRule> {
     
     public ShowIndexMergedResult(final ShardingRule shardingRule,
                                  final SQLStatementContext<?> sqlStatementContext, final ShardingSphereSchema schema, final List<QueryResult> queryResults) throws SQLException {
@@ -42,8 +42,8 @@ public class ShowIndexMergedResult extends MemoryMergedResult<ShardingRule> {
     }
     
     @Override
-    protected final List<MemoryQueryResultRow> init(final ShardingRule shardingRule, final ShardingSphereSchema schema,
-                                                    final SQLStatementContext<?> sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
+    protected List<MemoryQueryResultRow> init(final ShardingRule shardingRule, final ShardingSphereSchema schema,
+                                              final SQLStatementContext<?> sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
         List<MemoryQueryResultRow> result = new LinkedList<>();
         for (QueryResult each : queryResults) {
             while (each.next()) {

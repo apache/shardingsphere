@@ -153,9 +153,9 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
      * @return encryptor
      */
     @SuppressWarnings("rawtypes")
-    public Optional<EncryptAlgorithm> findAssistEncryptor(final String logicTable, final String logicColumn) {
+    public Optional<EncryptAlgorithm> findAssistedQueryEncryptor(final String logicTable, final String logicColumn) {
         String lowerCaseLogicTable = logicTable.toLowerCase();
-        return tables.containsKey(lowerCaseLogicTable) ? tables.get(lowerCaseLogicTable).findAssistEncryptorName(logicColumn).map(encryptors::get) : Optional.empty();
+        return tables.containsKey(lowerCaseLogicTable) ? tables.get(lowerCaseLogicTable).findAssistedQueryEncryptorName(logicColumn).map(encryptors::get) : Optional.empty();
     }
     
     /**
@@ -242,7 +242,7 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
      */
     @SuppressWarnings("rawtypes")
     public List<Object> getEncryptAssistedQueryValues(final String databaseName, final String schemaName, final String logicTable, final String logicColumn, final List<Object> originalValues) {
-        Optional<EncryptAlgorithm> encryptor = findAssistEncryptor(logicTable, logicColumn);
+        Optional<EncryptAlgorithm> encryptor = findAssistedQueryEncryptor(logicTable, logicColumn);
         EncryptContext encryptContext = EncryptContextBuilder.build(databaseName, schemaName, logicTable, logicColumn);
         Preconditions.checkArgument(encryptor.isPresent(), "Can not find assist encryptor by %s.%s.", logicTable, logicColumn);
         return getEncryptAssistedQueryValues(encryptor.get(), originalValues, encryptContext);

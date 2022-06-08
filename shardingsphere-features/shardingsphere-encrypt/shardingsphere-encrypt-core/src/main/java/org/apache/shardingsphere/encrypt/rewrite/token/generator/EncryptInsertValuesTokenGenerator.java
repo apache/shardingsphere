@@ -137,8 +137,8 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
                 Object originalValue = insertValueContext.getValue(columnIndex).orElseThrow(() -> new ShardingSphereException("Not support for encrypt!"));
                 EncryptContext encryptContext = EncryptContextBuilder.build(databaseName, schemaName, tableName, columnName);
                 addPlainColumn(insertValueToken, columnIndex, encryptContext, insertValueContext, originalValue);
-                if (encryptRule.findAssistEncryptor(tableName, columnName).isPresent()) {
-                    addAssistedQueryColumn(insertValueToken, encryptRule.findAssistEncryptor(tableName, columnName).get(), columnIndex, encryptContext, insertValueContext, originalValue);
+                if (encryptRule.findAssistedQueryEncryptor(tableName, columnName).isPresent()) {
+                    addAssistedQueryColumn(insertValueToken, encryptRule.findAssistedQueryEncryptor(tableName, columnName).get(), columnIndex, encryptContext, insertValueContext, originalValue);
                 }
                 setCipherColumn(insertValueToken, encryptor.get(), columnIndex, encryptContext, insertValueContext.getValueExpressions().get(columnIndex), originalValue);
             }

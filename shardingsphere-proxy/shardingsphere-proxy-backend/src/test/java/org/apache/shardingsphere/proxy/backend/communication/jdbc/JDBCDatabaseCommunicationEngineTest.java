@@ -215,6 +215,7 @@ public final class JDBCDatabaseCommunicationEngineTest extends ProxyContextResto
         cachedStatements.add(statement);
         engine.close();
         verify(resultSet).close();
+        verify(statement).cancel();
         verify(statement).close();
         assertTrue(cachedResultSets.isEmpty());
         assertTrue(cachedStatements.isEmpty());

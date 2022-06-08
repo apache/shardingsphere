@@ -162,10 +162,10 @@ public final class SelectInformationExecutorTest extends ProxyContextRestorer {
                 Collections.singletonMap("foo_ds", new MockedDataSource(mockConnection(expectedResultSetMap)))), mock(ShardingSphereRuleMetaData.class), Collections.emptyMap());
     }
     
-    private ShardingSphereDatabase createEmptyDatabase(final String schemaName) {
+    private ShardingSphereDatabase createEmptyDatabase(final String databaseName) {
         ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class);
         when(ruleMetaData.getRules()).thenReturn(Collections.singleton(mock(AuthorityRule.class, RETURNS_DEEP_STUBS)));
-        return new ShardingSphereDatabase(schemaName, new MySQLDatabaseType(), new ShardingSphereResource(Collections.emptyMap()), ruleMetaData, Collections.emptyMap());
+        return new ShardingSphereDatabase(databaseName, new MySQLDatabaseType(), new ShardingSphereResource(Collections.emptyMap()), ruleMetaData, Collections.emptyMap());
     }
     
     private Connection mockConnection(final Map<String, String> expectedResultSetMap) throws SQLException {

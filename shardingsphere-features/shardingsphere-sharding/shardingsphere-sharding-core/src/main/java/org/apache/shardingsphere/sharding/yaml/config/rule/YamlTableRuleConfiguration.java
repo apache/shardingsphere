@@ -34,7 +34,7 @@ public final class YamlTableRuleConfiguration implements YamlConfiguration {
     
     private String actualDataNodes;
     
-    private String replaceTablePrefix;
+    private String actualTablePrefix;
     
     private YamlShardingStrategyConfiguration databaseStrategy;
     
