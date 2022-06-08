@@ -26,10 +26,10 @@ import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
 
 /**
- * Customized filterable execute data context.
+ * Translatable execute data context.
  */
 @RequiredArgsConstructor
-public final class CustomizedFilterableExecuteDataContext implements DataContext {
+public final class TranslatableExecuteDataContext implements DataContext {
     
     private final SqlValidator validator;
     

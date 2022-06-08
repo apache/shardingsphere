@@ -88,7 +88,7 @@ public final class TranslatableFederationExecutor implements FederationExecutor 
         SqlValidator validator = optimizerContext.getPlannerContexts().get(databaseName).getValidators().get(schemaName);
         SqlToRelConverter converter = optimizerContext.getPlannerContexts().get(databaseName).getConverters().get(schemaName);
         return new FederateInterpretableConverter(
-                cluster, cluster.traitSetOf(InterpretableConvention.INSTANCE), bestPlan).bind(new CustomizedFilterableExecuteDataContext(validator, converter));
+                cluster, cluster.traitSetOf(InterpretableConvention.INSTANCE), bestPlan).bind(new TranslatableExecuteDataContext(validator, converter));
     }
     
     @Override
