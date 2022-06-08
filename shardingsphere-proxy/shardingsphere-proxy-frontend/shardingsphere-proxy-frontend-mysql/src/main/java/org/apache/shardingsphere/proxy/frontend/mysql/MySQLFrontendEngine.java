@@ -53,8 +53,8 @@ public final class MySQLFrontendEngine implements DatabaseProtocolFrontendEngine
     }
     
     @Override
-    public void setDatabaseVersion(final String schemaName, final String databaseVersion) {
-        MySQLServerInfo.setServerVersion(schemaName, databaseVersion);
+    public void setDatabaseVersion(final String databaseName, final String databaseVersion) {
+        MySQLServerInfo.setServerVersion(databaseName, databaseVersion);
     }
     
     @Override

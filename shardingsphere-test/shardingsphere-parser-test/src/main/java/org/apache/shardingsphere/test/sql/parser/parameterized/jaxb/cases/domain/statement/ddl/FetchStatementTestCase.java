@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domai
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.cursor.ExpectedCursorName;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.cursor.ExpectedDirectionSegment;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -33,4 +34,7 @@ public final class FetchStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "cursor-name")
     private ExpectedCursorName cursorName;
+    
+    @XmlElement(name = "direction")
+    private ExpectedDirectionSegment direction;
 }
