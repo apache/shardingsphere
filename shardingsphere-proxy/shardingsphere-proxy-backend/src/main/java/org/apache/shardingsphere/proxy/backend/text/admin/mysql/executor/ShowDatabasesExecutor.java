@@ -51,10 +51,10 @@ public final class ShowDatabasesExecutor implements DatabaseAdminQueryExecutor {
     
     @Override
     public void execute(final ConnectionSession connectionSession) {
-        mergedResult = new SingleLocalDataMergedResult(getSchemaNames(connectionSession));
+        mergedResult = new SingleLocalDataMergedResult(getDatabaseNames(connectionSession));
     }
     
-    private Collection<Object> getSchemaNames(final ConnectionSession connectionSession) {
+    private Collection<Object> getDatabaseNames(final ConnectionSession connectionSession) {
         Collection<Object> result = new LinkedList<>();
         for (String each : ProxyContext.getInstance().getAllDatabaseNames()) {
             if (checkLikePattern(each) && SQLCheckEngine.check(each, getRules(each), connectionSession.getGrantee())) {
@@ -64,17 +64,17 @@ public final class ShowDatabasesExecutor implements DatabaseAdminQueryExecutor {
         return result;
     }
     
-    private boolean checkLikePattern(final String schemaName) {
+    private boolean checkLikePattern(final String databaseName) {
         if (showDatabasesStatement.getFilter().isPresent()) {
             Optional<String> pattern = showDatabasesStatement.getFilter().get().getLike().map(optional -> SQLUtil.convertLikePatternToRegex(optional.getPattern()));
-            return !pattern.isPresent() || schemaName.matches(pattern.get());
+            return !pattern.isPresent() || databaseName.matches(pattern.get());
         }
         return true;
     }
     
-    private Collection<ShardingSphereRule> getRules(final String schemaName) {
+    private Collection<ShardingSphereRule> getRules(final String databaseName) {
         Collection<ShardingSphereRule> result;
-        result = new LinkedList<>(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases().get(schemaName).getRuleMetaData().getRules());
+        result = new LinkedList<>(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases().get(databaseName).getRuleMetaData().getRules());
         result.addAll(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules());
         return result;
     }

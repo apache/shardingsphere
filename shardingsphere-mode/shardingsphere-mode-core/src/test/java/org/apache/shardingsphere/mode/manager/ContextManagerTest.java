@@ -38,7 +38,6 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.SchemaMetaDataPersistService;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
-import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.Before;
 import org.junit.Test;
@@ -84,7 +83,7 @@ public final class ContextManagerTest {
         when(metaDataContexts.getMetaData().getDatabases().get("foo_db").getSchemas()).thenReturn(Collections.singletonMap("foo_db", new ShardingSphereSchema()));
         when(metaDataContexts.getMetaData().getDatabases().get("foo_db").getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()));
         when(metaDataContexts.getOptimizerContext().getFederationMetaData().getDatabases()).thenReturn(new LinkedHashMap<>());
-        contextManager = new ContextManager(metaDataContexts, mock(TransactionContexts.class), mock(InstanceContext.class));
+        contextManager = new ContextManager(metaDataContexts, mock(InstanceContext.class));
     }
     
     @Test
@@ -101,13 +100,6 @@ public final class ContextManagerTest {
         MetaDataContexts contexts = mock(MetaDataContexts.class);
         contextManager.renewMetaDataContexts(contexts);
         assertThat(contextManager.getMetaDataContexts(), is(contexts));
-    }
-    
-    @Test
-    public void assertRenewTransactionContexts() {
-        TransactionContexts contexts = mock(TransactionContexts.class);
-        contextManager.renewTransactionContexts(contexts);
-        assertThat(contextManager.getTransactionContexts(), is(contexts));
     }
     
     @Test
@@ -130,7 +122,7 @@ public final class ContextManagerTest {
     
     @Test
     public void assertDeleteDatabase() {
-        when(metaDataContexts.getMetaData().getDatabases()).thenReturn(new HashMap<>(Collections.singletonMap("foo_db", mock(ShardingSphereDatabase.class))));
+        when(metaDataContexts.getMetaData().getDatabases()).thenReturn(new HashMap<>(Collections.singletonMap("foo_db", mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS))));
         when(metaDataContexts.getOptimizerContext().getFederationMetaData().getDatabases()).thenReturn(new HashMap<>(Collections.singletonMap("foo_db", mock(FederationDatabaseMetaData.class))));
         when(metaDataContexts.getOptimizerContext().getParserContexts()).thenReturn(new HashMap<>(Collections.singletonMap("foo_db", mock(OptimizerParserContext.class))));
         when(metaDataContexts.getOptimizerContext().getPlannerContexts()).thenReturn(new HashMap<>(Collections.singletonMap("foo_db", mock(OptimizerPlannerContext.class))));
@@ -276,6 +268,5 @@ public final class ContextManagerTest {
     public void assertClose() throws Exception {
         contextManager.close();
         verify(metaDataContexts).close();
-        verify(contextManager.getTransactionContexts()).close();
     }
 }

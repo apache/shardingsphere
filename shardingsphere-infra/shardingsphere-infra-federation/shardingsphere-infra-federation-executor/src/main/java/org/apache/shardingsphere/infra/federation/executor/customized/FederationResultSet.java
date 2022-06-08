@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.federation.executor.customized;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 
 import java.io.InputStream;
@@ -28,6 +28,7 @@ import java.sql.Array;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Date;
+import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
@@ -37,10 +38,10 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 public final class FederationResultSet extends AbstractUnsupportedOperationResultSet {
     
-    private MergedResult mergedResult;
+    private final MergedResult mergedResult;
     
     @Override
     public boolean next() throws SQLException {
@@ -53,7 +54,7 @@ public final class FederationResultSet extends AbstractUnsupportedOperationResul
     }
     
     @Override
-    public boolean wasNull() throws SQLException {
+    public boolean wasNull() {
         return false;
     }
     
@@ -118,42 +119,42 @@ public final class FederationResultSet extends AbstractUnsupportedOperationResul
     }
     
     @Override
-    public float getFloat(final int columnIndex) throws SQLException {
+    public float getFloat(final int columnIndex) {
         return 0;
     }
     
     @Override
-    public float getFloat(final String columnLabel) throws SQLException {
+    public float getFloat(final String columnLabel) {
         return 0;
     }
     
     @Override
-    public double getDouble(final int columnIndex) throws SQLException {
+    public double getDouble(final int columnIndex) {
         return 0;
     }
     
     @Override
-    public double getDouble(final String columnLabel) throws SQLException {
+    public double getDouble(final String columnLabel) {
         return 0;
     }
     
     @Override
-    public BigDecimal getBigDecimal(final int columnIndex, final int scale) throws SQLException {
+    public BigDecimal getBigDecimal(final int columnIndex, final int scale) {
         return null;
     }
     
     @Override
-    public BigDecimal getBigDecimal(final String columnLabel, final int scale) throws SQLException {
+    public BigDecimal getBigDecimal(final String columnLabel, final int scale) {
         return null;
     }
     
     @Override
-    public BigDecimal getBigDecimal(final int columnIndex) throws SQLException {
+    public BigDecimal getBigDecimal(final int columnIndex) {
         return null;
     }
     
     @Override
-    public BigDecimal getBigDecimal(final String columnLabel) throws SQLException {
+    public BigDecimal getBigDecimal(final String columnLabel) {
         return null;
     }
     
@@ -228,32 +229,32 @@ public final class FederationResultSet extends AbstractUnsupportedOperationResul
     }
     
     @Override
-    public InputStream getAsciiStream(final int columnIndex) throws SQLException {
+    public InputStream getAsciiStream(final int columnIndex) {
         return null;
     }
     
     @Override
-    public InputStream getAsciiStream(final String columnLabel) throws SQLException {
+    public InputStream getAsciiStream(final String columnLabel) {
         return null;
     }
     
     @Override
-    public InputStream getUnicodeStream(final int columnIndex) throws SQLException {
+    public InputStream getUnicodeStream(final int columnIndex) {
         return null;
     }
     
     @Override
-    public InputStream getUnicodeStream(final String columnLabel) throws SQLException {
+    public InputStream getUnicodeStream(final String columnLabel) {
         return null;
     }
     
     @Override
-    public InputStream getBinaryStream(final int columnIndex) throws SQLException {
+    public InputStream getBinaryStream(final int columnIndex) {
         return null;
     }
     
     @Override
-    public InputStream getBinaryStream(final String columnLabel) throws SQLException {
+    public InputStream getBinaryStream(final String columnLabel) {
         return null;
     }
     
@@ -288,12 +289,12 @@ public final class FederationResultSet extends AbstractUnsupportedOperationResul
     }
     
     @Override
-    public Reader getCharacterStream(final int columnIndex) throws SQLException {
+    public Reader getCharacterStream(final int columnIndex) {
         return null;
     }
     
     @Override
-    public Reader getCharacterStream(final String columnLabel) throws SQLException {
+    public Reader getCharacterStream(final String columnLabel) {
         return null;
     }
     
@@ -303,28 +304,27 @@ public final class FederationResultSet extends AbstractUnsupportedOperationResul
     }
     
     @Override
-    public int getFetchDirection() throws SQLException {
-        return 0;
+    public int getFetchDirection() {
+        return ResultSet.FETCH_FORWARD;
     }
     
     @Override
     public void setFetchSize(final int rows) throws SQLException {
-        
     }
     
     @Override
-    public int getFetchSize() throws SQLException {
+    public int getFetchSize() {
         return 0;
     }
     
     @Override
     public int getType() throws SQLException {
-        return 0;
+        return ResultSet.TYPE_FORWARD_ONLY;
     }
     
     @Override
     public int getConcurrency() throws SQLException {
-        return 0;
+        return ResultSet.CONCUR_READ_ONLY;
     }
     
     @Override
@@ -333,32 +333,32 @@ public final class FederationResultSet extends AbstractUnsupportedOperationResul
     }
     
     @Override
-    public Blob getBlob(final int columnIndex) throws SQLException {
+    public Blob getBlob(final int columnIndex) {
         return null;
     }
     
     @Override
-    public Blob getBlob(final String columnLabel) throws SQLException {
+    public Blob getBlob(final String columnLabel) {
         return null;
     }
     
     @Override
-    public Clob getClob(final int columnIndex) throws SQLException {
+    public Clob getClob(final int columnIndex) {
         return null;
     }
     
     @Override
-    public Clob getClob(final String columnLabel) throws SQLException {
+    public Clob getClob(final String columnLabel) {
         return null;
     }
     
     @Override
-    public Array getArray(final int columnIndex) throws SQLException {
+    public Array getArray(final int columnIndex) {
         return null;
     }
     
     @Override
-    public Array getArray(final String columnLabel) throws SQLException {
+    public Array getArray(final String columnLabel) {
         return null;
     }
     
@@ -378,22 +378,22 @@ public final class FederationResultSet extends AbstractUnsupportedOperationResul
     }
     
     @Override
-    public SQLXML getSQLXML(final int columnIndex) throws SQLException {
+    public SQLXML getSQLXML(final int columnIndex) {
         return null;
     }
     
     @Override
-    public SQLXML getSQLXML(final String columnLabel) throws SQLException {
+    public SQLXML getSQLXML(final String columnLabel) {
         return null;
     }
     
     @Override
-    public String getNString(final int columnIndex) throws SQLException {
+    public String getNString(final int columnIndex) {
         return null;
     }
     
     @Override
-    public String getNString(final String columnLabel) throws SQLException {
+    public String getNString(final String columnLabel) {
         return null;
     }
 }

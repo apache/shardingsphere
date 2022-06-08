@@ -46,6 +46,8 @@ public enum SQLVisitorRule {
     
     CREATE_TABLE("CreateTable", SQLStatementType.DDL),
     
+    CREATE_AGGREGATE("CreateAggregate", SQLStatementType.DDL),
+    
     RENAME_TABLE("RenameTable", SQLStatementType.DDL),
     
     ALTER_TABLE("AlterTable", SQLStatementType.DDL),
@@ -79,6 +81,8 @@ public enum SQLVisitorRule {
     DROP_INDEX("DropIndex", SQLStatementType.DDL),
     
     CREATE_PROCEDURE("CreateProcedure", SQLStatementType.DDL),
+    
+    CREATE_PUBLICATION("CreatePublication", SQLStatementType.DDL),
     
     ALTER_PROCEDURE("AlterProcedure", SQLStatementType.DDL),
     
@@ -537,6 +541,16 @@ public enum SQLVisitorRule {
     CREATE_ROLLBACK_SEGMENT("CreateRollbackSegment", SQLStatementType.DDL),
     
     DROP_ROLLBACK_SEGMENT("DropRollbackSegment", SQLStatementType.DDL),
+    
+    CREATE_LOCKDOWN_PROFILE("CreateLockdownProfile", SQLStatementType.DDL),
+    
+    DROP_LOCKDOWN_PROFILE("DropLockdownProfile", SQLStatementType.DDL),
+    
+    CREATE_INMEMORY_JOIN_GROUP("CreateInmemoryJoinGroup", SQLStatementType.DDL),
+    
+    DROP_INMEMORY_JOIN_GROUP("DropInmemoryJoinGroup", SQLStatementType.DDL),
+    
+    CREATE_RESTORE_POINT("CreateRestorePoint", SQLStatementType.DDL),
     
     CURSOR("Cursor", SQLStatementType.DDL),
     

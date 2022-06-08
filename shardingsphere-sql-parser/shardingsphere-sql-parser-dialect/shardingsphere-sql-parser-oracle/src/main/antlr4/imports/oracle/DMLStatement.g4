@@ -136,10 +136,10 @@ select
     ;
 
 selectSubquery
-    : (queryBlock | selectUnionClause | parenthesisSelectSubquery) orderByClause? rowLimitingClause
+    : (queryBlock | selectCombineClause | parenthesisSelectSubquery) orderByClause? rowLimitingClause
     ;
 
-selectUnionClause
+selectCombineClause
     : ((queryBlock | parenthesisSelectSubquery) orderByClause? rowLimitingClause) ((UNION ALL? | INTERSECT | MINUS) selectSubquery)+
     ;
 

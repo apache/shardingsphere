@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.agent.core.spi;
 
+import org.apache.shardingsphere.agent.core.plugin.AgentPluginLoader;
+
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
-import org.apache.shardingsphere.agent.core.plugin.ApmPluginLoader;
 
 /**
  * Agent service loader.
@@ -77,7 +78,7 @@ public final class AgentServiceLoader<T> {
             return;
         }
         serviceMap.put(service, new LinkedList<>());
-        ServiceLoader.load(service, ApmPluginLoader.getInstance())
+        ServiceLoader.load(service, AgentPluginLoader.getInstance())
                 .forEach(each -> serviceMap.get(service).add(each));
     }
 }

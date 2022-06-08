@@ -42,7 +42,7 @@ public final class EncryptTable {
         columns = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         for (EncryptColumnRuleConfiguration each : config.getColumns()) {
             columns.put(each.getLogicColumn(), new EncryptColumn(each.getCipherColumn(), each.getAssistedQueryColumn(), each.getPlainColumn(), each.getEncryptorName(),
-                    each.getAssistEncryptorName(), each.getQueryWithCipherColumn()));
+                    each.getAssistedQueryEncryptorName(), each.getQueryWithCipherColumn()));
         }
         queryWithCipherColumn = config.getQueryWithCipherColumn();
     }
@@ -58,13 +58,13 @@ public final class EncryptTable {
     }
     
     /**
-     * Find assist encrypt algorithm name.
+     * Find assisted query encrypt algorithm name.
      *
      * @param logicColumn column name
      * @return assist encrypt algorithm name
      */
-    public Optional<String> findAssistEncryptorName(final String logicColumn) {
-        return columns.containsKey(logicColumn) ? Optional.ofNullable(columns.get(logicColumn).getAssistEncryptorName()) : Optional.empty();
+    public Optional<String> findAssistedQueryEncryptorName(final String logicColumn) {
+        return columns.containsKey(logicColumn) ? Optional.ofNullable(columns.get(logicColumn).getAssistedQueryEncryptorName()) : Optional.empty();
     }
     
     /**
