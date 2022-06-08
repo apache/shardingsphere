@@ -15,7 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.federation.executor.translatable;
+package org.apache.shardingsphere.infra.federation.executor.translatable.resultset;
+
+import org.apache.shardingsphere.infra.federation.executor.translatable.WrapperAdapter;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -35,7 +37,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 
 /**
- * Unsupported {@code ResultSet} methods.
+ * Unsupported {@code ResultSet} update methods.
  */
 public abstract class AbstractUnsupportedUpdateOperationResultSet extends WrapperAdapter implements ResultSet {
     
