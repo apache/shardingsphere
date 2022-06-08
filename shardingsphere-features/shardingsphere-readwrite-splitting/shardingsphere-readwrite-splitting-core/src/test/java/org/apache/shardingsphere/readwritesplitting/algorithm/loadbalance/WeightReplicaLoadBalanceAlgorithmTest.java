@@ -41,7 +41,7 @@ public final class WeightReplicaLoadBalanceAlgorithmTest {
     @Before
     @After
     public void reset() throws NoSuchFieldException, IllegalAccessException {
-        Field accuracyThresholdField = WeightReplicaLoadBalanceAlgorithm.class.getDeclaredField("WEIGHT_MAP");
+        Field accuracyThresholdField = WeightReplicaLoadBalanceAlgorithm.class.getDeclaredField("weightMap");
         accuracyThresholdField.setAccessible(true);
         ((Map) accuracyThresholdField.get(WeightReplicaLoadBalanceAlgorithm.class)).clear();
     }
