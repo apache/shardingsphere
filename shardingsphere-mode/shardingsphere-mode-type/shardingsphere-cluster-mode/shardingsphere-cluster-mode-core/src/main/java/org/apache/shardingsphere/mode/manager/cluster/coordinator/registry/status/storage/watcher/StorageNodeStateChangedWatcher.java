@@ -27,7 +27,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.Gover
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.PrimaryStateChangedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.node.StorageStatusNode;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.node.StorageNode;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 
@@ -43,7 +43,7 @@ public final class StorageNodeStateChangedWatcher implements GovernanceWatcher<G
     
     @Override
     public Collection<String> getWatchingKeys() {
-        return Collections.singletonList(StorageStatusNode.getRootPath());
+        return Collections.singletonList(StorageNode.getRootPath());
     }
     
     @Override
@@ -56,14 +56,14 @@ public final class StorageNodeStateChangedWatcher implements GovernanceWatcher<G
         if (Strings.isNullOrEmpty(event.getValue())) {
             return Optional.empty();
         }
-        Optional<QualifiedDatabase> qualifiedSchema = StorageStatusNode.extractQualifiedSchema(event.getKey());
-        if (qualifiedSchema.isPresent()) {
-            QualifiedDatabase schema = qualifiedSchema.get();
+        Optional<QualifiedDatabase> qualifiedDatabase = StorageNode.extractQualifiedDatabase(event.getKey());
+        if (qualifiedDatabase.isPresent()) {
+            QualifiedDatabase database = qualifiedDatabase.get();
             StorageNodeDataSource storageNodeDataSource = YamlEngine.unmarshal(event.getValue(), StorageNodeDataSource.class);
             if (StorageNodeRole.PRIMARY.name().toLowerCase().equals(storageNodeDataSource.getRole())) {
-                return Optional.of(new PrimaryStateChangedEvent(schema));
+                return Optional.of(new PrimaryStateChangedEvent(database));
             }
-            return Optional.of(new DisabledStateChangedEvent(schema, Type.DELETED == event.getType()
+            return Optional.of(new DisabledStateChangedEvent(database, Type.DELETED == event.getType()
                     || StorageNodeStatus.DISABLED.name().toLowerCase().equals(storageNodeDataSource.getStatus())));
         }
         return Optional.empty();

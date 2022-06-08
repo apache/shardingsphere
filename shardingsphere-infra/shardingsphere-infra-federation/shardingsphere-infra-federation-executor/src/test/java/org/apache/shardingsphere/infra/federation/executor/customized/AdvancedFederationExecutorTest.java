@@ -42,9 +42,9 @@ import java.util.Map;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class CustomizedFilterableExecutorTest {
+public class AdvancedFederationExecutorTest {
     
-    private CustomizedFilterableExecutor executor;
+    private AdvancedFederationExecutor executor;
     
     @Before
     public void init() throws Exception {
@@ -56,7 +56,7 @@ public class CustomizedFilterableExecutorTest {
         Map<String, ShardingSphereSchema> schemas = Collections.singletonMap(databaseName, new ShardingSphereSchema(tables));
         ShardingSphereDatabase metaData = new ShardingSphereDatabase(schemaName, new H2DatabaseType(), mockResource(), null, schemas);
         OptimizerContext optimizerContext = OptimizerContextFactory.create(Collections.singletonMap(schemaName, metaData), createGlobalRuleMetaData());
-        executor = new CustomizedFilterableExecutor(databaseName, schemaName, optimizerContext);
+        executor = new AdvancedFederationExecutor(databaseName, schemaName, optimizerContext);
     }
     
     private ShardingSphereRuleMetaData createGlobalRuleMetaData() {
