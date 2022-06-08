@@ -42,6 +42,8 @@ public final class ColumnDefinitionSegment implements CreateDefinitionSegment {
     private DataTypeSegment dataType;
     
     private boolean primaryKey;
+
+    private boolean notNull;
     
     private final Collection<SimpleTableSegment> referencedTables = new LinkedList<>();
     
