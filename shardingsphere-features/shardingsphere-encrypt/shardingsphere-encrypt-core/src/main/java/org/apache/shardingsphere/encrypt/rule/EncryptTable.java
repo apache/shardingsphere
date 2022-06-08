@@ -58,6 +58,16 @@ public final class EncryptTable {
     }
     
     /**
+     * Find assisted query encrypt algorithm name.
+     *
+     * @param logicColumn column name
+     * @return assist encrypt algorithm name
+     */
+    public Optional<String> findAssistedQueryEncryptorName(final String logicColumn) {
+        return columns.containsKey(logicColumn) ? Optional.ofNullable(columns.get(logicColumn).getAssistedQueryEncryptorName()) : Optional.empty();
+    }
+    
+    /**
      * Get logic columns.
      *
      * @return logic column
