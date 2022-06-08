@@ -79,6 +79,7 @@ public final class ShardingSphereOptimizer {
         return Programs.standard().run(planner, optimizedRelRoot.rel, optimizedRelRoot.rel.getTraitSet(), Collections.emptyList(), Collections.emptyList());
     }
     
+    // TODO replace to related convention
     private RelTraitSet getDesiredTraitSet(final RelTraitSet relTraitSet, final Convention convention) {
         return relTraitSet.replace(convention).simplify();
     }
