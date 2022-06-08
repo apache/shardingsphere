@@ -57,7 +57,7 @@ public class AddressRepositoryImpl implements AddressRepository {
     
     @Override
     public void delete(final Long addressCode) {
-        Query query = entityManager.createQuery("DELETE FROM AddressEntity i WHERE i.addressCode = ?1");
+        Query query = entityManager.createQuery("DELETE FROM AddressEntity i WHERE i.addressId = ?1");
         query.setParameter(1, addressCode);
         query.executeUpdate();
     }

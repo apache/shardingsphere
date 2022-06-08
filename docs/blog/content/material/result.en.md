@@ -1,10 +1,8 @@
 +++
 title = "How to merge the child resultsets"
-weight = 11
+weight = 3
 chapter = true
 +++
-
-## How to merge the child resultsets
 
 This series of articles is a hands-on introduction and analysis of SS's core modules, the cutting-edge technologies used, and valuable lessons learned by SS's core development members. This series of articles will take you into the world of SS kernel, to gain new knowledge and inspire. We hope you will pay attention to us, exchange ideas and go forward together.
 
@@ -36,18 +34,13 @@ It is the simplest form of aggregation. Simply merge multiple result sets into a
 
 Due to the existence of the ORDER BY statement in SQL, each data result set is itself ordered, so only the data values that the current cursor of the data result set points to need to be sorted. This is equivalent to sorting multiple ordered arrays, and merge sorting is the most appropriate sorting algorithm for this scenario.
 
-
-
 Sharding-Sphere compares the current data values of each result set (done by implementing Java's Comparable interface) and places them in a priority queue when the sorted queries are merged. Each time the next piece of data is fetched, simply move the cursor of the result set at the top of the queue down and find your place in the priority queue again based on the new cursor. To illustrate Sharding-Sphere's sorting and merging with an example, the following diagram shows an example of sorting by score.
- 
 
 ![](https://shardingsphere.apache.org/blog/img/result1.jpg)
-
 
 The example shows 3 tables returning data result sets, each of which is already sorted according to score, but is unordered between the 3 data result sets. The data values pointed to by the current cursor for each of the 3 result sets are sorted and placed into a priority queue, with the first data value of t_score_0 being the largest, the first data value of t_score_2 the next largest, and the first data value of t_score_1 the smallest, so the priority queue is based on the t_score_0, t_score_2, and t_score_1's The following diagram shows how sorting the queue is done when the next call is made.
 
 The following diagram shows how the sorting and merging is done when the next call is made.
-
 
 ![](https://shardingsphere.apache.org/blog/img/result2.jpg)
  
@@ -71,27 +64,23 @@ To illustrate, suppose that the table structure contains the candidate's name (d
  
 In the case where the grouping item is identical to the sorting item, the data obtained is continuous, and the full amount of data required for grouping exists in the data values pointed to by the current cursor of each data result set, so streamwise merging can be used. This is shown in the figure below.
 
-
 ![](https://shardingsphere.apache.org/blog/img/result4.jpg)
  
 When performing a merge, the logic is similar to a sorted merge. The following diagram shows how stream group merging is performed when next call is made.
 
 ![](https://shardingsphere.apache.org/blog/img/result5.jpg)
 
- 
 As you can see in the diagram, when the first next call is made, the first t_score_java is ejected from the queue, along with all other result sets with the same value as "Jetty". After obtaining the scores of all students named "Jetty" and adding them up, the result set is the sum of "Jetty's" scores at the end of the first next call. At the same time, all cursors in the result set are moved down to the next different value of "Jetty" and re-sorted according to the value of the current cursor in the result set. As a result, the relevant result set containing the name "John" in the second place is at the top of the queue.
 
 Stream Group-by Merger merging differs from sorted merging in just two ways.
 
-1.	It will be a one-time multiple data result set of grouped items of the same data out of all.
-2.	It needs to be aggregated according to the type of aggregation function to calculate.
+1. It will be a one-time multiple data result set of grouped items of the same data out of all.
+2. It needs to be aggregated according to the type of aggregation function to calculate.
 
-For cases where the grouped item does not match the sorted item, since the data values associated with the grouping that needs to be obtained are not continuous, stream merging cannot be used and all the result set data needs to be loaded into memory for grouping and aggregation. For example, if the following SQL is used to obtain the total score for each candidate and sort the scores from highest to lowest.
- 
+For cases where the grouped item does not match the sorted item, since the data values associated with the grouping that needs to be obtained are not continuous, stream merging cannot be used and all the result set data needs to be loaded into memory for grouping and aggregation. For example, if the following SQL is used to obtain the total score for each candidate and sort the scores from highest to lowest. 
  
  ![](https://shardingsphere.apache.org/blog/img/result6.jpg)
- 
- 
+
 Then the data taken out of each data result set is consistent with the original data in the table structure in the upper half of the sorting example diagram for the scores, and it is not possible to perform streamwise summation.
 
 When the SQL contains only grouping statements, the order of sorting may not be the same as the grouping order depending on the implementation of different databases. However, the absence of the sorting statement means that this SQL does not care about the sorting order. Therefore, Sharding-Sphere automatically adds sorted items consistent with grouped items through SQL-optimized rewrites, allowing it to convert from a memory-consuming in-memory grouped imputation approach to a streaming grouped imputation scheme.
@@ -102,7 +91,6 @@ Comparison of the type of aggregate function refers to MAX and MIN. they need to
 Sum and COUNT are aggregation functions that need to be added to the result set for each cohort.
 
 It must be calculated by the SQL rewrite of SUM and COUNT, the relevant content has been covered in the SQL rewrite, not to repeat.
-
 
 #### Pagination Merger
 

@@ -21,20 +21,19 @@ package org.apache.shardingsphere.sharding.algorithm.sharding.classbased;
  * Class based sharding strategy.
  */
 public enum ClassBasedShardingAlgorithmStrategyType {
-
+    
     /**
      * The sharding strategy is standard.
      */
     STANDARD,
-
+    
     /**
      * The sharding strategy is complex.
      */
     COMPLEX,
-
+    
     /**
      * The sharding strategy is hint.
      */
     HINT
-
 }

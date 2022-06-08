@@ -18,20 +18,19 @@
 package org.apache.shardingsphere.spring.namespace.fixture;
 
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.Properties;
 
 @Getter
 public final class FooShardingSphereFixtureAlgorithm implements ShardingSphereFixtureAlgorithm {
     
-    @Setter
     private Properties props;
     
     private String value;
     
     @Override
-    public void init() {
+    public void init(final Properties props) {
+        this.props = props;
         value = props.getProperty("fixture-value");
     }
     

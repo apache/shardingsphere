@@ -18,13 +18,12 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal;
 
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.LoadStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
  * PostgreSQL load statement.
  */
 @ToString
-public final class PostgreSQLLoadStatement extends AbstractSQLStatement implements DALStatement, PostgreSQLStatement {
+public final class PostgreSQLLoadStatement extends LoadStatement implements PostgreSQLStatement {
 }

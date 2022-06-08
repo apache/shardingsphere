@@ -17,14 +17,17 @@
 
 package org.apache.shardingsphere.sharding.route.strategy.type.hint;
 
-import com.google.common.collect.Sets;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
+import org.apache.shardingsphere.sharding.fixture.CoreHintShardingAlgorithmFixture;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
+import org.junit.Test;
+
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Properties;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
-import org.apache.shardingsphere.sharding.route.strategy.fixture.HintShardingAlgorithmFixture;
-import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -33,10 +36,11 @@ public final class HintShardingStrategyTest {
     
     @Test
     public void assertDoSharding() {
-        Collection<String> targets = Sets.newHashSet("1", "2", "3");
-        HintShardingStrategy hintShardingStrategy = new HintShardingStrategy(new HintShardingAlgorithmFixture());
-        Collection<String> actualSharding = hintShardingStrategy
-            .doSharding(targets, Collections.singletonList(new ListShardingConditionValue<>("column", "logicTable", Collections.singletonList(1))), new ConfigurationProperties(new Properties()));
+        Collection<String> targets = new HashSet<>(Arrays.asList("1", "2", "3"));
+        HintShardingStrategy hintShardingStrategy = new HintShardingStrategy(new CoreHintShardingAlgorithmFixture());
+        DataNodeInfo dataNodeInfo = new DataNodeInfo("logicTable_", 1, '0');
+        Collection<String> actualSharding = hintShardingStrategy.doSharding(targets, Collections.singletonList(
+                new ListShardingConditionValue<>("column", "logicTable", Collections.singletonList(1))), dataNodeInfo, new ConfigurationProperties(new Properties()));
         assertThat(actualSharding.size(), is(1));
         assertThat(actualSharding.iterator().next(), is("1"));
     }

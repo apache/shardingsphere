@@ -1,10 +1,8 @@
 +++
 title = "How automatic executor of ShardingSphere works"
-weight = 10
+weight = 4
 chapter = true
 +++
-
-## How automatic executor of ShardingSphere works
 
 Today「Analysis of Sharding-Sphere Series Articles」is brings you an introduction to the Sharding-Sphere automated execution engine module in this article. Since the boss prefers serious technical articles, I try my best to use a serious and solemn narrative style to share with you the topic of "Sharding-Sphere Automated Execution Engine Module".
 

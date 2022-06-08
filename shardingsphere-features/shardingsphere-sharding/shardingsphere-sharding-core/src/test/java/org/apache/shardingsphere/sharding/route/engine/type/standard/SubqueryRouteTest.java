@@ -17,9 +17,7 @@
 
 package org.apache.shardingsphere.sharding.route.engine.type.standard;
 
-import org.apache.shardingsphere.infra.datetime.DatetimeService;
 import org.apache.shardingsphere.infra.hint.HintManager;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.junit.Test;
 
 import java.util.LinkedList;
@@ -27,12 +25,8 @@ import java.util.List;
 
 public final class SubqueryRouteTest extends AbstractSQLRouteTest {
     
-    static {
-        ShardingSphereServiceLoader.register(DatetimeService.class);
-    }
-    
     @Test
-    public void assertOneTableDifferentConditionWithFederate() {
+    public void assertOneTableDifferentConditionWithFederation() {
         String sql = "select (select max(id) from t_order b where b.user_id =? ) from t_order a where user_id = ? ";
         List<Object> parameters = new LinkedList<>();
         parameters.add(3);
@@ -41,7 +35,7 @@ public final class SubqueryRouteTest extends AbstractSQLRouteTest {
     }
     
     @Test
-    public void assertOneTableSameConditionWithFederate() {
+    public void assertOneTableSameConditionWithFederation() {
         String sql = "select (select max(id) from t_order b where b.user_id = ? and b.user_id = a.user_id) from t_order a where user_id = ? ";
         List<Object> parameters = new LinkedList<>();
         parameters.add(1);
@@ -50,7 +44,7 @@ public final class SubqueryRouteTest extends AbstractSQLRouteTest {
     }
     
     @Test
-    public void assertBindingTableWithFederate() {
+    public void assertBindingTableWithFederation() {
         String sql = "select (select max(id) from t_order_item b where b.user_id = ?) from t_order a where user_id = ? ";
         List<Object> parameters = new LinkedList<>();
         parameters.add(1);
@@ -68,7 +62,7 @@ public final class SubqueryRouteTest extends AbstractSQLRouteTest {
     }
     
     @Test
-    public void assertBindingTableWithDifferentValueWithFederate() {
+    public void assertBindingTableWithDifferentValueWithFederation() {
         String sql = "select (select max(id) from t_order_item b where b.user_id = ? ) from t_order a where user_id = ? ";
         List<Object> parameters = new LinkedList<>();
         parameters.add(2);
@@ -77,7 +71,7 @@ public final class SubqueryRouteTest extends AbstractSQLRouteTest {
     }
     
     @Test
-    public void assertTwoTableWithDifferentOperatorWithFederate() {
+    public void assertTwoTableWithDifferentOperatorWithFederation() {
         List<Object> parameters = new LinkedList<>();
         parameters.add(1);
         parameters.add(2);
@@ -87,7 +81,7 @@ public final class SubqueryRouteTest extends AbstractSQLRouteTest {
     }
     
     @Test
-    public void assertTwoTableWithInWithFederate() {
+    public void assertTwoTableWithInWithFederation() {
         List<Object> parameters = new LinkedList<>();
         parameters.add(1);
         parameters.add(2);
@@ -141,7 +135,7 @@ public final class SubqueryRouteTest extends AbstractSQLRouteTest {
     
     @Test
     public void assertSubqueryForAggregation() {
-        String sql = "select count(*) from t_order where c.user_id = (select user_id from t_order where user_id =?) ";
+        String sql = "select count(*) from t_order where user_id = (select user_id from t_order where user_id =?) ";
         List<Object> parameters = new LinkedList<>();
         parameters.add(1);
         assertRoute(sql, parameters);

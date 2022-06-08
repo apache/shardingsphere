@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.proxy.backend.text.admin.executor;
 
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+
+import java.sql.SQLException;
 
 /**
  * Database admin executor.
@@ -27,7 +29,8 @@ public interface DatabaseAdminExecutor {
     /**
      * Execute.
      * 
-     * @param backendConnection backend connection
+     * @param connectionSession connection session
+     * @throws SQLException SQLException
      */
-    void execute(BackendConnection backendConnection);
+    void execute(ConnectionSession connectionSession) throws SQLException;
 }

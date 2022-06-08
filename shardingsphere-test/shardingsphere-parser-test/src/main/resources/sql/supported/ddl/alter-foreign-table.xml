@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="alter_foreign_table_add_column_options" value="ALTER FOREIGN TABLE IF EXISTS doesnt_exist_ft1 ADD COLUMN c10 integer OPTIONS (p1 &apos;v1&apos;);" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_foreign_table_add_column_not_null" value="ALTER FOREIGN TABLE IF EXISTS doesnt_exist_ft1 ADD COLUMN c7 integer NOT NULL;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_foreign_table_add_column_integer" value="ALTER FOREIGN TABLE IF EXISTS doesnt_exist_ft1 ADD COLUMN c8 integer;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_foreign_table_alter_column_set" value="ALTER FOREIGN TABLE IF EXISTS doesnt_exist_ft1 ALTER COLUMN c6 SET NOT NULL;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_foreign_table_alter_column_drop" value="ALTER FOREIGN TABLE IF EXISTS doesnt_exist_ft1 ALTER COLUMN c7 DROP NOT NULL;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_foreign_table_alter_column_option_add" value="ALTER FOREIGN TABLE IF EXISTS doesnt_exist_ft1 ALTER COLUMN c7 OPTIONS (ADD p1 &apos;v1&apos;, ADD p2 &apos;v2&apos;),ALTER COLUMN c8 OPTIONS (ADD p1 &apos;v1&apos;, ADD p2 &apos;v2&apos;);" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_foreign_table_alter_column_option_set" value="ALTER FOREIGN TABLE IF EXISTS doesnt_exist_ft1 ALTER COLUMN c8 OPTIONS (SET p2 &apos;V2&apos;, DROP p1);" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_foreign_table_alter_set_data" value="ALTER FOREIGN TABLE IF EXISTS doesnt_exist_ft1 ALTER COLUMN c8 SET DATA TYPE text;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_foreign_table_alter_column_char" value="ALTER FOREIGN TABLE IF EXISTS doesnt_exist_ft1 ALTER COLUMN c8 TYPE char(10);" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_foreign_table_drop_column_if_exists" value="ALTER FOREIGN TABLE IF EXISTS doesnt_exist_ft1 DROP COLUMN IF EXISTS no_column;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_foreign_table_drop_column" value="ALTER FOREIGN TABLE IF EXISTS doesnt_exist_ft1 DROP COLUMN c9;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_foreign_table_drop_constraint_if_exists" value="ALTER FOREIGN TABLE IF EXISTS doesnt_exist_ft1 DROP CONSTRAINT IF EXISTS no_const;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_foreign_table_drop_constraint" value="ALTER FOREIGN TABLE IF EXISTS doesnt_exist_ft1 DROP CONSTRAINT ft1_c1_check;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_foreign_table_options_drop_set" value="ALTER FOREIGN TABLE IF EXISTS doesnt_exist_ft1 OPTIONS (DROP delimiter, SET quote &apos;~&apos;, ADD escape &apos;@&apos;);" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_foreign_table_owner" value="ALTER FOREIGN TABLE IF EXISTS doesnt_exist_ft1 OWNER TO regress_test_role;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_foreign_table_rename" value="ALTER FOREIGN TABLE IF EXISTS doesnt_exist_ft1 RENAME TO foreign_table_1;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_foreign_table_set_schema" value="ALTER FOREIGN TABLE IF EXISTS doesnt_exist_ft1 SET SCHEMA foreign_schema;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_foreign_table_add_constraint" value="ALTER FOREIGN TABLE fd_pt2_1 ADD CONSTRAINT fd_pt2chk1 CHECK (c1 &gt; 0);" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_foreign_table_set_not_null" value="ALTER FOREIGN TABLE fd_pt2_1 ALTER c2 SET NOT NULL;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_foreign_table_disable_trigger" value="ALTER FOREIGN TABLE foreign_schema.foreign_table_1 	DISABLE TRIGGER trigtest_before_stmt;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_foreign_table_enable_trigger" value="ALTER FOREIGN TABLE foreign_schema.foreign_table_1 	ENABLE TRIGGER trigtest_before_stmt;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_foreign_table_rename_a_to_b" value="ALTER FOREIGN TABLE foreign_schema.ft1 RENAME c1 TO foreign_column_1;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_foreign_table_add_column_options_p1" value="ALTER FOREIGN TABLE ft1 ADD COLUMN c10 integer OPTIONS (p1 &apos;v1&apos;);" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_foreign_table_add_column_default" value="ALTER FOREIGN TABLE ft1 ADD COLUMN c5 integer DEFAULT 0;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_foreign_table_add_constraint_no_valid" value="ALTER FOREIGN TABLE ft1 ADD CONSTRAINT ft1_c9_check CHECK (c9 &lt; 0) NOT VALID;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_foreign_table_add_primary" value="ALTER FOREIGN TABLE ft1 ADD PRIMARY KEY (c7);" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_foreign_table_alter_column_set_number" value="ALTER FOREIGN TABLE ft1 ALTER COLUMN c1 SET (n_distinct = 100);" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_foreign_table_alter_column_set_statistics" value="ALTER FOREIGN TABLE ft1 ALTER COLUMN c1 SET STATISTICS 10000;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_foreign_table_alter_column_c4" value="ALTER FOREIGN TABLE ft1 ALTER COLUMN c4 SET DEFAULT 0;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_foreign_table_alter_column_drop_default" value="ALTER FOREIGN TABLE ft1 ALTER COLUMN c5 DROP DEFAULT;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_foreign_table_alter_column_c6" value="ALTER FOREIGN TABLE ft1 ALTER COLUMN c6 SET NOT NULL;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_foreign_table_alter_column_c7_drop_not_null" value="ALTER FOREIGN TABLE ft1 ALTER COLUMN c7 DROP NOT NULL;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_foreign_table_alter_column_c7_options_add_add" value="ALTER FOREIGN TABLE ft1 ALTER COLUMN c7 OPTIONS (ADD p1 &apos;v1&apos;, ADD p2 &apos;v2&apos;),ALTER COLUMN c8 OPTIONS (ADD p1 &apos;v1&apos;, ADD p2 &apos;v2&apos;);" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_foreign_table_alter_c8_set_drop" value="ALTER FOREIGN TABLE ft1 ALTER COLUMN c8 OPTIONS (SET p2 &apos;V2&apos;, DROP p1);" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_foreign_table_alter_c8_set_data_type_integer" value="ALTER FOREIGN TABLE ft1 ALTER COLUMN c8 SET DATA TYPE integer;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_foreign_table_alter_c8_set_data_type_text" value="ALTER FOREIGN TABLE ft1 ALTER COLUMN c8 SET DATA TYPE text;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_foreign_table_alter_c8_set_statistics" value="ALTER FOREIGN TABLE ft1 ALTER COLUMN c8 SET STATISTICS -1;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_foreign_table_alter_c8_set_storage_plain" value="ALTER FOREIGN TABLE ft1 ALTER COLUMN c8 SET STORAGE PLAIN;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_foreign_table_alter_c8_type_using" value="ALTER FOREIGN TABLE ft1 ALTER COLUMN c8 TYPE char(10) USING &apos;0&apos;;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_foreign_table_alter_c8_type_char" value="ALTER FOREIGN TABLE ft1 ALTER COLUMN c8 TYPE char(10);" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_foreign_table_alter_column_options_add_v1" value="ALTER FOREIGN TABLE ft1 ALTER COLUMN xmin OPTIONS (ADD p1 &apos;v1&apos;);" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_foreign_table_alter_constraint_deferrable" value="ALTER FOREIGN TABLE ft1 ALTER CONSTRAINT ft1_c9_check DEFERRABLE;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_foreign_table_drop_if_exists" value="ALTER FOREIGN TABLE ft1 DROP COLUMN IF EXISTS no_column;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_foreign_table_drop_column_c9" value="ALTER FOREIGN TABLE ft1 DROP COLUMN c9;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_foreign_table_drop_constraint_no_const" value="ALTER FOREIGN TABLE ft1 DROP CONSTRAINT IF EXISTS no_const;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_foreign_table_drop_constraint_ft1" value="ALTER FOREIGN TABLE ft1 DROP CONSTRAINT ft1_c9_check;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_foreign_table_drop_constraint_no" value="ALTER FOREIGN TABLE ft1 DROP CONSTRAINT no_const;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_foreign_table_options_drop_delimiter_set" value="ALTER FOREIGN TABLE ft1 OPTIONS (DROP delimiter, SET quote &apos;~&apos;, ADD escape &apos;@&apos;);" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_foreign_table_owner_to_regress" value="ALTER FOREIGN TABLE ft1 OWNER TO regress_test_role;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_foreign_table_set_schema_foreign" value="ALTER FOREIGN TABLE ft1 SET SCHEMA foreign_schema;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_foreign_table_set_tablespace" value="ALTER FOREIGN TABLE ft1 SET TABLESPACE ts;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_foreign_table_add_constraint_check" value="ALTER FOREIGN TABLE ft2 ADD CONSTRAINT fd_pt1chk2 CHECK (c2 &lt;&gt; &apos;&apos;);" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_foreign_table_inherit" value="ALTER FOREIGN TABLE ft2 INHERIT fd_pt1;" db-types="PostgreSQL,openGauss" />
+</sql-cases>

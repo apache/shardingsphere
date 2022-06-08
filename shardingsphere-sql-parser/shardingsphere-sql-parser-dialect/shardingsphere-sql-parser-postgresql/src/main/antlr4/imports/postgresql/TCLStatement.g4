@@ -15,9 +15,13 @@
  * limitations under the License.
  */
 
-grammar TCLStatement;
+parser grammar TCLStatement;
 
-import Symbol, Keyword, PostgreSQLKeyword, Literals, BaseRule;
+import DMLStatement;
+
+options {
+    tokenVocab = ModeLexer;
+}
 
 setTransaction
     : SET (SESSION CHARACTERISTICS AS)? TRANSACTION transactionModeList
@@ -70,5 +74,17 @@ commitPrepared
 
 rollbackPrepared
     : ROLLBACK PREPARED STRING_
+    ;
+
+setConstraints
+    : SET CONSTRAINTS constraintsSetList constraintsSetMode
+    ;
+
+constraintsSetMode
+    : DEFERRED | IMMEDIATE
+    ;
+
+constraintsSetList
+    : ALL | qualifiedNameList
     ;
 

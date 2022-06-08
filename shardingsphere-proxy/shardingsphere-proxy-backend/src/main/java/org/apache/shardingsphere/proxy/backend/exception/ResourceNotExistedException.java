@@ -17,21 +17,10 @@
 
 package org.apache.shardingsphere.proxy.backend.exception;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-import java.util.Collection;
-
 /**
- * Resource not existed exception.
+ * Resource does not exist exception.
  */
-@RequiredArgsConstructor
-@Getter
 public final class ResourceNotExistedException extends BackendException {
-
-    private static final long serialVersionUID = 1704331180489268L;
-
-    private final String schemaName;
-
-    private final Collection<String> resourceNames;
+    
+    private static final long serialVersionUID = 4146100333670404924L;
 }

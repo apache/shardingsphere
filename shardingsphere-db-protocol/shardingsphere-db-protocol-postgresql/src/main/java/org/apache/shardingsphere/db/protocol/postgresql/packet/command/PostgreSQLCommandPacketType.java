@@ -22,6 +22,10 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.packet.CommandPacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Command packet type for PostgreSQL.
  * 
@@ -30,6 +34,8 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.Postgr
 @RequiredArgsConstructor
 @Getter
 public enum PostgreSQLCommandPacketType implements CommandPacketType, PostgreSQLIdentifierTag {
+    
+    PASSWORD('p'),
     
     SIMPLE_QUERY('Q'),
     
@@ -49,6 +55,10 @@ public enum PostgreSQLCommandPacketType implements CommandPacketType, PostgreSQL
     
     TERMINATE('X');
     
+    private static final Set<PostgreSQLCommandPacketType> EXTENDED_PROTOCOL_PACKET_TYPE = new HashSet<>(Arrays.asList(PostgreSQLCommandPacketType.PARSE_COMMAND,
+            PostgreSQLCommandPacketType.BIND_COMMAND, PostgreSQLCommandPacketType.DESCRIBE_COMMAND, PostgreSQLCommandPacketType.EXECUTE_COMMAND, PostgreSQLCommandPacketType.SYNC_COMMAND,
+            PostgreSQLCommandPacketType.CLOSE_COMMAND, PostgreSQLCommandPacketType.FLUSH_COMMAND));
+    
     private final char value;
     
     /**
@@ -64,5 +74,15 @@ public enum PostgreSQLCommandPacketType implements CommandPacketType, PostgreSQL
             }
         }
         throw new IllegalArgumentException(String.format("Cannot find '%s' in PostgreSQL command packet type", value));
+    }
+    
+    /**
+     * Check if the packet type is extended protocol packet type.
+     *
+     * @param commandPacketType command packet type
+     * @return is extended protocol packet type
+     */
+    public static boolean isExtendedProtocolPacketType(final CommandPacketType commandPacketType) {
+        return EXTENDED_PROTOCOL_PACKET_TYPE.contains(commandPacketType);
     }
 }

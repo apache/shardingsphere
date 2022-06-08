@@ -17,53 +17,64 @@
 
 package org.apache.shardingsphere.proxy.frontend.postgresql.command;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary.describe.PostgreSQLComDescribeExecutor;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Optional;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * PostgreSQL connection context.
  */
-@Getter
-@Setter
 public final class PostgreSQLConnectionContext {
     
-    private final Collection<CommandExecutor> pendingExecutors = new LinkedList<>();
-    
-    private SQLStatement sqlStatement;
-    
-    private long updateCount;
+    private final Map<String, Portal<?>> portals = new LinkedHashMap<>();
     
     /**
-     * Get describe command executor.
+     * Create a portal.
      *
-     * @return describe command executor
+     * @param portal portal name
      */
-    public Optional<PostgreSQLComDescribeExecutor> getDescribeExecutor() {
-        return pendingExecutors.stream().filter(PostgreSQLComDescribeExecutor.class::isInstance).map(PostgreSQLComDescribeExecutor.class::cast).findFirst();
+    public void addPortal(final Portal<?> portal) {
+        boolean isNamedPortal = !portal.getName().isEmpty();
+        if (isNamedPortal && portals.containsKey(portal.getName())) {
+            throw new IllegalStateException("Named portal [" + portal.getName() + "] must be explicitly closed");
+        }
+        Portal<?> previousPortal = portals.put(portal.getName(), portal);
+        if (null != previousPortal) {
+            previousPortal.close();
+        }
     }
     
     /**
-     * Get SQL statement.
+     * Get portal.
      *
-     * @return SQL statement
+     * @param <T> type of Portal
+     * @param portal portal name
+     * @return portal
      */
-    public Optional<SQLStatement> getSqlStatement() {
-        return Optional.ofNullable(sqlStatement);
+    public <T extends Portal<?>> T getPortal(final String portal) {
+        return (T) portals.get(portal);
     }
     
     /**
-     * Clear context.
+     * Close portal.
+     *
+     * @param portal portal name
      */
-    public void clearContext() {
-        pendingExecutors.clear();
-        sqlStatement = null;
-        updateCount = 0;
+    public void closePortal(final String portal) {
+        Portal<?> result = portals.remove(portal);
+        if (null != result) {
+            result.close();
+        }
+    }
+    
+    /**
+     * Close all portals.
+     */
+    public void closeAllPortals() {
+        for (Portal<?> each : portals.values()) {
+            each.close();
+        }
+        portals.clear();
     }
 }

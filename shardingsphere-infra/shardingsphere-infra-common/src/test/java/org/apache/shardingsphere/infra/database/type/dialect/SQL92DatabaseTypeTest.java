@@ -35,7 +35,7 @@ public final class SQL92DatabaseTypeTest {
     
     @Test
     public void assertGetName() {
-        assertThat(new SQL92DatabaseType().getName(), is("SQL92"));
+        assertThat(new SQL92DatabaseType().getType(), is("SQL92"));
     }
     
     @Test

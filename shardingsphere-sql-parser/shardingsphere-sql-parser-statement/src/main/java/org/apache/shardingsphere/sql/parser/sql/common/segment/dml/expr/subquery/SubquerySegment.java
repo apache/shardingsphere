@@ -19,7 +19,9 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquer
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.SubqueryType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
@@ -36,4 +38,7 @@ public final class SubquerySegment implements ExpressionSegment {
     private final int stopIndex;
     
     private final SelectStatement select;
+    
+    @Setter
+    private SubqueryType subqueryType;
 }

@@ -20,4 +20,9 @@ package org.apache.shardingsphere.infra.route.fixture.rule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 public final class RouteRuleFixture implements ShardingSphereRule {
+    
+    @Override
+    public String getType() {
+        return RouteRuleFixture.class.getSimpleName();
+    }
 }

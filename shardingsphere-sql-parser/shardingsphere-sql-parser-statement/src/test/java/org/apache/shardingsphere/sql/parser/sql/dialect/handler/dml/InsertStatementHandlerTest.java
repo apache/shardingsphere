@@ -21,6 +21,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.Se
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml.OpenGaussInsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLInsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerInsertStatement;
 import org.junit.Test;
@@ -44,6 +45,21 @@ public final class InsertStatementHandlerTest {
     @Test
     public void assertGetOnDuplicateKeyColumnsSegmentWithoutOnDuplicateKeyColumnsSegmentForMySQL() {
         MySQLInsertStatement insertStatement = new MySQLInsertStatement();
+        Optional<OnDuplicateKeyColumnsSegment> onDuplicateKeyColumnsSegment = InsertStatementHandler.getOnDuplicateKeyColumnsSegment(insertStatement);
+        assertFalse(onDuplicateKeyColumnsSegment.isPresent());
+    }
+    
+    @Test
+    public void assertGetOnDuplicateKeyColumnsSegmentWithOnDuplicateKeyColumnsSegmentForOpenGauss() {
+        OpenGaussInsertStatement insertStatement = new OpenGaussInsertStatement();
+        insertStatement.setOnDuplicateKeyColumnsSegment(new OnDuplicateKeyColumnsSegment(0, 0, Collections.emptyList()));
+        Optional<OnDuplicateKeyColumnsSegment> onDuplicateKeyColumnsSegment = InsertStatementHandler.getOnDuplicateKeyColumnsSegment(insertStatement);
+        assertTrue(onDuplicateKeyColumnsSegment.isPresent());
+    }
+    
+    @Test
+    public void assertGetOnDuplicateKeyColumnsSegmentWithoutOnDuplicateKeyColumnsSegmentForOpenGauss() {
+        OpenGaussInsertStatement insertStatement = new OpenGaussInsertStatement();
         Optional<OnDuplicateKeyColumnsSegment> onDuplicateKeyColumnsSegment = InsertStatementHandler.getOnDuplicateKeyColumnsSegment(insertStatement);
         assertFalse(onDuplicateKeyColumnsSegment.isPresent());
     }

@@ -17,25 +17,58 @@
 
 dataSources:
   ds:
-    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-    driverClassName: org.h2.Driver
-    jdbcUrl: jdbc:h2:mem:primary_ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
-    username: sa
-    password: 
+    dataSourceClassName: org.apache.shardingsphere.test.mock.MockedDataSource
   shadow_ds:
-    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-    driverClassName: org.h2.Driver
-    jdbcUrl: jdbc:h2:mem:replica_ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
-    username: sa
-    password:
+    dataSourceClassName: org.apache.shardingsphere.test.mock.MockedDataSource
 
 rules:
 - !SHADOW
-  column: shadow
-  sourceDataSourceNames:
-    - ds
-    - ds1
-  shadowDataSourceNames:
-    - shadow_ds
-    - shadow_ds1
-
+  dataSources:
+    shadowDataSource:
+      sourceDataSourceName: ds
+      shadowDataSourceName: ds_shadow
+  tables:
+    t_order:
+      dataSourceNames:
+        - shadowDataSource
+      shadowAlgorithmNames:
+        - user-id-insert-match-algorithm
+        - user-id-select-match-algorithm
+    t_order_item:
+      dataSourceNames:
+        - shadowDataSource
+      shadowAlgorithmNames:
+        - user-id-insert-match-algorithm
+        - user-id-update-match-algorithm
+        - user-id-select-match-algorithm
+    t_address:
+      dataSourceNames:
+        - shadowDataSource
+      shadowAlgorithmNames:
+        - user-id-insert-match-algorithm
+        - user-id-select-match-algorithm
+        - simple-hint-algorithm
+  shadowAlgorithms:
+    user-id-insert-match-algorithm:
+      type: REGEX_MATCH
+      props:
+        operation: insert
+        column: user_id
+        regex: "[1]"
+    user-id-update-match-algorithm:
+      type: REGEX_MATCH
+      props:
+        operation: update
+        column: user_id
+        regex: "[1]"
+    user-id-select-match-algorithm:
+      type: REGEX_MATCH
+      props:
+        operation: select
+        column: user_id
+        regex: "[1]"
+    simple-hint-algorithm:
+      type: SIMPLE_HINT
+      props:
+        shadow: true
+        foo: bar

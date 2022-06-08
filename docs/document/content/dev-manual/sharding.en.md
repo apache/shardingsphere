@@ -1,26 +1,31 @@
 +++
-pre = "<b>5.4. </b>"
+pre = "<b>6.7. </b>"
 title = "Data Sharding"
-weight = 4
+weight = 7
 chapter = true
 +++
 
 ## ShardingAlgorithm
 
-| *SPI Name*                      | *Description*                          |
-| ------------------------------- | -------------------------------------- |
-| ShardingAlgorithm               | Sharding algorithm                     |
+| *SPI Name*                          | *Description*                                  |
+| ----------------------------------- | ---------------------------------------------- |
+| ShardingAlgorithm                   | Sharding algorithm                             |
 
-| *Implementation Class*              | *Description*                           |
-| ----------------------------------- | --------------------------------------- |
-| InlineShardingAlgorithm             | Inline sharding algorithm               |
-| ModShardingAlgorithm                | Modulo sharding algorithm               |
-| HashModShardingAlgorithm            | Hash modulo sharding algorithm          |
-| FixedIntervalShardingAlgorithm      | Fixed interval sharding algorithm       |
-| MutableIntervalShardingAlgorithm    | Mutable interval sharding algorithm     |
-| VolumeBasedRangeShardingAlgorithm   | Volume based range sharding algorithm   |
-| BoundaryBasedRangeShardingAlgorithm | Boundary based range sharding algorithm |
-| ClassBasedShardingAlgorithm         | Class based sharding algorithm          |
+| *Implementation Class*                  | *Description*                                                           |
+|-----------------------------------------|-------------------------------------------------------------------------|
+| BoundaryBasedRangeShardingAlgorithm     | Boundary based range sharding algorithm                                 |
+| VolumeBasedRangeShardingAlgorithm       | Volume based range sharding algorithm                                   |
+| ComplexInlineShardingAlgorithm          | Complex inline sharding algorithm                                       |
+| AutoIntervalShardingAlgorithm           | Mutable interval sharding algorithm                                     |
+| ClassBasedShardingAlgorithm             | Class based sharding algorithm                                          |
+| HintInlineShardingAlgorithm             | Hint inline sharding algorithm                                          |
+| IntervalShardingAlgorithm               | Fixed interval sharding algorithm                                       |
+| HashModShardingAlgorithm                | Hash modulo sharding algorithm                                          |
+| InlineShardingAlgorithm                 | Inline sharding algorithm                                               |
+| ModShardingAlgorithm                    | Modulo sharding algorithm                                               |
+| CosIdModShardingAlgorithm               | Modulo sharding algorithm provided by CosId                             |
+| CosIdIntervalShardingAlgorithm          | Fixed interval sharding algorithm provided by CosId                     |
+| CosIdSnowflakeIntervalShardingAlgorithm | Snowflake key-based fixed interval sharding algorithm provided by CosId |
 
 ## KeyGenerateAlgorithm
 
@@ -28,21 +33,24 @@ chapter = true
 | ----------------------------- | -------------------------------- |
 | KeyGenerateAlgorithm          | Key generate algorithm           |
 
-| *Implementation Class*        | *Description*                    |
-| ----------------------------- | -------------------------------- |
-| SnowflakeKeyGenerateAlgorithm | Snowflake key generate algorithm |
-| UUIDKeyGenerateAlgorithm      | UUID key generate algorithm      |
+| *Implementation Class*             | *Description*                                      |
+|----------------------------------- |--------------------------------------------------- |
+| SnowflakeKeyGenerateAlgorithm      | Snowflake key generate algorithm                   |
+| UUIDKeyGenerateAlgorithm           | UUID key generate algorithm                        |
+| CosIdKeyGenerateAlgorithm          | CosId key generate algorithm                       |
+| CosIdSnowflakeKeyGenerateAlgorithm | Snowflake key generate algorithm provided by CosId |
+| NanoIdKeyGenerateAlgorithm         | NanoId key generate algorithm                      |
 
-## TimeService
+## DatetimeService
 
-| *SPI Name*                  | *Description*                                                |
-| --------------------------- | ------------------------------------------------------------ |
-| TimeService                 | Use current time for routing                                 |
+| *SPI Name*                      | *Description*                                                |
+| ------------------------------- | ------------------------------------------------------------ |
+| DatetimeService                 | Use current time for routing                                 |
 
-| *Implementation Class*      | *Description*                                                |
-| --------------------------- | ------------------------------------------------------------ |
-| DefaultTimeService          | Get the current time from the application system for routing |
-| DatabaseTimeServiceDelegate | Get the current time from the database for routing           |
+| *Implementation Class*          | *Description*                                                |
+| ------------------------------- | ------------------------------------------------------------ |
+| DatabaseDatetimeServiceDelegate | Get the current time from the database for routing           |
+| SystemDatetimeService           | Get the current time from the application system for routing |
 
 ## DatabaseSQLEntry
 

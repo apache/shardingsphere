@@ -17,7 +17,7 @@
 
 grammar TCLStatement;
 
-import Symbol, Keyword, OracleKeyword, Literals, BaseRule;
+import BaseRule;
 
 setTransaction
     : SET TRANSACTION ((READ (ONLY | WRITE)

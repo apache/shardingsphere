@@ -46,6 +46,8 @@ customKeyword
     | AUTOCOMMIT
     | INNODB
     | REDO_LOG
+    | LAST_VALUE
+    | PRIMARY
     ;
     
 literals
@@ -63,7 +65,7 @@ string_
     ;
     
 stringLiterals
-    : UNDERSCORE_CHARSET? string_ | NCHAR_TEXT
+    : (UNDERSCORE_CHARSET | UL_BINARY )? string_ | NCHAR_TEXT
     ;
     
 numberLiterals
@@ -103,6 +105,7 @@ identifier
     | identifierKeywordsAmbiguous4SystemVariables
     | customKeyword
     | DOUBLE_QUOTED_TEXT
+    | UNDERSCORE_CHARSET
     ;
     
 identifierKeywordsUnambiguous
@@ -161,6 +164,7 @@ identifierKeywordsUnambiguous
     | CONSTRAINT_SCHEMA
     | CONTEXT
     | CPU
+    | CREATE
     | CURRENT
     | CURSOR_NAME
     | DATAFILE
@@ -240,6 +244,7 @@ identifierKeywordsUnambiguous
     | ISSUER
     | JSON
     | JSON_VALUE
+    | KEY
     | KEY_BLOCK_SIZE
     | LAST
     | LEAVES
@@ -564,6 +569,7 @@ variable
     
 userVariable
     : AT_ textOrIdentifier
+    | textOrIdentifier
     ;
     
 systemVariable
@@ -614,7 +620,7 @@ schemaNames
     ;
     
 charsetName
-    : textOrIdentifier | BINARY
+    : textOrIdentifier | BINARY | DEFAULT
     ;
     
 schemaPairs
@@ -641,16 +647,20 @@ constraintName
     : identifier
     ;
 
+delimiterName
+    : textOrIdentifier | ('\\'. | ~('\'' | '"' | '`' | '\\'))+
+    ; 
+
 userIdentifierOrText
     : textOrIdentifier (AT_ textOrIdentifier)?
     ;
     
-userName
+username
     : userIdentifierOrText | CURRENT_USER (LP_ RP_)?
     ;
     
 eventName
-    : identifier (DOT_ identifier)?
+    : (owner DOT_)? identifier
     ;
     
 serverName
@@ -662,13 +672,15 @@ wrapperName
     ;
     
 functionName
-    : identifier
-    | (owner DOT_)? identifier
+    : (owner DOT_)? identifier
     ;
-    
+
+procedureName
+    : (owner DOT_)? identifier
+    ;
+
 viewName
-    : identifier
-    | (owner DOT_)? identifier
+    : (owner DOT_)? identifier
     ;
     
 owner
@@ -715,7 +727,7 @@ pluginName
     : identifier
     ;
     
-hostName
+hostname
     : string_
     ;
     
@@ -724,7 +736,7 @@ port
     ;
     
 cloneInstance
-    : userName AT_ hostName COLON_ port
+    : username AT_ hostname COLON_ port
     ;
     
 cloneDir
@@ -764,7 +776,7 @@ tableOrTables
     ;
     
 userOrRole
-    : userName | roleName
+    : username | roleName
     ;
     
 partitionName
@@ -789,13 +801,18 @@ triggerOrder
     
 expr
     : booleanPrimary
-    | expr logicalOperator expr
+    | expr andOperator expr
+    | expr orOperator expr
     | expr XOR expr
     | notOperator expr
     ;
     
-logicalOperator
-    : OR | OR_ | AND | AND_
+andOperator
+    : AND | AND_
+    ;
+    
+orOperator
+    : OR | OR_
     ;
     
 notOperator
@@ -807,7 +824,12 @@ booleanPrimary
     | booleanPrimary SAFE_EQ_ predicate
     | booleanPrimary comparisonOperator predicate
     | booleanPrimary comparisonOperator (ALL | ANY) subquery
+    | booleanPrimary assignmentOperator predicate
     | predicate
+    ;
+    
+assignmentOperator
+    : EQ_ | ASSIGNMENT_
     ;
     
 comparisonOperator
@@ -847,7 +869,7 @@ simpleExpr
     | parameterMarker
     | literals
     | columnRef
-    | simpleExpr COLLATE textOrIdentifier
+    | simpleExpr collateClause
     | variable
     | simpleExpr OR_ simpleExpr
     | (PLUS_ | MINUS_ | TILDE_ | notOperator | BINARY) simpleExpr
@@ -855,9 +877,18 @@ simpleExpr
     | EXISTS? subquery
     | LBE_ identifier expr RBE_
     | identifier (JSON_SEPARATOR | JSON_UNQUOTED_SEPARATOR) string_
+    | path (RETURNING dataType)? onEmptyError? 
     | matchExpression
     | caseExpression
     | intervalExpression
+    ;
+    
+path
+    : string_
+    ;
+
+onEmptyError
+    : (NULL | ERROR | DEFAULT literals) ON (EMPTY | ERROR)
     ;
     
 columnRef
@@ -873,11 +904,11 @@ functionCall
     ;
     
 aggregationFunction
-    : aggregationFunctionName LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? RP_ overClause?
+    : aggregationFunctionName LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? collateClause? RP_ overClause?
     ;
     
 aggregationFunctionName
-    : MAX | MIN | SUM | COUNT | AVG
+    : MAX | MIN | SUM | COUNT | AVG | BIT_XOR
     ;
     
 distinct
@@ -885,11 +916,11 @@ distinct
     ;
     
 overClause
-    : OVER (LP_ windowSpecification RP_ | identifier)
+    : OVER (windowSpecification | identifier)
     ;
     
 windowSpecification
-    : identifier? (PARTITION BY expr (COMMA_ expr)*)? orderByClause? frameClause?
+    : LP_ identifier? (PARTITION BY expr (COMMA_ expr)*)? orderByClause? frameClause? RP_
     ;
     
 frameClause
@@ -996,7 +1027,8 @@ charFunction
     ;
     
 trimFunction
-    : TRIM LP_ (LEADING | BOTH | TRAILING) string_ FROM string_ RP_
+    : TRIM LP_ ((LEADING | BOTH | TRAILING) string_? FROM)? string_ RP_
+    | TRIM LP_ (string_ FROM)? string_ RP_
     ;
     
 valuesFunction
@@ -1032,7 +1064,8 @@ regularFunctionName
     : IF | LOCALTIME | LOCALTIMESTAMP | REPLACE | INTERVAL | MOD
     | DATABASE | SCHEMA | LEFT | RIGHT | DATE | DAY | GEOMETRYCOLLECTION
     | LINESTRING | MULTILINESTRING | MULTIPOINT | MULTIPOLYGON | POINT | POLYGON
-    | TIME | TIMESTAMP | TIMESTAMP_ADD | TIMESTAMP_DIFF | DATE | CURRENT_TIMESTAMP | identifier
+    | TIME | TIMESTAMP | TIMESTAMP_ADD | TIMESTAMP_DIFF | DATE | CURRENT_TIMESTAMP 
+    | CURRENT_DATE | CURRENT_TIME | UTC_TIMESTAMP | identifier
     ;
     
 matchExpression
@@ -1097,6 +1130,7 @@ dataType
     | dataTypeName = (BOOL | BOOLEAN)
     | dataTypeName = CHAR fieldLength? charsetWithOptBinary?
     | (dataTypeName = NCHAR | dataTypeName = NATIONAL CHAR) fieldLength? BINARY?
+    | dataTypeName = SIGNED (INTEGER | INT)?
     | dataTypeName = BINARY fieldLength?
     | (dataTypeName = CHAR VARYING | dataTypeName = VARCHAR) fieldLength charsetWithOptBinary?
     | (dataTypeName = NATIONAL VARCHAR | dataTypeName = NVARCHAR | dataTypeName = NCHAR VARCHAR | dataTypeName = NATIONAL CHAR VARYING | dataTypeName = NCHAR VARYING) fieldLength BINARY?
@@ -1104,6 +1138,7 @@ dataType
     | dataTypeName = YEAR fieldLength? fieldOptions?
     | dataTypeName = DATE
     | dataTypeName = TIME typeDatetimePrecision?
+    | dataTypeName = UNSIGNED (INTEGER | INT)?
     | dataTypeName = TIMESTAMP typeDatetimePrecision?
     | dataTypeName = DATETIME typeDatetimePrecision?
     | dataTypeName = TINYBLOB
@@ -1219,7 +1254,7 @@ characterSet
     ;
     
 collateClause
-    : COLLATE collationName
+    : COLLATE (collationName | parameterMarker)
     ;
     
 fieldOrVarSpec
@@ -1250,7 +1285,7 @@ conditionName
     : identifier
     ;
     
-unionOption
+combineOption
     : ALL | DISTINCT
     ;
     
@@ -1261,18 +1296,4 @@ noWriteToBinLog
     
 channelOption
     : FOR CHANNEL string_
-    ;
-    
-preparedStatement
-    : PREPARE identifier FROM (stringLiterals | userVariable)
-    | executeStatement
-    | (DEALLOCATE | DROP) PREPARE identifier
-    ;
-    
-executeStatement
-    : EXECUTE identifier (USING executeVarList)?
-    ;
-    
-executeVarList
-    : userVariable (COMMA_ userVariable)*
     ;

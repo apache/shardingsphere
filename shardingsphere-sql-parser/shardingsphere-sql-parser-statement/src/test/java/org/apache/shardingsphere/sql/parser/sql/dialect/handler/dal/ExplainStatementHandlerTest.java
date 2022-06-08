@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.handler.dal;
 
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLExplainStatement;
 import org.junit.Test;
@@ -32,7 +33,7 @@ public final class ExplainStatementHandlerTest {
     @Test
     public void assertGetSimpleTableSegmentWithSimpleTableSegmentForMySQL() {
         MySQLExplainStatement explainStatement = new MySQLExplainStatement();
-        explainStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("")));
+        explainStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue(""))));
         Optional<SimpleTableSegment> simpleTableSegment = ExplainStatementHandler.getSimpleTableSegment(explainStatement);
         assertTrue(simpleTableSegment.isPresent());
     }

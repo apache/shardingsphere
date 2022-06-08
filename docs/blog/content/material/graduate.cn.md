@@ -1,11 +1,8 @@
 +++
 title = "分布式数据库解决方案Apache ShardingSphere毕业成为顶级项目"
-weight = 3
+weight = 11
 chapter = true
 +++
-
-## 分布式数据库解决方案Apache ShardingSphere毕业成为顶级项目
-
 
 全球最大的开源软件基金会 Apache 软件基金会（以下简称 Apache）于北京时间 2020年4 月 15 日宣布 Apache ShardingSphere毕业成为 Apache 顶级项目。
 

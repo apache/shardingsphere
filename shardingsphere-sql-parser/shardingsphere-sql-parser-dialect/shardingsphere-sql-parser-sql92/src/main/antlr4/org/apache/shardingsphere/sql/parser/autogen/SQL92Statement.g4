@@ -17,7 +17,7 @@
 
 grammar SQL92Statement;
 
-import Symbol, Comments, DMLStatement, DDLStatement, TCLStatement, DCLStatement;
+import Comments, DDLStatement, TCLStatement, DCLStatement;
 
 execute
     : (select

@@ -18,31 +18,53 @@
 package org.apache.shardingsphere.proxy.backend.text.transaction;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.BackendTransactionManager;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.JDBCBackendTransactionManager;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.data.impl.BroadcastDatabaseBackendHandler;
+import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
+import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.hamcrest.Matcher;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Answers;
 
 import java.lang.reflect.Field;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-public final class TransactionBackendHandlerFactoryTest {
+public final class TransactionBackendHandlerFactoryTest extends ProxyContextRestorer {
+    
+    @Before
+    public void setTransactionContexts() {
+        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(TransactionRule.class)).thenReturn(Optional.of(mock(TransactionRule.class)));
+        ProxyContext.init(contextManager);
+    }
     
     @Test
     public void assertTransactionBackendHandlerReturnedWhenTCLStatementInstanceOfCommitStatement() {
-        BackendConnection backendConnection = mock(BackendConnection.class, Answers.RETURNS_DEEP_STUBS);
-        TextProtocolBackendHandler textProtocolBackendHandler = TransactionBackendHandlerFactory.newInstance(mock(CommitStatement.class), null, backendConnection);
+        ConnectionSession connectionSession = mock(ConnectionSession.class, Answers.RETURNS_DEEP_STUBS);
+        JDBCBackendConnection backendConnection = mock(JDBCBackendConnection.class);
+        when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
+        when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
+        SQLStatementContext<CommitStatement> context = mock(SQLStatementContext.class);
+        when(context.getSqlStatement()).thenReturn(mock(CommitStatement.class));
+        TextProtocolBackendHandler textProtocolBackendHandler = TransactionBackendHandlerFactory.newInstance(context, null, connectionSession);
         assertThat(textProtocolBackendHandler, instanceOf(TransactionBackendHandler.class));
         TransactionBackendHandler transactionBackendHandler = (TransactionBackendHandler) textProtocolBackendHandler;
         assertFieldOfInstance(transactionBackendHandler, "operationType", is(TransactionOperationType.COMMIT));
@@ -51,8 +73,13 @@ public final class TransactionBackendHandlerFactoryTest {
     
     @Test
     public void assertTransactionBackendHandlerReturnedWhenTCLStatementInstanceOfRollbackStatement() {
-        BackendConnection backendConnection = mock(BackendConnection.class, Answers.RETURNS_DEEP_STUBS);
-        TextProtocolBackendHandler textProtocolBackendHandler = TransactionBackendHandlerFactory.newInstance(mock(RollbackStatement.class), null, backendConnection);
+        ConnectionSession connectionSession = mock(ConnectionSession.class, Answers.RETURNS_DEEP_STUBS);
+        JDBCBackendConnection backendConnection = mock(JDBCBackendConnection.class);
+        when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
+        when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
+        SQLStatementContext<RollbackStatement> context = mock(SQLStatementContext.class);
+        when(context.getSqlStatement()).thenReturn(mock(RollbackStatement.class));
+        TextProtocolBackendHandler textProtocolBackendHandler = TransactionBackendHandlerFactory.newInstance(context, null, connectionSession);
         assertThat(textProtocolBackendHandler, instanceOf(TransactionBackendHandler.class));
         TransactionBackendHandler transactionBackendHandler = (TransactionBackendHandler) textProtocolBackendHandler;
         assertFieldOfInstance(transactionBackendHandler, "operationType", is(TransactionOperationType.ROLLBACK));
@@ -61,7 +88,9 @@ public final class TransactionBackendHandlerFactoryTest {
     
     @Test
     public void assertBroadcastBackendHandlerReturnedWhenTCLStatementNotHit() {
-        assertThat(TransactionBackendHandlerFactory.newInstance(mock(TCLStatement.class), null, null), instanceOf(BroadcastDatabaseBackendHandler.class));
+        SQLStatementContext<TCLStatement> context = mock(SQLStatementContext.class);
+        when(context.getSqlStatement()).thenReturn(mock(TCLStatement.class));
+        assertThat(TransactionBackendHandlerFactory.newInstance(context, null, mock(ConnectionSession.class)), instanceOf(BroadcastDatabaseBackendHandler.class));
     }
     
     @SuppressWarnings("unchecked")
@@ -74,9 +103,9 @@ public final class TransactionBackendHandlerFactoryTest {
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private BackendTransactionManager getBackendTransactionManager(final TransactionBackendHandler transactionBackendHandler) {
+    private JDBCBackendTransactionManager getBackendTransactionManager(final TransactionBackendHandler transactionBackendHandler) {
         Field field = transactionBackendHandler.getClass().getDeclaredField("backendTransactionManager");
         field.setAccessible(true);
-        return (BackendTransactionManager) field.get(transactionBackendHandler);
+        return (JDBCBackendTransactionManager) field.get(transactionBackendHandler);
     }
 }

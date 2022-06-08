@@ -127,6 +127,10 @@ PROCEDURE
     : P R O C E D U R E
     ;
 
+SPECIFICATION
+    : S P E C I F I C A T I O N
+    ;
+
 VIEW
     : V I E W
     ;
@@ -347,6 +351,10 @@ BOOLEAN
     : B O O L E A N
     ;
 
+BODY
+    : B O D Y
+    ;
+    
 DOUBLE
     : D O U B L E
     ;

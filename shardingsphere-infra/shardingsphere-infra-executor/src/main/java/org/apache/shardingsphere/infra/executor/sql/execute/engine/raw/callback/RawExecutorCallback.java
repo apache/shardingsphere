@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.callback;
 
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
+
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
@@ -27,6 +29,7 @@ import java.util.Map;
  * @param <I> type of input value
  * @param <O> type of output value
  */
+@SingletonSPI
 public interface RawExecutorCallback<I, O> {
     
     /**

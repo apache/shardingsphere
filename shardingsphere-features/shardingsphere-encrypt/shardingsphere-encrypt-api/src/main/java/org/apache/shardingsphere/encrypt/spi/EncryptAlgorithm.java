@@ -17,27 +17,32 @@
 
 package org.apache.shardingsphere.encrypt.spi;
 
+import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPostProcessor;
 
 /**
- * Encrypt algorithm for SPI.
+ * Encrypt algorithm.
+ * 
+ * @param <I> type of plain value
+ * @param <O> type of cipher value
  */
-public interface EncryptAlgorithm extends ShardingSphereAlgorithm, ShardingSphereAlgorithmPostProcessor {
+public interface EncryptAlgorithm<I, O> extends ShardingSphereAlgorithm {
     
     /**
      * Encode.
      *
-     * @param plaintext plaintext
-     * @return ciphertext
+     * @param plainValue plain value
+     * @param encryptContext encrypt context
+     * @return cipher value
      */
-    String encrypt(Object plaintext);
+    O encrypt(I plainValue, EncryptContext encryptContext);
     
     /**
      * Decode.
      *
-     * @param ciphertext ciphertext
-     * @return plaintext
+     * @param cipherValue cipher value
+     * @param encryptContext encrypt context
+     * @return plain value
      */
-    Object decrypt(String ciphertext);
+    I decrypt(O cipherValue, EncryptContext encryptContext);
 }

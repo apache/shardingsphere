@@ -44,7 +44,8 @@ public final class GeneratedKeyInsertValuesTokenGenerator extends BaseGeneratedK
     
     @Override
     protected boolean isGenerateSQLToken(final InsertStatementContext insertStatementContext) {
-        return !insertStatementContext.getSqlStatement().getValues().isEmpty();
+        return !insertStatementContext.getSqlStatement().getValues().isEmpty() && insertStatementContext.getGeneratedKeyContext().isPresent()
+                && !insertStatementContext.getGeneratedKeyContext().get().getGeneratedValues().isEmpty();
     }
     
     @Override
@@ -59,7 +60,8 @@ public final class GeneratedKeyInsertValuesTokenGenerator extends BaseGeneratedK
         for (InsertValueContext each : insertStatementContext.getInsertValueContexts()) {
             InsertValue insertValueToken = result.get().getInsertValues().get(count);
             DerivedSimpleExpressionSegment expressionSegment = isToAddDerivedLiteralExpression(parameters, count)
-                    ? new DerivedLiteralExpressionSegment(generatedValues.next()) : new DerivedParameterMarkerExpressionSegment(each.getParameterCount());
+                    ? new DerivedLiteralExpressionSegment(generatedValues.next())
+                    : new DerivedParameterMarkerExpressionSegment(each.getParameterCount());
             insertValueToken.getValues().add(expressionSegment);
             count++;
         }

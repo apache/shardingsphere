@@ -20,14 +20,13 @@ package org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.builder
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCManager;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCStatementManager;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.List;
 
 /**
  * JDBC prepared statement execution unit builder.
@@ -35,16 +34,16 @@ import java.util.List;
 public final class PreparedStatementExecutionUnitBuilder implements JDBCExecutionUnitBuilder {
     
     @Override
-    public JDBCExecutionUnit build(final ExecutionUnit executionUnit, final ExecutorJDBCManager executorManager,
+    public JDBCExecutionUnit build(final ExecutionUnit executionUnit, final ExecutorJDBCStatementManager statementManager,
                                    final Connection connection, final ConnectionMode connectionMode, final StatementOption option) throws SQLException {
         PreparedStatement preparedStatement = createPreparedStatement(
-                executionUnit.getSqlUnit().getSql(), executionUnit.getSqlUnit().getParameters(), executorManager, connection, connectionMode, option);
+                executionUnit, statementManager, connection, connectionMode, option);
         return new JDBCExecutionUnit(executionUnit, connectionMode, preparedStatement);
     }
     
-    private PreparedStatement createPreparedStatement(final String sql, final List<Object> parameters, final ExecutorJDBCManager executorJDBCManager, final Connection connection,
+    private PreparedStatement createPreparedStatement(final ExecutionUnit executionUnit, final ExecutorJDBCStatementManager statementManager, final Connection connection,
                                                       final ConnectionMode connectionMode, final StatementOption option) throws SQLException {
-        return (PreparedStatement) executorJDBCManager.createStorageResource(sql, parameters, connection, connectionMode, option);
+        return (PreparedStatement) statementManager.createStorageResource(executionUnit, connection, connectionMode, option);
     }
     
     @Override

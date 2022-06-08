@@ -46,6 +46,8 @@ public final class AggregationUnitFactory {
                 return isDistinct ? new DistinctCountAggregationUnit() : new AccumulationAggregationUnit();
             case AVG:
                 return isDistinct ? new DistinctAverageAggregationUnit() : new AverageAggregationUnit();
+            case BIT_XOR:
+                return new BitXorAggregationUnit();
             default:
                 throw new UnsupportedOperationException(type.name());
         }

@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.sharding.route.engine.validator.dml.impl;
 
-import com.google.common.base.Preconditions;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.route.engine.validator.dml.ShardingDMLStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -30,23 +31,16 @@ import java.util.List;
 /**
  * Sharding select statement validator.
  */
+@RequiredArgsConstructor
 public final class ShardingSelectStatementValidator extends ShardingDMLStatementValidator<SelectStatement> {
     
-    private boolean needCheckDatabaseInstance;
-    
     @Override
-    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<SelectStatement> sqlStatementContext, 
-                            final List<Object> parameters, final ShardingSphereSchema schema) {
-        if (isNeedMergeShardingValues(sqlStatementContext, shardingRule)) {
-            needCheckDatabaseInstance = checkSubqueryShardingValues(shardingRule, sqlStatementContext, parameters, schema);
-        }
+    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<SelectStatement> sqlStatementContext,
+                            final List<Object> parameters, final ShardingSphereDatabase database) {
     }
     
     @Override
-    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<SelectStatement> sqlStatementContext, 
-                             final RouteContext routeContext, final ShardingSphereSchema schema) {
-        if (!routeContext.isFederated() && needCheckDatabaseInstance) {
-            Preconditions.checkState(routeContext.isSingleRouting(), "Sharding value must same with subquery.");
-        }
+    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<SelectStatement> sqlStatementContext, final List<Object> parameters,
+                             final ShardingSphereDatabase database, final ConfigurationProperties props, final RouteContext routeContext) {
     }
 }

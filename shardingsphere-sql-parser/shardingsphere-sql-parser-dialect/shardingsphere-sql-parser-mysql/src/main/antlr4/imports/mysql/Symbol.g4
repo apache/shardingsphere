@@ -57,5 +57,6 @@ BQ_:                 '`';
 QUESTION_:           '?';
 AT_:                 '@';
 SEMI_:               ';';
+ASSIGNMENT_:         ':=';
 JSON_SEPARATOR:      '->';
 JSON_UNQUOTED_SEPARATOR:      '->>';

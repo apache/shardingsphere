@@ -16,14 +16,13 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-agent-plugins</artifactId>
-        <version>5.0.0-RC1-SNAPSHOT</version>
+        <version>5.1.2-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-agent-plugin-tracing</artifactId>
     <packaging>pom</packaging>
@@ -34,27 +33,13 @@
         <module>shardingsphere-agent-tracing-jaeger</module>
         <module>shardingsphere-agent-tracing-zipkin</module>
         <module>shardingsphere-agent-tracing-opentracing</module>
+        <module>shardingsphere-agent-tracing-opentelemetry</module>
     </modules>
     
     <properties>
         <tracing.target.directory>${project.basedir}/../target/plugins</tracing.target.directory>
-        <opentracing.version>0.31.0</opentracing.version>
-        <jaeger-client.version>0.31.0</jaeger-client.version>
-        <zipkin-brave.version>5.13.2</zipkin-brave.version>
-        <zipkin-reporter.version>2.16.2</zipkin-reporter.version>
     </properties>
     
-    <dependencies>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-agent-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-proxy-common</artifactId>
-        </dependency>
-    </dependencies>
-
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -66,16 +51,22 @@
         </dependencies>
     </dependencyManagement>
     
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-agent-api</artifactId>
+        </dependency>
+    </dependencies>
+    
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
             </plugin>
             <plugin>
                 <artifactId>maven-shade-plugin</artifactId>
                 <configuration>
-                    <outputFile>${tracing.target.directory}/${project.build.finalName}</outputFile>
+                    <outputFile>${tracing.target.directory}/${project.build.finalName}.jar</outputFile>
                 </configuration>
             </plugin>
         </plugins>

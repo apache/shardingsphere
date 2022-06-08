@@ -23,4 +23,9 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
  * Transparent rule.
  */
 public final class TransparentRule implements ShardingSphereRule {
+    
+    @Override
+    public String getType() {
+        return TransparentRule.class.getSimpleName();
+    }
 }

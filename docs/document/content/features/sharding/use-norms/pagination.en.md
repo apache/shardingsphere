@@ -21,14 +21,15 @@ This SQL will make MySQL acquire another 10 records after skipping 1,000,000 rec
 SELECT * FROM t_order ORDER BY id LIMIT 0, 1000010
 ```
 
-It also means taking out all the records prior to the offset and only acquire the last 10 records after ordering. It will further aggravate the performance bottleneck effect when the database is already slow in execution. The reason for that is the former SQL only needs to transmit 10 records to the user end, but now it will transmit `1000010 * 2` records after the rewrite.
+It also means taking out all the records prior to the offset and only acquire the last 10 records after ordering. It will further aggravate the performance bottleneck effect when the database is already slow in execution. The reason for that is the former SQL only needs to transmit 10 records to the user end, but now it will transmit `1,000,010 * 2` records after the rewrite.
 
 ### Optimization of ShardingSphere
 
 ShardingSphere has optimized in two ways.
 
 Firstly, it adopts stream process + merger ordering to avoid excessive memory occupation. SQL rewrite unavoidably occupies extra bandwidth, but it will not lead to sharp increase of memory occupation. Most people may assume that ShardingSphere would upload all the `1,000,010 * 2` records to the memory and occupy a large amount of it, which can lead to memory overflow. But each ShardingSphere comparison only acquires current result set record of each shard, since result set records have their own order.
-The record stored in the memory is only the current position pointed by the cursor in the result set of the shard routed to. For the item to be sorted which has its own order, merger ordering only has the time complexity of `O(n)`, with a very low performance consumption.
+The record stored in the memory is only the current position pointed by the cursor in the result set of the shard routed to. 
+For the item to be sorted which has its own order, merger ordering only has the time complexity of `O(mn(log m))`, and the number of shard m is generally small enough to be considered as `O(n)`, with a very low performance consumption.
 
 Secondly, ShardingSphere further optimizes the query that only falls into single shards. Requests of this kind can guarantee the correctness of records without rewriting SQLs. Under this kind of situation, ShardingSphere will not do that in order to save the bandwidth.
 

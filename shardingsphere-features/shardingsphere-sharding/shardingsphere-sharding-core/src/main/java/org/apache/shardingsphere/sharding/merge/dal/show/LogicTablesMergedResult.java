@@ -21,8 +21,8 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryMergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 
@@ -39,13 +39,13 @@ import java.util.Set;
 public class LogicTablesMergedResult extends MemoryMergedResult<ShardingRule> {
     
     public LogicTablesMergedResult(final ShardingRule shardingRule,
-                                   final SQLStatementContext sqlStatementContext, final ShardingSphereSchema schema, final List<QueryResult> queryResults) throws SQLException {
+                                   final SQLStatementContext<?> sqlStatementContext, final ShardingSphereSchema schema, final List<QueryResult> queryResults) throws SQLException {
         super(shardingRule, schema, sqlStatementContext, queryResults);
     }
     
     @Override
     protected final List<MemoryQueryResultRow> init(final ShardingRule shardingRule, final ShardingSphereSchema schema,
-                                                    final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
+                                                    final SQLStatementContext<?> sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
         List<MemoryQueryResultRow> result = new LinkedList<>();
         Set<String> tableNames = new HashSet<>();
         for (QueryResult each : queryResults) {
@@ -55,13 +55,13 @@ public class LogicTablesMergedResult extends MemoryMergedResult<ShardingRule> {
                 Optional<TableRule> tableRule = shardingRule.findTableRuleByActualTable(actualTableName);
                 if (!tableRule.isPresent()) {
                     if (shardingRule.getTableRules().isEmpty() || tableNames.add(actualTableName)) {
-                        setCellValue(memoryResultSetRow, actualTableName, actualTableName, schema.get(actualTableName));
+                        setCellValue(memoryResultSetRow, actualTableName, actualTableName, schema.get(actualTableName), shardingRule);
                         result.add(memoryResultSetRow);
                     }
                 } else if (tableNames.add(tableRule.get().getLogicTable())) {
                     String logicTableName = tableRule.get().getLogicTable();
                     memoryResultSetRow.setCell(1, logicTableName);
-                    setCellValue(memoryResultSetRow, logicTableName, actualTableName, schema.get(logicTableName));
+                    setCellValue(memoryResultSetRow, logicTableName, actualTableName, schema.get(logicTableName), shardingRule);
                     result.add(memoryResultSetRow);
                 }
             }
@@ -69,6 +69,7 @@ public class LogicTablesMergedResult extends MemoryMergedResult<ShardingRule> {
         return result;
     }
     
-    protected void setCellValue(final MemoryQueryResultRow memoryResultSetRow, final String logicTableName, final String actualTableName, final TableMetaData tableMetaData) {
+    protected void setCellValue(final MemoryQueryResultRow memoryResultSetRow,
+                                final String logicTableName, final String actualTableName, final ShardingSphereTable table, final ShardingRule shardingRule) {
     }
 }

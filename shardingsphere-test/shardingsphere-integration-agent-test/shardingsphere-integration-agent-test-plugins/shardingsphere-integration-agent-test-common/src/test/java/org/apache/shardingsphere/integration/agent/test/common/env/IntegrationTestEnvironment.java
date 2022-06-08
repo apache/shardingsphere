@@ -19,15 +19,16 @@ package org.apache.shardingsphere.integration.agent.test.common.env;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import lombok.Getter;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
-import javax.sql.DataSource;
-import lombok.Getter;
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 
 @Getter
 @Slf4j
@@ -35,51 +36,52 @@ public final class IntegrationTestEnvironment {
     
     private static final IntegrationTestEnvironment INSTANCE = new IntegrationTestEnvironment();
     
+    private final Properties props;
+    
     private final boolean isEnvironmentPrepared;
     
     private DataSource dataSource;
     
-    private Properties engineEnvProps;
-    
     @SneakyThrows
     private IntegrationTestEnvironment() {
-        engineEnvProps = EnvironmentProperties.loadProperties("env/engine-env.properties");
-        isEnvironmentPrepared = engineEnvProps.getProperty("it.env.value").equals(engineEnvProps.getProperty("it.env.type"));
+        props = EnvironmentProperties.loadProperties("env/engine-env.properties");
+        isEnvironmentPrepared = props.getProperty("it.env.value").equals(props.getProperty("it.env.type"));
         if (isEnvironmentPrepared) {
-            waitForEnvironmentReady(engineEnvProps);
-            dataSource = createHikariCP(engineEnvProps);
+            waitForEnvironmentReady(props);
+            dataSource = createHikariCP(props);
         }
     }
     
-    private static DataSource createHikariCP(final Properties engineEnvProps) {
+    private static DataSource createHikariCP(final Properties props) {
         HikariConfig result = new HikariConfig();
         result.setDriverClassName("com.mysql.jdbc.Driver");
-        result.setJdbcUrl(engineEnvProps.getProperty("proxy.url"));
-        result.setUsername(engineEnvProps.getProperty("proxy.username", "root"));
-        result.setPassword(engineEnvProps.getProperty("proxy.password", "root"));
+        result.setJdbcUrl(props.getProperty("proxy.url"));
+        result.setUsername(props.getProperty("proxy.username", "root"));
+        result.setPassword(props.getProperty("proxy.password", "root"));
         result.setMaximumPoolSize(5);
         result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
         return new HikariDataSource(result);
     }
     
-    private void waitForEnvironmentReady(final Properties engineEnvProps) {
+    private void waitForEnvironmentReady(final Properties props) {
         log.info("wait begin proxy environment");
         int retryCount = 0;
-        while (!isProxyReady(engineEnvProps) && retryCount < Integer.parseInt(engineEnvProps.getProperty("proxy.retry", "30"))) {
+        while (!isProxyReady(props) && retryCount < Integer.parseInt(props.getProperty("proxy.retry", "30"))) {
             try {
-                Thread.sleep(Long.parseLong(engineEnvProps.getProperty("proxy.waitMs", "1000")));
+                Thread.sleep(Long.parseLong(props.getProperty("proxy.waitMs", "1000")));
             } catch (final InterruptedException ignore) {
             }
             retryCount++;
         }
     }
     
-    private boolean isProxyReady(final Properties engineEnvProps) {
-        String url = engineEnvProps.getProperty("proxy.url");
-        String username = engineEnvProps.getProperty("proxy.username", "root");
-        String password = engineEnvProps.getProperty("proxy.password", "root");
-        try (Connection connection = DriverManager.getConnection(url, username, password);
-             Statement statement = connection.createStatement()) {
+    private boolean isProxyReady(final Properties props) {
+        String url = props.getProperty("proxy.url");
+        String username = props.getProperty("proxy.username", "root");
+        String password = props.getProperty("proxy.password", "root");
+        try (
+                Connection connection = DriverManager.getConnection(url, username, password);
+                Statement statement = connection.createStatement()) {
             statement.execute("SELECT 1");
         } catch (final SQLException ignore) {
             return false;

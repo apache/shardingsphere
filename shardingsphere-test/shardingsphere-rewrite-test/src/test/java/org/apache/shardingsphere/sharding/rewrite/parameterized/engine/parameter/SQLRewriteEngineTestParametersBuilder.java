@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.rewrite.parameterized.engine.parameter;
 
 import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import com.google.common.primitives.Ints;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -28,6 +29,7 @@ import org.apache.shardingsphere.sharding.rewrite.parameterized.loader.RewriteAs
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -54,39 +56,68 @@ public final class SQLRewriteEngineTestParametersBuilder {
      */
     public static Collection<Object[]> loadTestParameters(final String type, final String path, final Class<?> targetClass) {
         Collection<Object[]> result = new LinkedList<>();
-        for (Entry<String, RewriteAssertionsRootEntity> entry : loadAllRewriteAssertionsRootEntities(path, targetClass).entrySet()) {
+        for (Entry<String, RewriteAssertionsRootEntity> entry : loadAllRewriteAssertionsRootEntities(type, path, targetClass).entrySet()) {
             result.addAll(createTestParameters(type, entry.getKey(), entry.getValue()));
         }
         return result;
     }
     
-    private static Map<String, RewriteAssertionsRootEntity> loadAllRewriteAssertionsRootEntities(final String path, final Class<?> targetClass) {
+    private static Map<String, RewriteAssertionsRootEntity> loadAllRewriteAssertionsRootEntities(final String type, final String path, final Class<?> targetClass) {
         Map<String, RewriteAssertionsRootEntity> result = new LinkedHashMap<>();
         File file = new File(targetClass.getProtectionDomain().getCodeSource().getLocation().getPath() + "/" + path);
         for (File each : Objects.requireNonNull(file.listFiles())) {
-            if (each.getName().endsWith(".xml")) {
-                result.put(each.getName(), new RewriteAssertionsRootEntityLoader().load(path + "/" + each.getName()));
+            if (each.isFile()) {
+                appendFromFile(type, each, path, result);
+            } else {
+                appendFromDirectory(type, each, path + "/" + each.getName(), result);
             }
         }
         return result;
     }
     
+    private static void appendFromDirectory(final String type, final File directory, final String path, final Map<String, RewriteAssertionsRootEntity> result) {
+        for (File each : Objects.requireNonNull(directory.listFiles())) {
+            if (each.isFile()) {
+                appendFromFile(type, each, path, result);
+            } else {
+                appendFromDirectory(type, each, path + "/" + each.getName(), result);
+            }
+        }
+    }
+    
+    private static void appendFromFile(final String type, final File file, final String path, final Map<String, RewriteAssertionsRootEntity> result) {
+        if (file.getName().endsWith(".xml")) {
+            String key = path.toLowerCase().replace(type.toLowerCase() + "/", "") + "/" + file.getName();
+            result.put(key, new RewriteAssertionsRootEntityLoader().load(path + "/" + file.getName()));
+        }
+    }
+    
     private static Collection<Object[]> createTestParameters(final String type, final String fileName, final RewriteAssertionsRootEntity rootAssertions) {
         Collection<Object[]> result = new LinkedList<>();
         for (RewriteAssertionEntity each : rootAssertions.getAssertions()) {
-            result.add(new SQLRewriteEngineTestParameters(type, each.getId(), fileName, rootAssertions.getYamlRule(), each.getInput().getSql(), 
-                    createInputParameters(each.getInput().getParameters()), createOutputSQLs(each.getOutputs()), createOutputGroupedParameters(each.getOutputs()), each.getDatabaseType()).toArray());
+            for (String databaseType : getDatabaseTypes(each.getDatabaseTypes())) {
+                result.add(new SQLRewriteEngineTestParameters(type, each.getId(), fileName, rootAssertions.getYamlRule(), each.getInput().getSql(),
+                        createInputParameters(each.getInput().getParameters()), createOutputSQLs(each.getOutputs()), createOutputGroupedParameters(each.getOutputs()), databaseType).toArray());
+            }
         }
         return result;
+    }
+    
+    private static Collection<String> getDatabaseTypes(final String databaseTypes) {
+        return Strings.isNullOrEmpty(databaseTypes) ? getAllDatabaseTypes() : Splitter.on(',').trimResults().splitToList(databaseTypes);
+    }
+    
+    private static Collection<String> getAllDatabaseTypes() {
+        return Arrays.asList("MySQL", "PostgreSQL", "Oracle", "SQLServer", "SQL92", "openGauss");
     }
     
     private static List<Object> createInputParameters(final String inputParameters) {
         if (null == inputParameters) {
             return Collections.emptyList();
         } else {
-            return Splitter.on(",").trimResults().splitToList(inputParameters).stream().map(input -> {
-                Object result = Ints.tryParse(input);
-                return result == null ? input : result;
+            return Splitter.on(",").trimResults().splitToList(inputParameters).stream().map(each -> {
+                Object result = Ints.tryParse(each);
+                return result == null ? each : result;
             }).collect(Collectors.toList());
         }
     }

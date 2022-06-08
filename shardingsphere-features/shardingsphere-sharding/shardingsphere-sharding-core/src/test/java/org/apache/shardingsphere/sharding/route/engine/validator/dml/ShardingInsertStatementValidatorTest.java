@@ -17,15 +17,28 @@
 
 package org.apache.shardingsphere.sharding.route.engine.validator.dml;
 
-import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.route.context.RouteMapper;
+import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.factory.ShardingAlgorithmFactory;
+import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 import org.apache.shardingsphere.sharding.route.engine.validator.dml.impl.ShardingInsertStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.rule.TableRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.OnDuplicateKeyColumnsSegment;
@@ -33,6 +46,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.P
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
@@ -43,12 +57,15 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Properties;
 
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -58,88 +75,207 @@ public final class ShardingInsertStatementValidatorTest {
     @Mock
     private ShardingRule shardingRule;
     
-    @Test(expected = ShardingSphereException.class)
-    public void assertValidateInsertModifyMultiTables() {
-        SQLStatementContext<InsertStatement> sqlStatementContext = new InsertStatementContext(
-                new ShardingSphereSchema(Collections.emptyMap()), Collections.singletonList(1), createInsertStatement());
-        Collection<String> shardingTableNames = Lists.newArrayList("order", "order_item");
-        when(shardingRule.getShardingLogicTableNames(sqlStatementContext.getTablesContext().getTableNames())).thenReturn(shardingTableNames);
-        when(shardingRule.isAllBindingTables(shardingTableNames)).thenReturn(true);
-        new ShardingInsertStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), mock(ShardingSphereSchema.class));
-    }
+    @Mock
+    private RouteContext routeContext;
     
-    @Test
-    public void assertValidateOnDuplicateKeyWithoutShardingKey() {
-        when(shardingRule.isShardingColumn("id", "user")).thenReturn(false);
-        SQLStatementContext<InsertStatement> sqlStatementContext = new InsertStatementContext(
-                new ShardingSphereSchema(Collections.emptyMap()), Collections.singletonList(1), createInsertStatement());
-        new ShardingInsertStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), mock(ShardingSphereSchema.class));
-    }
+    @Mock
+    private ShardingConditions shardingConditions;
     
     @Test(expected = ShardingSphereException.class)
-    public void assertValidateOnDuplicateKeyWithShardingKey() {
-        when(shardingRule.isShardingColumn("id", "user")).thenReturn(true);
-        SQLStatementContext<InsertStatement> sqlStatementContext = new InsertStatementContext(
-                new ShardingSphereSchema(Collections.emptyMap()), Collections.singletonList(1), createInsertStatement());
-        new ShardingInsertStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), mock(ShardingSphereSchema.class));
+    public void assertPreValidateWhenInsertMultiTables() {
+        SQLStatementContext<InsertStatement> sqlStatementContext = createInsertStatementContext(Collections.singletonList(1), createInsertStatement());
+        Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
+        when(shardingRule.isAllShardingTables(tableNames)).thenReturn(false);
+        when(shardingRule.tableRuleExists(tableNames)).thenReturn(true);
+        new ShardingInsertStatementValidator(shardingConditions).preValidate(shardingRule,
+                sqlStatementContext, Collections.emptyList(), mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS));
+    }
+    
+    private InsertStatementContext createInsertStatementContext(final List<Object> parameters, final InsertStatement insertStatement) {
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getSchemas().get(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
+        return new InsertStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), parameters, insertStatement, DefaultDatabase.LOGIC_NAME);
     }
     
     @Test(expected = ShardingSphereException.class)
-    public void assertValidateInsertSelectWithoutKeyGenerateColumn() {
+    public void assertPreValidateWhenInsertSelectWithoutKeyGenerateColumn() {
         when(shardingRule.findGenerateKeyColumnName("user")).thenReturn(Optional.of("id"));
         when(shardingRule.isGenerateKeyColumn("id", "user")).thenReturn(false);
-        SQLStatementContext<InsertStatement> sqlStatementContext = new InsertStatementContext(
-                new ShardingSphereSchema(Collections.emptyMap()), Collections.singletonList(1), createInsertSelectStatement());
-        sqlStatementContext.getTablesContext().getTables().addAll(createSingleTablesContext().getTables());
-        new ShardingInsertStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), mock(ShardingSphereSchema.class));
+        SQLStatementContext<InsertStatement> sqlStatementContext = createInsertStatementContext(Collections.singletonList(1), createInsertSelectStatement());
+        sqlStatementContext.getTablesContext().getTableNames().addAll(createSingleTablesContext().getTableNames());
+        new ShardingInsertStatementValidator(shardingConditions).preValidate(shardingRule,
+                sqlStatementContext, Collections.emptyList(), mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS));
     }
     
     @Test
-    public void assertValidateInsertSelectWithKeyGenerateColumn() {
+    public void assertPreValidateWhenInsertSelectWithKeyGenerateColumn() {
         when(shardingRule.findGenerateKeyColumnName("user")).thenReturn(Optional.of("id"));
         when(shardingRule.isGenerateKeyColumn("id", "user")).thenReturn(true);
-        SQLStatementContext<InsertStatement> sqlStatementContext = new InsertStatementContext(
-                new ShardingSphereSchema(Collections.emptyMap()), Collections.singletonList(1), createInsertSelectStatement());
-        sqlStatementContext.getTablesContext().getTables().addAll(createSingleTablesContext().getTables());
-        new ShardingInsertStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), mock(ShardingSphereSchema.class));
+        SQLStatementContext<InsertStatement> sqlStatementContext = createInsertStatementContext(Collections.singletonList(1), createInsertSelectStatement());
+        sqlStatementContext.getTablesContext().getTableNames().addAll(createSingleTablesContext().getTableNames());
+        new ShardingInsertStatementValidator(shardingConditions).preValidate(shardingRule,
+                sqlStatementContext, Collections.emptyList(), mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS));
     }
     
     @Test(expected = ShardingSphereException.class)
-    public void assertValidateInsertSelectWithoutBindingTables() {
+    public void assertPreValidateWhenInsertSelectWithoutBindingTables() {
         when(shardingRule.findGenerateKeyColumnName("user")).thenReturn(Optional.of("id"));
         when(shardingRule.isGenerateKeyColumn("id", "user")).thenReturn(true);
         TablesContext multiTablesContext = createMultiTablesContext();
         when(shardingRule.isAllBindingTables(multiTablesContext.getTableNames())).thenReturn(false);
-        SQLStatementContext<InsertStatement> sqlStatementContext = new InsertStatementContext(
-                new ShardingSphereSchema(Collections.emptyMap()), Collections.singletonList(1), createInsertSelectStatement());
-        sqlStatementContext.getTablesContext().getTables().addAll(multiTablesContext.getTables());
-        new ShardingInsertStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), mock(ShardingSphereSchema.class));
+        when(shardingRule.tableRuleExists(multiTablesContext.getTableNames())).thenReturn(true);
+        SQLStatementContext<InsertStatement> sqlStatementContext = createInsertStatementContext(Collections.singletonList(1), createInsertSelectStatement());
+        sqlStatementContext.getTablesContext().getTableNames().addAll(multiTablesContext.getTableNames());
+        new ShardingInsertStatementValidator(shardingConditions).preValidate(shardingRule,
+                sqlStatementContext, Collections.emptyList(), mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS));
     }
     
     @Test
-    public void assertValidateInsertSelectWithBindingTables() {
+    public void assertPreValidateWhenInsertSelectWithBindingTables() {
         when(shardingRule.findGenerateKeyColumnName("user")).thenReturn(Optional.of("id"));
         when(shardingRule.isGenerateKeyColumn("id", "user")).thenReturn(true);
         TablesContext multiTablesContext = createMultiTablesContext();
-        when(shardingRule.isAllBindingTables(multiTablesContext.getTableNames())).thenReturn(true);
-        SQLStatementContext<InsertStatement> sqlStatementContext = new InsertStatementContext(
-                new ShardingSphereSchema(Collections.emptyMap()), Collections.singletonList(1), createInsertSelectStatement());
-        sqlStatementContext.getTablesContext().getTables().addAll(multiTablesContext.getTables());
-        new ShardingInsertStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), mock(ShardingSphereSchema.class));
+        SQLStatementContext<InsertStatement> sqlStatementContext = createInsertStatementContext(Collections.singletonList(1), createInsertSelectStatement());
+        sqlStatementContext.getTablesContext().getTableNames().addAll(multiTablesContext.getTableNames());
+        new ShardingInsertStatementValidator(shardingConditions).preValidate(shardingRule,
+                sqlStatementContext, Collections.emptyList(), mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS));
+    }
+    
+    @Test
+    public void assertPostValidateWhenInsertWithSingleRouting() {
+        SQLStatementContext<InsertStatement> sqlStatementContext = createInsertStatementContext(Collections.singletonList(1), createInsertStatement());
+        when(routeContext.isSingleRouting()).thenReturn(true);
+        new ShardingInsertStatementValidator(shardingConditions).postValidate(shardingRule, sqlStatementContext,
+                Collections.emptyList(), mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS), mock(ConfigurationProperties.class), routeContext);
+    }
+    
+    @Test
+    public void assertPostValidateWhenInsertWithBroadcastTable() {
+        SQLStatementContext<InsertStatement> sqlStatementContext = createInsertStatementContext(Collections.singletonList(1), createInsertStatement());
+        when(routeContext.isSingleRouting()).thenReturn(false);
+        when(shardingRule.isBroadcastTable(sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue())).thenReturn(true);
+        new ShardingInsertStatementValidator(shardingConditions).postValidate(shardingRule, sqlStatementContext,
+                Collections.emptyList(), mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS), mock(ConfigurationProperties.class), routeContext);
+    }
+    
+    @Test
+    public void assertPostValidateWhenInsertWithRoutingToSingleDataNode() {
+        SQLStatementContext<InsertStatement> sqlStatementContext = createInsertStatementContext(Collections.singletonList(1), createInsertStatement());
+        when(routeContext.isSingleRouting()).thenReturn(false);
+        when(shardingRule.isBroadcastTable(sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue())).thenReturn(false);
+        when(routeContext.getOriginalDataNodes()).thenReturn(getSingleRouteDataNodes());
+        new ShardingInsertStatementValidator(shardingConditions).postValidate(shardingRule, sqlStatementContext,
+                Collections.emptyList(), mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS), mock(ConfigurationProperties.class), routeContext);
+    }
+    
+    @Test(expected = IllegalStateException.class)
+    public void assertPostValidateWhenInsertWithRoutingToMultipleDataNodes() {
+        SQLStatementContext<InsertStatement> sqlStatementContext = createInsertStatementContext(Collections.singletonList(1), createInsertStatement());
+        when(routeContext.isSingleRouting()).thenReturn(false);
+        when(shardingRule.isBroadcastTable(sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue())).thenReturn(false);
+        when(routeContext.getOriginalDataNodes()).thenReturn(getMultipleRouteDataNodes());
+        new ShardingInsertStatementValidator(shardingConditions).postValidate(shardingRule, sqlStatementContext,
+                Collections.emptyList(), mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS), mock(ConfigurationProperties.class), routeContext);
+    }
+    
+    @Test
+    public void assertPostValidateWhenNotOnDuplicateKeyUpdateShardingColumn() {
+        List<Object> parameters = Collections.singletonList(1);
+        RouteContext routeContext = mock(RouteContext.class);
+        when(routeContext.isSingleRouting()).thenReturn(true);
+        InsertStatementContext insertStatementContext = createInsertStatementContext(parameters, createInsertStatement());
+        new ShardingInsertStatementValidator(mock(ShardingConditions.class)).postValidate(shardingRule,
+                insertStatementContext, parameters, mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS), mock(ConfigurationProperties.class), routeContext);
+    }
+    
+    @Test
+    public void assertPostValidateWhenOnDuplicateKeyUpdateShardingColumnWithSameRouteContext() {
+        mockShardingRuleForUpdateShardingColumn();
+        List<Object> parameters = Collections.singletonList(1);
+        InsertStatementContext insertStatementContext = createInsertStatementContext(parameters, createInsertStatement());
+        new ShardingInsertStatementValidator(mock(ShardingConditions.class)).postValidate(shardingRule,
+                insertStatementContext, parameters, mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS), mock(ConfigurationProperties.class), createSingleRouteContext());
+    }
+    
+    @Test(expected = ShardingSphereException.class)
+    public void assertPostValidateWhenOnDuplicateKeyUpdateShardingColumnWithDifferentRouteContext() {
+        mockShardingRuleForUpdateShardingColumn();
+        List<Object> parameters = Collections.singletonList(1);
+        InsertStatementContext insertStatementContext = createInsertStatementContext(parameters, createInsertStatement());
+        new ShardingInsertStatementValidator(mock(ShardingConditions.class)).postValidate(shardingRule,
+                insertStatementContext, parameters, mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS), mock(ConfigurationProperties.class), createFullRouteContext());
+    }
+    
+    private void mockShardingRuleForUpdateShardingColumn() {
+        TableRule tableRule = mock(TableRule.class);
+        when(tableRule.getActualDatasourceNames()).thenReturn(Arrays.asList("ds_0", "ds_1"));
+        when(tableRule.getActualTableNames("ds_1")).thenReturn(Collections.singletonList("user"));
+        when(shardingRule.findShardingColumn("id", "user")).thenReturn(Optional.of("id"));
+        when(shardingRule.getTableRule("user")).thenReturn(tableRule);
+        StandardShardingStrategyConfiguration databaseStrategyConfig = mock(StandardShardingStrategyConfiguration.class);
+        when(databaseStrategyConfig.getShardingColumn()).thenReturn("id");
+        when(databaseStrategyConfig.getShardingAlgorithmName()).thenReturn("database_inline");
+        when(shardingRule.getDatabaseShardingStrategyConfiguration(tableRule)).thenReturn(databaseStrategyConfig);
+        when(shardingRule.getShardingAlgorithms()).thenReturn(
+                Collections.singletonMap("database_inline", ShardingAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("INLINE", createProperties()))));
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.put("algorithm-expression", "ds_${id % 2}");
+        return result;
+    }
+    
+    private RouteContext createSingleRouteContext() {
+        RouteContext result = new RouteContext();
+        result.getRouteUnits().add(new RouteUnit(new RouteMapper("ds_1", "ds_1"), Collections.singletonList(new RouteMapper("user", "user"))));
+        return result;
+    }
+    
+    private RouteContext createFullRouteContext() {
+        RouteContext result = new RouteContext();
+        result.getRouteUnits().add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("user", "user"))));
+        result.getRouteUnits().add(new RouteUnit(new RouteMapper("ds_1", "ds_1"), Collections.singletonList(new RouteMapper("user", "user"))));
+        return result;
+    }
+    
+    private Collection<Collection<DataNode>> getMultipleRouteDataNodes() {
+        Collection<DataNode> value1DataNodes = new LinkedList<>();
+        value1DataNodes.add(new DataNode("ds_0", "user_0"));
+        Collection<DataNode> value2DataNodes = new LinkedList<>();
+        value2DataNodes.add(new DataNode("ds_0", "user_0"));
+        value2DataNodes.add(new DataNode("ds_0", "user_1"));
+        Collection<Collection<DataNode>> result = new LinkedList<>();
+        result.add(value1DataNodes);
+        result.add(value2DataNodes);
+        return result;
+    }
+    
+    private Collection<Collection<DataNode>> getSingleRouteDataNodes() {
+        Collection<DataNode> value1DataNodes = new LinkedList<>();
+        value1DataNodes.add(new DataNode("ds_0", "user_0"));
+        Collection<DataNode> value2DataNodes = new LinkedList<>();
+        value2DataNodes.add(new DataNode("ds_0", "user_0"));
+        Collection<Collection<DataNode>> result = new LinkedList<>();
+        result.add(value1DataNodes);
+        result.add(value2DataNodes);
+        return result;
     }
     
     private InsertStatement createInsertStatement() {
         MySQLInsertStatement result = new MySQLInsertStatement();
-        result.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("user")));
+        result.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user"))));
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("id"));
-        AssignmentSegment assignmentSegment = new AssignmentSegment(0, 0, columnSegment, new ParameterMarkerExpressionSegment(0, 0, 1));
+        List<ColumnSegment> columnSegments = new LinkedList<>();
+        columnSegments.add(columnSegment);
+        AssignmentSegment assignmentSegment = new ColumnAssignmentSegment(0, 0, columnSegments, new ParameterMarkerExpressionSegment(0, 0, 0));
         result.setOnDuplicateKeyColumns(new OnDuplicateKeyColumnsSegment(0, 0, Collections.singletonList(assignmentSegment)));
         Collection<ColumnSegment> columns = new LinkedList<>();
         columns.add(columnSegment);
         result.setInsertColumns(new InsertColumnsSegment(0, 0, columns));
         return result;
     }
-
+    
     private InsertStatement createInsertSelectStatement() {
         InsertStatement result = createInsertStatement();
         SelectStatement selectStatement = new MySQLSelectStatement();
@@ -150,14 +286,14 @@ public final class ShardingInsertStatementValidatorTest {
     
     private TablesContext createSingleTablesContext() {
         List<SimpleTableSegment> result = new LinkedList<>();
-        result.add(new SimpleTableSegment(0, 0, new IdentifierValue("user")));
-        return new TablesContext(result);
+        result.add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user"))));
+        return new TablesContext(result, DatabaseTypeEngine.getDatabaseType("MySQL"));
     }
     
     private TablesContext createMultiTablesContext() {
         List<SimpleTableSegment> result = new LinkedList<>();
-        result.add(new SimpleTableSegment(0, 0, new IdentifierValue("user")));
-        result.add(new SimpleTableSegment(0, 0, new IdentifierValue("order")));
-        return new TablesContext(result);
+        result.add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user"))));
+        result.add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("order"))));
+        return new TablesContext(result, DatabaseTypeEngine.getDatabaseType("MySQL"));
     }
 }

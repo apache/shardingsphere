@@ -23,28 +23,38 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 
+import java.util.Properties;
+
 /**
  * ShardingSphere class based algorithm factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ClassBasedShardingAlgorithmFactory {
-
+    
     /**
      * Create sharding algorithm.
-     *
+     * 
      * @param shardingAlgorithmClassName sharding algorithm class name
      * @param superShardingAlgorithmClass sharding algorithm super class
+     * @param props properties
      * @param <T> class generic type
      * @return sharding algorithm instance
      */
-    @SneakyThrows
     @SuppressWarnings("unchecked")
-    public static <T extends ShardingAlgorithm> T newInstance(final String shardingAlgorithmClassName, final Class<T> superShardingAlgorithmClass) {
-        Class<?> result = Class.forName(shardingAlgorithmClassName);
-        if (!superShardingAlgorithmClass.isAssignableFrom(result)) {
+    @SneakyThrows(ReflectiveOperationException.class)
+    public static <T extends ShardingAlgorithm> T newInstance(final String shardingAlgorithmClassName, final Class<T> superShardingAlgorithmClass, final Properties props) {
+        Class<?> algorithmClass = Class.forName(shardingAlgorithmClassName);
+        if (!superShardingAlgorithmClass.isAssignableFrom(algorithmClass)) {
             throw new ShardingSphereException("Class %s should be implement %s", shardingAlgorithmClassName, superShardingAlgorithmClass.getName());
         }
-        return (T) result.newInstance();
+        T result = (T) algorithmClass.getDeclaredConstructor().newInstance();
+        result.init(convertToStringTypedProperties(props));
+        return result;
     }
     
+    private static Properties convertToStringTypedProperties(final Properties props) {
+        Properties result = new Properties();
+        props.forEach((key, value) -> result.setProperty(key.toString(), null == value ? null : value.toString()));
+        return result;
+    }
 }

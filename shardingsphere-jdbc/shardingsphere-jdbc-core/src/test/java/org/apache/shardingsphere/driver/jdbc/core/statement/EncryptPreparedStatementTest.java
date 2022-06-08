@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.driver.jdbc.core.statement;
 
 import org.apache.shardingsphere.driver.jdbc.base.AbstractShardingSphereDataSourceForEncryptTest;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.junit.Test;
 
 import java.sql.Connection;
@@ -54,8 +54,8 @@ public final class EncryptPreparedStatementTest extends AbstractShardingSphereDa
     private static final String SELECT_SQL_FOR_CONTAINS_COLUMN = "SELECT * FROM t_encrypt_contains_column WHERE plain_pwd = ?";
     
     @Test
-    public void assertSQLShow() {
-        assertTrue(getEncryptConnectionWithProps().getMetaDataContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
+    public void assertSQLShow() throws SQLException {
+        assertTrue(getEncryptConnectionWithProps().getContextManager().getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
     }
     
     @Test
@@ -90,6 +90,18 @@ public final class EncryptPreparedStatementTest extends AbstractShardingSphereDa
             assertTrue(resultSet.next());
             assertThat(resultSet.getInt(1), is(6));
             assertFalse(resultSet.next());
+        }
+        assertResultSet(3, 2, "encryptValue", "assistedEncryptValue");
+    }
+    
+    @Test
+    public void assertInsertWithBatchExecuteWithGeneratedKeys() throws SQLException {
+        try (PreparedStatement statement = getEncryptConnection().prepareStatement(INSERT_GENERATED_KEY_SQL, Statement.RETURN_GENERATED_KEYS)) {
+            statement.setObject(1, 'b');
+            statement.addBatch();
+            statement.setObject(1, 'c');
+            statement.addBatch();
+            statement.executeBatch();
         }
         assertResultSet(3, 2, "encryptValue", "assistedEncryptValue");
     }
@@ -152,7 +164,7 @@ public final class EncryptPreparedStatementTest extends AbstractShardingSphereDa
             assertThat(metaData.getColumnCount(), is(2));
             for (int i = 0; i < metaData.getColumnCount(); i++) {
                 assertThat(metaData.getColumnLabel(1), is("id"));
-                assertThat(metaData.getColumnLabel(2), is("pwd"));
+                assertThat(metaData.getColumnLabel(2), is("PWD"));
             }
         }
     }
@@ -169,8 +181,9 @@ public final class EncryptPreparedStatementTest extends AbstractShardingSphereDa
     }
     
     private void assertResultSet(final int resultSetCount, final int id, final Object pwd, final Object assistPwd) throws SQLException {
-        try (Connection conn = getActualDataSources().get("encrypt").getConnection();
-             Statement stmt = conn.createStatement()) {
+        try (
+                Connection conn = getActualDataSources().get("encrypt").getConnection();
+                Statement stmt = conn.createStatement()) {
             ResultSet resultSet = stmt.executeQuery(SELECT_ALL_SQL);
             int count = 1;
             while (resultSet.next()) {
@@ -206,7 +219,7 @@ public final class EncryptPreparedStatementTest extends AbstractShardingSphereDa
             assertThat(metaData.getColumnCount(), is(2));
             for (int i = 0; i < metaData.getColumnCount(); i++) {
                 assertThat(metaData.getColumnLabel(1), is("id"));
-                assertThat(metaData.getColumnLabel(2), is("pwd"));
+                assertThat(metaData.getColumnLabel(2), is("PWD"));
             }
         }
     }
@@ -219,8 +232,8 @@ public final class EncryptPreparedStatementTest extends AbstractShardingSphereDa
             assertThat(metaData.getColumnCount(), is(3));
             for (int i = 0; i < metaData.getColumnCount(); i++) {
                 assertThat(metaData.getColumnLabel(1), is("id"));
-                assertThat(metaData.getColumnLabel(2), is("plain_pwd")); 
-                assertThat(metaData.getColumnLabel(3), is("plain_pwd2"));
+                assertThat(metaData.getColumnLabel(2), is("PLAIN_PWD"));
+                assertThat(metaData.getColumnLabel(3), is("PLAIN_PWD2"));
             }
         }
     }

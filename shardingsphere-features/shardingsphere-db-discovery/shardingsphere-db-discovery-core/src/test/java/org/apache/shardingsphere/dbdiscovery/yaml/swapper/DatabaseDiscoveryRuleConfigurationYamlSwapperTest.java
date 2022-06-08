@@ -17,18 +17,15 @@
 
 package org.apache.shardingsphere.dbdiscovery.yaml.swapper;
 
-import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.yaml.config.YamlDatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.yaml.config.rule.YamlDatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperFactory;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Properties;
@@ -39,27 +36,22 @@ import static org.junit.Assert.assertTrue;
 
 public final class DatabaseDiscoveryRuleConfigurationYamlSwapperTest {
     
-    private final Collection<YamlRuleConfigurationSwapper> collection = ShardingSphereServiceLoader.getSingletonServiceInstances(YamlRuleConfigurationSwapper.class);
-    
-    static {
-        ShardingSphereServiceLoader.register(YamlRuleConfigurationSwapper.class);
-    }
-    
     @Test
     public void assertSwapToYamlWithLoadBalanceAlgorithm() {
         DatabaseDiscoveryDataSourceRuleConfiguration dataSourceConfig =
-                new DatabaseDiscoveryDataSourceRuleConfiguration("ds", Collections.singletonList("dataSourceName"), "discoveryTypeName");
+                new DatabaseDiscoveryDataSourceRuleConfiguration("ds", Collections.singletonList("dataSourceName"), "ha_heartbeat", "discoveryTypeName");
         YamlDatabaseDiscoveryRuleConfiguration actual = getHARuleConfigurationYamlSwapper().swapToYamlConfiguration(new DatabaseDiscoveryRuleConfiguration(Collections.singleton(dataSourceConfig),
-                ImmutableMap.of("mgr", new ShardingSphereAlgorithmConfiguration("MGR", new Properties()))));
+                Collections.emptyMap(), Collections.singletonMap("mgr", new ShardingSphereAlgorithmConfiguration("MySQL.MGR", new Properties()))));
         assertThat(actual.getDataSources().keySet(), is(Collections.singleton("ds")));
         assertThat(actual.getDataSources().get("ds").getDataSourceNames(), is(Collections.singletonList("dataSourceName")));
     }
     
     @Test
     public void assertSwapToYamlWithoutLoadBalanceAlgorithm() {
-        DatabaseDiscoveryDataSourceRuleConfiguration dataSourceConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("ds", Collections.singletonList("dataSourceName"), "discoveryTypeName");
+        DatabaseDiscoveryDataSourceRuleConfiguration dataSourceConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("ds", Collections.singletonList("dataSourceName"),
+                "ha_heartbeat", "discoveryTypeName");
         YamlDatabaseDiscoveryRuleConfiguration actual = getHARuleConfigurationYamlSwapper().swapToYamlConfiguration(
-                new DatabaseDiscoveryRuleConfiguration(Collections.singleton(dataSourceConfig), Collections.emptyMap()));
+                new DatabaseDiscoveryRuleConfiguration(Collections.singleton(dataSourceConfig), Collections.emptyMap(), Collections.emptyMap()));
         assertThat(actual.getDataSources().keySet(), is(Collections.singleton("ds")));
         assertThat(actual.getDataSources().get("ds").getDataSourceNames(), is(Collections.singletonList("dataSourceName")));
     }
@@ -87,23 +79,16 @@ public final class DatabaseDiscoveryRuleConfigurationYamlSwapperTest {
     
     private void assertHARuleConfiguration(final DatabaseDiscoveryRuleConfiguration actual) {
         DatabaseDiscoveryDataSourceRuleConfiguration group = actual.getDataSources().iterator().next();
-        assertThat(group.getName(), is("ha_ds"));
+        assertThat(group.getGroupName(), is("ha_ds"));
         assertThat(group.getDataSourceNames(), is(Arrays.asList("ds_0", "ds_1")));
     }
     
-    @Test
-    public void assertGetTypeClass() {
-        DatabaseDiscoveryRuleConfigurationYamlSwapper swapper = getHARuleConfigurationYamlSwapper();
-        Class<DatabaseDiscoveryRuleConfiguration> actual = swapper.getTypeClass();
-        assertTrue(actual.isAssignableFrom(DatabaseDiscoveryRuleConfiguration.class));
-    }
-    
     private DatabaseDiscoveryRuleConfigurationYamlSwapper getHARuleConfigurationYamlSwapper() {
-        Optional<DatabaseDiscoveryRuleConfigurationYamlSwapper> optional = collection.stream()
-                .filter(swapper -> swapper instanceof DatabaseDiscoveryRuleConfigurationYamlSwapper)
-                .map(swapper -> (DatabaseDiscoveryRuleConfigurationYamlSwapper) swapper)
+        Optional<DatabaseDiscoveryRuleConfigurationYamlSwapper> result = YamlRuleConfigurationSwapperFactory.getAllInstances().stream()
+                .filter(each -> each instanceof DatabaseDiscoveryRuleConfigurationYamlSwapper)
+                .map(each -> (DatabaseDiscoveryRuleConfigurationYamlSwapper) each)
                 .findFirst();
-        assertTrue(optional.isPresent());
-        return optional.get();
+        assertTrue(result.isPresent());
+        return result.get();
     }
 }

@@ -15,11 +15,13 @@
 # limitations under the License.
 #
 
-applicationName: shardingsphere-agent
+applicationName: shardingsphere
 ignoredPluginNames:
   - Jaeger
-  - Opentracing
+  - OpenTracing
   - Zipkin
+  - OpenTelemetry
+  - Logging
   - Prometheus
 
 plugins:
@@ -32,20 +34,24 @@ plugins:
     host: "localhost"
     port: 5775
     props:
-      SERVICE_NAME: "shardingsphere-agent"
+      SERVICE_NAME: "shardingsphere"
       JAEGER_SAMPLER_TYPE: "const"
       JAEGER_SAMPLER_PARAM: "1"
-      JAEGER_REPORTER_LOG_SPANS: "true"
-      JAEGER_REPORTER_FLUSH_INTERVAL: "1"
   Zipkin:
     host: "localhost"
     port: 9411
     props:
-      SERVICE_NAME: "shardingsphere-agent"
+      SERVICE_NAME: "shardingsphere"
       URL_VERSION: "/api/v2/spans"
-  Opentracing:
+      SAMPLER_TYPE: "const"
+      SAMPLER_PARAM: "1"
+  OpenTracing:
     props:
       OPENTRACING_TRACER_CLASS_NAME: "org.apache.skywalking.apm.toolkit.opentracing.SkywalkingTracer"
+  OpenTelemetry:
+    props:
+      otel.resource.attributes: "service.name=shardingsphere"
+      otel.traces.exporter: "zipkin"
   Logging:
     props:
       LEVEL: "INFO"

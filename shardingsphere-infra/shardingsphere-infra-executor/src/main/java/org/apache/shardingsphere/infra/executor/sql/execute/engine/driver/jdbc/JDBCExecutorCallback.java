@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -50,6 +51,7 @@ public abstract class JDBCExecutorCallback<T> implements ExecutorCallback<JDBCEx
     
     private static final Map<String, DataSourceMetaData> CACHED_DATASOURCE_METADATA = new ConcurrentHashMap<>();
     
+    @Getter
     private final DatabaseType databaseType;
     
     private final SQLStatement sqlStatement;
@@ -70,8 +72,7 @@ public abstract class JDBCExecutorCallback<T> implements ExecutorCallback<JDBCEx
     }
     
     /*
-     * To make sure SkyWalking will be available at the next release of ShardingSphere,
-     * a new plugin should be provided to SkyWalking project if this API changed.
+     * To make sure SkyWalking will be available at the next release of ShardingSphere, a new plugin should be provided to SkyWalking project if this API changed.
      *
      * @see <a href="https://github.com/apache/skywalking/blob/master/docs/en/guides/Java-Plugin-Development-Guide.md#user-content-plugin-development-guide">Plugin Development Guide</a>
      */
@@ -100,12 +101,12 @@ public abstract class JDBCExecutorCallback<T> implements ExecutorCallback<JDBCEx
         }
     }
     
-    private DataSourceMetaData getDataSourceMetaData(final DatabaseMetaData metaData) throws SQLException {
-        String url = metaData.getURL();
+    private DataSourceMetaData getDataSourceMetaData(final DatabaseMetaData databaseMetaData) throws SQLException {
+        String url = databaseMetaData.getURL();
         if (CACHED_DATASOURCE_METADATA.containsKey(url)) {
             return CACHED_DATASOURCE_METADATA.get(url);
         }
-        DataSourceMetaData result = databaseType.getDataSourceMetaData(url, metaData.getUserName());
+        DataSourceMetaData result = databaseType.getDataSourceMetaData(url, databaseMetaData.getUserName());
         CACHED_DATASOURCE_METADATA.put(url, result);
         return result;
     }

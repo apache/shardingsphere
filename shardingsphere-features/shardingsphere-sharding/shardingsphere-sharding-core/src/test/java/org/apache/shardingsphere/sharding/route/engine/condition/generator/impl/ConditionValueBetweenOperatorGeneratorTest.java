@@ -17,24 +17,29 @@
 
 package org.apache.shardingsphere.sharding.route.engine.condition.generator.impl;
 
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.datetime.DatetimeService;
+import com.google.common.collect.Range;
 import org.apache.shardingsphere.sharding.route.engine.condition.Column;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.RangeShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SafeNumberOperationUtil;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.Optional;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -43,10 +48,6 @@ public final class ConditionValueBetweenOperatorGeneratorTest {
     private final ConditionValueBetweenOperatorGenerator generator = new ConditionValueBetweenOperatorGenerator();
     
     private final Column column = new Column("id", "tbl");
-    
-    static {
-        ShardingSphereServiceLoader.register(DatetimeService.class);
-    }
     
     @SuppressWarnings("unchecked")
     @Test
@@ -121,5 +122,31 @@ public final class ConditionValueBetweenOperatorGeneratorTest {
         assertThat(rangeShardingConditionValue.getColumnName(), is(column.getName()));
         assertThat(rangeShardingConditionValue.getTableName(), is(column.getTableName()));
         assertTrue(rangeShardingConditionValue.getValueRange().upperEndpoint().before(after));
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void assertGenerateConditionValueWithParameter() {
+        ColumnSegment left = new ColumnSegment(0, 0, new IdentifierValue("id"));
+        ParameterMarkerExpressionSegment between = new ParameterMarkerExpressionSegment(0, 0, 0);
+        ParameterMarkerExpressionSegment and = new ParameterMarkerExpressionSegment(0, 0, 1);
+        BetweenExpression predicate = new BetweenExpression(0, 0, left, between, and, false);
+        Optional<ShardingConditionValue> actual = generator.generate(predicate, column, Arrays.asList(1, 2));
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), instanceOf(RangeShardingConditionValue.class));
+        RangeShardingConditionValue<Integer> conditionValue = (RangeShardingConditionValue<Integer>) actual.get();
+        assertThat(conditionValue.getTableName(), is("tbl"));
+        assertThat(conditionValue.getColumnName(), is("id"));
+        assertThat(conditionValue.getValueRange(), is(Range.closed(1, 2)));
+    }
+    
+    @Test
+    public void assertGenerateConditionValueWithoutParameter() {
+        ColumnSegment left = new ColumnSegment(0, 0, new IdentifierValue("id"));
+        ParameterMarkerExpressionSegment between = new ParameterMarkerExpressionSegment(0, 0, 0);
+        ParameterMarkerExpressionSegment and = new ParameterMarkerExpressionSegment(0, 0, 1);
+        BetweenExpression predicate = new BetweenExpression(0, 0, left, between, and, false);
+        Optional<ShardingConditionValue> actual = generator.generate(predicate, column, new LinkedList<>());
+        assertFalse(actual.isPresent());
     }
 }

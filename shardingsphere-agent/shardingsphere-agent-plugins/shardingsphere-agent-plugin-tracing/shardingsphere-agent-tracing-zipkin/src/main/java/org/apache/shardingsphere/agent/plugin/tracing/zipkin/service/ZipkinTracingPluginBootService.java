@@ -18,6 +18,9 @@
 package org.apache.shardingsphere.agent.plugin.tracing.zipkin.service;
 
 import brave.Tracing;
+import brave.sampler.BoundarySampler;
+import brave.sampler.RateLimitingSampler;
+import brave.sampler.Sampler;
 import org.apache.shardingsphere.agent.config.PluginConfiguration;
 import org.apache.shardingsphere.agent.exception.PluginConfigurationException;
 import org.apache.shardingsphere.agent.spi.boot.PluginBootService;
@@ -47,8 +50,9 @@ public final class ZipkinTracingPluginBootService implements PluginBootService {
         String urlVersion = Optional.ofNullable(props.getProperty("URL_VERSION")).orElse("/api/v2/spans");
         String serviceName = Optional.ofNullable(props.getProperty("SERVICE_NAME")).orElse("shardingsphere-agent");
         sender = OkHttpSender.create(String.format("http://%s:%s%s", pluginConfig.getHost(), pluginConfig.getPort(), urlVersion));
+        Sampler sampler = createSampler(pluginConfig);
         zipkinSpanHandler = AsyncZipkinSpanHandler.create(sender);
-        tracing = Tracing.newBuilder().localServiceName(serviceName).addSpanHandler(zipkinSpanHandler).build();
+        tracing = Tracing.newBuilder().localServiceName(serviceName).sampler(sampler).addSpanHandler(zipkinSpanHandler).build();
     }
     
     @Override
@@ -60,7 +64,7 @@ public final class ZipkinTracingPluginBootService implements PluginBootService {
             zipkinSpanHandler.close();
         }
         if (null != sender) {
-            sender.close(); 
+            sender.close();
         }
     }
     
@@ -69,9 +73,30 @@ public final class ZipkinTracingPluginBootService implements PluginBootService {
         return "Zipkin";
     }
     
-    private boolean checkConfig(final PluginConfiguration pluginConfiguration) {
-        String host = pluginConfiguration.getHost();
-        int port = pluginConfiguration.getPort();
+    private boolean checkConfig(final PluginConfiguration pluginConfig) {
+        String host = pluginConfig.getHost();
+        int port = pluginConfig.getPort();
         return null != host && !"".equalsIgnoreCase(host) && port > 0;
+    }
+    
+    private Sampler createSampler(final PluginConfiguration pluginConfig) {
+        String samplerType = Optional.ofNullable(pluginConfig.getProps().getProperty("SAMPLER_TYPE")).orElse("const");
+        String samplerParameter = Optional.ofNullable(pluginConfig.getProps().getProperty("SAMPLER_PARAM")).orElse("1");
+        switch (samplerType) {
+            case "const":
+                if ("0".equals(samplerParameter)) {
+                    return Sampler.NEVER_SAMPLE;
+                }
+                return Sampler.ALWAYS_SAMPLE;
+            case "counting":
+                return Sampler.create(Float.parseFloat(samplerParameter));
+            case "ratelimiting":
+                return RateLimitingSampler.create(Integer.parseInt(samplerParameter));
+            case "boundary":
+                return BoundarySampler.create(Float.parseFloat(samplerParameter));
+            default:
+                break;
+        }
+        return Sampler.ALWAYS_SAMPLE;
     }
 }

@@ -20,16 +20,14 @@ package org.apache.shardingsphere.proxy.frontend.mysql.err;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.proxy.backend.exception.CircuitBreakException;
 import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
-import org.apache.shardingsphere.proxy.backend.exception.DBDropExistsException;
+import org.apache.shardingsphere.proxy.backend.exception.DBDropNotExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
-import org.apache.shardingsphere.proxy.backend.exception.ShardingTableRuleNotExistedException;
-import org.apache.shardingsphere.proxy.backend.exception.ShardingTableRulesInUsedException;
 import org.apache.shardingsphere.proxy.backend.exception.TableModifyInTransactionException;
 import org.apache.shardingsphere.proxy.backend.exception.UnknownDatabaseException;
-import org.apache.shardingsphere.proxy.backend.text.sctl.exception.InvalidShardingCTLFormatException;
-import org.apache.shardingsphere.proxy.backend.text.sctl.exception.UnsupportedShardingCTLTypeException;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.exception.UnsupportedVariableException;
 import org.apache.shardingsphere.proxy.frontend.exception.UnsupportedCommandException;
 import org.apache.shardingsphere.proxy.frontend.exception.UnsupportedPreparedStatementException;
 import org.apache.shardingsphere.sharding.route.engine.exception.NoSuchTableException;
@@ -38,13 +36,13 @@ import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.junit.Test;
 
 import java.sql.SQLException;
-import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.endsWith;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public final class MySQLErrPacketFactoryTest {
     
@@ -56,7 +54,7 @@ public final class MySQLErrPacketFactoryTest {
         assertThat(actual.getSqlState(), is("XXX"));
         assertThat(actual.getErrorMessage(), is("No reason"));
     }
-
+    
     @Test
     public void assertNewInstanceWithSQLExceptionOfNullSQLState() {
         MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new SQLException(new RuntimeException("No reason")));
@@ -65,7 +63,7 @@ public final class MySQLErrPacketFactoryTest {
         assertThat(actual.getSqlState(), is("HY000"));
         assertThat(actual.getErrorMessage(), endsWith("No reason"));
     }
-
+    
     @Test
     public void assertNewInstanceWithSQLExceptionOfNullParam() {
         MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new SQLException(""));
@@ -76,21 +74,12 @@ public final class MySQLErrPacketFactoryTest {
     }
     
     @Test
-    public void assertNewInstanceWithInvalidShardingCTLFormatException() {
-        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new InvalidShardingCTLFormatException("test"));
-        assertThat(actual.getSequenceId(), is(1));
-        assertThat(actual.getErrorCode(), is(11000));
-        assertThat(actual.getSqlState(), is("S11000"));
-        assertThat(actual.getErrorMessage(), is("Invalid format for sharding ctl [test]."));
-    }
-    
-    @Test
-    public void assertNewInstanceWithUnsupportedShardingCTLTypeException() {
-        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new UnsupportedShardingCTLTypeException("sctl:set xxx=xxx"));
+    public void assertNewInstanceWithUnsupportedVariableExceptionException() {
+        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new UnsupportedVariableException("test"));
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getErrorCode(), is(11001));
-        assertThat(actual.getSqlState(), is("S11001"));
-        assertThat(actual.getErrorMessage(), is("Could not support sctl type [sctl:set xxx=xxx]."));
+        assertThat(actual.getSqlState(), is("11001"));
+        assertThat(actual.getErrorMessage(), is("Could not support variable [test]."));
     }
     
     @Test
@@ -133,7 +122,7 @@ public final class MySQLErrPacketFactoryTest {
     
     @Test
     public void assertNewInstanceWithDBDropExistsException() {
-        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new DBDropExistsException("No reason"));
+        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new DBDropNotExistsException("No reason"));
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getErrorCode(), is(1008));
         assertThat(actual.getSqlState(), is("HY000"));
@@ -194,23 +183,18 @@ public final class MySQLErrPacketFactoryTest {
     }
     
     @Test
-    public void assertNewInstanceWithShardingTableRuleNotExistedException() {
-        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new ShardingTableRuleNotExistedException("test", Collections.singleton("tbl")));
+    public void assertNewInstanceWithRuleDefinitionViolationException() {
+        RuleDefinitionViolationException exception = mock(RuleDefinitionViolationException.class);
+        when(exception.getErrorCode()).thenReturn(1);
+        when(exception.getSQLState()).thenReturn("C0000");
+        when(exception.getMessage()).thenReturn("Test error");
+        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(exception);
         assertThat(actual.getSequenceId(), is(1));
-        assertThat(actual.getErrorCode(), is(1106));
-        assertThat(actual.getSqlState(), is("C1106"));
-        assertThat(actual.getErrorMessage(), is("Sharding table rules [tbl] do not exist in schema test."));
+        assertThat(actual.getErrorCode(), is(1));
+        assertThat(actual.getSqlState(), is("C0000"));
+        assertThat(actual.getErrorMessage(), is("Test error"));
     }
     
-    @Test
-    public void assertNewInstanceWithTablesInUsedException() {
-        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new ShardingTableRulesInUsedException(Collections.singleton("tbl")));
-        assertThat(actual.getSequenceId(), is(1));
-        assertThat(actual.getErrorCode(), is(1107));
-        assertThat(actual.getSqlState(), is("C1107"));
-        assertThat(actual.getErrorMessage(), is("Sharding table rules [tbl] are still used by binding table rule."));
-    }
-
     @Test
     public void assertNewInstanceWithUnsupportedCommandException() {
         MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new UnsupportedCommandException("No reason"));
@@ -222,10 +206,19 @@ public final class MySQLErrPacketFactoryTest {
     
     @Test
     public void assertNewInstanceWithOtherException() {
-        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new RuntimeException("No reason"));
+        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new ReflectiveOperationException("No reason"));
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getErrorCode(), is(1999));
         assertThat(actual.getSqlState(), is("C1999"));
         assertThat(actual.getErrorMessage(), is("Unknown exception: [No reason]"));
+    }
+    
+    @Test
+    public void assertNewInstanceWithRuntimeException() {
+        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new RuntimeException("No reason"));
+        assertThat(actual.getSequenceId(), is(1));
+        assertThat(actual.getErrorCode(), is(1997));
+        assertThat(actual.getSqlState(), is("C1997"));
+        assertThat(actual.getErrorMessage(), is("Runtime exception: [No reason]"));
     }
 }

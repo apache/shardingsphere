@@ -19,7 +19,7 @@ package org.apache.shardingsphere.encrypt.yaml.config.rule;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
 
 /**
  * Encrypt column rule configuration for YAML.
@@ -37,4 +37,6 @@ public final class YamlEncryptColumnRuleConfiguration implements YamlConfigurati
     private String plainColumn;
     
     private String encryptorName;
+    
+    private Boolean queryWithCipherColumn;
 }

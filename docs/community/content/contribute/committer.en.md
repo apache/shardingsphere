@@ -1,6 +1,6 @@
 +++
 title = "Committer Guide"
-weight = 3
+weight = 4
 chapter = true
 +++
 
@@ -18,16 +18,16 @@ After a contributor participates ShardingSphere community actively, PMC and Comm
  - Answer questions;
  - Update documentation and example;
  - Improve processes and tools;
+ - Check whether [CI Scheduled Workflow]( https://github.com/apache/shardingsphere/actions?query=event%3Aschedule ) works or not periodically;
  - Guide new contributors join community.
 
 
 ##  Committer Routine
 
-1. Weekly rotating committers needs to check the list of pull requests and issues to be processed in the community on a daily basis.
+1. Check the list of pull requests and issues to be processed in the community on a daily basis.
 
  - Including label issue, reply issue, close issue;
  - Assign issue to the appropriate committer, namely assignee;
- - The rotation period is one week. 
  
 2. After a committer is assigned with an issue, the following work is required:
 
@@ -38,18 +38,3 @@ After a contributor participates ShardingSphere community actively, PMC and Comm
 3. Pull request that committer submits needs to add labels and milestone based on the type and release period.
 
 4. When committer reviewed and approved any pull request, committer could squash and merge to master. If there is any question you concerned about this pull request, please reply directly to the related issue.
-
-### Committer rota
-
-| Name                | GitHub ID               |
-| :------------------ | :---------------------- |
-| YangWen Ou          | avalon566               |
-| Xiaofeng Jiang      | SteNicholas             |
-| Zhengqiang Duan     | strongduanmu            |
-| Zonglei Dong        | dongzl                  |
-| Liang Zhang         | terrymanu               |
-| Yonglun Zhang       | tuohai666, zhangyonglun |
-| Juan Pan            | tristaZero              |
-| Haoran Meng         | menghaoranss            |
-| Kimm King           | kimmking                |
-| Xiao Yu             | yu199195                |

@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.sharding.spring.namespace.parser.rule;
 
 import com.google.common.base.Strings;
+import org.apache.shardingsphere.sharding.algorithm.config.AlgorithmProvidedShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.spring.namespace.factorybean.KeyGenerateAlgorithmFactoryBean;
 import org.apache.shardingsphere.sharding.spring.namespace.factorybean.ShardingAlgorithmFactoryBean;
 import org.apache.shardingsphere.sharding.spring.namespace.tag.rule.ShardingRuleBeanDefinitionTag;
-import org.apache.shardingsphere.sharding.algorithm.config.AlgorithmProvidedShardingRuleConfiguration;
 import org.apache.shardingsphere.spring.namespace.registry.ShardingSphereAlgorithmBeanRegistry;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
@@ -54,6 +54,7 @@ public final class ShardingRuleBeanDefinitionParser extends AbstractBeanDefiniti
         setDefaultDatabaseShardingStrategyRef(element, factory);
         setDefaultTableShardingStrategyRef(element, factory);
         setDefaultKeyGenerateStrategyRef(element, factory);
+        setDefaultShardingColumn(element, factory);
         factory.addPropertyValue("shardingAlgorithms", ShardingSphereAlgorithmBeanRegistry.getAlgorithmBeanReferences(parserContext, ShardingAlgorithmFactoryBean.class));
         factory.addPropertyValue("keyGenerators", ShardingSphereAlgorithmBeanRegistry.getAlgorithmBeanReferences(parserContext, KeyGenerateAlgorithmFactoryBean.class));
         return factory.getBeanDefinition();
@@ -190,5 +191,12 @@ public final class ShardingRuleBeanDefinitionParser extends AbstractBeanDefiniti
     private Optional<String> parseStrategyRef(final Element element, final String tagName) {
         String result = element.getAttribute(tagName);
         return Strings.isNullOrEmpty(result) ? Optional.empty() : Optional.of(result);
+    }
+    
+    private void setDefaultShardingColumn(final Element element, final BeanDefinitionBuilder factory) {
+        String defaultShardingColumn = element.getAttribute(ShardingRuleBeanDefinitionTag.DEFAULT_SHARDING_COLUMN);
+        if (!Strings.isNullOrEmpty(defaultShardingColumn)) {
+            factory.addPropertyValue("defaultShardingColumn", defaultShardingColumn);
+        }
     }
 }

@@ -17,23 +17,11 @@
 
 dataSources:
   ds_0:
-    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-    driverClassName: org.h2.Driver
-    jdbcUrl: jdbc:h2:mem:primary_ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
-    username: sa
-    password: 
+    dataSourceClassName: org.apache.shardingsphere.test.mock.MockedDataSource
   ds_1:
-    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-    driverClassName: org.h2.Driver
-    jdbcUrl: jdbc:h2:mem:primary_ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
-    username: sa
-    password: 
+    dataSourceClassName: org.apache.shardingsphere.test.mock.MockedDataSource
   default_ds:
-    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-    driverClassName: org.h2.Driver
-    jdbcUrl: jdbc:h2:mem:default_ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
-    username: sa
-    password: 
+    dataSourceClassName: org.apache.shardingsphere.test.mock.MockedDataSource
 
 rules:
 - !SHARDING
@@ -43,19 +31,19 @@ rules:
       databaseStrategy: 
         complex:
           shardingColumns: region_id, user_id
-          shardingAlgorithmName: complex_test
+          shardingAlgorithmName: core_complex_fixture
       tableStrategy: 
         complex:
           shardingColumns: region_id, user_id
-          shardingAlgorithmName: complex_test
+          shardingAlgorithmName: core_complex_fixture
     t_stock:
       actualDataNodes: ds_${0..1}.t_stock{0..8}
       databaseStrategy: 
         hint:
-          shardingAlgorithmName: hint_test
+          shardingAlgorithmName: core_hint_fixture
       tableStrategy: 
         hint:
-          shardingAlgorithmName: hint_test
+          shardingAlgorithmName: core_hint_fixture
     t_order: 
       actualDataNodes: ds_${0..1}.t_order_${0..1}
       tableStrategy: 
@@ -70,7 +58,7 @@ rules:
       tableStrategy:
         standard:
           shardingColumn: order_id
-          shardingAlgorithmName: standard_test
+          shardingAlgorithmName: core_standard_fixture
   bindingTables:
     - t_order, t_order_item
   broadcastTables:
@@ -81,14 +69,15 @@ rules:
       shardingAlgorithmName: database_inline
   defaultTableStrategy: 
     none:
+  defaultShardingColumn: order_id
   
   shardingAlgorithms:
-    standard_test:
-      type: STANDARD_TEST
-    complex_test:
-      type: COMPLEX_TEST
-    hint_test:
-      type: HINT_TEST
+    core_standard_fixture:
+      type: CORE.STANDARD.FIXTURE
+    core_complex_fixture:
+      type: CORE.COMPLEX.FIXTURE
+    core_hint_fixture:
+      type: CORE.HINT.FIXTURE
     database_inline:
       type: INLINE
       props:
@@ -101,8 +90,29 @@ rules:
   keyGenerators:
     snowflake:
       type: SNOWFLAKE
-      props:
-        worker-id: 123
+  
+  scalingName: default_scaling
+  scaling:
+    default_scaling:
+      input:
+        workerThread: 40
+        batchSize: 1000
+        shardingSize: 10000000
+      output:
+        workerThread: 40
+        batchSize: 1000
+      streamChannel:
+        type: MEMORY
+        props:
+          block-queue-size: 10000
+      completionDetector:
+        type: IDLE
+        props:
+          incremental-task-idle-seconds-threshold: 1800
+      dataConsistencyChecker:
+        type: DATA_MATCH
+        props:
+          chunk-size: 1000
 
 props:
   sql-show: true

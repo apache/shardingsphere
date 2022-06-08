@@ -23,6 +23,8 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQ
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.junit.Test;
 
+import java.nio.charset.StandardCharsets;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -32,7 +34,7 @@ public final class PostgreSQLComTerminationPacketTest {
     public void assertReadWrite() {
         ByteBuf byteBuf = ByteBufTestUtils.createByteBuf(4);
         byteBuf.writeInt(1);
-        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf);
+        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
         PostgreSQLComTerminationPacket packet = new PostgreSQLComTerminationPacket(payload);
         assertThat(packet.getIdentifier(), is(PostgreSQLCommandPacketType.TERMINATE));
         assertThat(byteBuf.readerIndex(), is(4));

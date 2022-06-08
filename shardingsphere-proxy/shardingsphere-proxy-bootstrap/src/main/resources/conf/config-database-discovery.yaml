@@ -22,11 +22,11 @@
 #
 ######################################################################################################
 #
-#schemaName: database_discovery_db
+#databaseName: database_discovery_db
 #
 #dataSources:
-#  primary_ds:
-#    url: jdbc:postgresql://127.0.0.1:5432/demo_primary_ds?serverTimezone=UTC&useSSL=false
+#  ds_0:
+#    url: jdbc:postgresql://127.0.0.1:5432/demo_primary_ds
 #    username: postgres
 #    password: postgres
 #    connectionTimeoutMilliseconds: 3000
@@ -34,9 +34,8 @@
 #    maxLifetimeMilliseconds: 1800000
 #    maxPoolSize: 50
 #    minPoolSize: 1
-#    maintenanceIntervalMilliseconds: 30000
-#  replica_ds_0:
-#    url: jdbc:postgresql://127.0.0.1:5432/demo_replica_ds_0?serverTimezone=UTC&useSSL=false
+#  ds_1:
+#    url: jdbc:postgresql://127.0.0.1:5432/demo_replica_ds_0
 #    username: postgres
 #    password: postgres
 #    connectionTimeoutMilliseconds: 3000
@@ -44,9 +43,8 @@
 #    maxLifetimeMilliseconds: 1800000
 #    maxPoolSize: 50
 #    minPoolSize: 1
-#    maintenanceIntervalMilliseconds: 30000
-#  replica_ds_1:
-#    url: jdbc:postgresql://127.0.0.1:5432/demo_replica_ds_1?serverTimezone=UTC&useSSL=false
+#  ds_2:
+#    url: jdbc:postgresql://127.0.0.1:5432/demo_replica_ds_1
 #    username: postgres
 #    password: postgres
 #    connectionTimeoutMilliseconds: 3000
@@ -54,24 +52,26 @@
 #    maxLifetimeMilliseconds: 1800000
 #    maxPoolSize: 50
 #    minPoolSize: 1
-#    maintenanceIntervalMilliseconds: 30000
 #
 #rules:
 #- !DB_DISCOVERY
 #  dataSources:
-#    pr_ds:
+#    readwrite_ds:
 #      dataSourceNames:
 #        - ds_0
 #        - ds_1
 #        - ds_2
+#      discoveryHeartbeatName: mgr-heartbeat
 #      discoveryTypeName: mgr
+#  discoveryHeartbeats:
+#    mgr-heartbeat:
+#      props:
+#        keep-alive-cron: '0/5 * * * * ?'
 #  discoveryTypes:
 #    mgr:
-#      type: MGR
+#      type: MySQL.MGR
 #      props:
-#        groupName: 92504d5b-6dec-11e8-91ea-246e9612aaf1
-#        zkServerLists: 'localhost:2181'
-#        keepAliveCron: '0/5 * * * * ?'
+#        group-name: 92504d5b-6dec-11e8-91ea-246e9612aaf1
 
 ######################################################################################################
 #
@@ -79,7 +79,7 @@
 #
 ######################################################################################################
 
-#schemaName: database_discovery_db
+#databaseName: database_discovery_db
 #
 #dataSources:
 #  ds_0:
@@ -91,7 +91,6 @@
 #    maxLifetimeMilliseconds: 1800000
 #    maxPoolSize: 50
 #    minPoolSize: 1
-#    maintenanceIntervalMilliseconds: 30000
 #  ds_1:
 #    url: jdbc:mysql://127.0.0.1:3306/demo_replica_ds_0?serverTimezone=UTC&useSSL=false
 #    username: root
@@ -101,7 +100,6 @@
 #    maxLifetimeMilliseconds: 1800000
 #    maxPoolSize: 50
 #    minPoolSize: 1
-#    maintenanceIntervalMilliseconds: 30000
 #  ds_2:
 #    url: jdbc:mysql://127.0.0.1:3306/demo_replica_ds_1?serverTimezone=UTC&useSSL=false
 #    username: root
@@ -111,21 +109,23 @@
 #    maxLifetimeMilliseconds: 1800000
 #    maxPoolSize: 50
 #    minPoolSize: 1
-#    maintenanceIntervalMilliseconds: 30000
 #
 #rules:
 #- !DB_DISCOVERY
 #  dataSources:
-#    pr_ds:
+#    readwrite_ds:
 #      dataSourceNames:
 #        - ds_0
 #        - ds_1
 #        - ds_2
+#      discoveryHeartbeatName: mgr-heartbeat
 #      discoveryTypeName: mgr
+#  discoveryHeartbeats:
+#    mgr-heartbeat:
+#      props:
+#        keep-alive-cron: '0/5 * * * * ?'
 #  discoveryTypes:
 #    mgr:
-#      type: MGR
+#      type: MySQL.MGR
 #      props:
-#        groupName: 92504d5b-6dec-11e8-91ea-246e9612aaf1
-#        zkServerLists: 'localhost:2181'
-#        keepAliveCron: '0/5 * * * * ?'
+#        group-name: 92504d5b-6dec-11e8-91ea-246e9612aaf1

@@ -17,15 +17,26 @@
 
 package org.apache.shardingsphere.proxy.backend.text.data.impl;
 
+import com.google.common.base.Preconditions;
+import io.vertx.core.Future;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.binder.aware.CursorDefinitionAware;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.ddl.CloseStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.ddl.CursorStatementContext;
+import org.apache.shardingsphere.infra.binder.type.CursorAvailable;
+import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.util.SystemSchemaUtil;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.JDBCDatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistsException;
+import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.data.DatabaseBackendHandler;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sharding.merge.ddl.fetch.FetchOrderByValueQueuesHolder;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -38,21 +49,60 @@ public final class SchemaAssignedDatabaseBackendHandler implements DatabaseBacke
     
     private final DatabaseCommunicationEngineFactory databaseCommunicationEngineFactory = DatabaseCommunicationEngineFactory.getInstance();
     
-    private final SQLStatement sqlStatement;
+    private final SQLStatementContext<?> sqlStatementContext;
     
     private final String sql;
     
-    private final BackendConnection backendConnection;
+    private final ConnectionSession connectionSession;
     
-    private DatabaseCommunicationEngine databaseCommunicationEngine;
+    private DatabaseCommunicationEngine<?> databaseCommunicationEngine;
     
     @Override
     public ResponseHeader execute() throws SQLException {
-        if (!ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName()).isComplete()) {
-            throw new RuleNotExistsException();
+        prepareDatabaseCommunicationEngine();
+        return (ResponseHeader) databaseCommunicationEngine.execute();
+    }
+    
+    @Override
+    public Future<ResponseHeader> executeFuture() {
+        try {
+            prepareDatabaseCommunicationEngine();
+            return (Future<ResponseHeader>) databaseCommunicationEngine.execute();
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            return Future.failedFuture(ex);
         }
-        databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatement, sql, backendConnection);
-        return databaseCommunicationEngine.execute();
+    }
+    
+    private void prepareDatabaseCommunicationEngine() throws RequiredResourceMissedException {
+        ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(connectionSession.getDatabaseName());
+        boolean isSystemSchema = SystemSchemaUtil.containsSystemSchema(sqlStatementContext.getDatabaseType(), sqlStatementContext.getTablesContext().getSchemaNames(), database);
+        if (!isSystemSchema && !database.hasDataSource()) {
+            throw new RequiredResourceMissedException(connectionSession.getDatabaseName());
+        }
+        if (!isSystemSchema && !database.isComplete()) {
+            throw new RuleNotExistedException();
+        }
+        if (sqlStatementContext instanceof CursorAvailable) {
+            prepareCursorStatementContext((CursorAvailable) sqlStatementContext, connectionSession);
+        }
+        databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatementContext, sql, connectionSession.getBackendConnection());
+    }
+    
+    private void prepareCursorStatementContext(final CursorAvailable statementContext, final ConnectionSession connectionSession) {
+        String cursorName = statementContext.getCursorName().getIdentifier().getValue().toLowerCase();
+        if (statementContext instanceof CursorStatementContext) {
+            connectionSession.getCursorDefinitions().put(cursorName, (CursorStatementContext) statementContext);
+        }
+        if (statementContext instanceof CloseStatementContext) {
+            FetchOrderByValueQueuesHolder.get().remove(cursorName);
+        }
+        if (statementContext instanceof CursorDefinitionAware) {
+            CursorStatementContext cursorStatementContext = connectionSession.getCursorDefinitions().get(cursorName);
+            Preconditions.checkArgument(null != cursorStatementContext, "Cursor %s does not exist.", cursorName);
+            ((CursorDefinitionAware) statementContext).setUpCursorDefinition(cursorStatementContext);
+        }
     }
     
     @Override
@@ -63,5 +113,12 @@ public final class SchemaAssignedDatabaseBackendHandler implements DatabaseBacke
     @Override
     public Collection<Object> getRowData() throws SQLException {
         return databaseCommunicationEngine.getQueryResponseRow().getData();
+    }
+    
+    @Override
+    public void close() throws SQLException {
+        if (databaseCommunicationEngine instanceof JDBCDatabaseCommunicationEngine) {
+            ((JDBCDatabaseCommunicationEngine) databaseCommunicationEngine).close();
+        }
     }
 }

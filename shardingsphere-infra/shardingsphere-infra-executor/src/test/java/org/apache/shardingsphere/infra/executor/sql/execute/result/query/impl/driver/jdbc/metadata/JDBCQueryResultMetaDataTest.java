@@ -26,6 +26,7 @@ import java.sql.Types;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -96,16 +97,16 @@ public final class JDBCQueryResultMetaDataTest {
     
     @Test
     public void assertIsSigned() throws SQLException {
-        assertThat(queryResultMetaData.isSigned(1), is(true));
+        assertTrue(queryResultMetaData.isSigned(1));
     }
     
     @Test
     public void assertIsNotNull() throws SQLException {
-        assertThat(queryResultMetaData.isNotNull(1), is(true));
+        assertTrue(queryResultMetaData.isNotNull(1));
     }
     
     @Test
     public void assertIsAutoIncrement() throws SQLException {
-        assertThat(queryResultMetaData.isAutoIncrement(1), is(true));
+        assertTrue(queryResultMetaData.isAutoIncrement(1));
     }
 }

@@ -21,8 +21,7 @@ import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLBinaryColumnTyp
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 public final class MySQLMySQLBinaryProtocolValueFactoryTest {
@@ -154,7 +153,7 @@ public final class MySQLMySQLBinaryProtocolValueFactoryTest {
     
     @Test
     public void assertGetBinaryProtocolValueWithMySQLTypeNull() {
-        assertThat(MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(MySQLBinaryColumnType.MYSQL_TYPE_NULL), is(nullValue()));
+        assertNull(MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(MySQLBinaryColumnType.MYSQL_TYPE_NULL));
     }
     
     @Test(expected = IllegalArgumentException.class)

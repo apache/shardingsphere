@@ -17,7 +17,7 @@
 
 grammar DDLStatement;
 
-import Symbol, Keyword, SQL92Keyword, Literals, BaseRule, DMLStatement;
+import DMLStatement;
 
 createTable
     : CREATE createTableSpecification? TABLE tableName (createDefinitionClause | createLikeClause)

@@ -32,7 +32,7 @@ public interface QueryResult extends ExecuteResult {
      * Iterate next data.
      *
      * @return has next data
-     * @throws SQLException SQL Exception
+     * @throws SQLException SQL exception
      */
     boolean next() throws SQLException;
     
@@ -42,7 +42,7 @@ public interface QueryResult extends ExecuteResult {
      * @param columnIndex column index
      * @param type class type of data value
      * @return data value
-     * @throws SQLException SQL Exception
+     * @throws SQLException SQL exception
      */
     Object getValue(int columnIndex, Class<?> type) throws SQLException;
     
@@ -53,7 +53,7 @@ public interface QueryResult extends ExecuteResult {
      * @param type class type of data value
      * @param calendar calendar
      * @return calendar value
-     * @throws SQLException SQL Exception
+     * @throws SQLException SQL exception
      */
     Object getCalendarValue(int columnIndex, Class<?> type, Calendar calendar) throws SQLException;
     
@@ -63,7 +63,7 @@ public interface QueryResult extends ExecuteResult {
      * @param columnIndex column index
      * @param type class type of data value
      * @return input stream
-     * @throws SQLException SQL Exception
+     * @throws SQLException SQL exception
      */
     InputStream getInputStream(int columnIndex, String type) throws SQLException;
     
@@ -71,7 +71,7 @@ public interface QueryResult extends ExecuteResult {
      * Judge result set is null or not.
      *
      * @return result set is null or not
-     * @throws SQLException SQL Exception
+     * @throws SQLException SQL exception
      */
     boolean wasNull() throws SQLException;
     
@@ -85,7 +85,7 @@ public interface QueryResult extends ExecuteResult {
     /**
      * Close.
      *
-     * @throws SQLException sql exception
+     * @throws SQLException SQL exception
      */
     void close() throws SQLException;
 }

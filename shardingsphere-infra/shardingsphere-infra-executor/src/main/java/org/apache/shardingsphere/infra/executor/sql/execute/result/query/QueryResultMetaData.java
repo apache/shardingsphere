@@ -28,7 +28,7 @@ public interface QueryResultMetaData {
      * Get column count.
      *
      * @return column count
-     * @throws SQLException SQL Exception
+     * @throws SQLException SQL exception
      */
     int getColumnCount() throws SQLException;
     
@@ -37,7 +37,7 @@ public interface QueryResultMetaData {
      *
      * @param columnIndex column index
      * @return table name
-     * @throws SQLException SQL Exception
+     * @throws SQLException SQL exception
      */
     String getTableName(int columnIndex) throws SQLException;
     
@@ -46,7 +46,7 @@ public interface QueryResultMetaData {
      *
      * @param columnIndex column index
      * @return column name
-     * @throws SQLException SQL Exception
+     * @throws SQLException SQL exception
      */
     String getColumnName(int columnIndex) throws SQLException;
     
@@ -55,7 +55,7 @@ public interface QueryResultMetaData {
      *
      * @param columnIndex column index
      * @return column label
-     * @throws SQLException SQL Exception
+     * @throws SQLException SQL exception
      */
     String getColumnLabel(int columnIndex) throws SQLException;
     
@@ -64,7 +64,7 @@ public interface QueryResultMetaData {
      *
      * @param columnIndex column index
      * @return column type
-     * @throws SQLException SQL Exception
+     * @throws SQLException SQL exception
      */
     int getColumnType(int columnIndex) throws SQLException;
     
@@ -73,7 +73,7 @@ public interface QueryResultMetaData {
      *
      * @param columnIndex column index
      * @return column type name
-     * @throws SQLException SQL Exception
+     * @throws SQLException SQL exception
      */
     String getColumnTypeName(int columnIndex) throws SQLException;
     
@@ -82,7 +82,7 @@ public interface QueryResultMetaData {
      *
      * @param columnIndex column index
      * @return column length
-     * @throws SQLException SQL Exception
+     * @throws SQLException SQL exception
      */
     int getColumnLength(int columnIndex) throws SQLException;
     
@@ -91,7 +91,7 @@ public interface QueryResultMetaData {
      *
      * @param columnIndex column index
      * @return decimals
-     * @throws SQLException SQL Exception
+     * @throws SQLException SQL exception
      */
     int getDecimals(int columnIndex) throws SQLException;
     
@@ -100,7 +100,7 @@ public interface QueryResultMetaData {
      *
      * @param columnIndex column index
      * @return signed or not
-     * @throws SQLException SQL Exception
+     * @throws SQLException SQL exception
      */
     boolean isSigned(int columnIndex) throws SQLException;
     
@@ -109,7 +109,7 @@ public interface QueryResultMetaData {
      *
      * @param columnIndex column index
      * @return not null or null
-     * @throws SQLException SQL Exception
+     * @throws SQLException SQL exception
      */
     boolean isNotNull(int columnIndex) throws SQLException;
     
@@ -118,7 +118,7 @@ public interface QueryResultMetaData {
      *
      * @param columnIndex column index
      * @return auto increment or not
-     * @throws SQLException SQL Exception
+     * @throws SQLException SQL exception
      */
     boolean isAutoIncrement(int columnIndex) throws SQLException;
 }

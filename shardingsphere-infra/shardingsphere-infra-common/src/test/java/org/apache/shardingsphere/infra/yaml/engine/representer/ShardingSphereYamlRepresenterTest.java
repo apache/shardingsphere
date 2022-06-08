@@ -22,11 +22,13 @@ import org.junit.Test;
 import org.yaml.snakeyaml.Yaml;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 
 public final class ShardingSphereYamlRepresenterTest {
@@ -46,10 +48,15 @@ public final class ShardingSphereYamlRepresenterTest {
         map.put("key1", "value1");
         map.put("key2", "value2");
         actual.setMap(map);
+        actual.setEmbeddedMap(new LinkedHashMap<>());
+        actual.getEmbeddedMap().put("embedded_map_1", new LinkedHashMap<>());
+        actual.getEmbeddedMap().put("embedded_map_2", Collections.singletonMap("embedded_map_foo", "embedded_map_foo_value"));
         actual.setCustomizedTag("customized_tag");
         String expected = new Yaml(new ShardingSphereYamlRepresenter()).dumpAsMap(actual);
         assertThat(expected, containsString("collection:\n- value1\n- value2\n"));
         assertThat(expected, containsString("map:\n  key1: value1\n  key2: value2\n"));
+        assertThat(expected, not(containsString("embedded_map_1")));
+        assertThat(expected, containsString("embeddedMap:\n  embedded_map_2:\n    embedded_map_foo: embedded_map_foo_value\n"));
         assertThat(expected, containsString("value: value\n"));
         assertThat(expected, containsString("customizedTag: converted_customized_tag\n"));
     }

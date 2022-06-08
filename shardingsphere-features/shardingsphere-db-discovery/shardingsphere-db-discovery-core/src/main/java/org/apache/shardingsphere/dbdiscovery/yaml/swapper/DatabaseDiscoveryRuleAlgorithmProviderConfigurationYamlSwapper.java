@@ -19,14 +19,18 @@ package org.apache.shardingsphere.dbdiscovery.yaml.swapper;
 
 import org.apache.shardingsphere.dbdiscovery.algorithm.config.AlgorithmProvidedDatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
+import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHeartBeatConfiguration;
 import org.apache.shardingsphere.dbdiscovery.constant.DatabaseDiscoveryOrder;
 import org.apache.shardingsphere.dbdiscovery.yaml.config.YamlDatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.yaml.config.rule.YamlDatabaseDiscoveryDataSourceRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper;
+import org.apache.shardingsphere.dbdiscovery.yaml.config.rule.YamlDatabaseDiscoveryHeartBeatConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapper;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
@@ -34,19 +38,34 @@ import java.util.stream.Collectors;
  * Database discovery rule configuration YAML swapper.
  */
 public final class DatabaseDiscoveryRuleAlgorithmProviderConfigurationYamlSwapper
-        implements YamlRuleConfigurationSwapper<YamlDatabaseDiscoveryRuleConfiguration, AlgorithmProvidedDatabaseDiscoveryRuleConfiguration> {
+        implements
+            YamlRuleConfigurationSwapper<YamlDatabaseDiscoveryRuleConfiguration, AlgorithmProvidedDatabaseDiscoveryRuleConfiguration> {
     
     @Override
     public YamlDatabaseDiscoveryRuleConfiguration swapToYamlConfiguration(final AlgorithmProvidedDatabaseDiscoveryRuleConfiguration data) {
         YamlDatabaseDiscoveryRuleConfiguration result = new YamlDatabaseDiscoveryRuleConfiguration();
         result.setDataSources(data.getDataSources().stream().collect(
-                Collectors.toMap(DatabaseDiscoveryDataSourceRuleConfiguration::getName, this::swapToYamlConfiguration, (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
+                Collectors.toMap(DatabaseDiscoveryDataSourceRuleConfiguration::getGroupName, this::swapToYamlConfiguration, (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
+        if (null != data.getDiscoveryHeartbeats()) {
+            data.getDiscoveryHeartbeats().forEach((key, value) -> result.getDiscoveryHeartbeats().put(key, swapToYamlConfiguration(value)));
+        }
+        if (null != data.getDiscoveryTypes()) {
+            data.getDiscoveryTypes().forEach((key, value) -> result.getDiscoveryTypes().put(key, new YamlShardingSphereAlgorithmConfiguration(value.getType(), value.getProps())));
+        }
         return result;
     }
     
     private YamlDatabaseDiscoveryDataSourceRuleConfiguration swapToYamlConfiguration(final DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig) {
         YamlDatabaseDiscoveryDataSourceRuleConfiguration result = new YamlDatabaseDiscoveryDataSourceRuleConfiguration();
         result.setDataSourceNames(dataSourceRuleConfig.getDataSourceNames());
+        result.setDiscoveryHeartbeatName(dataSourceRuleConfig.getDiscoveryHeartbeatName());
+        result.setDiscoveryTypeName(dataSourceRuleConfig.getDiscoveryTypeName());
+        return result;
+    }
+    
+    private YamlDatabaseDiscoveryHeartBeatConfiguration swapToYamlConfiguration(final DatabaseDiscoveryHeartBeatConfiguration heartBeatConfig) {
+        YamlDatabaseDiscoveryHeartBeatConfiguration result = new YamlDatabaseDiscoveryHeartBeatConfiguration();
+        result.setProps(heartBeatConfig.getProps());
         return result;
     }
     
@@ -56,13 +75,23 @@ public final class DatabaseDiscoveryRuleAlgorithmProviderConfigurationYamlSwappe
         for (Entry<String, YamlDatabaseDiscoveryDataSourceRuleConfiguration> entry : yamlConfig.getDataSources().entrySet()) {
             dataSources.add(swapToObject(entry.getKey(), entry.getValue()));
         }
+        Map<String, DatabaseDiscoveryHeartBeatConfiguration> heartBeats = new LinkedHashMap<>(yamlConfig.getDiscoveryHeartbeats().entrySet().size(), 1);
+        if (null != yamlConfig.getDiscoveryHeartbeats()) {
+            yamlConfig.getDiscoveryHeartbeats().forEach((key, value) -> heartBeats.put(key, swapToObject(value)));
+        }
         AlgorithmProvidedDatabaseDiscoveryRuleConfiguration ruleConfig = new AlgorithmProvidedDatabaseDiscoveryRuleConfiguration();
         ruleConfig.setDataSources(dataSources);
+        ruleConfig.setDiscoveryHeartbeats(heartBeats);
         return ruleConfig;
     }
     
     private DatabaseDiscoveryDataSourceRuleConfiguration swapToObject(final String name, final YamlDatabaseDiscoveryDataSourceRuleConfiguration yamlDataSourceRuleConfig) {
-        return new DatabaseDiscoveryDataSourceRuleConfiguration(name, yamlDataSourceRuleConfig.getDataSourceNames(), yamlDataSourceRuleConfig.getDiscoveryTypeName());
+        return new DatabaseDiscoveryDataSourceRuleConfiguration(name, yamlDataSourceRuleConfig.getDataSourceNames(), yamlDataSourceRuleConfig.getDiscoveryHeartbeatName(),
+                yamlDataSourceRuleConfig.getDiscoveryTypeName());
+    }
+    
+    private DatabaseDiscoveryHeartBeatConfiguration swapToObject(final YamlDatabaseDiscoveryHeartBeatConfiguration yamlHeartBeatConfig) {
+        return new DatabaseDiscoveryHeartBeatConfiguration(yamlHeartBeatConfig.getProps());
     }
     
     @Override

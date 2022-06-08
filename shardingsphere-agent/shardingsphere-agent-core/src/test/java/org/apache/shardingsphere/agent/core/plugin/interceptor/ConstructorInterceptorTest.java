@@ -1,8 +1,8 @@
 /*
- * Licensed to the Apache Software Foundation (final ASF) under one or more
+ * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, final Version 2.0
+ * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
@@ -29,8 +29,8 @@ import net.bytebuddy.jar.asm.Opcodes;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
 import org.apache.shardingsphere.agent.core.bytebuddy.listener.LoggingListener;
-import org.apache.shardingsphere.agent.core.mock.material.ConstructorMaterial;
 import org.apache.shardingsphere.agent.core.mock.advice.MockConstructorAdvice;
+import org.apache.shardingsphere.agent.core.mock.material.ConstructorMaterial;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -39,8 +39,9 @@ import org.junit.Test;
 import java.util.LinkedList;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertThat;
 
 public final class ConstructorInterceptorTest {
     
@@ -76,10 +77,8 @@ public final class ConstructorInterceptorTest {
     }
     
     @Test
-    @SuppressWarnings("all")
     public void assertNoArgConstructor() {
-        Object material = new ConstructorMaterial();
-        assertTrue(material instanceof AdviceTargetObject);
+        assertThat(new ConstructorMaterial(), instanceOf(AdviceTargetObject.class));
     }
     
     @Test

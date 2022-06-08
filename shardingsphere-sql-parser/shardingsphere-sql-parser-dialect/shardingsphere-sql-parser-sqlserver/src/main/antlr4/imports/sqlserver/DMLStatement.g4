@@ -17,7 +17,7 @@
 
 grammar DMLStatement;
 
-import Symbol, Keyword, SQLServerKeyword, Literals, BaseRule;
+import BaseRule;
 
 insert
     : withClause? INSERT top? INTO? tableName (AS? alias)? (insertDefaultValue | insertValuesClause | insertSelectClause)
@@ -81,7 +81,7 @@ aggregationClause
     ;
 
 selectClause
-    : SELECT duplicateSpecification? projections fromClause? whereClause? groupByClause? havingClause? orderByClause?
+    : selectWithClause? SELECT duplicateSpecification? projections fromClause? whereClause? groupByClause? havingClause? orderByClause? forClause?
     ;
 
 duplicateSpecification
@@ -102,10 +102,6 @@ top
 
 topNum
     : numberLiterals | parameterMarker
-    ;
-
-alias
-    : identifier | STRING_
     ;
 
 unqualifiedShorthand
@@ -158,7 +154,11 @@ subquery
     ;
 
 withClause
-    : WITH cteClause (COMMA_ cteClause)*
+    : WITH cteClauseSet
+    ;
+
+cteClauseSet
+    : cteClause (COMMA_ cteClause)*
     ;
 
 cteClause
@@ -231,4 +231,46 @@ useHitName
     | SQ_ FORCE_LEGACY_CARDINALITY_ESTIMATION SQ_
     | SQ_ QUERY_OPTIMIZER_COMPATIBILITY_LEVEL_n SQ_
     | SQ_ QUERY_PLAN_PROFILE SQ_
+    ;
+
+forClause
+    : FOR (BROWSE | forXmlClause | forJsonClause)
+    ;
+
+forXmlClause
+    : XML ((RAW (LP_ stringLiterals RP_)? | AUTO) (commonDirectivesForXml (COMMA_ (XMLDATA | XMLSCHEMA (LP_ stringLiterals RP_)?))? (COMMA_ ELEMENTS (XSINIL | ABSENT)?)?)?
+    | EXPLICIT (commonDirectivesForXml (COMMA_ XMLDATA)?)?
+    | PATH (LP_ stringLiterals RP_)? (commonDirectivesForXml (COMMA_ ELEMENTS (XSINIL | ABSENT)?)?)?)
+    ;
+
+commonDirectivesForXml
+    : (COMMA_ BINARY BASE64)? (COMMA_ TYPE)? (COMMA_ ROOT (LP_ stringLiterals RP_)?)?
+    ;
+
+forJsonClause
+    : JSON ((AUTO | PATH) ((COMMA_ ROOT (LP_ stringLiterals RP_)?)? (COMMA_ INCLUDE_NULL_VALUES)? (COMMA_ WITHOUT_ARRAY_WRAPPER)?)?)
+    ;
+
+selectWithClause
+    : WITH (xmlNamespacesClause COMMA_?)? cteClauseSet?
+    ;
+
+xmlNamespacesClause
+    : XMLNAMESPACES LP_ xmlNamespaceDeclarationItem (COMMA_ xmlNamespaceDeclarationItem)* RP_
+    ;
+
+xmlNamespaceDeclarationItem
+    : xmlNamespaceUri AS xmlNamespacePrefix | xmlDefaultNamespaceDeclarationItem
+    ;
+
+xmlNamespaceUri
+    : stringLiterals
+    ;
+
+xmlNamespacePrefix
+    : identifier
+    ;
+
+xmlDefaultNamespaceDeclarationItem
+    : DEFAULT xmlNamespaceUri
     ;

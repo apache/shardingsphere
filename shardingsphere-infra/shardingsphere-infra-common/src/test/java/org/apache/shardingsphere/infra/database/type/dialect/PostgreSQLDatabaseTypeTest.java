@@ -23,11 +23,14 @@ import org.junit.Test;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -35,7 +38,7 @@ public final class PostgreSQLDatabaseTypeTest {
     
     @Test
     public void assertGetName() {
-        assertThat(new PostgreSQLDatabaseType().getName(), is("PostgreSQL"));
+        assertThat(new PostgreSQLDatabaseType().getType(), is("PostgreSQL"));
     }
     
     @Test
@@ -65,5 +68,15 @@ public final class PostgreSQLDatabaseTypeTest {
         QuoteCharacter actual = new PostgreSQLDatabaseType().getQuoteCharacter();
         assertThat(actual.getStartDelimiter(), is("\""));
         assertThat(actual.getEndDelimiter(), is("\""));
+    }
+    
+    @Test
+    public void assertGetSystemDatabases() {
+        assertTrue(new PostgreSQLDatabaseType().getSystemDatabaseSchemaMap().containsKey("postgres"));
+    }
+    
+    @Test
+    public void assertGetSystemSchemas() {
+        assertThat(new PostgreSQLDatabaseType().getSystemSchemas(), is(new HashSet<>(Arrays.asList("information_schema", "pg_catalog"))));
     }
 }

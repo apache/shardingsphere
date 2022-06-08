@@ -25,7 +25,7 @@ import java.util.List;
 public interface AggregationUnit {
     
     /**
-     * merge aggregation values.
+     * Merge aggregation values.
      * 
      * @param values aggregation values
      */

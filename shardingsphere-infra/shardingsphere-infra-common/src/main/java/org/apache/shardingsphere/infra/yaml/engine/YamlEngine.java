@@ -19,10 +19,12 @@ package org.apache.shardingsphere.infra.yaml.engine;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.constructor.ShardingSphereYamlConstructor;
 import org.apache.shardingsphere.infra.yaml.engine.representer.ShardingSphereYamlRepresenter;
+import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.representer.Representer;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -30,6 +32,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Collection;
 
 /**
  * YAML engine.
@@ -49,8 +52,7 @@ public final class YamlEngine {
     public static <T extends YamlConfiguration> T unmarshal(final File yamlFile, final Class<T> classType) throws IOException {
         try (
                 FileInputStream fileInputStream = new FileInputStream(yamlFile);
-                InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream)
-        ) {
+                InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream)) {
             return new Yaml(new ShardingSphereYamlConstructor(classType)).loadAs(inputStreamReader, classType);
         }
     }
@@ -83,12 +85,32 @@ public final class YamlEngine {
     }
     
     /**
+     * Unmarshal YAML.
+     *
+     * @param yamlContent YAML content
+     * @param classType class type
+     * @param skipMissingProps true if missing properties should be skipped, false otherwise
+     * @param <T> type of class
+     * @return object from YAML
+     */
+    public static <T> T unmarshal(final String yamlContent, final Class<T> classType, final boolean skipMissingProps) {
+        Representer representer = new Representer();
+        representer.getPropertyUtils().setSkipMissingProperties(skipMissingProps);
+        return new Yaml(new ShardingSphereYamlConstructor(classType), representer).loadAs(yamlContent, classType);
+    }
+    
+    /**
      * Marshal YAML.
      *
      * @param value object to be marshaled
      * @return YAML content
      */
     public static String marshal(final Object value) {
-        return new Yaml(new ShardingSphereYamlRepresenter()).dumpAsMap(value);
+        DumperOptions dumperOptions = new DumperOptions();
+        dumperOptions.setLineBreak(DumperOptions.LineBreak.getPlatformLineBreak());
+        if (value instanceof Collection) {
+            return new Yaml(new ShardingSphereYamlRepresenter(), dumperOptions).dumpAs(value, null, DumperOptions.FlowStyle.BLOCK);
+        }
+        return new Yaml(new ShardingSphereYamlRepresenter(), dumperOptions).dumpAsMap(value);
     }
 }

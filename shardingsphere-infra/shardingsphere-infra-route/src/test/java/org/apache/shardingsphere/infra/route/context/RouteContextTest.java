@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.route.context;
 
-import com.google.common.collect.Lists;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -50,12 +49,20 @@ public final class RouteContextTest {
     
     private RouteContext multiRouteContext;
     
+    private RouteContext notContainsTableShardingRouteContext;
+    
     @Before
     public void setUp() {
         singleRouteContext = new RouteContext();
         multiRouteContext = new RouteContext();
+        notContainsTableShardingRouteContext = new RouteContext();
         multiRouteContext.getRouteUnits().addAll(Arrays.asList(mockRouteUnit(DATASOURCE_NAME_0), mockRouteUnit(DATASOURCE_NAME_1)));
         singleRouteContext.getRouteUnits().add(mockRouteUnit(DATASOURCE_NAME_0));
+        notContainsTableShardingRouteContext.getRouteUnits().addAll(Arrays.asList(mockDatabaseShardingOnlyRouteUnit(DATASOURCE_NAME_0), mockDatabaseShardingOnlyRouteUnit(DATASOURCE_NAME_1)));
+    }
+    
+    private RouteUnit mockDatabaseShardingOnlyRouteUnit(final String datasourceName) {
+        return new RouteUnit(new RouteMapper(datasourceName, datasourceName), Collections.singletonList(new RouteMapper(LOGIC_TABLE, LOGIC_TABLE)));
     }
     
     private RouteUnit mockRouteUnit(final String datasourceName) {
@@ -82,16 +89,14 @@ public final class RouteContextTest {
     
     @Test
     public void assertGetActualTableNameGroups() {
-        Set<String> logicTableSet = new HashSet<>();
-        logicTableSet.add(LOGIC_TABLE);
-        List<Set<String>> actual = multiRouteContext.getActualTableNameGroups(DATASOURCE_NAME_1, logicTableSet);
+        List<Set<String>> actual = multiRouteContext.getActualTableNameGroups(DATASOURCE_NAME_1, new HashSet<>(Collections.singleton(LOGIC_TABLE)));
         assertThat(actual.size(), is(1));
         assertTrue(actual.get(0).contains(ACTUAL_TABLE));
     }
     
     @Test
     public void assertGetDataSourceLogicTablesMap() {
-        List<String> dataSources = Lists.newArrayList(DATASOURCE_NAME_0, DATASOURCE_NAME_1);
+        List<String> dataSources = Arrays.asList(DATASOURCE_NAME_0, DATASOURCE_NAME_1);
         Map<String, Set<String>> actual = multiRouteContext.getDataSourceLogicTablesMap(dataSources);
         assertThat(actual.size(), is(2));
         assertThat(actual.get(DATASOURCE_NAME_0).size(), is(1));
@@ -110,5 +115,16 @@ public final class RouteContextTest {
     @Test
     public void assertTableMapperNotFound() {
         assertFalse(singleRouteContext.findTableMapper(DATASOURCE_NAME_1, ACTUAL_TABLE).isPresent());
+    }
+    
+    @Test
+    public void assertContainsTableShardingWhenContainsTableSharding() {
+        assertTrue(singleRouteContext.containsTableSharding());
+        assertTrue(multiRouteContext.containsTableSharding());
+    }
+    
+    @Test
+    public void assertContainsTableShardingWhenNotContainsTableSharding() {
+        assertFalse(notContainsTableShardingRouteContext.containsTableSharding());
     }
 }

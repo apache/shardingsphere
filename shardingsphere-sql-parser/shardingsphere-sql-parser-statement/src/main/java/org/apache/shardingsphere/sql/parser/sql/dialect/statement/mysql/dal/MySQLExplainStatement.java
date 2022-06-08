@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
 
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ExplainStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
@@ -34,6 +35,8 @@ public final class MySQLExplainStatement extends ExplainStatement implements MyS
     
     private SimpleTableSegment table;
     
+    private ColumnSegment columnWild;
+    
     /**
      * Get simple table segment.
      * 
@@ -41,5 +44,14 @@ public final class MySQLExplainStatement extends ExplainStatement implements MyS
      */
     public Optional<SimpleTableSegment> getTable() {
         return Optional.ofNullable(table);
+    }
+    
+    /**
+     * Get column segment.
+     *
+     * @return column segment
+     */
+    public Optional<ColumnSegment> getColumnWild() {
+        return Optional.ofNullable(columnWild);
     }
 }

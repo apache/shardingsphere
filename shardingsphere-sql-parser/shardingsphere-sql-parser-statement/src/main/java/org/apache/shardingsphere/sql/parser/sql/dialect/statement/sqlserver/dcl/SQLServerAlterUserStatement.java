@@ -17,13 +17,20 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.AlterUserStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.UserSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
 
 /**
  * SQLServer alter user statement.
  */
 @ToString
+@Getter
+@Setter
 public final class SQLServerAlterUserStatement extends AlterUserStatement implements SQLServerStatement {
+    
+    private UserSegment user;
 }

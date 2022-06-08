@@ -23,64 +23,90 @@ import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContex
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dal.AnalyzeTableStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dal.ExplainStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dal.FlushStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dal.OptimizeTableStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dal.ShowColumnsStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dal.ShowCreateTableStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dal.ShowIndexStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dal.ShowTableStatusStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dal.ShowTablesStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dcl.DenyUserStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dcl.GrantStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dcl.RevokeStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.AlterIndexStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.AlterTableStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.AlterViewStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.ddl.CloseStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.ddl.CommentStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CreateFunctionStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CreateIndexStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CreateProcedureStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.ddl.CreateSchemaStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CreateTableStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CreateViewStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.ddl.CursorStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.DropIndexStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.DropTableStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.DropViewStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.ddl.FetchStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.ddl.MoveStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.PrepareStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.ddl.RenameTableStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.TruncateStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.CallStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.CopyStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.DeleteStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementContext;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.AnalyzeTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ExplainStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.FlushStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.GrantStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.RevokeStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterViewStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CloseStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CommentStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateFunctionStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateProcedureStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateSchemaStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropViewStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.PrepareStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.RenameTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.TruncateStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.CallStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.CopyStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLOptimizeTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowColumnsStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowIndexStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLPrepareStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTableStatusStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCursorStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussFetchStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussMoveStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerDenyUserStatement;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * SQL statement context factory.
@@ -91,17 +117,31 @@ public final class SQLStatementContextFactory {
     /**
      * Create SQL statement context.
      *
-     * @param schema ShardingSphere schema
-     * @param parameters SQL parameters
+     * @param databases databases
      * @param sqlStatement SQL statement
+     * @param defaultDatabaseName default database name
      * @return SQL statement context
      */
-    public static SQLStatementContext<?> newInstance(final ShardingSphereSchema schema, final List<Object> parameters, final SQLStatement sqlStatement) {
+    public static SQLStatementContext<?> newInstance(final Map<String, ShardingSphereDatabase> databases, final SQLStatement sqlStatement, final String defaultDatabaseName) {
+        return newInstance(databases, Collections.emptyList(), sqlStatement, defaultDatabaseName);
+    }
+    
+    /**
+     * Create SQL statement context.
+     *
+     * @param databases databases
+     * @param parameters SQL parameters
+     * @param sqlStatement SQL statement
+     * @param defaultDatabaseName default database name
+     * @return SQL statement context
+     */
+    public static SQLStatementContext<?> newInstance(final Map<String, ShardingSphereDatabase> databases,
+                                                     final List<Object> parameters, final SQLStatement sqlStatement, final String defaultDatabaseName) {
         if (sqlStatement instanceof DMLStatement) {
-            return getDMLStatementContext(schema, parameters, (DMLStatement) sqlStatement);
+            return getDMLStatementContext(databases, parameters, (DMLStatement) sqlStatement, defaultDatabaseName);
         }
         if (sqlStatement instanceof DDLStatement) {
-            return getDDLStatementContext((DDLStatement) sqlStatement);
+            return getDDLStatementContext(databases, parameters, (DDLStatement) sqlStatement, defaultDatabaseName);
         }
         if (sqlStatement instanceof DCLStatement) {
             return getDCLStatementContext((DCLStatement) sqlStatement);
@@ -112,9 +152,10 @@ public final class SQLStatementContextFactory {
         return new CommonSQLStatementContext<>(sqlStatement);
     }
     
-    private static SQLStatementContext<?> getDMLStatementContext(final ShardingSphereSchema schema, final List<Object> parameters, final DMLStatement sqlStatement) {
+    private static SQLStatementContext<?> getDMLStatementContext(final Map<String, ShardingSphereDatabase> databases,
+                                                                 final List<Object> parameters, final DMLStatement sqlStatement, final String defaultDatabaseName) {
         if (sqlStatement instanceof SelectStatement) {
-            return new SelectStatementContext(schema, parameters, (SelectStatement) sqlStatement);
+            return new SelectStatementContext(databases, parameters, (SelectStatement) sqlStatement, defaultDatabaseName);
         }
         if (sqlStatement instanceof UpdateStatement) {
             return new UpdateStatementContext((UpdateStatement) sqlStatement);
@@ -123,20 +164,30 @@ public final class SQLStatementContextFactory {
             return new DeleteStatementContext((DeleteStatement) sqlStatement);
         }
         if (sqlStatement instanceof InsertStatement) {
-            return new InsertStatementContext(schema, parameters, (InsertStatement) sqlStatement);
+            return new InsertStatementContext(databases, parameters, (InsertStatement) sqlStatement, defaultDatabaseName);
         }
         if (sqlStatement instanceof CallStatement) {
             return new CallStatementContext((CallStatement) sqlStatement);
         }
+        if (sqlStatement instanceof CopyStatement) {
+            return new CopyStatementContext((CopyStatement) sqlStatement);
+        }
         throw new UnsupportedOperationException(String.format("Unsupported SQL statement `%s`", sqlStatement.getClass().getSimpleName()));
     }
     
-    private static SQLStatementContext<?> getDDLStatementContext(final DDLStatement sqlStatement) {
+    private static SQLStatementContext<?> getDDLStatementContext(final Map<String, ShardingSphereDatabase> databases, final List<Object> parameters,
+                                                                 final DDLStatement sqlStatement, final String defaultDatabaseName) {
+        if (sqlStatement instanceof CreateSchemaStatement) {
+            return new CreateSchemaStatementContext((CreateSchemaStatement) sqlStatement);
+        }
         if (sqlStatement instanceof CreateTableStatement) {
             return new CreateTableStatementContext((CreateTableStatement) sqlStatement);
         }
         if (sqlStatement instanceof AlterTableStatement) {
             return new AlterTableStatementContext((AlterTableStatement) sqlStatement);
+        }
+        if (sqlStatement instanceof RenameTableStatement) {
+            return new RenameTableStatementContext((RenameTableStatement) sqlStatement);
         }
         if (sqlStatement instanceof DropTableStatement) {
             return new DropTableStatementContext((DropTableStatement) sqlStatement);
@@ -168,8 +219,23 @@ public final class SQLStatementContextFactory {
         if (sqlStatement instanceof DropViewStatement) {
             return new DropViewStatementContext((DropViewStatement) sqlStatement);
         }
-        if (sqlStatement instanceof PostgreSQLPrepareStatement) {
-            return new PrepareStatementContext((PostgreSQLPrepareStatement) sqlStatement);
+        if (sqlStatement instanceof PrepareStatement) {
+            return new PrepareStatementContext((PrepareStatement) sqlStatement);
+        }
+        if (sqlStatement instanceof CommentStatement) {
+            return new CommentStatementContext((CommentStatement) sqlStatement);
+        }
+        if (sqlStatement instanceof OpenGaussCursorStatement) {
+            return new CursorStatementContext(databases, parameters, (OpenGaussCursorStatement) sqlStatement, defaultDatabaseName);
+        }
+        if (sqlStatement instanceof CloseStatement) {
+            return new CloseStatementContext((CloseStatement) sqlStatement);
+        }
+        if (sqlStatement instanceof OpenGaussMoveStatement) {
+            return new MoveStatementContext((OpenGaussMoveStatement) sqlStatement);
+        }
+        if (sqlStatement instanceof OpenGaussFetchStatement) {
+            return new FetchStatementContext((OpenGaussFetchStatement) sqlStatement);
         }
         return new CommonSQLStatementContext<>(sqlStatement);
     }
@@ -197,11 +263,23 @@ public final class SQLStatementContextFactory {
         if (sqlStatement instanceof MySQLShowColumnsStatement) {
             return new ShowColumnsStatementContext((MySQLShowColumnsStatement) sqlStatement);
         }
+        if (sqlStatement instanceof MySQLShowTablesStatement) {
+            return new ShowTablesStatementContext((MySQLShowTablesStatement) sqlStatement);
+        }
+        if (sqlStatement instanceof MySQLShowTableStatusStatement) {
+            return new ShowTableStatusStatementContext((MySQLShowTableStatusStatement) sqlStatement);
+        }
         if (sqlStatement instanceof MySQLShowIndexStatement) {
             return new ShowIndexStatementContext((MySQLShowIndexStatement) sqlStatement);
         }
         if (sqlStatement instanceof AnalyzeTableStatement) {
             return new AnalyzeTableStatementContext((AnalyzeTableStatement) sqlStatement);
+        }
+        if (sqlStatement instanceof FlushStatement) {
+            return new FlushStatementContext((FlushStatement) sqlStatement);
+        }
+        if (sqlStatement instanceof MySQLOptimizeTableStatement) {
+            return new OptimizeTableStatementContext((MySQLOptimizeTableStatement) sqlStatement);
         }
         return new CommonSQLStatementContext<>(sqlStatement);
     }

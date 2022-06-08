@@ -18,10 +18,9 @@
 package org.apache.shardingsphere.encrypt.algorithm;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.codec.binary.StringUtils;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 
 import java.nio.charset.StandardCharsets;
@@ -31,7 +30,7 @@ import java.util.Properties;
 /**
  * RC4 encrypt algorithm.
  */
-public final class RC4EncryptAlgorithm implements EncryptAlgorithm {
+public final class RC4EncryptAlgorithm implements EncryptAlgorithm<Object, String> {
     
     private static final String RC4_KEY = "rc4-key-value";
     
@@ -39,44 +38,43 @@ public final class RC4EncryptAlgorithm implements EncryptAlgorithm {
     
     private static final int KEY_MIN_LENGTH = 5;
     
-    private byte[] key = new byte[SBOX_LENGTH - 1];
-    
-    private int[] sBox = new int[SBOX_LENGTH];
-    
     @Getter
-    @Setter
-    private Properties props = new Properties();
+    private Properties props;
+    
+    private volatile byte[] key = new byte[SBOX_LENGTH - 1];
+    
+    private volatile int[] sBox = new int[SBOX_LENGTH];
     
     @Override
-    public void init() {
+    public void init(final Properties props) {
+        this.props = props;
         reset();
-        setKey(StringUtils.getBytesUtf8(props.getProperty(RC4_KEY)));
+        setKey(props.getProperty(RC4_KEY, "").getBytes(StandardCharsets.UTF_8));
+    }
+    
+    private void setKey(final byte[] key) throws ShardingSphereException {
+        if (!(key.length >= KEY_MIN_LENGTH && key.length < SBOX_LENGTH)) {
+            throw new ShardingSphereException("Key length has to be between " + KEY_MIN_LENGTH + " and " + (SBOX_LENGTH - 1));
+        }
+        this.key = key;
     }
     
     @Override
-    public String encrypt(final Object plaintext) {
-        if (null == plaintext) {
-            return null;
-        }
-        byte[] result = handle(StringUtils.getBytesUtf8(String.valueOf(plaintext)), key);
-        return Base64.encodeBase64String(result);
+    public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
+        return null == plainValue ? null : Base64.encodeBase64String(handle(String.valueOf(plainValue).getBytes(StandardCharsets.UTF_8), key));
     }
     
     @Override
-    public Object decrypt(final String ciphertext) {
-        if (null == ciphertext) {
+    public Object decrypt(final String cipherValue, final EncryptContext encryptContext) {
+        if (null == cipherValue) {
             return null;
         }
-        byte[] result = handle(Base64.decodeBase64(ciphertext), key);
+        byte[] result = handle(Base64.decodeBase64(cipherValue), key);
         return new String(result, StandardCharsets.UTF_8);
     }
     
     private byte[] handle(final byte[] data, final byte[] key) {
-        reset();
-        setKey(key);
-        byte[] result = crypt(data);
-        reset();
-        return result;
+        return crypt(data);
     }
     
     private void reset() {
@@ -84,10 +82,7 @@ public final class RC4EncryptAlgorithm implements EncryptAlgorithm {
         Arrays.fill(sBox, 0);
     }
     
-    /**
-     * Crypt given byte array. Be aware, that you must init key, before using.
-     * @param message array to be crypt
-     * @return byte array
+    /*
      * @see <a href="http://en.wikipedia.org/wiki/RC4#Pseudo-random_generation_algorithm_.28PRGA.29">Pseudo-random generation algorithm</a>
      */
     private byte[] crypt(final byte[] message) {
@@ -105,11 +100,7 @@ public final class RC4EncryptAlgorithm implements EncryptAlgorithm {
         return result;
     }
     
-    /**
-     * Initialize SBOX with given key, Key-scheduling algorithm.
-     *
-     * @param key key
-     * @return sBox int array
+    /*
      * @see <a href="http://en.wikipedia.org/wiki/RC4#Key-scheduling_algorithm_.28KSA.29">Wikipedia. Init sBox</a>
      */
     private int[] initSBox(final byte[] key) {
@@ -131,22 +122,8 @@ public final class RC4EncryptAlgorithm implements EncryptAlgorithm {
         sBox[j] = temp;
     }
     
-    /**
-     * Set key.
-     *
-     * @param key key to be setup
-     * @throws ShardingSphereException if key length is smaller than 5 or bigger than 255
-     */
-    private void setKey(final byte[] key) throws ShardingSphereException {
-        if (!(key.length >= KEY_MIN_LENGTH && key.length < SBOX_LENGTH)) {
-            throw new ShardingSphereException("Key length has to be between " + KEY_MIN_LENGTH + " and " + (SBOX_LENGTH - 1));
-        }
-        this.key = key;
-    }
-    
     @Override
     public String getType() {
         return "RC4";
     }
 }
-

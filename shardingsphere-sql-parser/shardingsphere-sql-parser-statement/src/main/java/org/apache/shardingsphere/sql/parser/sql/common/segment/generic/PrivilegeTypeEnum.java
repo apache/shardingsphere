@@ -22,67 +22,69 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.generic;
  */
 public enum PrivilegeTypeEnum {
     
-    SELECT_ACL,
+    SELECT,
     
-    INSERT_ACL,
+    INSERT,
     
-    UPDATE_ACL,
+    UPDATE,
     
-    DELETE_ACL,
+    DELETE,
     
-    USAGE_ACL,
+    USAGE,
     
-    CREATE_ACL,
+    CREATE,
     
-    DROP_ACL,
+    DROP,
     
-    RELOAD_ACL,
+    RELOAD,
     
-    SHUTDOWN_ACL,
+    SHUTDOWN,
     
-    PROCESS_ACL,
+    PROCESS,
     
-    FILE_ACL,
+    FILE,
     
-    GRANT_ACL,
+    GRANT,
     
-    REFERENCES_ACL,
+    REFERENCES,
     
-    INDEX_ACL,
+    INDEX,
     
-    ALTER_ACL,
+    ALTER,
     
-    SHOW_DB_ACL,
+    SHOW_DB,
     
-    SUPER_ACL,
+    SUPER,
     
-    CREATE_TMP_ACL,
+    CREATE_TMP,
     
-    LOCK_TABLES_ACL,
+    LOCK_TABLES,
     
-    EXECUTE_ACL,
+    EXECUTE,
     
-    REPL_SLAVE_ACL,
+    REPL_SLAVE,
     
-    REPL_CLIENT_ACL,
+    REPL_CLIENT,
     
-    CREATE_VIEW_ACL,
+    CREATE_VIEW,
     
-    SHOW_VIEW_ACL,
+    SHOW_VIEW,
     
-    CREATE_PROC_ACL,
+    CREATE_PROC,
     
-    ALTER_PROC_ACL,
+    ALTER_PROC,
     
-    CREATE_USER_ACL,
+    CREATE_USER,
     
-    EVENT_ACL,
+    DROP_USER,
     
-    TRIGGER_ACL,
+    EVENT,
     
-    CREATE_TABLESPACE_ACL,
+    TRIGGER,
     
-    CREATE_ROLE_ACL,
+    CREATE_TABLESPACE,
     
-    DROP_ROLE_ACL
+    CREATE_ROLE,
+    
+    DROP_ROLE
 }

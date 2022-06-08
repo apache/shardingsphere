@@ -15,13 +15,16 @@
 # limitations under the License.
 #
 
+databaseName: logic_db
+
 rules:
 - !READWRITE_SPLITTING
   dataSources:
     test_ds:
-      writeDataSourceName: test_write_ds
-      readDataSourceNames:
-        - test_replica_ds
+      type: Static
+      props:
+        write-data-source-name: test_write_ds
+        read-data-source-names: test_replica_ds
       loadBalancerName: roundRobin
   loadBalancers:
     roundRobin:

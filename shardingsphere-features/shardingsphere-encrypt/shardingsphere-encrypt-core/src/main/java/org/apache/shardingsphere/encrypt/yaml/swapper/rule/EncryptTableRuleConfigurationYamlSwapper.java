@@ -21,7 +21,7 @@ import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfig
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptTableRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.swapper.YamlConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.YamlConfigurationSwapper;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -40,6 +40,8 @@ public final class EncryptTableRuleConfigurationYamlSwapper implements YamlConfi
         for (EncryptColumnRuleConfiguration each : data.getColumns()) {
             result.getColumns().put(each.getLogicColumn(), columnYamlSwapper.swapToYamlConfiguration(each));
         }
+        result.setName(data.getName());
+        result.setQueryWithCipherColumn(data.getQueryWithCipherColumn());
         return result;
     }
     
@@ -51,6 +53,6 @@ public final class EncryptTableRuleConfigurationYamlSwapper implements YamlConfi
             yamlEncryptColumnRuleConfig.setLogicColumn(entry.getKey());
             columns.add(columnYamlSwapper.swapToObject(yamlEncryptColumnRuleConfig));
         }
-        return new EncryptTableRuleConfiguration(yamlConfig.getName(), columns);
+        return new EncryptTableRuleConfiguration(yamlConfig.getName(), columns, yamlConfig.getQueryWithCipherColumn());
     }
 }

@@ -17,16 +17,18 @@
 
 package org.apache.shardingsphere.driver.api;
 
+import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
@@ -39,28 +41,140 @@ public final class ShardingSphereDataSourceFactory {
     /**
      * Create ShardingSphere data source.
      *
+     * @param databaseName database name
+     * @param modeConfig mode configuration
+     * @return ShardingSphere data source
+     * @throws SQLException SQL exception
+     */
+    public static DataSource createDataSource(final String databaseName, final ModeConfiguration modeConfig) throws SQLException {
+        return new ShardingSphereDataSource(Strings.isNullOrEmpty(databaseName) ? DefaultDatabase.LOGIC_NAME : databaseName, modeConfig);
+    }
+    
+    /**
+     * Create ShardingSphere data source.
+     *
+     * @param modeConfig mode configuration
+     * @return ShardingSphere data source
+     * @throws SQLException SQL exception
+     */
+    public static DataSource createDataSource(final ModeConfiguration modeConfig) throws SQLException {
+        return createDataSource(DefaultDatabase.LOGIC_NAME, modeConfig);
+    }
+    
+    /**
+     * Create ShardingSphere data source.
+     *
+     * @param databaseName database name
+     * @param modeConfig mode configuration
      * @param dataSourceMap data source map
-     * @param configurations rule configurations
+     * @param configs rule configurations
      * @param props properties for data source
      * @return ShardingSphere data source
      * @throws SQLException SQL exception
      */
-    public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> configurations, final Properties props) throws SQLException {
-        return new ShardingSphereDataSource(dataSourceMap, configurations, props);
+    public static DataSource createDataSource(final String databaseName, final ModeConfiguration modeConfig,
+                                              final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> configs, final Properties props) throws SQLException {
+        return new ShardingSphereDataSource(Strings.isNullOrEmpty(databaseName) ? DefaultDatabase.LOGIC_NAME : databaseName, modeConfig, dataSourceMap, configs, props);
+    }
+    
+    /**
+     * Create ShardingSphere data source.
+     *
+     * @param modeConfig mode configuration
+     * @param dataSourceMap data source map
+     * @param configs rule configurations
+     * @param props properties for data source
+     * @return ShardingSphere data source
+     * @throws SQLException SQL exception
+     */
+    public static DataSource createDataSource(final ModeConfiguration modeConfig,
+                                              final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> configs, final Properties props) throws SQLException {
+        return createDataSource(DefaultDatabase.LOGIC_NAME, modeConfig, dataSourceMap, configs, props);
+    }
+    
+    /**
+     * Create ShardingSphere data source.
+     *
+     * @param databaseName database name
+     * @param modeConfig mode configuration
+     * @param dataSource data source
+     * @param configs rule configurations
+     * @param props properties for data source
+     * @return ShardingSphere data source
+     * @throws SQLException SQL exception
+     */
+    public static DataSource createDataSource(final String databaseName, final ModeConfiguration modeConfig,
+                                              final DataSource dataSource, final Collection<RuleConfiguration> configs, final Properties props) throws SQLException {
+        return createDataSource(databaseName, modeConfig, Collections.singletonMap(Strings.isNullOrEmpty(databaseName) ? DefaultDatabase.LOGIC_NAME : databaseName, dataSource), configs, props);
+    }
+    
+    /**
+     * Create ShardingSphere data source.
+     *
+     * @param modeConfig mode configuration
+     * @param dataSource data source
+     * @param configs rule configurations
+     * @param props properties for data source
+     * @return ShardingSphere data source
+     * @throws SQLException SQL exception
+     */
+    public static DataSource createDataSource(final ModeConfiguration modeConfig,
+                                              final DataSource dataSource, final Collection<RuleConfiguration> configs, final Properties props) throws SQLException {
+        return createDataSource(modeConfig, Collections.singletonMap(DefaultDatabase.LOGIC_NAME, dataSource), configs, props);
+    }
+    
+    /**
+     * Create ShardingSphere data source.
+     *
+     * @param databaseName database name
+     * @param dataSourceMap data source map
+     * @param configs rule configurations
+     * @param props properties for data source
+     * @return ShardingSphere data source
+     * @throws SQLException SQL exception
+     */
+    public static DataSource createDataSource(final String databaseName,
+                                              final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> configs, final Properties props) throws SQLException {
+        return createDataSource(databaseName, null, dataSourceMap, configs, props);
+    }
+    
+    /**
+     * Create ShardingSphere data source.
+     *
+     * @param dataSourceMap data source map
+     * @param configs rule configurations
+     * @param props properties for data source
+     * @return ShardingSphere data source
+     * @throws SQLException SQL exception
+     */
+    public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> configs, final Properties props) throws SQLException {
+        return createDataSource((ModeConfiguration) null, dataSourceMap, configs, props);
+    }
+    
+    /**
+     * Create ShardingSphere data source.
+     *
+     * @param databaseName database name
+     * @param dataSource data source
+     * @param configs rule configurations
+     * @param props properties for data source
+     * @return ShardingSphere data source
+     * @throws SQLException SQL exception
+     */
+    public static DataSource createDataSource(final String databaseName, final DataSource dataSource, final Collection<RuleConfiguration> configs, final Properties props) throws SQLException {
+        return createDataSource(databaseName, null, dataSource, configs, props);
     }
     
     /**
      * Create ShardingSphere data source.
      *
      * @param dataSource data source
-     * @param configurations rule configurations
+     * @param configs rule configurations
      * @param props properties for data source
      * @return ShardingSphere data source
      * @throws SQLException SQL exception
      */
-    public static DataSource createDataSource(final DataSource dataSource, final Collection<RuleConfiguration> configurations, final Properties props) throws SQLException {
-        Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
-        dataSourceMap.put(DefaultSchema.LOGIC_NAME, dataSource);
-        return createDataSource(dataSourceMap, configurations, props);
+    public static DataSource createDataSource(final DataSource dataSource, final Collection<RuleConfiguration> configs, final Properties props) throws SQLException {
+        return createDataSource((ModeConfiguration) null, dataSource, configs, props);
     }
 }

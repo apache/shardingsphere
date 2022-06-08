@@ -1,7 +1,7 @@
 +++
-pre = "<b>3.6. </b>"
+pre = "<b>4.9. </b>"
 title = "Encryption"
-weight = 6
+weight = 9
 chapter = true
 +++
 
@@ -19,9 +19,9 @@ The demand for data encryption is generally divided into two situations in real 
 
 2. For the service has been launched, and plaintext has been stored in the database before. The relevant department suddenly needs to encrypt the data from the on-line business. This scenario generally needs to deal with three issues as followings:
 
-* How to encrypt the historical data, a.k.a.s clean data.
+* How to encrypt the historical data, a.k.a.s data clean.
 * How to encrypt the newly added data and store it in the database without changing the business SQL and logic; then decrypt the taken out data when use it.
-* How to securely, seamlessly and transparently migrate plaintext and ciphertext data between business systems
+* How to securely, seamlessly and transparently migrate plaintext and ciphertext data between business systems.
 
 ## Challenges
 
@@ -32,3 +32,5 @@ In addition, for the online business system, it is relatively complex to realize
 ## Goal
 
 **Provides a security and transparent data encryption solution, which is the main design goal of Apache ShardingSphere data encryption module.**
+
+**Source Codes: https://github.com/apache/shardingsphere/tree/master/shardingsphere-features/shardingsphere-encrypt**

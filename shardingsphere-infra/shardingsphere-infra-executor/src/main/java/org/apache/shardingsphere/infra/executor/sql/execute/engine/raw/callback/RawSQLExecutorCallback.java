@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.RawSQLExe
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.process.ExecuteProcessEngine;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessConstants;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -34,15 +33,11 @@ import java.util.Map;
  */
 public final class RawSQLExecutorCallback implements ExecutorCallback<RawSQLExecutionUnit, ExecuteResult> {
     
-    static {
-        ShardingSphereServiceLoader.register(RawExecutorCallback.class);
-    }
-    
     @SuppressWarnings("rawtypes")
     private final Collection<RawExecutorCallback> callbacks;
     
     public RawSQLExecutorCallback() {
-        callbacks = ShardingSphereServiceLoader.getSingletonServiceInstances(RawExecutorCallback.class);
+        callbacks = RawExecutorCallbackFactory.getAllInstances();
         Preconditions.checkState(!callbacks.isEmpty(), "No raw executor callback implementation found.");
     }
     

@@ -207,7 +207,7 @@ public final class SQL92DDLStatementSQLVisitor extends SQL92StatementSQLVisitor 
     public ASTNode visitAddColumnSpecification(final AddColumnSpecificationContext ctx) {
         CollectionValue<AddColumnDefinitionSegment> result = new CollectionValue<>();
         AddColumnDefinitionSegment addColumnDefinition = new AddColumnDefinitionSegment(
-                ctx.columnDefinition().getStart().getStartIndex(), ctx.columnDefinition().getStop().getStopIndex(), 
+                ctx.columnDefinition().getStart().getStartIndex(), ctx.columnDefinition().getStop().getStopIndex(),
                 Collections.singletonList((ColumnDefinitionSegment) visit(ctx.columnDefinition())));
         result.getValue().add(addColumnDefinition);
         return result;

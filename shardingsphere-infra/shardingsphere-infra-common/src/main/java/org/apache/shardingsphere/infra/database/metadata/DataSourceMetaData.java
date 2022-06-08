@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.database.metadata;
 
+import java.util.Properties;
+
 /**
  * Data source meta data.
  */
@@ -27,7 +29,7 @@ public interface DataSourceMetaData {
      * 
      * @return host name
      */
-    String getHostName();
+    String getHostname();
     
     /**
      * Get port.
@@ -49,4 +51,28 @@ public interface DataSourceMetaData {
      * @return schema
      */
     String getSchema();
+    
+    /**
+     * Get query properties.
+     * 
+     * @return query properties
+     */
+    Properties getQueryProperties();
+    
+    /**
+     * Get default query properties.
+     *
+     * @return default query properties
+     */
+    Properties getDefaultQueryProperties();
+    
+    /**
+     * Judge whether two of data sources are in the same database instance.
+     *
+     * @param dataSourceMetaData data source meta data
+     * @return data sources are in the same database instance or not
+     */
+    default boolean isInSameDatabaseInstance(final DataSourceMetaData dataSourceMetaData) {
+        return getHostname().equals(dataSourceMetaData.getHostname()) && getPort() == dataSourceMetaData.getPort();
+    }
 }

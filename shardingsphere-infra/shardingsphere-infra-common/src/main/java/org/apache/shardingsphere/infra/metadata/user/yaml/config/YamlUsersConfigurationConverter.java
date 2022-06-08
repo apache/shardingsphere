@@ -32,47 +32,47 @@ import java.util.stream.Collectors;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class YamlUsersConfigurationConverter {
-
+    
     private static final UserYamlSwapper USER_YAML_SWAPPER = new UserYamlSwapper();
-
+    
     /**
-     * Convert to users yaml content.
+     * Convert to users YAML content.
      *
-     * @param users sharding sphere users
-     * @return users yaml content
+     * @param users ShardingSphere users
+     * @return users YAML content
      */
     public static Collection<String> convertYamlUserConfigurations(final Collection<ShardingSphereUser> users) {
         Collection<String> result = new LinkedList<>();
-        users.stream().map(USER_YAML_SWAPPER::swapToYamlConfiguration).forEach(user -> result.add(user.toString()));
+        users.stream().map(USER_YAML_SWAPPER::swapToYamlConfiguration).forEach(each -> result.add(each.toString()));
         return result;
     }
-
+    
     /**
-     * Convert to sharding sphere users.
+     * Convert to ShardingSphere users.
      *
-     * @param users users yaml content
-     * @return sharding sphere users
+     * @param users users YAML content
+     * @return ShardingSphere users
      */
     public static Collection<ShardingSphereUser> convertShardingSphereUser(final Collection<String> users) {
         Collection<YamlUserConfiguration> yamlUsers = convertYamlUserConfiguration(users);
         return yamlUsers.stream().map(USER_YAML_SWAPPER::swapToObject).collect(Collectors.toList());
     }
-
+    
     /**
-     * Convert to yaml user configurations.
+     * Convert to YAML user configurations.
      *
-     * @param users users yaml content
-     * @return yaml user configurations
+     * @param users users YAML content
+     * @return YAML user configurations
      */
     public static Collection<YamlUserConfiguration> convertYamlUserConfiguration(final Collection<String> users) {
         return users.stream().map(YamlUsersConfigurationConverter::convertYamlUserConfiguration).collect(Collectors.toList());
     }
-
+    
     /**
-     * Convert to yaml user configuration.
+     * Convert to YAML user configuration.
      *
-     * @param yamlUser user yaml content
-     * @return yaml user configuration
+     * @param yamlUser user YAML content
+     * @return YAML user configuration
      */
     private static YamlUserConfiguration convertYamlUserConfiguration(final String yamlUser) {
         Preconditions.checkArgument(0 < yamlUser.indexOf("@") && 0 < yamlUser.indexOf(":") && yamlUser.indexOf(":") <= yamlUser.length() - 1,

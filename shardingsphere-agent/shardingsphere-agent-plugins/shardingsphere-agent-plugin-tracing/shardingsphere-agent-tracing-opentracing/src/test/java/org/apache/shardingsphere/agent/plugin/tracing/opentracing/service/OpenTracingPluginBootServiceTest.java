@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.agent.plugin.tracing.opentracing.service;
 
 import io.opentracing.util.GlobalTracer;
-import java.util.Properties;
 import org.apache.shardingsphere.agent.config.PluginConfiguration;
 import org.junit.After;
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import java.util.Properties;
+
+import static org.junit.Assert.assertTrue;
 
 public final class OpenTracingPluginBootServiceTest {
     
@@ -32,16 +32,14 @@ public final class OpenTracingPluginBootServiceTest {
     
     @Test
     public void assertStart() {
-        Properties props = new Properties();
-        props.setProperty("OPENTRACING_TRACER_CLASS_NAME", "io.opentracing.mock.MockTracer");
-        PluginConfiguration configuration = new PluginConfiguration("localhost", 8090, "", props);
-        openTracingPluginBootService.start(configuration);
-        assertThat(GlobalTracer.isRegistered(), is(true));
+        openTracingPluginBootService.start(new PluginConfiguration("localhost", 8090, "", createProperties()));
+        assertTrue(GlobalTracer.isRegistered());
     }
     
-    @Test
-    public void assertType() {
-        assertThat(openTracingPluginBootService.getType(), is("Opentracing"));
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty("OPENTRACING_TRACER_CLASS_NAME", "io.opentracing.mock.MockTracer");
+        return result;
     }
     
     @After

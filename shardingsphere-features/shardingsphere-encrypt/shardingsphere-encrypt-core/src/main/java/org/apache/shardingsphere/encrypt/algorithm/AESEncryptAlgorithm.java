@@ -19,12 +19,10 @@ package org.apache.shardingsphere.encrypt.algorithm;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.SneakyThrows;
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.codec.binary.StringUtils;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
@@ -34,48 +32,49 @@ import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Properties;
 
 /**
  * AES encrypt algorithm.
  */
-@Getter
-@Setter
-public final class AESEncryptAlgorithm implements EncryptAlgorithm {
+public final class AESEncryptAlgorithm implements EncryptAlgorithm<Object, String> {
     
     private static final String AES_KEY = "aes-key-value";
     
-    private Properties props = new Properties();
+    @Getter
+    private Properties props;
     
     private byte[] secretKey;
     
     @Override
-    public void init() {
-        secretKey = createSecretKey();
+    public void init(final Properties props) {
+        this.props = props;
+        secretKey = createSecretKey(props);
     }
     
-    private byte[] createSecretKey() {
-        Preconditions.checkArgument(props.containsKey(AES_KEY), String.format("%s can not be null.", AES_KEY));
+    private byte[] createSecretKey(final Properties props) {
+        Preconditions.checkArgument(props.containsKey(AES_KEY), "%s can not be null.", AES_KEY);
         return Arrays.copyOf(DigestUtils.sha1(props.getProperty(AES_KEY)), 16);
     }
     
     @SneakyThrows(GeneralSecurityException.class)
     @Override
-    public String encrypt(final Object plaintext) {
-        if (null == plaintext) {
+    public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
+        if (null == plainValue) {
             return null;
         }
-        byte[] result = getCipher(Cipher.ENCRYPT_MODE).doFinal(StringUtils.getBytesUtf8(String.valueOf(plaintext)));
-        return Base64.encodeBase64String(result);
+        byte[] result = getCipher(Cipher.ENCRYPT_MODE).doFinal(String.valueOf(plainValue).getBytes(StandardCharsets.UTF_8));
+        return Base64.getEncoder().encodeToString(result);
     }
     
     @SneakyThrows(GeneralSecurityException.class)
     @Override
-    public Object decrypt(final String ciphertext) {
-        if (null == ciphertext) {
+    public Object decrypt(final String cipherValue, final EncryptContext encryptContext) {
+        if (null == cipherValue) {
             return null;
         }
-        byte[] result = getCipher(Cipher.DECRYPT_MODE).doFinal(Base64.decodeBase64(ciphertext));
+        byte[] result = getCipher(Cipher.DECRYPT_MODE).doFinal(Base64.getDecoder().decode(cipherValue));
         return new String(result, StandardCharsets.UTF_8);
     }
     

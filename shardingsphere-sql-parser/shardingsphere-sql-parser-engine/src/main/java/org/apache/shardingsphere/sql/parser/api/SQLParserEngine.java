@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.api;
 
-import com.google.common.cache.LoadingCache;
-import org.antlr.v4.runtime.tree.ParseTree;
+import com.github.benmanes.caffeine.cache.LoadingCache;
+import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.core.database.cache.ParseTreeCacheBuilder;
 import org.apache.shardingsphere.sql.parser.core.database.parser.SQLParserExecutor;
 
@@ -29,11 +29,7 @@ public final class SQLParserEngine {
     
     private final SQLParserExecutor sqlParserExecutor;
     
-    private final LoadingCache<String, ParseTree> parseTreeCache;
-    
-    public SQLParserEngine(final String databaseType) {
-        this(databaseType, new CacheOption(128, 1024L, 4));
-    }
+    private final LoadingCache<String, ParseASTNode> parseTreeCache;
     
     public SQLParserEngine(final String databaseType, final CacheOption cacheOption) {
         sqlParserExecutor = new SQLParserExecutor(databaseType);
@@ -45,9 +41,9 @@ public final class SQLParserEngine {
      *
      * @param sql SQL to be parsed
      * @param useCache whether use cache
-     * @return parse tree
+     * @return parse AST node
      */
-    public ParseTree parse(final String sql, final boolean useCache) {
-        return useCache ? parseTreeCache.getUnchecked(sql) : sqlParserExecutor.parse(sql);
+    public ParseASTNode parse(final String sql, final boolean useCache) {
+        return useCache ? parseTreeCache.get(sql) : sqlParserExecutor.parse(sql);
     }
 }

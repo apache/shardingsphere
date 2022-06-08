@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.yaml.engine.fixture;
 
 import org.apache.shardingsphere.infra.yaml.engine.representer.processor.ShardingSphereYamlTupleProcessor;
+import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.nodes.NodeTuple;
 import org.yaml.snakeyaml.nodes.ScalarNode;
 import org.yaml.snakeyaml.nodes.Tag;
@@ -33,6 +34,6 @@ public final class YamlTupleProcessorFixture implements ShardingSphereYamlTupleP
     @Override
     public NodeTuple process(final NodeTuple nodeTuple) {
         String value = ((ScalarNode) nodeTuple.getValueNode()).getValue();
-        return "null".equals(value) ? null : new NodeTuple(nodeTuple.getKeyNode(), new ScalarNode(Tag.STR, String.join("_", "converted", value), null, null, null));
+        return "null".equals(value) ? null : new NodeTuple(nodeTuple.getKeyNode(), new ScalarNode(Tag.STR, String.join("_", "converted", value), null, null, DumperOptions.ScalarStyle.PLAIN));
     }
 }

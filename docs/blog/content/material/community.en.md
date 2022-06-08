@@ -1,10 +1,8 @@
 +++
 title = "Exploration and expansion of the community"
-weight = 5
+weight = 9
 chapter = true
 +++
-
-## Exploration and expansion of the Apache ShardingSphere community 
 
 Apache ShardingSphere community was invited to attend the Apache Event-join Apache open source community held by at Tsinghua University on November 9th. As an honored speaker, Liang Zhang, the PPMC, gave a talk named exploring and expanding the Apache ShardingSphere community. The main points of this topic are as follows.
 
@@ -36,7 +34,7 @@ Recently, more and more Chinese projects entered the Apache foundation. There ar
 
 ### 03 What is Apache ShardingSphere?
 
-Apache ShardingSphere (TLP) is an open-source ecosystem consisted of a set of distributed database solutions. From the GitHub data, its community is active and growing up fast, which benefits from its stable micro-core and scalable architecture.
+Apache ShardingSphere (TLP) is an open-source ecosystem consisting of a set of distributed database solutions. From the GitHub data, its community is active and growing up fast, which benefits from its stable micro-core and scalable architecture.
 
 ### 04 Apache ShardingSphere Community Statistics
 

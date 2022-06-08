@@ -63,6 +63,7 @@ public final class EncryptRuleBeanDefinitionParser extends AbstractBeanDefinitio
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(EncryptTableRuleConfiguration.class);
         factory.addConstructorArgValue(element.getAttribute(BeanDefinitionParserDelegate.NAME_ATTRIBUTE));
         factory.addConstructorArgValue(parseEncryptColumnRuleConfigurations(element));
+        factory.addConstructorArgValue(element.getAttribute(EncryptRuleBeanDefinitionTag.QUERY_WITH_CIPHER_COLUMN));
         return factory.getBeanDefinition();
     }
     
@@ -82,6 +83,7 @@ public final class EncryptRuleBeanDefinitionParser extends AbstractBeanDefinitio
         factory.addConstructorArgValue(element.getAttribute(EncryptRuleBeanDefinitionTag.ASSISTED_QUERY_COLUMN_ATTRIBUTE));
         factory.addConstructorArgValue(element.getAttribute(EncryptRuleBeanDefinitionTag.PLAIN_COLUMN_ATTRIBUTE));
         factory.addConstructorArgValue(element.getAttribute(EncryptRuleBeanDefinitionTag.ENCRYPT_ALGORITHM_REF_ATTRIBUTE));
+        factory.addConstructorArgValue(element.getAttribute(EncryptRuleBeanDefinitionTag.QUERY_WITH_CIPHER_COLUMN));
         return factory.getBeanDefinition();
     }
 }

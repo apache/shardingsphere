@@ -20,26 +20,30 @@ package org.apache.shardingsphere.infra.binder.statement.ddl;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateViewStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.CreateViewStatementHandler;
 
-import java.util.Optional;
+import java.util.Collection;
 
 /**
  * Create view statement context.
  */
 @Getter
-public final class CreateViewStatementContext extends CommonSQLStatementContext<CreateViewStatement> {
+public final class CreateViewStatementContext extends CommonSQLStatementContext<CreateViewStatement> implements TableAvailable {
     
     private final TablesContext tablesContext;
     
     public CreateViewStatementContext(final CreateViewStatement sqlStatement) {
         super(sqlStatement);
-        Optional<SelectStatement> selectStatement = CreateViewStatementHandler.getSelectStatement(sqlStatement);
         TableExtractor extractor = new TableExtractor();
-        selectStatement.ifPresent(extractor::extractTablesFromSelect);
-        tablesContext = new TablesContext(extractor.getRewriteTables());
+        extractor.extractTablesFromCreateViewStatement(sqlStatement);
+        tablesContext = new TablesContext(extractor.getRewriteTables(), getDatabaseType());
+    }
+    
+    @Override
+    public Collection<SimpleTableSegment> getAllTables() {
+        return tablesContext.getTables();
     }
 }

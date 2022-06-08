@@ -27,7 +27,7 @@ public final class OpenTracingPluginDefinitionService extends AbstractPluginDefi
     
     private static final String COMMAND_EXECUTOR_TASK_ENHANCE_CLASS = "org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask";
     
-    private static final String COMMAND_EXECUTOR_METHOD_NAME = "executeCommand";
+    private static final String COMMAND_EXECUTOR_METHOD_NAME = "run";
     
     private static final String COMMAND_EXECUTOR_TASK_ADVICE_CLASS = "org.apache.shardingsphere.agent.plugin.tracing.opentracing.advice.CommandExecutorTaskAdvice";
     
@@ -65,6 +65,6 @@ public final class OpenTracingPluginDefinitionService extends AbstractPluginDefi
     
     @Override
     public String getType() {
-        return "Opentracing";
+        return "OpenTracing";
     }
 }

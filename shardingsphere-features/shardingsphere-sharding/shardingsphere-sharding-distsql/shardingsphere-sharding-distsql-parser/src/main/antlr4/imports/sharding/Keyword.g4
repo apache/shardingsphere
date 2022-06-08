@@ -55,8 +55,8 @@ RESOURCES
     : R E S O U R C E S
     ;
 
-GENERATED_KEY
-    : G E N E R A T E D UL_ K E Y
+KEY_GENERATE_STRATEGY
+    : K E Y UL_ G E N E R A T E UL_ S T R A T E G Y
     ;
 
 DEFAULT_TABLE_STRATEGY
@@ -69,6 +69,10 @@ TABLE
 
 SHARDING_COLUMN
     : S H A R D I N G UL_ C O L U M N
+    ;
+
+SHARDING_COLUMNS
+    : S H A R D I N G UL_ C O L U M N S
     ;
 
 TYPE
@@ -101,4 +105,108 @@ RULES
 
 COLUMNS
     : C O L U M N S
+    ;
+
+ALGORITHM
+    : A L G O R I T H M
+    ;
+
+ALGORITHMS
+    : A L G O R I T H M S
+    ;
+
+HINT
+    : H I N T
+    ;
+
+SET
+    : S E T
+    ;
+
+ADD
+    : A D D
+    ;
+
+DATABASE_VALUE
+    : D A T A B A S E UL_ V A L U E
+    ;
+
+TABLE_VALUE
+    : T A B L E UL_ V A L U E
+    ;
+
+STATUS
+    : S T A T U S
+    ;
+
+CLEAR
+    : C L E A R
+    ;
+
+DEFAULT
+    : D E F A U L T
+    ;
+
+DATABASE
+    : D A T A B A S E
+    ;
+
+SHARDING_ALGORITHM
+    : S H A R D I N G UL_ A L G O R I T H M
+    ;
+
+STRATEGY
+    : S T R A T E G Y
+    ;
+
+DATANODES
+    : D A T A N O D E S
+    ;
+
+DATABASE_STRATEGY
+    : D A T A B A S E UL_ S T R A T E G Y
+    ;
+
+TABLE_STRATEGY
+    : T A B L E UL_ S T R A T E G Y
+    ;
+
+NODES
+    : N O D E S
+    ;
+
+KEY
+    : K E Y
+    ;
+
+GENERATOR
+    : G E N E R A T O R
+    ;
+
+GENERATORS
+    : G E N E R A T O R S
+    ;
+
+KEY_GENERATOR
+    : K E Y UL_ G E N E R A T O R
+    ;
+
+UNUSED
+    : U N U S E D
+    ;
+
+USED
+    : U S E D
+    ;
+
+IF
+    : I F
+    ;
+
+EXISTS
+    : E X I S T S
+    ;
+    
+WITH
+    : W I T H
     ;

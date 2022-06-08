@@ -90,3 +90,43 @@ CIPHER
 PLAIN
     : P L A I N
     ;
+    
+ASSISTED_QUERY_COLUMN
+    : A S S I S T E D UL_ Q U E R Y UL_ C O L U M N
+    ;
+    
+QUERY_WITH_CIPHER_COLUMN
+    : Q U E R Y UL_ W I T H UL_ C I P H E R UL_ C O L U M N
+    ;
+    
+TRUE
+    : T R U E
+    ;
+    
+FALSE
+    : F A L S E
+    ;    
+
+DATA_TYPE
+    : D A T A UL_ T Y P E
+    ;
+    
+PLAIN_DATA_TYPE
+    : P L A I N UL_ D A T A UL_ T Y P E
+    ;
+
+CIPHER_DATA_TYPE
+    : C I P H E R UL_ D A T A UL_ T Y P E
+    ;
+
+ASSISTED_QUERY_DATA_TYPE
+    : A S S I S T E D UL_ Q U E R Y UL_ D A T A UL_ T Y P E
+    ;
+
+IF  
+    : I F
+    ;
+    
+EXISTS
+    : E X I S T S
+    ;

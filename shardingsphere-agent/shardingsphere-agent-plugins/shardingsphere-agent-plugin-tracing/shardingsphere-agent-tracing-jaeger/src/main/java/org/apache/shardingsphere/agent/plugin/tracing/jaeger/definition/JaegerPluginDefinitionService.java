@@ -27,7 +27,7 @@ public final class JaegerPluginDefinitionService extends AbstractPluginDefinitio
     
     private static final String COMMAND_EXECUTOR_TASK_ENHANCE_CLASS = "org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask";
     
-    private static final String COMMAND_EXECUTOR_METHOD_NAME = "executeCommand";
+    private static final String COMMAND_EXECUTOR_METHOD_NAME = "run";
     
     private static final String COMMAND_EXECUTOR_TASK_ADVICE_CLASS = "org.apache.shardingsphere.agent.plugin.tracing.jaeger.advice.CommandExecutorTaskAdvice";
     
@@ -58,8 +58,7 @@ public final class JaegerPluginDefinitionService extends AbstractPluginDefinitio
         defineInterceptor(JDBC_EXECUTOR_CALLBACK_ENGINE_ENHANCE_CLASS)
                 .aroundInstanceMethod(
                         ElementMatchers.named(JDBC_EXECUTOR_METHOD_NAME)
-                                .and(ElementMatchers.takesArgument(0, ElementMatchers.named(JDBC_EXECUTOR_UNIT_ENGINE_ENHANCE_CLASS)))
-                )
+                                .and(ElementMatchers.takesArgument(0, ElementMatchers.named(JDBC_EXECUTOR_UNIT_ENGINE_ENHANCE_CLASS))))
                 .implement(JDBC_EXECUTOR_CALLBACK_ADVICE_CLASS)
                 .build();
     }

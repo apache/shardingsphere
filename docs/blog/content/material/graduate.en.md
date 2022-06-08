@@ -1,11 +1,8 @@
 +++
 title = "Congratulations on graduation of Apache ShardingSphere as a Top-Level Project!" 
-weight = 3
+weight = 11
 chapter = true
 +++
-
-## Congratulations on graduation of Apache ShardingSphere as a Top-Level Project!
-
 
 Apache Software Foundation (ASF), The most popular open-source software foundation, announced Apache ShardingSphere as a Top-Level Project (TLP) on Wakefield, MA, 16th April 2020.
 

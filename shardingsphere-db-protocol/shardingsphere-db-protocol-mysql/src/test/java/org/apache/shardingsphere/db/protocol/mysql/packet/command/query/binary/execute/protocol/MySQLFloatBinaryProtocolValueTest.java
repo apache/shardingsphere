@@ -24,6 +24,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.nio.charset.StandardCharsets;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
@@ -38,12 +40,12 @@ public final class MySQLFloatBinaryProtocolValueTest {
     @Test
     public void assertRead() {
         when(byteBuf.readFloatLE()).thenReturn(1.0f);
-        assertThat(new MySQLFloatBinaryProtocolValue().read(new MySQLPacketPayload(byteBuf)), is(1.0f));
+        assertThat(new MySQLFloatBinaryProtocolValue().read(new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8)), is(1.0f));
     }
     
     @Test
     public void assertWrite() {
-        new MySQLFloatBinaryProtocolValue().write(new MySQLPacketPayload(byteBuf), 1.0f);
+        new MySQLFloatBinaryProtocolValue().write(new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8), 1.0f);
         verify(byteBuf).writeFloatLE(1.0f);
     }
 }

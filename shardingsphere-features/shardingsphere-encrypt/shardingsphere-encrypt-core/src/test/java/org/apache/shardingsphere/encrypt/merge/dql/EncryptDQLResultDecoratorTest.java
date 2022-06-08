@@ -35,7 +35,7 @@ public final class EncryptDQLResultDecoratorTest {
     public void assertDecorateQueryResult() throws SQLException {
         QueryResult queryResult = mock(QueryResult.class);
         when(queryResult.next()).thenReturn(true);
-        EncryptDQLResultDecorator decorator = new EncryptDQLResultDecorator(mock(EncryptAlgorithmMetaData.class), false);
+        EncryptDQLResultDecorator decorator = new EncryptDQLResultDecorator(mock(EncryptAlgorithmMetaData.class));
         MergedResult actual = decorator.decorate(queryResult, mock(SQLStatementContext.class), mock(EncryptRule.class));
         assertTrue(actual.next());
     }
@@ -44,7 +44,7 @@ public final class EncryptDQLResultDecoratorTest {
     public void assertDecorateMergedResult() throws SQLException {
         MergedResult mergedResult = mock(MergedResult.class);
         when(mergedResult.next()).thenReturn(true);
-        EncryptDQLResultDecorator decorator = new EncryptDQLResultDecorator(mock(EncryptAlgorithmMetaData.class), false);
+        EncryptDQLResultDecorator decorator = new EncryptDQLResultDecorator(mock(EncryptAlgorithmMetaData.class));
         MergedResult actual = decorator.decorate(mergedResult, mock(SQLStatementContext.class), mock(EncryptRule.class));
         assertTrue(actual.next());
     }

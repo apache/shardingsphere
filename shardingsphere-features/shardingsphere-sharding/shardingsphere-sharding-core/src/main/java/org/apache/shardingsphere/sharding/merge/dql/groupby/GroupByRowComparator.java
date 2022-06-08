@@ -46,6 +46,7 @@ public final class GroupByRowComparator implements Comparator<MemoryQueryResultR
         return compare(o1, o2, selectStatementContext.getGroupByContext().getItems());
     }
     
+    @SuppressWarnings("rawtypes")
     private int compare(final MemoryQueryResultRow o1, final MemoryQueryResultRow o2, final Collection<OrderByItem> orderByItems) {
         for (OrderByItem each : orderByItems) {
             Object orderValue1 = o1.getCell(each.getIndex());
@@ -53,7 +54,7 @@ public final class GroupByRowComparator implements Comparator<MemoryQueryResultR
             Object orderValue2 = o2.getCell(each.getIndex());
             Preconditions.checkState(null == orderValue2 || orderValue2 instanceof Comparable, "Order by value must implements Comparable");
             int result = CompareUtil.compareTo((Comparable) orderValue1, (Comparable) orderValue2, each.getSegment().getOrderDirection(),
-                each.getSegment().getNullOrderDirection(), valueCaseSensitive.get(each.getIndex()));
+                    each.getSegment().getNullOrderDirection(), valueCaseSensitive.get(each.getIndex()));
             if (0 != result) {
                 return result;
             }

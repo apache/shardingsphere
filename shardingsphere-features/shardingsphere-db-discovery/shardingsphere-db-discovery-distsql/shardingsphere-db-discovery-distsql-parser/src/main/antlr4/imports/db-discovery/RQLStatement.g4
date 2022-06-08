@@ -17,12 +17,20 @@
 
 grammar RQLStatement;
 
-import Keyword, Literals, Symbol;
+import BaseRule;
 
 showDatabaseDiscoveryRules
-    : SHOW DB_DISCOVERY RULES (FROM schemaName)?
+    : SHOW DB_DISCOVERY RULES (FROM databaseName)?
     ;
 
-schemaName
+showDatabaseDiscoveryTypes
+    : SHOW DB_DISCOVERY TYPES (FROM databaseName)?
+    ;
+
+showDatabaseDiscoveryHeartbeats
+    : SHOW DB_DISCOVERY HEARTBEATS (FROM databaseName)?
+    ;
+
+databaseName
     : IDENTIFIER
     ;

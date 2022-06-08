@@ -1,9 +1,20 @@
 +++
-pre = "<b>5.5. </b>"
+pre = "<b>6.8. </b>"
 title = "Readwrite-splitting"
-weight = 5
+weight = 8
 chapter = true
 +++
+
+## ReadwriteSplittingType
+
+| *SPI 名称*                                 | *详细说明*                 |
+| ----------------------------------------- | ------------------------- |
+| ReadwriteSplittingType                    | Readwrite-splitting type  |
+
+| *已知实现类*                               | *详细说明*                         |
+| ----------------------------------------- | -------------------------------- |
+| StaticReadwriteSplittingType              | Static readwrite-splitting type  |
+| DynamicReadwriteSplittingType             | Dynamic readwrite-splitting type |
 
 ## ReplicaLoadBalanceAlgorithm
 
@@ -15,3 +26,4 @@ chapter = true
 | ------------------------------------- | ------------------------------------------------------- |
 | RoundRobinReplicaLoadBalanceAlgorithm | Round robin load balance algorithm of replica databases |
 | RandomReplicaLoadBalanceAlgorithm     | Random load balance algorithm of replica databases      |
+| WeightReplicaLoadBalanceAlgorithm     | Weight load balance algorithm of replica databases      |

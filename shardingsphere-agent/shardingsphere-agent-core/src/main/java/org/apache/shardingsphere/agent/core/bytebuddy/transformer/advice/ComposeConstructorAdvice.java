@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
 import org.apache.shardingsphere.agent.api.advice.ConstructorAdvice;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * Compose Constructor advice.
@@ -29,7 +29,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class ComposeConstructorAdvice implements ConstructorAdvice {
     
-    private final List<ConstructorAdvice> advices;
+    private final Collection<ConstructorAdvice> advices;
     
     @Override
     public void onConstructor(final AdviceTargetObject target, final Object[] args) {

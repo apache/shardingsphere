@@ -17,12 +17,8 @@
 
 grammar RQLStatement;
 
-import Keyword, Literals, Symbol;
+import BaseRule;
 
 showReadwriteSplittingRules
-    : SHOW READWRITE_SPLITTING RULES (FROM schemaName)?
-    ;
-
-schemaName
-    : IDENTIFIER
+    : SHOW READWRITE_SPLITTING RULES (FROM databaseName)?
     ;

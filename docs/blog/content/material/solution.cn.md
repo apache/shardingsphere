@@ -1,10 +1,8 @@
 +++
 title = "刚柔并济的开源分布式事务解决方案"
-weight = 8
+weight = 6
 chapter = true
 +++
-
-## 刚柔并济的开源分布式事务解决方案
 
 ### 作者
 
@@ -206,7 +204,7 @@ Apache ShardingSphere（Incubating）的目标是像使用一个数据库一样�
 
 
 
-1.通过SCTL（sharding-ctl，即ShardingSphere提供的数据库管理命令）切换当前事务类型。以SQL执行的方式输入即可，适用于Sharding-JDBC和Sharding-Proxy。例如：SCTL:SET TRANSACTION_TYPE=BASE
+1.通过 RAL（Resource & Rule Administration Language）切换当前事务类型。以 SQL 执行的方式输入即可，适用于 Sharding-Proxy。例如：SET VARIABLE TRANSACTION_TYPE=BASE
 
 2.通过Threadlocal切换当前事务类型，适用于Sharding-JDBC。例如：TransactionTypeHolder.set (TransactionType.XA)
 

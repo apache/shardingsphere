@@ -16,17 +16,17 @@
 #
 
 ######################################################################################################
-# 
+#
 # Here you can configure the rules for the proxy.
 # This example is configuration of replica-query rule.
-# 
+#
 ######################################################################################################
 #
-#schemaName: replica_query_db
+#databaseName: readwrite_splitting_db
 #
 #dataSources:
 #  primary_ds:
-#    url: jdbc:postgresql://127.0.0.1:5432/demo_primary_ds?serverTimezone=UTC&useSSL=false
+#    url: jdbc:postgresql://127.0.0.1:5432/demo_primary_ds
 #    username: postgres
 #    password: postgres
 #    connectionTimeoutMilliseconds: 30000
@@ -34,9 +34,8 @@
 #    maxLifetimeMilliseconds: 1800000
 #    maxPoolSize: 50
 #    minPoolSize: 1
-#    maintenanceIntervalMilliseconds: 30000
 #  replica_ds_0:
-#    url: jdbc:postgresql://127.0.0.1:5432/demo_replica_ds_0?serverTimezone=UTC&useSSL=false
+#    url: jdbc:postgresql://127.0.0.1:5432/demo_replica_ds_0
 #    username: postgres
 #    password: postgres
 #    connectionTimeoutMilliseconds: 30000
@@ -44,9 +43,8 @@
 #    maxLifetimeMilliseconds: 1800000
 #    maxPoolSize: 50
 #    minPoolSize: 1
-#    maintenanceIntervalMilliseconds: 30000
 #  replica_ds_1:
-#    url: jdbc:postgresql://127.0.0.1:5432/demo_replica_ds_1?serverTimezone=UTC&useSSL=false
+#    url: jdbc:postgresql://127.0.0.1:5432/demo_replica_ds_1
 #    username: postgres
 #    password: postgres
 #    connectionTimeoutMilliseconds: 30000
@@ -54,16 +52,19 @@
 #    maxLifetimeMilliseconds: 1800000
 #    maxPoolSize: 50
 #    minPoolSize: 1
-#    maintenanceIntervalMilliseconds: 30000
 #
 #rules:
 #- !READWRITE_SPLITTING
 #  dataSources:
-#    pr_ds:
-#      writeDataSourceName: primary_ds
-#      readDataSourceNames:
-#        - replica_ds_0
-#        - replica_ds_1
+#    readwrite_ds:
+#      type: Static
+#      props:
+#        write-data-source-name: primary_ds
+#        read-data-source-names: replica_ds_0,replica_ds_1
+#      loadBalancerName: random
+#  loadBalancers:
+#    random:
+#      type: RANDOM
 
 ######################################################################################################
 #
@@ -71,7 +72,7 @@
 #
 ######################################################################################################
 
-#schemaName: readwrite_splitting_db
+#databaseName: readwrite_splitting_db
 #
 #dataSources:
 #  write_ds:
@@ -83,7 +84,6 @@
 #    maxLifetimeMilliseconds: 1800000
 #    maxPoolSize: 50
 #    minPoolSize: 1
-#    maintenanceIntervalMilliseconds: 30000
 #  read_ds_0:
 #    url: jdbc:mysql://127.0.0.1:3306/demo_read_ds_0?serverTimezone=UTC&useSSL=false
 #    username: root
@@ -93,7 +93,6 @@
 #    maxLifetimeMilliseconds: 1800000
 #    maxPoolSize: 50
 #    minPoolSize: 1
-#    maintenanceIntervalMilliseconds: 30000
 #  read_ds_1:
 #    url: jdbc:mysql://127.0.0.1:3306/demo_read_ds_1?serverTimezone=UTC&useSSL=false
 #    username: root
@@ -103,13 +102,16 @@
 #    maxLifetimeMilliseconds: 1800000
 #    maxPoolSize: 50
 #    minPoolSize: 1
-#    maintenanceIntervalMilliseconds: 30000
 #
 #rules:
 #- !READWRITE_SPLITTING
 #  dataSources:
-#    pr_ds:
-#      writeDataSourceName: write_ds
-#      readDataSourceNames:
-#        - read_ds_0
-#        - read_ds_1
+#    readwrite_ds:
+#      type: Static
+#      props:
+#        write-data-source-name: write_ds
+#        read-data-source-names: read_ds_0,read_ds_1
+#      loadBalancerName: random
+#  loadBalancers:
+#    random:
+#      type: RANDOM

@@ -59,6 +59,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * SQL utility class.
@@ -67,6 +68,20 @@ import java.util.List;
 public final class SQLUtil {
     
     private static final String SQL_END = ";";
+    
+    private static final String COMMENT_PREFIX = "/*";
+    
+    private static final String COMMENT_SUFFIX = "*/";
+    
+    private static final String EXCLUDED_CHARACTERS = "[]`'\"";
+    
+    private static final Pattern SINGLE_CHARACTER_PATTERN = Pattern.compile("^_|([^\\\\])_");
+    
+    private static final Pattern SINGLE_CHARACTER_ESCAPE_PATTERN = Pattern.compile("\\\\_");
+    
+    private static final Pattern ANY_CHARACTER_PATTERN = Pattern.compile("^%|([^\\\\])%");
+    
+    private static final Pattern ANY_CHARACTER_ESCAPE_PATTERN = Pattern.compile("\\\\%");
     
     /**
      * Get exactly number value and type.
@@ -103,7 +118,24 @@ public final class SQLUtil {
      * @return exactly SQL expression
      */
     public static String getExactlyValue(final String value) {
-        return null == value ? null : CharMatcher.anyOf("[]`'\"").removeFrom(value);
+        return null == value ? null : CharMatcher.anyOf(EXCLUDED_CHARACTERS).removeFrom(value);
+    }
+    
+    /**
+     * Get exactly value for SQL expression.
+     *
+     * <p>remove special char for SQL expression</p>
+     *
+     * @param value SQL expression
+     * @param reservedCharacters characters to be reserved
+     * @return exactly SQL expression
+     */
+    public static String getExactlyValue(final String value, final String reservedCharacters) {
+        if (null == value) {
+            return null;
+        }
+        String toBeExcludedCharacters = CharMatcher.anyOf(reservedCharacters).removeFrom(EXCLUDED_CHARACTERS);
+        return CharMatcher.anyOf(toBeExcludedCharacters).removeFrom(value);
     }
     
     /**
@@ -205,7 +237,7 @@ public final class SQLUtil {
     }
     
     private static boolean isReadOnly(final DALStatement sqlStatement) {
-        if (sqlStatement instanceof SetStatement
+        return !(sqlStatement instanceof SetStatement
                 | sqlStatement instanceof MySQLUseStatement
                 | sqlStatement instanceof MySQLUninstallPluginStatement
                 | sqlStatement instanceof MySQLResetStatement
@@ -216,10 +248,7 @@ public final class SQLUtil {
                 | sqlStatement instanceof MySQLInstallPluginStatement
                 | sqlStatement instanceof MySQLFlushStatement
                 | sqlStatement instanceof MySQLChecksumTableStatement
-                | sqlStatement instanceof MySQLCacheIndexStatement) {
-            return false;
-        }
-        return true;
+                | sqlStatement instanceof MySQLCacheIndexStatement);
     }
     
     /**
@@ -255,5 +284,41 @@ public final class SQLUtil {
      */
     public static String trimSemicolon(final String sql) {
         return sql.endsWith(SQL_END) ? sql.substring(0, sql.length() - 1) : sql;
+    }
+    
+    /**
+     * Trim the comment of sql.
+     *
+     * @param sql SQL to be trim
+     * @return remove comment from SQL
+     */
+    public static String trimComment(final String sql) {
+        String result = sql;
+        if (sql.startsWith(COMMENT_PREFIX)) {
+            result = result.substring(sql.indexOf(COMMENT_SUFFIX) + 2);
+        }
+        if (sql.endsWith(SQL_END)) {
+            result = result.substring(0, result.length() - 1);
+        }
+        return result.trim();
+    }
+    
+    /**
+     * Convert like pattern to regex.
+     * 
+     * @param pattern like pattern
+     * @return regex
+     */
+    public static String convertLikePatternToRegex(final String pattern) {
+        String result = pattern;
+        if (pattern.contains("_")) {
+            result = SINGLE_CHARACTER_PATTERN.matcher(result).replaceAll("$1.");
+            result = SINGLE_CHARACTER_ESCAPE_PATTERN.matcher(result).replaceAll("_");
+        }
+        if (pattern.contains("%")) {
+            result = ANY_CHARACTER_PATTERN.matcher(result).replaceAll("$1.*");
+            result = ANY_CHARACTER_ESCAPE_PATTERN.matcher(result).replaceAll("%");
+        }
+        return result;
     }
 }

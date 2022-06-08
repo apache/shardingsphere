@@ -19,27 +19,43 @@ package org.apache.shardingsphere.agent.metrics.prometheus.collector;
 
 import io.prometheus.client.Collector;
 import io.prometheus.client.GaugeMetricFamily;
-import java.util.ArrayList;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.agent.metrics.api.constant.MetricIds;
+import org.apache.shardingsphere.agent.metrics.prometheus.wrapper.PrometheusWrapperFactory;
+
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 /**
- * Build info collector.
+ * Build information collector.
  */
+@Slf4j
 public final class BuildInfoCollector extends Collector {
+    
+    private static final String PROXY_BOOTSTRAP_CLASS = "org.apache.shardingsphere.proxy.Bootstrap";
+    
+    private static final PrometheusWrapperFactory FACTORY = new PrometheusWrapperFactory();
     
     @Override
     public List<MetricFamilySamples> collect() {
-        List<MetricFamilySamples> result = new ArrayList<>(1);
-        GaugeMetricFamily artifactInfo = new GaugeMetricFamily(
-                "jmx_exporter_build_info",
-                "A metric with a constant '1' value labeled with the version of the JMX exporter.",
-                Arrays.asList("version", "name"));
-        Package pkg = getClass().getPackage();
-        String version = pkg.getImplementationVersion();
-        String name = pkg.getImplementationTitle();
-        artifactInfo.addMetric(Arrays.asList(null != version ? version : "unknown", null != name ? name : "unknown"), 1L);
-        result.add(artifactInfo);
-        return result;
+        Optional<GaugeMetricFamily> artifactInfo = FACTORY.createGaugeMetricFamily(MetricIds.BUILD_INFO);
+        if (!artifactInfo.isPresent()) {
+            return Collections.emptyList();
+        }
+        addMetric(artifactInfo.get(), getClass().getPackage());
+        try {
+            addMetric(artifactInfo.get(), Class.forName(PROXY_BOOTSTRAP_CLASS).getPackage());
+        } catch (final ClassNotFoundException ignored) {
+            log.warn("No proxy class find");
+        }
+        return Collections.singletonList(artifactInfo.get());
+    }
+    
+    private void addMetric(final GaugeMetricFamily artifactInfo, final Package pkg) {
+        String version = null == pkg.getImplementationVersion() ? "unknown" : pkg.getImplementationVersion();
+        String name = null == pkg.getImplementationTitle() ? "unknown" : pkg.getImplementationTitle();
+        artifactInfo.addMetric(Arrays.asList(version, name), 1L);
     }
 }

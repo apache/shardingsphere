@@ -17,23 +17,23 @@
 
 package org.apache.shardingsphere.sharding.route.strategy;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
-import com.google.common.collect.Sets;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.sharding.route.strategy.type.complex.ComplexShardingStrategy;
-import org.apache.shardingsphere.sharding.route.strategy.fixture.ComplexKeysShardingAlgorithmFixture;
-import org.apache.shardingsphere.sharding.route.strategy.fixture.StandardShardingAlgorithmFixture;
-import org.apache.shardingsphere.sharding.route.strategy.type.none.NoneShardingStrategy;
-import org.apache.shardingsphere.sharding.route.strategy.type.standard.StandardShardingStrategy;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
+import org.apache.shardingsphere.sharding.fixture.CoreComplexKeysShardingAlgorithmFixture;
+import org.apache.shardingsphere.sharding.fixture.CoreStandardShardingAlgorithmFixture;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.RangeShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
+import org.apache.shardingsphere.sharding.route.strategy.type.complex.ComplexShardingStrategy;
+import org.apache.shardingsphere.sharding.route.strategy.type.none.NoneShardingStrategy;
+import org.apache.shardingsphere.sharding.route.strategy.type.standard.StandardShardingStrategy;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -41,26 +41,33 @@ import static org.junit.Assert.assertThat;
 
 public final class ShardingStrategyTest {
     
-    private final Collection<String> targets = Sets.newHashSet("1", "2", "3");
+    private static final DataNodeInfo DATA_NODE_INFO = new DataNodeInfo("logicTable_", 1, '0');
+    
+    private final Collection<String> targets = Arrays.asList("1", "2", "3");
     
     @Test
     public void assertDoShardingWithoutShardingColumns() {
         NoneShardingStrategy strategy = new NoneShardingStrategy();
-        assertThat(strategy.doSharding(targets, Collections.emptySet(), new ConfigurationProperties(new Properties())), is(targets));
+        assertThat(strategy.doSharding(targets, Collections.emptySet(), DATA_NODE_INFO, new ConfigurationProperties(new Properties())), is(targets));
     }
     
     @Test
     public void assertDoShardingForBetweenSingleKey() {
-        StandardShardingStrategy strategy = new StandardShardingStrategy("column", new StandardShardingAlgorithmFixture());
-        assertThat(strategy.doSharding(targets, Collections.singletonList(new RangeShardingConditionValue<>("column", "logicTable", Range.open(1, 3))), new ConfigurationProperties(new Properties())),
-                is(Sets.newHashSet("1")));
+        StandardShardingStrategy strategy = new StandardShardingStrategy("column", new CoreStandardShardingAlgorithmFixture());
+        Collection<ShardingConditionValue> shardingConditionValues = Collections.singleton(new RangeShardingConditionValue<>("column", "logicTable", Range.open(1, 3)));
+        assertThat(strategy.doSharding(targets, shardingConditionValues, DATA_NODE_INFO, new ConfigurationProperties(new Properties())), is(Collections.singleton("1")));
     }
     
     @Test
     public void assertDoShardingForMultipleKeys() {
-        ComplexShardingStrategy strategy = new ComplexShardingStrategy("column1, column2", new ComplexKeysShardingAlgorithmFixture());
-        List<ShardingConditionValue> shardingConditionValues = Lists.newArrayList(
-                new ListShardingConditionValue<>("column1", "logicTable", Collections.singletonList(1)), new RangeShardingConditionValue<>("column2", "logicTable", Range.open(1, 3)));
-        assertThat(strategy.doSharding(targets, shardingConditionValues, new ConfigurationProperties(new Properties())), is(Sets.newHashSet("1", "2", "3")));
+        Collection<String> expected = new HashSet<>(3, 1);
+        expected.add("1");
+        expected.add("2");
+        expected.add("3");
+        ComplexShardingStrategy strategy = new ComplexShardingStrategy("column1, column2", new CoreComplexKeysShardingAlgorithmFixture());
+        Collection<ShardingConditionValue> shardingConditionValues = Arrays.asList(
+                new ListShardingConditionValue<>("column1", "logicTable", Collections.singletonList(1)),
+                new RangeShardingConditionValue<>("column2", "logicTable", Range.open(1, 3)));
+        assertThat(strategy.doSharding(targets, shardingConditionValues, DATA_NODE_INFO, new ConfigurationProperties(new Properties())), is(expected));
     }
 }

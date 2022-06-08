@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.spring.transaction.fixture;
 
-import org.apache.shardingsphere.transaction.annotation.ShardingTransactionType;
+import org.apache.shardingsphere.transaction.annotation.ShardingSphereTransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 import org.springframework.stereotype.Service;
 
 @Service
-@ShardingTransactionType(TransactionType.XA)
+@ShardingSphereTransactionType(TransactionType.XA)
 public class MockService {
     
     /**
@@ -31,7 +31,7 @@ public class MockService {
      *
      * @return transaction type
      */
-    @ShardingTransactionType(TransactionType.LOCAL)
+    @ShardingSphereTransactionType(TransactionType.LOCAL)
     public TransactionType executeLocal() {
         return TransactionTypeHolder.get();
     }
@@ -41,7 +41,7 @@ public class MockService {
      *
      * @return transaction type
      */
-    @ShardingTransactionType(TransactionType.BASE)
+    @ShardingSphereTransactionType(TransactionType.BASE)
     public TransactionType executeBase() {
         return TransactionTypeHolder.get();
     }

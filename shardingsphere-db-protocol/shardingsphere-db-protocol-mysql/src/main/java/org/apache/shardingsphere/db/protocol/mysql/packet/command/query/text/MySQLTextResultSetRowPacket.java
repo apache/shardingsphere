@@ -24,6 +24,8 @@ import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -37,6 +39,8 @@ import java.util.Collection;
 public final class MySQLTextResultSetRowPacket implements MySQLPacket {
     
     private static final int NULL = 0xfb;
+    
+    private static final DateTimeFormatter DT_FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     
     private final int sequenceId;
     
@@ -64,6 +68,8 @@ public final class MySQLTextResultSetRowPacket implements MySQLPacket {
                     payload.writeStringLenenc(((BigDecimal) each).toPlainString());
                 } else if (each instanceof Boolean) {
                     payload.writeBytesLenenc((Boolean) each ? new byte[]{1} : new byte[]{0});
+                } else if (each instanceof LocalDateTime) {
+                    payload.writeStringLenenc(DT_FMT.format((LocalDateTime) each));
                 } else {
                     payload.writeStringLenenc(each.toString());
                 }

@@ -1,10 +1,8 @@
 +++
 title = "How to construct the distributed database"
-weight = 4
+weight = 10
 chapter = true
 +++
-
-## How we build a distributed database
 
 Author | Liang Zhang
 
@@ -48,7 +46,7 @@ Defines itself as a transparent database proxy, providing a database server that
 
 ![](https://shardingsphere.apache.org/blog/img/database2.jpg)
 
-**Sharding-Sidecar（Planned）**
+**Sharding-Sidecar (Planned) **
 
 Defines itself as a cloud native database agent of the Kubernetes environment, in charge of all the access to the database in the form of sidecar. It provides a mesh layer interacting with the database, we call this as Database Mesh.
 

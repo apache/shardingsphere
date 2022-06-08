@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.sharding.rewrite.token.generator.IgnoreForSingleRoute;
-import org.apache.shardingsphere.sharding.rewrite.token.pojo.AggregationDistinctToken;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.DerivedColumn;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
+import org.apache.shardingsphere.sharding.rewrite.token.generator.IgnoreForSingleRoute;
+import org.apache.shardingsphere.sharding.rewrite.token.pojo.AggregationDistinctToken;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -32,15 +32,15 @@ import java.util.LinkedList;
 /**
  * Aggregation distinct token generator.
  */
-public final class AggregationDistinctTokenGenerator implements CollectionSQLTokenGenerator, IgnoreForSingleRoute {
+public final class AggregationDistinctTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext<?>>, IgnoreForSingleRoute {
     
     @Override
-    public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
+    public boolean isGenerateSQLToken(final SQLStatementContext<?> sqlStatementContext) {
         return sqlStatementContext instanceof SelectStatementContext;
     }
     
     @Override
-    public Collection<AggregationDistinctToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
+    public Collection<AggregationDistinctToken> generateSQLTokens(final SQLStatementContext<?> sqlStatementContext) {
         Collection<AggregationDistinctToken> result = new LinkedList<>();
         for (AggregationDistinctProjection each : ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getAggregationDistinctProjections()) {
             result.add(generateSQLToken(each));

@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.readwritesplitting.spring.boot;
 
-import org.apache.shardingsphere.readwritesplitting.algorithm.RandomReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.algorithm.config.AlgorithmProvidedReadwriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.RandomReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -55,10 +55,11 @@ public class ReadwriteSplittingSpringBootStarterTest {
         assertThat(config.getDataSources().size(), is(1));
         assertTrue(config.getDataSources().stream().findFirst().isPresent());
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig = config.getDataSources().stream().findFirst().get();
-        assertThat(dataSourceRuleConfig.getName(), is("pr_ds"));
-        assertThat(dataSourceRuleConfig.getWriteDataSourceName(), is("write_ds"));
+        assertThat(dataSourceRuleConfig.getName(), is("readwrite_ds"));
+        assertThat(dataSourceRuleConfig.getType(), is("Static"));
+        assertThat(dataSourceRuleConfig.getProps().getProperty("write-data-source-name"), is("write_ds"));
+        assertThat(dataSourceRuleConfig.getProps().getProperty("read-data-source-names"), is("read_ds_0,read_ds_1"));
         assertThat(dataSourceRuleConfig.getLoadBalancerName(), is("random"));
-        assertThat(dataSourceRuleConfig.getReadDataSourceNames().size(), is(2));
         assertTrue(config.getDataSources().contains(dataSourceRuleConfig));
         assertThat(config.getLoadBalanceAlgorithms().size(), is(1));
         assertTrue(config.getLoadBalanceAlgorithms().containsKey("random"));

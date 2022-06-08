@@ -17,7 +17,7 @@
 
 grammar MySQLStatement;
 
-import Symbol, Comments, DMLStatement, DDLStatement, TCLStatement, DCLStatement, DALStatement, RLStatement;
+import Comments, DDLStatement, TCLStatement, DCLStatement, RLStatement;
 
 execute
     : (select
@@ -52,7 +52,9 @@ execute
     | alterResourceGroup
     | createResourceGroup
     | dropResourceGroup
-    | preparedStatement
+    | prepare
+    | executeStmt
+    | deallocate
     | setTransaction
     | beginTransaction
     | setAutoCommit
@@ -69,9 +71,6 @@ execute
     | dropRole
     | setDefaultRole
     | setRole
-    | createTablespaceInnodb
-    | createTablespaceNdb
-    | dropTablespace
     | createSRSStatement
     | dropSRSStatement
     | flush
@@ -120,6 +119,7 @@ execute
     | createTablespace
     | alterTablespace
     | dropTablespace
+    | delimiter
     ) (SEMI_ EOF? | EOF)
     | EOF
     ;

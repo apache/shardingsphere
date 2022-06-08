@@ -17,21 +17,14 @@
 
 package org.apache.shardingsphere.agent.metrics.prometheus.collector;
 
-import io.prometheus.client.Collector.MetricFamilySamples;
-import java.util.List;
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertFalse;
 
 public final class BuildInfoCollectorTest {
-
+    
     @Test
     public void assertCollect() {
-        BuildInfoCollector buildInfoCollector = new BuildInfoCollector();
-        List<MetricFamilySamples> metricFamilySamples = buildInfoCollector.collect();
-        assertThat(metricFamilySamples.toString(), is("[Name: jmx_exporter_build_info Type: GAUGE Help: "
-                + "A metric with a constant '1' value labeled with the version of the JMX exporter. Samples: "
-                + "[Name: jmx_exporter_build_info LabelNames: [version, name] labelValues: [unknown, unknown] Value: 1.0 TimestampMs: null]]"));
+        assertFalse(new BuildInfoCollector().collect().isEmpty());
     }
 }

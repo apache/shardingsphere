@@ -18,13 +18,12 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal;
 
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.VacuumStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
  * PostgreSQL vacuum statement.
  */
 @ToString
-public final class PostgreSQLVacuumStatement extends AbstractSQLStatement implements DALStatement, PostgreSQLStatement {
+public final class PostgreSQLVacuumStatement extends VacuumStatement implements PostgreSQLStatement {
 }

@@ -219,6 +219,10 @@ DIRECTORY
     : D I R E C T O R Y
     ;
 
+CREDENTIALS
+    : C R E D E N T I A L S
+    ;
+
 EDITION
     : E D I T I O N
     ;
@@ -241,6 +245,10 @@ EXCEPTIONS
 
 FORCE
     : F O R C E
+    ;
+
+NOFORCE
+    : N O F O R C E
     ;
 
 GLOBAL
@@ -535,6 +543,10 @@ INDEXTYPE
     : I N D E X T Y P E
     ;
 
+INDEXTYPES
+    : I N D E X T Y P E S
+    ;
+
 EXTERNAL
     : E X T E R N A L
     ;
@@ -607,6 +619,10 @@ SEGMENT
     : S E G M E N T
     ;
 
+RESTRICT
+    : R E S T R I C T
+    ;
+
 RESTRICTED
     : R E S T R I C T E D
     ;
@@ -677,6 +693,10 @@ SYSKM
 
 SYSOPER
     : S Y S O P E R
+    ;
+
+RECYCLEBIN
+    : R E C Y C L E B I N
     ;
 
 DBA_RECYCLEBIN
@@ -917,6 +937,10 @@ LOG
 
 REUSE
     : R E U S E
+    ;
+
+SETTINGS
+    : S E T T I N G S
     ;
 
 STORAGE
@@ -1213,6 +1237,10 @@ INCLUDING
 
 OVERFLOW
     : O V E R F L O W
+    ;
+
+ATTRIBUTE
+    : A T T R I B U T E
     ;
 
 ATTRIBUTES
@@ -1903,6 +1931,10 @@ SPFILE
     : S P F I L E
     ;
 
+PFILE
+    : P F I L E
+    ;
+
 BOTH
     : B O T H
     ;
@@ -2021,6 +2053,10 @@ ACCESSIBLE
 
 PACKAGE
     : P A C K A G E
+    ;
+
+PACKAGES
+    : P A C K A G E S
     ;
 
 USING_NLS_COMP
@@ -2201,4 +2237,600 @@ FAST
 
 COMPLETE
     : C O M P L E T E
+    ;
+
+ASSOCIATE
+    : A S S O C I A T E
+    ;
+
+DISASSOCIATE
+    : D I S A S S O C I A T E
+    ;
+
+FUNCTIONS
+    : F U N C T I O N S
+    ;
+
+TYPES
+    : T Y P E S
+    ;
+
+SELECTIVITY
+    : S E L E C T I V I T Y
+    ;
+
+RETURNING
+    : R E T U R N I N G
+    ;
+
+VERSIONS
+    : V E R S I O N S
+    ;
+
+SCN
+    : S C N
+    ;
+
+PERIOD
+    : P E R I O D
+    ;
+
+LATERAL
+    : L A T E R A L
+    ;
+
+BADFILE
+    : B A D F I L E
+    ;
+
+DISCARDFILE
+    : D I S C A R D F I L E
+    ;
+
+PIVOT
+    : P I V O T
+    ;
+
+UNPIVOT
+    : U N P I V O T
+    ;
+
+INCLUDE
+    : I N C L U D E
+    ;
+
+EXCLUDE
+    : E X C L U D E
+    ;
+
+SAMPLE
+    : S A M P L E
+    ;
+
+SEED
+    : S E E D
+    ;
+
+OPTION
+    : O P T I O N
+    ;
+
+SHARDS
+    : S H A R D S
+    ;
+
+MATCH_RECOGNIZE
+    : M A T C H UL_ R E C O G N I Z E
+    ;
+
+PATTERN
+    : P A T T E R N
+    ;
+
+DEFINE
+    : D E F I N E
+    ;
+
+ONE
+    : O N E
+    ;
+
+PER
+    : P E R
+    ;
+
+MATCH
+    : M A T C H
+    ;
+
+PAST
+    : P A S T
+    ;
+
+PERMUTE
+    : P E R M U T E
+    ;
+
+CLASSIFIER
+    : C L A S S I F I E R
+    ;
+
+MATCH_NUMBER
+    : M A T C H UL_ N U M B E R
+    ;
+
+RUNNING
+    : R U N N I N G
+    ;
+
+FINAL
+    : F I N A L
+    ;
+
+PREV
+    : P R E V
+    ;
+
+NOAUDIT
+    : N O A U D I T
+    ;
+
+WHENEVER
+    : W H E N E V E R
+    ;
+
+SUCCESSFUL
+    : S U C C E S S F U L
+    ;
+
+USERS
+    : U S E R S
+    ;
+
+GRANTED
+    : G R A N T E D
+    ;
+
+ROLES
+    : R O L E S
+    ;
+
+NAMESPACE
+    : N A M E S P A C E
+    ;
+
+ROLLUP
+    : R O L L U P
+    ;
+
+GROUPING
+    : G R O U P I N G
+    ;
+
+SETS
+    : S E T S
+    ;
+
+DECODE
+    : D E C O D E
+    ;
+
+RESTORE
+    : R E S T O R E
+    ;
+
+POINT
+    : P O I N T
+    ;
+
+BEFORE
+    : B E F O R E
+    ;
+
+IGNORE
+    : I G N O R E
+    ;
+
+NAV
+    : N A V
+    ;
+
+SINGLE
+    : S I N G L E
+    ;
+
+UPDATED
+    : U P D A T E D
+    ;
+
+MAIN
+    : M A I N
+    ;
+
+RULES
+    : R U L E S
+    ;
+
+UPSERT
+    : U P S E R T
+    ;
+
+SEQUENTIAL
+    : S E Q U E N T I A L
+    ;
+
+ITERATE
+    : I T E R A T E
+    ;
+
+DECREMENT
+    : D E C R E M E N T
+    ;
+
+SOME
+    : S O M E
+    ;
+
+NAN
+    : N A N
+    ;
+
+INFINITE
+    : I N F I N I T E
+    ;
+
+PRESENT
+    : P R E S E N T
+    ;
+
+EMPTY
+    : E M P T Y
+    ;
+
+SUBMULTISET
+    : S U B M U L T I S E T
+    ;
+
+LIKEC
+    : L I K E C
+    ;
+
+LIKE2
+    : L I K E '2'
+    ;
+
+LIKE4
+    : L I K E '4'
+    ;
+
+REGEXP_LIKE
+    : R E G E X P UL_ L I K E
+    ;
+
+EQUALS_PATH
+    : E Q U A L S UL_ P A T H
+    ;
+
+UNDER_PATH
+    : U N D E R UL_ P A T H
+    ;
+
+FORMAT
+    : F O R M A T
+    ;
+
+STRICT
+    : S T R I C T
+    ;
+
+LAX
+    : L A X
+    ;
+
+KEYS
+    : K E Y S
+    ;
+
+JSON_EQUAL
+    : J S O N UL_ E Q U A L
+    ;
+
+JSON_EXISTS
+    : J S O N UL_ E X I S T S
+    ;
+
+PASSING
+    : P A S S I N G
+    ;
+
+ERROR
+    : E R R O R
+    ;
+
+JSON_TEXTCONTAINS
+    : J S O N UL_ T E X T C O N T A I N S
+    ;
+
+HAS
+    : H A S
+    ;
+
+STARTS
+    : S T A R T S
+    ;
+
+LIKE_REGEX
+    : L I K E UL_ R E G E X
+    ;
+
+EQ_REGEX
+    : E Q UL_ R E G E X
+    ;
+
+SYS
+    : S Y S
+    ;
+
+MAXDATAFILES
+    : M A X D A T A F I L E S
+    ;
+
+MAXINSTANCES
+    : M A X I N S T A N C E S
+    ;
+
+AL32UTF8
+    : A L '3' '2' U T F '8'
+    ;
+
+AL16UTF16
+    : A L '1' '6' U T F '1' '6'
+    ;
+
+UTF8
+    : U T F '8'
+    ;
+
+USER_DATA
+    : U S E R UL_ D A T A
+    ;
+
+MAXLOGFILES
+    : M A X L O G F I L E S
+    ;
+
+MAXLOGMEMBERS
+    : M A X L O G M E M B E R S
+    ;
+
+MAXLOGHISTORY
+    : M A X L O G H I S T O R Y
+    ;
+
+EXTENT
+    : E X T E N T
+    ;
+
+SYSAUX
+    : S Y S A U X
+    ;
+
+LEAF
+    : L E A F
+    ;
+
+AUTOALLOCATE
+    : A U T O A L L O C A T E
+    ;
+
+UNIFORM
+    : U N I F O R M
+    ;
+
+FILE_NAME_CONVERT
+    : F I L E UL_ N A M E UL_ C O N V E R T
+    ;
+
+ALLOCATE
+    : A L L O C A T E
+    ;
+
+DEALLOCATE
+    : D E A L L O C A T E
+    ;
+
+SHARED
+    : S H A R E D
+    ;
+
+AUTHENTICATED
+    : A U T H E N T I C A T E D
+    ;
+
+CHILD
+    : C H I L D
+    ;
+
+DETERMINES
+    : D E T E R M I N E S
+    ;
+
+RELIES_ON
+    : R E L I E S UL_ O N
+    ;
+
+AGGREGATE
+    : A G G R E G A T E
+    ;
+
+POLYMORPHIC
+    : P O L Y M O R P H I C
+    ;
+
+SQL_MARCO
+    : S Q L UL_ M A R C O
+    ;
+
+LANGUAGE
+    : L A N G U A G E
+    ;
+
+AGENT
+    : A G E N T
+    ;
+
+SELF
+    : S E L F
+    ;
+
+TDO
+    : T D O
+    ;
+
+INDICATOR
+    : I N D I C A T O R
+    ;
+
+STRUCT
+    : S T R U C T
+    ;
+
+LENGTH
+    : L E N G T H
+    ;
+
+DURATION
+    : D U R A T I O N
+    ;
+
+MAXLEN
+    : M A X L E N
+    ;
+
+CHARSETID
+    : C H A R S E T I D
+    ;
+
+CHARSETFORM
+    : C H A R S E T F O R M
+    ;
+
+SINGLE_C
+    : C
+    ;
+
+SYSTIMESTAMP
+    : S Y S T I M E S T A M P
+    ;
+
+CATEGORY
+    : C A T E G O R Y
+    ;
+
+ORDER
+    : O R D E R
+    ;
+
+NOKEEP
+    : N O K E E P
+    ;
+
+SCALE
+    : S C A L E
+    ;
+
+NOSCALE
+    : N O S C A L E
+    ;
+
+EXTEND
+    : E X T E N D
+    ;
+
+NOEXTEND
+    : N O E X T E N D
+    ;
+
+NOSHARD
+    : N O S H A R D
+    ;
+
+INITIALIZED
+    : I N I T I A L I Z E D
+    ;
+
+EXTERNALLY
+    : E X T E R N A L L Y
+    ;
+
+GLOBALLY
+    : G L O B A L L Y
+    ;
+
+ACCESSED
+    : A C C E S S E D
+    ;
+
+RESTART
+    : R E S T A R T
+    ;
+
+OPTIMIZE
+    : O P T I M I Z E
+    ;
+
+QUOTA
+    : Q U O T A
+    ;
+
+DISKGROUP
+    : D I S K G R O U P
+    ;
+
+NORMAL
+    : N O R M A L
+    ;
+
+FLEX
+    : F L E X
+    ;
+
+SITE
+    : S I T E
+    ;
+
+QUORUM
+    : Q U O R U M
+    ;
+
+REGULAR
+    : R E G U L A R
+    ;
+
+FAILGROUP
+    : F A I L G R O U P
+    ;
+
+DISK
+    : D I S K
+    ;
+
+EXCLUDING
+    : E X C L U D I N G
+    ;
+
+CONTENTS
+    : C O N T E N T S
+    ;
+
+LOCKDOWN
+    : L O C K D O W N
+    ;
+
+CLEAN
+    : C L E A N
+    ;
+
+GUARANTEE
+    : G U A R A N T E E
     ;

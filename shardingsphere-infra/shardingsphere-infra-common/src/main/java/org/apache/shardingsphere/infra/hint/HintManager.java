@@ -22,9 +22,11 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 
 /**
  * The manager that use hint to inject sharding key directly through {@code ThreadLocal}.
@@ -42,10 +44,13 @@ public final class HintManager implements AutoCloseable {
     
     private boolean writeRouteOnly;
     
+    @Setter
+    private String dataSourceName;
+    
     /**
      * Get a new instance for {@code HintManager}.
      *
-     * @return  {@code HintManager} instance
+     * @return {@code HintManager} instance
      */
     public static HintManager getInstance() {
         Preconditions.checkState(null == HINT_MANAGER_HOLDER.get(), "Hint has previous value, please clear first.");
@@ -146,6 +151,13 @@ public final class HintManager implements AutoCloseable {
     }
     
     /**
+     * Set database routing to be automatic.
+     */
+    public void setReadwriteSplittingAuto() {
+        writeRouteOnly = false;
+    }
+    
+    /**
      * Judge whether route to write database only or not.
      *
      * @return route to write database only or not
@@ -159,6 +171,33 @@ public final class HintManager implements AutoCloseable {
      */
     public static void clear() {
         HINT_MANAGER_HOLDER.remove();
+    }
+    
+    /**
+     * Clear sharding values.
+     */
+    public void clearShardingValues() {
+        databaseShardingValues.clear();
+        tableShardingValues.clear();
+        databaseShardingOnly = false;
+    }
+    
+    /**
+     * Judge whether hint manager instantiated or not.
+     *
+     * @return whether hint manager instantiated or not
+     */
+    public static boolean isInstantiated() {
+        return null != HINT_MANAGER_HOLDER.get();
+    }
+    
+    /**
+     * Get data source name.
+     *
+     * @return dataSource name
+     */
+    public static Optional<String> getDataSourceName() {
+        return Optional.ofNullable(HINT_MANAGER_HOLDER.get()).map(optional -> optional.dataSourceName);
     }
     
     @Override

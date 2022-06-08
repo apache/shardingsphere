@@ -22,7 +22,7 @@
 # 
 ######################################################################################################
 
-schemaName: readwrite-splitting_db
+databaseName: readwrite-splitting_db
 
 dataSources:
   write_ds:
@@ -34,7 +34,6 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 50
     minPoolSize: 1
-    maintenanceIntervalMilliseconds: 30000
   read_ds_0:
     url: jdbc:mysql://127.0.0.1:3306/demo_read_ds_0?serverTimezone=UTC&useSSL=false
     username: root
@@ -44,7 +43,6 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 50
     minPoolSize: 1
-    maintenanceIntervalMilliseconds: 30000
   read_ds_1:
     url: jdbc:mysql://127.0.0.1:3306/demo_read_ds_1?serverTimezone=UTC&useSSL=false
     username: root
@@ -54,13 +52,12 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 50
     minPoolSize: 1
-    maintenanceIntervalMilliseconds: 30000
 
 rules:
 - !READWRITE_SPLITTING
   dataSources:
-    pr_ds:
-      writeDataSourceName: write_ds
-      readDataSourceNames:
-        - read_ds_0
-        - read_ds_1
+    readwrite_ds:
+      type: Static
+      props:
+        write-data-source-name: write_ds
+        read-data-source-names: read_ds_0, read_ds_1

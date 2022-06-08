@@ -21,12 +21,14 @@
 #
 ######################################################################################################
 #
-#governance:
-#  name: governance_ds
-#  registryCenter:
+
+#mode:
+#  type: Cluster
+#  repository:
 #    type: ZooKeeper
-#    serverLists: localhost:2181
 #    props:
+#      namespace: governance_ds
+#      server-lists: localhost:2181
 #      retryIntervalMilliseconds: 500
 #      timeToLiveSeconds: 60
 #      maxRetries: 3
@@ -38,17 +40,12 @@ rules:
     users:
       - root@:root
     provider:
-      type: NATIVE
+      type: ALL_PERMITTED
 
 props:
   max-connections-size-per-query: 1
-  executor-size: 16  # Infinite by default.
+  kernel-executor-size: 16  # Infinite by default.
   proxy-frontend-flush-threshold: 128  # The default value is 128.
-    # LOCAL: Proxy will run with LOCAL transaction.
-    # XA: Proxy will run with XA transaction.
-    # BASE: Proxy will run with B.A.S.E transaction.
-  proxy-transaction-type: LOCAL
-  proxy-opentracing-enabled: false
   proxy-hint-enabled: true
   sql-show: true
   check-table-metadata-enabled: false

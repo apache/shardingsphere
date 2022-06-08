@@ -18,23 +18,25 @@
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource;
 
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
-import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
+import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.fixture.CallTimeRecordDataSource;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
-import org.apache.shardingsphere.transaction.context.TransactionContexts;
+import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
+import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
+import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.Before;
 import org.junit.Test;
 
 import javax.sql.DataSource;
-import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -43,6 +45,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -51,7 +54,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -59,42 +61,32 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class JDBCBackendDataSourceTest {
+public final class JDBCBackendDataSourceTest extends ProxyContextRestorer {
     
     private static final String DATA_SOURCE_PATTERN = "ds_%s";
     
     @Before
     public void setUp() {
-        setMetaDataContexts();
-        setTransactionContexts();
+        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
+                new ShardingSphereMetaData(createDatabases(), mockGlobalRuleMetaData(), new ConfigurationProperties(new Properties())), mock(OptimizerContext.class));
+        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
+        ProxyContext.init(contextManager);
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
-    private void setMetaDataContexts() {
-        Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
-        metaDataContexts.setAccessible(true);
-        metaDataContexts.set(ProxyContext.getInstance(), new StandardMetaDataContexts(createMetaDataMap(), mock(ShardingSphereRuleMetaData.class), 
-                mock(ExecutorEngine.class), new ConfigurationProperties(new Properties())));
+    private Map<String, ShardingSphereDatabase> createDatabases() {
+        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(result.getName()).thenReturn("schema");
+        when(result.getResource().getDatabaseType()).thenReturn(new H2DatabaseType());
+        when(result.getResource().getDataSources()).thenReturn(mockDataSources(2));
+        return Collections.singletonMap("schema", result);
     }
     
-    private Map<String, ShardingSphereMetaData> createMetaDataMap() {
-        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        when(metaData.getName()).thenReturn("schema");
-        when(metaData.getResource().getDatabaseType()).thenReturn(new H2DatabaseType());
-        when(metaData.getResource().getDataSources()).thenReturn(mockDataSources(2));
-        return Collections.singletonMap("schema", metaData);
-    }
-    
-    @SneakyThrows(ReflectiveOperationException.class)
-    private void setTransactionContexts() {
-        Field transactionContexts = ProxyContext.getInstance().getClass().getDeclaredField("transactionContexts");
-        transactionContexts.setAccessible(true);
-        transactionContexts.set(ProxyContext.getInstance(), createTransactionContexts());
-    }
-    
-    private TransactionContexts createTransactionContexts() {
-        TransactionContexts result = mock(TransactionContexts.class, RETURNS_DEEP_STUBS);
-        when(result.getEngines().get("schema")).thenReturn(mock(ShardingTransactionManagerEngine.class));
+    private ShardingSphereRuleMetaData mockGlobalRuleMetaData() {
+        ShardingSphereRuleMetaData result = mock(ShardingSphereRuleMetaData.class, RETURNS_DEEP_STUBS);
+        TransactionRule transactionRule = mock(TransactionRule.class);
+        when(transactionRule.getResources()).thenReturn(Collections.singletonMap("schema", mock(ShardingSphereTransactionManagerEngine.class)));
+        when(result.findSingleRule(TransactionRule.class)).thenReturn(Optional.of(transactionRule));
         return result;
     }
     
@@ -104,12 +96,6 @@ public final class JDBCBackendDataSourceTest {
             result.put(String.format(DATA_SOURCE_PATTERN, i), new CallTimeRecordDataSource());
         }
         return result;
-    }
-    
-    @Test
-    public void assertGetConnectionFixedOne() throws SQLException {
-        Connection actual = ProxyContext.getInstance().getBackendDataSource().getConnection("schema", String.format(DATA_SOURCE_PATTERN, 1));
-        assertThat(actual, instanceOf(Connection.class));
     }
     
     @Test
@@ -149,7 +135,7 @@ public final class JDBCBackendDataSourceTest {
         private final String datasourceName;
         
         private final int connectionSize;
-    
+        
         private final ConnectionMode connectionMode;
         
         @Override

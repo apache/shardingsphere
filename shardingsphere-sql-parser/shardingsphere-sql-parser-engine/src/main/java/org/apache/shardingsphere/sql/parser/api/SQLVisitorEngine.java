@@ -18,12 +18,16 @@
 package org.apache.shardingsphere.sql.parser.api;
 
 import lombok.RequiredArgsConstructor;
-import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
+import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.core.database.visitor.SQLVisitorFactory;
 import org.apache.shardingsphere.sql.parser.core.database.visitor.SQLVisitorRule;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.CommentSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
+import java.util.Collection;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 /**
  * SQL visitor engine.
@@ -35,17 +39,31 @@ public final class SQLVisitorEngine {
     
     private final String visitorType;
     
+    private final boolean isParseComment;
+    
     private final Properties props;
     
     /**
-     * Visit parse tree.
+     * Visit parse context.
      *
-     * @param parseTree parse tree
+     * @param parseASTNode parse AST node
      * @param <T> type of SQL visitor result
      * @return SQL visitor result
      */
-    public <T> T visit(final ParseTree parseTree) {
-        ParseTreeVisitor<T> visitor = SQLVisitorFactory.newInstance(databaseType, visitorType, SQLVisitorRule.valueOf(parseTree.getClass()), props);
-        return parseTree.accept(visitor);
+    public <T> T visit(final ParseASTNode parseASTNode) {
+        ParseTreeVisitor<T> visitor = SQLVisitorFactory.newInstance(databaseType, visitorType, SQLVisitorRule.valueOf(parseASTNode.getRootNode().getClass()), props);
+        T result = parseASTNode.getRootNode().accept(visitor);
+        if (isParseComment) {
+            appendSQLComments(parseASTNode, result);
+        }
+        return result;
+    }
+    
+    private <T> void appendSQLComments(final ParseASTNode parseASTNode, final T visitResult) {
+        if (visitResult instanceof AbstractSQLStatement) {
+            Collection<CommentSegment> commentSegments = parseASTNode.getHiddenTokens().stream()
+                    .map(each -> new CommentSegment(each.getText(), each.getStartIndex(), each.getStopIndex())).collect(Collectors.toList());
+            ((AbstractSQLStatement) visitResult).getCommentSegments().addAll(commentSegments);
+        }
     }
 }

@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.infra.yaml.engine;
 
-import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
-import org.apache.shardingsphere.infra.yaml.swapper.fixture.YamlRuleConfigurationFixture;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.swapper.fixture.YamlRuleConfigurationFixture;
 import org.junit.Test;
 import org.yaml.snakeyaml.constructor.ConstructorException;
 
@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -53,7 +54,7 @@ public final class YamlEngineTest {
                 BufferedReader reader = new BufferedReader(fileReader)) {
             String line;
             while (null != (line = reader.readLine())) {
-                yamlContent.append(line).append("\n");
+                yamlContent.append(line).append(System.lineSeparator());
             }
         }
         YamlRuleConfigurationFixture actual = YamlEngine.unmarshal(yamlContent.toString().getBytes(), YamlRuleConfigurationFixture.class);
@@ -67,6 +68,12 @@ public final class YamlEngineTest {
     }
     
     @Test
+    public void assertUnmarshalWithYamlContentClassTypeSkipMissingProperties() {
+        YamlRuleConfigurationFixture actual = YamlEngine.unmarshal("name: test\nnotExistsField: test", YamlRuleConfigurationFixture.class, true);
+        assertThat(actual.getName(), is("test"));
+    }
+    
+    @Test
     public void assertUnmarshalProperties() {
         Properties actual = YamlEngine.unmarshal("password: pwd", Properties.class);
         assertThat(actual.getProperty("password"), is("pwd"));
@@ -76,7 +83,7 @@ public final class YamlEngineTest {
     public void assertMarshal() {
         YamlRuleConfigurationFixture actual = new YamlRuleConfigurationFixture();
         actual.setName("test");
-        assertThat(YamlEngine.marshal(actual), is("name: test\n"));
+        assertThat(YamlEngine.marshal(actual), is("name: test" + System.lineSeparator()));
     }
     
     @Test(expected = ConstructorException.class)
@@ -89,9 +96,21 @@ public final class YamlEngineTest {
                 BufferedReader reader = new BufferedReader(fileReader)) {
             String line;
             while (null != (line = reader.readLine())) {
-                yamlContent.append(line).append("\n");
+                yamlContent.append(line).append(System.lineSeparator());
             }
         }
-        YamlEngine.unmarshal(yamlContent.toString(), YamlRootRuleConfigurations.class);
+        YamlEngine.unmarshal(yamlContent.toString(), YamlRootConfiguration.class);
+    }
+    
+    @Test
+    public void assertMarshalCollection() {
+        YamlRuleConfigurationFixture actual = new YamlRuleConfigurationFixture();
+        actual.setName("test");
+        YamlRuleConfigurationFixture actualAnother = new YamlRuleConfigurationFixture();
+        actualAnother.setName("test");
+        StringBuilder res = new StringBuilder("- !FIXTURE");
+        res.append(System.lineSeparator()).append("  name: test").append(System.lineSeparator()).append("- !FIXTURE")
+                .append(System.lineSeparator()).append("  name: test").append(System.lineSeparator());
+        assertThat(YamlEngine.marshal(Arrays.asList(actual, actualAnother)), is(res.toString()));
     }
 }

@@ -17,10 +17,9 @@
 
 package org.apache.shardingsphere.sql.parser.core;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
-import org.antlr.v4.runtime.tree.ParseTree;
+import com.github.benmanes.caffeine.cache.CacheLoader;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.LoadingCache;
 import org.apache.shardingsphere.sql.parser.core.database.parser.SQLParserExecutor;
 import org.junit.Test;
 
@@ -36,20 +35,19 @@ public final class SQLParserEngineTest {
     @Test
     public void assertParse() {
         SQLParserExecutor sqlParserExecutor = mock(SQLParserExecutor.class);
-        when(sqlParserExecutor.parse("")).thenReturn(mock(ParseTree.class));
-        LoadingCache<String, ParseTree> parseTreeCache = CacheBuilder.newBuilder().softValues()
-                .initialCapacity(128).maximumSize(1024).concurrencyLevel(4).build(new CacheLoader<String, ParseTree>() {
+        when(sqlParserExecutor.parse("")).thenReturn(mock(ParseASTNode.class));
+        LoadingCache<String, ParseASTNode> parseTreeCache = Caffeine.newBuilder().softValues()
+                .initialCapacity(128).maximumSize(1024).build(new CacheLoader<String, ParseASTNode>() {
                     
-                        @ParametersAreNonnullByDefault
-                        @Override
-                        public ParseTree load(final String sql) {
-                            return sqlParserExecutor.parse(sql);
-                        }
+                    @ParametersAreNonnullByDefault
+                    @Override
+                    public ParseASTNode load(final String sql) {
+                        return sqlParserExecutor.parse(sql);
                     }
-                );
-        parseTreeCache.getUnchecked("");
+                });
+        parseTreeCache.get("");
         verify(sqlParserExecutor, times(1)).parse("");
-        parseTreeCache.getUnchecked("");
+        parseTreeCache.get("");
         verify(sqlParserExecutor, times(1)).parse("");
         sqlParserExecutor.parse("");
         verify(sqlParserExecutor, times(2)).parse("");

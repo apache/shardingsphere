@@ -18,16 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor;
 
 import com.google.common.eventbus.Subscribe;
-import java.sql.Types;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 import lombok.Getter;
-import org.apache.shardingsphere.governance.core.registry.process.event.ShowProcessListRequestEvent;
-import org.apache.shardingsphere.governance.core.registry.process.event.ShowProcessListResponseEvent;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
@@ -36,21 +27,31 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.ra
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.type.RawMemoryQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory.row.MemoryQueryResultDataRow;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessConstants;
+import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessContext;
+import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.BatchYamlExecuteProcessContext;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
-import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.event.ShowProcessListRequestEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.event.ShowProcessListResponseEvent;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminQueryExecutor;
-import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessContext;
+
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * Show process list executor.
  */
 public final class ShowProcessListExecutor implements DatabaseAdminQueryExecutor {
     
-    private Collection<String> processListData;
+    private Collection<String> batchProcessContexts;
     
     @Getter
     private QueryResultMetaData queryResultMetaData;
@@ -69,39 +70,40 @@ public final class ShowProcessListExecutor implements DatabaseAdminQueryExecutor
      */
     @Subscribe
     public void receiveProcessListData(final ShowProcessListResponseEvent event) {
-        processListData = event.getProcessListData();
+        batchProcessContexts = event.getBatchProcessContexts();
     }
     
     @Override
-    public void execute(final BackendConnection backendConnection) {
+    public void execute(final ConnectionSession connectionSession) {
         queryResultMetaData = createQueryResultMetaData();
-        mergedResult = new TransparentMergedResult(getQueryResult(backendConnection));
+        mergedResult = new TransparentMergedResult(getQueryResult());
     }
     
-    private QueryResult getQueryResult(final BackendConnection backendConnection) {
-        if (!ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName()).isComplete()) {
-            return new RawMemoryQueryResult(queryResultMetaData, Collections.emptyList());
-        }
+    private QueryResult getQueryResult() {
         ShardingSphereEventBus.getInstance().post(new ShowProcessListRequestEvent());
-        if (null == processListData || processListData.isEmpty()) {
+        if (null == batchProcessContexts || batchProcessContexts.isEmpty()) {
             return new RawMemoryQueryResult(queryResultMetaData, Collections.emptyList());
         }
-        Collection<YamlExecuteProcessContext> processContexts = processListData.stream()
-            .map(value -> YamlEngine.unmarshal(value, YamlExecuteProcessContext.class)).collect(Collectors.toList());
-        Grantee grantee = backendConnection.getGrantee();
+        Collection<YamlExecuteProcessContext> processContexts = new LinkedList<>();
+        for (String each : batchProcessContexts) {
+            processContexts.addAll(YamlEngine.unmarshal(each, BatchYamlExecuteProcessContext.class).getContexts());
+        }
         List<MemoryQueryResultDataRow> rows = processContexts.stream().map(processContext -> {
             List<Object> rowValues = new ArrayList<>(8);
             rowValues.add(processContext.getExecutionID());
-            rowValues.add(grantee.getUsername());
-            rowValues.add(grantee.getHostname());
-            rowValues.add(backendConnection.getSchemaName());
+            rowValues.add(processContext.getUsername());
+            rowValues.add(processContext.getHostname());
+            rowValues.add(processContext.getDatabaseName());
             rowValues.add("Execute");
             rowValues.add(TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - processContext.getStartTimeMillis()));
-            int processDoneCount = processContext.getUnitStatuses().stream().map(processUnit -> ExecuteProcessConstants.EXECUTE_STATUS_DONE == processUnit.getStatus() ? 1 : 0).reduce(0, Integer::sum);
+            int processDoneCount = processContext.getUnitStatuses().stream().map(each -> ExecuteProcessConstants.EXECUTE_STATUS_DONE == each.getStatus() ? 1 : 0).reduce(0, Integer::sum);
             String statePrefix = "Executing ";
             rowValues.add(statePrefix + processDoneCount + "/" + processContext.getUnitStatuses().size());
-            // TODO Show original SQL
-            rowValues.add("");
+            String sql = processContext.getSql();
+            if (null != sql && sql.length() > 100) {
+                sql = sql.substring(0, 100);
+            }
+            rowValues.add(null != sql ? sql : "");
             return new MemoryQueryResultDataRow(rowValues);
         }).collect(Collectors.toList());
         return new RawMemoryQueryResult(queryResultMetaData, rows);

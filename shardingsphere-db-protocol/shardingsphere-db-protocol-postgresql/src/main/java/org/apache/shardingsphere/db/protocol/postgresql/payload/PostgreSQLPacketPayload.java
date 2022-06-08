@@ -18,9 +18,12 @@
 package org.apache.shardingsphere.db.protocol.postgresql.payload;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.CompositeByteBuf;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
+
+import java.nio.charset.Charset;
 
 /**
  * Payload operation for PostgreSQL packet data types.
@@ -32,6 +35,8 @@ import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 public final class PostgreSQLPacketPayload implements PacketPayload {
     
     private final ByteBuf byteBuf;
+    
+    private final Charset charset;
     
     /**
      * Read 1 byte fixed length integer from byte buffers.
@@ -129,10 +134,9 @@ public final class PostgreSQLPacketPayload implements PacketPayload {
      * @return null terminated string
      */
     public String readStringNul() {
-        byte[] result = new byte[byteBuf.bytesBefore((byte) 0)];
-        byteBuf.readBytes(result);
+        String result = byteBuf.readCharSequence(byteBuf.bytesBefore((byte) 0), charset).toString();
         byteBuf.skipBytes(1);
-        return new String(result);
+        return result;
     }
     
     /**
@@ -141,7 +145,7 @@ public final class PostgreSQLPacketPayload implements PacketPayload {
      * @param value null terminated string
      */
     public void writeStringNul(final String value) {
-        byteBuf.writeBytes(value.getBytes());
+        byteBuf.writeBytes(value.getBytes(charset));
         byteBuf.writeByte(0);
     }
     
@@ -151,7 +155,7 @@ public final class PostgreSQLPacketPayload implements PacketPayload {
      * @param value rest of packet string
      */
     public void writeStringEOF(final String value) {
-        byteBuf.writeBytes(value.getBytes());
+        byteBuf.writeBytes(value.getBytes(charset));
     }
     
     /**
@@ -163,8 +167,25 @@ public final class PostgreSQLPacketPayload implements PacketPayload {
         byteBuf.skipBytes(length);
     }
     
+    /**
+     * Check if there has complete packet in ByteBuf.
+     * PostgreSQL Message: (byte1) message type + (int4) length + (length - 4) payload
+     *
+     * @return has complete packet
+     */
+    public boolean hasCompletePacket() {
+        return byteBuf.readableBytes() >= 5 && byteBuf.readableBytes() - 1 >= byteBuf.getInt(byteBuf.readerIndex() + 1);
+    }
+    
     @Override
     public void close() {
+        if (byteBuf instanceof CompositeByteBuf) {
+            int remainBytes = byteBuf.readableBytes();
+            if (remainBytes > 0) {
+                byteBuf.skipBytes(remainBytes);
+            }
+            ((CompositeByteBuf) byteBuf).discardReadComponents();
+        }
         byteBuf.release();
     }
 }

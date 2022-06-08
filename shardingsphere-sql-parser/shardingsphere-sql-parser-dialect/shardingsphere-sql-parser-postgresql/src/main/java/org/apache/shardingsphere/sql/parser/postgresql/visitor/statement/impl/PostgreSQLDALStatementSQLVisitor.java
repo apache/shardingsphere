@@ -36,6 +36,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Va
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
@@ -76,8 +77,17 @@ public final class PostgreSQLDALStatementSQLVisitor extends PostgreSQLStatementS
                 variableAssignSegment.getVariable().setScope(ctx.runtimeScope().getText());
             }
             variableAssigns.add(variableAssignSegment);
-            result.getVariableAssigns().addAll(variableAssigns);
         }
+        if (null != ctx.encoding()) {
+            VariableAssignSegment variableAssignSegment = new VariableAssignSegment();
+            VariableSegment variableSegment = new VariableSegment();
+            variableSegment.setVariable("client_encoding");
+            variableAssignSegment.setVariable(variableSegment);
+            String value = ctx.encoding().getText();
+            variableAssignSegment.setAssignValue(value);
+            variableAssigns.add(variableAssignSegment);
+        }
+        result.getVariableAssigns().addAll(variableAssigns);
         return result;
     }
     
@@ -120,7 +130,8 @@ public final class PostgreSQLDALStatementSQLVisitor extends PostgreSQLStatementS
         CollectionValue<SimpleTableSegment> result = new CollectionValue<>();
         for (VacuumRelationContext each : ctx.vacuumRelation()) {
             ColIdContext colId = each.qualifiedName().colId();
-            result.getValue().add(new SimpleTableSegment(colId.start.getStartIndex(), colId.stop.getStopIndex(), new IdentifierValue(colId.getText())));
+            TableNameSegment tableName = new TableNameSegment(colId.start.getStartIndex(), colId.stop.getStopIndex(), new IdentifierValue(colId.getText()));
+            result.getValue().add(new SimpleTableSegment(tableName));
         }
         return result;
     }
@@ -153,7 +164,7 @@ public final class PostgreSQLDALStatementSQLVisitor extends PostgreSQLStatementS
         } else if (null != ctx.delete()) {
             return visit(ctx.delete());
         } else if (null != ctx.declare()) {
-            // TODO visit declare statement 
+            // TODO visit declare statement
             return visit(ctx.declare());
         } else if (null != ctx.executeStmt()) {
             return visit(ctx.executeStmt());

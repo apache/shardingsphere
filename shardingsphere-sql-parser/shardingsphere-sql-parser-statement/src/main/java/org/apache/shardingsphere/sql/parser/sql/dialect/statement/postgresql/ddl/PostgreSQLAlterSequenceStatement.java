@@ -17,20 +17,13 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
-import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterSequenceStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
  * PostgreSQL alter sequence statement.
  */
 @ToString
-@Getter
-@Setter
-public final class PostgreSQLAlterSequenceStatement extends AbstractSQLStatement implements DDLStatement, PostgreSQLStatement {
-
-    private String sequenceName;
+public final class PostgreSQLAlterSequenceStatement extends AlterSequenceStatement implements PostgreSQLStatement {
 }

@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
@@ -25,6 +27,10 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 /**
  * MySQL show create function statement.
  */
+@Getter
+@Setter
 @ToString
 public final class MySQLShowCreateFunctionStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
+    
+    private String functionName;
 }

@@ -19,11 +19,11 @@ package org.apache.shardingsphere.infra.executor.sql.context;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 
 import java.util.Collection;
-import java.util.Collections;
 
 /**
  * Execution context.
@@ -32,13 +32,18 @@ import java.util.Collections;
 @Getter
 public final class ExecutionContext {
     
-    private final SQLStatementContext<?> sqlStatementContext;
+    private final LogicSQL logicSQL;
     
     private final Collection<ExecutionUnit> executionUnits;
     
     private final RouteContext routeContext;
     
-    public ExecutionContext(final SQLStatementContext<?> sqlStatementContext, final ExecutionUnit executionUnit, final RouteContext routeContext) {
-        this(sqlStatementContext, Collections.singletonList(executionUnit), routeContext);
+    /**
+     * Get SQL statement context.
+     *
+     * @return SQL statement context.
+     */
+    public SQLStatementContext<?> getSqlStatementContext() {
+        return logicSQL.getSqlStatementContext();
     }
 }

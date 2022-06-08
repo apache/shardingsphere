@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.merge.fixture.merger;
 
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.merge.engine.merger.ResultMerger;
 import org.apache.shardingsphere.infra.merge.engine.merger.ResultMergerEngine;
@@ -27,13 +27,14 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 public final class ResultMergerEngineFixture implements ResultMergerEngine<MergerRuleFixture> {
     
     @Override
-    public ResultMerger newInstance(final DatabaseType databaseType, final MergerRuleFixture rule, final ConfigurationProperties props, final SQLStatementContext<?> sqlStatementContext) {
+    public ResultMerger newInstance(final String databaseName, final DatabaseType databaseType, final MergerRuleFixture rule, final ConfigurationProperties props,
+                                    final SQLStatementContext<?> sqlStatementContext) {
         return new ResultMergerFixture();
     }
     
     @Override
     public int getOrder() {
-        return 0;
+        return 3;
     }
     
     @Override

@@ -20,4 +20,9 @@ package org.apache.shardingsphere.infra.merge.fixture.rule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 public final class MergerRuleFixture implements ShardingSphereRule {
+    
+    @Override
+    public String getType() {
+        return MergerRuleFixture.class.getSimpleName();
+    }
 }

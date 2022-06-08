@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.metadata.user.yaml.config;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
 
 /**
  * User for YAML.
@@ -27,13 +27,13 @@ import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
 @Getter
 @Setter
 public final class YamlUserConfiguration implements YamlConfiguration {
-
+    
     private String username;
     
     private String hostname;
     
     private String password;
-
+    
     @Override
     public String toString() {
         return username + "@" + (null == hostname ? "%" : hostname) + ":" + password;

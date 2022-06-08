@@ -17,17 +17,20 @@
 
 package org.apache.shardingsphere.infra.rewrite.sql.token.generator.generic;
 
-import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.type.IndexAvailable;
+import org.apache.shardingsphere.infra.binder.type.RemoveAvailable;
+import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.RemoveToken;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.RemoveAvailable;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowColumnsStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTableStatusStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.LinkedList;
+import java.util.stream.Collectors;
 
 /**
  * Remove token generator.
@@ -36,35 +39,65 @@ public final class RemoveTokenGenerator implements CollectionSQLTokenGenerator<S
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        if (sqlStatementContext.getSqlStatement() instanceof MySQLShowTablesStatement) {
-            return ((MySQLShowTablesStatement) sqlStatementContext.getSqlStatement()).getFromSchema().isPresent();
+        boolean containsRemoveSegment = false;
+        if (sqlStatementContext instanceof RemoveAvailable) {
+            containsRemoveSegment = !((RemoveAvailable) sqlStatementContext).getRemoveSegments().isEmpty();
         }
-        if (sqlStatementContext.getSqlStatement() instanceof MySQLShowTableStatusStatement) {
-            return ((MySQLShowTableStatusStatement) sqlStatementContext.getSqlStatement()).getFromSchema().isPresent();
+        boolean containsSchemaName = false;
+        if (sqlStatementContext instanceof TableAvailable) {
+            containsSchemaName = ((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName().isPresent();
         }
-        if (sqlStatementContext.getSqlStatement() instanceof MySQLShowColumnsStatement) {
-            return ((MySQLShowColumnsStatement) sqlStatementContext.getSqlStatement()).getFromSchema().isPresent();
+        boolean containsIndexSegment = false;
+        if (sqlStatementContext instanceof IndexAvailable) {
+            containsIndexSegment = !((IndexAvailable) sqlStatementContext).getIndexes().isEmpty();
         }
-        return false;
+        return containsRemoveSegment || containsSchemaName || containsIndexSegment;
     }
     
     @Override
     public Collection<RemoveToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
-        if (sqlStatementContext.getSqlStatement() instanceof MySQLShowTablesStatement) {
-            Preconditions.checkState(((MySQLShowTablesStatement) sqlStatementContext.getSqlStatement()).getFromSchema().isPresent());
-            RemoveAvailable removeAvailable = ((MySQLShowTablesStatement) sqlStatementContext.getSqlStatement()).getFromSchema().get();
-            return Collections.singletonList(new RemoveToken(removeAvailable.getStartIndex(), removeAvailable.getStopIndex()));
+        Collection<RemoveToken> result = new LinkedList<>();
+        if (sqlStatementContext instanceof RemoveAvailable && !((RemoveAvailable) sqlStatementContext).getRemoveSegments().isEmpty()) {
+            result.addAll(generateRemoveAvailableSQLTokens(((RemoveAvailable) sqlStatementContext).getRemoveSegments()));
         }
-        if (sqlStatementContext.getSqlStatement() instanceof MySQLShowTableStatusStatement) {
-            Preconditions.checkState(((MySQLShowTableStatusStatement) sqlStatementContext.getSqlStatement()).getFromSchema().isPresent());
-            RemoveAvailable removeAvailable = ((MySQLShowTableStatusStatement) sqlStatementContext.getSqlStatement()).getFromSchema().get();
-            return Collections.singletonList(new RemoveToken(removeAvailable.getStartIndex(), removeAvailable.getStopIndex()));
+        if (sqlStatementContext instanceof TableAvailable && ((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName().isPresent()) {
+            result.addAll(generateTableAvailableSQLTokens((TableAvailable) sqlStatementContext));
         }
-        if (sqlStatementContext.getSqlStatement() instanceof MySQLShowColumnsStatement) {
-            Preconditions.checkState(((MySQLShowColumnsStatement) sqlStatementContext.getSqlStatement()).getFromSchema().isPresent());
-            RemoveAvailable removeAvailable = ((MySQLShowColumnsStatement) sqlStatementContext.getSqlStatement()).getFromSchema().get();
-            return Collections.singletonList(new RemoveToken(removeAvailable.getStartIndex(), removeAvailable.getStopIndex()));
+        if (sqlStatementContext instanceof IndexAvailable && !((IndexAvailable) sqlStatementContext).getIndexes().isEmpty()) {
+            result.addAll(generateIndexAvailableSQLTokens((IndexAvailable) sqlStatementContext));
         }
-        return Collections.emptyList();
+        return result;
+    }
+    
+    private Collection<RemoveToken> generateRemoveAvailableSQLTokens(final Collection<SQLSegment> removeSegments) {
+        return removeSegments.stream().map(each -> new RemoveToken(each.getStartIndex(), each.getStopIndex())).collect(Collectors.toList());
+    }
+    
+    private Collection<RemoveToken> generateTableAvailableSQLTokens(final TableAvailable tableAvailable) {
+        Collection<RemoveToken> result = new LinkedList<>();
+        for (SimpleTableSegment each : tableAvailable.getAllTables()) {
+            if (!each.getOwner().isPresent()) {
+                continue;
+            }
+            OwnerSegment owner = each.getOwner().get();
+            int startIndex = owner.getOwner().isPresent() ? owner.getOwner().get().getStartIndex() : owner.getStartIndex();
+            int stopIndex = owner.getOwner().isPresent() ? owner.getStartIndex() - 1 : each.getTableName().getStartIndex() - 1;
+            result.add(new RemoveToken(startIndex, stopIndex));
+        }
+        return result;
+    }
+    
+    private Collection<RemoveToken> generateIndexAvailableSQLTokens(final IndexAvailable indexAvailable) {
+        Collection<RemoveToken> result = new LinkedList<>();
+        for (IndexSegment each : indexAvailable.getIndexes()) {
+            if (!each.getOwner().isPresent()) {
+                continue;
+            }
+            OwnerSegment owner = each.getOwner().get();
+            int startIndex = owner.getOwner().isPresent() ? owner.getOwner().get().getStartIndex() : owner.getStartIndex();
+            int stopIndex = owner.getOwner().isPresent() ? owner.getStartIndex() - 1 : each.getStartIndex() - 1;
+            result.add(new RemoveToken(startIndex, stopIndex));
+        }
+        return result;
     }
 }

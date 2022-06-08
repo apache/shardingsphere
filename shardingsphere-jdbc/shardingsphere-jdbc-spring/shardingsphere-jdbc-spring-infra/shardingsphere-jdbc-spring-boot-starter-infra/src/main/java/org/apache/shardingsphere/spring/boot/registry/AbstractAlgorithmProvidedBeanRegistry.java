@@ -20,10 +20,9 @@ package org.apache.shardingsphere.spring.boot.registry;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPostProcessor;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
-import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spring.boot.util.PropertyUtil;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -32,9 +31,12 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.core.env.Environment;
 
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
+import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
@@ -53,51 +55,67 @@ public abstract class AbstractAlgorithmProvidedBeanRegistry<T extends ShardingSp
     
     private final Environment environment;
     
-    @SuppressWarnings("all")
-    protected void registerBean(final String prefix, final Class<T> algorithmClass, final BeanDefinitionRegistry registry) {
-        boolean existPrefix = PropertyUtil.containPropertyPrefix(environment, prefix);
-        if (existPrefix) {
-            Map<String, Object> paramMap = PropertyUtil.handle(environment, prefix, Map.class);
-            Set<String> keys = paramMap.keySet().stream().map(key -> {
-                return key.contains(POINT) ? key.substring(0, key.indexOf(POINT)) : key;
-            }).collect(Collectors.toSet());
-            Map<String, YamlShardingSphereAlgorithmConfiguration> shardingAlgorithmMap = new LinkedHashMap<>();
-            keys.forEach(each -> {
-                YamlShardingSphereAlgorithmConfiguration config = new YamlShardingSphereAlgorithmConfiguration();
-                String propsPrefix = String.join("", prefix, each, PROPS_SUFFIX);
-                boolean existProps = PropertyUtil.containPropertyPrefix(environment, propsPrefix);
-                if (existProps) {
-                    Map<String, Object> propsMap = PropertyUtil.handle(environment, propsPrefix, Map.class);
-                    config.getProps().putAll(propsMap);
-                }
-                String typePrefix = String.join("", prefix, each, TYPE_SUFFIX);
-                String algorithmType = environment.getProperty(typePrefix);
-                config.setType(algorithmType);
-                shardingAlgorithmMap.put(each, config);
-            });
-            ShardingSphereServiceLoader.register(algorithmClass);
-            shardingAlgorithmMap.forEach((key, algorithmConfiguration) -> {
-                ShardingSphereAlgorithm algorithm = TypedSPIRegistry.getRegisteredService(algorithmClass, algorithmConfiguration.getType(), algorithmConfiguration.getProps());
-                BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(algorithm.getClass());
-                builder.addPropertyValue(PROPS, algorithmConfiguration.getProps());
-                registry.registerBeanDefinition(key, builder.getBeanDefinition());
-            });
+    private final Map<String, Properties> propsMap = new HashMap<>();
+    
+    @SuppressWarnings("unchecked")
+    protected final void registerBean(final String prefix, final Class<T> algorithmClass, final BeanDefinitionRegistry registry) {
+        if (!PropertyUtil.containPropertyPrefix(environment, prefix)) {
+            return;
+        }
+        Map<String, Object> parameterMap = PropertyUtil.handle(environment, prefix, Map.class);
+        Collection<String> algorithmNames = parameterMap.keySet().stream().map(key -> key.contains(POINT) ? key.substring(0, key.indexOf(POINT)) : key).collect(Collectors.toSet());
+        Map<String, ShardingSphereAlgorithmConfiguration> algorithmConfigs = createAlgorithmConfigurations(prefix, algorithmNames);
+        ShardingSphereServiceLoader.register(algorithmClass);
+        for (Entry<String, ShardingSphereAlgorithmConfiguration> entry : algorithmConfigs.entrySet()) {
+            ShardingSphereAlgorithmConfiguration algorithmConfig = entry.getValue();
+            BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(ShardingSphereAlgorithmFactory.createAlgorithm(algorithmConfig, algorithmClass).getClass());
+            registry.registerBeanDefinition(entry.getKey(), builder.getBeanDefinition());
+            propsMap.put(entry.getKey(), algorithmConfig.getProps());
         }
     }
     
-    @Override
-    public void postProcessBeanFactory(final ConfigurableListableBeanFactory configurableListableBeanFactory) {
+    private Map<String, ShardingSphereAlgorithmConfiguration> createAlgorithmConfigurations(final String prefix, final Collection<String> algorithmNames) {
+        Map<String, ShardingSphereAlgorithmConfiguration> result = new LinkedHashMap<>(algorithmNames.size(), 1);
+        for (String each : algorithmNames) {
+            result.put(each, createAlgorithmConfiguration(prefix, each));
+        }
+        return result;
+    }
+    
+    private ShardingSphereAlgorithmConfiguration createAlgorithmConfiguration(final String prefix, final String algorithmName) {
+        String type = environment.getProperty(String.join("", prefix, algorithmName, TYPE_SUFFIX));
+        Properties props = getProperties(prefix, algorithmName);
+        return new ShardingSphereAlgorithmConfiguration(type, props);
+    }
+    
+    private Properties getProperties(final String prefix, final String algorithmName) {
+        String propsPrefix = String.join("", prefix, algorithmName, PROPS_SUFFIX);
+        Properties result = new Properties();
+        if (PropertyUtil.containPropertyPrefix(environment, propsPrefix)) {
+            result.putAll(PropertyUtil.handle(environment, propsPrefix, Map.class));
+        }
+        return convertToStringTypedProperties(result);
+    }
+    
+    private Properties convertToStringTypedProperties(final Properties props) {
+        Properties result = new Properties();
+        props.forEach((key, value) -> result.setProperty(key.toString(), null == value ? null : value.toString()));
+        return result;
     }
     
     @Override
-    public Object postProcessBeforeInitialization(final Object bean, final String beanName) {
+    public final void postProcessBeanFactory(final ConfigurableListableBeanFactory configurableListableBeanFactory) {
+    }
+    
+    @Override
+    public final Object postProcessBeforeInitialization(final Object bean, final String beanName) {
         return bean;
     }
     
     @Override
-    public Object postProcessAfterInitialization(final Object bean, final String beanName) {
-        if (bean instanceof ShardingSphereAlgorithmPostProcessor) {
-            ((ShardingSphereAlgorithmPostProcessor) bean).init();
+    public final Object postProcessAfterInitialization(final Object bean, final String beanName) {
+        if (bean instanceof ShardingSphereAlgorithm && propsMap.containsKey(beanName)) {
+            ((ShardingSphereAlgorithm) bean).init(propsMap.get(beanName));
         }
         return bean;
     }

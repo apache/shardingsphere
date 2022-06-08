@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.infra.parser.cache;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.LoadingCache;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.LoadingCache;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
@@ -33,12 +33,15 @@ public final class SQLStatementCacheBuilder {
     /**
      * Build SQL statement cache.
      *
-     * @param option cache option
+     * @param sqlStatementCacheOption SQL statement cache option
+     * @param parseTreeCacheOption parse tree cache option
+     * @param isParseComment is parse comment
      * @param databaseType database type
      * @return built SQL statement cache
      */
-    public static LoadingCache<String, SQLStatement> build(final CacheOption option, final String databaseType) {
-        return CacheBuilder.newBuilder().softValues()
-                .initialCapacity(option.getInitialCapacity()).maximumSize(option.getMaximumSize()).concurrencyLevel(option.getConcurrencyLevel()).build(new SQLStatementCacheLoader(databaseType));
+    public static LoadingCache<String, SQLStatement> build(final String databaseType,
+                                                           final CacheOption sqlStatementCacheOption, final CacheOption parseTreeCacheOption, final boolean isParseComment) {
+        return Caffeine.newBuilder().softValues().initialCapacity(sqlStatementCacheOption.getInitialCapacity()).maximumSize(sqlStatementCacheOption.getMaximumSize())
+                .build(new SQLStatementCacheLoader(databaseType, parseTreeCacheOption, isParseComment));
     }
 }

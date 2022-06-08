@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.test.integration.fixture.ConstantKeyGenerateAlgorithm
+org.apache.shardingsphere.test.integration.fixture.ITKeyGenerateAlgorithmFixture

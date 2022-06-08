@@ -17,20 +17,16 @@
 
 grammar RQLStatement;
 
-import Keyword, Literals, Symbol;
+import BaseRule;
 
 showEncryptRules
-    : SHOW ENCRYPT (TABLE tableRule | RULES) (FROM schemaName)?
+    : SHOW ENCRYPT (TABLE tableRule | RULES) (FROM databaseName)?
     ;
 
 tableRule
     : RULE tableName
     ;
 
-tableName
-    : IDENTIFIER
-    ;
-
-schemaName
+databaseName
     : IDENTIFIER
     ;

@@ -21,9 +21,12 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.function.EnhancedRuleConfiguration;
+import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -31,7 +34,7 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 @Getter
-public final class EncryptRuleConfiguration implements SchemaRuleConfiguration {
+public final class EncryptRuleConfiguration implements SchemaRuleConfiguration, EnhancedRuleConfiguration {
     
     private final Collection<EncryptTableRuleConfiguration> tables;
     
@@ -39,7 +42,15 @@ public final class EncryptRuleConfiguration implements SchemaRuleConfiguration {
     
     private final boolean queryWithCipherColumn;
     
+    private final String dataConverterName;
+    
+    private final Map<String, OnRuleAlteredActionConfiguration> dataConverters;
+    
     public EncryptRuleConfiguration(final Collection<EncryptTableRuleConfiguration> tables, final Map<String, ShardingSphereAlgorithmConfiguration> encryptors) {
         this(tables, encryptors, true);
+    }
+    
+    public EncryptRuleConfiguration(final Collection<EncryptTableRuleConfiguration> tables, final Map<String, ShardingSphereAlgorithmConfiguration> encryptors, final boolean queryWithCipherColumn) {
+        this(tables, encryptors, queryWithCipherColumn, null, Collections.emptyMap());
     }
 }

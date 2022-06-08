@@ -1,7 +1,7 @@
 +++
-pre = "<b>5.11. </b>"
+pre = "<b>6.6. </b>"
 title = "Proxy"
-weight = 11
+weight = 6
 chapter = true
 +++
 
@@ -11,32 +11,20 @@ chapter = true
 | -------------------------------- | ------------------------------------------------------------------------------- |
 | DatabaseProtocolFrontendEngine   | Regulate parse and adapter protocol of database access for ShardingSphere-Proxy |
 
-| *Implementation Class*   | *Description*                                                                   |
-| ------------------------ | ------------------------------------------------------------------------------- |
-| MySQLFrontendEngine      | Base on MySQL database protocol                                                 |
-| PostgreSQLFrontendEngine | Base on PostgreSQL database protocol                                            |
-
-## JDBCDriverURLRecognizer
-
-| *SPI Name*              | *Description*                              |
-| ----------------------- | ------------------------------------------ |
-| JDBCDriverURLRecognizer | Use JDBC driver to execute SQL             |
-
-| *Implementation Class*  | *Description*                              |
-| ----------------------- | ------------------------------------------ |
-| MySQLRecognizer         |  Use MySQL JDBC driver to execute SQL      |
-| PostgreSQLRecognizer    |  Use PostgreSQL JDBC driver to execute SQL |
-| OracleRecognizer        |  Use Oracle JDBC driver to execute SQL     |
-| SQLServerRecognizer     |  Use SQLServer JDBC driver to execute SQL  |
-| H2Recognizer            |  Use H2 JDBC driver to execute SQL         |
+| *Implementation Class*   | *Description*                        |
+| ------------------------ | ------------------------------------ |
+| MySQLFrontendEngine      | Base on MySQL database protocol      |
+| PostgreSQLFrontendEngine | Base on PostgreSQL database protocol |
+| OpenGaussFrontendEngine  | Base on openGauss database protocol  |
 
 ## AuthorityProvideAlgorithm
 
-| *SPI Name*                       | *Description*                 |
-| ------------------------------- | ------------------------------ |
-| AuthorityProvideAlgorithm       | User authority loading logic   |
+| *SPI Name*                       | *Description*                  |
+| -------------------------------  | ------------------------------ |
+| AuthorityProviderAlgorithm       | User authority loading logic   |
 
-| *Implementation Class*                             | *Type*                   | *Description*                                                                                                          |
-| -------------------------------------------------- | ------------------------ | ---------------------------------------------------------------------------------------------------------------------- |
-| NativeAuthorityProviderAlgorithm                   | NATIVE                   | Persist user authority defined in server.yaml into the backend database. An admin user will be created if not existed. |
-| AllPrivilegesPermittedAuthorityProviderAlgorithm   | ALL_PRIVILEGES_PERMITTED | All privileges granted to user by default (No authentication). Will not interact with the actual database.             |
+| *Implementation Class*                              | *Type*           | *Description*                                                                                                         |
+|-----------------------------------------------------| ---------------- | --------------------------------------------------------------------------------------------------------------------- |
+| NativeAuthorityProviderAlgorithm (Deprecated)       | NATIVE           | Persist user authority defined in server.yaml into the backend database. An admin user will be created if not existed |
+| AllPermittedPrivilegesProviderAlgorithm             | ALL_PERMITTED    | All privileges granted to user by default (No authentication). Will not interact with the actual database             |
+| SchemaPermittedPrivilegesProviderAlgorithm          | DATABASE_PERMITTED | Permissions configured through the attribute user-database-mappings                                                     |

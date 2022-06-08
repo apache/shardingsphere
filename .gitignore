@@ -7,6 +7,8 @@ target/
 *.tar
 *.tar.gz
 dependency-reduced-pom.xml
+.flattened-pom.xml
+pom.xml.versionsBackup
 
 # maven plugin ignore
 release.properties
@@ -17,9 +19,11 @@ cobertura.ser
 .settings/
 .project
 .classpath
+.factorypath
 
 # idea ignore
 .idea/
+!/.idea/icon.png
 *.ipr
 *.iml
 *.iws
@@ -32,13 +36,15 @@ logs/
 *.diff
 *.patch
 *.tmp
+.hugo_build.lock
 
 # system ignore
 .DS_Store
 Thumbs.db
 
 # antlr ignore
-src/main/antlr4/imports/**/gen/
+gen/
+*.tokens
 
 # agent build ignore
 /agent/

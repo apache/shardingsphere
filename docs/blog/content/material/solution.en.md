@@ -1,21 +1,19 @@
 +++
 title = "The mixed open-source distributed transaction solution"
-weight = 8
+weight = 6
 chapter = true
 +++
 
-## The mixed open-source distributed transaction solution
-
 ### Author
 
-Liang Zhang，Leader of Data R&D of JD.com, initiator & PPMC of Apache ShardingSphere. 
+Liang Zhang, Leader of Data R&D of JD.com, initiator & PPMC of Apache ShardingSphere. 
 
 Love open source, currently leading open source project ShardingSphere (formerly known as Sharding-JDBC) and Elastic-Job. Good at using Java as the popular distributed architecture and Kubernetes and Mesos as the popular cloud platform, admiring elegant codes, and having more research on how to write expressive codes.
 
 At present, focus on improving ShardingSphere to be the industry's first-class financial data solution. ShardingSphere has entered the Apache Incubator, is the first open source project of the Jingdong Group to enter the Apache Software Foundation, and is also the first distributed database middleware of the Apache Software Foundation.
 
 ---
-Ning Jiang，Technical expert of Huawei Open Source Competency Center, project leader of Apache ServiceComb. Former chief software engineer of Red Hat Software. He has more than ten years of experience in enterprise-level open source middleware development, rich experience in Java development, and also is the enthusiast of functional programming. Since 2006, he has been engaged in the development of the Apache open source middleware projects, and has participated in the development of Apache CXF, Apache Camel, and Apache ServiceMix. He has in-depth research in the micro-service architecture, such as WebServices, Enterprise Integration Pattern, SOA and OSGi.
+Ning Jiang, Technical expert of Huawei Open Source Competency Center, project leader of Apache ServiceComb. Former chief software engineer of Red Hat Software. He has more than ten years of experience in enterprise-level open source middleware development, rich experience in Java development, and also is the enthusiast of functional programming. Since 2006, he has been engaged in the development of the Apache open source middleware projects, and has participated in the development of Apache CXF, Apache Camel, and Apache ServiceMix. He has in-depth research in the micro-service architecture, such as WebServices, Enterprise Integration Pattern, SOA and OSGi.
 
 Blog site：https://willemjiang.github.io/
 
@@ -117,7 +115,7 @@ Provides APIs for users and SPIs for developers.
 
 The parent module of two-phases commit transaction. Currently only the sharding-transaction-xa module provides XA protocol support. In the future, more types of transactions based on two-phase commit will be introduced, such as `percolator`, see:
 
-[https://storage.googleapis.com/pub-tools-public-publication-data/pdf/36726.pdf]。
+[https://storage.googleapis.com/pub-tools-public-publication-data/pdf/36726.pdf].
 
 - sharding-transaction-base:
 
@@ -202,7 +200,7 @@ Since the native transaction interface does not support transaction types, Shard
 
 
 
-1.Switch the current transaction type through SCTL (sharding-ctl, the database management command provided by ShardingSphere). Just enter it in SQL execution mode, and it is applicable to Sharding-JDBC and Sharding-Proxy. For example: `SCTL:SET TRANSACTION_TYPE=BASE`.
+1.Switch the current transaction type through RAL (Resource & Rule Administration Language). Just enter it in SQL execution mode, and it is applicable to Sharding-Proxy. For example: `SET VARIABLE TRANSACTION_TYPE=BASE`.
 
 2.Switch the current transaction type through `Threadlocal`, suitable for Sharding-JDBC. For example: `TransactionTypeHolder.set (TransactionType.XA)`.
 

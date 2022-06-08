@@ -19,8 +19,9 @@ package org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDLStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -38,15 +39,12 @@ import java.util.stream.Collectors;
 public final class ShardingAlterTableStatementValidator extends ShardingDDLStatementValidator<AlterTableStatement> {
     
     @Override
-    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<AlterTableStatement> sqlStatementContext, 
-                            final List<Object> parameters, final ShardingSphereSchema schema) {
+    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<AlterTableStatement> sqlStatementContext,
+                            final List<Object> parameters, final ShardingSphereDatabase database) {
         Collection<String> tableNames = sqlStatementContext instanceof TableAvailable
                 ? ((TableAvailable) sqlStatementContext).getAllTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList())
                 : sqlStatementContext.getTablesContext().getTableNames();
         Optional<SimpleTableSegment> renameTable = sqlStatementContext.getSqlStatement().getRenameTable();
-        if (!renameTable.isPresent() && !shardingRule.tableRuleExists(tableNames) && !shardingRule.isSingleTablesInSameDataSource(tableNames)) {
-            throw new ShardingSphereException("Single tables must be in the same datasource.");
-        }
         if (renameTable.isPresent() && containsShardingBroadcastTable(shardingRule, tableNames)) {
             throw new ShardingSphereException("ALTER TABLE ... RENAME TO ... statement can not support sharding tables and broadcast tables.");
         }
@@ -57,8 +55,8 @@ public final class ShardingAlterTableStatementValidator extends ShardingDDLState
     }
     
     @Override
-    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<AlterTableStatement> sqlStatementContext, 
-                             final RouteContext routeContext, final ShardingSphereSchema schema) {
+    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<AlterTableStatement> sqlStatementContext, final List<Object> parameters,
+                             final ShardingSphereDatabase database, final ConfigurationProperties props, final RouteContext routeContext) {
         String primaryTable = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
         if (isRouteUnitDataNodeDifferentSize(shardingRule, routeContext, primaryTable)) {
             throw new ShardingSphereException("ALTER TABLE ... statement can not route correctly for tables %s.", sqlStatementContext.getTablesContext().getTableNames());

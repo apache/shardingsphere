@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.sql.parser.sql.common.util;
 
 import com.google.common.collect.BoundType;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
 import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -176,47 +176,47 @@ public final class SafeNumberOperationUtilTest {
         Range<Comparable<?>> range = Range.closed(new BigDecimal("123.11"), new BigDecimal("9999.123"));
         assertTrue(SafeNumberOperationUtil.safeContains(range, 510.12));
     }
-
+    
     @Test
     public void assertSafeCollectionEqualsForInteger() {
-        List<Comparable<?>> sourceCollection = Lists.newArrayList(10, 12);
-        List<Comparable<?>> targetCollection = Lists.newArrayList(10, 12);
-        assertTrue(SafeNumberOperationUtil.safeCollectionEquals(sourceCollection, targetCollection));
+        List<Comparable<?>> sources = Arrays.asList(10, 12);
+        List<Comparable<?>> targets = Arrays.asList(10, 12);
+        assertTrue(SafeNumberOperationUtil.safeCollectionEquals(sources, targets));
     }
-
+    
     @Test
     public void assertSafeCollectionEqualsForLong() {
-        List<Comparable<?>> sourceCollection = Lists.newArrayList(10, 12);
-        List<Comparable<?>> targetCollection = Lists.newArrayList(10L, 12L);
-        assertTrue(SafeNumberOperationUtil.safeCollectionEquals(sourceCollection, targetCollection));
+        List<Comparable<?>> sources = Arrays.asList(10, 12);
+        List<Comparable<?>> targets = Arrays.asList(10L, 12L);
+        assertTrue(SafeNumberOperationUtil.safeCollectionEquals(sources, targets));
     }
-
+    
     @Test
     public void assertSafeCollectionEqualsForBigInteger() {
-        List<Comparable<?>> sourceCollection = Lists.newArrayList(10, 12);
-        List<Comparable<?>> targetCollection = Lists.newArrayList(BigInteger.valueOf(10), BigInteger.valueOf(12L));
-        assertTrue(SafeNumberOperationUtil.safeCollectionEquals(sourceCollection, targetCollection));
+        List<Comparable<?>> sources = Arrays.asList(10, 12);
+        List<Comparable<?>> targets = Arrays.asList(BigInteger.valueOf(10), BigInteger.valueOf(12L));
+        assertTrue(SafeNumberOperationUtil.safeCollectionEquals(sources, targets));
     }
-
+    
     @Test
     public void assertSafeCollectionEqualsForFloat() {
-        List<Comparable<?>> sourceCollection = Lists.newArrayList(10.01F, 12.01F);
-        List<Comparable<?>> targetCollection = Lists.newArrayList(10.01F, 12.01F);
-        assertTrue(SafeNumberOperationUtil.safeCollectionEquals(sourceCollection, targetCollection));
+        List<Comparable<?>> sources = Arrays.asList(10.01F, 12.01F);
+        List<Comparable<?>> targets = Arrays.asList(10.01F, 12.01F);
+        assertTrue(SafeNumberOperationUtil.safeCollectionEquals(sources, targets));
     }
-
+    
     @Test
     public void assertSafeCollectionEqualsForDouble() {
-        List<Comparable<?>> sourceCollection = Lists.newArrayList(10.01, 12.01);
-        List<Comparable<?>> targetCollection = Lists.newArrayList(10.01F, 12.01);
-        assertTrue(SafeNumberOperationUtil.safeCollectionEquals(sourceCollection, targetCollection));
+        List<Comparable<?>> sources = Arrays.asList(10.01, 12.01);
+        List<Comparable<?>> targets = Arrays.asList(10.01F, 12.01);
+        assertTrue(SafeNumberOperationUtil.safeCollectionEquals(sources, targets));
     }
-
+    
     @Test
     public void assertSafeCollectionEqualsForBigDecimal() {
-        List<Comparable<?>> sourceCollection = Lists.newArrayList(10.01, 12.01);
-        List<Comparable<?>> targetCollection = Lists.newArrayList(BigDecimal.valueOf(10.01), BigDecimal.valueOf(12.01));
-        assertTrue(SafeNumberOperationUtil.safeCollectionEquals(sourceCollection, targetCollection));
+        List<Comparable<?>> sources = Arrays.asList(10.01, 12.01);
+        List<Comparable<?>> targets = Arrays.asList(BigDecimal.valueOf(10.01), BigDecimal.valueOf(12.01));
+        assertTrue(SafeNumberOperationUtil.safeCollectionEquals(sources, targets));
     }
     
     @Test

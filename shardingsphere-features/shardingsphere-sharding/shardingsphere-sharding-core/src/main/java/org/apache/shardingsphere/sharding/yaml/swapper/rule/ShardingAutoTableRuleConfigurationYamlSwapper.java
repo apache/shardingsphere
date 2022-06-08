@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.yaml.swapper.rule;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.yaml.swapper.YamlConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.YamlConfigurationSwapper;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.swapper.strategy.KeyGenerateStrategyConfigurationYamlSwapper;
@@ -38,6 +38,7 @@ public final class ShardingAutoTableRuleConfigurationYamlSwapper implements Yaml
         YamlShardingAutoTableRuleConfiguration result = new YamlShardingAutoTableRuleConfiguration();
         result.setLogicTable(data.getLogicTable());
         result.setActualDataSources(data.getActualDataSources());
+        result.setActualTablePrefix(data.getActualTablePrefix());
         if (null != data.getShardingStrategy()) {
             result.setShardingStrategy(shardingStrategyYamlSwapper.swapToYamlConfiguration(data.getShardingStrategy()));
         }
@@ -51,6 +52,7 @@ public final class ShardingAutoTableRuleConfigurationYamlSwapper implements Yaml
     public ShardingAutoTableRuleConfiguration swapToObject(final YamlShardingAutoTableRuleConfiguration yamlConfig) {
         Preconditions.checkNotNull(yamlConfig.getLogicTable(), "Logic table cannot be null.");
         ShardingAutoTableRuleConfiguration result = new ShardingAutoTableRuleConfiguration(yamlConfig.getLogicTable(), yamlConfig.getActualDataSources());
+        result.setActualTablePrefix(yamlConfig.getActualTablePrefix());
         if (null != yamlConfig.getShardingStrategy()) {
             result.setShardingStrategy(shardingStrategyYamlSwapper.swapToObject(yamlConfig.getShardingStrategy()));
         }

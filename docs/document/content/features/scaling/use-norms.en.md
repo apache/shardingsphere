@@ -1,14 +1,15 @@
 +++
-pre = "<b>3.5.3. </b>"
 title = "User Norms"
-weight = 3
+weight = 2
 +++
 
-## Supported Items
+## Supported
 
-* Migrate out data into databases which managed by Apache ShardingSphere;
+* Migrate data outside into databases which managed by Apache ShardingSphere;
 * Scale out data between data nodes of Apache ShardingSphere.
 
-## Unsupported Items
+## Unsupported
 
-* Do not support to scale tables without primary key.
+* Scale table without primary key, primary key can not be composite;
+* Scale table with composite primary key;
+* Do not support scale on in used databases, need to prepare a new database cluster for target.

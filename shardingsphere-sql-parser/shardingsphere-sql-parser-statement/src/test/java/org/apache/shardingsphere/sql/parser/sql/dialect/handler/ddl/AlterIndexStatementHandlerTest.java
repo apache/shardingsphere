@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl;
 
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLAlterIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerAlterIndexStatement;
@@ -34,7 +36,7 @@ public final class AlterIndexStatementHandlerTest {
     @Test
     public void assertGetSimpleTableSegmentWithSimpleTableSegmentForSQLServer() {
         SQLServerAlterIndexStatement alterIndexStatement = new SQLServerAlterIndexStatement();
-        alterIndexStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("")));
+        alterIndexStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue(""))));
         Optional<SimpleTableSegment> simpleTableSegment = AlterIndexStatementHandler.getSimpleTableSegment(alterIndexStatement);
         assertTrue(simpleTableSegment.isPresent());
     }
@@ -49,7 +51,7 @@ public final class AlterIndexStatementHandlerTest {
     @Test
     public void assertGetRenameIndexSegmentWithRenameIndexSegmentForPostgreSQL() {
         PostgreSQLAlterIndexStatement alterIndexStatement = new PostgreSQLAlterIndexStatement();
-        alterIndexStatement.setRenameIndex(new IndexSegment(0, 0, new IdentifierValue("")));
+        alterIndexStatement.setRenameIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue(""))));
         Optional<IndexSegment> indexSegment = AlterIndexStatementHandler.getRenameIndexSegment(alterIndexStatement);
         assertTrue(indexSegment.isPresent());
     }

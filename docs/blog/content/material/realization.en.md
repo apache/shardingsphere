@@ -1,10 +1,8 @@
 +++
 title = "The quick explanation of ShardingSphere transaction module"
-weight = 12
+weight = 2
 chapter = true
 +++
-
-## Distributed Transaction Implementation on Sharding-Sphere
 
 <!-- ## 分布式事务在Sharding-Sphere中的实现 -->
 ### Lecturer
@@ -19,7 +17,7 @@ Senior Java Development Engineer
 <!-- 高级Java开发工程师 -->
 
 <!-- - 多年互联网开发经验，热爱开源技术，对分布式存储有浓厚的兴趣。熟悉ElasticSearch、HBase、Presto、Storm等离线和实时数据处理 -->
-- Years of internet development experience, love open source technology, full of interested in distributed storage. And familiar with online and realtime data processing with ElasticSearch、HBase、Presto、Storm and et.
+- Years of internet development experience, love open source technology, full of interested in distributed storage. And familiar with online and realtime data processing with ElasticSearch, HBase, Presto, Storm and et.
 
 <!-- - 目前主要在Sharding-Sphere团队负责分布式事务的开发 -->
 - Be responsible for distributed transaction implementation in Sharding-Sphere team.
@@ -128,7 +126,7 @@ TM needs a global transaction id(xid) to call XAResource interfaces and coordina
 
 <!-- 弱XA通过去掉XA的Prepare阶段，以达到减少资源锁定范围而提升并发性能的效果。典型的实现为在一个业务线程中，遍历所有的数据库连接，依次做commit或者rollback。弱XA同本地事务相比，性能损耗低，但在事务提交的执行过程中，若出现网络故障、数据库宕机等预期之外的异常，将会造成数据不一致，且无法进行回滚。基于弱XA的事务无需额外的实现成本，因此Sharding-Sphere默认支持。 -->
 
-Comparing to 2PC, weak XA without prepare phase can benefit for reducing resource blocking and improving concurrency. The implementation only needs to iterate and call commit/callback on each datasource connection in a business thread. Performance of weak XA almost without reducing compares to local transaction. When has network failures、database crash and et., weak XA will lead inconsistent data and can't be rollback. Weak XA transaction implementation doesn't need extra efforts, so Sharding-Sphere supports it by default.
+Comparing to 2PC, weak XA without prepare phase can benefit for reducing resource blocking and improving concurrency. The implementation only needs to iterate and call commit/callback on each datasource connection in a business thread. Performance of weak XA almost without reducing compares to local transaction. When has network failures, database crash and et., weak XA will lead inconsistent data and can't be rollback. Weak XA transaction implementation doesn't need extra efforts, so Sharding-Sphere supports it by default.
 
 <!-- **二阶段提交：2PC** -->
 
@@ -143,7 +141,7 @@ All local transactions will use default isolation level to lock resources, recor
 
 <!-- 开启XA全局事务后，所有子事务会按照本地默认的隔离级别锁定资源，并记录undo和redo日志，然后由TM发起prepare投票，询问所有的子事务是否可以进行提交：当所有子事务反馈的结果为“yes”时，TM再发起commit；若其中任何一个子事务反馈的结果为“no”，TM则发起rollback；如果在prepare阶段的反馈结果为yes，而commit的过程中出现宕机等异常时，则在节点服务重启后，可根据XA recover再次进行commit补偿，以保证数据的一致性。 -->
 
-On 2PC model, the prepare stage needs to wait all involved RMs response and that may lead resource locked for a long time，so it's not suitable for high concurrency and time-consumed sub transaction scenario.
+On 2PC model, the prepare stage needs to wait all involved RMs response and that may lead resource locked for a long time, so it's not suitable for high concurrency and time-consumed sub transaction scenario.
 
 <!-- 2PC模型中，在prepare阶段需要等待所有参与子事务的反馈，因此可能造成数据库资源锁定时间过长，不适合并发高以及子事务生命周长较长的业务场景。 -->
 
@@ -402,7 +400,7 @@ All in word, TCC and MQ are both depend on business transformation, but XA, BED 
 
 <!-- Sharding-Sphere是一套开源的分布式数据库中间件解决方案组成的生态圈，它由Sharding-JDBC、Sharding-Proxy和Sharding-Sidecar这3款相互独立的产品组成。它们均提供标准化的数据水平扩展、分布式事务和分布式治理等功能，可适用于如Java同构、异构语言、容器、云原生等各种多样化的应用场景。 -->
 
-[ShardingSphere](https://github.com/sharding-sphere/sharding-sphere/) is an open-source ecosystem consisted of a set of distributed database middleware solutions, including 3 independent products, JDBC, Proxy & Sidecar. They all provide functions of data scale out, distributed transaction and distributed governance, applicable in a variety of situations such as Java isomorphism, heterogeneous language container and cloud native.
+[ShardingSphere](https://github.com/sharding-sphere/sharding-sphere/) is an open-source ecosystem consisting of a set of distributed database middleware solutions, including 3 independent products, JDBC, Proxy & Sidecar. They all provide functions of data scale out, distributed transaction and distributed governance, applicable in a variety of situations such as Java isomorphism, heterogeneous language container and cloud native.
 
 <!-- 项目地址： -->
 
@@ -424,7 +422,7 @@ Both XA and BASE transaction are supported by Sharding-Sphere, and allows to sel
 
 Sharding-Sphere TM integrated XA and BASE transaction model:
 
-- For XA transaction, using SPI makes weak XA、Atomikos、Narayana are mutually exclusive.
+- For XA transaction, using SPI makes weak XA, Atomikos, Narayana are mutually exclusive.
 
 <!-- 下面将Sharding-Sphere内部如何用事件驱动方式，将事务从分片主流程中解耦进行详细说明： -->
 The following section will explain how to decouple transaction from main process by event-driven:

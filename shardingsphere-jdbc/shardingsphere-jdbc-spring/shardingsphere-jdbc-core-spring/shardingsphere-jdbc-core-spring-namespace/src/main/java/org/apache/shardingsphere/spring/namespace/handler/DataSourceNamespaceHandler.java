@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.spring.namespace.handler;
 
-import org.apache.shardingsphere.spring.namespace.tag.DataSourceBeanDefinitionTag;
-import org.apache.shardingsphere.spring.namespace.tag.TransactionTypeScannerBeanDefinitionTag;
 import org.apache.shardingsphere.spring.namespace.parser.DataSourceBeanDefinitionParser;
 import org.apache.shardingsphere.spring.namespace.parser.TransactionTypeScannerBeanDefinitionParser;
+import org.apache.shardingsphere.spring.namespace.tag.DataSourceBeanDefinitionTag;
+import org.apache.shardingsphere.spring.namespace.tag.TransactionTypeScannerBeanDefinitionTag;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
 /**

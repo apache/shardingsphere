@@ -24,8 +24,8 @@ import net.bytebuddy.description.method.MethodDescription;
 /**
  * ShardingSphere transformer point.
  */
-@Getter
 @RequiredArgsConstructor
+@Getter
 public class ShardingSphereTransformationPoint<T> {
     
     private final MethodDescription description;

@@ -13,7 +13,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package org.apache.shardingsphere.agent.core.plugin.interceptor;
@@ -27,6 +26,7 @@ import net.bytebuddy.implementation.bind.annotation.RuntimeType;
 import net.bytebuddy.implementation.bind.annotation.SuperCall;
 import org.apache.shardingsphere.agent.api.advice.ClassStaticMethodAroundAdvice;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
+import org.apache.shardingsphere.agent.core.plugin.PluginContext;
 
 import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
@@ -52,42 +52,49 @@ public class ClassStaticMethodAroundInterceptor {
     @RuntimeType
     @SneakyThrows
     public Object intercept(@Origin final Class<?> klass, @Origin final Method method, @AllArguments final Object[] args, @SuperCall final Callable<?> callable) {
-        MethodInvocationResult invocationResult = new MethodInvocationResult();
+        MethodInvocationResult methodResult = new MethodInvocationResult();
         Object result;
+        boolean adviceEnabled = classStaticMethodAroundAdvice.disableCheck() || PluginContext.isPluginEnabled();
         try {
-            classStaticMethodAroundAdvice.beforeMethod(klass, method, args, invocationResult);
+            if (adviceEnabled) {
+                classStaticMethodAroundAdvice.beforeMethod(klass, method, args, methodResult);
+            }
             // CHECKSTYLE:OFF
         } catch (final Throwable ex) {
             // CHECKSTYLE:ON
-            log.error("Failed to execute the pre-method of method[{}] in class[{}].", method.getName(), klass, ex);
+            log.error("Failed to execute the pre-method of method[{}] in class[{}]", method.getName(), klass, ex);
         }
         try {
-            if (invocationResult.isRebased()) {
-                result = invocationResult.getResult();
+            if (methodResult.isRebased()) {
+                result = methodResult.getResult();
             } else {
                 result = callable.call();
             }
-            invocationResult.rebase(result);
+            methodResult.rebase(result);
             // CHECKSTYLE:OFF
         } catch (final Throwable ex) {
             // CHECKSTYLE:ON
             try {
-                classStaticMethodAroundAdvice.onThrowing(klass, method, args, ex);
+                if (adviceEnabled) {
+                    classStaticMethodAroundAdvice.onThrowing(klass, method, args, ex);
+                }
                 // CHECKSTYLE:OFF
             } catch (final Throwable ignored) {
                 // CHECKSTYLE:ON
-                log.error("Failed to execute the error handler of method[{}] in class[{}].", method.getName(), klass, ex);
+                log.error("Failed to execute the error handler of method[{}] in class[{}]", method.getName(), klass, ex);
             }
             throw ex;
         } finally {
             try {
-                classStaticMethodAroundAdvice.afterMethod(klass, method, args, invocationResult);
+                if (adviceEnabled) {
+                    classStaticMethodAroundAdvice.afterMethod(klass, method, args, methodResult);
+                }
                 // CHECKSTYLE:OFF
             } catch (final Throwable ex) {
                 // CHECKSTYLE:ON
-                log.error("Failed to execute the post-method of method[{}] in class[{}].", method.getName(), klass, ex);
+                log.error("Failed to execute the post-method of method[{}] in class[{}]", method.getName(), klass, ex);
             }
         }
-        return result;
+        return methodResult.isRebased() ? methodResult.getResult() : result;
     }
 }

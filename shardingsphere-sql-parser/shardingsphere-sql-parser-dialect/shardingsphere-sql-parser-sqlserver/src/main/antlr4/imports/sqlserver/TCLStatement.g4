@@ -17,14 +17,18 @@
 
 grammar TCLStatement;
 
-import Symbol, Keyword, SQLServerKeyword, Literals;
+import BaseRule;
 
 setTransaction
-    : SET TRANSACTION
+    : SET TRANSACTION ISOLATION LEVEL isolationLevel
+    ;
+
+isolationLevel
+    : READ UNCOMMITTED | READ COMMITTED | REPEATABLE READ | SNAPSHOT | SERIALIZABLE
     ;
 
 setImplicitTransactions
-    : (IF AT_ AT_ TRANCOUNT GT_ NUMBER_ COMMIT TRAN)? SET IMPLICIT_TRANSACTIONS implicitTransactionsValue
+    : SET IMPLICIT_TRANSACTIONS implicitTransactionsValue
     ;
 
 implicitTransactionsValue
@@ -32,17 +36,29 @@ implicitTransactionsValue
     ;
 
 beginTransaction
-    : BEGIN (TRAN | TRANSACTION)
+    : BEGIN (TRAN | TRANSACTION) ((transactionName | transactionVariableName) (WITH MARK (stringLiterals | NCHAR_TEXT)?)?)?
+    ;
+
+beginDistributedTransaction
+    : BEGIN DISTRIBUTED (TRAN | TRANSACTION) (transactionName | transactionVariableName)?
     ;
 
 commit
-    : COMMIT 
+    : COMMIT ((TRAN | TRANSACTION) (transactionName | transactionVariableName)?)? (WITH LP_ DELAYED_DURABILITY EQ_ (OFF | ON) RP_)?
+    ;
+
+commitWork
+    : COMMIT WORK?
     ;
 
 rollback
-    : ROLLBACK
+    : ROLLBACK (TRAN | TRANSACTION) (transactionName | transactionVariableName | savepointName | savepointVariableName)?
+    ;
+
+rollbackWork
+    : ROLLBACK WORK?
     ;
 
 savepoint
-    : SAVE (TRAN | TRANSACTION)
+    : SAVE (TRAN | TRANSACTION) (savepointName | savepointVariableName)
     ;

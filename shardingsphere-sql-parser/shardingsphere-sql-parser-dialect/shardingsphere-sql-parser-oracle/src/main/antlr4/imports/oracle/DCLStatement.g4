@@ -17,7 +17,7 @@
 
 grammar DCLStatement;
 
-import Symbol, Keyword, OracleKeyword, Literals, BaseRule;
+import BaseRule;
 
 grant
     : GRANT (objectPrivilegeClause | systemPrivilegeClause | roleClause)

@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.sharding.algorithm.sharding.hint;
 
-import com.google.common.collect.Lists;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingValue;
+import org.apache.shardingsphere.sharding.factory.ShardingAlgorithmFactory;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -38,26 +39,20 @@ public final class HintInlineShardingAlgorithmTest {
     
     @Before
     public void setUp() {
-        initHintInlineShardingAlgorithm();
-        initHintInlineShardingAlgorithmDefault();
-    }
-    
-    private void initHintInlineShardingAlgorithm() {
-        hintInlineShardingAlgorithm = new HintInlineShardingAlgorithm();
-        Properties props = new Properties();
-        props.setProperty("algorithm-expression", "t_order_$->{value % 4}");
-        hintInlineShardingAlgorithm.setProperties(props);
-        hintInlineShardingAlgorithm.init();
-    }
-    
-    private void initHintInlineShardingAlgorithmDefault() {
+        hintInlineShardingAlgorithm = (HintInlineShardingAlgorithm) ShardingAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("HINT_INLINE", createProperties()));
         hintInlineShardingAlgorithmDefault = new HintInlineShardingAlgorithm();
-        hintInlineShardingAlgorithmDefault.init();
+        hintInlineShardingAlgorithmDefault.init(new Properties());
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty("algorithm-expression", "t_order_$->{value % 4}");
+        return result;
     }
     
     @Test
     public void assertDoShardingWithSingleValueOfDefault() {
-        List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
+        List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
         HintShardingValue<Comparable<?>> shardingValue = new HintShardingValue<>("t_order", "order_id", Collections.singleton("t_order_0"));
         Collection<String> actual = hintInlineShardingAlgorithmDefault.doSharding(availableTargetNames, shardingValue);
         assertTrue(actual.contains("t_order_0"));
@@ -65,7 +60,7 @@ public final class HintInlineShardingAlgorithmTest {
     
     @Test
     public void assertDoShardingWithSingleValue() {
-        List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
+        List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
         HintShardingValue<Comparable<?>> shardingValue = new HintShardingValue<>("t_order", "order_id", Collections.singleton(4));
         Collection<String> actual = hintInlineShardingAlgorithm.doSharding(availableTargetNames, shardingValue);
         assertTrue(actual.contains("t_order_0"));
@@ -73,7 +68,7 @@ public final class HintInlineShardingAlgorithmTest {
     
     @Test
     public void assertDoShardingWithMultiValues() {
-        List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
+        List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
         HintShardingValue<Comparable<?>> shardingValue = new HintShardingValue<>("t_order", "order_id", Arrays.asList(1, 2, 3, 4));
         Collection<String> actual = hintInlineShardingAlgorithm.doSharding(availableTargetNames, shardingValue);
         assertTrue(actual.containsAll(availableTargetNames));

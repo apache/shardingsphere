@@ -147,7 +147,7 @@ public final class HintManagerTest {
     }
     
     @Test
-    public void assertSetPrimaryRouteOnly() {
+    public void assertSetWriteRouteOnly() {
         try (HintManager hintManager = HintManager.getInstance()) {
             hintManager.setWriteRouteOnly();
             assertTrue(HintManager.isWriteRouteOnly());
@@ -155,7 +155,7 @@ public final class HintManagerTest {
     }
     
     @Test
-    public void assertIsPrimaryRouteOnly() {
+    public void assertIsWriteRouteOnly() {
         try (HintManager hintManager = HintManager.getInstance()) {
             hintManager.setWriteRouteOnly();
             assertTrue(HintManager.isWriteRouteOnly());
@@ -163,10 +163,29 @@ public final class HintManagerTest {
     }
     
     @Test
-    public void assertIsPrimaryRouteOnlyWithoutSet() {
+    public void assertIsWriteRouteOnlyWithoutSet() {
         HintManager hintManager = HintManager.getInstance();
         hintManager.close();
         assertFalse(HintManager.isWriteRouteOnly());
+    }
+    
+    @Test
+    public void assertSetReadwriteSplittingAuto() {
+        try (HintManager hintManager = HintManager.getInstance()) {
+            hintManager.setReadwriteSplittingAuto();
+            assertFalse(HintManager.isWriteRouteOnly());
+        }
+    }
+    
+    @Test
+    public void assertClearShardingValues() {
+        try (HintManager hintManager = HintManager.getInstance()) {
+            hintManager.addDatabaseShardingValue("t_order", 1);
+            hintManager.addTableShardingValue("t_order", 1);
+            hintManager.clearShardingValues();
+            assertTrue(HintManager.getDatabaseShardingValues().isEmpty());
+            assertTrue(HintManager.getTableShardingValues("t_order").isEmpty());
+        }
     }
     
     @Test
@@ -178,6 +197,13 @@ public final class HintManagerTest {
         assertTrue(HintManager.getDatabaseShardingValues("logic_table").isEmpty());
         assertTrue(HintManager.getTableShardingValues("logic_table").isEmpty());
     }
+    
+    @Test
+    public void assertIsInstantiated() {
+        assertFalse(HintManager.isInstantiated());
+        HintManager hintManager = HintManager.getInstance();
+        assertTrue(HintManager.isInstantiated());
+        hintManager.close();
+        assertFalse(HintManager.isInstantiated());
+    }
 }
-
-

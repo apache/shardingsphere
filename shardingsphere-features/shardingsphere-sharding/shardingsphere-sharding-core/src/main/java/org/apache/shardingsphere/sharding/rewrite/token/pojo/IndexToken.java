@@ -20,8 +20,8 @@ package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CreateIndexStatementContext;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.builder.util.IndexMetaDataUtil;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtil;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.RouteUnitAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.Substitutable;
@@ -45,14 +45,14 @@ public final class IndexToken extends SQLToken implements Substitutable, RouteUn
     
     private final IdentifierValue identifier;
     
-    private final SQLStatementContext sqlStatementContext;
+    private final SQLStatementContext<?> sqlStatementContext;
     
     private final ShardingRule shardingRule;
     
     private final ShardingSphereSchema schema;
     
-    public IndexToken(final int startIndex, final int stopIndex, final IdentifierValue identifier, 
-                      final SQLStatementContext sqlStatementContext, final ShardingRule shardingRule, final ShardingSphereSchema schema) {
+    public IndexToken(final int startIndex, final int stopIndex, final IdentifierValue identifier,
+                      final SQLStatementContext<?> sqlStatementContext, final ShardingRule shardingRule, final ShardingSphereSchema schema) {
         super(startIndex);
         this.stopIndex = stopIndex;
         this.identifier = identifier;
@@ -74,7 +74,7 @@ public final class IndexToken extends SQLToken implements Substitutable, RouteUn
     private String getIndexValue(final RouteUnit routeUnit) {
         Map<String, String> logicAndActualTables = getLogicAndActualTables(routeUnit);
         String actualTableName = findLogicTableNameFromMetaData(identifier.getValue()).map(logicAndActualTables::get)
-                .orElse(logicAndActualTables.values().stream().findFirst().orElse(null));
+                .orElseGet(() -> logicAndActualTables.values().stream().findFirst().orElse(null));
         return IndexMetaDataUtil.getActualIndexName(identifier.getValue(), actualTableName);
     }
     

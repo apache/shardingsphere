@@ -43,11 +43,14 @@ public final class ShardingStrategyFactory {
      * 
      * @param shardingStrategyConfig sharding strategy configuration
      * @param shardingAlgorithm sharding algorithm
+     * @param defaultShardingColumn default sharding column
      * @return sharding strategy instance
      */
-    public static ShardingStrategy newInstance(final ShardingStrategyConfiguration shardingStrategyConfig, final ShardingAlgorithm shardingAlgorithm) {
+    @SuppressWarnings("rawtypes")
+    public static ShardingStrategy newInstance(final ShardingStrategyConfiguration shardingStrategyConfig, final ShardingAlgorithm shardingAlgorithm, final String defaultShardingColumn) {
         if (shardingStrategyConfig instanceof StandardShardingStrategyConfiguration && shardingAlgorithm instanceof StandardShardingAlgorithm) {
-            return new StandardShardingStrategy(((StandardShardingStrategyConfiguration) shardingStrategyConfig).getShardingColumn(), (StandardShardingAlgorithm) shardingAlgorithm);
+            String shardingColumn = ((StandardShardingStrategyConfiguration) shardingStrategyConfig).getShardingColumn();
+            return new StandardShardingStrategy(null == shardingColumn ? defaultShardingColumn : shardingColumn, (StandardShardingAlgorithm) shardingAlgorithm);
         }
         if (shardingStrategyConfig instanceof ComplexShardingStrategyConfiguration && shardingAlgorithm instanceof ComplexKeysShardingAlgorithm) {
             return new ComplexShardingStrategy(((ComplexShardingStrategyConfiguration) shardingStrategyConfig).getShardingColumns(), (ComplexKeysShardingAlgorithm) shardingAlgorithm);

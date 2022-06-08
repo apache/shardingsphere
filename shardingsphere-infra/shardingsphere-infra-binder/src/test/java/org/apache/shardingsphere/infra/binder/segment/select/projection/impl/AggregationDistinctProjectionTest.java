@@ -17,15 +17,18 @@
 
 package org.apache.shardingsphere.infra.binder.segment.select.projection.impl;
 
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 public final class AggregationDistinctProjectionTest {
     
-    private final AggregationDistinctProjection aggregationDistinctProjection = new AggregationDistinctProjection(0, 0, AggregationType.COUNT, "(DISTINCT order_id)", "c", "order_id");
+    private final AggregationDistinctProjection aggregationDistinctProjection = new AggregationDistinctProjection(
+            0, 0, AggregationType.COUNT, "(DISTINCT order_id)", "c", "order_id", mock(DatabaseType.class));
     
     @Test
     public void assertGetDistinctColumnLabel() {

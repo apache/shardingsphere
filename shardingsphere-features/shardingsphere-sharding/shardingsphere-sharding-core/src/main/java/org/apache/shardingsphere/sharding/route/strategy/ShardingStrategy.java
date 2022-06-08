@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.sharding.route.strategy;
 
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 
@@ -47,8 +48,9 @@ public interface ShardingStrategy {
      *
      * @param availableTargetNames available data source or table names
      * @param shardingConditionValues sharding condition values
+     * @param dataNodeInfo data node info
      * @param props configuration properties
      * @return sharding results for data source or table names
      */
-    Collection<String> doSharding(Collection<String> availableTargetNames, Collection<ShardingConditionValue> shardingConditionValues, ConfigurationProperties props);
+    Collection<String> doSharding(Collection<String> availableTargetNames, Collection<ShardingConditionValue> shardingConditionValues, DataNodeInfo dataNodeInfo, ConfigurationProperties props);
 }

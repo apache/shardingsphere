@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.infra.binder.segment.select.pagination.engine;
 
-import org.apache.shardingsphere.infra.binder.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.infra.binder.segment.select.pagination.PaginationContext;
+import org.apache.shardingsphere.infra.binder.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
@@ -28,41 +28,41 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.ro
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.rownum.ParameterMarkerRowNumberValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.rownum.RowNumberValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
-import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionBuilder;
+import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtil;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
  * Pagination context engine for row number.
  */
 public final class RowNumberPaginationContextEngine {
     
-    // TODO recognize database type, only oracle and sqlserver can use row number
-    private static final Collection<String> ROW_NUMBER_IDENTIFIERS = new HashSet<>();
+    private static final Collection<String> ROW_NUMBER_IDENTIFIERS = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
     
     static {
-        ROW_NUMBER_IDENTIFIERS.add("rownum");
+        ROW_NUMBER_IDENTIFIERS.add("ROWNUM");
         ROW_NUMBER_IDENTIFIERS.add("ROW_NUMBER");
     }
     
     /**
      * Create pagination context.
      * 
-     * @param where where condition
+     * @param expressions expressions
      * @param projectionsContext projections context
      * @param parameters SQL parameters
      * @return pagination context
      */
-    public PaginationContext createPaginationContext(final ExpressionSegment where, final ProjectionsContext projectionsContext, final List<Object> parameters) {
+    public PaginationContext createPaginationContext(final Collection<ExpressionSegment> expressions, final ProjectionsContext projectionsContext, final List<Object> parameters) {
         Optional<String> rowNumberAlias = isRowNumberAlias(projectionsContext);
         if (!rowNumberAlias.isPresent()) {
             return new PaginationContext(null, null, parameters);
         }
-        Collection<AndPredicate> andPredicates = new ExpressionBuilder(where).extractAndPredicates().getAndPredicates();
+        Collection<AndPredicate> andPredicates = expressions.stream().flatMap(each -> ExpressionExtractUtil.getAndPredicates(each).stream()).collect(Collectors.toList());
         Collection<BinaryOperationExpression> rowNumberPredicates = getRowNumberPredicates(andPredicates, rowNumberAlias.get());
         return rowNumberPredicates.isEmpty() ? new PaginationContext(null, null, parameters) : createPaginationWithRowNumber(rowNumberPredicates, parameters);
     }
@@ -92,8 +92,12 @@ public final class RowNumberPaginationContextEngine {
     private boolean isRowNumberColumn(final ExpressionSegment predicate, final String rowNumberAlias) {
         if (predicate instanceof BinaryOperationExpression) {
             ExpressionSegment left = ((BinaryOperationExpression) predicate).getLeft();
-            return left instanceof ColumnSegment ? ROW_NUMBER_IDENTIFIERS.contains(((ColumnSegment) left).getIdentifier().getValue())
-                    || ((ColumnSegment) left).getIdentifier().getValue().equalsIgnoreCase(rowNumberAlias) : false;
+            if (left instanceof ColumnSegment) {
+                String leftColumnValue = ((ColumnSegment) left).getIdentifier().getValue();
+                return ROW_NUMBER_IDENTIFIERS.contains(leftColumnValue) || leftColumnValue.equalsIgnoreCase(rowNumberAlias);
+            } else {
+                return false;
+            }
         }
         return false;
     }

@@ -32,7 +32,7 @@ EXT_LIB=${DEPLOY_DIR}/ext-lib
 
 CLASS_PATH=.:${DEPLOY_DIR}/lib/*:${EXT_LIB}/*
 
-JAVA_OPTS=" -Djava.awt.headless=true -Djava.net.preferIPv4Stack=true -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=3308"
+JAVA_OPTS=" -Djava.awt.headless=true -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=3308"
 
 JAVA_MEM_OPTS=" -server -Xmx2g -Xms2g -Xmn1g -Xss256k -XX:+DisableExplicitGC -XX:+UseConcMarkSweepGC -XX:+CMSParallelRemarkEnabled -XX:LargePageSizeInBytes=128m -XX:+UseFastAccessorMethods -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=70 "
 
@@ -44,6 +44,10 @@ print_usage() {
     echo "  config_dir: proxy config directory, default is conf"
     exit 0
 }
+
+if [ $# == 0 ]; then
+    CLASS_PATH=${DEPLOY_DIR}/conf:${CLASS_PATH}
+fi
 
 if [ "$1" == "-h" ] || [ "$1" == "--help" ] ; then
     print_usage

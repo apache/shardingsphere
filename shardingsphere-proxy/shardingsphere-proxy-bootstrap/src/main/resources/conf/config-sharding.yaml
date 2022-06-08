@@ -22,11 +22,11 @@
 # 
 ######################################################################################################
 #
-#schemaName: sharding_db
+#databaseName: sharding_db
 #
 #dataSources:
 #  ds_0:
-#    url: jdbc:postgresql://127.0.0.1:5432/demo_ds_0?serverTimezone=UTC&useSSL=false
+#    url: jdbc:postgresql://127.0.0.1:5432/demo_ds_0
 #    username: postgres
 #    password: postgres
 #    connectionTimeoutMilliseconds: 30000
@@ -34,9 +34,8 @@
 #    maxLifetimeMilliseconds: 1800000
 #    maxPoolSize: 50
 #    minPoolSize: 1
-#    maintenanceIntervalMilliseconds: 30000
 #  ds_1:
-#    url: jdbc:postgresql://127.0.0.1:5432/demo_ds_1?serverTimezone=UTC&useSSL=false
+#    url: jdbc:postgresql://127.0.0.1:5432/demo_ds_1
 #    username: postgres
 #    password: postgres
 #    connectionTimeoutMilliseconds: 30000
@@ -44,7 +43,6 @@
 #    maxLifetimeMilliseconds: 1800000
 #    maxPoolSize: 50
 #    minPoolSize: 1
-#    maintenanceIntervalMilliseconds: 30000
 #
 #rules:
 #- !SHARDING
@@ -89,12 +87,32 @@
 #      type: INLINE
 #      props:
 #        algorithm-expression: t_order_item_${order_id % 2}
-#  
+#
 #  keyGenerators:
 #    snowflake:
 #      type: SNOWFLAKE
-#      props:
-#        worker-id: 123
+#
+#  scalingName: default_scaling
+#  scaling:
+#    default_scaling:
+#      input:
+#        workerThread: 40
+#        batchSize: 1000
+#      output:
+#        workerThread: 40
+#        batchSize: 1000
+#      streamChannel:
+#        type: MEMORY
+#        props:
+#          block-queue-size: 10000
+#      completionDetector:
+#        type: IDLE
+#        props:
+#          incremental-task-idle-seconds-threshold: 1800
+#      dataConsistencyChecker:
+#        type: DATA_MATCH
+#        props:
+#          chunk-size: 1000
 
 ######################################################################################################
 #
@@ -102,7 +120,7 @@
 #
 ######################################################################################################
 
-#schemaName: sharding_db
+#databaseName: sharding_db
 #
 #dataSources:
 #  ds_0:
@@ -114,7 +132,6 @@
 #    maxLifetimeMilliseconds: 1800000
 #    maxPoolSize: 50
 #    minPoolSize: 1
-#    maintenanceIntervalMilliseconds: 30000
 #  ds_1:
 #    url: jdbc:mysql://127.0.0.1:3306/demo_ds_1?serverTimezone=UTC&useSSL=false
 #    username: root
@@ -124,7 +141,6 @@
 #    maxLifetimeMilliseconds: 1800000
 #    maxPoolSize: 50
 #    minPoolSize: 1
-#    maintenanceIntervalMilliseconds: 30000
 #
 #rules:
 #- !SHARDING
@@ -155,7 +171,7 @@
 #      shardingAlgorithmName: database_inline
 #  defaultTableStrategy:
 #    none:
-#  
+#
 #  shardingAlgorithms:
 #    database_inline:
 #      type: INLINE
@@ -169,9 +185,29 @@
 #      type: INLINE
 #      props:
 #        algorithm-expression: t_order_item_${order_id % 2}
-#  
+#
 #  keyGenerators:
 #    snowflake:
 #      type: SNOWFLAKE
-#      props:
-#        worker-id: 123
+#
+#  scalingName: default_scaling
+#  scaling:
+#    default_scaling:
+#      input:
+#        workerThread: 40
+#        batchSize: 1000
+#      output:
+#        workerThread: 40
+#        batchSize: 1000
+#      streamChannel:
+#        type: MEMORY
+#        props:
+#          block-queue-size: 10000
+#      completionDetector:
+#        type: IDLE
+#        props:
+#          incremental-task-idle-seconds-threshold: 1800
+#      dataConsistencyChecker:
+#        type: DATA_MATCH
+#        props:
+#          chunk-size: 1000

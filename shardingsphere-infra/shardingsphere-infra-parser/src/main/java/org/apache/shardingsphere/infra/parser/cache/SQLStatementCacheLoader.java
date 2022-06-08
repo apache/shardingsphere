@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.infra.parser.cache;
 
-import com.google.common.cache.CacheLoader;
+import com.github.benmanes.caffeine.cache.CacheLoader;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserExecutor;
+import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -26,12 +27,12 @@ import javax.annotation.ParametersAreNonnullByDefault;
 /**
  * SQL statement cache loader.
  */
-public final class SQLStatementCacheLoader extends CacheLoader<String, SQLStatement> {
+public final class SQLStatementCacheLoader implements CacheLoader<String, SQLStatement> {
     
     private final SQLStatementParserExecutor sqlStatementParserExecutor;
     
-    public SQLStatementCacheLoader(final String databaseType) {
-        sqlStatementParserExecutor = new SQLStatementParserExecutor(databaseType);
+    public SQLStatementCacheLoader(final String databaseType, final CacheOption parseTreeCacheOption, final boolean isParseComment) {
+        sqlStatementParserExecutor = new SQLStatementParserExecutor(databaseType, parseTreeCacheOption, isParseComment);
     }
     
     @ParametersAreNonnullByDefault

@@ -17,46 +17,32 @@
 
 package org.apache.shardingsphere.proxy.frontend.mysql.err;
 
+import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobNotFoundException;
 import org.apache.shardingsphere.db.protocol.error.CommonErrorCode;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
+import org.apache.shardingsphere.infra.exception.DatabaseNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.CircuitBreakException;
 import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
-import org.apache.shardingsphere.proxy.backend.exception.DBDropExistsException;
-import org.apache.shardingsphere.proxy.backend.exception.DatabaseDiscoveryRulesNotExistedException;
-import org.apache.shardingsphere.proxy.backend.exception.DuplicateBindingTablesException;
-import org.apache.shardingsphere.proxy.backend.exception.DuplicateResourceException;
-import org.apache.shardingsphere.proxy.backend.exception.DuplicateRuleNamesException;
-import org.apache.shardingsphere.proxy.backend.exception.DuplicateTablesException;
-import org.apache.shardingsphere.proxy.backend.exception.EncryptRulesNotExistedException;
-import org.apache.shardingsphere.proxy.backend.exception.InvalidDatabaseDiscoveryTypesException;
-import org.apache.shardingsphere.proxy.backend.exception.InvalidEncryptorsException;
-import org.apache.shardingsphere.proxy.backend.exception.InvalidKeyGeneratorsException;
-import org.apache.shardingsphere.proxy.backend.exception.InvalidLoadBalancersException;
-import org.apache.shardingsphere.proxy.backend.exception.InvalidResourceException;
-import org.apache.shardingsphere.proxy.backend.exception.InvalidShardingAlgorithmsException;
+import org.apache.shardingsphere.proxy.backend.exception.DBDropNotExistsException;
+import org.apache.shardingsphere.proxy.backend.exception.DatabaseLockedException;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
-import org.apache.shardingsphere.proxy.backend.exception.ReadwriteSplittingRulesNotExistedException;
-import org.apache.shardingsphere.proxy.backend.exception.ResourceInUsedException;
 import org.apache.shardingsphere.proxy.backend.exception.ResourceNotExistedException;
-import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistsException;
-import org.apache.shardingsphere.proxy.backend.exception.ShardingBindingTableRulesNotExistsException;
-import org.apache.shardingsphere.proxy.backend.exception.ShardingBroadcastTableRulesExistsException;
-import org.apache.shardingsphere.proxy.backend.exception.ShardingBroadcastTableRulesNotExistsException;
-import org.apache.shardingsphere.proxy.backend.exception.ShardingTableRuleNotExistedException;
-import org.apache.shardingsphere.proxy.backend.exception.ShardingTableRulesInUsedException;
+import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.TableLockWaitTimeoutException;
 import org.apache.shardingsphere.proxy.backend.exception.TableLockedException;
 import org.apache.shardingsphere.proxy.backend.exception.TableModifyInTransactionException;
 import org.apache.shardingsphere.proxy.backend.exception.UnknownDatabaseException;
-import org.apache.shardingsphere.proxy.backend.text.sctl.ShardingCTLErrorCode;
-import org.apache.shardingsphere.proxy.backend.text.sctl.exception.ShardingCTLException;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.exception.CommonDistSQLErrorCode;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.exception.CommonDistSQLException;
+import org.apache.shardingsphere.proxy.frontend.exception.FrontendTooManyConnectionsException;
 import org.apache.shardingsphere.proxy.frontend.exception.UnsupportedCommandException;
 import org.apache.shardingsphere.proxy.frontend.exception.UnsupportedPreparedStatementException;
-import org.apache.shardingsphere.scaling.core.common.exception.ScalingJobNotFoundException;
+import org.apache.shardingsphere.proxy.frontend.mysql.command.query.exception.UnknownCharacterSetException;
 import org.apache.shardingsphere.sharding.route.engine.exception.NoSuchTableException;
 import org.apache.shardingsphere.sharding.route.engine.exception.TableExistsException;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
@@ -70,20 +56,20 @@ import java.sql.SQLException;
 public final class MySQLErrPacketFactory {
     
     /**
-     * New instance of MySQL ERR packet.
+     * Create new instance of MySQL ERR packet.
      *
      * @param cause cause
-     * @return instance of MySQL ERR packet
+     * @return created instance
      */
     public static MySQLErrPacket newInstance(final Exception cause) {
         if (cause instanceof SQLException) {
             SQLException sqlException = (SQLException) cause;
-            return null != sqlException.getSQLState() ? new MySQLErrPacket(1, sqlException.getErrorCode(), sqlException.getSQLState(), sqlException.getMessage())
-                    : new MySQLErrPacket(1, MySQLServerErrorCode.ER_INTERNAL_ERROR, cause.getMessage());
+            return null == sqlException.getSQLState() ? new MySQLErrPacket(1, MySQLServerErrorCode.ER_INTERNAL_ERROR, getErrorMessage(sqlException))
+                    : new MySQLErrPacket(1, sqlException.getErrorCode(), sqlException.getSQLState(), sqlException.getMessage());
         }
-        if (cause instanceof ShardingCTLException) {
-            ShardingCTLException shardingCTLException = (ShardingCTLException) cause;
-            return new MySQLErrPacket(1, ShardingCTLErrorCode.valueOf(shardingCTLException), shardingCTLException.getShardingCTL());
+        if (cause instanceof CommonDistSQLException) {
+            CommonDistSQLException commonDistSQLException = (CommonDistSQLException) cause;
+            return new MySQLErrPacket(1, CommonDistSQLErrorCode.valueOf(commonDistSQLException), commonDistSQLException.getVariable());
         }
         if (cause instanceof TableModifyInTransactionException) {
             return new MySQLErrPacket(1, MySQLServerErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE, ((TableModifyInTransactionException) cause).getTableName());
@@ -91,14 +77,19 @@ public final class MySQLErrPacketFactory {
         if (cause instanceof UnknownDatabaseException) {
             return new MySQLErrPacket(1, MySQLServerErrorCode.ER_BAD_DB_ERROR, ((UnknownDatabaseException) cause).getDatabaseName());
         }
+        if (cause instanceof DatabaseNotExistedException) {
+            return null != ((DatabaseNotExistedException) cause).getDatabaseName()
+                    ? new MySQLErrPacket(1, MySQLServerErrorCode.ER_BAD_DB_ERROR, ((DatabaseNotExistedException) cause).getDatabaseName())
+                    : new MySQLErrPacket(1, MySQLServerErrorCode.ER_NO_DB_ERROR);
+        }
         if (cause instanceof NoDatabaseSelectedException) {
             return new MySQLErrPacket(1, MySQLServerErrorCode.ER_NO_DB_ERROR);
         }
         if (cause instanceof DBCreateExistsException) {
             return new MySQLErrPacket(1, MySQLServerErrorCode.ER_DB_CREATE_EXISTS_ERROR, ((DBCreateExistsException) cause).getDatabaseName());
         }
-        if (cause instanceof DBDropExistsException) {
-            return new MySQLErrPacket(1, MySQLServerErrorCode.ER_DB_DROP_EXISTS_ERROR, ((DBDropExistsException) cause).getDatabaseName());
+        if (cause instanceof DBDropNotExistsException) {
+            return new MySQLErrPacket(1, MySQLServerErrorCode.ER_DB_DROP_NOT_EXISTS_ERROR, ((DBDropNotExistsException) cause).getDatabaseName());
         }
         if (cause instanceof TableExistsException) {
             return new MySQLErrPacket(1, MySQLServerErrorCode.ER_TABLE_EXISTS_ERROR, ((TableExistsException) cause).getTableName());
@@ -109,13 +100,6 @@ public final class MySQLErrPacketFactory {
         if (cause instanceof CircuitBreakException) {
             return new MySQLErrPacket(1, CommonErrorCode.CIRCUIT_BREAK_MODE);
         }
-        if (cause instanceof ShardingTableRuleNotExistedException) {
-            return new MySQLErrPacket(1, CommonErrorCode.SHARDING_TABLE_RULES_NOT_EXISTED, ((ShardingTableRuleNotExistedException) cause).getTableNames(),
-                    ((ShardingTableRuleNotExistedException) cause).getSchemaName());
-        }
-        if (cause instanceof ShardingTableRulesInUsedException) {
-            return new MySQLErrPacket(1, CommonErrorCode.SHARDING_TABLE_RULES_IN_USED_BY_BINDING_TABLE, ((ShardingTableRulesInUsedException) cause).getTableNames());
-        }
         if (cause instanceof UnsupportedCommandException) {
             return new MySQLErrPacket(1, CommonErrorCode.UNSUPPORTED_COMMAND, ((UnsupportedCommandException) cause).getCommandType());
         }
@@ -125,12 +109,16 @@ public final class MySQLErrPacketFactory {
         if (cause instanceof ShardingSphereConfigurationException || cause instanceof SQLParsingException) {
             return new MySQLErrPacket(1, MySQLServerErrorCode.ER_NOT_SUPPORTED_YET, cause.getMessage());
         }
-        if (cause instanceof RuleNotExistsException) {
+        if (cause instanceof RuleNotExistedException || cause instanceof ResourceNotExistedException) {
             return new MySQLErrPacket(1, MySQLServerErrorCode.ER_SP_DOES_NOT_EXIST);
+        }
+        if (cause instanceof DatabaseLockedException) {
+            DatabaseLockedException exception = (DatabaseLockedException) cause;
+            return new MySQLErrPacket(1, CommonErrorCode.DATABASE_WRITE_LOCKED, exception.getDatabaseName());
         }
         if (cause instanceof TableLockWaitTimeoutException) {
             TableLockWaitTimeoutException exception = (TableLockWaitTimeoutException) cause;
-            return new MySQLErrPacket(1, CommonErrorCode.TABLE_LOCK_WAIT_TIMEOUT, exception.getTableName(), 
+            return new MySQLErrPacket(1, CommonErrorCode.TABLE_LOCK_WAIT_TIMEOUT, exception.getTableName(),
                     exception.getSchemaName(), exception.getTimeoutMilliseconds());
         }
         if (cause instanceof TableLockedException) {
@@ -138,68 +126,25 @@ public final class MySQLErrPacketFactory {
             return new MySQLErrPacket(1, CommonErrorCode.TABLE_LOCKED, exception.getTableName(),
                     exception.getSchemaName());
         }
-        if (cause instanceof ResourceNotExistedException) {
-            return new MySQLErrPacket(1, CommonErrorCode.RESOURCE_NOT_EXIST, ((ResourceNotExistedException) cause).getResourceNames(),
-                    ((ResourceNotExistedException) cause).getSchemaName());
+        if (cause instanceof PipelineJobNotFoundException) {
+            return new MySQLErrPacket(1, CommonErrorCode.SCALING_JOB_NOT_EXIST, ((PipelineJobNotFoundException) cause).getJobId());
         }
-        if (cause instanceof ResourceInUsedException) {
-            return new MySQLErrPacket(1, CommonErrorCode.RESOURCE_IN_USED, ((ResourceInUsedException) cause).getResourceNames());
+        if (cause instanceof FrontendTooManyConnectionsException) {
+            return new MySQLErrPacket(0, MySQLServerErrorCode.ER_CON_COUNT_ERROR, MySQLServerErrorCode.ER_CON_COUNT_ERROR.getErrorMessage());
         }
-        if (cause instanceof InvalidResourceException) {
-            return new MySQLErrPacket(1, CommonErrorCode.INVALID_RESOURCE, ((InvalidResourceException) cause).getResourceNames());
+        if (cause instanceof UnknownCharacterSetException) {
+            return new MySQLErrPacket(1, MySQLServerErrorCode.ER_UNKNOWN_CHARACTER_SET, cause.getMessage());
         }
-        if (cause instanceof DuplicateResourceException) {
-            return new MySQLErrPacket(1, CommonErrorCode.DUPLICATE_RESOURCE, ((DuplicateResourceException) cause).getResourceNames());
-        }
-        if (cause instanceof DuplicateTablesException) {
-            return new MySQLErrPacket(1, CommonErrorCode.DUPLICATE_TABLE, ((DuplicateTablesException) cause).getTableNames());
-        }
-        if (cause instanceof ShardingBroadcastTableRulesExistsException) {
-            return new MySQLErrPacket(1, CommonErrorCode.SHARDING_BROADCAST_EXIST, ((ShardingBroadcastTableRulesExistsException) cause).getSchemaName());
-        }
-        if (cause instanceof ShardingBindingTableRulesNotExistsException) {
-            return new MySQLErrPacket(1, CommonErrorCode.SHARDING_BINDING_TABLE_RULES_NOT_EXIST, ((ShardingBindingTableRulesNotExistsException) cause).getSchemaName());
-        }
-        if (cause instanceof ShardingBroadcastTableRulesNotExistsException) {
-            return new MySQLErrPacket(1, CommonErrorCode.SHARDING_BROADCAST_TABLE_RULES_NOT_EXIST, ((ShardingBroadcastTableRulesNotExistsException) cause).getSchemaName());
-        }
-        if (cause instanceof ReadwriteSplittingRulesNotExistedException) {
-            return new MySQLErrPacket(1, CommonErrorCode.READWRITE_SPLITTING_RULES_NOT_EXIST,
-                    ((ReadwriteSplittingRulesNotExistedException) cause).getRuleNames(), ((ReadwriteSplittingRulesNotExistedException) cause).getSchemaName());
-        }
-        if (cause instanceof ScalingJobNotFoundException) {
-            return new MySQLErrPacket(1, CommonErrorCode.SCALING_JOB_NOT_EXIST, ((ScalingJobNotFoundException) cause).getJobId());
-        }
-        if (cause instanceof InvalidLoadBalancersException) {
-            return new MySQLErrPacket(1, CommonErrorCode.INVALID_LOAD_BALANCERS, ((InvalidLoadBalancersException) cause).getLoadBalancers());
-        }
-        if (cause instanceof InvalidDatabaseDiscoveryTypesException) {
-            return new MySQLErrPacket(1, CommonErrorCode.INVALID_DATABASE_DISCOVERY_TYPES, ((InvalidDatabaseDiscoveryTypesException) cause).getDatabaseDiscoveryTypes());
-        }
-        if (cause instanceof DatabaseDiscoveryRulesNotExistedException) {
-            return new MySQLErrPacket(1, CommonErrorCode.DATABASE_DISCOVERY_RULES_NOT_EXIST, ((DatabaseDiscoveryRulesNotExistedException) cause).getRuleNames(),
-                    ((DatabaseDiscoveryRulesNotExistedException) cause).getSchemaName());
-        }
-        if (cause instanceof InvalidEncryptorsException) {
-            return new MySQLErrPacket(1, CommonErrorCode.INVALID_ENCRYPTORS, ((InvalidEncryptorsException) cause).getEncryptors());
-        }
-        if (cause instanceof EncryptRulesNotExistedException) {
-            return new MySQLErrPacket(1, CommonErrorCode.ENCRYPT_RULES_NOT_EXIST, ((EncryptRulesNotExistedException) cause).getTables(),
-                    ((EncryptRulesNotExistedException) cause).getSchemaName());
-        }
-        if (cause instanceof DuplicateRuleNamesException) {
-            return new MySQLErrPacket(1, CommonErrorCode.DUPLICATE_RULE_NAMES, ((DuplicateRuleNamesException) cause).getRuleNames(),
-                    ((DuplicateRuleNamesException) cause).getSchemaName());
-        }
-        if (cause instanceof InvalidShardingAlgorithmsException) {
-            return new MySQLErrPacket(1, CommonErrorCode.INVALID_SHARDING_ALGORITHMS, ((InvalidShardingAlgorithmsException) cause).getAlgorithms());
-        }
-        if (cause instanceof InvalidKeyGeneratorsException) {
-            return new MySQLErrPacket(1, CommonErrorCode.INVALID_KEY_GENERATORS, ((InvalidKeyGeneratorsException) cause).getKeyGenerators());
-        }
-        if (cause instanceof DuplicateBindingTablesException) {
-            return new MySQLErrPacket(1, CommonErrorCode.DUPLICATE_BINDING_TABLES, ((DuplicateBindingTablesException) cause).getTableNames());
+        if (cause instanceof RuntimeException) {
+            return new MySQLErrPacket(1, CommonErrorCode.RUNTIME_EXCEPTION, cause.getMessage());
         }
         return new MySQLErrPacket(1, CommonErrorCode.UNKNOWN_EXCEPTION, cause.getMessage());
+    }
+    
+    private static String getErrorMessage(final SQLException cause) {
+        if (null != cause.getNextException() && Strings.isNullOrEmpty(cause.getMessage())) {
+            return cause.getNextException().getMessage();
+        }
+        return cause.getMessage();
     }
 }

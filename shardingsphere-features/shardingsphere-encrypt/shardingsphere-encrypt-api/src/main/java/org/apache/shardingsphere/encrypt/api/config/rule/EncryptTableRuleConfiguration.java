@@ -32,4 +32,6 @@ public final class EncryptTableRuleConfiguration {
     private final String name;
     
     private final Collection<EncryptColumnRuleConfiguration> columns;
+    
+    private final Boolean queryWithCipherColumn;
 }

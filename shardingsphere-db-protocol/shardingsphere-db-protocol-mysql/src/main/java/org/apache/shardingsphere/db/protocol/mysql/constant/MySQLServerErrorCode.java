@@ -44,7 +44,7 @@ public enum MySQLServerErrorCode implements SQLErrorCode {
     
     ER_DB_CREATE_EXISTS_ERROR(1007, "HY000", "Can't create database '%s'; database exists"),
     
-    ER_DB_DROP_EXISTS_ERROR(1008, "HY000", "Can't drop database '%s'; database doesn't exist"),
+    ER_DB_DROP_NOT_EXISTS_ERROR(1008, "HY000", "Can't drop database '%s'; database doesn't exist"),
     
     ER_TABLE_EXISTS_ERROR(1050, "42S01", "Table '%s' already exists"),
     
@@ -54,8 +54,12 @@ public enum MySQLServerErrorCode implements SQLErrorCode {
     
     ER_SP_DOES_NOT_EXIST(1305, "42000", "Message: Datasource or ShardingSphere rule does not exist"),
     
-    ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE(3176, "HY000", 
-            "Please do not modify the %s table with an XA transaction. This is an internal system table used to store GTIDs for committed transactions. " 
+    ER_CON_COUNT_ERROR(1040, "HY000", "Too many connections"),
+    
+    ER_UNKNOWN_CHARACTER_SET(1115, "42000", "Unknown character set: '%s'"),
+    
+    ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE(3176, "HY000",
+            "Please do not modify the %s table with an XA transaction. This is an internal system table used to store GTIDs for committed transactions. "
                     + "Although modifying it can lead to an inconsistent GTID state, if necessary you can modify it with a non-XA transaction.");
     
     private final int errorCode;

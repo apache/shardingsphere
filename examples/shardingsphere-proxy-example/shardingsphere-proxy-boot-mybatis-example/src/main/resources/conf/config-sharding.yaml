@@ -22,7 +22,7 @@
 #
 ######################################################################################################
 
-schemaName: sharding_db
+databaseName: sharding_db
 
 dataSources:
   ds_0:
@@ -34,7 +34,6 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 50
     minPoolSize: 1
-    maintenanceIntervalMilliseconds: 30000
   ds_1:
     url: jdbc:mysql://127.0.0.1:3306/demo_ds_1?serverTimezone=UTC&useSSL=false
     username: root
@@ -44,7 +43,6 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 50
     minPoolSize: 1
-    maintenanceIntervalMilliseconds: 30000
 
 rules:
 - !SHARDING
@@ -80,9 +78,9 @@ rules:
   
   shardingAlgorithms:
     database_inline:
-        type: INLINE
-        props:
-          algorithm-expression: ds_${user_id % 2}
+      type: INLINE
+      props:
+        algorithm-expression: ds_${user_id % 2}
     t_order_inline:
       type: INLINE
       props:
@@ -95,5 +93,3 @@ rules:
   keyGenerators:
     snowflake:
       type: SNOWFLAKE
-      props:
-          worker-id: 123

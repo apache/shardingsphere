@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.route.engine.type.complex;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
@@ -27,11 +27,10 @@ import org.apache.shardingsphere.sharding.route.engine.type.standard.ShardingSta
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Optional;
 import java.util.TreeSet;
-import java.util.stream.Collectors;
 
 /**
  * Sharding complex routing engine.
@@ -39,26 +38,24 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class ShardingComplexRoutingEngine implements ShardingRouteEngine {
     
-    private final Collection<String> logicTables;
-    
     private final ShardingConditions shardingConditions;
     
     private final ConfigurationProperties props;
     
+    private final Collection<String> logicTables;
+    
     @Override
-    public void route(final RouteContext routeContext, final ShardingRule shardingRule) {
+    public RouteContext route(final ShardingRule shardingRule) {
+        RouteContext result = new RouteContext();
         Collection<String> bindingTableNames = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        Collection<RouteContext> routeContexts = new ArrayList<>(logicTables.size());
+        Collection<RouteContext> routeContexts = new LinkedList<>();
         for (String each : logicTables) {
-            RouteContext newRouteContext = new RouteContext();
             Optional<TableRule> tableRule = shardingRule.findTableRule(each);
             if (tableRule.isPresent()) {
                 if (!bindingTableNames.contains(each)) {
-                    new ShardingStandardRoutingEngine(tableRule.get().getLogicTable(), shardingConditions, props).route(newRouteContext, shardingRule);
-                    routeContexts.add(newRouteContext);
+                    routeContexts.add(new ShardingStandardRoutingEngine(tableRule.get().getLogicTable(), shardingConditions, props).route(shardingRule));
                 }
-                shardingRule.findBindingTableRule(each).ifPresent(bindingTableRule -> bindingTableNames.addAll(
-                    bindingTableRule.getTableRules().stream().map(TableRule::getLogicTable).collect(Collectors.toList())));
+                shardingRule.findBindingTableRule(each).ifPresent(optional -> bindingTableNames.addAll(optional.getTableRules().keySet()));
             }
         }
         if (routeContexts.isEmpty()) {
@@ -66,13 +63,13 @@ public final class ShardingComplexRoutingEngine implements ShardingRouteEngine {
         }
         if (1 == routeContexts.size()) {
             RouteContext newRouteContext = routeContexts.iterator().next();
-            routeContext.getOriginalDataNodes().addAll(newRouteContext.getOriginalDataNodes());
-            routeContext.getRouteUnits().addAll(newRouteContext.getRouteUnits());
-            return;
+            result.getOriginalDataNodes().addAll(newRouteContext.getOriginalDataNodes());
+            result.getRouteUnits().addAll(newRouteContext.getRouteUnits());
+        } else {
+            RouteContext routeContext = new ShardingCartesianRoutingEngine(routeContexts).route(shardingRule);
+            result.getOriginalDataNodes().addAll(routeContext.getOriginalDataNodes());
+            result.getRouteUnits().addAll(routeContext.getRouteUnits());
         }
-        RouteContext newRouteContext = new RouteContext();
-        new ShardingCartesianRoutingEngine(routeContexts).route(newRouteContext, shardingRule);
-        routeContext.getOriginalDataNodes().addAll(newRouteContext.getOriginalDataNodes());
-        routeContext.getRouteUnits().addAll(newRouteContext.getRouteUnits());
+        return result;
     }
 }

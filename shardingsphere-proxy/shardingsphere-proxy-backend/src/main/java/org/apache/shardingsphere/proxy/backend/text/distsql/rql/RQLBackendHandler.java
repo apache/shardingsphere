@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.rql;
 
 import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
-import org.apache.shardingsphere.infra.distsql.RQLResultSet;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
-import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
+import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.text.DatabaseRequiredBackendHandler;
 
 import java.sql.Types;
 import java.util.Collection;
@@ -34,20 +34,20 @@ import java.util.stream.Collectors;
 /**
  * RQL backend handler.
  */
-public final class RQLBackendHandler extends SchemaRequiredBackendHandler<RQLStatement> {
+public final class RQLBackendHandler extends DatabaseRequiredBackendHandler<RQLStatement> {
     
-    private final RQLResultSet resultSet;
+    private final DistSQLResultSet resultSet;
     
-    public RQLBackendHandler(final RQLStatement sqlStatement, final BackendConnection backendConnection, final RQLResultSet resultSet) {
-        super(sqlStatement, backendConnection);
+    public RQLBackendHandler(final RQLStatement sqlStatement, final ConnectionSession connectionSession, final DistSQLResultSet resultSet) {
+        super(sqlStatement, connectionSession);
         this.resultSet = resultSet;
     }
     
     @Override
-    protected ResponseHeader execute(final String schemaName, final RQLStatement sqlStatement) {
-        resultSet.init(ProxyContext.getInstance().getMetaData(schemaName), sqlStatement);
-        List<QueryHeader> queryHeaders = resultSet.getColumnNames().stream().map(
-            each -> new QueryHeader(schemaName, "", each, each, Types.CHAR, "CHAR", 255, 0, false, false, false, false)).collect(Collectors.toList());
+    protected ResponseHeader execute(final String databaseName, final RQLStatement sqlStatement) {
+        resultSet.init(ProxyContext.getInstance().getDatabase(databaseName), sqlStatement);
+        List<QueryHeader> queryHeaders = resultSet.getColumnNames().stream()
+                .map(each -> new QueryHeader(databaseName, "", each, each, Types.CHAR, "CHAR", 255, 0, false, false, false, false)).collect(Collectors.toList());
         return new QueryResponseHeader(queryHeaders);
     }
     

@@ -45,7 +45,7 @@ public final class InsertSelectContext {
     }
     
     private List<Object> getParameters(final List<Object> parameters, final int parametersOffset) {
-        if (0 == parameterCount) {
+        if (parameters.isEmpty() || 0 == parameterCount) {
             return Collections.emptyList();
         }
         List<Object> result = new ArrayList<>(parameterCount);

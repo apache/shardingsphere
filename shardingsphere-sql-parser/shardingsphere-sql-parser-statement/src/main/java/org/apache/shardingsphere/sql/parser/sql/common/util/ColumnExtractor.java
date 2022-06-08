@@ -24,8 +24,11 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenE
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 
-import java.util.Optional;
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * Column extractor.
@@ -34,24 +37,47 @@ import java.util.Optional;
 public final class ColumnExtractor {
     
     /**
-     * Get left value if left value of expression is column segment.
+     * Extract column segment collection.
      *
      * @param expression expression segment
-     * @return column segment
+     * @return column segment collection
      */
-    public static Optional<ColumnSegment> extract(final ExpressionSegment expression) {
-        if (expression instanceof BinaryOperationExpression && ((BinaryOperationExpression) expression).getLeft() instanceof ColumnSegment) {
-            ColumnSegment column = (ColumnSegment) ((BinaryOperationExpression) expression).getLeft();
-            return Optional.of(column);
+    public static Collection<ColumnSegment> extract(final ExpressionSegment expression) {
+        Collection<ColumnSegment> result = new LinkedList<>();
+        if (expression instanceof BinaryOperationExpression) {
+            if (((BinaryOperationExpression) expression).getLeft() instanceof ColumnSegment) {
+                result.add((ColumnSegment) ((BinaryOperationExpression) expression).getLeft());
+            }
+            if (((BinaryOperationExpression) expression).getRight() instanceof ColumnSegment) {
+                result.add((ColumnSegment) ((BinaryOperationExpression) expression).getRight());
+            }
         }
         if (expression instanceof InExpression && ((InExpression) expression).getLeft() instanceof ColumnSegment) {
-            ColumnSegment column = (ColumnSegment) ((InExpression) expression).getLeft();
-            return Optional.of(column);
+            result.add((ColumnSegment) ((InExpression) expression).getLeft());
         }
         if (expression instanceof BetweenExpression && ((BetweenExpression) expression).getLeft() instanceof ColumnSegment) {
-            ColumnSegment column = (ColumnSegment) ((BetweenExpression) expression).getLeft();
-            return Optional.of(column);
+            result.add((ColumnSegment) ((BetweenExpression) expression).getLeft());
         }
-        return Optional.empty();
+        return result;
+    }
+    
+    /**
+     * Extract column segments.
+     *
+     * @param columnSegments column segments
+     * @param whereSegments where segments
+     */
+    public static void extractColumnSegments(final Collection<ColumnSegment> columnSegments, final Collection<WhereSegment> whereSegments) {
+        for (WhereSegment each : whereSegments) {
+            for (AndPredicate andPredicate : ExpressionExtractUtil.getAndPredicates(each.getExpr())) {
+                extractColumnSegments(columnSegments, andPredicate);
+            }
+        }
+    }
+    
+    private static void extractColumnSegments(final Collection<ColumnSegment> columnSegments, final AndPredicate andPredicate) {
+        for (ExpressionSegment each : andPredicate.getPredicates()) {
+            columnSegments.addAll(ColumnExtractor.extract(each));
+        }
     }
 }

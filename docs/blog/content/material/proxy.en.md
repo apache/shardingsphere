@@ -1,10 +1,8 @@
 +++
 title = "Revealing Sharding-Proxy —— Database Middleware Oriented DBA"
-weight = 13
+weight = 1
 chapter = true
 +++
-
-## Revealing Sharding-Proxy —— Database Middleware Oriented DBA 
 
 ### Lecturer introduction
 
@@ -202,8 +200,8 @@ Let's analyze the reason, and then I'll introduce second optimization: Current l
 
 Main settings about cache as follows:: 
 
-*   SO_RCVBUF/SO_SNDBUF is for TCP cache；
-    
+*   SO_RCVBUF/SO_SNDBUF is for TCP cache;    
+
 *   ChannelOutboundBuffer is for Netty writing cache.
     
 

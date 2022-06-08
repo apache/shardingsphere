@@ -3,11 +3,11 @@ title = "Local Transaction"
 weight = 1
 +++
 
-## Supported Items
+## Supported
 
-* Fully support none-cross-database transactions, for example, sharding table or sharding database with its route result in one database;
-* Fully support cross-database transactions caused by logic exceptions, for example, the update of two databases in one transaction, after which, databases will throw null cursor and the content in both databases can be rolled back.
+* Support none-cross-database transactions. For example, sharding table or sharding database with its route result in same database;
+* Support cross-database transactions caused by logic exceptions. For example, update two databases in transaction with exception thrown, data can rollback in both databases.
 
-## Unsupported Items
+## Unsupported
 
-* Do not support the cross-database transactions caused by network or hardware exceptions. For example, after the update of two databases in one transaction, if one database is down before submitted, then only the data of the other database can be submitted.
+* Do not support the cross-database transactions caused by network or hardware crash. For example, when update two databases in transaction, if one database crashes before commit, then only the data of the other database can commit.

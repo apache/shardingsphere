@@ -17,28 +17,56 @@
 
 grammar RQLStatement;
 
-import Keyword, Literals, Symbol;
+import BaseRule;
 
 showShardingTableRules
-    : SHOW SHARDING TABLE (tableRule | RULES) (FROM schemaName)?
+    : SHOW SHARDING TABLE (tableRule | RULES) (FROM databaseName)?
     ;
 
 showShardingBindingTableRules
-    : SHOW SHARDING BINDING TABLE RULES (FROM schemaName)?
+    : SHOW SHARDING BINDING TABLE RULES (FROM databaseName)?
     ;
 
 showShardingBroadcastTableRules
-    : SHOW SHARDING BROADCAST TABLE RULES (FROM schemaName)?
+    : SHOW SHARDING BROADCAST TABLE RULES (FROM databaseName)?
     ;
 
+showShardingAlgorithms
+    : SHOW SHARDING ALGORITHMS (FROM databaseName)?
+    ;
+
+showShardingTableNodes
+    : SHOW SHARDING TABLE NODES tableName? (FROM databaseName)?
+    ;
+
+showShardingKeyGenerators
+    : SHOW SHARDING KEY GENERATORS (FROM databaseName)?
+    ;
+
+showShardingDefaultShardingStrategy
+    : SHOW DEFAULT SHARDING STRATEGY (FROM databaseName)?
+    ;
+
+showUnusedShardingAlgorithms
+    : SHOW UNUSED SHARDING ALGORITHMS (FROM databaseName)?
+    ;
+
+showUnusedShardingKeyGenerators
+    : SHOW UNUSED SHARDING KEY GENERATORS (FROM databaseName)?
+    ;
+
+showShardingTableRulesUsedAlgorithm
+    : SHOW SHARDING TABLE RULES USED ALGORITHM algorithmName (FROM databaseName)?
+    ;
+
+showShardingTableRulesUsedKeyGenerator
+    : SHOW SHARDING TABLE RULES USED KEY GENERATOR keyGeneratorName (FROM databaseName)?
+    ;
+ 
 tableRule
     : RULE tableName
     ;
 
-tableName
-    : IDENTIFIER
-    ;
-
-schemaName
+databaseName
     : IDENTIFIER
     ;

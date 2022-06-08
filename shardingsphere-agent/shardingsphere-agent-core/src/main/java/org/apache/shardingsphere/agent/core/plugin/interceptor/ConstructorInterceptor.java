@@ -13,7 +13,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package org.apache.shardingsphere.agent.core.plugin.interceptor;
@@ -23,8 +22,9 @@ import lombok.extern.slf4j.Slf4j;
 import net.bytebuddy.implementation.bind.annotation.AllArguments;
 import net.bytebuddy.implementation.bind.annotation.RuntimeType;
 import net.bytebuddy.implementation.bind.annotation.This;
-import org.apache.shardingsphere.agent.api.advice.ConstructorAdvice;
 import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
+import org.apache.shardingsphere.agent.api.advice.ConstructorAdvice;
+import org.apache.shardingsphere.agent.core.plugin.PluginContext;
 
 /**
  * Proxy class for ByteBuddy to intercept methods of target and weave post-method after constructor.
@@ -44,7 +44,10 @@ public class ConstructorInterceptor {
     @RuntimeType
     public void intercept(@This final AdviceTargetObject target, @AllArguments final Object[] args) {
         try {
-            constructorAdvice.onConstructor(target, args);
+            boolean adviceEnabled = constructorAdvice.disableCheck() || PluginContext.isPluginEnabled();
+            if (adviceEnabled) {
+                constructorAdvice.onConstructor(target, args);
+            }
             // CHECKSTYLE:OFF
         } catch (final Throwable throwable) {
             // CHECKSTYLE:ON

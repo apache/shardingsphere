@@ -31,8 +31,8 @@ import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
  * @see <a href="https://dev.mysql.com/doc/internals/en/connection-phase-packets.html#packet-Protocol::HandshakeResponse41">HandshakeResponse41</a>
  */
 @RequiredArgsConstructor
-@Setter
 @Getter
+@Setter
 public final class MySQLHandshakeResponse41Packet implements MySQLPacket {
     
     private final int sequenceId;

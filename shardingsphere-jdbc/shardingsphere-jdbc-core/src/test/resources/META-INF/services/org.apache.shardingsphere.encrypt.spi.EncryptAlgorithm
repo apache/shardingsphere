@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.driver.fixture.TestEncryptAlgorithm
-org.apache.shardingsphere.driver.fixture.TestQueryAssistedEncryptAlgorithm
+org.apache.shardingsphere.driver.fixture.encrypt.JDBCEncryptAlgorithmFixture
+org.apache.shardingsphere.driver.fixture.encrypt.JDBCQueryAssistedEncryptAlgorithmFixture

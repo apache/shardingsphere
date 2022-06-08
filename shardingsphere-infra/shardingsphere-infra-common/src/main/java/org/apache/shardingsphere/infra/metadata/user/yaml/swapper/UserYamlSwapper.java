@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.metadata.user.yaml.swapper;
 
 import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUserConfiguration;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.yaml.swapper.YamlConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.YamlConfigurationSwapper;
 
 import java.util.Objects;
 
@@ -27,7 +27,7 @@ import java.util.Objects;
  * User YAML swapper.
  */
 public final class UserYamlSwapper implements YamlConfigurationSwapper<YamlUserConfiguration, ShardingSphereUser> {
-
+    
     @Override
     public YamlUserConfiguration swapToYamlConfiguration(final ShardingSphereUser data) {
         if (Objects.isNull(data)) {
@@ -39,7 +39,7 @@ public final class UserYamlSwapper implements YamlConfigurationSwapper<YamlUserC
         result.setPassword(data.getPassword());
         return result;
     }
-
+    
     @Override
     public ShardingSphereUser swapToObject(final YamlUserConfiguration yamlConfig) {
         if (Objects.isNull(yamlConfig)) {

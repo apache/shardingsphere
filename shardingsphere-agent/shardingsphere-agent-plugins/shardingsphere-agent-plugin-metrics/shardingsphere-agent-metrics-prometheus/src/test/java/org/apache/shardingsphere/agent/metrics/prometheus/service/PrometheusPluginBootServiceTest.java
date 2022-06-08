@@ -17,44 +17,49 @@
 
 package org.apache.shardingsphere.agent.metrics.prometheus.service;
 
-import io.prometheus.client.exporter.HTTPServer;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.config.PluginConfiguration;
+import org.apache.shardingsphere.agent.metrics.prometheus.ProxyContextRestorer;
+import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
+import org.apache.shardingsphere.infra.lock.LockContext;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.memory.workerid.generator.MemoryWorkerIdGenerator;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.junit.AfterClass;
 import org.junit.Test;
 
-import java.lang.reflect.Field;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
-public final class PrometheusPluginBootServiceTest {
+public final class PrometheusPluginBootServiceTest extends ProxyContextRestorer {
     
-    private static PrometheusPluginBootService prometheusPluginBootService = new PrometheusPluginBootService();
-    
-    @SneakyThrows
-    @Test
-    public void assertStart() {
-        Properties props = new Properties();
-        props.setProperty("JVM_INFORMATION_COLLECTOR_ENABLED", "true");
-        PluginConfiguration configuration = new PluginConfiguration("localhost", 8090, "", props);
-        prometheusPluginBootService.start(configuration);
-        Field field = PrometheusPluginBootService.class.getDeclaredField("httpServer");
-        field.setAccessible(true);
-        HTTPServer httpServer = (HTTPServer) field.get(prometheusPluginBootService);
-        assertNotNull(httpServer);
-        assertThat(httpServer.getPort(), is(8090));
-    }
-    
-    @Test
-    public void assertType() {
-        assertThat(prometheusPluginBootService.getType(), is("Prometheus"));
-    }
+    private static final PrometheusPluginBootService PROMETHEUS_PLUGIN_BOOT_SERVICE = new PrometheusPluginBootService();
     
     @AfterClass
     public static void close() {
-        prometheusPluginBootService.close();
+        PROMETHEUS_PLUGIN_BOOT_SERVICE.close();
+    }
+    
+    @Test
+    public void assertStart() throws IOException {
+        InstanceContext instanceContext = new InstanceContext(
+                new ComputeNodeInstance(mock(InstanceDefinition.class)), new MemoryWorkerIdGenerator(), new ModeConfiguration("Memory", null, false), mock(LockContext.class));
+        ProxyContext.init(new ContextManager(new MetaDataContexts(mock(MetaDataPersistService.class)), instanceContext));
+        PROMETHEUS_PLUGIN_BOOT_SERVICE.start(new PluginConfiguration("localhost", 8090, "", createProperties()));
+        new Socket().connect(new InetSocketAddress("localhost", 8090));
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty("JVM_INFORMATION_COLLECTOR_ENABLED", Boolean.TRUE.toString());
+        return result;
     }
 }

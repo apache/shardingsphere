@@ -30,6 +30,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.SQLStats;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 import java.nio.CharBuffer;
 import java.util.Collection;
@@ -57,7 +58,8 @@ public final class MySQLTableVistorTest {
                 + "`runoob_test` NATIONAL CHAR(40),\n"
                 + "`submission_date` DATE,\n"
                 + "PRIMARY KEY ( `runoob_id` )\n"
-                + ")ENGINE=InnoDB DEFAULT CHARSET=utf8;", 1, 5});
+                + ")ENGINE=InnoDB DEFAULT CHARSET=utf8;",
+                1, 5});
     }
     
     private final String caseId;
@@ -68,7 +70,7 @@ public final class MySQLTableVistorTest {
     
     private final int columnNum;
     
-    @Parameterized.Parameters(name = "{0}")
+    @Parameters(name = "{0}")
     public static Collection<Object[]> getTestParameters() {
         return testUnits;
     }

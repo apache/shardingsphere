@@ -17,25 +17,26 @@
 
 package org.apache.shardingsphere.agent.plugin.tracing.jaeger.advice;
 
-import com.google.common.collect.Maps;
 import io.opentracing.mock.MockSpan;
+import io.opentracing.mock.MockSpan.LogEntry;
 import io.opentracing.tag.Tags;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 import org.apache.shardingsphere.agent.plugin.tracing.advice.AbstractCommandExecutorTaskAdviceTest;
-import org.apache.shardingsphere.agent.plugin.tracing.jaeger.constant.JaegerConstants;
 import org.apache.shardingsphere.agent.plugin.tracing.jaeger.collector.JaegerCollector;
-import org.junit.Assert;
+import org.apache.shardingsphere.agent.plugin.tracing.jaeger.constant.JaegerConstants;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutorTaskAdviceTest {
     
@@ -44,7 +45,7 @@ public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutor
     
     private static final CommandExecutorTaskAdvice ADVICE = new CommandExecutorTaskAdvice();
     
-    private static final Map<String, Object> EXPECTED = Maps.newHashMap();
+    private static final Map<String, Object> EXPECTED = new HashMap<>(2, 1);
     
     @BeforeClass
     public static void setup() {
@@ -58,7 +59,7 @@ public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutor
         ADVICE.afterMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
         List<MockSpan> spans = COLLECTOR.finishedSpans();
         assertThat(spans.size(), is(1));
-        assertThat(spans.get(0).logEntries().size(), is(0));
+        assertTrue(spans.get(0).logEntries().isEmpty());
         assertThat(spans.get(0).operationName(), is("/ShardingSphere/rootInvoke/"));
         assertThat(spans.get(0).tags(), is(EXPECTED));
     }
@@ -69,17 +70,17 @@ public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutor
         ADVICE.onThrowing(getTargetObject(), null, new Object[]{}, new IOException());
         ADVICE.afterMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
         List<MockSpan> spans = COLLECTOR.finishedSpans();
-        Assert.assertEquals(1, spans.size());
+        assertThat(spans.size(), is(1));
         MockSpan span = spans.get(0);
-        assertThat(span.tags().get("error"), is(true));
-        List<MockSpan.LogEntry> entries = span.logEntries();
+        assertTrue((boolean) span.tags().get("error"));
+        List<LogEntry> entries = span.logEntries();
         assertThat(entries.size(), is(1));
         Map<String, ?> fields = entries.get(0).fields();
         assertThat(fields.get("event"), is("error"));
         assertNull(fields.get("message"));
         assertThat(fields.get("error.kind"), is("java.io.IOException"));
         assertThat(span.operationName(), is("/ShardingSphere/rootInvoke/"));
-        Map<Object, Object> map = Maps.newHashMap(EXPECTED);
+        Map<Object, Object> map = new HashMap<>(EXPECTED);
         map.put(JaegerConstants.ErrorLogTagKeys.EVENT_ERROR_TYPE, true);
         assertThat(spans.get(0).tags(), is(map));
     }

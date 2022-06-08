@@ -15,12 +15,15 @@
  * limitations under the License.
  */
 
-grammar BaseRule;
+parser grammar BaseRule;
 
-import Keyword, PostgreSQLKeyword, Symbol, Literals;
+options {
+    tokenVocab = ModeLexer;
+}
 
 parameterMarker
     : QUESTION_ literalsType?
+    | DOLLAR_ numberLiterals
     ;
 
 reservedKeyword
@@ -112,11 +115,7 @@ literalsType
     ;
 
 identifier
-    : unicodeEscapes? IDENTIFIER_ uescape? |  unreservedWord 
-    ;
-
-unicodeEscapes
-    : ('U' | 'u') AMPERSAND_
+    : UNICODE_ESCAPE? IDENTIFIER_ uescape? |  unreservedWord 
     ;
 
 uescape
@@ -208,6 +207,7 @@ unreservedWord
     | EXECUTE
     | EXPLAIN
     | EXPRESSION
+    | EXTENDED
     | EXTENSION
     | EXTERNAL
     | FAMILY
@@ -245,6 +245,7 @@ unreservedWord
     | INSERT
     | INSTEAD
     | INVOKER
+    | INTERVAL
     | ISOLATION
     | KEY
     | LABEL
@@ -260,6 +261,7 @@ unreservedWord
     | LOCK
     | LOCKED
     | LOGGED
+    | MAIN
     | MAPPING
     | MATCH
     | MATERIALIZED
@@ -270,6 +272,7 @@ unreservedWord
     | MODE
     | MONTH
     | MOVE
+    | MOD
     | NAME
     | NAMES
     | NEW
@@ -304,6 +307,7 @@ unreservedWord
     | PARTITION
     | PASSING
     | PASSWORD
+    | PLAIN
     | PLANS
     | POLICY
     | PRECEDING
@@ -394,6 +398,8 @@ unreservedWord
     | TRUSTED
     | TYPE
     | TYPES
+    | TIME
+    | TIMESTAMP
     | UESCAPE
     | UNBOUNDED
     | UNCOMMITTED
@@ -424,6 +430,8 @@ unreservedWord
     | YES
     | ZONE
     | JSON
+    | PARAM
+    | TABLE
     ;
 
 typeFuncNameKeyword
@@ -500,8 +508,12 @@ primaryKey
     : PRIMARY? KEY
     ;
 
-logicalOperator
-    : OR | OR_ | AND | AND_
+andOperator
+    : AND | AND_
+    ;
+
+orOperator
+    : OR | OR_
     ;
 
 comparisonOperator
@@ -542,6 +554,8 @@ aExpr
     | aExpr SLASH_ aExpr
     | aExpr MOD_ aExpr
     | aExpr CARET_ aExpr
+    | aExpr AMPERSAND_ aExpr
+    | aExpr VERTICAL_BAR_ aExpr
     | aExpr qualOp aExpr
     | qualOp aExpr
     | aExpr qualOp
@@ -579,7 +593,8 @@ aExpr
     | aExpr IS unicodeNormalForm NORMALIZED
     | aExpr IS NOT NORMALIZED
     | aExpr IS NOT unicodeNormalForm NORMALIZED
-    | aExpr logicalOperator aExpr
+    | aExpr andOperator aExpr
+    | aExpr orOperator aExpr
     | DEFAULT
     ;
 
@@ -864,6 +879,7 @@ funcName
 aexprConst
     : NUMBER_
     | STRING_
+    | BEGIN_DOLLAR_STRING_CONSTANT DOLLAR_TEXT* END_DOLLAR_STRING_CONSTANT
     | funcName STRING_
     | funcName LP_ funcArgList sortClause? RP_ STRING_
     | TRUE
@@ -1377,7 +1393,7 @@ funcType
     ;
 
 selectWithParens
-    : 'Default does not match anything'
+    : DEFAULT_DOES_NOT_MATCH_ANYTHING
     ;
 
 dataType

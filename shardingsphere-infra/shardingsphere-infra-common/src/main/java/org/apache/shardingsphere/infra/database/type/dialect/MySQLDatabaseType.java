@@ -23,15 +23,23 @@ import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * Database type of MySQL.
  */
 public final class MySQLDatabaseType implements DatabaseType {
     
-    @Override
-    public String getName() {
-        return "MySQL";
+    private static final Map<String, Collection<String>> SYSTEM_DATABASE_SCHEMA_MAP = new HashMap<>();
+    
+    static {
+        SYSTEM_DATABASE_SCHEMA_MAP.put("information_schema", Collections.singletonList("information_schema"));
+        SYSTEM_DATABASE_SCHEMA_MAP.put("performance_schema", Collections.singletonList("performance_schema"));
+        SYSTEM_DATABASE_SCHEMA_MAP.put("mysql", Collections.singletonList("mysql"));
+        SYSTEM_DATABASE_SCHEMA_MAP.put("sys", Collections.singletonList("sys"));
     }
     
     @Override
@@ -47,5 +55,25 @@ public final class MySQLDatabaseType implements DatabaseType {
     @Override
     public MySQLDataSourceMetaData getDataSourceMetaData(final String url, final String username) {
         return new MySQLDataSourceMetaData(url);
+    }
+    
+    @Override
+    public Optional<String> getDataSourceClassName() {
+        return Optional.of("com.mysql.jdbc.jdbc2.optional.MysqlDataSource");
+    }
+    
+    @Override
+    public Map<String, Collection<String>> getSystemDatabaseSchemaMap() {
+        return SYSTEM_DATABASE_SCHEMA_MAP;
+    }
+    
+    @Override
+    public Collection<String> getSystemSchemas() {
+        return SYSTEM_DATABASE_SCHEMA_MAP.keySet();
+    }
+    
+    @Override
+    public String getType() {
+        return "MySQL";
     }
 }

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.agent.core.config;
 
-import org.apache.shardingsphere.agent.config.AgentConfiguration;
 import org.apache.shardingsphere.agent.core.config.loader.AgentConfigurationLoader;
 import org.apache.shardingsphere.agent.core.config.path.AgentPathBuilder;
 import org.apache.shardingsphere.agent.core.util.ReflectiveUtil;
@@ -26,6 +25,8 @@ import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.net.URLDecoder;
+
 import static org.junit.Assert.assertNotNull;
 
 public final class AgentConfigurationLoaderTest {
@@ -35,14 +36,13 @@ public final class AgentConfigurationLoaderTest {
     @Test
     public void assertLoad() throws IOException {
         ReflectiveUtil.setStaticField(AgentPathBuilder.class, "agentPath", new File(getResourceUrl()));
-        AgentConfiguration configuration = AgentConfigurationLoader.load();
-        assertNotNull(configuration);
+        assertNotNull(AgentConfigurationLoader.load());
     }
     
     private String getResourceUrl() {
         URL url = AgentConfigurationLoader.class.getClassLoader().getResource("");
         if (null != url) {
-            return url.getFile();
+            return URLDecoder.decode(url.getFile());
         }
         return DEFAULT_CONFIG_PATH;
     }

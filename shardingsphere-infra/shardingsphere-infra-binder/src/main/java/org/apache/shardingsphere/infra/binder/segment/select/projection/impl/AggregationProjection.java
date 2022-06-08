@@ -23,8 +23,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
-import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +47,8 @@ public class AggregationProjection implements Projection {
     
     private final String alias;
     
+    private final DatabaseType databaseType;
+    
     private final List<AggregationProjection> derivedAggregationProjections = new ArrayList<>(2);
     
     @Setter
@@ -52,7 +56,7 @@ public class AggregationProjection implements Projection {
     
     @Override
     public final String getExpression() {
-        return SQLUtil.getExactlyValue(type.name() + innerExpression);
+        return type.name() + innerExpression;
     }
     
     @Override
@@ -67,6 +71,7 @@ public class AggregationProjection implements Projection {
      */
     @Override
     public String getColumnLabel() {
-        return getAlias().orElse(getExpression());
+        boolean isPostgreSQLOpenGaussStatement = databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType;
+        return getAlias().orElseGet(() -> isPostgreSQLOpenGaussStatement ? type.name() : getExpression());
     }
 }

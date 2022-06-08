@@ -18,7 +18,9 @@
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.TransactionManager;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
+import org.apache.shardingsphere.transaction.ConnectionSavepointManager;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -29,12 +31,12 @@ import java.util.LinkedList;
  * Local transaction manager.
  */
 @RequiredArgsConstructor
-public final class LocalTransactionManager implements TransactionManager {
+public final class LocalTransactionManager implements TransactionManager<Void> {
     
-    private final BackendConnection connection;
+    private final JDBCBackendConnection connection;
     
     @Override
-    public void begin() {
+    public Void begin() {
         connection.getConnectionPostProcessors().add(target -> {
             try {
                 target.setAutoCommit(false);
@@ -42,14 +44,19 @@ public final class LocalTransactionManager implements TransactionManager {
                 throw new RuntimeException(ex);
             }
         });
+        return null;
     }
     
     @Override
-    public void commit() throws SQLException {
-        if (connection.getTransactionStatus().isInTransaction()) {
-            Collection<SQLException> exceptions = new LinkedList<>(commitConnections());
-            throwSQLExceptionIfNecessary(exceptions);
+    public Void commit() throws SQLException {
+        Collection<SQLException> exceptions = new LinkedList<>();
+        if (connection.getConnectionSession().getTransactionStatus().isRollbackOnly()) {
+            exceptions.addAll(rollbackConnections());
+        } else {
+            exceptions.addAll(commitConnections());
         }
+        throwSQLExceptionIfNecessary(exceptions);
+        return null;
     }
     
     private Collection<SQLException> commitConnections() {
@@ -67,11 +74,12 @@ public final class LocalTransactionManager implements TransactionManager {
     }
     
     @Override
-    public void rollback() throws SQLException {
-        if (connection.getTransactionStatus().isInTransaction()) {
+    public Void rollback() throws SQLException {
+        if (connection.getConnectionSession().getTransactionStatus().isInTransaction()) {
             Collection<SQLException> exceptions = new LinkedList<>(rollbackConnections());
             throwSQLExceptionIfNecessary(exceptions);
         }
+        return null;
     }
     
     private Collection<SQLException> rollbackConnections() {
@@ -89,52 +97,18 @@ public final class LocalTransactionManager implements TransactionManager {
     }
     
     @Override
-    public void setSavepoint(final String savepointName) throws SQLException {
-        if (!connection.getTransactionStatus().isInTransaction()) {
-            return;
-        }
-        for (Connection each : connection.getCachedConnections().values()) {
-            ConnectionSavepointManager.getInstance().setSavepoint(each, savepointName);
-        }
-        connection.getConnectionPostProcessors().add(target -> {
-            try {
-                ConnectionSavepointManager.getInstance().setSavepoint(target, savepointName);
-            } catch (final SQLException ex) {
-                throw new RuntimeException(ex);
-            }
-        });
+    public Void setSavepoint(final String savepointName) {
+        return null;
     }
     
     @Override
-    public void rollbackTo(final String savepointName) throws SQLException {
-        if (!connection.getTransactionStatus().isInTransaction()) {
-            return;
-        }
-        Collection<SQLException> result = new LinkedList<>();
-        for (Connection each : connection.getCachedConnections().values()) {
-            try {
-                ConnectionSavepointManager.getInstance().rollbackToSavepoint(each, savepointName);
-            } catch (final SQLException ex) {
-                result.add(ex);
-            }
-        }
-        throwSQLExceptionIfNecessary(result);
+    public Void rollbackTo(final String savepointName) {
+        return null;
     }
     
     @Override
-    public void releaseSavepoint(final String savepointName) throws SQLException {
-        if (!connection.getTransactionStatus().isInTransaction()) {
-            return;
-        }
-        Collection<SQLException> result = new LinkedList<>();
-        for (Connection each : connection.getCachedConnections().values()) {
-            try {
-                ConnectionSavepointManager.getInstance().releaseSavepoint(each, savepointName);
-            } catch (final SQLException ex) {
-                result.add(ex);
-            }
-        }
-        throwSQLExceptionIfNecessary(result);
+    public Void releaseSavepoint(final String savepointName) {
+        return null;
     }
     
     private void throwSQLExceptionIfNecessary(final Collection<SQLException> exceptions) throws SQLException {

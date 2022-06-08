@@ -17,32 +17,38 @@
 
 package org.apache.shardingsphere.shadow.api.config;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.function.DistributedRuleConfiguration;
+import org.apache.shardingsphere.infra.config.function.ResourceRequiredRuleConfiguration;
 import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
+import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
+import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 
-import java.util.List;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Shadow rule configuration.
  */
 @Getter
-public final class ShadowRuleConfiguration implements SchemaRuleConfiguration {
+@Setter
+public final class ShadowRuleConfiguration implements SchemaRuleConfiguration, DistributedRuleConfiguration, ResourceRequiredRuleConfiguration {
     
-    private final String column;
+    private String defaultShadowAlgorithmName;
     
-    private final List<String> sourceDataSourceNames;
+    private Map<String, ShadowDataSourceConfiguration> dataSources = new LinkedHashMap<>();
     
-    private final List<String> shadowDataSourceNames;
+    private Map<String, ShadowTableConfiguration> tables = new LinkedHashMap<>();
     
-    public ShadowRuleConfiguration(final String column, final List<String> sourceDataSourceNames, final List<String> shadowDataSourceNames) {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(column), "Column is required.");
-        Preconditions.checkArgument(!sourceDataSourceNames.isEmpty(), "SourceDataSourceNames is required.");
-        Preconditions.checkArgument(!shadowDataSourceNames.isEmpty(), "ShadowDataSourceNames is required.");
-        Preconditions.checkArgument(sourceDataSourceNames.size() == shadowDataSourceNames.size(), "SourceDataSourceNames and ShadowDataSourceNames size must same.");
-        this.column = column;
-        this.sourceDataSourceNames = sourceDataSourceNames;
-        this.shadowDataSourceNames = shadowDataSourceNames;
+    private Map<String, ShardingSphereAlgorithmConfiguration> shadowAlgorithms = new LinkedHashMap<>();
+    
+    @Override
+    public Collection<String> getRequiredResource() {
+        return dataSources.values().stream().map(each -> Arrays.asList(each.getSourceDataSourceName(), each.getShadowDataSourceName())).flatMap(Collection::stream).collect(Collectors.toSet());
     }
 }

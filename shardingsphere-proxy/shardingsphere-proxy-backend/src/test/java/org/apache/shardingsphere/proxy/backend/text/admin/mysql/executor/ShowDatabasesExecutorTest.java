@@ -17,21 +17,25 @@
 
 package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor;
 
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
+import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ShowFilterSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ShowLikeSegment;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowDatabasesStatement;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
 
-import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -44,8 +48,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
-public final class ShowDatabasesExecutorTest {
+public final class ShowDatabasesExecutorTest extends ProxyContextRestorer {
     
     private static final String SCHEMA_PATTERN = "schema_%s";
     
@@ -53,27 +56,28 @@ public final class ShowDatabasesExecutorTest {
     
     @Before
     public void setUp() throws IllegalAccessException, NoSuchFieldException {
-        showDatabasesExecutor = new ShowDatabasesExecutor();
-        Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
-        metaDataContexts.setAccessible(true);
-        metaDataContexts.set(ProxyContext.getInstance(), new StandardMetaDataContexts(getMetaDataMap(), mock(ShardingSphereRuleMetaData.class), 
-                mock(ExecutorEngine.class), new ConfigurationProperties(new Properties())));
+        showDatabasesExecutor = new ShowDatabasesExecutor(new MySQLShowDatabasesStatement());
+        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
+                new ShardingSphereMetaData(getDatabases(), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())), mock(OptimizerContext.class));
+        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
+        ProxyContext.init(contextManager);
     }
     
-    private Map<String, ShardingSphereMetaData> getMetaDataMap() {
-        Map<String, ShardingSphereMetaData> result = new LinkedHashMap<>(10, 1);
+    private Map<String, ShardingSphereDatabase> getDatabases() {
+        Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(10, 1);
         for (int i = 0; i < 10; i++) {
-            ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-            when(metaData.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
-            when(metaData.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()));
-            result.put(String.format(SCHEMA_PATTERN, i), metaData);
+            ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+            when(database.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+            when(database.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
+            result.put(String.format(SCHEMA_PATTERN, i), database);
         }
         return result;
     }
     
     @Test
     public void assertExecute() throws SQLException {
-        showDatabasesExecutor.execute(mockBackendConnection());
+        showDatabasesExecutor.execute(mockConnectionSession());
         assertThat(showDatabasesExecutor.getQueryResultMetaData().getColumnCount(), is(1));
         int count = 0;
         while (showDatabasesExecutor.getMergedResult().next()) {
@@ -82,8 +86,80 @@ public final class ShowDatabasesExecutorTest {
         }
     }
     
-    private BackendConnection mockBackendConnection() {
-        BackendConnection result = mock(BackendConnection.class);
+    @Test
+    public void assertExecuteWithPrefixLike() throws SQLException {
+        MySQLShowDatabasesStatement showDatabasesStatement = new MySQLShowDatabasesStatement();
+        ShowFilterSegment showFilterSegment = new ShowFilterSegment(0, 0);
+        ShowLikeSegment showLikeSegment = new ShowLikeSegment(0, 0, "schema%");
+        showFilterSegment.setLike(showLikeSegment);
+        showDatabasesStatement.setFilter(showFilterSegment);
+        showDatabasesExecutor = new ShowDatabasesExecutor(showDatabasesStatement);
+        showDatabasesExecutor.execute(mockConnectionSession());
+        assertThat(showDatabasesExecutor.getQueryResultMetaData().getColumnCount(), is(1));
+        int count = 0;
+        while (showDatabasesExecutor.getMergedResult().next()) {
+            assertThat(showDatabasesExecutor.getMergedResult().getValue(1, Object.class), is(String.format(SCHEMA_PATTERN, count)));
+            count++;
+        }
+        assertThat(count, is(10));
+    }
+    
+    @Test
+    public void assertExecuteWithSuffixLike() throws SQLException {
+        MySQLShowDatabasesStatement showDatabasesStatement = new MySQLShowDatabasesStatement();
+        ShowFilterSegment showFilterSegment = new ShowFilterSegment(0, 0);
+        ShowLikeSegment showLikeSegment = new ShowLikeSegment(0, 0, "%_1");
+        showFilterSegment.setLike(showLikeSegment);
+        showDatabasesStatement.setFilter(showFilterSegment);
+        showDatabasesExecutor = new ShowDatabasesExecutor(showDatabasesStatement);
+        showDatabasesExecutor.execute(mockConnectionSession());
+        assertThat(showDatabasesExecutor.getQueryResultMetaData().getColumnCount(), is(1));
+        int count = 0;
+        while (showDatabasesExecutor.getMergedResult().next()) {
+            assertThat(showDatabasesExecutor.getMergedResult().getValue(1, Object.class), is("schema_1"));
+            count++;
+        }
+        assertThat(count, is(1));
+    }
+    
+    @Test
+    public void assertExecuteWithPreciseLike() throws SQLException {
+        MySQLShowDatabasesStatement showDatabasesStatement = new MySQLShowDatabasesStatement();
+        ShowFilterSegment showFilterSegment = new ShowFilterSegment(0, 0);
+        ShowLikeSegment showLikeSegment = new ShowLikeSegment(0, 0, "schema_9");
+        showFilterSegment.setLike(showLikeSegment);
+        showDatabasesStatement.setFilter(showFilterSegment);
+        showDatabasesExecutor = new ShowDatabasesExecutor(showDatabasesStatement);
+        showDatabasesExecutor.execute(mockConnectionSession());
+        assertThat(showDatabasesExecutor.getQueryResultMetaData().getColumnCount(), is(1));
+        int count = 0;
+        while (showDatabasesExecutor.getMergedResult().next()) {
+            assertThat(showDatabasesExecutor.getMergedResult().getValue(1, Object.class), is("schema_9"));
+            count++;
+        }
+        assertThat(count, is(1));
+    }
+    
+    @Test
+    public void assertExecuteWithLikeMatchNone() throws SQLException {
+        MySQLShowDatabasesStatement showDatabasesStatement = new MySQLShowDatabasesStatement();
+        ShowFilterSegment showFilterSegment = new ShowFilterSegment(0, 0);
+        ShowLikeSegment showLikeSegment = new ShowLikeSegment(0, 0, "schema_not_exist");
+        showFilterSegment.setLike(showLikeSegment);
+        showDatabasesStatement.setFilter(showFilterSegment);
+        showDatabasesExecutor = new ShowDatabasesExecutor(showDatabasesStatement);
+        showDatabasesExecutor.execute(mockConnectionSession());
+        assertThat(showDatabasesExecutor.getQueryResultMetaData().getColumnCount(), is(1));
+        int count = 0;
+        while (showDatabasesExecutor.getMergedResult().next()) {
+            assertThat(showDatabasesExecutor.getMergedResult().getValue(1, Object.class), is("schema_not_exist"));
+            count++;
+        }
+        assertThat(count, is(0));
+    }
+    
+    private ConnectionSession mockConnectionSession() {
+        ConnectionSession result = mock(ConnectionSession.class);
         when(result.getGrantee()).thenReturn(new Grantee("root", ""));
         return result;
     }

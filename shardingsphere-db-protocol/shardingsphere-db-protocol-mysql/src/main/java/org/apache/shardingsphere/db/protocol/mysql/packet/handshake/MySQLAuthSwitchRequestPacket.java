@@ -57,7 +57,7 @@ public final class MySQLAuthSwitchRequestPacket implements MySQLPacket {
     
     @Override
     public void write(final MySQLPacketPayload payload) {
-        payload.writeInt1(0xfe);
+        payload.writeInt1(HEADER);
         payload.writeStringNul(authPluginName);
         payload.writeStringNul(new String(authPluginData.getAuthenticationPluginData()));
     }

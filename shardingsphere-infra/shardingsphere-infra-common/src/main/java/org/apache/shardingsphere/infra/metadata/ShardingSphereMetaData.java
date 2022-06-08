@@ -19,31 +19,29 @@ package org.apache.shardingsphere.infra.metadata;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
-import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Properties;
 
 /**
- * ShardingSphere meta data.
+ * Meta data contexts.
  */
 @RequiredArgsConstructor
 @Getter
 public final class ShardingSphereMetaData {
     
-    private final String name;
+    private final Map<String, ShardingSphereDatabase> databases;
     
-    private final ShardingSphereResource resource;
+    private final ShardingSphereRuleMetaData globalRuleMetaData;
     
-    private final ShardingSphereRuleMetaData ruleMetaData;
+    private final ConfigurationProperties props;
     
-    private final ShardingSphereSchema schema;
-    
-    /**
-     * Judge whether is completed.
-     *
-     * @return is completed or not
-     */
-    public boolean isComplete() {
-        return !ruleMetaData.getRules().isEmpty() && !resource.getDataSources().isEmpty();
+    public ShardingSphereMetaData() {
+        this(new LinkedHashMap<>(), new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()), new ConfigurationProperties(new Properties()));
     }
 }

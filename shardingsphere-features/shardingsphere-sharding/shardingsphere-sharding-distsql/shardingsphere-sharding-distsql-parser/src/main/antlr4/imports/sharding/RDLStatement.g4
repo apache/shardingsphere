@@ -17,18 +17,38 @@
 
 grammar RDLStatement;
 
-import Keyword, Literals, Symbol;
+import BaseRule;
 
 createShardingTableRule
     : CREATE SHARDING TABLE RULE shardingTableRuleDefinition (COMMA shardingTableRuleDefinition)*
     ;
 
 createShardingBindingTableRules
-    : CREATE SHARDING BINDING TABLE RULES LP bindTableRulesDefinition (COMMA bindTableRulesDefinition)* RP
+    : CREATE SHARDING BINDING TABLE RULES bindTableRulesDefinition (COMMA bindTableRulesDefinition)*
     ;
 
 createShardingBroadcastTableRules
     : CREATE SHARDING BROADCAST TABLE RULES LP tableName (COMMA tableName)* RP
+    ;
+
+createShardingAlgorithm
+    : CREATE SHARDING ALGORITHM shardingAlgorithmDefinition (COMMA  shardingAlgorithmDefinition)*
+    ;
+
+createDefaultShardingStrategy
+    : CREATE DEFAULT SHARDING type=(DATABASE | TABLE) STRATEGY LP shardingStrategy RP
+    ;
+
+alterDefaultShardingStrategy
+    : ALTER DEFAULT SHARDING type=(DATABASE | TABLE) STRATEGY LP shardingStrategy RP
+    ;
+
+dropDefaultShardingStrategy
+    : DROP DEFAULT SHARDING type=(DATABASE | TABLE) STRATEGY existsClause?
+    ;
+
+createShardingKeyGenerator
+    : CREATE SHARDING KEY GENERATOR keyGeneratorDefinition (COMMA keyGeneratorDefinition)*
     ;
 
 alterShardingTableRule
@@ -36,43 +56,131 @@ alterShardingTableRule
     ;
 
 alterShardingBindingTableRules
-    : ALTER SHARDING BINDING TABLE RULES LP bindTableRulesDefinition (COMMA bindTableRulesDefinition)* RP
+    : ALTER SHARDING BINDING TABLE RULES bindTableRulesDefinition (COMMA bindTableRulesDefinition)*
     ;
 
 alterShardingBroadcastTableRules
     : ALTER SHARDING BROADCAST TABLE RULES LP tableName (COMMA tableName)* RP
     ;
 
+alterShardingAlgorithm
+    : ALTER SHARDING ALGORITHM shardingAlgorithmDefinition (COMMA  shardingAlgorithmDefinition)*
+    ;
+
+alterShardingKeyGenerator
+    : ALTER SHARDING KEY GENERATOR keyGeneratorDefinition (COMMA keyGeneratorDefinition)*
+    ;
+
 dropShardingTableRule
-    : DROP SHARDING TABLE RULE tableName (COMMA tableName)*
+    : DROP SHARDING TABLE RULE existsClause? tableName (COMMA tableName)* withUnusedAlgorithmsClause?
     ;
 
 dropShardingBindingTableRules
-    : DROP SHARDING BINDING TABLE RULES
+    : DROP SHARDING BINDING TABLE RULES existsClause? (bindTableRulesDefinition (COMMA bindTableRulesDefinition)*)?
     ;
 
 dropShardingBroadcastTableRules
-    : DROP SHARDING BROADCAST TABLE RULES
+    : DROP SHARDING BROADCAST TABLE RULES existsClause? (tableName (COMMA tableName)*)?
+    ;
+
+dropShardingAlgorithm
+    : DROP SHARDING ALGORITHM existsClause? algorithmName (COMMA algorithmName)*
+    ;
+
+dropShardingKeyGenerator
+    : DROP SHARDING KEY GENERATOR existsClause? keyGeneratorName (COMMA keyGeneratorName)*
     ;
 
 shardingTableRuleDefinition
-    : tableName LP resources (COMMA shardingColumn)? (COMMA algorithmDefinition)? (COMMA keyGenerateStrategy)? RP
+    : (shardingAutoTableRule | shardingTableRule)
+    ;
+
+shardingAutoTableRule
+    : tableName LP resources COMMA shardingColumnDefinition COMMA algorithmDefinition (COMMA keyGenerateDeclaration)? RP
+    ;
+
+shardingTableRule
+    : tableName LP dataNodes (COMMA  databaseStrategy)? (COMMA tableStrategy)? (COMMA keyGenerateDeclaration)? RP
+    ;
+
+keyGeneratorDefinition
+    : keyGeneratorName LP algorithmDefinition RP
+    ;
+
+keyGeneratorName
+    : IDENTIFIER
     ;
 
 resources
-    : RESOURCES LP IDENTIFIER (COMMA IDENTIFIER)* RP
+    : RESOURCES LP resource (COMMA resource)* RP
+    ;
+
+resource
+    : IDENTIFIER | STRING
+    ;
+
+dataNodes
+    : DATANODES LP dataNode (COMMA dataNode)* RP
+    ;
+
+dataNode
+    : IDENTIFIER | STRING
+    ;
+
+shardingColumnDefinition
+    : shardingColumn | shardingColumns
     ;
 
 shardingColumn
     : SHARDING_COLUMN EQ columnName
     ;
 
-keyGenerateStrategy
-    : GENERATED_KEY LP COLUMN EQ columnName COMMA algorithmDefinition RP
+shardingColumns
+    : SHARDING_COLUMNS EQ columnName COMMA columnName (COMMA columnName)*
     ;
 
-tableName
-    : IDENTIFIER
+shardingAlgorithm
+    : existingAlgorithm | autoCreativeAlgorithm
+    ;
+
+existingAlgorithm
+    : SHARDING_ALGORITHM EQ shardingAlgorithmName
+    ;
+
+autoCreativeAlgorithm
+    : SHARDING_ALGORITHM LP algorithmDefinition RP
+    ;
+
+keyGenerator
+    : KEY_GENERATOR EQ shardingAlgorithmName
+    ;
+
+shardingStrategy
+    :  TYPE EQ strategyType COMMA shardingColumnDefinition COMMA shardingAlgorithm 
+    ;
+
+databaseStrategy
+    : DATABASE_STRATEGY LP shardingStrategy RP
+    ;
+
+tableStrategy
+    : TABLE_STRATEGY LP shardingStrategy RP
+    ;
+
+keyGenerateDeclaration
+    : keyGenerateDefinition | keyGenerateStrategy
+    ;
+
+keyGenerateDefinition
+    : KEY_GENERATE_STRATEGY LP COLUMN EQ columnName COMMA algorithmDefinition RP
+    ;
+
+keyGenerateStrategy
+    : KEY_GENERATE_STRATEGY LP COLUMN EQ columnName COMMA keyGenerator RP
+    ;
+
+algorithmDefinition
+    : TYPE LP NAME EQ algorithmName (COMMA PROPERTIES LP algorithmProperties? RP)? RP
     ;
 
 columnName
@@ -83,11 +191,19 @@ bindTableRulesDefinition
     : LP tableName (COMMA tableName)* RP
     ;
 
-algorithmDefinition
-    : TYPE LP NAME EQ algorithmName (COMMA PROPERTIES LP algorithmProperties? RP)? RP
+shardingAlgorithmDefinition
+    : shardingAlgorithmName LP algorithmDefinition RP
     ;
 
 algorithmName
+    : IDENTIFIER
+    ;
+
+shardingAlgorithmName
+    : IDENTIFIER
+    ;
+
+strategyType
     : IDENTIFIER
     ;
 
@@ -96,5 +212,13 @@ algorithmProperties
     ;
 
 algorithmProperty
-    : key=(IDENTIFIER | STRING) EQ value=(NUMBER | INT | STRING)
+    : key=(IDENTIFIER | STRING) EQ value=(NUMBER | INT | IDENTIFIER | STRING)
+    ;
+
+existClause
+    : IF EXISTS
+    ;
+
+withUnusedAlgorithmsClause
+    : WITH UNUSED ALGORITHMS
     ;

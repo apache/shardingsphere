@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.driver.executor.batch;
 
-import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -36,7 +36,7 @@ public final class BatchExecutionUnitTest {
     
     @Test
     public void assertGetParameterSets() {
-        BatchExecutionUnit batchExecutionUnit = new BatchExecutionUnit(new ExecutionUnit(DATA_SOURCE_NAME, new SQLUnit(SQL, Lists.newArrayList(1))));
+        BatchExecutionUnit batchExecutionUnit = new BatchExecutionUnit(new ExecutionUnit(DATA_SOURCE_NAME, new SQLUnit(SQL, Collections.singletonList(1))));
         List<List<Object>> actual = batchExecutionUnit.getParameterSets();
         assertThat(actual.size(), is(1));
         assertTrue(actual.get(0).isEmpty());
@@ -49,14 +49,14 @@ public final class BatchExecutionUnitTest {
     
     @Test
     public void assertEquals() {
-        BatchExecutionUnit actual = new BatchExecutionUnit(new ExecutionUnit(DATA_SOURCE_NAME, new SQLUnit(SQL, Lists.newArrayList(1))));
-        BatchExecutionUnit expected = new BatchExecutionUnit(new ExecutionUnit(DATA_SOURCE_NAME, new SQLUnit(SQL, Lists.newArrayList(2))));
+        BatchExecutionUnit actual = new BatchExecutionUnit(new ExecutionUnit(DATA_SOURCE_NAME, new SQLUnit(SQL, Collections.singletonList(1))));
+        BatchExecutionUnit expected = new BatchExecutionUnit(new ExecutionUnit(DATA_SOURCE_NAME, new SQLUnit(SQL, Collections.singletonList(2))));
         assertThat(actual, is(expected));
     }
     
     @Test
     public void assertToString() {
-        ExecutionUnit executionUnit = new ExecutionUnit(DATA_SOURCE_NAME, new SQLUnit(SQL, Lists.newArrayList(1)));
+        ExecutionUnit executionUnit = new ExecutionUnit(DATA_SOURCE_NAME, new SQLUnit(SQL, Collections.singletonList(1)));
         BatchExecutionUnit actual = new BatchExecutionUnit(executionUnit);
         assertThat(actual.toString(), is(String.format("BatchExecutionUnit(executionUnit=ExecutionUnit"
                 + "(dataSourceName=%s, sqlUnit=SQLUnit(sql=%s, parameters=[%d], tableRouteMappers=[])), "

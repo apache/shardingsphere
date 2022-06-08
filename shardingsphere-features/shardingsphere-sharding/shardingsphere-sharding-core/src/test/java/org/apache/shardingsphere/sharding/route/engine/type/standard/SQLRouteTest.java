@@ -34,7 +34,7 @@ public final class SQLRouteTest extends AbstractSQLRouteTest {
     
     @Test
     public void assertWithBroadcastTable() {
-        String sql = "SELECT id,name from t_order_item a join product b on a.product_id = b.product_id where user_id = ?";
+        String sql = "SELECT id,name from t_order_item a join t_product b on a.product_id = b.product_id where user_id = ?";
         List<Object> parameters = new LinkedList<>();
         parameters.add(1);
         assertRoute(sql, parameters);

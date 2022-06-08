@@ -130,14 +130,19 @@ characterSetName
     ;
 
 expr
-    : expr logicalOperator expr
+    : expr andOperator expr
+    | expr orOperator expr
     | notOperator expr
     | LP_ expr RP_
     | booleanPrimary
     ;
 
-logicalOperator
-    : OR | AND | AND_
+andOperator
+    : AND | AND_
+    ;
+    
+orOperator
+    : OR
     ;
 
 notOperator

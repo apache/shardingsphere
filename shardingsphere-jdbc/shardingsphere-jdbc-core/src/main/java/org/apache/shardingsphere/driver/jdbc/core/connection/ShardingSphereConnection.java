@@ -17,137 +17,54 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.connection;
 
-import com.google.common.base.Preconditions;
-import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.driver.jdbc.adapter.AbstractConnectionAdapter;
+import org.apache.shardingsphere.driver.jdbc.context.JDBCContext;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement;
-import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCManager;
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
-import org.apache.shardingsphere.infra.transaction.TransactionHolder;
-import org.apache.shardingsphere.transaction.context.TransactionContexts;
-import org.apache.shardingsphere.transaction.core.TransactionType;
-import org.apache.shardingsphere.transaction.spi.ShardingTransactionManager;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.sharding.merge.ddl.fetch.FetchOrderByValueQueuesHolder;
+import org.apache.shardingsphere.traffic.context.TrafficContextHolder;
+import org.apache.shardingsphere.transaction.TransactionHolder;
 
-import javax.sql.DataSource;
 import java.sql.Array;
-import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Savepoint;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 
 /**
- * ShardingSphere Connection.
+ * ShardingSphere connection.
  */
-@Getter
-public final class ShardingSphereConnection extends AbstractConnectionAdapter implements ExecutorJDBCManager {
+public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     
-    private final Map<String, DataSource> dataSourceMap;
+    @Getter
+    private final String databaseName;
     
-    private final MetaDataContexts metaDataContexts;
+    @Getter
+    private final ContextManager contextManager;
     
-    private final TransactionType transactionType;
+    @Getter
+    private final JDBCContext jdbcContext;
     
-    private final ShardingTransactionManager shardingTransactionManager;
+    @Getter
+    private final ConnectionManager connectionManager;
     
-    @Getter(AccessLevel.NONE)
     private boolean autoCommit = true;
     
-    public ShardingSphereConnection(final Map<String, DataSource> dataSourceMap,
-                                    final MetaDataContexts metaDataContexts, final TransactionContexts transactionContexts, final TransactionType transactionType) {
-        this.dataSourceMap = dataSourceMap;
-        this.metaDataContexts = metaDataContexts;
-        this.transactionType = transactionType;
-        shardingTransactionManager = transactionContexts.getDefaultTransactionManagerEngine().getTransactionManager(transactionType);
-    }
+    private int transactionIsolation = TRANSACTION_READ_UNCOMMITTED;
     
-    /**
-     * Get database connection.
-     *
-     * @param dataSourceName data source name
-     * @return database connection
-     * @throws SQLException SQL exception
-     */
-    public Connection getConnection(final String dataSourceName) throws SQLException {
-        return getConnections(dataSourceName, 1, ConnectionMode.MEMORY_STRICTLY).get(0);
-    }
+    private boolean readOnly;
     
-    @Override
-    public List<Connection> getConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        DataSource dataSource = dataSourceMap.get(dataSourceName);
-        Preconditions.checkState(null != dataSource, "Missing the data source name: '%s'", dataSourceName);
-        Collection<Connection> connections;
-        synchronized (getCachedConnections()) {
-            connections = getCachedConnections().get(dataSourceName);
-        }
-        List<Connection> result;
-        if (connections.size() >= connectionSize) {
-            result = new ArrayList<>(connections).subList(0, connectionSize);
-        } else if (!connections.isEmpty()) {
-            result = new ArrayList<>(connectionSize);
-            result.addAll(connections);
-            List<Connection> newConnections = createConnections(dataSourceName, dataSource, connectionSize - connections.size(), connectionMode);
-            result.addAll(newConnections);
-            synchronized (getCachedConnections()) {
-                getCachedConnections().putAll(dataSourceName, newConnections);
-            }
-        } else {
-            result = new ArrayList<>(createConnections(dataSourceName, dataSource, connectionSize, connectionMode));
-            synchronized (getCachedConnections()) {
-                getCachedConnections().putAll(dataSourceName, result);
-            }
-        }
-        return result;
-    }
+    private volatile boolean closed;
     
-    @SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
-    private List<Connection> createConnections(final String dataSourceName, final DataSource dataSource, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        if (1 == connectionSize) {
-            Connection connection = createConnection(dataSourceName, dataSource);
-            replayMethodsInvocation(connection);
-            return Collections.singletonList(connection);
-        }
-        if (ConnectionMode.CONNECTION_STRICTLY == connectionMode) {
-            return createConnections(dataSourceName, dataSource, connectionSize);
-        }
-        synchronized (dataSource) {
-            return createConnections(dataSourceName, dataSource, connectionSize);
-        }
-    }
-    
-    private List<Connection> createConnections(final String dataSourceName, final DataSource dataSource, final int connectionSize) throws SQLException {
-        List<Connection> result = new ArrayList<>(connectionSize);
-        for (int i = 0; i < connectionSize; i++) {
-            try {
-                Connection connection = createConnection(dataSourceName, dataSource);
-                replayMethodsInvocation(connection);
-                result.add(connection);
-            } catch (final SQLException ex) {
-                for (Connection each : result) {
-                    each.close();
-                }
-                throw new SQLException(String.format("Can not get %d connections one time, partition succeed connection(%d) have released!", connectionSize, result.size()), ex);
-            }
-        }
-        return result;
-    }
-    
-    private Connection createConnection(final String dataSourceName, final DataSource dataSource) throws SQLException {
-        return isInShardingTransaction() ? shardingTransactionManager.getConnection(dataSourceName) : dataSource.getConnection();
-    }
-    
-    private boolean isInShardingTransaction() {
-        return null != shardingTransactionManager && shardingTransactionManager.isInTransaction();
+    public ShardingSphereConnection(final String databaseName, final ContextManager contextManager, final JDBCContext jdbcContext) {
+        this.databaseName = databaseName;
+        this.contextManager = contextManager;
+        this.jdbcContext = jdbcContext;
+        connectionManager = new ConnectionManager(databaseName, contextManager);
     }
     
     /**
@@ -156,21 +73,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter im
      * @return true or false
      */
     public boolean isHoldTransaction() {
-        return (TransactionType.LOCAL == transactionType && !autoCommit) || (TransactionType.XA == transactionType && isInShardingTransaction());
-    }
-    
-    @SuppressWarnings("MagicConstant")
-    @Override
-    public Statement createStorageResource(final Connection connection, final ConnectionMode connectionMode, final StatementOption option) throws SQLException {
-        return connection.createStatement(option.getResultSetType(), option.getResultSetConcurrency(), option.getResultSetHoldability());
-    }
-
-    @SuppressWarnings("MagicConstant")
-    @Override
-    public PreparedStatement createStorageResource(final String sql, final List<Object> parameters,
-                                                   final Connection connection, final ConnectionMode connectionMode, final StatementOption option) throws SQLException {
-        return option.isReturnGeneratedKeys() ? connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
-                : connection.prepareStatement(sql, option.getResultSetType(), option.getResultSetConcurrency(), option.getResultSetHoldability());
+        return connectionManager.getConnectionTransaction().isHoldTransaction(autoCommit);
     }
     
     @Override
@@ -230,62 +133,146 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter im
     
     @Override
     public void setAutoCommit(final boolean autoCommit) throws SQLException {
-        if (TransactionType.LOCAL == transactionType) {
-            this.autoCommit = autoCommit;
-            recordMethodInvocation(Connection.class, "setAutoCommit", new Class[]{boolean.class}, new Object[]{autoCommit});
-            getForceExecuteTemplate().execute(getCachedConnections().values(), connection -> connection.setAutoCommit(autoCommit));
-            TransactionHolder.setInTransaction();
-            return;
+        this.autoCommit = autoCommit;
+        if (connectionManager.getConnectionTransaction().isLocalTransaction()) {
+            processLocalTransaction();
+        } else {
+            processDistributeTransaction();
         }
-        if (autoCommit != shardingTransactionManager.isInTransaction()) {
-            return;
-        }
-        if (autoCommit && shardingTransactionManager.isInTransaction()) {
-            shardingTransactionManager.commit();
-            return;
-        }
-        if (!autoCommit && !shardingTransactionManager.isInTransaction()) {
-            closeCachedConnections();
-            shardingTransactionManager.begin();
+    }
+    
+    private void processLocalTransaction() throws SQLException {
+        connectionManager.setAutoCommit(autoCommit);
+        if (!autoCommit) {
             TransactionHolder.setInTransaction();
         }
     }
     
-    private void closeCachedConnections() throws SQLException {
-        getForceExecuteTemplate().execute(getCachedConnections().values(), Connection::close);
-        getCachedConnections().clear();
+    private void processDistributeTransaction() throws SQLException {
+        switch (connectionManager.getConnectionTransaction().getDistributedTransactionOperationType(autoCommit)) {
+            case BEGIN:
+                connectionManager.close();
+                connectionManager.getConnectionTransaction().begin();
+                TransactionHolder.setInTransaction();
+                break;
+            case COMMIT:
+                connectionManager.getConnectionTransaction().commit();
+                break;
+            default:
+                break;
+        }
     }
     
     @Override
     public void commit() throws SQLException {
         try {
-            if (TransactionType.LOCAL == transactionType) {
-                getForceExecuteTemplate().execute(getCachedConnections().values(), Connection::commit);
-            } else {
-                shardingTransactionManager.commit();
-            }
+            connectionManager.commit();
         } finally {
+            connectionManager.getConnectionTransaction().setRollbackOnly(false);
             TransactionHolder.clear();
+            TrafficContextHolder.remove();
+            FetchOrderByValueQueuesHolder.remove();
         }
     }
     
     @Override
     public void rollback() throws SQLException {
         try {
-            if (TransactionType.LOCAL == transactionType) {
-                getForceExecuteTemplate().execute(getCachedConnections().values(), Connection::rollback);
-            } else {
-                shardingTransactionManager.rollback();
-            }
+            connectionManager.rollback();
         } finally {
+            connectionManager.getConnectionTransaction().setRollbackOnly(false);
             TransactionHolder.clear();
+            TrafficContextHolder.remove();
+            FetchOrderByValueQueuesHolder.remove();
         }
     }
     
     @Override
+    public void rollback(final Savepoint savepoint) throws SQLException {
+        checkClose();
+        connectionManager.rollback(savepoint);
+    }
+    
+    @Override
+    public Savepoint setSavepoint(final String name) throws SQLException {
+        checkClose();
+        if (!isHoldTransaction()) {
+            throw new SQLException("Savepoint can only be used in transaction blocks.");
+        }
+        return connectionManager.setSavepoint(name);
+    }
+    
+    @Override
+    public Savepoint setSavepoint() throws SQLException {
+        checkClose();
+        if (!isHoldTransaction()) {
+            throw new SQLException("Savepoint can only be used in transaction blocks.");
+        }
+        return connectionManager.setSavepoint();
+    }
+    
+    @Override
+    public void releaseSavepoint(final Savepoint savepoint) throws SQLException {
+        checkClose();
+        if (!isHoldTransaction()) {
+            return;
+        }
+        connectionManager.releaseSavepoint(savepoint);
+    }
+    
+    private void checkClose() throws SQLException {
+        if (isClosed()) {
+            throw new SQLException("This connection has been closed");
+        }
+    }
+    
+    @SuppressWarnings("MagicConstant")
+    @Override
+    public int getTransactionIsolation() throws SQLException {
+        return connectionManager.getTransactionIsolation().orElseGet(() -> transactionIsolation);
+    }
+    
+    @Override
+    public void setTransactionIsolation(final int level) throws SQLException {
+        transactionIsolation = level;
+        connectionManager.setTransactionIsolation(level);
+    }
+    
+    @Override
+    public boolean isReadOnly() {
+        return readOnly;
+    }
+    
+    @Override
+    public void setReadOnly(final boolean readOnly) throws SQLException {
+        this.readOnly = readOnly;
+        connectionManager.setReadOnly(readOnly);
+    }
+    
+    @Override
+    public boolean isValid(final int timeout) throws SQLException {
+        return connectionManager.isValid(timeout);
+    }
+    
+    @Override
     public Array createArrayOf(final String typeName, final Object[] elements) throws SQLException {
-        String dataSourceName = getDataSourceMap().entrySet().iterator().next().getKey();
-        Connection connection = getConnection(dataSourceName);
-        return connection.createArrayOf(typeName, elements);
+        return connectionManager.getRandomConnection().createArrayOf(typeName, elements);
+    }
+    
+    @Override
+    public String getSchema() {
+        // TODO return databaseName for now in getSchema(), the same as before
+        return databaseName;
+    }
+    
+    @Override
+    public boolean isClosed() {
+        return closed;
+    }
+    
+    @Override
+    public void close() throws SQLException {
+        closed = true;
+        connectionManager.close();
     }
 }

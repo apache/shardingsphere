@@ -23,16 +23,13 @@ import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * Database type of SQL92.
  */
 public final class SQL92DatabaseType implements DatabaseType {
-    
-    @Override
-    public String getName() {
-        return "SQL92";
-    }
     
     @Override
     public QuoteCharacter getQuoteCharacter() {
@@ -47,5 +44,25 @@ public final class SQL92DatabaseType implements DatabaseType {
     @Override
     public SQL92DataSourceMetaData getDataSourceMetaData(final String url, final String username) {
         return new SQL92DataSourceMetaData(url);
+    }
+    
+    @Override
+    public Optional<String> getDataSourceClassName() {
+        return Optional.empty();
+    }
+    
+    @Override
+    public Map<String, Collection<String>> getSystemDatabaseSchemaMap() {
+        return Collections.emptyMap();
+    }
+    
+    @Override
+    public Collection<String> getSystemSchemas() {
+        return Collections.emptyList();
+    }
+    
+    @Override
+    public String getType() {
+        return "SQL92";
     }
 }

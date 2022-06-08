@@ -25,6 +25,7 @@ import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CodePointBuffer;
 import org.antlr.v4.runtime.CodePointCharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.ConsoleErrorListener;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.TokenStream;
@@ -40,12 +41,12 @@ import java.nio.CharBuffer;
 public final class SQLParserFactory {
     
     /**
-     * New instance of SQL parser.
+     * Create new instance of SQL parser.
      * 
      * @param sql SQL
      * @param lexerClass lexer class
      * @param parserClass parser class
-     * @return SQL parser
+     * @return created instance
      */
     public static SQLParser newInstance(final String sql, final Class<? extends SQLLexer> lexerClass, final Class<? extends SQLParser> parserClass) {
         return createSQLParser(createTokenStream(sql, lexerClass), parserClass);
@@ -55,12 +56,14 @@ public final class SQLParserFactory {
     private static SQLParser createSQLParser(final TokenStream tokenStream, final Class<? extends SQLParser> parserClass) {
         SQLParser result = parserClass.getConstructor(TokenStream.class).newInstance(tokenStream);
         ((Parser) result).setErrorHandler(new BailErrorStrategy());
+        ((Parser) result).removeErrorListener(ConsoleErrorListener.INSTANCE);
         return result;
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
     private static TokenStream createTokenStream(final String sql, final Class<? extends SQLLexer> lexerClass) {
         Lexer lexer = (Lexer) lexerClass.getConstructor(CharStream.class).newInstance(getSQLCharStream(sql));
+        lexer.removeErrorListener(ConsoleErrorListener.INSTANCE);
         return new CommonTokenStream(lexer);
     }
     

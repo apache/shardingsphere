@@ -1,10 +1,8 @@
 +++
-title = "Seata_AT"
+title = "Apache ShardingSphere merged Seata AT distributed transactions"
 weight = 7
 chapter = true
 +++
-
-## Apache ShardingSphere merged Seata AT distributed transactions
 
 ### Background
 

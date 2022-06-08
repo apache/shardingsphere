@@ -18,20 +18,24 @@
 package org.apache.shardingsphere.encrypt.rewrite.token;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.encrypt.rewrite.token.generator.impl.EncryptAlterTableTokenGenerator;
-import org.apache.shardingsphere.encrypt.rewrite.token.generator.impl.EncryptCreateTableTokenGenerator;
-import org.apache.shardingsphere.encrypt.rewrite.token.generator.impl.EncryptInsertOnUpdateTokenGenerator;
+import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptConditionsAware;
+import org.apache.shardingsphere.encrypt.rewrite.aware.DatabaseNameAware;
+import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptCondition;
+import org.apache.shardingsphere.encrypt.rewrite.token.generator.AssistQueryAndPlainInsertColumnsTokenGenerator;
+import org.apache.shardingsphere.encrypt.rewrite.token.generator.EncryptAlterTableTokenGenerator;
+import org.apache.shardingsphere.encrypt.rewrite.token.generator.EncryptAssignmentTokenGenerator;
+import org.apache.shardingsphere.encrypt.rewrite.token.generator.EncryptCreateTableTokenGenerator;
+import org.apache.shardingsphere.encrypt.rewrite.token.generator.EncryptForUseDefaultInsertColumnsTokenGenerator;
+import org.apache.shardingsphere.encrypt.rewrite.token.generator.EncryptInsertOnUpdateTokenGenerator;
+import org.apache.shardingsphere.encrypt.rewrite.token.generator.EncryptInsertValuesTokenGenerator;
+import org.apache.shardingsphere.encrypt.rewrite.token.generator.EncryptOrderByItemTokenGenerator;
+import org.apache.shardingsphere.encrypt.rewrite.token.generator.EncryptPredicateColumnTokenGenerator;
+import org.apache.shardingsphere.encrypt.rewrite.token.generator.EncryptPredicateRightValueTokenGenerator;
+import org.apache.shardingsphere.encrypt.rewrite.token.generator.EncryptProjectionTokenGenerator;
+import org.apache.shardingsphere.encrypt.rewrite.token.generator.InsertCipherNameTokenGenerator;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.encrypt.rewrite.token.generator.impl.EncryptForUseDefaultInsertColumnsTokenGenerator;
-import org.apache.shardingsphere.encrypt.rewrite.token.generator.impl.EncryptPredicateColumnTokenGenerator;
-import org.apache.shardingsphere.encrypt.rewrite.token.generator.impl.EncryptPredicateRightValueTokenGenerator;
-import org.apache.shardingsphere.encrypt.rewrite.token.generator.impl.InsertCipherNameTokenGenerator;
 import org.apache.shardingsphere.encrypt.rule.aware.EncryptRuleAware;
-import org.apache.shardingsphere.encrypt.rewrite.aware.QueryWithCipherColumnAware;
-import org.apache.shardingsphere.encrypt.rewrite.token.generator.impl.AssistQueryAndPlainInsertColumnsTokenGenerator;
-import org.apache.shardingsphere.encrypt.rewrite.token.generator.impl.EncryptAssignmentTokenGenerator;
-import org.apache.shardingsphere.encrypt.rewrite.token.generator.impl.EncryptInsertValuesTokenGenerator;
-import org.apache.shardingsphere.encrypt.rewrite.token.generator.impl.EncryptProjectionTokenGenerator;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.SQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.builder.SQLTokenGeneratorBuilder;
 
@@ -46,35 +50,46 @@ public final class EncryptTokenGenerateBuilder implements SQLTokenGeneratorBuild
     
     private final EncryptRule encryptRule;
     
-    private final boolean queryWithCipherColumn;
+    private final SQLStatementContext<?> sqlStatementContext;
+    
+    private final Collection<EncryptCondition> encryptConditions;
+    
+    private final String databaseName;
     
     @Override
     public Collection<SQLTokenGenerator> getSQLTokenGenerators() {
-        Collection<SQLTokenGenerator> result = buildSQLTokenGenerators();
-        for (SQLTokenGenerator each : result) {
-            if (each instanceof EncryptRuleAware) {
-                ((EncryptRuleAware) each).setEncryptRule(encryptRule);
-            }
-            if (each instanceof QueryWithCipherColumnAware) {
-                ((QueryWithCipherColumnAware) each).setQueryWithCipherColumn(queryWithCipherColumn);
-            }
-        }
+        Collection<SQLTokenGenerator> result = new LinkedList<>();
+        addSQLTokenGenerator(result, new EncryptProjectionTokenGenerator());
+        addSQLTokenGenerator(result, new EncryptAssignmentTokenGenerator());
+        addSQLTokenGenerator(result, new EncryptPredicateColumnTokenGenerator());
+        addSQLTokenGenerator(result, new EncryptPredicateRightValueTokenGenerator());
+        addSQLTokenGenerator(result, new EncryptInsertValuesTokenGenerator());
+        addSQLTokenGenerator(result, new EncryptForUseDefaultInsertColumnsTokenGenerator());
+        addSQLTokenGenerator(result, new InsertCipherNameTokenGenerator());
+        addSQLTokenGenerator(result, new AssistQueryAndPlainInsertColumnsTokenGenerator());
+        addSQLTokenGenerator(result, new EncryptInsertOnUpdateTokenGenerator());
+        addSQLTokenGenerator(result, new EncryptCreateTableTokenGenerator());
+        addSQLTokenGenerator(result, new EncryptAlterTableTokenGenerator());
+        addSQLTokenGenerator(result, new EncryptOrderByItemTokenGenerator());
         return result;
     }
     
-    private Collection<SQLTokenGenerator> buildSQLTokenGenerators() {
-        Collection<SQLTokenGenerator> result = new LinkedList<>();
-        result.add(new EncryptProjectionTokenGenerator());
-        result.add(new EncryptAssignmentTokenGenerator());
-        result.add(new EncryptPredicateColumnTokenGenerator());
-        result.add(new EncryptPredicateRightValueTokenGenerator());
-        result.add(new EncryptInsertValuesTokenGenerator());
-        result.add(new EncryptForUseDefaultInsertColumnsTokenGenerator());
-        result.add(new InsertCipherNameTokenGenerator());
-        result.add(new AssistQueryAndPlainInsertColumnsTokenGenerator());
-        result.add(new EncryptInsertOnUpdateTokenGenerator());
-        result.add(new EncryptCreateTableTokenGenerator());
-        result.add(new EncryptAlterTableTokenGenerator());
-        return result;
+    private void addSQLTokenGenerator(final Collection<SQLTokenGenerator> sqlTokenGenerators, final SQLTokenGenerator toBeAddedSQLTokenGenerator) {
+        if (toBeAddedSQLTokenGenerator.isGenerateSQLToken(sqlStatementContext)) {
+            setUpSQLTokenGenerator(toBeAddedSQLTokenGenerator);
+            sqlTokenGenerators.add(toBeAddedSQLTokenGenerator);
+        }
+    }
+    
+    private void setUpSQLTokenGenerator(final SQLTokenGenerator toBeAddedSQLTokenGenerator) {
+        if (toBeAddedSQLTokenGenerator instanceof EncryptRuleAware) {
+            ((EncryptRuleAware) toBeAddedSQLTokenGenerator).setEncryptRule(encryptRule);
+        }
+        if (toBeAddedSQLTokenGenerator instanceof EncryptConditionsAware) {
+            ((EncryptConditionsAware) toBeAddedSQLTokenGenerator).setEncryptConditions(encryptConditions);
+        }
+        if (toBeAddedSQLTokenGenerator instanceof DatabaseNameAware) {
+            ((DatabaseNameAware) toBeAddedSQLTokenGenerator).setDatabaseName(databaseName);
+        }
     }
 }

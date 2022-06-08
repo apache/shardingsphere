@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.route.engine.validator;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingAlterIndexStatementValidator;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingAlterTableStatementValidator;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingAlterViewStatementValidator;
@@ -30,6 +31,8 @@ import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.Shardi
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingDropIndexStatementValidator;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingDropTableStatementValidator;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingPrepareStatementValidator;
+import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingRenameTableStatementValidator;
+import org.apache.shardingsphere.sharding.route.engine.validator.dml.impl.ShardingCopyStatementValidator;
 import org.apache.shardingsphere.sharding.route.engine.validator.dml.impl.ShardingDeleteStatementValidator;
 import org.apache.shardingsphere.sharding.route.engine.validator.dml.impl.ShardingInsertStatementValidator;
 import org.apache.shardingsphere.sharding.route.engine.validator.dml.impl.ShardingSelectStatementValidator;
@@ -46,12 +49,14 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateViewS
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.PrepareStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.RenameTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.CopyStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLPrepareStatement;
 
 import java.util.Optional;
 
@@ -65,14 +70,15 @@ public final class ShardingStatementValidatorFactory {
      * New instance of sharding statement validator.
      * 
      * @param sqlStatement SQL statement
-     * @return instance of sharding statement validator
+     * @param shardingConditions sharding conditions
+     * @return created instance
      */
-    public static Optional<ShardingStatementValidator> newInstance(final SQLStatement sqlStatement) {
+    public static Optional<ShardingStatementValidator> newInstance(final SQLStatement sqlStatement, final ShardingConditions shardingConditions) {
         if (sqlStatement instanceof DDLStatement) {
             return getDDLStatementValidator(sqlStatement);
         }
         if (sqlStatement instanceof DMLStatement) {
-            return getDMLStatementValidator(sqlStatement);
+            return getDMLStatementValidator(sqlStatement, shardingConditions);
         }
         return Optional.empty();
     }
@@ -96,6 +102,9 @@ public final class ShardingStatementValidatorFactory {
         if (sqlStatement instanceof AlterTableStatement) {
             return Optional.of(new ShardingAlterTableStatementValidator());
         }
+        if (sqlStatement instanceof RenameTableStatement) {
+            return Optional.of(new ShardingRenameTableStatementValidator());
+        }
         if (sqlStatement instanceof AlterViewStatement) {
             return Optional.of(new ShardingAlterViewStatementValidator());
         }
@@ -108,15 +117,15 @@ public final class ShardingStatementValidatorFactory {
         if (sqlStatement instanceof DropIndexStatement) {
             return Optional.of(new ShardingDropIndexStatementValidator());
         }
-        if (sqlStatement instanceof PostgreSQLPrepareStatement) {
+        if (sqlStatement instanceof PrepareStatement) {
             return Optional.of(new ShardingPrepareStatementValidator());
         }
         return Optional.empty();
     }
     
-    private static Optional<ShardingStatementValidator> getDMLStatementValidator(final SQLStatement sqlStatement) {
+    private static Optional<ShardingStatementValidator> getDMLStatementValidator(final SQLStatement sqlStatement, final ShardingConditions shardingConditions) {
         if (sqlStatement instanceof InsertStatement) {
-            return Optional.of(new ShardingInsertStatementValidator());
+            return Optional.of(new ShardingInsertStatementValidator(shardingConditions));
         }
         if (sqlStatement instanceof UpdateStatement) {
             return Optional.of(new ShardingUpdateStatementValidator());
@@ -126,6 +135,9 @@ public final class ShardingStatementValidatorFactory {
         }
         if (sqlStatement instanceof SelectStatement) {
             return Optional.of(new ShardingSelectStatementValidator());
+        }
+        if (sqlStatement instanceof CopyStatement) {
+            return Optional.of(new ShardingCopyStatementValidator());
         }
         return Optional.empty();
     }

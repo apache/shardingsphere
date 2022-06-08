@@ -4,8 +4,6 @@ weight = 7
 chapter = true
 +++
 
-## Apache ShardingSphere整合Seata AT分布式事务
-
 ### 背景知识
 
 Seata是阿里集团和蚂蚁金服联合打造的分布式事务框架，目前版本包含了AT事务和TCC事务。其中AT事务的目标是在微服务架构下，提供增量的事务ACID语意，让用户像使用本地事务一样，使用分布式事务，核心理念同ShardingSphere一脉相承。

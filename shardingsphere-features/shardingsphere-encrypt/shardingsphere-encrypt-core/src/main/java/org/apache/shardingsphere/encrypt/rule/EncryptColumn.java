@@ -38,6 +38,8 @@ public final class EncryptColumn {
     
     private final String encryptorName;
     
+    private final Boolean queryWithCipherColumn;
+    
     /**
      * Get assisted query column.
      * 

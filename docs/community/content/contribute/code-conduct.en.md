@@ -1,6 +1,6 @@
 +++
 title = "Code of Conduct" 
-weight = 4
+weight = 5
 chapter = true
 +++
 
@@ -15,18 +15,16 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
 
 ## Contributor Covenant Submitting of Conduct
 
- - Make sure all the test cases are passed, Make sure `./mvnw -T 1C clean install` can be compiled and tested successfully.
+ - Make sure Maven build process success. Run `mvn -T 1C clean install` or `./mvnw -T 1C clean install` command in shell to start Maven build process. On which directory to run Maven build process, there are 2 alternatives, we could select one of them: 1) if we're not familiar with Apache ShardingSphere, then we could run it on project root directory, 2) if we know which modules will be affected by the changes, then we could run it on these modules to save build time.
  - Make sure the test coverage rate is not lower than the master branch.
- - Make sure to check codes with Checkstyle. codes that violate check rules should have special reasons. Find checkstyle template from `https://github.com/apache/shardingsphere/blob/master/src/resources/checkstyle.xml`, please use checkstyle `8.8` to run the rules.
  - Careful consideration for each `pull request`; Small and frequent `pull request` with complete unit function is welcomed.
  - Conform to `Contributor Covenant Code of Conduct` below.
- - If using IDEA，you can import the recommended [Settings](https://shardingsphere.apache.org/community/data/shardingsphere-settings.jar).
+ - If using IDEA, you can import the recommended [Settings](https://shardingsphere.apache.org/community/data/shardingsphere-settings.jar).
+ - Through the uniform code style of spotless, execute the `mvn spotless:apply` formatted code.
 
 ## Contributor Covenant Code of Conduct
 
  - Use linux line separators.
- - Keep indents (including blank lines) consistent with the previous one.
- - Keep one blank line after class definition.
  - No meaningless blank lines. Please extract private methods to instead of blank lines if too long method body or different logic code fragments.
  - Use meaningful class, method and variable names, avoid to use abbreviate. 
  - Return values are named with `result`; Variables in the loop structure are named with `each`; Replace `each` with `entry` in map.
@@ -49,6 +47,7 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
  - Use English in all the logs and javadoc.
  - Include Javadoc, todo and fixme only in the comments.
  - Only `public` classes and methods need javadoc, other methods, classes and override methods do not need javadoc.
+ - conditional operator(<expression1> ? <expression2> : <expression3>) `nested use` is forbidden.
 
 ## Contributor Covenant Unit Test of Conduct
 
@@ -63,6 +62,7 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
    - Design: Design with production codes.
    - Error: Error value test, test for error input, exception to get expect result.
  - Without particular reasons, test cases should be fully covered.
+ - Test cases should be fully covered expect simply `getter /setter` methods, and declared static codes of SPI, such as: `getType / getOrder`.
  - Every test case need precised assertion.
  - Environment preparation codes should be separate from test codes.
  - Only those that relate to junit `Assert`, hamcrest `CoreMatchers` and `Mockito` can use static import.

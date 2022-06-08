@@ -17,7 +17,7 @@
 
 grammar DMLStatement;
 
-import Symbol, Keyword, SQL92Keyword, Literals, BaseRule;
+import BaseRule;
 
 insert
     : INSERT INTO? tableName (insertValuesClause | insertSelectClause)
@@ -65,10 +65,10 @@ singleTableClause
     ;
 
 select
-    : unionClause
+    : combineClause
     ;
 
-unionClause
+combineClause
     : selectClause (UNION (ALL)? selectClause)*
     ;
 
@@ -159,5 +159,5 @@ limitOffset
     ;
 
 subquery
-    : LP_ unionClause RP_
+    : LP_ combineClause RP_
     ;

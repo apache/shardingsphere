@@ -19,16 +19,18 @@ package org.apache.shardingsphere.sharding.merge.dal;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.engine.merger.ResultMerger;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sharding.merge.dal.common.SingleLocalDataMergedResult;
 import org.apache.shardingsphere.sharding.merge.dal.show.LogicTablesMergedResult;
 import org.apache.shardingsphere.sharding.merge.dal.show.ShowCreateTableMergedResult;
 import org.apache.shardingsphere.sharding.merge.dal.show.ShowIndexMergedResult;
+import org.apache.shardingsphere.sharding.merge.dal.show.ShowTableStatusMergedResult;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateTableStatement;
@@ -47,16 +49,23 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class ShardingDALResultMerger implements ResultMerger {
     
+    private final String databaseName;
+    
     private final ShardingRule shardingRule;
     
     @Override
-    public MergedResult merge(final List<QueryResult> queryResults, final SQLStatementContext<?> sqlStatementContext, final ShardingSphereSchema schema) throws SQLException {
+    public MergedResult merge(final List<QueryResult> queryResults, final SQLStatementContext<?> sqlStatementContext, final ShardingSphereDatabase database) throws SQLException {
         SQLStatement dalStatement = sqlStatementContext.getSqlStatement();
+        String schemaName = sqlStatementContext.getTablesContext().getSchemaName().orElse(DatabaseTypeEngine.getDefaultSchemaName(sqlStatementContext.getDatabaseType(), database.getName()));
         if (dalStatement instanceof MySQLShowDatabasesStatement) {
-            return new SingleLocalDataMergedResult(Collections.singletonList(DefaultSchema.LOGIC_NAME));
+            return new SingleLocalDataMergedResult(Collections.singletonList(databaseName));
         }
-        if (dalStatement instanceof MySQLShowTablesStatement || dalStatement instanceof MySQLShowTableStatusStatement) {
+        ShardingSphereSchema schema = database.getSchemas().get(schemaName);
+        if (dalStatement instanceof MySQLShowTablesStatement) {
             return new LogicTablesMergedResult(shardingRule, sqlStatementContext, schema, queryResults);
+        }
+        if (dalStatement instanceof MySQLShowTableStatusStatement) {
+            return new ShowTableStatusMergedResult(shardingRule, sqlStatementContext, schema, queryResults);
         }
         if (dalStatement instanceof MySQLShowIndexStatement) {
             return new ShowIndexMergedResult(shardingRule, sqlStatementContext, schema, queryResults);

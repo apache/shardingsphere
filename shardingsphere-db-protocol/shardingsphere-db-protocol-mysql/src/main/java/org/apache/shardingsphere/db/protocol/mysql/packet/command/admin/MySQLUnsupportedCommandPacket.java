@@ -17,12 +17,14 @@
 
 package org.apache.shardingsphere.db.protocol.mysql.packet.command.admin;
 
+import lombok.ToString;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.MySQLCommandPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.MySQLCommandPacketType;
 
 /**
  * Unsupported command packet for MySQL.
  */
+@ToString
 public final class MySQLUnsupportedCommandPacket extends MySQLCommandPacket {
     
     public MySQLUnsupportedCommandPacket(final MySQLCommandPacketType type) {

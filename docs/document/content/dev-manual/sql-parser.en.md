@@ -1,7 +1,7 @@
 +++
-pre = "<b>5.1. </b>"
+pre = "<b>6.5. </b>"
 title = "SQL Parser"
-weight = 1
+weight = 5
 chapter = true
 +++
 
@@ -11,13 +11,14 @@ chapter = true
 | ---------------------------- | -------------------------------------- |
 | DatabaseTypedSQLParserFacade | SQL parser facade for lexer and parser |
 
-| *Implementation Class* | *Description*                          |
-| ---------------------- | -------------------------------------- |
-| MySQLParserFacade      | SQL parser facade for MySQL            |
-| PostgreSQLParserFacade | SQL parser facade for PostgreSQL       |
-| SQLServerParserFacade  | SQL parser facade for SQLServer        |
-| OracleParserFacade     | SQL parser facade for Oracle           |
-| SQL92ParserFacade      | SQL parser facade for SQL92            |
+| *Implementation Class* | *Description*                      |
+| ---------------------- |------------------------------------|
+| MySQLParserFacade      | SQL parser facade for MySQL        |
+| PostgreSQLParserFacade | SQL parser facade for PostgreSQL   |
+| SQLServerParserFacade  | SQL parser facade for SQLServer    |
+| OracleParserFacade     | SQL parser facade for Oracle       |
+| SQL92ParserFacade      | SQL parser facade for SQL92        |
+| OpenGaussParserFacade  | SQL parser facade for openGauss    |
 
 ## SQLVisitorFacade
 

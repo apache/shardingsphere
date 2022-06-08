@@ -17,21 +17,68 @@
 
 package org.apache.shardingsphere.proxy.initializer;
 
-import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
+import org.apache.shardingsphere.infra.instance.definition.InstanceType;
+import org.apache.shardingsphere.infra.yaml.config.swapper.mode.ModeConfigurationYamlSwapper;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.ContextManagerBuilderFactory;
+import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
+import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleListener;
+import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleListenerFactory;
+import org.apache.shardingsphere.proxy.backend.config.ProxyConfiguration;
+import org.apache.shardingsphere.proxy.backend.config.YamlProxyConfiguration;
+import org.apache.shardingsphere.proxy.backend.config.yaml.swapper.YamlProxyConfigurationSwapper;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.version.ShardingSphereProxyVersion;
 
 import java.sql.SQLException;
 
 /**
  * Bootstrap initializer.
  */
-public interface BootstrapInitializer {
+@RequiredArgsConstructor
+@Slf4j
+public final class BootstrapInitializer {
     
     /**
      * Initialize.
-     * 
+     *
      * @param yamlConfig YAML proxy configuration
-     * @param port port
+     * @param port proxy port
      * @throws SQLException SQL exception
      */
-    void init(YamlProxyConfiguration yamlConfig, int port) throws SQLException;
+    public void init(final YamlProxyConfiguration yamlConfig, final int port) throws SQLException {
+        ModeConfiguration modeConfig = null == yamlConfig.getServerConfiguration().getMode() ? null : new ModeConfigurationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getMode());
+        ContextManager contextManager = createContextManager(yamlConfig, modeConfig, port);
+        ProxyContext.init(contextManager);
+        contextManagerInitializedCallback(modeConfig, contextManager);
+        ShardingSphereProxyVersion.setVersion(contextManager);
+    }
+    
+    private ContextManager createContextManager(final YamlProxyConfiguration yamlConfig, final ModeConfiguration modeConfig, final int port) throws SQLException {
+        ProxyConfiguration proxyConfig = new YamlProxyConfigurationSwapper().swap(yamlConfig);
+        ContextManagerBuilderParameter parameter = ContextManagerBuilderParameter.builder()
+                .modeConfig(modeConfig)
+                .databaseConfigs(proxyConfig.getDatabaseConfigurations())
+                .globalRuleConfigs(proxyConfig.getGlobalConfiguration().getRules())
+                .props(proxyConfig.getGlobalConfiguration().getProperties())
+                .labels(proxyConfig.getGlobalConfiguration().getLabels())
+                .instanceDefinition(new InstanceDefinition(InstanceType.PROXY, port)).build();
+        return ContextManagerBuilderFactory.getInstance(modeConfig).build(parameter);
+    }
+    
+    private void contextManagerInitializedCallback(final ModeConfiguration modeConfig, final ContextManager contextManager) {
+        for (ContextManagerLifecycleListener each : ContextManagerLifecycleListenerFactory.getAllInstances()) {
+            try {
+                each.onInitialized(modeConfig, contextManager);
+                // CHECKSTYLE:OFF
+            } catch (final Exception ex) {
+                // CHECKSTYLE:ON
+                log.error("contextManager onInitialized callback for '{}' failed", each.getClass().getName(), ex);
+            }
+        }
+    }
 }

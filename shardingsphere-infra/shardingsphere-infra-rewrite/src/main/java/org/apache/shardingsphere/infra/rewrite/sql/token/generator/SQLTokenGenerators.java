@@ -17,23 +17,25 @@
 
 package org.apache.shardingsphere.infra.rewrite.sql.token.generator;
 
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.ParametersAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.PreviousSQLTokensAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * SQL token generators.
  */
 public final class SQLTokenGenerators {
     
-    private final Collection<SQLTokenGenerator> sqlTokenGenerators = new LinkedList<>();
+    private final Map<Class<?>, SQLTokenGenerator> sqlTokenGenerators = new LinkedHashMap<>();
     
     /**
      * Add all SQL token generators.
@@ -42,37 +44,27 @@ public final class SQLTokenGenerators {
      */
     public void addAll(final Collection<SQLTokenGenerator> sqlTokenGenerators) {
         for (SQLTokenGenerator each : sqlTokenGenerators) {
-            if (!containsClass(each)) {
-                this.sqlTokenGenerators.add(each);
+            if (!this.sqlTokenGenerators.containsKey(each.getClass())) {
+                this.sqlTokenGenerators.put(each.getClass(), each);
             }
         }
-    }
-    
-    private boolean containsClass(final SQLTokenGenerator sqlTokenGenerator) {
-        for (SQLTokenGenerator each : sqlTokenGenerators) {
-            if (each.getClass() == sqlTokenGenerator.getClass()) {
-                return true;
-            }
-        }
-        return false;
     }
     
     /**
      * Generate SQL tokens.
      *
+     * @param databaseName database name
      * @param sqlStatementContext SQL statement context
      * @param parameters SQL parameters
-     * @param schema sShardingSphere schema
+     * @param schemas ShardingSphere schema map
      * @return SQL tokens
      */
-    @SuppressWarnings("unchecked")
-    public List<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext, final List<Object> parameters, final ShardingSphereSchema schema) {
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    public List<SQLToken> generateSQLTokens(final String databaseName, final Map<String, ShardingSphereSchema> schemas,
+                                            final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
         List<SQLToken> result = new LinkedList<>();
-        for (SQLTokenGenerator each : sqlTokenGenerators) {
-            setUpSQLTokenGenerator(each, parameters, schema, result);
-            if (!each.isGenerateSQLToken(sqlStatementContext)) {
-                continue;
-            }
+        for (SQLTokenGenerator each : sqlTokenGenerators.values()) {
+            setUpSQLTokenGenerator(each, parameters, databaseName, schemas, result);
             if (each instanceof OptionalSQLTokenGenerator) {
                 SQLToken sqlToken = ((OptionalSQLTokenGenerator) each).generateSQLToken(sqlStatementContext);
                 if (!result.contains(sqlToken)) {
@@ -85,12 +77,14 @@ public final class SQLTokenGenerators {
         return result;
     }
     
-    private void setUpSQLTokenGenerator(final SQLTokenGenerator sqlTokenGenerator, final List<Object> parameters, final ShardingSphereSchema schema, final List<SQLToken> previousSQLTokens) {
+    private void setUpSQLTokenGenerator(final SQLTokenGenerator sqlTokenGenerator, final List<Object> parameters,
+                                        final String databaseName, final Map<String, ShardingSphereSchema> schemas, final List<SQLToken> previousSQLTokens) {
         if (sqlTokenGenerator instanceof ParametersAware) {
             ((ParametersAware) sqlTokenGenerator).setParameters(parameters);
         }
         if (sqlTokenGenerator instanceof SchemaMetaDataAware) {
-            ((SchemaMetaDataAware) sqlTokenGenerator).setSchema(schema);
+            ((SchemaMetaDataAware) sqlTokenGenerator).setSchemas(schemas);
+            ((SchemaMetaDataAware) sqlTokenGenerator).setDatabaseName(databaseName);
         }
         if (sqlTokenGenerator instanceof PreviousSQLTokensAware) {
             ((PreviousSQLTokensAware) sqlTokenGenerator).setPreviousSQLTokens(previousSQLTokens);

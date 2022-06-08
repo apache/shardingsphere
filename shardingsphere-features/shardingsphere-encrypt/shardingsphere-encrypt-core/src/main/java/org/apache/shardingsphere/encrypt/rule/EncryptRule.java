@@ -24,31 +24,30 @@ import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncry
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
+import org.apache.shardingsphere.encrypt.context.EncryptContextBuilder;
+import org.apache.shardingsphere.encrypt.factory.EncryptAlgorithmFactory;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.QueryAssistedEncryptAlgorithm;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
-import org.apache.shardingsphere.infra.rule.level.FeatureRule;
-import org.apache.shardingsphere.infra.rule.scope.SchemaRule;
-import org.apache.shardingsphere.infra.rule.type.TableContainedRule;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
+import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Encrypt rule.
  */
-public final class EncryptRule implements FeatureRule, SchemaRule, TableContainedRule {
+public final class EncryptRule implements SchemaRule, TableContainedRule {
     
-    static {
-        ShardingSphereServiceLoader.register(EncryptAlgorithm.class);
-    }
-    
+    @SuppressWarnings("rawtypes")
     private final Map<String, EncryptAlgorithm> encryptors = new LinkedHashMap<>();
     
     private final Map<String, EncryptTable> tables = new LinkedHashMap<>();
@@ -58,15 +57,15 @@ public final class EncryptRule implements FeatureRule, SchemaRule, TableContaine
     
     public EncryptRule(final EncryptRuleConfiguration config) {
         Preconditions.checkArgument(isValidRuleConfiguration(config), "Invalid encrypt column configurations in EncryptTableRuleConfigurations.");
-        config.getEncryptors().forEach((key, value) -> encryptors.put(key, ShardingSphereAlgorithmFactory.createAlgorithm(value, EncryptAlgorithm.class)));
-        config.getTables().forEach(each -> tables.put(each.getName(), new EncryptTable(each)));
+        config.getEncryptors().forEach((key, value) -> encryptors.put(key, EncryptAlgorithmFactory.newInstance(value)));
+        config.getTables().forEach(each -> tables.put(each.getName().toLowerCase(), new EncryptTable(each)));
         queryWithCipherColumn = config.isQueryWithCipherColumn();
     }
     
     public EncryptRule(final AlgorithmProvidedEncryptRuleConfiguration config) {
         Preconditions.checkArgument(isValidRuleConfigurationWithAlgorithmProvided(config), "Invalid encrypt column configurations in EncryptTableRuleConfigurations.");
         encryptors.putAll(config.getEncryptors());
-        config.getTables().forEach(each -> tables.put(each.getName(), new EncryptTable(each)));
+        config.getTables().forEach(each -> tables.put(each.getName().toLowerCase(), new EncryptTable(each)));
         queryWithCipherColumn = config.isQueryWithCipherColumn();
     }
     
@@ -120,7 +119,18 @@ public final class EncryptRule implements FeatureRule, SchemaRule, TableContaine
      * @return encrypt table
      */
     public Optional<EncryptTable> findEncryptTable(final String logicTable) {
-        return Optional.ofNullable(tables.get(logicTable));
+        return Optional.ofNullable(tables.get(logicTable.toLowerCase()));
+    }
+    
+    /**
+     * Find encrypt column.
+     * 
+     * @param logicTable logic table
+     * @param columnName column name
+     * @return encrypt column
+     */
+    public Optional<EncryptColumn> findEncryptColumn(final String logicTable, final String columnName) {
+        return findEncryptTable(logicTable).flatMap(optional -> optional.findEncryptColumn(columnName));
     }
     
     /**
@@ -130,22 +140,38 @@ public final class EncryptRule implements FeatureRule, SchemaRule, TableContaine
      * @param logicColumn logic column name
      * @return encryptor
      */
+    @SuppressWarnings("rawtypes")
     public Optional<EncryptAlgorithm> findEncryptor(final String logicTable, final String logicColumn) {
-        return tables.containsKey(logicTable) ? tables.get(logicTable).findEncryptorName(logicColumn).map(encryptors::get) : Optional.empty();
+        String lowerCaseLogicTable = logicTable.toLowerCase();
+        return tables.containsKey(lowerCaseLogicTable) ? tables.get(lowerCaseLogicTable).findEncryptorName(logicColumn).map(encryptors::get) : Optional.empty();
     }
     
     /**
      * get encrypt values.
      *
+     * @param databaseName database name
+     * @param schemaName schema name
      * @param logicTable logic table
      * @param logicColumn logic column
      * @param originalValues original values
      * @return encrypt values
      */
-    public List<Object> getEncryptValues(final String logicTable, final String logicColumn, final List<Object> originalValues) {
+    @SuppressWarnings("rawtypes")
+    public List<Object> getEncryptValues(final String databaseName, final String schemaName, final String logicTable, final String logicColumn, final List<Object> originalValues) {
         Optional<EncryptAlgorithm> encryptor = findEncryptor(logicTable, logicColumn);
-        Preconditions.checkArgument(encryptor.isPresent(), String.format("Can not find QueryAssistedEncryptAlgorithm by %s.%s.", logicTable, logicColumn));
-        return originalValues.stream().map(input -> null == input ? null : String.valueOf(encryptor.get().encrypt(input.toString()))).collect(Collectors.toList());
+        EncryptContext encryptContext = EncryptContextBuilder.build(databaseName, schemaName, logicTable, logicColumn);
+        Preconditions.checkArgument(encryptor.isPresent(), "Can not find EncryptAlgorithm by %s.%s.", logicTable, logicColumn);
+        return getEncryptValues(encryptor.get(), originalValues, encryptContext);
+    }
+    
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private List<Object> getEncryptValues(final EncryptAlgorithm encryptor, final List<Object> originalValues, final EncryptContext encryptContext) {
+        List<Object> result = new LinkedList<>();
+        for (Object each : originalValues) {
+            Object encryptValue = null == each ? null : encryptor.encrypt(each, encryptContext);
+            result.add(encryptValue);
+        }
+        return result;
     }
     
     /**
@@ -156,7 +182,7 @@ public final class EncryptRule implements FeatureRule, SchemaRule, TableContaine
      * @return cipher column
      */
     public String getCipherColumn(final String logicTable, final String logicColumn) {
-        return tables.get(logicTable).getCipherColumn(logicColumn);
+        return tables.get(logicTable.toLowerCase()).getCipherColumn(logicColumn);
     }
     
     /**
@@ -166,7 +192,8 @@ public final class EncryptRule implements FeatureRule, SchemaRule, TableContaine
      * @return logic and cipher columns
      */
     public Map<String, String> getLogicAndCipherColumns(final String logicTable) {
-        return tables.containsKey(logicTable) ? tables.get(logicTable).getLogicAndCipherColumns() : Collections.emptyMap();
+        String lowerCaseLogicTable = logicTable.toLowerCase();
+        return tables.containsKey(lowerCaseLogicTable) ? tables.get(lowerCaseLogicTable).getLogicAndCipherColumns() : Collections.emptyMap();
     }
     
     /**
@@ -177,7 +204,8 @@ public final class EncryptRule implements FeatureRule, SchemaRule, TableContaine
      * @return assisted query column
      */
     public Optional<String> findAssistedQueryColumn(final String logicTable, final String logicColumn) {
-        return tables.containsKey(logicTable) ? tables.get(logicTable).findAssistedQueryColumn(logicColumn) : Optional.empty();
+        String lowerCaseLogicTable = logicTable.toLowerCase();
+        return tables.containsKey(lowerCaseLogicTable) ? tables.get(lowerCaseLogicTable).findAssistedQueryColumn(logicColumn) : Optional.empty();
     }
     
     /**
@@ -187,22 +215,35 @@ public final class EncryptRule implements FeatureRule, SchemaRule, TableContaine
      * @return assisted query columns
      */
     public Collection<String> getAssistedQueryColumns(final String logicTable) {
-        return tables.containsKey(logicTable) ? tables.get(logicTable).getAssistedQueryColumns() : Collections.emptyList();
+        return tables.containsKey(logicTable.toLowerCase()) ? tables.get(logicTable.toLowerCase()).getAssistedQueryColumns() : Collections.emptyList();
     }
     
     /**
      * Get encrypt assisted query values.
      *
+     * @param databaseName database name
+     * @param schemaName schema name
      * @param logicTable logic table
      * @param logicColumn logic column
      * @param originalValues original values
      * @return assisted query values
      */
-    public List<Object> getEncryptAssistedQueryValues(final String logicTable, final String logicColumn, final List<Object> originalValues) {
+    @SuppressWarnings("rawtypes")
+    public List<Object> getEncryptAssistedQueryValues(final String databaseName, final String schemaName, final String logicTable, final String logicColumn, final List<Object> originalValues) {
         Optional<EncryptAlgorithm> encryptor = findEncryptor(logicTable, logicColumn);
+        EncryptContext encryptContext = EncryptContextBuilder.build(databaseName, schemaName, logicTable, logicColumn);
         Preconditions.checkArgument(encryptor.isPresent() && encryptor.get() instanceof QueryAssistedEncryptAlgorithm,
-                String.format("Can not find QueryAssistedEncryptAlgorithm by %s.%s.", logicTable, logicColumn));
-        return originalValues.stream().map(input -> null == input ? null : ((QueryAssistedEncryptAlgorithm) encryptor.get()).queryAssistedEncrypt(input.toString())).collect(Collectors.toList());
+                "Can not find QueryAssistedEncryptAlgorithm by %s.%s.", logicTable, logicColumn);
+        return getEncryptAssistedQueryValues((QueryAssistedEncryptAlgorithm) encryptor.get(), originalValues, encryptContext);
+    }
+    
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private List<Object> getEncryptAssistedQueryValues(final QueryAssistedEncryptAlgorithm encryptor, final List<Object> originalValues, final EncryptContext encryptContext) {
+        List<Object> result = new LinkedList<>();
+        for (Object each : originalValues) {
+            result.add(null == each ? null : encryptor.queryAssistedEncrypt(each, encryptContext));
+        }
+        return result;
     }
     
     /**
@@ -214,11 +255,22 @@ public final class EncryptRule implements FeatureRule, SchemaRule, TableContaine
      */
     public Optional<String> findPlainColumn(final String logicTable, final String logicColumn) {
         Optional<String> originColumnName = findOriginColumnName(logicTable, logicColumn);
-        return originColumnName.isPresent() && tables.containsKey(logicTable) ? tables.get(logicTable).findPlainColumn(originColumnName.get()) : Optional.empty();
+        return originColumnName.isPresent() && tables.containsKey(logicTable.toLowerCase()) ? tables.get(logicTable.toLowerCase()).findPlainColumn(originColumnName.get()) : Optional.empty();
+    }
+    
+    /**
+     * Judge whether column is support QueryWithCipherColumn or not.
+     *
+     * @param logicTable logic table name
+     * @param logicColumn logic column name
+     * @return whether column is support QueryWithCipherColumn or not
+     */
+    public boolean isQueryWithCipherColumn(final String logicTable, final String logicColumn) {
+        return findEncryptTable(logicTable).flatMap(encryptTable -> encryptTable.getQueryWithCipherColumn(logicColumn)).orElse(queryWithCipherColumn);
     }
     
     private Optional<String> findOriginColumnName(final String logicTable, final String logicColumn) {
-        for (String each : tables.get(logicTable).getLogicColumns()) {
+        for (String each : tables.get(logicTable.toLowerCase()).getLogicColumns()) {
             if (logicColumn.equalsIgnoreCase(each)) {
                 return Optional.of(each);
             }
@@ -229,5 +281,25 @@ public final class EncryptRule implements FeatureRule, SchemaRule, TableContaine
     @Override
     public Collection<String> getTables() {
         return tables.keySet();
+    }
+    
+    @Override
+    public String getType() {
+        return EncryptRule.class.getSimpleName();
+    }
+    
+    /**
+     * Set schema meta data.
+     *
+     * @param databaseName database name
+     * @param schemas schema map
+     */
+    public void setSchemaMetaData(final String databaseName, final Map<String, ShardingSphereSchema> schemas) {
+        for (EncryptAlgorithm<?, ?> each : encryptors.values()) {
+            if (each instanceof SchemaMetaDataAware) {
+                ((SchemaMetaDataAware) each).setDatabaseName(databaseName);
+                ((SchemaMetaDataAware) each).setSchemas(schemas);
+            }
+        }
     }
 }

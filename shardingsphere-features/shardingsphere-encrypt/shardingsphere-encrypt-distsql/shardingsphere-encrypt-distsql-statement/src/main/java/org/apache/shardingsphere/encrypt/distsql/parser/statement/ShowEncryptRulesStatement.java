@@ -19,18 +19,27 @@ package org.apache.shardingsphere.encrypt.distsql.parser.statement;
 
 import lombok.Getter;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+import org.apache.shardingsphere.distsql.parser.subject.impl.EncryptSubjectSupplier;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
+
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Show encrypt rules statement.
  */
 @Getter
-public final class ShowEncryptRulesStatement extends ShowRulesStatement {
+public final class ShowEncryptRulesStatement extends ShowRulesStatement implements EncryptSubjectSupplier {
     
     private final String tableName;
     
-    public ShowEncryptRulesStatement(final String tableName, final SchemaSegment schema) {
-        super(schema);
+    public ShowEncryptRulesStatement(final String tableName, final DatabaseSegment database) {
+        super(database);
         this.tableName = tableName;
+    }
+    
+    @Override
+    public Collection<String> getSubjectNames() {
+        return null != tableName ? Collections.singletonList(tableName) : Collections.emptyList();
     }
 }

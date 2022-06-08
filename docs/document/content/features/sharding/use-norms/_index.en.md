@@ -1,7 +1,6 @@
 +++
-pre = "<b>3.1.3. </b>"
 title = "Use Norms"
-weight = 3
+weight = 2
 +++
 
 ## Background

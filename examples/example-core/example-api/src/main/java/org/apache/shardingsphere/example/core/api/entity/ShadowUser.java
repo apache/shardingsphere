@@ -21,49 +21,57 @@ import java.io.Serializable;
 
 public class ShadowUser implements Serializable {
     
-    private static final long serialVersionUID = 263434701950670170L;
+    private static final long serialVersionUID = -6711618386636677067L;
     
     private int userId;
     
-    private String userName;
+    private int userType;
     
-    private String userNamePlain;
+    private String username;
+    
+    private String usernamePlain;
     
     private String pwd;
     
     private String assistedQueryPwd;
     
-    private Boolean shadow;
-    
     public int getUserId() {
         return userId;
     }
     
-    public void setUserId(final int userId) {
+    public void setUserId(int userId) {
         this.userId = userId;
     }
     
-    public String getUserName() {
-        return userName;
+    public int getUserType() {
+        return userType;
     }
     
-    public void setUserName(final String userName) {
-        this.userName = userName;
+    public void setUserType(int userType) {
+        this.userType = userType;
     }
     
-    public String getUserNamePlain() {
-        return userNamePlain;
+    public String getUsername() {
+        return username;
     }
     
-    public void setUserNamePlain(final String userNamePlain) {
-        this.userNamePlain = userNamePlain;
+    public void setUsername(String username) {
+        this.username = username;
+    }
+    
+    public String getUsernamePlain() {
+        return usernamePlain;
+    }
+    
+    public void setUsernamePlain(String usernamePlain) {
+        this.usernamePlain = usernamePlain;
     }
     
     public String getPwd() {
         return pwd;
     }
     
-    public void setPwd(final String pwd) {
+    public void setPwd(String pwd) {
         this.pwd = pwd;
     }
     
@@ -71,20 +79,13 @@ public class ShadowUser implements Serializable {
         return assistedQueryPwd;
     }
     
-    public void setAssistedQueryPwd(final String assistedQueryPwd) {
+    public void setAssistedQueryPwd(String assistedQueryPwd) {
         this.assistedQueryPwd = assistedQueryPwd;
-    }
-    
-    public Boolean isShadow() {
-        return shadow;
-    }
-    
-    public void setShadow(final Boolean shadow) {
-        this.shadow = shadow;
     }
     
     @Override
     public String toString() {
-        return String.format("user_id: %d, user_name: %s, user_name_plain: %s, pwd: %s, assisted_query_pwd: %s, shadow: %s", userId, userName, userNamePlain, pwd, assistedQueryPwd, shadow);
+        return String.format("user_id: %d, user_type: %d, username: %s, username_plain: %s, pwd: %s, assisted_query_pwd: %s", userId, userType, username, usernamePlain, pwd,
+                assistedQueryPwd);
     }
 }

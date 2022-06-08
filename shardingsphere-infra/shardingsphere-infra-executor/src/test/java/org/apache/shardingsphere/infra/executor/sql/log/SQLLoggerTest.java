@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.executor.sql.log;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
@@ -32,6 +33,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.Logger;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -57,7 +59,7 @@ public final class SQLLoggerTest {
     private Logger logger;
     
     @Before
-    public void setUp() throws NoSuchFieldException, IllegalAccessException {
+    public void setUp() throws NoSuchFieldException {
         executionUnits = mockExecutionUnits(Arrays.asList("db1", "db2", "db3"), SQL);
         setFinalStatic(SQLLogger.class.getDeclaredField("log"), logger);
     }
@@ -68,7 +70,7 @@ public final class SQLLoggerTest {
     
     @Test
     public void assertLogNormalSQLWithoutParameter() {
-        SQLLogger.logSQL(logicSQL, false, new ExecutionContext(null, executionUnits, mock(RouteContext.class)));
+        SQLLogger.logSQL(logicSQL, false, new ExecutionContext(logicSQL, executionUnits, mock(RouteContext.class)));
         InOrder inOrder = inOrder(logger);
         inOrder.verify(logger).info("Logic SQL: {}", new Object[]{SQL});
         inOrder.verify(logger).info("SQLStatement: {}", new Object[]{null});
@@ -81,7 +83,7 @@ public final class SQLLoggerTest {
     public void assertLogNormalSQLWithParameters() {
         List<Object> parameters = executionUnits.iterator().next().getSqlUnit().getParameters();
         parameters.add("parameter");
-        SQLLogger.logSQL(logicSQL, false, new ExecutionContext(null, executionUnits, mock(RouteContext.class)));
+        SQLLogger.logSQL(logicSQL, false, new ExecutionContext(logicSQL, executionUnits, mock(RouteContext.class)));
         InOrder inOrder = inOrder(logger);
         inOrder.verify(logger).info("Logic SQL: {}", new Object[]{SQL});
         inOrder.verify(logger).info("SQLStatement: {}", new Object[]{null});
@@ -92,7 +94,7 @@ public final class SQLLoggerTest {
     
     @Test
     public void assertLogSimpleSQL() {
-        SQLLogger.logSQL(logicSQL, true, new ExecutionContext(null, executionUnits, mock(RouteContext.class)));
+        SQLLogger.logSQL(logicSQL, true, new ExecutionContext(logicSQL, executionUnits, mock(RouteContext.class)));
         InOrder inOrder = inOrder(logger);
         inOrder.verify(logger).info("Logic SQL: {}", new Object[]{SQL});
         inOrder.verify(logger).info("SQLStatement: {}", new Object[]{null});
@@ -103,11 +105,25 @@ public final class SQLLoggerTest {
         return executionUnits.stream().map(ExecutionUnit::getDataSourceName).collect(Collectors.toCollection(() -> new HashSet<>(executionUnits.size())));
     }
     
-    private static void setFinalStatic(final Field field, final Object newValue) throws NoSuchFieldException, IllegalAccessException {
+    @SneakyThrows
+    private static void setFinalStatic(final Field field, final Object newValue) {
         field.setAccessible(true);
-        Field modifiersField = Field.class.getDeclaredField("modifiers");
+        Field modifiersField = getModifiersField();
         modifiersField.setAccessible(true);
         modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
         field.set(null, newValue);
+    }
+    
+    @SneakyThrows
+    private static Field getModifiersField() {
+        Method getDeclaredFields0 = Class.class.getDeclaredMethod("getDeclaredFields0", boolean.class);
+        getDeclaredFields0.setAccessible(true);
+        Field[] fields = (Field[]) getDeclaredFields0.invoke(Field.class, false);
+        for (Field each : fields) {
+            if ("modifiers".equals(each.getName())) {
+                return each;
+            }
+        }
+        throw new UnsupportedOperationException();
     }
 }

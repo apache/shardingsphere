@@ -25,7 +25,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "t_shadow_user")
+@Table(name = "t_user")
 public final class ShadowUserEntity extends ShadowUser {
     
     private static final long serialVersionUID = -3708998745561667721L;
@@ -37,21 +37,21 @@ public final class ShadowUserEntity extends ShadowUser {
         return super.getUserId();
     }
     
-    @Column(name = "user_name")
+    @Column(name = "user_type")
     @Override
-    public String getUserName() {
-        return super.getUserName();
+    public int getUserType() {
+        return super.getUserType();
+    }
+    
+    @Column(name = "username")
+    @Override
+    public String getUsername() {
+        return super.getUsername();
     }
     
     @Column(name = "pwd")
     @Override
     public String getPwd() {
         return super.getPwd();
-    }
-    
-    @Column(name = "shadow")
-    @Override
-    public Boolean isShadow() {
-        return super.isShadow();
     }
 }

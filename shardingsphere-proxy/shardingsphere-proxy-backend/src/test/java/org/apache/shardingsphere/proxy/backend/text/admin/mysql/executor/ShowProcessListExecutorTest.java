@@ -17,94 +17,67 @@
 
 package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor;
 
+import io.netty.util.DefaultAttributeMap;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.merge.result.MergedResult;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
+import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.junit.Before;
+import org.junit.Test;
+
 import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
-import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
-import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.metadata.user.Grantee;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.junit.Before;
-import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-public final class ShowProcessListExecutorTest {
-    
-    private static final String SCHEMA_NAME = "sharding_db";
+public final class ShowProcessListExecutorTest extends ProxyContextRestorer {
     
     private ShowProcessListExecutor showProcessListExecutor;
     
     @Before
     public void setUp() throws NoSuchFieldException, IllegalAccessException {
         showProcessListExecutor = new ShowProcessListExecutor();
-        setupMetaDataContexts();
-        setupChildrenValues();
+        setupBatchProcessContexts();
+        ProxyContext.init(mock(ContextManager.class, RETURNS_DEEP_STUBS));
     }
     
-    private void setupMetaDataContexts() throws NoSuchFieldException, IllegalAccessException {
-        Field metaDataContextsField = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
-        metaDataContextsField.setAccessible(true);
-        Map<String, ShardingSphereMetaData> metaDataMap = getMetaDataMap();
-        MetaDataContexts metaDataContexts = new StandardMetaDataContexts(metaDataMap, mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class),
-            new ConfigurationProperties(new Properties()));
-        metaDataContextsField.set(ProxyContext.getInstance(), metaDataContexts);
-    }
-    
-    private Map<String, ShardingSphereMetaData> getMetaDataMap() {
-        Map<String, ShardingSphereMetaData> result = new HashMap<>(2);
-        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        when(metaData.isComplete()).thenReturn(true);
-        when(metaData.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
-        result.put(SCHEMA_NAME, metaData);
-        return result;
-    }
-    
-    private void setupChildrenValues() throws NoSuchFieldException, IllegalAccessException {
-        Field childrenValuesField = showProcessListExecutor.getClass().getDeclaredField("processListData");
-        childrenValuesField.setAccessible(true);
-        String executionNodeValue = "executionID: f6c2336a-63ba-41bf-941e-2e3504eb2c80\n"
-            + "startTimeMillis: 1617939785160\n"
-            + "unitStatuses:\n"
-            + "- status: EXECUTE_STATUS_START\n"
-            + "  unitID: unitID1\n"
-            + "- status: EXECUTE_STATUS_DONE\n"
-            + "  unitID: unitID2\n";
-        childrenValuesField.set(showProcessListExecutor, Collections.singleton(executionNodeValue));
+    private void setupBatchProcessContexts() throws NoSuchFieldException, IllegalAccessException {
+        Field batchProcessContextsField = showProcessListExecutor.getClass().getDeclaredField("batchProcessContexts");
+        batchProcessContextsField.setAccessible(true);
+        String executionNodeValue = "contexts:\n"
+                + "- executionID: f6c2336a-63ba-41bf-941e-2e3504eb2c80\n"
+                + "  sql: alter table t_order add column a varchar(64) after order_id\n"
+                + "  startTimeMillis: 1617939785160\n"
+                + "  databaseName: sharding_db\n"
+                + "  username: sharding\n"
+                + "  hostname: 127.0.0.1\n"
+                + "  unitStatuses:\n"
+                + "  - status: EXECUTE_STATUS_START\n"
+                + "    unitID: unitID1\n"
+                + "  - status: EXECUTE_STATUS_DONE\n"
+                + "    unitID: unitID2\n";
+        batchProcessContextsField.set(showProcessListExecutor, Collections.singleton(executionNodeValue));
     }
     
     @Test
     public void assertExecute() throws SQLException {
-        showProcessListExecutor.execute(mockBackendConnection());
+        showProcessListExecutor.execute(new ConnectionSession(mock(MySQLDatabaseType.class), TransactionType.LOCAL, new DefaultAttributeMap()));
         assertThat(showProcessListExecutor.getQueryResultMetaData().getColumnCount(), is(8));
         MergedResult mergedResult = showProcessListExecutor.getMergedResult();
         while (mergedResult.next()) {
             assertThat(mergedResult.getValue(1, String.class), is("f6c2336a-63ba-41bf-941e-2e3504eb2c80"));
-            assertThat(mergedResult.getValue(2, String.class), is("root"));
-            assertThat(mergedResult.getValue(3, String.class), is("localhost:30000"));
-            assertThat(mergedResult.getValue(4, String.class), is(SCHEMA_NAME));
+            assertThat(mergedResult.getValue(2, String.class), is("sharding"));
+            assertThat(mergedResult.getValue(3, String.class), is("127.0.0.1"));
+            assertThat(mergedResult.getValue(4, String.class), is("sharding_db"));
             assertThat(mergedResult.getValue(7, String.class), is("Executing 1/2"));
+            assertThat(mergedResult.getValue(8, String.class), is("alter table t_order add column a varchar(64) after order_id"));
         }
-    }
-    
-    private BackendConnection mockBackendConnection() {
-        BackendConnection result = mock(BackendConnection.class);
-        when(result.getGrantee()).thenReturn(new Grantee("root", "localhost:30000"));
-        when(result.getSchemaName()).thenReturn(SCHEMA_NAME);
-        return result;
     }
 }

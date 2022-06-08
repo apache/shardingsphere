@@ -17,7 +17,29 @@
 
 package org.apache.shardingsphere.sql.parser.fixture;
 
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.Lexer;
+import org.antlr.v4.runtime.atn.ATN;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 
-public final class LexerFixture implements SQLLexer {
+public final class LexerFixture extends Lexer implements SQLLexer {
+    
+    public LexerFixture(final CharStream input) {
+        super(input);
+    }
+    
+    @Override
+    public String[] getRuleNames() {
+        return new String[0];
+    }
+    
+    @Override
+    public String getGrammarFileName() {
+        return null;
+    }
+    
+    @Override
+    public ATN getATN() {
+        return null;
+    }
 }

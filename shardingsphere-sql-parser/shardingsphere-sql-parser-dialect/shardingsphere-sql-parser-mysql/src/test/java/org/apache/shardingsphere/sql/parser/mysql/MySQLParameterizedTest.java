@@ -30,6 +30,7 @@ import org.apache.shardingsphere.sql.parser.mysql.visitor.format.impl.MySQLForma
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 import java.nio.CharBuffer;
 import java.util.Collection;
@@ -94,14 +95,30 @@ public final class MySQLParameterizedTest {
                 + "`runoob_test` NATIONAL CHAR(40),\n"
                 + "`submission_date` DATE,\n"
                 + "PRIMARY KEY (`runoob_id`)\n"
-                + ")ENGINE=InnoDB DEFAULT CHARSET=utf8;", "CREATE TABLE IF NOT EXISTS `runoob_tbl` (\n"
-                + "\t`runoob_id` INT UNSIGNED AUTO_INCREMENT,\n"
-                + "\t`runoob_title` VARCHAR(100) NOT NULL,\n"
-                + "\t`runoob_author` VARCHAR(40) NOT NULL,\n"
-                + "\t`runoob_test` NATIONAL CHAR(40),\n"
-                + "\t`submission_date` DATE,\n"
-                + "\tPRIMARY KEY (`runoob_id`)\n"
-                + ") ENGINE = InnoDB DEFAULT CHARSET = utf8"});
+                + ")ENGINE=InnoDB DEFAULT CHARSET=utf8;",
+                "CREATE TABLE IF NOT EXISTS `runoob_tbl` (\n"
+                        + "\t`runoob_id` INT UNSIGNED AUTO_INCREMENT,\n"
+                        + "\t`runoob_title` VARCHAR(100) NOT NULL,\n"
+                        + "\t`runoob_author` VARCHAR(40) NOT NULL,\n"
+                        + "\t`runoob_test` NATIONAL CHAR(40),\n"
+                        + "\t`submission_date` DATE,\n"
+                        + "\tPRIMARY KEY (`runoob_id`)\n"
+                        + ") ENGINE = InnoDB DEFAULT CHARSET = utf8"});
+        testUnits.add(new String[]{"select_with_column",
+                "select id, name, age, count(table1.id) as n, (select id, name, age, sex from table2 where id=2) as sid, yyyy from table1 where id=1",
+                "SELECT id ,"
+                        + " name , age , \n"
+                        + "\tCOUNT(table1.id) AS n, \n"
+                        + "\t(\n"
+                        + "\t\tSELECT id , name , age , \n"
+                        + "\t\t\tsex \n"
+                        + "\t\tFROM table2\n"
+                        + "\t\tWHERE \n"
+                        + "\t\t\tid = ?\n"
+                        + "\t) AS sid, yyyy \n"
+                        + "FROM table1\n"
+                        + "WHERE \n"
+                        + "\tid = ?;"});
     }
     
     private final String caseId;
@@ -110,7 +127,7 @@ public final class MySQLParameterizedTest {
     
     private final String expectFormattedSQL;
     
-    @Parameterized.Parameters(name = "{0}")
+    @Parameters(name = "{0}")
     public static Collection<String[]> getTestParameters() {
         return testUnits;
     }

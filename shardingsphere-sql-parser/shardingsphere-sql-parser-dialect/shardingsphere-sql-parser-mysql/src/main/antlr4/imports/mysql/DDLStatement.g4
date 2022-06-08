@@ -17,7 +17,7 @@
 
 grammar DDLStatement;
 
-import Symbol, Keyword, MySQLKeyword, Literals, BaseRule, DMLStatement, DALStatement;
+import DMLStatement, DALStatement;
 
 alterStatement
     : alterTable
@@ -113,10 +113,10 @@ alterOrderList
     ;
 
 tableConstraintDef
-    : keyOrIndex indexNameAndType? keyListWithExpression indexOption*
+    : keyOrIndex indexName? indexTypeClause? keyListWithExpression indexOption*
     | FULLTEXT keyOrIndex? indexName? keyListWithExpression fulltextIndexOption*
     | SPATIAL keyOrIndex? indexName? keyListWithExpression commonIndexOption*
-    | constraintClause? (PRIMARY KEY | UNIQUE keyOrIndex?) indexNameAndType? keyListWithExpression indexOption*
+    | constraintClause? (PRIMARY KEY | UNIQUE keyOrIndex?) indexName? indexTypeClause? keyListWithExpression indexOption*
     | constraintClause? FOREIGN KEY indexName? keyParts referenceDefinition
     | constraintClause? checkConstraint (constraintEnforcement)?
     ;
@@ -178,10 +178,6 @@ restrict
 fulltextIndexOption
     : commonIndexOption
     | WITH PARSER identifier
-    ;
-
-partitionNames
-    : partitionName (COMMA_ partitionName)*
     ;
 
 dropTable
@@ -348,7 +344,7 @@ createTablespaceInnodb
       ADD DATAFILE string_
       (FILE_BLOCK_SIZE EQ_ fileSizeLiteral)?
       (ENCRYPTION EQ_ y_or_n=string_)?
-      (ENGINE EQ_? string_)?
+      (ENGINE EQ_? identifier)?
     ;
 
 createTablespaceNdb
@@ -421,7 +417,7 @@ dropTrigger
     ;
 
 renameTable
-    : RENAME TABLE tableName TO tableName (tableName TO tableName)*
+    : RENAME TABLE tableName TO tableName (COMMA_ tableName TO tableName)*
     ;
 
 createDefinitionClause
@@ -477,10 +473,6 @@ onUpdateDelete
 
 referenceOption
     : RESTRICT | CASCADE | SET NULL | NO ACTION | SET DEFAULT
-    ;
-
-indexNameAndType
-    : indexName indexTypeClause?
     ;
 
 indexType
@@ -617,7 +609,7 @@ subpartitionDefinition
     ;
 
 ownerStatement
-    : DEFINER EQ_ (userName | CURRENT_USER ( LP_ RP_)?)
+    : DEFINER EQ_ (username | CURRENT_USER ( LP_ RP_)?)
     ;
 
 scheduleExpression
@@ -824,4 +816,20 @@ signalStatement
     
 signalInformationItem
     : conditionInformationItemName EQ_ expr
+    ;
+    
+prepare
+    : PREPARE identifier FROM (stringLiterals | userVariable)
+    ;
+    
+executeStmt
+    : EXECUTE identifier (USING executeVarList)?
+    ;
+    
+executeVarList
+    : userVariable (COMMA_ userVariable)*
+    ;
+    
+deallocate
+    : (DEALLOCATE | DROP) PREPARE identifier
     ;

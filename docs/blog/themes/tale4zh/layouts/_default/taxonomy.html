@@ -3,7 +3,7 @@
 <main>
     <h1>{{ strings.FirstUpper .Data.Singular }} {{ .Title }}</h1>
 	<div class="catalogue">
-		{{ range (.Paginate .Pages).Pages.ByWeight }}
+		{{ range (.Paginate .Pages.ByWeight.Reverse).Pages }}
 			{{ .Render "summary" }}
 		{{ end }}
 	</div>

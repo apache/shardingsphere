@@ -17,31 +17,37 @@
 
 package org.apache.shardingsphere.proxy.backend.communication;
 
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
-import org.apache.shardingsphere.infra.context.metadata.refresher.MetadataRefreshEngine;
+import org.apache.shardingsphere.infra.context.refresher.MetaDataRefreshEngine;
+import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
 import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.event.MetaDataRefreshedEvent;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
+import org.apache.shardingsphere.mode.manager.lock.ShardingSphereLockJudgeEngine;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.exception.DatabaseLockedException;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.data.impl.BinaryQueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.data.impl.TextQueryResponseCell;
-import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeaderBuilderEngine;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeaderBuilder;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 
 import java.sql.SQLException;
@@ -53,110 +59,134 @@ import java.util.stream.Collectors;
 
 /**
  * Database communication engine.
+ *
+ * @param <T> type of execute result
  */
 @RequiredArgsConstructor
-public final class DatabaseCommunicationEngine {
+@Getter(AccessLevel.PROTECTED)
+@Setter(AccessLevel.PROTECTED)
+public abstract class DatabaseCommunicationEngine<T> {
     
     private final String driverType;
     
-    private final ShardingSphereMetaData metaData;
+    private final ShardingSphereDatabase database;
     
     private final LogicSQL logicSQL;
     
-    private final ProxySQLExecutor proxySQLExecutor;
+    private final KernelProcessor kernelProcessor = new KernelProcessor();
     
-    private final KernelProcessor kernelProcessor;
+    private final MetaDataRefreshEngine metadataRefreshEngine;
     
     private List<QueryHeader> queryHeaders;
     
     private MergedResult mergedResult;
     
-    private ProxyLockEngine proxyLockEngine;
+    private final BackendConnection<?> backendConnection;
     
-    public DatabaseCommunicationEngine(final String driverType, final ShardingSphereMetaData metaData, final LogicSQL logicSQL, final BackendConnection backendConnection) {
+    private final ShardingSphereLockJudgeEngine lockJudgeEngine;
+    
+    public DatabaseCommunicationEngine(final String driverType, final ShardingSphereDatabase database, final LogicSQL logicSQL, final BackendConnection<?> backendConnection) {
         this.driverType = driverType;
-        this.metaData = metaData;
+        this.database = database;
         this.logicSQL = logicSQL;
-        proxySQLExecutor = new ProxySQLExecutor(driverType, backendConnection);
-        kernelProcessor = new KernelProcessor();
-        proxyLockEngine = new ProxyLockEngine(proxySQLExecutor, new MetadataRefreshEngine(metaData, 
-                ProxyContext.getInstance().getMetaDataContexts().getOptimizeContextFactory().getSchemaMetadatas().getSchemas().get(backendConnection.getSchemaName()), 
-                ProxyContext.getInstance().getMetaDataContexts().getProps(), ProxyContext.getInstance().getLock().orElse(null)), backendConnection.getSchemaName());
+        this.backendConnection = backendConnection;
+        String databaseName = backendConnection.getConnectionSession().getDatabaseName();
+        metadataRefreshEngine = new MetaDataRefreshEngine(database,
+                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getOptimizerContext().getFederationMetaData().getDatabases().get(databaseName),
+                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getOptimizerContext().getPlannerContexts(),
+                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps());
+        lockJudgeEngine = new ShardingSphereLockJudgeEngine(ProxyContext.getInstance().getContextManager().getInstanceContext().getLockContext());
     }
     
     /**
-     * Execute to database.
+     * Execute.
      *
-     * @return backend response
-     * @throws SQLException SQL exception
+     * @return execute result
      */
-    public ResponseHeader execute() throws SQLException {
-        ExecutionContext executionContext = kernelProcessor.generateExecutionContext(logicSQL, metaData, ProxyContext.getInstance().getMetaDataContexts().getProps());
-        if (executionContext.getExecutionUnits().isEmpty()) {
-            return new UpdateResponseHeader(executionContext.getSqlStatementContext().getSqlStatement());
+    public abstract T execute();
+    
+    protected void refreshMetaData(final ExecutionContext executionContext) throws SQLException {
+        Optional<MetaDataRefreshedEvent> event = metadataRefreshEngine.refresh(executionContext.getSqlStatementContext(), () -> executionContext.getRouteContext().getRouteUnits().stream()
+                .map(each -> each.getDataSourceMapper().getLogicName()).collect(Collectors.toList()));
+        if (ProxyContext.getInstance().getContextManager().getInstanceContext().isCluster() && event.isPresent()) {
+            ShardingSphereEventBus.getInstance().post(event.get());
         }
-        proxySQLExecutor.checkExecutePrerequisites(executionContext);
-        Collection<ExecuteResult> executeResults = proxyLockEngine.execute(executionContext);
-        ExecuteResult executeResultSample = executeResults.iterator().next();
-        return executeResultSample instanceof QueryResult
-                ? processExecuteQuery(executionContext, executeResults.stream().map(each -> (QueryResult) each).collect(Collectors.toList()), (QueryResult) executeResultSample)
-                : processExecuteUpdate(executionContext, executeResults.stream().map(each -> (UpdateResult) each).collect(Collectors.toList()));
     }
     
-    private QueryResponseHeader processExecuteQuery(final ExecutionContext executionContext, final List<QueryResult> queryResults, final QueryResult queryResultSample) throws SQLException {
+    protected QueryResponseHeader processExecuteQuery(final ExecutionContext executionContext, final List<QueryResult> queryResults, final QueryResult queryResultSample) throws SQLException {
         queryHeaders = createQueryHeaders(executionContext, queryResultSample);
         mergedResult = mergeQuery(executionContext.getSqlStatementContext(), queryResults);
         return new QueryResponseHeader(queryHeaders);
     }
     
-    private List<QueryHeader> createQueryHeaders(final ExecutionContext executionContext, final QueryResult queryResultSample) throws SQLException {
+    protected List<QueryHeader> createQueryHeaders(final ExecutionContext executionContext, final QueryResult queryResultSample) throws SQLException {
         int columnCount = getColumnCount(executionContext, queryResultSample);
         List<QueryHeader> result = new ArrayList<>(columnCount);
+        LazyInitializer<DataNodeContainedRule> dataNodeContainedRule = getDataNodeContainedRuleLazyInitializer(database);
+        QueryHeaderBuilderEngine queryHeaderBuilderEngine = new QueryHeaderBuilderEngine(database.getProtocolType());
         for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
-            result.add(createQueryHeader(executionContext, queryResultSample, metaData, columnIndex));
+            result.add(createQueryHeader(queryHeaderBuilderEngine, executionContext, queryResultSample, database, columnIndex, dataNodeContainedRule));
         }
         return result;
     }
     
-    private QueryHeader createQueryHeader(final ExecutionContext executionContext,
-                                          final QueryResult queryResultSample, final ShardingSphereMetaData metaData, final int columnIndex) throws SQLException {
+    protected LazyInitializer<DataNodeContainedRule> getDataNodeContainedRuleLazyInitializer(final ShardingSphereDatabase database) {
+        return new LazyInitializer<DataNodeContainedRule>() {
+            
+            @Override
+            protected DataNodeContainedRule initialize() {
+                return null != database ? database.getRuleMetaData().findSingleRule(DataNodeContainedRule.class).orElse(null) : null;
+            }
+        };
+    }
+    
+    protected QueryHeader createQueryHeader(final QueryHeaderBuilderEngine queryHeaderBuilderEngine, final ExecutionContext executionContext, final QueryResult queryResultSample,
+                                            final ShardingSphereDatabase database, final int columnIndex,
+                                            final LazyInitializer<DataNodeContainedRule> dataNodeContainedRule) throws SQLException {
+        return hasSelectExpandProjections(executionContext.getSqlStatementContext()) ? queryHeaderBuilderEngine.build(
+                ((SelectStatementContext) executionContext.getSqlStatementContext()).getProjectionsContext(), queryResultSample.getMetaData(), database, columnIndex, dataNodeContainedRule)
+                : queryHeaderBuilderEngine.build(queryResultSample.getMetaData(), database, columnIndex, dataNodeContainedRule);
+    }
+    
+    protected int getColumnCount(final ExecutionContext executionContext, final QueryResult queryResultSample) throws SQLException {
         return hasSelectExpandProjections(executionContext.getSqlStatementContext())
-                ? QueryHeaderBuilder.build(((SelectStatementContext) executionContext.getSqlStatementContext()).getProjectionsContext(), queryResultSample.getMetaData(), metaData, columnIndex)
-                : QueryHeaderBuilder.build(queryResultSample.getMetaData(), metaData, columnIndex);
+                ? ((SelectStatementContext) executionContext.getSqlStatementContext()).getProjectionsContext().getExpandProjections().size()
+                : queryResultSample.getMetaData().getColumnCount();
     }
     
-    private int getColumnCount(final ExecutionContext executionContext, final QueryResult queryResultSample) throws SQLException {
-        return hasSelectExpandProjections(executionContext.getSqlStatementContext())
-                ? ((SelectStatementContext) executionContext.getSqlStatementContext()).getProjectionsContext().getExpandProjections().size() : queryResultSample.getMetaData().getColumnCount();
+    protected boolean hasSelectExpandProjections(final SQLStatementContext<?> sqlStatementContext) {
+        return sqlStatementContext instanceof SelectStatementContext && !((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().isEmpty();
     }
     
-    private boolean hasSelectExpandProjections(final SQLStatementContext<?> sqlStatementContext) {
-        return sqlStatementContext instanceof SelectStatementContext && !((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().isEmpty()
-                && !((SelectStatementContext) sqlStatementContext).isContainsSubquery();
-    }
-    
-    private MergedResult mergeQuery(final SQLStatementContext<?> sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
-        MergeEngine mergeEngine = new MergeEngine(ProxyContext.getInstance().getMetaDataContexts().getMetaData(metaData.getName()).getResource().getDatabaseType(),
-                metaData.getSchema(), ProxyContext.getInstance().getMetaDataContexts().getProps(), metaData.getRuleMetaData().getRules());
+    protected MergedResult mergeQuery(final SQLStatementContext<?> sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
+        MergeEngine mergeEngine = new MergeEngine(database, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps());
         return mergeEngine.merge(queryResults, sqlStatementContext);
     }
     
-    private UpdateResponseHeader processExecuteUpdate(final ExecutionContext executionContext, final Collection<UpdateResult> updateResults) {
+    protected UpdateResponseHeader processExecuteUpdate(final ExecutionContext executionContext, final Collection<UpdateResult> updateResults) {
         UpdateResponseHeader result = new UpdateResponseHeader(executionContext.getSqlStatementContext().getSqlStatement(), updateResults);
         mergeUpdateCount(executionContext.getSqlStatementContext(), result);
         return result;
     }
     
-    private void mergeUpdateCount(final SQLStatementContext<?> sqlStatementContext, final UpdateResponseHeader response) {
+    protected void mergeUpdateCount(final SQLStatementContext<?> sqlStatementContext, final UpdateResponseHeader response) {
         if (isNeedAccumulate(sqlStatementContext)) {
             response.mergeUpdateCount();
         }
     }
     
-    private boolean isNeedAccumulate(final SQLStatementContext<?> sqlStatementContext) {
-        Optional<DataNodeContainedRule> dataNodeContainedRule = 
-                metaData.getRuleMetaData().getRules().stream().filter(each -> each instanceof DataNodeContainedRule).findFirst().map(rule -> (DataNodeContainedRule) rule);
+    protected boolean isNeedAccumulate(final SQLStatementContext<?> sqlStatementContext) {
+        Optional<DataNodeContainedRule> dataNodeContainedRule = findDataNodeContainedRule();
         return dataNodeContainedRule.isPresent() && dataNodeContainedRule.get().isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames());
+    }
+    
+    private Optional<DataNodeContainedRule> findDataNodeContainedRule() {
+        for (ShardingSphereRule each : database.getRuleMetaData().getRules()) {
+            if (each instanceof DataNodeContainedRule) {
+                return Optional.of((DataNodeContainedRule) each);
+            }
+        }
+        return Optional.empty();
     }
     
     /**
@@ -189,7 +219,13 @@ public final class DatabaseCommunicationEngine {
         return new QueryResponseRow(cells);
     }
     
-    private boolean isBinary() {
-        return JDBCDriverType.PREPARED_STATEMENT.equals(driverType);
+    protected boolean isBinary() {
+        return !JDBCDriverType.STATEMENT.equals(driverType);
+    }
+    
+    protected void checkLockedDatabase(final ExecutionContext executionContext) {
+        if (lockJudgeEngine.isLocked(backendConnection.getConnectionSession().getDatabaseName(), executionContext.getSqlStatementContext().getSqlStatement())) {
+            throw new DatabaseLockedException(backendConnection.getConnectionSession().getDatabaseName());
+        }
     }
 }

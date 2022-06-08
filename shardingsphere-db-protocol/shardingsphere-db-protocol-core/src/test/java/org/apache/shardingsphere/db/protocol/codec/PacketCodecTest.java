@@ -57,7 +57,7 @@ public final class PacketCodecTest {
         when(byteBuf.readableBytes()).thenReturn(1);
         when(databasePacketCodecEngine.isValidHeader(1)).thenReturn(true);
         packetCodec.decode(context, byteBuf, Collections.emptyList());
-        verify(databasePacketCodecEngine).decode(context, byteBuf, Collections.emptyList(), 1);
+        verify(databasePacketCodecEngine).decode(context, byteBuf, Collections.emptyList());
     }
     
     @Test
@@ -65,7 +65,7 @@ public final class PacketCodecTest {
         when(byteBuf.readableBytes()).thenReturn(1);
         when(databasePacketCodecEngine.isValidHeader(1)).thenReturn(false);
         packetCodec.decode(context, byteBuf, Collections.emptyList());
-        verify(databasePacketCodecEngine, times(0)).decode(context, byteBuf, Collections.emptyList(), 1);
+        verify(databasePacketCodecEngine, times(0)).decode(context, byteBuf, Collections.emptyList());
     }
     
     @SuppressWarnings("unchecked")

@@ -17,83 +17,44 @@
 
 package org.apache.shardingsphere.driver.jdbc.adapter;
 
-import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
+import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.List;
 import java.util.Properties;
-import java.util.logging.Logger;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public final class WrapperAdapterTest {
     
-    private ShardingSphereDataSource shardingSphereDataSource;
+    private ShardingSphereDataSource wrapperAdapter;
     
     @Before
     public void setUp() throws SQLException {
-        shardingSphereDataSource = new ShardingSphereDataSource(Collections.emptyMap(), Collections.emptyList(), new Properties());
+        wrapperAdapter = new ShardingSphereDataSource(
+                DefaultDatabase.LOGIC_NAME, null, Collections.singletonMap("ds", new MockedDataSource()), Collections.singletonList(mock(RuleConfiguration.class)), new Properties());
     }
     
     @Test
     public void assertUnwrapSuccess() throws SQLException {
-        assertThat(shardingSphereDataSource.unwrap(Object.class), is(shardingSphereDataSource));
+        assertThat(wrapperAdapter.unwrap(Object.class), is(wrapperAdapter));
     }
     
     @Test(expected = SQLException.class)
     public void assertUnwrapFailure() throws SQLException {
-        shardingSphereDataSource.unwrap(String.class);
+        wrapperAdapter.unwrap(String.class);
     }
     
     @Test
     public void assertIsWrapperFor() {
-        assertTrue(shardingSphereDataSource.isWrapperFor(Object.class));
-    }
-    
-    @Test
-    public void assertIsNotWrapperFor() {
-        assertFalse(shardingSphereDataSource.isWrapperFor(String.class));
-    }
-    
-    @Test
-    public void assertRecordMethodInvocationSuccess() {
-        List<?> list = mock(List.class);
-        when(list.isEmpty()).thenReturn(true);
-        shardingSphereDataSource.recordMethodInvocation(List.class, "isEmpty", new Class[]{}, new Object[]{});
-        shardingSphereDataSource.replayMethodsInvocation(list);
-    }
-    
-    @Test(expected = NoSuchMethodException.class)
-    public void assertRecordMethodInvocationFailure() {
-        shardingSphereDataSource.recordMethodInvocation(String.class, "none", new Class[]{}, new Object[]{});
-    }
-    
-    @Test
-    public void assertSetLogWriter() {
-        assertThat(shardingSphereDataSource.getLogWriter(), instanceOf(PrintWriter.class));
-        shardingSphereDataSource.setLogWriter(null);
-        assertNull(shardingSphereDataSource.getLogWriter());
-    }
-    
-    @Test
-    public void assertGetParentLogger() {
-        assertThat(shardingSphereDataSource.getParentLogger().getName(), is(Logger.GLOBAL_LOGGER_NAME));
-    }
-    
-    @Test
-    public void assertGetConnectionWithUsername() {
-        assertThat(shardingSphereDataSource.getConnection("username", "password"), instanceOf(ShardingSphereConnection.class));
+        assertTrue(wrapperAdapter.isWrapperFor(Object.class));
     }
 }

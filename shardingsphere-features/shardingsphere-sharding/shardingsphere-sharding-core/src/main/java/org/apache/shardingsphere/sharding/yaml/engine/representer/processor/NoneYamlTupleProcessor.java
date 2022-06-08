@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.yaml.engine.representer.processor;
 
 import org.apache.shardingsphere.infra.yaml.engine.representer.processor.ShardingSphereYamlTupleProcessor;
+import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.nodes.NodeTuple;
 import org.yaml.snakeyaml.nodes.ScalarNode;
@@ -43,6 +44,6 @@ public final class NoneYamlTupleProcessor implements ShardingSphereYamlTupleProc
     }
     
     private NodeTuple processNoneTuple(final NodeTuple noneTuple) {
-        return new NodeTuple(noneTuple.getKeyNode(), new ScalarNode(Tag.STR, "", null, null, null));
+        return new NodeTuple(noneTuple.getKeyNode(), new ScalarNode(Tag.STR, "", null, null, DumperOptions.ScalarStyle.PLAIN));
     }
 }

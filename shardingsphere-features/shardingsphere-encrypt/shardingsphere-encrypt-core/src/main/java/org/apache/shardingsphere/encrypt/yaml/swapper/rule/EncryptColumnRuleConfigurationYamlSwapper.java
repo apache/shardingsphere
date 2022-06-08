@@ -19,7 +19,7 @@ package org.apache.shardingsphere.encrypt.yaml.swapper.rule;
 
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptColumnRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.swapper.YamlConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.YamlConfigurationSwapper;
 
 /**
  * Encrypt column rule configuration YAML swapper.
@@ -29,16 +29,19 @@ public final class EncryptColumnRuleConfigurationYamlSwapper implements YamlConf
     @Override
     public YamlEncryptColumnRuleConfiguration swapToYamlConfiguration(final EncryptColumnRuleConfiguration data) {
         YamlEncryptColumnRuleConfiguration result = new YamlEncryptColumnRuleConfiguration();
+        result.setLogicColumn(data.getLogicColumn());
         result.setPlainColumn(data.getPlainColumn());
         result.setCipherColumn(data.getCipherColumn());
         result.setAssistedQueryColumn(data.getAssistedQueryColumn());
         result.setEncryptorName(data.getEncryptorName());
+        result.setQueryWithCipherColumn(data.getQueryWithCipherColumn());
         return result;
     }
     
     @Override
     public EncryptColumnRuleConfiguration swapToObject(final YamlEncryptColumnRuleConfiguration yamlConfig) {
         return new EncryptColumnRuleConfiguration(
-                yamlConfig.getLogicColumn(), yamlConfig.getCipherColumn(), yamlConfig.getAssistedQueryColumn(), yamlConfig.getPlainColumn(), yamlConfig.getEncryptorName());
+                yamlConfig.getLogicColumn(), yamlConfig.getCipherColumn(), yamlConfig.getAssistedQueryColumn(), yamlConfig.getPlainColumn(), yamlConfig.getEncryptorName(),
+                yamlConfig.getQueryWithCipherColumn());
     }
 }

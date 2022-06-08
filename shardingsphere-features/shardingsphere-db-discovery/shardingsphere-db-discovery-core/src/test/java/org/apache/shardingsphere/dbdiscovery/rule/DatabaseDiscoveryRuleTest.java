@@ -17,18 +17,19 @@
 
 package org.apache.shardingsphere.dbdiscovery.rule;
 
-import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
+import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHeartBeatConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
+import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
+import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
 
 import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
@@ -36,70 +37,53 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
 
 public final class DatabaseDiscoveryRuleTest {
     
-    private final Map<String, DataSource> dataSourceMap = Collections.singletonMap("ds", mock(DataSource.class));
-    
-    @Test(expected = IllegalArgumentException.class)
-    public void assertNewWithEmptyDataSourceRule() {
-        new DatabaseDiscoveryRule(new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap()), mock(DatabaseType.class), dataSourceMap, "ha_db");
-    }
+    private final Map<String, DataSource> dataSourceMap = Collections.singletonMap("primary", new MockedDataSource());
     
     @Test
     public void assertFindDataSourceRule() {
-        Optional<DatabaseDiscoveryDataSourceRule> actual = createHARule().findDataSourceRule("test_pr");
+        Optional<DatabaseDiscoveryDataSourceRule> actual = createRule().findDataSourceRule("test_pr");
         assertTrue(actual.isPresent());
         assertDataSourceRule(actual.get());
     }
     
     @Test
     public void assertGetSingleDataSourceRule() {
-        assertDataSourceRule(createHARule().getSingleDataSourceRule());
-    }
-    
-    private DatabaseDiscoveryRule createHARule() {
-        DatabaseDiscoveryDataSourceRuleConfiguration config =
-                new DatabaseDiscoveryDataSourceRuleConfiguration("test_pr", Arrays.asList("ds_0", "ds_1"), "discoveryTypeName");
-        return new DatabaseDiscoveryRule(new DatabaseDiscoveryRuleConfiguration(
-                Collections.singleton(config), ImmutableMap.of("mgr", new ShardingSphereAlgorithmConfiguration("MGR", new Properties()))),
-                mock(DatabaseType.class), dataSourceMap, "ha_db");
+        assertDataSourceRule(createRule().getSingleDataSourceRule());
     }
     
     private void assertDataSourceRule(final DatabaseDiscoveryDataSourceRule actual) {
-        assertThat(actual.getName(), is("test_pr"));
+        assertThat(actual.getGroupName(), is("test_pr"));
         assertThat(actual.getDataSourceNames(), is(Arrays.asList("ds_0", "ds_1")));
     }
     
     @Test
-    public void assertUpdateRuleStatusWithNotExistDataSource() {
-        DatabaseDiscoveryRule databaseDiscoveryRule = createHARule();
-        databaseDiscoveryRule.updateRuleStatus(new DataSourceNameDisabledEvent("db", true));
-        assertThat(databaseDiscoveryRule.getSingleDataSourceRule().getDataSourceNames(), is(Arrays.asList("ds_0", "ds_1")));
-    }
-    
-    @Test
-    public void assertUpdateRuleStatus() {
-        DatabaseDiscoveryRule databaseDiscoveryRule = createHARule();
-        databaseDiscoveryRule.updateRuleStatus(new DataSourceNameDisabledEvent("ds_0", true));
-        assertThat(databaseDiscoveryRule.getSingleDataSourceRule().getDataSourceNames(), is(Collections.singletonList("ds_1")));
-    }
-    
-    @Test
-    public void assertUpdateRuleStatusWithEnable() {
-        DatabaseDiscoveryRule databaseDiscoveryRule = createHARule();
-        databaseDiscoveryRule.updateRuleStatus(new DataSourceNameDisabledEvent("ds_0", true));
-        assertThat(databaseDiscoveryRule.getSingleDataSourceRule().getDataSourceNames(), is(Collections.singletonList("ds_1")));
-        databaseDiscoveryRule.updateRuleStatus(new DataSourceNameDisabledEvent("ds_0", false));
-        assertThat(databaseDiscoveryRule.getSingleDataSourceRule().getDataSourceNames(), is(Arrays.asList("ds_0", "ds_1")));
-    }
-    
-    @Test
     public void assertGetDataSourceMapper() {
-        DatabaseDiscoveryRule databaseDiscoveryRule = createHARule();
+        DatabaseDiscoveryRule databaseDiscoveryRule = createRule();
         Map<String, Collection<String>> actual = databaseDiscoveryRule.getDataSourceMapper();
-        Map<String, Collection<String>> expected = ImmutableMap.of("test_pr", Arrays.asList("ds_0", "ds_1"));
+        Map<String, Collection<String>> expected = getDataSourceMapper();
         assertThat(actual, is(expected));
+    }
+    
+    private Map<String, Collection<String>> getDataSourceMapper() {
+        Map<String, Collection<String>> result = new HashMap<>(2, 1);
+        result.put("ds_0", Collections.singletonList("ds_0"));
+        result.put("ds_1", Collections.singletonList("ds_1"));
+        return result;
+    }
+    
+    @Test
+    public void assertGetExportedMethods() {
+        DatabaseDiscoveryRule databaseDiscoveryRule = createRule();
+        assertThat(databaseDiscoveryRule.getExportedMethods().get(ExportableConstants.EXPORT_DB_DISCOVERY_PRIMARY_DATA_SOURCES).get(), is(Collections.singletonMap("test_pr", "primary")));
+    }
+    
+    private DatabaseDiscoveryRule createRule() {
+        DatabaseDiscoveryDataSourceRuleConfiguration config = new DatabaseDiscoveryDataSourceRuleConfiguration("test_pr", Arrays.asList("ds_0", "ds_1"), "", "CORE.FIXTURE");
+        return new DatabaseDiscoveryRule("db_discovery", dataSourceMap, new DatabaseDiscoveryRuleConfiguration(
+                Collections.singleton(config), Collections.singletonMap("discovery_heartbeat", new DatabaseDiscoveryHeartBeatConfiguration(new Properties())),
+                Collections.singletonMap("CORE.FIXTURE", new ShardingSphereAlgorithmConfiguration("CORE.FIXTURE", new Properties()))));
     }
 }

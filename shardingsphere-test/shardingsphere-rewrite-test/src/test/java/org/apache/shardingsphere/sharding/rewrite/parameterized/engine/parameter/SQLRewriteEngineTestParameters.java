@@ -53,11 +53,12 @@ public final class SQLRewriteEngineTestParameters {
      * @return array value of test parameters
      */
     public Object[] toArray() {
-        Object[] result = new Object[4];
+        Object[] result = new Object[5];
         result[0] = type;
         result[1] = name;
         result[2] = fileName;
-        result[3] = this;
+        result[3] = databaseType;
+        result[4] = this;
         return result;
     }
 }

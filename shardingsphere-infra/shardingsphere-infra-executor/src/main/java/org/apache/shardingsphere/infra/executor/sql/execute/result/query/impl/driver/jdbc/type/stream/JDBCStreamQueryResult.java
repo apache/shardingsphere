@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.stream;
 
+import lombok.Getter;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.metadata.JDBCQueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.stream.AbstractStreamQueryResult;
 
@@ -37,6 +38,7 @@ import java.util.Calendar;
  */
 public final class JDBCStreamQueryResult extends AbstractStreamQueryResult {
     
+    @Getter
     private final ResultSet resultSet;
     
     public JDBCStreamQueryResult(final ResultSet resultSet) throws SQLException {

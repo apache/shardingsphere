@@ -18,10 +18,13 @@
 package org.apache.shardingsphere.infra.executor.kernel.model;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.metadata.user.Grantee;
 
 import java.util.Collection;
 import java.util.UUID;
-import lombok.RequiredArgsConstructor;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Execution group context.
@@ -30,9 +33,14 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
+@Setter
 public final class ExecutionGroupContext<T> {
     
     private final Collection<ExecutionGroup<T>> inputGroups;
     
-    private final String executionID = UUID.randomUUID().toString();
+    private final String executionID = new UUID(ThreadLocalRandom.current().nextLong(), ThreadLocalRandom.current().nextLong()).toString();
+    
+    private volatile String databaseName;
+    
+    private volatile Grantee grantee;
 }

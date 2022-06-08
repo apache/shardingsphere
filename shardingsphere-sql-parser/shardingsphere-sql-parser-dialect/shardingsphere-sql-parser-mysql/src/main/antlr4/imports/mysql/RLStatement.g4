@@ -17,7 +17,7 @@
 
 grammar RLStatement;
 
-import Symbol, Keyword, MySQLKeyword, Literals, BaseRule;
+import BaseRule;
 
 change
     : changeMasterTo | changeReplicationFilter

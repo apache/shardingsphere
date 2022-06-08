@@ -19,18 +19,24 @@ package org.apache.shardingsphere.proxy.backend.text.distsql;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.DistSQLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.CommonDistSQLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.QueryableScalingRALStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableScalingRALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.exception.DatabaseLockedException;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.RDLBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.RQLBackendHandlerFactory;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
-import java.util.Optional;
 
 /**
  * DistSQL backend handler factory.
@@ -42,18 +48,37 @@ public final class DistSQLBackendHandlerFactory {
      * Create new instance of DistSQL backend handler.
      *
      * @param databaseType database type
-     * @param sqlStatement SQL statement
-     * @param backendConnection backend connection
+     * @param sqlStatement dist SQL statement
+     * @param connectionSession connection session
      * @return text protocol backend handler
      * @throws SQLException SQL exception
      */
-    public static Optional<TextProtocolBackendHandler> newInstance(final DatabaseType databaseType, final SQLStatement sqlStatement, final BackendConnection backendConnection) throws SQLException {
+    public static TextProtocolBackendHandler newInstance(final DatabaseType databaseType, final DistSQLStatement sqlStatement, final ConnectionSession connectionSession) throws SQLException {
         if (sqlStatement instanceof RQLStatement) {
-            return Optional.of(RQLBackendHandlerFactory.newInstance((RQLStatement) sqlStatement, backendConnection));
+            return RQLBackendHandlerFactory.newInstance((RQLStatement) sqlStatement, connectionSession);
         }
         if (sqlStatement instanceof RDLStatement) {
-            return RDLBackendHandlerFactory.newInstance(databaseType, sqlStatement, backendConnection);
+            checkLockedDatabase(connectionSession);
+            return RDLBackendHandlerFactory.newInstance((RDLStatement) sqlStatement, connectionSession);
         }
-        return RALBackendHandlerFactory.newInstance(sqlStatement);
+        if (sqlStatement instanceof RALStatement) {
+            if (sqlStatement instanceof CommonDistSQLStatement || sqlStatement instanceof QueryableRALStatement || sqlStatement instanceof QueryableScalingRALStatement
+                    || sqlStatement instanceof UpdatableScalingRALStatement) {
+                return RALBackendHandlerFactory.newInstance(databaseType, (RALStatement) sqlStatement, connectionSession);
+            }
+            checkLockedDatabase(connectionSession);
+            return RALBackendHandlerFactory.newInstance(databaseType, (RALStatement) sqlStatement, connectionSession);
+        }
+        throw new UnsupportedOperationException(sqlStatement.getClass().getCanonicalName());
+    }
+    
+    private static void checkLockedDatabase(final ConnectionSession connectionSession) {
+        String databaseName = connectionSession.getDatabaseName();
+        if (null == databaseName) {
+            return;
+        }
+        if (ProxyContext.getInstance().getContextManager().getInstanceContext().getLockContext().isLocked(databaseName)) {
+            throw new DatabaseLockedException(databaseName);
+        }
     }
 }

@@ -19,82 +19,78 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.PostgreSQLBinaryStatementRegistry;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind.PostgreSQLComBindPacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.close.PostgreSQLComClosePacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.parse.PostgreSQLComParsePacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.text.PostgreSQLComQueryPacket;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLAggregatedCommandPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLComBindPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.close.PostgreSQLComClosePacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.describe.PostgreSQLComDescribePacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.execute.PostgreSQLComExecutePacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.parse.PostgreSQLComParsePacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.sync.PostgreSQLComSyncPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.simple.PostgreSQLComQueryPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLComTerminationPacket;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.generic.PostgreSQLComTerminationExecutor;
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary.bind.PostgreSQLComBindExecutor;
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary.close.PostgreSQLComCloseExecutor;
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary.describe.PostgreSQLComDescribeExecutor;
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary.execute.PostgreSQLComExecuteExecutor;
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary.parse.PostgreSQLComParseExecutor;
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary.sync.PostgreSQLComSyncExecutor;
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.text.PostgreSQLComQueryExecutor;
-import org.junit.BeforeClass;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.generic.PostgreSQLUnsupportedCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLAggregatedBatchedStatementsCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLAggregatedCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.bind.PostgreSQLComBindExecutor;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.close.PostgreSQLComCloseExecutor;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.describe.PostgreSQLComDescribeExecutor;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.execute.PostgreSQLComExecuteExecutor;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.parse.PostgreSQLComParseExecutor;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.sync.PostgreSQLComSyncExecutor;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.simple.PostgreSQLComQueryExecutor;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class PostgreSQLCommandExecutorFactoryTest {
     
     @Mock
-    private BackendConnection backendConnection;
+    private ConnectionSession connectionSession;
     
-    @BeforeClass
-    public static void setup() {
-        PostgreSQLBinaryStatementRegistry.getInstance().register(0);
-    }
-    
-    @Test
-    public void assertPendingCommandExecutors() throws SQLException {
-        PostgreSQLConnectionContext connectionContext = mock(PostgreSQLConnectionContext.class);
-        Collection<CommandExecutor> pendingCommandExecutors = mock(Collection.class);
-        when(connectionContext.getPendingExecutors()).thenReturn(pendingCommandExecutors);
-        PostgreSQLCommandExecutorFactory.newInstance(PostgreSQLCommandPacketType.CLOSE_COMMAND, mock(PostgreSQLComClosePacket.class), backendConnection, connectionContext);
-        PostgreSQLCommandExecutorFactory.newInstance(PostgreSQLCommandPacketType.BIND_COMMAND, mock(PostgreSQLComBindPacket.class), backendConnection, connectionContext);
-        PostgreSQLCommandExecutorFactory.newInstance(PostgreSQLCommandPacketType.DESCRIBE_COMMAND, null, backendConnection, connectionContext);
-        verify(pendingCommandExecutors).add(any(PostgreSQLComCloseExecutor.class));
-        verify(pendingCommandExecutors).add(any(PostgreSQLComBindExecutor.class));
-        verify(pendingCommandExecutors).add(any(PostgreSQLComDescribeExecutor.class));
-    }
+    @Mock
+    private PostgreSQLConnectionContext connectionContext;
     
     @Test
     public void assertNewInstance() throws SQLException {
-        when(backendConnection.getSchemaName()).thenReturn("schema");
         Collection<InputOutput> inputOutputs = Arrays.asList(
-            new InputOutput(PostgreSQLCommandPacketType.SIMPLE_QUERY, PostgreSQLComQueryPacket.class, PostgreSQLComQueryExecutor.class),
-            new InputOutput(PostgreSQLCommandPacketType.PARSE_COMMAND, PostgreSQLComParsePacket.class, PostgreSQLComParseExecutor.class),
-            new InputOutput(PostgreSQLCommandPacketType.EXECUTE_COMMAND, null, PostgreSQLComExecuteExecutor.class),
-            new InputOutput(PostgreSQLCommandPacketType.SYNC_COMMAND, null, PostgreSQLComSyncExecutor.class),
-            new InputOutput(PostgreSQLCommandPacketType.TERMINATE, null, PostgreSQLComTerminationExecutor.class)
-        );
-        for (InputOutput inputOutput : inputOutputs) {
-            Class<? extends PostgreSQLCommandPacket> commandPacketClass = inputOutput.getCommandPacketClass();
+                new InputOutput(PostgreSQLCommandPacketType.SIMPLE_QUERY, PostgreSQLComQueryPacket.class, PostgreSQLComQueryExecutor.class),
+                new InputOutput(PostgreSQLCommandPacketType.PARSE_COMMAND, PostgreSQLComParsePacket.class, PostgreSQLComParseExecutor.class),
+                new InputOutput(PostgreSQLCommandPacketType.BIND_COMMAND, PostgreSQLComBindPacket.class, PostgreSQLComBindExecutor.class),
+                new InputOutput(PostgreSQLCommandPacketType.DESCRIBE_COMMAND, PostgreSQLComDescribePacket.class, PostgreSQLComDescribeExecutor.class),
+                new InputOutput(PostgreSQLCommandPacketType.EXECUTE_COMMAND, PostgreSQLComExecutePacket.class, PostgreSQLComExecuteExecutor.class),
+                new InputOutput(PostgreSQLCommandPacketType.SYNC_COMMAND, PostgreSQLComSyncPacket.class, PostgreSQLComSyncExecutor.class),
+                new InputOutput(PostgreSQLCommandPacketType.CLOSE_COMMAND, PostgreSQLComClosePacket.class, PostgreSQLComCloseExecutor.class),
+                new InputOutput(PostgreSQLCommandPacketType.TERMINATE, PostgreSQLComTerminationPacket.class, PostgreSQLComTerminationExecutor.class),
+                new InputOutput(PostgreSQLCommandPacketType.FLUSH_COMMAND, null, PostgreSQLUnsupportedCommandExecutor.class));
+        for (InputOutput each : inputOutputs) {
+            Class<? extends PostgreSQLCommandPacket> commandPacketClass = each.getCommandPacketClass();
             if (null == commandPacketClass) {
                 commandPacketClass = PostgreSQLCommandPacket.class;
             }
             PostgreSQLCommandPacket packet = preparePacket(commandPacketClass);
-            CommandExecutor actual = PostgreSQLCommandExecutorFactory.newInstance(inputOutput.getCommandPacketType(), packet, backendConnection, mock(PostgreSQLConnectionContext.class));
-            assertThat(actual, instanceOf(inputOutput.getResultClass()));
+            CommandExecutor actual = PostgreSQLCommandExecutorFactory.newInstance(each.getCommandPacketType(), packet, connectionSession, connectionContext);
+            assertThat(actual, instanceOf(each.getResultClass()));
         }
     }
     
@@ -103,11 +99,64 @@ public final class PostgreSQLCommandExecutorFactoryTest {
         if (result instanceof PostgreSQLComQueryPacket) {
             when(((PostgreSQLComQueryPacket) result).getSql()).thenReturn("");
         }
-        if (result instanceof PostgreSQLComParsePacket) {
-            when(((PostgreSQLComParsePacket) result).getStatementId()).thenReturn("S_0");
-            when(((PostgreSQLComParsePacket) result).getSql()).thenReturn("");
-        }
         return result;
+    }
+    
+    @Test
+    public void assertAggregatedPacketNotBatchedStatements() throws SQLException {
+        PostgreSQLComParsePacket parsePacket = mock(PostgreSQLComParsePacket.class);
+        when(parsePacket.getIdentifier()).thenReturn(PostgreSQLCommandPacketType.PARSE_COMMAND);
+        PostgreSQLComBindPacket bindPacket = mock(PostgreSQLComBindPacket.class);
+        when(bindPacket.getIdentifier()).thenReturn(PostgreSQLCommandPacketType.BIND_COMMAND);
+        PostgreSQLComDescribePacket describePacket = mock(PostgreSQLComDescribePacket.class);
+        when(describePacket.getIdentifier()).thenReturn(PostgreSQLCommandPacketType.DESCRIBE_COMMAND);
+        PostgreSQLComExecutePacket executePacket = mock(PostgreSQLComExecutePacket.class);
+        when(executePacket.getIdentifier()).thenReturn(PostgreSQLCommandPacketType.EXECUTE_COMMAND);
+        PostgreSQLComSyncPacket syncPacket = mock(PostgreSQLComSyncPacket.class);
+        when(syncPacket.getIdentifier()).thenReturn(PostgreSQLCommandPacketType.SYNC_COMMAND);
+        PostgreSQLAggregatedCommandPacket packet = mock(PostgreSQLAggregatedCommandPacket.class);
+        when(packet.isContainsBatchedStatements()).thenReturn(false);
+        when(packet.getPackets()).thenReturn(Arrays.asList(parsePacket, bindPacket, describePacket, executePacket, syncPacket));
+        CommandExecutor actual = PostgreSQLCommandExecutorFactory.newInstance(null, packet, connectionSession, connectionContext);
+        assertThat(actual, instanceOf(PostgreSQLAggregatedCommandExecutor.class));
+        Iterator<CommandExecutor> actualPacketsIterator = getExecutorsFromAggregatedCommandExecutor((PostgreSQLAggregatedCommandExecutor) actual).iterator();
+        assertThat(actualPacketsIterator.next(), instanceOf(PostgreSQLComParseExecutor.class));
+        assertThat(actualPacketsIterator.next(), instanceOf(PostgreSQLComBindExecutor.class));
+        assertThat(actualPacketsIterator.next(), instanceOf(PostgreSQLComDescribeExecutor.class));
+        assertThat(actualPacketsIterator.next(), instanceOf(PostgreSQLComExecuteExecutor.class));
+        assertThat(actualPacketsIterator.next(), instanceOf(PostgreSQLComSyncExecutor.class));
+        assertFalse(actualPacketsIterator.hasNext());
+    }
+    
+    @Test
+    public void assertAggregatedPacketIsBatchedStatements() throws SQLException {
+        PostgreSQLComParsePacket parsePacket = mock(PostgreSQLComParsePacket.class);
+        when(parsePacket.getIdentifier()).thenReturn(PostgreSQLCommandPacketType.PARSE_COMMAND);
+        PostgreSQLComBindPacket bindPacket = mock(PostgreSQLComBindPacket.class);
+        PostgreSQLComDescribePacket describePacket = mock(PostgreSQLComDescribePacket.class);
+        PostgreSQLComExecutePacket executePacket = mock(PostgreSQLComExecutePacket.class);
+        PostgreSQLComSyncPacket syncPacket = mock(PostgreSQLComSyncPacket.class);
+        when(syncPacket.getIdentifier()).thenReturn(PostgreSQLCommandPacketType.SYNC_COMMAND);
+        PostgreSQLAggregatedCommandPacket packet = mock(PostgreSQLAggregatedCommandPacket.class);
+        when(packet.isContainsBatchedStatements()).thenReturn(true);
+        when(packet.getPackets()).thenReturn(Arrays.asList(parsePacket, bindPacket, describePacket, executePacket, bindPacket, describePacket, executePacket, syncPacket));
+        when(packet.getFirstBindIndex()).thenReturn(1);
+        when(packet.getLastExecuteIndex()).thenReturn(6);
+        CommandExecutor actual = PostgreSQLCommandExecutorFactory.newInstance(null, packet, connectionSession, connectionContext);
+        assertThat(actual, instanceOf(PostgreSQLAggregatedCommandExecutor.class));
+        Iterator<CommandExecutor> actualPacketsIterator = getExecutorsFromAggregatedCommandExecutor((PostgreSQLAggregatedCommandExecutor) actual).iterator();
+        assertThat(actualPacketsIterator.next(), instanceOf(PostgreSQLComParseExecutor.class));
+        assertThat(actualPacketsIterator.next(), instanceOf(PostgreSQLAggregatedBatchedStatementsCommandExecutor.class));
+        assertThat(actualPacketsIterator.next(), instanceOf(PostgreSQLComSyncExecutor.class));
+        assertFalse(actualPacketsIterator.hasNext());
+    }
+    
+    @SuppressWarnings("unchecked")
+    @SneakyThrows
+    private static List<CommandExecutor> getExecutorsFromAggregatedCommandExecutor(final PostgreSQLAggregatedCommandExecutor executor) {
+        Field field = PostgreSQLAggregatedCommandExecutor.class.getDeclaredField("executors");
+        field.setAccessible(true);
+        return (List<CommandExecutor>) field.get(executor);
     }
     
     @RequiredArgsConstructor

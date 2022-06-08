@@ -5,7 +5,7 @@
         {{ partial "custom-comments.html" . }}
       </div>
 
-    <div id="navigation">
+    <div id="navigation" >
         <!-- Next prev page -->
         {{ $currentNode := . }}
         
@@ -41,18 +41,29 @@
 
 
         {{with ($.Scratch.Get "prevPage")}}
-            <a class="nav nav-prev" href="{{.URL}}" title="{{.Title}}"> <i class="fa fa-chevron-left"></i></a>
+            {{ if eq .Lang "en"}}
+                <a class="nav nav-prev" href="{{.URL}}" title="{{.Title}}"> <i class="fa fa-long-arrow-left fa-lg"></i> Previous</a>
+            {{ else }} 
+                <a class="nav nav-prev" href="{{.URL}}" title="{{.Title}}"> <i class="fa fa-long-arrow-left fa-lg"></i> 上一篇</a>
+            {{end}}
         {{end}}
         {{with ($.Scratch.Get "nextPage")}}
-            <a class="nav nav-next" href="{{.URL}}" title="{{.Title}}" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+            {{ if eq .Lang "en"}}
+                <a class="nav nav-next" href="{{.URL}}" title="{{.Title}}" style="margin-right: 0px;">Next<i class="fa fa-long-arrow-right fa-lg"></i></a>
+            {{ else }} 
+                <a class="nav nav-next" href="{{.URL}}" title="{{.Title}}" style="margin-right: 0px;">下一篇 <i class="fa fa-long-arrow-right fa-lg"></i></a>
+            {{end}}
         {{end}}
     </div>
 
     </section>
-    
+</div>
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
+    <!-- <div class="icon-1"></div>
+    <div class="icon-2"></div>
+    <div class="icon-3"></div> -->
     <script src="{{"js/clipboard.min.js" | relURL}}{{ if not .Site.Params.disableAssetsBusting }}?{{ now.Unix }}{{ end }}"></script>
     <script src="{{"js/perfect-scrollbar.min.js" | relURL}}{{ if not .Site.Params.disableAssetsBusting }}?{{ now.Unix }}{{ end }}"></script>
     <script src="{{"js/perfect-scrollbar.jquery.min.js" | relURL}}{{ if not .Site.Params.disableAssetsBusting }}?{{ now.Unix }}{{ end }}"></script>
@@ -64,7 +75,54 @@
     <script src="{{"js/modernizr.custom.71422.js" | relURL}}{{ if not .Site.Params.disableAssetsBusting }}?{{ now.Unix }}{{ end }}"></script>
     <script src="{{"js/learn.js" | relURL}}{{ if not .Site.Params.disableAssetsBusting }}?{{ now.Unix }}{{ end }}"></script>
     <script src="{{"js/hugo-learn.js" | relURL}}{{ if not .Site.Params.disableAssetsBusting }}?{{ now.Unix }}{{ end }}"></script>
+    <script>
+        try{
 
+            function log(fileName, category, locale){
+                window._hmt.push(['_trackEvent', 'document', 'download', locale ? 'PDF_'+locale : fileName]);
+
+                gtag('event', 'Downloads', {
+                    'event_category' : locale ? 'PDF' : category,
+                    'event_label' : locale ? locale+'.pdf' : fileName
+                });
+            }
+            
+            $('.padding[href*=shardingsphere]').on('click', function(){
+                var locale = /cn/.test(location.pathname) ?'cn':'en';
+                log('','', locale)
+            })
+
+            function getFileName(str){
+                var strs = str.split('/');
+                return strs[strs.length - 1]
+            }
+
+            $('a[href$="src.zip"]').on('click', function(){
+                log(getFileName($(this).attr('href')), "SRC")
+            })
+
+            $('a[href$="zip.asc"]').on('click', function(){
+                log(getFileName($(this).attr('href')), "ASC")
+            })
+            
+            $('a[href$="zip.sha512"]').on('click', function(){
+                log(getFileName($(this).attr('href')), "SHA512")
+            })
+
+            $('a[href$="tar.gz.asc"]').on('click', function(){
+                log(getFileName($(this).attr('href')), "ASC")
+            })
+            
+            $('a[href$="tar.gz.sha512"]').on('click', function(){
+                log(getFileName($(this).attr('href')), "SHA512")
+            })
+
+            $('a[href$="tar.gz"]').on('click', function(){
+                log(getFileName($(this).attr('href')), "TAR")
+            })
+
+        }catch(ex){}
+    </script>
     {{ partial "custom-footer.html" . }}
   </body>
 </html>

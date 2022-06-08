@@ -23,24 +23,30 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class MariaDBDataSourceMetaDataTest {
     
     @Test
-    public void assertNewConstructorWithPort() {
-        MariaDBDataSourceMetaData actual = new MariaDBDataSourceMetaData("jdbc:mariadb://127.0.0.1:9999/ds_0?serverTimezone=UTC&useSSL=false");
-        assertThat(actual.getHostName(), is("127.0.0.1"));
-        assertThat(actual.getPort(), is(9999));
-        assertThat(actual.getCatalog(), is("ds_0"));
+    public void assertNewConstructorWithSimpleJdbcUrl() {
+        MariaDBDataSourceMetaData actual = new MariaDBDataSourceMetaData("jdbc:mariadb://127.0.0.1/foo_ds");
+        assertThat(actual.getHostname(), is("127.0.0.1"));
+        assertThat(actual.getPort(), is(3306));
+        assertThat(actual.getCatalog(), is("foo_ds"));
         assertNull(actual.getSchema());
+        assertTrue(actual.getQueryProperties().isEmpty());
     }
     
     @Test
-    public void assertNewConstructorWithDefaultPort() {
-        MariaDBDataSourceMetaData actual = new MariaDBDataSourceMetaData("jdbc:mariadb:replication://127.0.0.1/ds_0?serverTimezone=UTC&useSSL=false");
-        assertThat(actual.getHostName(), is("127.0.0.1"));
-        assertThat(actual.getPort(), is(3306));
+    public void assertNewConstructorWithComplexJdbcUrl() {
+        MariaDBDataSourceMetaData actual = new MariaDBDataSourceMetaData("jdbc:mariadb:replication://127.0.0.1:9999, 127.0.0.2:9999/foo_ds?serverTimezone=UTC&useSSL=false");
+        assertThat(actual.getHostname(), is("127.0.0.1"));
+        assertThat(actual.getPort(), is(9999));
+        assertThat(actual.getCatalog(), is("foo_ds"));
         assertNull(actual.getSchema());
+        assertThat(actual.getQueryProperties().size(), is(2));
+        assertThat(actual.getQueryProperties().getProperty("serverTimezone"), is("UTC"));
+        assertThat(actual.getQueryProperties().getProperty("useSSL"), is(Boolean.FALSE.toString()));
     }
     
     @Test(expected = UnrecognizedDatabaseURLException.class)

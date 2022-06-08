@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.readwritesplitting.spring.namespace.parser;
 
-import com.google.common.base.Splitter;
 import org.apache.shardingsphere.readwritesplitting.algorithm.config.AlgorithmProvidedReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.spring.namespace.factorybean.ReplicaLoadBalanceAlgorithmFactoryBean;
@@ -32,8 +31,8 @@ import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
-import java.util.Collection;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * Readwrite-splitting rule bean definition parser.
@@ -43,34 +42,31 @@ public final class ReadwriteSplittingRuleBeanDefinitionParser extends AbstractBe
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(AlgorithmProvidedReadwriteSplittingRuleConfiguration.class);
-        factory.addConstructorArgValue(parseReadwriteSplittingDataSourceRuleConfigurations(element));
+        factory.addConstructorArgValue(parseReadwriteSplittingDataSourceRuleConfigurations(element, parserContext));
         factory.addConstructorArgValue(ShardingSphereAlgorithmBeanRegistry.getAlgorithmBeanReferences(parserContext, ReplicaLoadBalanceAlgorithmFactoryBean.class));
         return factory.getBeanDefinition();
     }
     
-    private List<BeanDefinition> parseReadwriteSplittingDataSourceRuleConfigurations(final Element element) {
+    private List<BeanDefinition> parseReadwriteSplittingDataSourceRuleConfigurations(final Element element, final ParserContext parserContext) {
         List<Element> dataSourceElements = DomUtils.getChildElementsByTagName(element, ReadwriteSplittingRuleBeanDefinitionTag.DATA_SOURCE_TAG);
         List<BeanDefinition> result = new ManagedList<>(dataSourceElements.size());
         for (Element each : dataSourceElements) {
-            result.add(parseReadwriteSplittingDataSourceRuleConfiguration(each));
+            result.add(parseReadwriteSplittingDataSourceRuleConfiguration(each, parserContext));
         }
         return result;
     }
     
-    private BeanDefinition parseReadwriteSplittingDataSourceRuleConfiguration(final Element element) {
+    private BeanDefinition parseReadwriteSplittingDataSourceRuleConfiguration(final Element element, final ParserContext parserContext) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(ReadwriteSplittingDataSourceRuleConfiguration.class);
         factory.addConstructorArgValue(element.getAttribute(ReadwriteSplittingRuleBeanDefinitionTag.READWRITE_SPLITTING_DATA_SOURCE_ID_ATTRIBUTE));
-        factory.addConstructorArgValue(element.getAttribute(ReadwriteSplittingRuleBeanDefinitionTag.AUTO_AWARE_DATA_SOURCE_NAME));
-        factory.addConstructorArgValue(element.getAttribute(ReadwriteSplittingRuleBeanDefinitionTag.WRITE_DATA_SOURCE_NAME_ATTRIBUTE));
-        factory.addConstructorArgValue(parseReadDataSourcesRef(element));
+        factory.addConstructorArgValue(element.getAttribute(ReadwriteSplittingRuleBeanDefinitionTag.READWRITE_SPLITTING_TYPE));
+        factory.addConstructorArgValue(parseProperties(element, parserContext));
         factory.addConstructorArgValue(element.getAttribute(ReadwriteSplittingRuleBeanDefinitionTag.LOAD_BALANCE_ALGORITHM_REF_ATTRIBUTE));
         return factory.getBeanDefinition();
     }
     
-    private Collection<String> parseReadDataSourcesRef(final Element element) {
-        List<String> readDataSources = Splitter.on(",").trimResults().splitToList(element.getAttribute(ReadwriteSplittingRuleBeanDefinitionTag.READ_DATA_SOURCE_NAMES_ATTRIBUTE));
-        Collection<String> result = new ManagedList<>(readDataSources.size());
-        result.addAll(readDataSources);
-        return result;
+    private Properties parseProperties(final Element element, final ParserContext parserContext) {
+        Element propsElement = DomUtils.getChildElementByTagName(element, ReadwriteSplittingRuleBeanDefinitionTag.READWRITE_SPLITTING_PROPS);
+        return null == propsElement ? new Properties() : parserContext.getDelegate().parsePropsElement(propsElement);
     }
 }

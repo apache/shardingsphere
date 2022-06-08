@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="drop_by_postgresql_source_test_case63" value="DROP FOREIGN TABLE IF EXISTS no_such_schema.foo;" db-types="PostgreSQL" />
+    <sql-case id="drop_by_postgresql_source_test_case64" value="DROP FOREIGN TABLE IF EXISTS no_table;" db-types="PostgreSQL" />
+    <sql-case id="drop_by_postgresql_source_test_case65" value="DROP FOREIGN TABLE fd_pt2_1;" db-types="PostgreSQL" />
+    <sql-case id="drop_by_postgresql_source_test_case66" value="DROP FOREIGN TABLE fd_pt2_1;" db-types="PostgreSQL" />
+    <sql-case id="drop_by_postgresql_source_test_case67" value="DROP FOREIGN TABLE fd_pt2_1;" db-types="PostgreSQL" />
+    <sql-case id="drop_by_postgresql_source_test_case68" value="DROP FOREIGN TABLE foreign_part;" db-types="PostgreSQL" />
+    <sql-case id="drop_by_postgresql_source_test_case69" value="DROP FOREIGN TABLE foreign_schema.foreign_table_1;" db-types="PostgreSQL" />
+    <sql-case id="drop_by_postgresql_source_test_case70" value="DROP FOREIGN TABLE ft1;" db-types="PostgreSQL" />
+    <sql-case id="drop_by_postgresql_source_test_case71" value="DROP FOREIGN TABLE ft2 CASCADE;" db-types="PostgreSQL" />
+    <sql-case id="drop_by_postgresql_source_test_case72" value="DROP FOREIGN TABLE ft2;" db-types="PostgreSQL" />
+    <sql-case id="drop_by_postgresql_source_test_case73" value="DROP FOREIGN TABLE ft2;" db-types="PostgreSQL" />
+    <sql-case id="drop_by_postgresql_source_test_case74" value="DROP FOREIGN TABLE ft_part1, ft_part2;" db-types="PostgreSQL" />
+    <sql-case id="drop_by_postgresql_source_test_case75" value="DROP FOREIGN TABLE ft_part2;" db-types="PostgreSQL" />
+    <sql-case id="drop_by_postgresql_source_test_case76" value="DROP FOREIGN TABLE ft_part_1_1, ft_part_1_2;" db-types="PostgreSQL" />
+    <sql-case id="drop_by_postgresql_source_test_case77" value="DROP FOREIGN TABLE ft_part_1_2;" db-types="PostgreSQL" />
+    <sql-case id="drop_by_postgresql_source_test_case78" value="DROP FOREIGN TABLE no_table;" db-types="PostgreSQL" />
+</sql-cases>

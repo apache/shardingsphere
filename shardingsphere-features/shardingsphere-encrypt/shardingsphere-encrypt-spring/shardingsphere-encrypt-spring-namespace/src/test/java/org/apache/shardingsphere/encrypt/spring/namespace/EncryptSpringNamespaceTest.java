@@ -33,16 +33,18 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 @ContextConfiguration(locations = "classpath:META-INF/spring/encrypt-application-context.xml")
 public final class EncryptSpringNamespaceTest extends AbstractJUnit4SpringContextTests {
     
     @Resource
-    private EncryptAlgorithm aesEncryptor;
+    private EncryptAlgorithm<Object, String> aesEncryptor;
     
     @Resource
-    private EncryptAlgorithm md5Encryptor;
+    private EncryptAlgorithm<Object, String> md5Encryptor;
     
     @Resource
     private AlgorithmProvidedEncryptRuleConfiguration encryptRule;
@@ -65,7 +67,7 @@ public final class EncryptSpringNamespaceTest extends AbstractJUnit4SpringContex
         assertEncryptTable(encryptRule.getTables().iterator().next());
     }
     
-    private void assertEncryptors(final Map<String, EncryptAlgorithm> encryptors) {
+    private void assertEncryptors(final Map<String, EncryptAlgorithm<?, ?>> encryptors) {
         assertThat(encryptors.size(), is(2));
         assertThat(encryptors.get("aesEncryptor"), instanceOf(AESEncryptAlgorithm.class));
         assertThat(encryptors.get("aesEncryptor").getProps().getProperty("aes-key-value"), is("123456"));
@@ -74,6 +76,7 @@ public final class EncryptSpringNamespaceTest extends AbstractJUnit4SpringContex
     
     private void assertEncryptTable(final EncryptTableRuleConfiguration tableRuleConfig) {
         assertThat(tableRuleConfig.getName(), is("t_order"));
+        assertFalse(tableRuleConfig.getQueryWithCipherColumn());
         assertThat(tableRuleConfig.getColumns().size(), is(2));
         Iterator<EncryptColumnRuleConfiguration> columnRuleConfigs = tableRuleConfig.getColumns().iterator();
         assertEncryptColumn1(columnRuleConfigs.next());
@@ -84,6 +87,7 @@ public final class EncryptSpringNamespaceTest extends AbstractJUnit4SpringContex
         assertThat(columnRuleConfig.getLogicColumn(), is("pwd"));
         assertThat(columnRuleConfig.getCipherColumn(), is("pwd_cipher"));
         assertThat(columnRuleConfig.getEncryptorName(), is("aesEncryptor"));
+        assertTrue(columnRuleConfig.getQueryWithCipherColumn());
     }
     
     private void assertEncryptColumn2(final EncryptColumnRuleConfiguration columnRuleConfig) {
@@ -92,5 +96,6 @@ public final class EncryptSpringNamespaceTest extends AbstractJUnit4SpringContex
         assertThat(columnRuleConfig.getAssistedQueryColumn(), is("credit_card_assisted_query"));
         assertThat(columnRuleConfig.getPlainColumn(), is("credit_card_plain"));
         assertThat(columnRuleConfig.getEncryptorName(), is("md5Encryptor"));
+        assertFalse(columnRuleConfig.getQueryWithCipherColumn());
     }
 }

@@ -18,100 +18,81 @@
 package org.apache.shardingsphere.proxy.backend.context;
 
 import com.google.common.base.Strings;
+import lombok.AccessLevel;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
-import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
-import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.state.StateContext;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
-import org.apache.shardingsphere.transaction.context.TransactionContexts;
-import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Optional;
 
 /**
  * Proxy context.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public final class ProxyContext {
     
     private static final ProxyContext INSTANCE = new ProxyContext();
     
-    private final JDBCBackendDataSource backendDataSource;
+    private final JDBCBackendDataSource backendDataSource = new JDBCBackendDataSource();
     
-    private MetaDataContexts metaDataContexts;
+    private ContextManager contextManager;
     
-    private TransactionContexts transactionContexts;
-    
-    private ProxyContext() {
-        backendDataSource = new JDBCBackendDataSource();
-        metaDataContexts = new StandardMetaDataContexts();
-        transactionContexts = new StandardTransactionContexts();
+    /**
+     * Initialize proxy context.
+     *
+     * @param contextManager context manager
+     */
+    public static void init(final ContextManager contextManager) {
+        INSTANCE.contextManager = contextManager;
     }
     
     /**
-     * Get instance of proxy schema schemas.
+     * Get instance of proxy context.
      *
-     * @return instance of ShardingSphere schemas.
+     * @return got instance
      */
     public static ProxyContext getInstance() {
         return INSTANCE;
     }
     
     /**
-     * Initialize proxy meta data contexts.
+     * Check database exists.
      *
-     * @param metaDataContexts meta data contexts
-     * @param transactionContexts transaction manager engine contexts
+     * @param name database name
+     * @return database exists or not
      */
-    public void init(final MetaDataContexts metaDataContexts, final TransactionContexts transactionContexts) {
-        this.metaDataContexts = metaDataContexts;
-        this.transactionContexts = transactionContexts;
+    public boolean databaseExists(final String name) {
+        return contextManager.getMetaDataContexts().getMetaData().getDatabases().containsKey(name);
     }
     
     /**
-     * Check schema exists.
+     * Get database.
      *
-     * @param schemaName schema name
-     * @return schema exists or not
+     * @param name database name
+     * @return got database
      */
-    public boolean schemaExists(final String schemaName) {
-        return metaDataContexts.getAllSchemaNames().contains(schemaName);
-    }
-    
-    /**
-     * Get ShardingSphere meta data.
-     *
-     * @param schemaName schema name
-     * @return ShardingSphere meta data
-     */
-    public ShardingSphereMetaData getMetaData(final String schemaName) {
-        if (Strings.isNullOrEmpty(schemaName) || !metaDataContexts.getAllSchemaNames().contains(schemaName)) {
+    public ShardingSphereDatabase getDatabase(final String name) {
+        if (Strings.isNullOrEmpty(name) || !contextManager.getMetaDataContexts().getMetaData().getDatabases().containsKey(name)) {
             throw new NoDatabaseSelectedException();
         }
-        return metaDataContexts.getMetaData(schemaName);
+        return contextManager.getMetaDataContexts().getMetaData().getDatabases().get(name);
     }
     
     /**
-     * Get all schema names.
+     * Get all database names.
      *
-     * @return all schema names
+     * @return all database names
      */
-    public List<String> getAllSchemaNames() {
-        return new ArrayList<>(metaDataContexts.getAllSchemaNames());
-    }
-    
-    /**
-     * Get lock.
-     * 
-     * @return lock
-     */
-    public Optional<ShardingSphereLock> getLock() {
-        return metaDataContexts.getLock();
+    public Collection<String> getAllDatabaseNames() {
+        return contextManager.getMetaDataContexts().getMetaData().getDatabases().keySet();
     }
     
     /**
@@ -119,7 +100,23 @@ public final class ProxyContext {
      * 
      * @return state context
      */
-    public StateContext getStateContext() {
-        return metaDataContexts.getStateContext();
+    public Optional<StateContext> getStateContext() {
+        return null == contextManager.getInstanceContext() ? Optional.empty() : Optional.ofNullable(contextManager.getInstanceContext().getInstance().getState());
+    }
+    
+    /**
+     * Get rules.
+     * 
+     * @param databaseName database name
+     * @return rules
+     */
+    // TODO performance enhancement: cache when call init() and pay attention for refresh of rule modification
+    public Collection<ShardingSphereRule> getRules(final String databaseName) {
+        Collection<ShardingSphereRule> result = new LinkedList<>();
+        if (!Strings.isNullOrEmpty(databaseName) && databaseExists(databaseName)) {
+            result.addAll(contextManager.getMetaDataContexts().getMetaData().getDatabases().get(databaseName).getRuleMetaData().getRules());
+        }
+        result.addAll(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules());
+        return result;
     }
 }

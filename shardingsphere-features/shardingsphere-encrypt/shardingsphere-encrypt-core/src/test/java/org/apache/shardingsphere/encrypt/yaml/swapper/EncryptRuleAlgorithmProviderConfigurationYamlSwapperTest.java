@@ -22,10 +22,8 @@ import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfigu
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptTableRuleConfiguration;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
-import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperFactory;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -38,13 +36,10 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class EncryptRuleAlgorithmProviderConfigurationYamlSwapperTest {
-    
-    static {
-        ShardingSphereServiceLoader.register(YamlRuleConfigurationSwapper.class);
-    }
     
     @Mock
     private AlgorithmProvidedEncryptRuleConfiguration ruleConfig;
@@ -53,12 +48,12 @@ public final class EncryptRuleAlgorithmProviderConfigurationYamlSwapperTest {
     public void assertSwapToYamlConfiguration() {
         YamlEncryptRuleConfiguration actual = getSwapper().swapToYamlConfiguration(createAlgorithmProvidedEncryptRuleConfiguration());
         assertThat(actual.getTables().size(), is(1));
-        assertThat(actual.getEncryptors().size(), is(0));
+        assertTrue(actual.getEncryptors().isEmpty());
     }
     
     private AlgorithmProvidedEncryptRuleConfiguration createAlgorithmProvidedEncryptRuleConfiguration() {
-        Collection<EncryptTableRuleConfiguration> tables = Collections.singletonList(new EncryptTableRuleConfiguration("tbl", Collections.emptyList()));
-        Map<String, EncryptAlgorithm> encryptors = new LinkedHashMap<>();
+        Collection<EncryptTableRuleConfiguration> tables = Collections.singletonList(new EncryptTableRuleConfiguration("tbl", Collections.emptyList(), null));
+        Map<String, EncryptAlgorithm<?, ?>> encryptors = new LinkedHashMap<>();
         return new AlgorithmProvidedEncryptRuleConfiguration(tables, encryptors, true);
     }
     
@@ -66,7 +61,7 @@ public final class EncryptRuleAlgorithmProviderConfigurationYamlSwapperTest {
     public void assertSwapToObject() {
         AlgorithmProvidedEncryptRuleConfiguration actual = getSwapper().swapToObject(createYamlEncryptRuleConfiguration());
         assertThat(actual.getTables().size(), is(1));
-        assertThat(actual.getEncryptors().size(), is(0));
+        assertTrue(actual.getEncryptors().isEmpty());
     }
     
     private YamlEncryptRuleConfiguration createYamlEncryptRuleConfiguration() {
@@ -75,13 +70,12 @@ public final class EncryptRuleAlgorithmProviderConfigurationYamlSwapperTest {
         tableRuleConfig.setName("t_encrypt");
         result.getTables().put("t_encrypt", tableRuleConfig);
         YamlShardingSphereAlgorithmConfiguration algorithmConfig = new YamlShardingSphereAlgorithmConfiguration();
-        algorithmConfig.setType("TEST");
-        result.getEncryptors().put("test", algorithmConfig);
+        algorithmConfig.setType("CORE.FIXTURE");
+        result.getEncryptors().put("fixture_encryptor", algorithmConfig);
         return result;
     }
     
     private EncryptRuleAlgorithmProviderConfigurationYamlSwapper getSwapper() {
-        return (EncryptRuleAlgorithmProviderConfigurationYamlSwapper)
-                    OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(ruleConfig), YamlRuleConfigurationSwapper.class).get(ruleConfig);
+        return (EncryptRuleAlgorithmProviderConfigurationYamlSwapper) YamlRuleConfigurationSwapperFactory.getInstanceMapByRuleConfigurations(Collections.singletonList(ruleConfig)).get(ruleConfig);
     }
 }

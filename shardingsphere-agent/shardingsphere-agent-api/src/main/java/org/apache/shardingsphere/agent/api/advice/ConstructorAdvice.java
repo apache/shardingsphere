@@ -23,6 +23,15 @@ package org.apache.shardingsphere.agent.api.advice;
 public interface ConstructorAdvice {
     
     /**
+     * Check if disable the check process when interceptor are trying to call the advice. Then the advice will be called by skipping checks.
+     *
+     * @return disable or not
+     */
+    default boolean disableCheck() {
+        return false;
+    }
+    
+    /**
      * Intercept the target's constructor. This method is weaved after the constructor execution.
      *
      * @param target intercepted target object

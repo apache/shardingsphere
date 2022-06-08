@@ -33,4 +33,6 @@ public final class EncryptRuleSegment implements ASTNode {
     private final String tableName;
     
     private final Collection<EncryptColumnSegment> columns;
+    
+    private final Boolean queryWithCipherColumn;
 }

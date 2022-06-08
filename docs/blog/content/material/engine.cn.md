@@ -1,10 +1,8 @@
 +++
 title = "自动化执行引擎"
-weight = 10
+weight = 4
 chapter = true
 +++
-
-## 自动化执行引擎 
 
 今天「剖析Sharding-Sphere系列文章」为大家带来对Sharding-Sphere自动化执行引擎模块的相关介绍。鉴于老板比较喜欢正经的技术文章，所以妹子我尽量用正经又不失肃穆的叙述风格，为大家带来《Sharding-Sphere自动化执行引擎模块》的分享。
 

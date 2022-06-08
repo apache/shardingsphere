@@ -21,4 +21,11 @@ package org.apache.shardingsphere.infra.rule;
  * ShardingSphere rule.
  */
 public interface ShardingSphereRule {
+    
+    /**
+     * Get type.
+     *
+     * @return rule type
+     */
+    String getType();
 }

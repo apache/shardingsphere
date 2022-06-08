@@ -1,9 +1,8 @@
 +++
 title = "After years of stagnation, ElasticJob is back with the first Apache version 3.0.0-alpha"
-weight = 1
+weight = 13
 chapter = true
 +++
-## After years of stagnation, ElasticJob is back with the first Apache version 3.0.0-alpha
 
 Within a few months ElasticJob as the subproject of Apache ShardingSphere has fixed and merged 535 issues and pull requests. More importantly, the ElasticJob community released the first official version: 3.0.0-alpha after joined Apache Software Foundation.
 
@@ -17,7 +16,7 @@ The scheduling model of ElasticJob is divided into in-process scheduling Elastic
 
 **In-process scheduling**
 
-ElasticJob-Lite is a thread-level scheduling framework for in-process. It can be used in conjunction with Java frameworks such as Spring, Dubbo and Spring-injected Beans can be used freely in operations, such as data source connection pools, Dubbo remote services, etc. It fits business developement well and make development more conveniently.
+ElasticJob-Lite is a thread-level scheduling framework for in-process. It can be used in conjunction with Java frameworks such as Spring, Dubbo and Spring-injected Beans can be used freely in operations, such as data source connection pools, Dubbo remote services, etc. It fits business development well and make development more conveniently.
 
 ElasticJob-Lite is deployed with business applications, and its life cycle is same as the business applications. It is a typical embedded lightweight architecture. ElasticJob-Lite is very suitable for ordinary Java applications with stable resource usage and simple deployment architecture. It can be understood as a Java development framework.
 

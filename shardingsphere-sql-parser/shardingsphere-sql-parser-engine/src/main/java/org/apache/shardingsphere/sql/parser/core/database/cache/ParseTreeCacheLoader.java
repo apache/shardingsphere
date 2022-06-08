@@ -17,16 +17,16 @@
 
 package org.apache.shardingsphere.sql.parser.core.database.cache;
 
-import com.google.common.cache.CacheLoader;
-import org.antlr.v4.runtime.tree.ParseTree;
+import com.github.benmanes.caffeine.cache.CacheLoader;
+import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.core.database.parser.SQLParserExecutor;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
- * Parse tree cache loader.
+ * Parse context cache loader.
  */
-public final class ParseTreeCacheLoader extends CacheLoader<String, ParseTree> {
+public final class ParseTreeCacheLoader implements CacheLoader<String, ParseASTNode> {
     
     private final SQLParserExecutor sqlParserExecutor;
     
@@ -36,7 +36,7 @@ public final class ParseTreeCacheLoader extends CacheLoader<String, ParseTree> {
     
     @ParametersAreNonnullByDefault
     @Override
-    public ParseTree load(final String sql) {
+    public ParseASTNode load(final String sql) {
         return sqlParserExecutor.parse(sql);
     }
 }

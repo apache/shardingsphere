@@ -19,15 +19,24 @@ package org.apache.shardingsphere.shadow.spring.boot;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
+import org.apache.shardingsphere.shadow.spring.boot.algorithm.ShadowAlgorithmProvidedBeanRegistry;
 import org.apache.shardingsphere.shadow.spring.boot.condition.ShadowSpringBootCondition;
 import org.apache.shardingsphere.shadow.spring.boot.rule.YamlShadowRuleSpringBootConfiguration;
 import org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfiguration;
-import org.apache.shardingsphere.shadow.yaml.swapper.ShadowRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.shadow.yaml.swapper.ShadowRuleAlgorithmProviderConfigurationYamlSwapper;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
+
+import java.util.Collections;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * Shadow rule configuration for spring boot.
@@ -39,17 +48,35 @@ import org.springframework.context.annotation.Configuration;
 @RequiredArgsConstructor
 public class ShadowRuleSpringBootConfiguration {
     
-    private final ShadowRuleConfigurationYamlSwapper swapper = new ShadowRuleConfigurationYamlSwapper();
+    private final ShadowRuleAlgorithmProviderConfigurationYamlSwapper swapper = new ShadowRuleAlgorithmProviderConfigurationYamlSwapper();
     
     private final YamlShadowRuleSpringBootConfiguration yamlConfig;
     
     /**
      * Shadow rule configuration.
      *
+     * @param shadowAlgorithms shadow algorithms
      * @return shadow rule configuration
      */
     @Bean
-    public RuleConfiguration shadowRuleConfiguration() {
-        return swapper.swapToObject(yamlConfig.getShadow());
+    public RuleConfiguration shadowRuleConfiguration(final ObjectProvider<Map<String, ShadowAlgorithm>> shadowAlgorithms) {
+        AlgorithmProvidedShadowRuleConfiguration result = swapper.swapToObject(yamlConfig.getShadow());
+        result.setShadowAlgorithms(createShadowAlgorithmMap(shadowAlgorithms));
+        return result;
+    }
+    
+    private Map<String, ShadowAlgorithm> createShadowAlgorithmMap(final ObjectProvider<Map<String, ShadowAlgorithm>> shadowAlgorithms) {
+        return Optional.ofNullable(shadowAlgorithms.getIfAvailable()).orElse(Collections.emptyMap());
+    }
+    
+    /**
+     * Shadow algorithm provided bean registry.
+     *
+     * @param environment environment
+     * @return shadow algorithm provided bean registry
+     */
+    @Bean
+    public static ShadowAlgorithmProvidedBeanRegistry shadowAlgorithmProvidedBeanRegistry(final Environment environment) {
+        return new ShadowAlgorithmProvidedBeanRegistry(environment);
     }
 }

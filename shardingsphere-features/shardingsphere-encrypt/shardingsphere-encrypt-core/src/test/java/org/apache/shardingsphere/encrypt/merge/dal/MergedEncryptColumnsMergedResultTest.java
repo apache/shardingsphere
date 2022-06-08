@@ -72,13 +72,13 @@ public final class MergedEncryptColumnsMergedResultTest {
     }
     
     private EncryptRule mockEncryptRule() {
-        EncryptRule encryptRule = mock(EncryptRule.class);
+        EncryptRule result = mock(EncryptRule.class);
         EncryptTable encryptTable = mock(EncryptTable.class);
-        when(encryptRule.findEncryptTable("test")).thenReturn(Optional.of(encryptTable));
+        when(result.findEncryptTable("test")).thenReturn(Optional.of(encryptTable));
         when(encryptTable.getAssistedQueryColumns()).thenReturn(Collections.singleton("assistedQuery"));
         when(encryptTable.isCipherColumn("cipher")).thenReturn(true);
         when(encryptTable.getLogicColumn("cipher")).thenReturn("id");
-        return encryptRule;
+        return result;
     }
     
     @Test
