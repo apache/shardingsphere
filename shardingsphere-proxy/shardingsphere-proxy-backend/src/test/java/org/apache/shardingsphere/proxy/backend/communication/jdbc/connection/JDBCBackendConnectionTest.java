@@ -383,10 +383,8 @@ public final class JDBCBackendConnectionTest extends ProxyContextRestorer {
     }
     
     @Test
-    public void assertPrepareForTaskExecution() throws SQLException {
+    public void assertPrepareForTaskExecution() {
         backendConnection.prepareForTaskExecution();
-        verify(backendConnection).closeDatabaseCommunicationEngines(true);
-        verify(backendConnection).closeConnections(false);
     }
     
     @Test

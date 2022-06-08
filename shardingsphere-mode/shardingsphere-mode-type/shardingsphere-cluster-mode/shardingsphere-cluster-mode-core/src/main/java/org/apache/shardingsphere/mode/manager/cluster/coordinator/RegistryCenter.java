@@ -30,7 +30,6 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.statu
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.service.StorageNodeStatusService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.subscriber.StorageNodeStatusSubscriber;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
-import java.util.Arrays;
 
 /**
  * Registry center.
@@ -76,7 +75,7 @@ public final class RegistryCenter {
     public void onlineInstance(final ComputeNodeInstance computeNodeInstance) {
         computeNodeStatusService.registerOnline(computeNodeInstance.getInstanceDefinition());
         computeNodeStatusService.persistInstanceLabels(computeNodeInstance.getCurrentInstanceId(), computeNodeInstance.getLabels());
-        computeNodeStatusService.persistInstanceXaRecoveryId(computeNodeInstance.getCurrentInstanceId(), Arrays.asList(computeNodeInstance.getXaRecoveryId()));
+        computeNodeStatusService.persistInstanceXaRecoveryId(computeNodeInstance.getCurrentInstanceId(), computeNodeInstance.getXaRecoveryIds());
         listenerFactory.watchListeners();
     }
 }

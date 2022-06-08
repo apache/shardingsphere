@@ -90,7 +90,8 @@ public final class MySQLMultiStatementsHandler implements TextProtocolBackendHan
     
     private ExecutionContext anyExecutionContext;
     
-    public MySQLMultiStatementsHandler(final ConnectionSession connectionSession, final SQLStatement sqlStatementSample, final String sql) {
+    public MySQLMultiStatementsHandler(final ConnectionSession connectionSession, final SQLStatement sqlStatementSample, final String sql) throws SQLException {
+        connectionSession.getBackendConnection().handleAutoCommit();
         this.connectionSession = connectionSession;
         this.sqlStatementSample = sqlStatementSample;
         Pattern pattern = sqlStatementSample instanceof UpdateStatement ? MULTI_UPDATE_STATEMENTS : MULTI_DELETE_STATEMENTS;

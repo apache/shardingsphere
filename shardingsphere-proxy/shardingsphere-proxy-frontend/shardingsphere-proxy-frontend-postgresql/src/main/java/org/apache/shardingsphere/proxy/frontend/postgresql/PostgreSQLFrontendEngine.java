@@ -47,7 +47,7 @@ public final class PostgreSQLFrontendEngine implements DatabaseProtocolFrontendE
     private final DatabasePacketCodecEngine<PostgreSQLPacket> codecEngine = new PostgreSQLPacketCodecEngine();
     
     @Override
-    public void setDatabaseVersion(final String schemaName, final String databaseVersion) {
+    public void setDatabaseVersion(final String databaseName, final String databaseVersion) {
         PostgreSQLServerInfo.setServerVersion(databaseVersion);
     }
     

@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -70,6 +71,9 @@ public final class StandardPipelineDataSourceConfiguration implements PipelineDa
         this.parameter = parameter;
         if (!yamlConfig.containsKey(DATA_SOURCE_CLASS_NAME)) {
             yamlConfig.put(DATA_SOURCE_CLASS_NAME, "com.zaxxer.hikari.HikariDataSource");
+        }
+        for (String each : Arrays.asList("minPoolSize", "minimumIdle")) {
+            yamlConfig.put(each, "1");
         }
         dataSourceProperties = new YamlDataSourceConfigurationSwapper().swapToDataSourceProperties(yamlConfig);
         yamlConfig.remove(DATA_SOURCE_CLASS_NAME);

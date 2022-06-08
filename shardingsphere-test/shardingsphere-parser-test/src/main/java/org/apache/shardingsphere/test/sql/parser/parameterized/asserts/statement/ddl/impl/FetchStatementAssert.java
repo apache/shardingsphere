@@ -22,8 +22,12 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussFetchStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.SQLSegmentAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.cursor.DirectionSegmentAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.value.IdentifierValueAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.FetchStatementTestCase;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Fetch statement assert.
@@ -40,10 +44,20 @@ public final class FetchStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final OpenGaussFetchStatement actual, final FetchStatementTestCase expected) {
         assertCursorName(assertContext, actual, expected);
+        assertDirection(assertContext, actual, expected);
     }
     
     private static void assertCursorName(final SQLCaseAssertContext assertContext, final OpenGaussFetchStatement actual, final FetchStatementTestCase expected) {
         IdentifierValueAssert.assertIs(assertContext, actual.getCursorName().getIdentifier(), expected.getCursorName(), "Fetch");
         SQLSegmentAssert.assertIs(assertContext, actual.getCursorName(), expected.getCursorName());
+    }
+    
+    private static void assertDirection(final SQLCaseAssertContext assertContext, final OpenGaussFetchStatement actual, final FetchStatementTestCase expected) {
+        if (null != expected.getDirection()) {
+            assertTrue(assertContext.getText("Actual direction segment should exist."), actual.getDirection().isPresent());
+            DirectionSegmentAssert.assertIs(assertContext, actual.getDirection().get(), expected.getDirection());
+        } else {
+            assertFalse(assertContext.getText("Actual direction segment should not exist."), actual.getDirection().isPresent());
+        }
     }
 }

@@ -117,5 +117,7 @@ public interface LockContext {
      * @param schemaName schema name
      * @return is locked or not
      */
-    boolean isLocked(String databaseName, String schemaName);
+    default boolean isLocked(String databaseName, String schemaName) {
+        throw new UnsupportedOperationException();
+    }
 }

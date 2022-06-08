@@ -137,6 +137,7 @@ public final class PostgreSQLBatchedStatementsExecutor {
      * @throws SQLException SQL exception
      */
     public int executeBatch() throws SQLException {
+        connectionSession.getBackendConnection().handleAutoCommit();
         addBatchedParametersToPreparedStatements();
         return executeBatchedPreparedStatements();
     }

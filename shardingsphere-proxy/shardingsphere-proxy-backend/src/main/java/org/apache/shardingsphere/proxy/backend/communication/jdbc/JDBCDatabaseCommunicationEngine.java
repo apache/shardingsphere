@@ -53,7 +53,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeaderBuilderEngine;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
-import org.apache.shardingsphere.sharding.merge.dql.iterator.IteratorStreamMergedResult;
+import org.apache.shardingsphere.sharding.merge.common.IteratorStreamMergedResult;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
 
 import java.sql.Connection;
@@ -126,9 +126,9 @@ public final class JDBCDatabaseCommunicationEngine extends DatabaseCommunication
         // TODO move federation route logic to binder
         SQLStatementContext<?> sqlStatementContext = logicSQL.getSqlStatementContext();
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        ShardingSphereDatabase databaseMetaData = metaDataContexts.getMetaData().getDatabases().get(backendConnection.getConnectionSession().getDatabaseName());
+        ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabases().get(backendConnection.getConnectionSession().getDatabaseName());
         if (executionContext.getRouteContext().isFederated() || (sqlStatementContext instanceof SelectStatementContext
-                && SystemSchemaUtil.containsSystemSchema(sqlStatementContext.getDatabaseType(), sqlStatementContext.getTablesContext().getSchemaNames(), databaseMetaData))) {
+                && SystemSchemaUtil.containsSystemSchema(sqlStatementContext.getDatabaseType(), sqlStatementContext.getTablesContext().getSchemaNames(), database))) {
             ResultSet resultSet = doExecuteFederation(logicSQL, metaDataContexts);
             return processExecuteFederation(resultSet, metaDataContexts);
         }

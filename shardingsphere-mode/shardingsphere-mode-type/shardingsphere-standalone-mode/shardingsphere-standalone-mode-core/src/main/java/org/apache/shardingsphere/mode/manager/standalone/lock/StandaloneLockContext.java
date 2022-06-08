@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
  */
 public final class StandaloneLockContext implements LockContext {
     
-    private final ShardingSphereLock standaloneLock = new ShardingSphereStandaloneMutexLock();
+    private final ShardingSphereLock standaloneLock = new ShardingSphereStandaloneLock();
     
     @Override
     public ShardingSphereLock getLock() {
@@ -51,11 +51,5 @@ public final class StandaloneLockContext implements LockContext {
     @Override
     public boolean isLocked(final String databaseName) {
         return standaloneLock.isLocked(databaseName);
-    }
-    
-    @Override
-    public boolean isLocked(final String databaseName, final String schemaName) {
-        // TODO when the lock structure adjustment is completed
-        throw new UnsupportedOperationException();
     }
 }

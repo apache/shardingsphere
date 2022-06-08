@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.event.MetaDataRefreshedEvent;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
@@ -57,20 +58,22 @@ public final class MetaDataRefreshEngine {
      * @param sqlStatementContext SQL statement context
      * @param logicDataSourceNamesSupplier logic data source names supplier
      * @throws SQLException SQL exception
+     * @return meta data refreshed event
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public void refresh(final SQLStatementContext<?> sqlStatementContext, final Supplier<Collection<String>> logicDataSourceNamesSupplier) throws SQLException {
+    public Optional<MetaDataRefreshedEvent> refresh(final SQLStatementContext<?> sqlStatementContext, final Supplier<Collection<String>> logicDataSourceNamesSupplier) throws SQLException {
         Class<? extends SQLStatement> sqlStatementClass = sqlStatementContext.getSqlStatement().getClass();
         if (IGNORABLE_SQL_STATEMENT_CLASSES.contains(sqlStatementClass)) {
-            return;
+            return Optional.empty();
         }
         Optional<MetaDataRefresher> schemaRefresher = MetaDataRefresherFactory.findInstance(sqlStatementClass);
         if (schemaRefresher.isPresent()) {
             String schemaName = sqlStatementContext.getTablesContext().getSchemaName()
                     .orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(sqlStatementContext.getDatabaseType(), database.getName()));
-            schemaRefresher.get().refresh(database, federationMetaData, optimizerPlanners, logicDataSourceNamesSupplier.get(), schemaName, sqlStatementContext.getSqlStatement(), props);
+            return schemaRefresher.get().refresh(database, federationMetaData, optimizerPlanners, logicDataSourceNamesSupplier.get(), schemaName, sqlStatementContext.getSqlStatement(), props);
         } else {
             IGNORABLE_SQL_STATEMENT_CLASSES.add(sqlStatementClass);
         }
+        return Optional.empty();
     }
 }

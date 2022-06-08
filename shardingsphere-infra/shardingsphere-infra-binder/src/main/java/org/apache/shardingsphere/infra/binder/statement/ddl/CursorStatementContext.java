@@ -20,28 +20,59 @@ package org.apache.shardingsphere.infra.binder.statement.ddl;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.type.CursorAvailable;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
+import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.cursor.CursorNameSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractor;
+import org.apache.shardingsphere.sql.parser.sql.common.util.WhereExtractUtil;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCursorStatement;
 
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Cursor statement context.
  */
 @Getter
-public final class CursorStatementContext extends CommonSQLStatementContext<OpenGaussCursorStatement> implements CursorAvailable, TableAvailable {
+public final class CursorStatementContext extends CommonSQLStatementContext<OpenGaussCursorStatement> implements CursorAvailable, TableAvailable, WhereAvailable {
+    
+    private final Collection<WhereSegment> whereSegments = new LinkedList<>();
+    
+    private final Collection<ColumnSegment> columnSegments = new LinkedList<>();
     
     private final TablesContext tablesContext;
     
-    public CursorStatementContext(final OpenGaussCursorStatement sqlStatement) {
+    private final SelectStatementContext selectStatementContext;
+    
+    public CursorStatementContext(final Map<String, ShardingSphereDatabase> databases, final List<Object> parameters,
+                                  final OpenGaussCursorStatement sqlStatement, final String defaultDatabaseName) {
         super(sqlStatement);
+        tablesContext = new TablesContext(getSimpleTableSegments(), getDatabaseType());
+        extractWhereSegments(whereSegments, sqlStatement.getSelect());
+        ColumnExtractor.extractColumnSegments(columnSegments, whereSegments);
+        selectStatementContext = new SelectStatementContext(databases, parameters, sqlStatement.getSelect(), defaultDatabaseName);
+    }
+    
+    private Collection<SimpleTableSegment> getSimpleTableSegments() {
         TableExtractor tableExtractor = new TableExtractor();
         tableExtractor.extractTablesFromSelect(getSqlStatement().getSelect());
-        tablesContext = new TablesContext(tableExtractor.getRewriteTables(), getDatabaseType());
+        return tableExtractor.getRewriteTables();
+    }
+    
+    private void extractWhereSegments(final Collection<WhereSegment> whereSegments, final SelectStatement select) {
+        select.getWhere().ifPresent(whereSegments::add);
+        whereSegments.addAll(WhereExtractUtil.getSubqueryWhereSegments(select));
+        whereSegments.addAll(WhereExtractUtil.getJoinWhereSegments(select));
     }
     
     @Override
@@ -52,5 +83,15 @@ public final class CursorStatementContext extends CommonSQLStatementContext<Open
     @Override
     public CursorNameSegment getCursorName() {
         return getSqlStatement().getCursorName();
+    }
+    
+    @Override
+    public Collection<WhereSegment> getWhereSegments() {
+        return whereSegments;
+    }
+    
+    @Override
+    public Collection<ColumnSegment> getColumnSegments() {
+        return columnSegments;
     }
 }

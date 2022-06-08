@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.lock.LockMode;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.database.ShardingSphereDistributeDatabaseLock;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.database.ShardingSphereDistributedDatabaseLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.distributed.ShardingSphereDistributedLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.ShardingSphereInterMutexLockHolder;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.TimeoutMilliseconds;
@@ -34,12 +34,12 @@ public final class DistributedLockManager implements ShardingSphereLockManager {
     
     private ShardingSphereDistributedLock distributedLock;
     
-    private ShardingSphereDistributeDatabaseLock databaseLock;
+    private ShardingSphereDistributedDatabaseLock databaseLock;
     
     @Override
     public void init(final ShardingSphereInterMutexLockHolder lockHolder) {
         distributedLock = new ShardingSphereDistributedLock(lockHolder);
-        databaseLock = new ShardingSphereDistributeDatabaseLock(lockHolder);
+        databaseLock = new ShardingSphereDistributedDatabaseLock(lockHolder);
     }
     
     @Override

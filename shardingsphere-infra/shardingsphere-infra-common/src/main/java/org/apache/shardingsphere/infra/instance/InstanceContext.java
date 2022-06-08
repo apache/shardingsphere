@@ -102,19 +102,36 @@ public final class InstanceContext {
     }
     
     /**
-     * Update instance XA recovery id.
+     * Add instance XA recovery id.
      *
      * @param instanceId instance id
      * @param xaRecoveryId XA recovery id
      * @return true if current instance updated, else false                    
      */
-    public boolean updateXaRecoveryId(final String instanceId, final String xaRecoveryId) {
-        if (instanceId.equals(instance.getCurrentInstanceId()) && !Objects.equals(xaRecoveryId, instance.getXaRecoveryId())) {
-            instance.setXaRecoveryId(xaRecoveryId);
-            computeNodeInstances.stream().filter(each -> each.getInstanceDefinition().getInstanceId().equals(instanceId)).forEach(each -> each.setXaRecoveryId(xaRecoveryId));
+    public boolean addXaRecoveryId(final String instanceId, final String xaRecoveryId) {
+        if (instanceId.equals(instance.getCurrentInstanceId()) && !instance.getXaRecoveryIds().contains(xaRecoveryId)) {
+            instance.getXaRecoveryIds().add(xaRecoveryId);
+            computeNodeInstances.stream().filter(each -> each.getInstanceDefinition().getInstanceId().equals(instanceId)).forEach(each -> each.getXaRecoveryIds().add(xaRecoveryId));
             return true;
         }
-        computeNodeInstances.stream().filter(each -> each.getInstanceDefinition().getInstanceId().equals(instanceId)).forEach(each -> each.setXaRecoveryId(xaRecoveryId));
+        computeNodeInstances.stream().filter(each -> each.getInstanceDefinition().getInstanceId().equals(instanceId)).forEach(each -> each.getXaRecoveryIds().add(xaRecoveryId));
+        return false;
+    }
+    
+    /**
+     * Delete instance XA recovery id.
+     *
+     * @param instanceId instance id
+     * @param xaRecoveryId XA recovery id
+     * @return true if current instance updated, else false                    
+     */
+    public boolean deleteXaRecoveryId(final String instanceId, final String xaRecoveryId) {
+        if (instanceId.equals(instance.getCurrentInstanceId()) && instance.getXaRecoveryIds().contains(xaRecoveryId)) {
+            instance.getXaRecoveryIds().remove(xaRecoveryId);
+            computeNodeInstances.stream().filter(each -> each.getInstanceDefinition().getInstanceId().equals(instanceId)).forEach(each -> each.getXaRecoveryIds().remove(xaRecoveryId));
+            return true;
+        }
+        computeNodeInstances.stream().filter(each -> each.getInstanceDefinition().getInstanceId().equals(instanceId)).forEach(each -> each.getXaRecoveryIds().remove(xaRecoveryId));
         return false;
     }
     
@@ -182,5 +199,14 @@ public final class InstanceContext {
      */
     public void initLockContext() {
         lockContext.initLockState(this);
+    }
+    
+    /**
+     * Is cluster instance or not.
+     * 
+     * @return true if is cluster, else false
+     */
+    public boolean isCluster() {
+        return "Cluster".equalsIgnoreCase(modeConfiguration.getType());
     }
 }

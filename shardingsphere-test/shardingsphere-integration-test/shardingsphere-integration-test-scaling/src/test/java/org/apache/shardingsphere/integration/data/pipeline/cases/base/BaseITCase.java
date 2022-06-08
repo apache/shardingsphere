@@ -25,6 +25,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
+import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrlAppender;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
@@ -41,6 +42,7 @@ import org.apache.shardingsphere.integration.data.pipeline.framework.watcher.Sca
 import org.apache.shardingsphere.integration.data.pipeline.util.DatabaseTypeUtil;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
 import org.junit.Rule;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
@@ -107,7 +109,7 @@ public abstract class BaseITCase {
         Properties queryProps = ScalingCaseHelper.getQueryPropertiesByDatabaseType(databaseType);
         String defaultDatabaseName = DatabaseTypeUtil.isPostgreSQL(databaseType) ? "postgres" : "";
         try (Connection connection = DriverManager.getConnection(jdbcUrlAppender.appendQueryProperties(composedContainer.getProxyJdbcUrl(defaultDatabaseName), queryProps), "root", "root")) {
-            connection.createStatement().execute("CREATE DATABASE sharding_db");
+            executeWithLog(connection, "CREATE DATABASE sharding_db");
         }
         jdbcTemplate = new JdbcTemplate(getProxyDataSource("sharding_db"));
     }
@@ -123,7 +125,7 @@ public abstract class BaseITCase {
         return result;
     }
     
-    protected boolean waitShardingAlgorithmEffect(final int maxWaitTimes) throws InterruptedException {
+    protected boolean waitShardingAlgorithmEffect(final int maxWaitTimes) {
         long startTime = System.currentTimeMillis();
         int waitTimes = 0;
         do {
@@ -132,7 +134,7 @@ public abstract class BaseITCase {
                 log.info("waitShardingAlgorithmEffect time consume: {}", System.currentTimeMillis() - startTime);
                 return true;
             }
-            TimeUnit.SECONDS.sleep(2);
+            ThreadUtil.sleep(2, TimeUnit.SECONDS);
             waitTimes++;
         } while (waitTimes <= maxWaitTimes);
         return false;
@@ -162,7 +164,7 @@ public abstract class BaseITCase {
                 .replace("${password}", ScalingCaseHelper.getPassword(databaseType))
                 .replace("${ds0}", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_0"), queryProps))
                 .replace("${ds1}", JDBC_URL_APPENDER.appendQueryProperties(getActualJdbcUrlTemplate("ds_1"), queryProps));
-        connection.createStatement().execute(addSourceResource);
+        executeWithLog(connection, addSourceResource);
     }
     
     @SneakyThrows
@@ -188,11 +190,9 @@ public abstract class BaseITCase {
         }
     }
     
-    protected void initShardingAlgorithm() throws InterruptedException {
+    protected void initShardingAlgorithm() {
         executeWithLog(getCommonSQLCommand().getCreateDatabaseShardingAlgorithm());
-        TimeUnit.SECONDS.sleep(2);
         executeWithLog(getCommonSQLCommand().getCreateOrderShardingAlgorithm());
-        TimeUnit.SECONDS.sleep(2);
         executeWithLog(getCommonSQLCommand().getCreateOrderItemShardingAlgorithm());
     }
     
@@ -217,14 +217,30 @@ public abstract class BaseITCase {
         executeWithLog(String.format("CREATE SCHEMA %s", schemaName));
     }
     
+    protected void executeWithLog(final Connection connection, final String sql) throws SQLException {
+        log.info("connection execute:{}", sql);
+        connection.createStatement().execute(sql);
+        ThreadUtil.sleep(1, TimeUnit.SECONDS);
+    }
+    
     protected void executeWithLog(final String sql) {
         log.info("jdbcTemplate execute:{}", sql);
         jdbcTemplate.execute(sql);
+        ThreadUtil.sleep(2, TimeUnit.SECONDS);
     }
     
     protected List<Map<String, Object>> queryForListWithLog(final String sql) {
-        log.info("jdbcTemplate queryForMap:{}", sql);
-        return jdbcTemplate.queryForList(sql);
+        int retryNumber = 0;
+        while (retryNumber <= 3) {
+            try {
+                return jdbcTemplate.queryForList(sql);
+            } catch (final DataAccessException ex) {
+                log.error("data access error", ex);
+            }
+            ThreadUtil.sleep(2, TimeUnit.SECONDS);
+            retryNumber++;
+        }
+        throw new RuntimeException("can't get result from proxy");
     }
     
     protected void startIncrementTask(final BaseIncrementTask baseIncrementTask) {

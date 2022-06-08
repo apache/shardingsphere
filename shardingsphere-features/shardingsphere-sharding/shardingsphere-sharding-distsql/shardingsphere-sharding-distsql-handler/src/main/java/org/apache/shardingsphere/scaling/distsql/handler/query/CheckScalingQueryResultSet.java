@@ -20,6 +20,7 @@ package org.apache.shardingsphere.scaling.distsql.handler.query;
 import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPI;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
+import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.scaling.distsql.statement.CheckScalingStatement;
@@ -45,10 +46,11 @@ public final class CheckScalingQueryResultSet implements DistSQLResultSet {
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
         CheckScalingStatement checkScalingStatement = (CheckScalingStatement) sqlStatement;
         Map<String, DataConsistencyCheckResult> checkResultMap;
-        if (null == checkScalingStatement.getTypeStrategy()) {
+        AlgorithmSegment typeStrategy = checkScalingStatement.getTypeStrategy();
+        if (null == typeStrategy) {
             checkResultMap = RULE_ALTERED_JOB_API.dataConsistencyCheck(checkScalingStatement.getJobId());
         } else {
-            checkResultMap = RULE_ALTERED_JOB_API.dataConsistencyCheck(checkScalingStatement.getJobId(), checkScalingStatement.getTypeStrategy().getName());
+            checkResultMap = RULE_ALTERED_JOB_API.dataConsistencyCheck(checkScalingStatement.getJobId(), typeStrategy.getName(), typeStrategy.getProps());
         }
         data = checkResultMap.entrySet().stream()
                 .map(each -> {

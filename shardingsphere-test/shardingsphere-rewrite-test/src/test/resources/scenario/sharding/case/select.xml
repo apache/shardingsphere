@@ -592,4 +592,9 @@
         <input sql="SELECT account_id FROM public.public.t_account WHERE account_id = ?" parameters="100" />
         <output sql="SELECT account_id FROM public.t_account_0 WHERE account_id = ?" parameters="100" />
     </rewrite-assertion>
+
+    <rewrite-assertion id="select_view_with_sharding">
+        <input sql="SELECT COUNT(*) FROM t_account_view WHERE account_id = 1" />
+        <output sql="SELECT COUNT(*) FROM t_account_view_1 WHERE account_id = 1" />
+    </rewrite-assertion>
 </rewrite-assertions>

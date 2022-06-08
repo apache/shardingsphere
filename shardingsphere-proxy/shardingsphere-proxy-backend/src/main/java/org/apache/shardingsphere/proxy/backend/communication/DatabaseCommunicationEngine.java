@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.context.refresher.MetaDataRefreshEngine;
+import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
@@ -34,6 +35,7 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriv
 import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.event.MetaDataRefreshedEvent;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.mode.manager.lock.ShardingSphereLockJudgeEngine;
@@ -104,8 +106,11 @@ public abstract class DatabaseCommunicationEngine<T> {
     public abstract T execute();
     
     protected void refreshMetaData(final ExecutionContext executionContext) throws SQLException {
-        metadataRefreshEngine.refresh(executionContext.getSqlStatementContext(), () -> executionContext.getRouteContext().getRouteUnits().stream()
+        Optional<MetaDataRefreshedEvent> event = metadataRefreshEngine.refresh(executionContext.getSqlStatementContext(), () -> executionContext.getRouteContext().getRouteUnits().stream()
                 .map(each -> each.getDataSourceMapper().getLogicName()).collect(Collectors.toList()));
+        if (ProxyContext.getInstance().getContextManager().getInstanceContext().isCluster() && event.isPresent()) {
+            ShardingSphereEventBus.getInstance().post(event.get());
+        }
     }
     
     protected QueryResponseHeader processExecuteQuery(final ExecutionContext executionContext, final List<QueryResult> queryResults, final QueryResult queryResultSample) throws SQLException {

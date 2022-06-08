@@ -130,6 +130,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AssociateStatisticsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AuditStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CloseStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.ClusterStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CommentStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateContextStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateConversionStatementTestCase;
@@ -153,6 +154,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateServerStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateServiceStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateSynonymStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreatePublicationStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateTablespaceStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateTextSearchStatementTestCase;
@@ -222,6 +224,13 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropFlashbackArchiveStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateDiskgroupStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropDiskgroupStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateRollbackSegmentStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateLockdownProfileStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropLockdownProfileStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateInmemoryJoinGroupStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropInmemoryJoinGroupStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateRestorePointStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropRollbackSegmentStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AddShardingHintDatabaseValueStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AddShardingHintTableValueStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AlterInstanceStatementTestCase;
@@ -641,6 +650,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "create-synonym")
     private final List<CreateSynonymStatementTestCase> createSynonymTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "create-publication")
+    private final List<CreatePublicationStatementTestCase> createPublicationTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-synonym")
     private final List<DropSynonymStatementTestCase> dropSynonymTestCases = new LinkedList<>();
@@ -1389,6 +1401,27 @@ public final class SQLParserTestCases {
     @XmlElement(name = "drop-diskgroup")
     private final List<DropDiskgroupStatementTestCase> dropDiskgroupTestCases = new LinkedList<>();
     
+    @XmlElement(name = "create-rollback-segment")
+    private final List<CreateRollbackSegmentStatementTestCase> createRollbackSegmentTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "drop-rollback-segment")
+    private final List<DropRollbackSegmentStatementTestCase> dropRollbackSegmentTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "create-lockdown-profile")
+    private final List<CreateLockdownProfileStatementTestCase> createLockdownProfileTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "drop-lockdown-profile")
+    private final List<DropLockdownProfileStatementTestCase> dropLockdownProfileTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "create-inmemory-join-group")
+    private final List<CreateInmemoryJoinGroupStatementTestCase> createInmemoryJoinGroupTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "drop-inmemory-join-group")
+    private final List<DropInmemoryJoinGroupStatementTestCase> dropInmemoryJoinGroupTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "create-restore-point")
+    private final List<CreateRestorePointStatementTestCase> createRestorePointTestCases = new LinkedList<>();
+    
     @XmlElement(name = "cursor")
     private final List<CursorStatementTestCase> cursorTestCases = new LinkedList<>();
     
@@ -1403,6 +1436,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "checkpoint")
     private final List<CheckpointStatementTestCase> checkpointTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "cluster")
+    private final List<ClusterStatementTestCase> clusterStatementTestCases = new LinkedList<>();
     
     /**
      * Get all SQL parser test cases.
@@ -1482,6 +1518,7 @@ public final class SQLParserTestCases {
         putAll(alterDimensionTestCases, result);
         putAll(createViewTestCases, result);
         putAll(createSynonymTestCases, result);
+        putAll(createPublicationTestCases, result);
         putAll(dropSynonymTestCases, result);
         putAll(createDirectoryTestCases, result);
         putAll(createTriggerTestCases, result);
@@ -1749,11 +1786,19 @@ public final class SQLParserTestCases {
         putAll(dropFlashbackArchiveTestCases, result);
         putAll(createDiskgroupTestCases, result);
         putAll(dropDiskgroupTestCases, result);
+        putAll(createRollbackSegmentTestCases, result);
+        putAll(dropRollbackSegmentTestCases, result);
+        putAll(createLockdownProfileTestCases, result);
+        putAll(dropLockdownProfileTestCases, result);
+        putAll(createInmemoryJoinGroupTestCases, result);
+        putAll(dropInmemoryJoinGroupTestCases, result);
+        putAll(createRestorePointTestCases, result);
         putAll(cursorTestCases, result);
         putAll(closeTestCases, result);
         putAll(moveTestCases, result);
         putAll(fetchTestCases, result);
         putAll(checkpointTestCases, result);
+        putAll(clusterStatementTestCases, result);
         return result;
     }
     // CHECKSTYLE:ON
