@@ -58,7 +58,7 @@ public final class ShardingSphereOptimizer {
      * 
      * @param databaseName database name
      * @param schemaName schema name
-     * @param sqlStatement SQL statement to be optimized
+     * @param sqlStatement SQL statement
      * @return optimized relational node
      */
     public RelNode optimize(final String databaseName, final String schemaName, final SQLStatement sqlStatement) {
