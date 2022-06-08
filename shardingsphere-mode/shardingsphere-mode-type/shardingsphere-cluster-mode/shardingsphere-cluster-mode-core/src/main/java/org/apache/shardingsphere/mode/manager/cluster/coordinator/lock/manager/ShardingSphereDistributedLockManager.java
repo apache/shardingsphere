@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.lock.LockMode;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.database.ShardingSphereDistributedDatabaseLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.distributed.ShardingSphereDistributedLock;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.state.LockStateContextFactory;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.ShardingSphereInterMutexLockHolder;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.TimeoutMilliseconds;
 
@@ -30,16 +31,16 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.Time
  * Distribute lock manager.
  */
 @Slf4j
-public final class DistributedLockManager implements ShardingSphereLockManager {
+public final class ShardingSphereDistributedLockManager implements ShardingSphereLockManager {
     
-    private ShardingSphereDistributedLock distributedLock;
+    private ShardingSphereLock distributedLock;
     
-    private ShardingSphereDistributedDatabaseLock databaseLock;
+    private ShardingSphereLock databaseLock;
     
     @Override
     public void init(final ShardingSphereInterMutexLockHolder lockHolder) {
         distributedLock = new ShardingSphereDistributedLock(lockHolder);
-        databaseLock = new ShardingSphereDistributedDatabaseLock(lockHolder);
+        databaseLock = new ShardingSphereDistributedDatabaseLock(lockHolder, LockStateContextFactory.getLockStateContext());
     }
     
     @Override
@@ -58,6 +59,7 @@ public final class DistributedLockManager implements ShardingSphereLockManager {
     }
     
     private synchronized boolean innerTryLock(final String databaseName, final LockMode lockMode, final long timeoutMilliseconds) {
+        Preconditions.checkNotNull(databaseName, "Try Lock write for database args database name can not be null.");
         switch (lockMode) {
             case READ:
                 return innerDatabaseTryLock(databaseName, timeoutMilliseconds);
@@ -68,9 +70,12 @@ public final class DistributedLockManager implements ShardingSphereLockManager {
     }
     
     private boolean innerDatabaseTryLock(final String databaseName, final long timeoutMilliseconds) {
-        Preconditions.checkNotNull(databaseName, "Try Lock write for database args database name can not be null.");
-        log.debug("Distribute database lock acquire sequenced success, database name: {}", databaseName);
-        return databaseLock.tryLock(databaseName, timeoutMilliseconds - TimeoutMilliseconds.DEFAULT_REGISTRY);
+        if (databaseLock.tryLock(databaseName, timeoutMilliseconds - TimeoutMilliseconds.DEFAULT_REGISTRY)) {
+            log.debug("Distribute database lock acquire sequenced success, database name: {}", databaseName);
+            return true;
+        }
+        log.debug("Distribute database lock acquire sequenced failed, database name: {}", databaseName);
+        return false;
     }
     
     @Override

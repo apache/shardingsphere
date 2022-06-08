@@ -27,11 +27,6 @@ public final class DatabaseLockNodeServiceTest {
     private static final DatabaseLockNodeService SERVICE = new DatabaseLockNodeService();
     
     @Test
-    public void assertGetSequenceNodePath() {
-        assertThat(SERVICE.getSequenceNodePath(), is("/lock/database/sequence"));
-    }
-    
-    @Test
     public void assertGetLockLevel() {
         assertThat(SERVICE.getLockTypeName(), is("database"));
     }

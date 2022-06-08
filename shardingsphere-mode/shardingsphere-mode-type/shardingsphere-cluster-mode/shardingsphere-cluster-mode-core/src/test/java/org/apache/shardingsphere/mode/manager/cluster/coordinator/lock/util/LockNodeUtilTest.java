@@ -26,8 +26,14 @@ public final class LockNodeUtilTest {
     
     @Test
     public void assertGenerateLockLeasesNodePath() {
-        String lockName = "/lock/mutex/locks/sharding_db";
-        assertThat(LockNodeUtil.generateLockLeasesNodePath(lockName), is("/lock/mutex/locks/sharding_db/leases"));
+        String lockName = "/lock/distributed/locks/sharding_db";
+        assertThat(LockNodeUtil.generateLockLeasesNodePath(lockName), is("/lock/distributed/locks/sharding_db/leases"));
+    }
+    
+    @Test
+    public void assertGenerateLockSequenceNodePath() {
+        String lockName = "/lock/distributed/locks/sharding_db";
+        assertThat(LockNodeUtil.generateLockSequenceNodePath(lockName), is("/lock/distributed/locks/sharding_db/sequence"));
     }
     
     @Test

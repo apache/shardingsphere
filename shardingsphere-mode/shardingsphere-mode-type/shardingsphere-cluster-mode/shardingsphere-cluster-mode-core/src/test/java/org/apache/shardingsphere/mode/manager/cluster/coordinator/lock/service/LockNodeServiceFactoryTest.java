@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service;
 
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.database.node.DatabaseLockNodeService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.distributed.node.DistributedLockNodeService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeType;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 public final class LockNodeServiceFactoryTest {
@@ -34,7 +34,5 @@ public final class LockNodeServiceFactoryTest {
         assertThat(distributedLockNodeService, instanceOf(DistributedLockNodeService.class));
         LockNodeService databaseLockNodeService = LockNodeServiceFactory.getInstance().getLockNodeService(LockNodeType.DATABASE);
         assertThat(databaseLockNodeService, instanceOf(DatabaseLockNodeService.class));
-        LockNodeService schemaLockNodeService = LockNodeServiceFactory.getInstance().getLockNodeService(LockNodeType.SCHEMA);
-        assertNull(schemaLockNodeService);
     }
 }
