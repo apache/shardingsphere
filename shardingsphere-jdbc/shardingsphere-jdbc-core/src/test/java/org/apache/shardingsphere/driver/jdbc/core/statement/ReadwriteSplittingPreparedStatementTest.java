@@ -72,4 +72,24 @@ public final class ReadwriteSplittingPreparedStatementTest extends AbstractShard
             assertFalse(generatedKeys.next());
         }
     }
+    
+    @Test
+    public void assertGetGeneratedKeysWithPrimaryKeyIsNull() throws SQLException {
+        try (
+                PreparedStatement preparedStatement = getReadwriteSplittingDataSource()
+                        .getConnection().prepareStatement("INSERT INTO t_config(id, status) VALUES(?, ?);", Statement.RETURN_GENERATED_KEYS)) {
+            preparedStatement.setObject(1, null);
+            preparedStatement.setString(2, "OK");
+            preparedStatement.executeUpdate();
+            ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
+            assertTrue(generatedKeys.next());
+            int columnCount = generatedKeys.getMetaData().getColumnCount();
+            for (int index = 0; index < columnCount; index++) {
+                assertNotNull(generatedKeys.getObject(index + 1));
+                assertNotNull(generatedKeys.getMetaData().getColumnLabel(index + 1));
+                assertNotNull(generatedKeys.getMetaData().getColumnName(index + 1));
+            }
+            assertFalse(generatedKeys.next());
+        }
+    }
 }
