@@ -15,27 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.context;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
-
-import java.util.Map;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Transaction contexts.
+ * Create aggregate statement test case.
  */
-@RequiredArgsConstructor
-@Getter
-public final class TransactionContexts implements AutoCloseable {
-    
-    private final Map<String, ShardingSphereTransactionManagerEngine> engines;
-    
-    @Override
-    public void close() throws Exception {
-        for (ShardingSphereTransactionManagerEngine each : engines.values()) {
-            each.close();
-        }
-    }
+public final class CreateAggregateStatementTestCase extends SQLParserTestCase {
 }

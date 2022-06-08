@@ -15,30 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.type.optional;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-
-import java.util.Collection;
-import java.util.Optional;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * Optional SPI registry.
+ * Create aggregate statement.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class OptionalSPIRegistry {
-    
-    /**
-     * Find registered service.
-     *
-     * @param spiClass optional SPI class
-     * @param <T> SPI class type
-     * @return registered service
-     */
-    public static <T extends OptionalSPI> Optional<T> findRegisteredService(final Class<T> spiClass) {
-        Collection<T> result = ShardingSphereServiceLoader.getServiceInstances(spiClass);
-        return result.isEmpty() ? Optional.empty() : Optional.of(result.iterator().next());
-    }
+@ToString
+public abstract class CreateAggregateStatement extends AbstractSQLStatement implements DDLStatement {
 }

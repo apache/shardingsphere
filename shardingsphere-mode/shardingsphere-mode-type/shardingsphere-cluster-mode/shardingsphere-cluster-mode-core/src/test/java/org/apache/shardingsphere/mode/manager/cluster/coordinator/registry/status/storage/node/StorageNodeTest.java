@@ -26,16 +26,21 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class StorageStatusNodeTest {
+public final class StorageNodeTest {
     
     @Test
     public void assertGetRootPath() {
-        assertThat(StorageStatusNode.getRootPath(), is("/nodes/storage_nodes/attributes"));
+        assertThat(StorageNode.getRootPath(), is("/nodes/storage_nodes"));
     }
     
     @Test
-    public void assertExtractQualifiedSchema() {
-        Optional<QualifiedDatabase> actual = StorageStatusNode.extractQualifiedSchema("/nodes/storage_nodes/attributes/replica_query_db.readwrite_ds.replica_ds_0");
+    public void assertGetStorageNodesDataSourcePath() {
+        assertThat(StorageNode.getStorageNodesDataSourcePath("replica_query_db.readwrite_ds.replica_ds_0"), is("/nodes/storage_nodes/replica_query_db.readwrite_ds.replica_ds_0"));
+    }
+    
+    @Test
+    public void assertExtractQualifiedDatabase() {
+        Optional<QualifiedDatabase> actual = StorageNode.extractQualifiedDatabase("/nodes/storage_nodes/replica_query_db.readwrite_ds.replica_ds_0");
         assertTrue(actual.isPresent());
         assertThat(actual.get().getDatabaseName(), is("replica_query_db"));
         assertThat(actual.get().getGroupName(), is("readwrite_ds"));

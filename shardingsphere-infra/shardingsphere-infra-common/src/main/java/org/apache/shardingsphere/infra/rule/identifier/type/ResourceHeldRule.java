@@ -15,30 +15,43 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.type.optional;
+package org.apache.shardingsphere.infra.rule.identifier.type;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
-import java.util.Collection;
-import java.util.Optional;
+import java.util.Map;
 
 /**
- * Optional SPI registry.
+ * Resource held rule.
+ * 
+ * @param <T> type of resource
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class OptionalSPIRegistry {
+public interface ResourceHeldRule<T> extends ShardingSphereRule {
     
     /**
-     * Find registered service.
-     *
-     * @param spiClass optional SPI class
-     * @param <T> SPI class type
-     * @return registered service
+     * Get resources.
+     * 
+     * @return got resources
      */
-    public static <T extends OptionalSPI> Optional<T> findRegisteredService(final Class<T> spiClass) {
-        Collection<T> result = ShardingSphereServiceLoader.getServiceInstances(spiClass);
-        return result.isEmpty() ? Optional.empty() : Optional.of(result.iterator().next());
-    }
+    Map<String, T> getResources();
+    
+    /**
+     * Add resource.
+     *
+     * @param database database
+     */
+    void addResource(ShardingSphereDatabase database);
+    
+    /**
+     * Close stale resource.
+     * 
+     * @param databaseName database name
+     */
+    void closeStaleResource(String databaseName);
+    
+    /**
+     * Close stale resources.
+     */
+    void closeStaleResources();
 }

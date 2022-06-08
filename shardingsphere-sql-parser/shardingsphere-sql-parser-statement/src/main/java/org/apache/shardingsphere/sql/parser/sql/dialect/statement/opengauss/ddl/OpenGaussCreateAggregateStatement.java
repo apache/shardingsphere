@@ -15,30 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.type.optional;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-
-import java.util.Collection;
-import java.util.Optional;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateAggregateStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 
 /**
- * Optional SPI registry.
+ * OpenGauss create aggregate statement.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class OptionalSPIRegistry {
-    
-    /**
-     * Find registered service.
-     *
-     * @param spiClass optional SPI class
-     * @param <T> SPI class type
-     * @return registered service
-     */
-    public static <T extends OptionalSPI> Optional<T> findRegisteredService(final Class<T> spiClass) {
-        Collection<T> result = ShardingSphereServiceLoader.getServiceInstances(spiClass);
-        return result.isEmpty() ? Optional.empty() : Optional.of(result.iterator().next());
-    }
+@ToString
+public final class OpenGaussCreateAggregateStatement extends CreateAggregateStatement implements OpenGaussStatement {
 }
