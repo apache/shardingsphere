@@ -76,11 +76,11 @@ public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter imple
                 Object cipherColumnValue = encryptor.get().encrypt(plainColumnValue, encryptContext);
                 groupedParameterBuilder.getGenericParameterBuilder().addReplacedParameters(columnIndex, cipherColumnValue);
                 Collection<Object> addedParameters = new LinkedList<>();
-                Optional<EncryptAlgorithm> assistEncryptor = encryptRule.findAssistEncryptor(tableName, encryptLogicColumnName);
-                if (assistEncryptor.isPresent()) {
+                Optional<EncryptAlgorithm> assistedQueryEncryptor = encryptRule.findAssistedQueryEncryptor(tableName, encryptLogicColumnName);
+                if (assistedQueryEncryptor.isPresent()) {
                     Optional<String> assistedColumnName = encryptRule.findAssistedQueryColumn(tableName, encryptLogicColumnName);
                     Preconditions.checkArgument(assistedColumnName.isPresent(), "Can not find assisted query Column Name");
-                    addedParameters.add(assistEncryptor.get().encrypt(plainColumnValue, encryptContext));
+                    addedParameters.add(assistedQueryEncryptor.get().encrypt(plainColumnValue, encryptContext));
                 }
                 if (encryptRule.findPlainColumn(tableName, encryptLogicColumnName).isPresent()) {
                     addedParameters.add(plainColumnValue);

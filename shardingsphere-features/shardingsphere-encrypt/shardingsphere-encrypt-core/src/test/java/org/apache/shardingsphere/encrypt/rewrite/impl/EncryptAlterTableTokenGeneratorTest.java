@@ -76,11 +76,11 @@ public final class EncryptAlterTableTokenGeneratorTest {
     }
     
     private EncryptColumn mockEncryptColumn() {
-        return new EncryptColumn("cipher_certificate_number", "assisted_certificate_number", "certificate_number_plain", "test", "test", null);
+        return new EncryptColumn("cipher_certificate_number", "assisted_certificate_number", "certificate_number_plain", "test", null);
     }
     
     private EncryptColumn mockNewEncryptColumn() {
-        return new EncryptColumn("cipher_certificate_number_new", "assisted_certificate_number_new", "certificate_number_new_plain", "test", "test", null);
+        return new EncryptColumn("cipher_certificate_number_new", "assisted_certificate_number_new", "certificate_number_new_plain", "test", null);
     }
     
     @Test
