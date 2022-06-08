@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.federation.executor.original.table;
+package org.apache.shardingsphere.infra.federation.executor.filterable.table;
 
 import com.google.common.collect.ImmutableList;
 import lombok.RequiredArgsConstructor;
@@ -64,8 +64,8 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.dr
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.process.ExecuteProcessEngine;
 import org.apache.shardingsphere.infra.federation.executor.FederationContext;
-import org.apache.shardingsphere.infra.federation.executor.original.row.EmptyRowEnumerator;
-import org.apache.shardingsphere.infra.federation.executor.original.row.FilterableRowEnumerator;
+import org.apache.shardingsphere.infra.federation.executor.filterable.row.EmptyRowEnumerator;
+import org.apache.shardingsphere.infra.federation.executor.filterable.row.FilterableRowEnumerator;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationTableMetaData;
 import org.apache.shardingsphere.infra.merge.MergeEngine;

@@ -15,25 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.federation.executor.original.table;
+package org.apache.shardingsphere.infra.federation.executor.filterable.row;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.calcite.DataContext;
-import org.apache.calcite.rex.RexNode;
-
-import java.util.List;
+import org.apache.calcite.linq4j.Enumerator;
 
 /**
- * Filterable table scan context.
+ * Empty row enumerator.
  */
-@RequiredArgsConstructor
-@Getter
-public final class FilterableTableScanContext {
+public final class EmptyRowEnumerator implements Enumerator<Object[]> {
     
-    private final DataContext root;
+    @Override
+    public Object[] current() {
+        return new Object[0];
+    }
     
-    private final List<RexNode> filters;
+    @Override
+    public boolean moveNext() {
+        return false;
+    }
     
-    private final int[] projects;
+    @Override
+    public void reset() {
+    }
+    
+    @Override
+    public void close() {
+    }
 }

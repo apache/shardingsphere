@@ -15,25 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.federation.executor.original.table;
+package org.apache.shardingsphere.infra.federation.executor.translatable;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.federation.executor.FederationContext;
+import java.sql.SQLException;
+import java.sql.Wrapper;
 
 /**
- * Filterable table scan executor context.
+ * Adapter for {@code java.sql.Wrapper}.
  */
-@RequiredArgsConstructor
-@Getter
-public final class FilterableTableScanExecutorContext {
+public abstract class WrapperAdapter implements Wrapper {
     
-    private final String databaseName;
+    @SuppressWarnings("unchecked")
+    @Override
+    public final <T> T unwrap(final Class<T> iface) throws SQLException {
+        if (isWrapperFor(iface)) {
+            return (T) this;
+        }
+        throw new SQLException(String.format("[%s] cannot be unwrapped as [%s]", getClass().getName(), iface.getName()));
+    }
     
-    private final String schemaName;
-    
-    private final ConfigurationProperties props;
-    
-    private final FederationContext federationContext;
+    @Override
+    public final boolean isWrapperFor(final Class<?> iface) {
+        return iface.isInstance(this);
+    }
 }
