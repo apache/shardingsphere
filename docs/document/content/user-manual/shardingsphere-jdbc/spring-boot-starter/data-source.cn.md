@@ -9,6 +9,7 @@ chapter = true
 ### 配置项说明
 
 ```properties
+spring.shardingsphere.enabled= # 是否启用shardingsphere,默认值: true
 spring.shardingsphere.datasource.names= # 真实数据源名称，多个数据源用逗号区分
 
 # <actual-data-source-name> 表示真实数据源名称

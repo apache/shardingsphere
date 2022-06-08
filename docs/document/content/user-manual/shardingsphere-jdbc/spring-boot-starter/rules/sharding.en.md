@@ -6,6 +6,7 @@ weight = 1
 ## Configuration Item Explanation
 
 ```properties
+spring.shardingsphere.enabled= # Whether enable shardingsphere or not, default value: true
 spring.shardingsphere.datasource.names= # Omit the data source configuration, please refer to the usage
 
 # Standard sharding table configuration

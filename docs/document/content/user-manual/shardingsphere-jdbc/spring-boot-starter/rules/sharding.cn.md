@@ -6,6 +6,7 @@ weight = 1
 ## 配置项说明
 
 ```properties
+spring.shardingsphere.enabled= # 是否启用shardingsphere,默认值: true
 spring.shardingsphere.datasource.names= # 省略数据源配置，请参考使用手册
 
 # 标准分片表配置

@@ -9,6 +9,7 @@ chapter = true
 ### Configuration Item Explanation
 
 ```properties
+spring.shardingsphere.enabled= # Whether enable shardingsphere or not, default value: true
 spring.shardingsphere.datasource.names= # Actual data source name, multiple split by `,`
 
 # <actual-data-source-name> indicate name of data source name
