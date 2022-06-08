@@ -15,37 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.federation.executor.original;
+package org.apache.shardingsphere.infra.federation.executor.original.schema;
 
 import lombok.Getter;
-import org.apache.calcite.schema.Schema;
+import org.apache.calcite.schema.Table;
 import org.apache.calcite.schema.impl.AbstractSchema;
+import org.apache.shardingsphere.infra.federation.executor.original.table.FederationTableStatistic;
+import org.apache.shardingsphere.infra.federation.executor.original.table.FilterableTable;
 import org.apache.shardingsphere.infra.federation.executor.original.table.FilterableTableScanExecutor;
-import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationSchemaMetaData;
+import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationTableMetaData;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Filterable database.
+ * Filterable schema.
  */
 @Getter
-public final class FilterableDatabase extends AbstractSchema {
+public final class FilterableSchema extends AbstractSchema {
     
     private final String name;
     
-    private final Map<String, Schema> subSchemaMap;
+    private final Map<String, Table> tableMap;
     
-    public FilterableDatabase(final FederationDatabaseMetaData databaseMetaData, final FilterableTableScanExecutor executor) {
-        name = databaseMetaData.getName();
-        subSchemaMap = createSubSchemaMap(databaseMetaData, executor);
+    public FilterableSchema(final FederationSchemaMetaData schemaMetaData, final FilterableTableScanExecutor executor) {
+        name = schemaMetaData.getName();
+        tableMap = createTableMap(schemaMetaData, executor);
     }
     
-    private Map<String, Schema> createSubSchemaMap(final FederationDatabaseMetaData databaseMetaData, final FilterableTableScanExecutor executor) {
-        Map<String, Schema> result = new LinkedHashMap<>(databaseMetaData.getSchemas().size(), 1);
-        for (FederationSchemaMetaData each : databaseMetaData.getSchemas().values()) {
-            result.put(each.getName(), new FilterableSchema(each, executor));
+    private Map<String, Table> createTableMap(final FederationSchemaMetaData schemaMetaData, final FilterableTableScanExecutor executor) {
+        Map<String, Table> result = new LinkedHashMap<>(schemaMetaData.getTables().size(), 1);
+        for (FederationTableMetaData each : schemaMetaData.getTables().values()) {
+            result.put(each.getName(), new FilterableTable(each, executor, new FederationTableStatistic()));
         }
         return result;
     }
