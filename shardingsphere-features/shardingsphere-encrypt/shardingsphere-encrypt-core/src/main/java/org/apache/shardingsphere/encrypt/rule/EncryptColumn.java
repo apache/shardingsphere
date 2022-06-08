@@ -38,7 +38,7 @@ public final class EncryptColumn {
     
     private final String encryptorName;
     
-    private final String assistEncryptorName;
+    private final String assistedQueryEncryptorName;
     
     private final Boolean queryWithCipherColumn;
     

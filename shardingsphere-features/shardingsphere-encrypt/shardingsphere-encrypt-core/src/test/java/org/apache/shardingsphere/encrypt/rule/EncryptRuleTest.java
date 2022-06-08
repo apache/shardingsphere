@@ -213,7 +213,7 @@ public final class EncryptRuleTest {
     @Test
     public void assertAssistedEncryptorNameSpecified() {
         EncryptColumnRuleConfiguration pwdColumnConfig = new EncryptColumnRuleConfiguration("pwd", "pwd_cipher", "pwd_assist", "pwd_plain", "test_encryptor", "test_assisted_encryptor", null);
-        assertTrue(pwdColumnConfig.getAssistEncryptorName().equals("test_assisted_encryptor"));
+        assertTrue(pwdColumnConfig.getAssistedQueryEncryptorName().equals("test_assisted_encryptor"));
         assertTrue(pwdColumnConfig.getEncryptorName().equals("test_encryptor"));
     }
     
