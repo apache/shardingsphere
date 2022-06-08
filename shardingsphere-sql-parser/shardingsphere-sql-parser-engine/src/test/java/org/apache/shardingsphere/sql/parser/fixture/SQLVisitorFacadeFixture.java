@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.api.visitor.type.RLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.TCLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.spi.SQLVisitorFacade;
 
-public class SQLVisitorFacadeFixture implements SQLVisitorFacade {
+public final class SQLVisitorFacadeFixture implements SQLVisitorFacade {
     
     @Override
     public String getDatabaseType() {

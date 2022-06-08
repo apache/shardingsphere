@@ -22,10 +22,10 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 import org.junit.Test;
 
-public class SQLVisitorFacadeFactoryTest {
+public final class SQLVisitorFacadeFactoryTest {
     
     @Test
-    public void assertValueOfParseTreeClassSuccess() {
+    public void assertGetInstance() {
         assertThat(SQLVisitorFacadeFactory.getInstance("FIXTURE", "FORMAT"), instanceOf(SQLVisitorFacade.class));
     }
 }
