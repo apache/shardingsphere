@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.federation.optimizer;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.calcite.adapter.enumerable.EnumerableConvention;
+import org.apache.calcite.plan.Convention;
 import org.apache.calcite.plan.RelOptPlanner;
 import org.apache.calcite.plan.RelTraitSet;
 import org.apache.calcite.rel.RelCollation;
@@ -73,18 +74,20 @@ public final class ShardingSphereOptimizer {
     
     private RelNode optimize(final SqlToRelConverter converter, final RelRoot relRoot) {
         RelOptPlanner planner = converter.getCluster().getPlanner();
-        RelRoot optimizedRelRoot = createRelRoot(planner.changeTraits(relRoot.rel, converter.getCluster().traitSet().replace(EnumerableConvention.INSTANCE)), relRoot.validatedRowType);
-        return Programs.standard().run(planner, optimizedRelRoot.rel, getDesireRootTraitSet(optimizedRelRoot), Collections.emptyList(), Collections.emptyList());
+        RelNode optimizedRelNode = planner.changeTraits(relRoot.rel, getDesiredTraitSet(converter.getCluster().traitSet(), EnumerableConvention.INSTANCE));
+        RelRoot optimizedRelRoot = createOptimizedRelRoot(optimizedRelNode, relRoot.validatedRowType);
+        return Programs.standard().run(planner, optimizedRelRoot.rel, optimizedRelRoot.rel.getTraitSet(), Collections.emptyList(), Collections.emptyList());
     }
     
-    private RelRoot createRelRoot(final RelNode relNode, final RelDataType resultType) {
+    // TODO replace to related convention
+    private RelTraitSet getDesiredTraitSet(final RelTraitSet relTraitSet, final Convention convention) {
+        return relTraitSet.replace(convention).simplify();
+    }
+    
+    private RelRoot createOptimizedRelRoot(final RelNode relNode, final RelDataType resultType) {
         RelDataType rowType = relNode.getRowType();
         List<Pair<Integer, String>> fields = Pair.zip(ImmutableIntList.identity(rowType.getFieldCount()), rowType.getFieldNames());
         RelCollation collation = relNode instanceof Sort ? ((Sort) relNode).collation : RelCollations.EMPTY;
         return new RelRoot(relNode, resultType, SqlKind.SELECT, fields, collation, new ArrayList<>());
-    }
-    
-    private RelTraitSet getDesireRootTraitSet(final RelRoot relRoot) {
-        return relRoot.rel.getTraitSet().replace(EnumerableConvention.INSTANCE).replace(relRoot.collation).simplify();
     }
 }

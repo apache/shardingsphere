@@ -95,13 +95,14 @@ public final class SchemaAssignedDatabaseBackendHandler implements DatabaseBacke
         if (statementContext instanceof CursorStatementContext) {
             connectionSession.getCursorDefinitions().put(cursorName, (CursorStatementContext) statementContext);
         }
-        if (statementContext instanceof CloseStatementContext) {
-            FetchOrderByValueQueuesHolder.get().remove(cursorName);
-        }
         if (statementContext instanceof CursorDefinitionAware) {
             CursorStatementContext cursorStatementContext = connectionSession.getCursorDefinitions().get(cursorName);
             Preconditions.checkArgument(null != cursorStatementContext, "Cursor %s does not exist.", cursorName);
             ((CursorDefinitionAware) statementContext).setUpCursorDefinition(cursorStatementContext);
+        }
+        if (statementContext instanceof CloseStatementContext) {
+            FetchOrderByValueQueuesHolder.get().remove(cursorName);
+            connectionSession.getCursorDefinitions().remove(cursorName);
         }
     }
     
