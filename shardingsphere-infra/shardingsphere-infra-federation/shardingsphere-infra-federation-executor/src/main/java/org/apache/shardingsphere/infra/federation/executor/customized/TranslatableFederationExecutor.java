@@ -44,9 +44,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * Advanced federation executor.
+ * Translatable federation executor.
  */
-public final class AdvancedFederationExecutor implements FederationExecutor {
+public final class TranslatableFederationExecutor implements FederationExecutor {
     
     private final String databaseName;
     
@@ -58,7 +58,7 @@ public final class AdvancedFederationExecutor implements FederationExecutor {
     
     private ResultSet federationResultSet;
     
-    public AdvancedFederationExecutor(final String databaseName, final String schemaName, final OptimizerContext optimizerContext) {
+    public TranslatableFederationExecutor(final String databaseName, final String schemaName, final OptimizerContext optimizerContext) {
         this.databaseName = databaseName;
         this.schemaName = schemaName;
         this.optimizerContext = optimizerContext;
