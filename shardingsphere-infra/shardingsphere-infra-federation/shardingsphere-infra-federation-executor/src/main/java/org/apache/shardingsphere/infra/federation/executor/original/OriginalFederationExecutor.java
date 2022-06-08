@@ -42,10 +42,10 @@ import java.sql.Statement;
 import java.util.List;
 
 /**
- * Original filterable executor.
+ * Original federation executor.
  */
 @RequiredArgsConstructor
-public final class OriginalFilterableExecutor implements FederationExecutor {
+public final class OriginalFederationExecutor implements FederationExecutor {
     
     public static final String CONNECTION_URL = "jdbc:calcite:";
     
