@@ -80,11 +80,6 @@ public final class CustomizedFilterableExecutor implements FederationExecutor {
         return federationResultSet;
     }
     
-    @Override
-    public ResultSet getResultSet() {
-        return federationResultSet;
-    }
-    
     private Enumerable<Object[]> execute(final SQLStatement sqlStatement) {
         // TODO
         return execute(optimizer.optimize(databaseName, schemaName, sqlStatement));
@@ -96,6 +91,11 @@ public final class CustomizedFilterableExecutor implements FederationExecutor {
         SqlToRelConverter converter = optimizerContext.getPlannerContexts().get(databaseName).getConverters().get(schemaName);
         return new FederateInterpretableConverter(
                 cluster, cluster.traitSetOf(InterpretableConvention.INSTANCE), bestPlan).bind(new CustomizedFilterableExecuteDataContext(validator, converter));
+    }
+    
+    @Override
+    public ResultSet getResultSet() {
+        return federationResultSet;
     }
     
     @Override
