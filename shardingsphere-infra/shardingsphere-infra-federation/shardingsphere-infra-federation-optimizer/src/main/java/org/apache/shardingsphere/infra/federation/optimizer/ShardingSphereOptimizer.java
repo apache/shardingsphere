@@ -74,12 +74,12 @@ public final class ShardingSphereOptimizer {
     
     private RelNode optimize(final SqlToRelConverter converter, final RelRoot relRoot) {
         RelOptPlanner planner = converter.getCluster().getPlanner();
-        RelNode optimizedRelNode = planner.changeTraits(relRoot.rel, getDesiredRootTraitSet(converter.getCluster().traitSet(), EnumerableConvention.INSTANCE, relRoot.collation));
+        RelNode optimizedRelNode = planner.changeTraits(relRoot.rel, getDesiredTraitSet(converter.getCluster().traitSet(), EnumerableConvention.INSTANCE, relRoot.collation));
         RelRoot optimizedRelRoot = createOptimizedRelRoot(optimizedRelNode, relRoot.validatedRowType);
         return Programs.standard().run(planner, optimizedRelRoot.rel, optimizedRelRoot.rel.getTraitSet(), Collections.emptyList(), Collections.emptyList());
     }
     
-    private RelTraitSet getDesiredRootTraitSet(final RelTraitSet relTraitSet, final Convention convention, final RelCollation collation) {
+    private RelTraitSet getDesiredTraitSet(final RelTraitSet relTraitSet, final Convention convention, final RelCollation collation) {
         return relTraitSet.replace(convention).replace(collation).simplify();
     }
     
