@@ -42,6 +42,10 @@ public final class EncryptColumn {
     
     private final Boolean queryWithCipherColumn;
     
+    public EncryptColumn(final String cipherColumn, final String assistedQueryColumn, final String plainColumn, final String encryptorName, final Boolean queryWithCipherColumn) {
+        this(cipherColumn, assistedQueryColumn, plainColumn, encryptorName, null, queryWithCipherColumn);
+    }
+    
     /**
      * Get assisted query column.
      * 
