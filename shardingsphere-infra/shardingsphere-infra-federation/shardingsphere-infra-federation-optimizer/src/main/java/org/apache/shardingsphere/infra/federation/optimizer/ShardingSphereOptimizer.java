@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.federation.optimizer;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.calcite.adapter.enumerable.EnumerableConvention;
 import org.apache.calcite.plan.Convention;
@@ -48,7 +47,6 @@ import java.util.List;
  * ShardingSphere optimizer.
  */
 @RequiredArgsConstructor
-@Getter
 public final class ShardingSphereOptimizer {
     
     private final OptimizerContext context;
@@ -58,7 +56,7 @@ public final class ShardingSphereOptimizer {
      * 
      * @param databaseName database name
      * @param schemaName schema name
-     * @param sqlStatement SQL statement to be optimized
+     * @param sqlStatement SQL statement
      * @return optimized relational node
      */
     public RelNode optimize(final String databaseName, final String schemaName, final SQLStatement sqlStatement) {

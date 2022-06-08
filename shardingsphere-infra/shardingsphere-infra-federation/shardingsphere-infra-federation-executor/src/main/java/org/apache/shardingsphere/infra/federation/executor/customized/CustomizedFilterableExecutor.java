@@ -23,8 +23,8 @@ import org.apache.calcite.linq4j.Enumerable;
 import org.apache.calcite.plan.RelOptCluster;
 import org.apache.calcite.plan.RelTraitSet;
 import org.apache.calcite.rel.RelNode;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
-import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
+import org.apache.calcite.sql.validate.SqlValidator;
+import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
@@ -52,31 +52,29 @@ public final class CustomizedFilterableExecutor implements FederationExecutor {
     
     private final String schemaName;
     
+    private final OptimizerContext optimizerContext;
+    
     private final ShardingSphereOptimizer optimizer;
     
     private ResultSet federationResultSet;
     
-    public CustomizedFilterableExecutor(final String databaseName, final String schemaName, final OptimizerContext context) {
+    public CustomizedFilterableExecutor(final String databaseName, final String schemaName, final OptimizerContext optimizerContext) {
         this.databaseName = databaseName;
         this.schemaName = schemaName;
-        optimizer = new ShardingSphereOptimizer(context);
+        this.optimizerContext = optimizerContext;
+        optimizer = new ShardingSphereOptimizer(optimizerContext);
     }
     
     @Override
     public ResultSet executeQuery(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
                                   final JDBCExecutorCallback<? extends ExecuteResult> callback, final FederationContext federationContext) throws SQLException {
         String sql = federationContext.getLogicSQL().getSql();
-        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(
-                DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType()), new CacheOption(1, 1), new CacheOption(1, 1), false);
-        SQLStatement sqlStatement = sqlParserEngine.parse(sql, false);
+        ShardingSphereSQLParserEngine parserEngine = new ShardingSphereSQLParserEngine(
+                federationContext.getDatabases().get(databaseName).getProtocolType().getType(), new CacheOption(1, 1), new CacheOption(1, 1), false);
+        SQLStatement sqlStatement = parserEngine.parse(sql, false);
         Enumerable<Object[]> enumerableResult = execute(sqlStatement);
         MergedResult mergedResult = new EnumerableMergedResult(enumerableResult);
         federationResultSet = new FederationResultSet(mergedResult);
-        return federationResultSet;
-    }
-    
-    @Override
-    public ResultSet getResultSet() {
         return federationResultSet;
     }
     
@@ -86,9 +84,16 @@ public final class CustomizedFilterableExecutor implements FederationExecutor {
     }
     
     private Enumerable<Object[]> execute(final RelNode bestPlan) {
-        RelOptCluster cluster = optimizer.getContext().getPlannerContexts().get(databaseName).getConverters().get(schemaName).getCluster();
+        RelOptCluster cluster = bestPlan.getCluster();
+        SqlValidator validator = optimizerContext.getPlannerContexts().get(databaseName).getValidators().get(schemaName);
+        SqlToRelConverter converter = optimizerContext.getPlannerContexts().get(databaseName).getConverters().get(schemaName);
         return new FederateInterpretableConverter(
-                cluster, cluster.traitSetOf(InterpretableConvention.INSTANCE), bestPlan).bind(new CustomizedFilterableExecuteDataContext(databaseName, schemaName, optimizer.getContext()));
+                cluster, cluster.traitSetOf(InterpretableConvention.INSTANCE), bestPlan).bind(new CustomizedFilterableExecuteDataContext(validator, converter));
+    }
+    
+    @Override
+    public ResultSet getResultSet() {
+        return federationResultSet;
     }
     
     @Override
