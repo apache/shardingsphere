@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.federation.optimizer;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.calcite.adapter.enumerable.EnumerableConvention;
 import org.apache.calcite.plan.Convention;
@@ -48,7 +47,6 @@ import java.util.List;
  * ShardingSphere optimizer.
  */
 @RequiredArgsConstructor
-@Getter
 public final class ShardingSphereOptimizer {
     
     private final OptimizerContext context;

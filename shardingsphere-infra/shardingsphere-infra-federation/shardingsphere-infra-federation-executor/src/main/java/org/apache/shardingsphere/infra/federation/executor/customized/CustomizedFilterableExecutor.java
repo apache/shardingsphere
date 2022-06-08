@@ -23,6 +23,8 @@ import org.apache.calcite.linq4j.Enumerable;
 import org.apache.calcite.plan.RelOptCluster;
 import org.apache.calcite.plan.RelTraitSet;
 import org.apache.calcite.rel.RelNode;
+import org.apache.calcite.sql.validate.SqlValidator;
+import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
@@ -52,14 +54,17 @@ public final class CustomizedFilterableExecutor implements FederationExecutor {
     
     private final String schemaName;
     
+    private final OptimizerContext optimizerContext;
+    
     private final ShardingSphereOptimizer optimizer;
     
     private ResultSet federationResultSet;
     
-    public CustomizedFilterableExecutor(final String databaseName, final String schemaName, final OptimizerContext context) {
+    public CustomizedFilterableExecutor(final String databaseName, final String schemaName, final OptimizerContext optimizerContext) {
         this.databaseName = databaseName;
         this.schemaName = schemaName;
-        optimizer = new ShardingSphereOptimizer(context);
+        this.optimizerContext = optimizerContext;
+        optimizer = new ShardingSphereOptimizer(optimizerContext);
     }
     
     @Override
@@ -87,8 +92,10 @@ public final class CustomizedFilterableExecutor implements FederationExecutor {
     
     private Enumerable<Object[]> execute(final RelNode bestPlan) {
         RelOptCluster cluster = bestPlan.getCluster();
+        SqlValidator validator = optimizerContext.getPlannerContexts().get(databaseName).getValidators().get(schemaName);
+        SqlToRelConverter converter = optimizerContext.getPlannerContexts().get(databaseName).getConverters().get(schemaName);
         return new FederateInterpretableConverter(
-                cluster, cluster.traitSetOf(InterpretableConvention.INSTANCE), bestPlan).bind(new CustomizedFilterableExecuteDataContext(databaseName, schemaName, optimizer.getContext()));
+                cluster, cluster.traitSetOf(InterpretableConvention.INSTANCE), bestPlan).bind(new CustomizedFilterableExecuteDataContext(validator, converter));
     }
     
     @Override
