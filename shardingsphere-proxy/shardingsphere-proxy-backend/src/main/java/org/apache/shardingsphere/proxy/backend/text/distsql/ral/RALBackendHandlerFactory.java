@@ -51,7 +51,6 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.S
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.UnlabelInstanceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.QueryableScalingRALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableScalingRALStatement;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandler.HandlerParameter;
@@ -150,13 +149,12 @@ public final class RALBackendHandlerFactory {
     /**
      * Create new instance of RAL backend handler.
      *
-     * @param databaseType database type
      * @param sqlStatement RAL statement
      * @param connectionSession connection session
      * @return created instance
      * @throws SQLException SQL exception
      */
-    public static TextProtocolBackendHandler newInstance(final DatabaseType databaseType, final RALStatement sqlStatement, final ConnectionSession connectionSession) throws SQLException {
+    public static TextProtocolBackendHandler newInstance(final RALStatement sqlStatement, final ConnectionSession connectionSession) throws SQLException {
         if (sqlStatement instanceof HintDistSQLStatement) {
             return new HintDistSQLBackendHandler((HintDistSQLStatement) sqlStatement, connectionSession);
         }

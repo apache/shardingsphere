@@ -241,7 +241,7 @@ public final class DistSQLBackendHandlerFactoryTest extends ProxyContextRestorer
     @Test
     public void assertExecuteShowScalingCheckAlgorithmsContext() throws SQLException {
         mockScalingContext();
-        ResponseHeader response = RALBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(ShowScalingCheckAlgorithmsStatement.class), connectionSession).execute();
+        ResponseHeader response = RALBackendHandlerFactory.newInstance(mock(ShowScalingCheckAlgorithmsStatement.class), connectionSession).execute();
         assertThat(response, instanceOf(QueryResponseHeader.class));
     }
     
@@ -250,7 +250,7 @@ public final class DistSQLBackendHandlerFactoryTest extends ProxyContextRestorer
     @Test
     public void assertExecuteStopScalingSourceWritingContext() throws SQLException {
         mockScalingContext();
-        ResponseHeader response = RALBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(StopScalingSourceWritingStatement.class), connectionSession).execute();
+        ResponseHeader response = RALBackendHandlerFactory.newInstance(mock(StopScalingSourceWritingStatement.class), connectionSession).execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
     }
     
@@ -258,7 +258,7 @@ public final class DistSQLBackendHandlerFactoryTest extends ProxyContextRestorer
     @Test
     public void assertExecuteCheckoutScalingContext() throws SQLException {
         mockScalingContext();
-        ResponseHeader response = RALBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(ApplyScalingStatement.class), connectionSession).execute();
+        ResponseHeader response = RALBackendHandlerFactory.newInstance(mock(ApplyScalingStatement.class), connectionSession).execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
     }
     
