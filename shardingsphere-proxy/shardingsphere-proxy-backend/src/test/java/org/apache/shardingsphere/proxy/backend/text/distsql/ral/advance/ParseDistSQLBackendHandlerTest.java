@@ -54,17 +54,13 @@ public final class ParseDistSQLBackendHandlerTest extends ProxyContextRestorer {
     private ContextManager contextManager;
     
     @Mock
-    private MySQLDatabaseType mySQLDatabaseType;
-    
-    @Mock
     private ConnectionSession connectionSession;
     
     @Before
     public void setUp() throws SQLException {
         ProxyContext.init(contextManager);
         when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(SQLParserRule.class)).thenReturn(Optional.of(sqlParserRule));
-        when(mySQLDatabaseType.getType()).thenReturn("MySQL");
-        when(connectionSession.getDatabaseType()).thenReturn(mySQLDatabaseType);
+        when(connectionSession.getDatabaseType()).thenReturn(new MySQLDatabaseType());
     }
     
     @Test
