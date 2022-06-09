@@ -119,7 +119,7 @@ public final class CountInstanceRulesTest extends ProxyContextRestorer {
     
     @Test
     public void assertGetRowData() throws SQLException {
-        CountInstanceRulesHandler handler = new CountInstanceRulesHandler().init(new RALBackendHandler.HandlerParameter<>(new CountInstanceRulesStatement(), null, null));
+        CountInstanceRulesHandler handler = new CountInstanceRulesHandler().init(new RALBackendHandler.HandlerParameter<>(new CountInstanceRulesStatement(), null));
         handler.execute();
         handler.next();
         Collection<Object> actual = handler.getRowData();
@@ -166,7 +166,7 @@ public final class CountInstanceRulesTest extends ProxyContextRestorer {
     
     @Test
     public void assertGetRowDataWithoutConfiguration() throws SQLException {
-        CountInstanceRulesHandler handler = new CountInstanceRulesHandler().init(new RALBackendHandler.HandlerParameter<>(new CountInstanceRulesStatement(), null, null));
+        CountInstanceRulesHandler handler = new CountInstanceRulesHandler().init(new RALBackendHandler.HandlerParameter<>(new CountInstanceRulesStatement(), null));
         when(database1.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
         when(database2.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
         handler.execute();
