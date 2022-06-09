@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.mode.metadata.persist.node;
 
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -164,21 +162,5 @@ public final class ComputeNode {
      */
     public static String getInstanceStatusNodePath(final String instanceId) {
         return String.join("/", "", ROOT_NODE, COMPUTE_NODE, STATUS_NODE, instanceId);
-    }
-    
-    /**
-     * Get instance definition by instance online path.
-     *
-     * @param onlineInstancePath online instance path
-     * @return instance id
-     */
-    public static Optional<InstanceDefinition> getInstanceDefinitionByInstanceOnlinePath(final String onlineInstancePath) {
-        Pattern pattern = Pattern.compile(getOnlineInstanceNodePath() + "/" + "(proxy|jdbc)" + "/([\\S]+)$", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(onlineInstancePath);
-        return matcher.find() ? Optional.of(new InstanceDefinition(getInstanceType(matcher.group(1)), matcher.group(2))) : Optional.empty();
-    }
-    
-    private static InstanceType getInstanceType(final String instanceType) {
-        return InstanceType.PROXY.name().equalsIgnoreCase(instanceType) ? InstanceType.PROXY : InstanceType.JDBC;
     }
 }

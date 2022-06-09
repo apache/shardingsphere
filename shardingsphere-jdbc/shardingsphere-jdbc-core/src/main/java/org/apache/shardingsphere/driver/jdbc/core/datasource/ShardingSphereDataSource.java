@@ -30,6 +30,7 @@ import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderFactory;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
+import org.apache.shardingsphere.mode.manager.instance.InstanceIdGeneratorFactory;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -79,7 +80,7 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
                 .databaseConfigs(Collections.singletonMap(databaseName, new DataSourceProvidedDatabaseConfiguration(dataSourceMap, ruleConfigs)))
                 .globalRuleConfigs(ruleConfigs.stream().filter(each -> each instanceof GlobalRuleConfiguration).collect(Collectors.toList()))
                 .props(props)
-                .instanceDefinition(new InstanceDefinition(InstanceType.JDBC)).build();
+                .instanceDefinition(new InstanceDefinition(InstanceType.JDBC, InstanceIdGeneratorFactory.getInstance(modeConfig).generate(InstanceType.JDBC))).build();
         return ContextManagerBuilderFactory.getInstance(modeConfig).build(parameter);
     }
     
