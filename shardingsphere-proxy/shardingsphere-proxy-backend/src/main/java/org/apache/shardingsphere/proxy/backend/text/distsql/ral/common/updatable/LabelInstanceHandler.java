@@ -35,7 +35,7 @@ import java.util.Optional;
 /**
  * Label instance handler.
  */
-public final class LabelInstanceHandler extends UpdatableRALBackendHandler<LabelInstanceStatement, LabelInstanceHandler> {
+public final class LabelInstanceHandler extends UpdatableRALBackendHandler<LabelInstanceStatement> {
     
     @Override
     public void update(final ContextManager contextManager, final LabelInstanceStatement sqlStatement) {

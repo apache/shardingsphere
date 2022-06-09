@@ -24,9 +24,11 @@ import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 
 /**
- * Updatable RAL backend handler .
+ * Updatable RAL backend handler.
+ * 
+ * @param <E> type of RAL Statement
  */
-public abstract class UpdatableRALBackendHandler<E extends RALStatement, R extends UpdatableRALBackendHandler> extends RALBackendHandler<E, R> {
+public abstract class UpdatableRALBackendHandler<E extends RALStatement> extends RALBackendHandler<E> {
     
     @Override
     protected final ResponseHeader handle(final ContextManager contextManager, final E sqlStatement) throws DistSQLException {

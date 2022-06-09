@@ -129,7 +129,8 @@ public final class ImportDatabaseConfigurationHandlerTest extends ProxyContextRe
     }
     
     private void init(final String feature) throws Exception {
-        importDatabaseConfigurationHandler = new ImportDatabaseConfigurationHandler().init(getParameter(featureMap.get(feature), mock(ConnectionSession.class)));
+        ImportDatabaseConfigurationHandler handler = importDatabaseConfigurationHandler = new ImportDatabaseConfigurationHandler();
+        handler.init(getParameter(featureMap.get(feature), mock(ConnectionSession.class)));
         Field validatorField = importDatabaseConfigurationHandler.getClass().getDeclaredField("validator");
         validatorField.setAccessible(true);
         validatorField.set(importDatabaseConfigurationHandler, validator);

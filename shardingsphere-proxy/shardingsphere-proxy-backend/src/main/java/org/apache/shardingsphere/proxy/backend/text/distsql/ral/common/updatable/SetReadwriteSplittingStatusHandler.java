@@ -54,16 +54,16 @@ import java.util.stream.Collectors;
 /**
  * Set readwrite-splitting status handler.
  */
-public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBackendHandler<SetReadwriteSplittingStatusStatement, SetReadwriteSplittingStatusHandler> {
+public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBackendHandler<SetReadwriteSplittingStatusStatement> {
     
     private static final String DISABLE = "DISABLE";
     
     private ConnectionSession connectionSession;
     
     @Override
-    public SetReadwriteSplittingStatusHandler init(final HandlerParameter<SetReadwriteSplittingStatusStatement> parameter) {
+    public void init(final HandlerParameter<SetReadwriteSplittingStatusStatement> parameter) {
+        super.init(parameter);
         connectionSession = parameter.getConnectionSession();
-        return super.init(parameter);
     }
     
     @Override

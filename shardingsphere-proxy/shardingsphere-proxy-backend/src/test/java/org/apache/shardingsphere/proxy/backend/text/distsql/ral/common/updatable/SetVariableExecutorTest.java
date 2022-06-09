@@ -50,14 +50,18 @@ public final class SetVariableExecutorTest extends ProxyContextRestorer {
     public void assertExecuteWithTransactionType() throws SQLException {
         SetVariableStatement statement = new SetVariableStatement("transaction_type", "local");
         when(connectionSession.getTransactionStatus()).thenReturn(new TransactionStatus(TransactionType.XA));
-        new SetVariableHandler().init(getParameter(statement, connectionSession)).execute();
+        SetVariableHandler handler = new SetVariableHandler();
+        handler.init(getParameter(statement, connectionSession));
+        handler.execute();
         assertThat(connectionSession.getTransactionStatus().getTransactionType().name(), is(TransactionType.LOCAL.name()));
     }
     
     @Test
     public void assertExecuteWithAgent() throws SQLException {
         SetVariableStatement statement = new SetVariableStatement("AGENT_PLUGINS_ENABLED", Boolean.FALSE.toString());
-        new SetVariableHandler().init(getParameter(statement, connectionSession)).execute();
+        SetVariableHandler handler = new SetVariableHandler();
+        handler.init(getParameter(statement, connectionSession));
+        handler.execute();
         String actualValue = SystemPropertyUtil.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), "default");
         assertThat(actualValue, is(Boolean.FALSE.toString()));
     }
@@ -67,7 +71,9 @@ public final class SetVariableExecutorTest extends ProxyContextRestorer {
         ContextManager contextManager = new ContextManager(new MetaDataContexts(null), null);
         ProxyContext.init(contextManager);
         SetVariableStatement statement = new SetVariableStatement("proxy_frontend_flush_threshold", "1024");
-        new SetVariableHandler().init(getParameter(statement, connectionSession)).execute();
+        SetVariableHandler handler = new SetVariableHandler();
+        handler.init(getParameter(statement, connectionSession));
+        handler.execute();
         Object actualValue = contextManager.getMetaDataContexts().getMetaData().getProps().getProps().get("proxy-frontend-flush-threshold");
         assertThat(actualValue.toString(), is("1024"));
         assertThat(contextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD), is(1024));

@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 /**
  * Show table metadata handler.
  */
-public final class ShowTableMetadataHandler extends QueryableRALBackendHandler<ShowTableMetadataStatement, ShowTableMetadataHandler> {
+public final class ShowTableMetadataHandler extends QueryableRALBackendHandler<ShowTableMetadataStatement> {
     
     private static final String SCHEMA_NAME = "schema_name";
     
@@ -52,9 +52,9 @@ public final class ShowTableMetadataHandler extends QueryableRALBackendHandler<S
     private ConnectionSession connectionSession;
     
     @Override
-    public ShowTableMetadataHandler init(final HandlerParameter<ShowTableMetadataStatement> parameter) {
+    public void init(final HandlerParameter<ShowTableMetadataStatement> parameter) {
+        super.init(parameter);
         connectionSession = parameter.getConnectionSession();
-        return super.init(parameter);
     }
     
     @Override

@@ -76,7 +76,7 @@ import java.util.stream.Collectors;
 /**
  * Preview backend handler.
  */
-public final class PreviewBackendHandler extends QueryableRALBackendHandler<PreviewStatement, PreviewBackendHandler> {
+public final class PreviewBackendHandler extends QueryableRALBackendHandler<PreviewStatement> {
     
     private static final String DATA_SOURCE_NAME = "data_source_name";
     
@@ -87,9 +87,9 @@ public final class PreviewBackendHandler extends QueryableRALBackendHandler<Prev
     private final KernelProcessor kernelProcessor = new KernelProcessor();
     
     @Override
-    public PreviewBackendHandler init(final HandlerParameter<PreviewStatement> parameter) {
+    public void init(final HandlerParameter<PreviewStatement> parameter) {
+        super.init(parameter);
         connectionSession = parameter.getConnectionSession();
-        return super.init(parameter);
     }
     
     @Override

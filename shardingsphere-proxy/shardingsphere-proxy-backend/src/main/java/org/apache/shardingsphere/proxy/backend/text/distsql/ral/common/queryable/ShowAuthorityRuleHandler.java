@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 /**
  * Show authority rule handler.
  */
-public final class ShowAuthorityRuleHandler extends QueryableRALBackendHandler<ShowAuthorityRuleStatement, ShowAuthorityRuleHandler> {
+public final class ShowAuthorityRuleHandler extends QueryableRALBackendHandler<ShowAuthorityRuleStatement> {
     
     private static final String USERS = "users";
     

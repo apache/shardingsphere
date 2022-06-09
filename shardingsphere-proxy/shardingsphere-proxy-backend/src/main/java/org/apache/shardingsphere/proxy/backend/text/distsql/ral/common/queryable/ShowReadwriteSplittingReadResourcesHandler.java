@@ -52,7 +52,7 @@ import java.util.stream.Collectors;
 /**
  * Show readwrite-splitting read resources executor.
  */
-public final class ShowReadwriteSplittingReadResourcesHandler extends QueryableRALBackendHandler<ShowReadwriteSplittingReadResourcesStatement, ShowReadwriteSplittingReadResourcesHandler> {
+public final class ShowReadwriteSplittingReadResourcesHandler extends QueryableRALBackendHandler<ShowReadwriteSplittingReadResourcesStatement> {
     
     private static final String RESOURCE = "resource";
     
@@ -63,9 +63,9 @@ public final class ShowReadwriteSplittingReadResourcesHandler extends QueryableR
     private ConnectionSession connectionSession;
     
     @Override
-    public ShowReadwriteSplittingReadResourcesHandler init(final HandlerParameter<ShowReadwriteSplittingReadResourcesStatement> parameter) {
+    public void init(final HandlerParameter<ShowReadwriteSplittingReadResourcesStatement> parameter) {
+        super.init(parameter);
         connectionSession = parameter.getConnectionSession();
-        return super.init(parameter);
     }
     
     @Override

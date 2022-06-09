@@ -34,7 +34,7 @@ import java.util.Optional;
 /**
  * Show SQL parser rule handler.
  */
-public final class ShowSQLParserRuleHandler extends QueryableRALBackendHandler<ShowSQLParserRuleStatement, ShowSQLParserRuleHandler> {
+public final class ShowSQLParserRuleHandler extends QueryableRALBackendHandler<ShowSQLParserRuleStatement> {
     
     private static final Gson GSON = new Gson();
     

@@ -31,7 +31,7 @@ import java.util.Optional;
 /**
  * Alter instance handler.
  */
-public final class AlterInstanceHandler extends UpdatableRALBackendHandler<AlterInstanceStatement, AlterInstanceHandler> {
+public final class AlterInstanceHandler extends UpdatableRALBackendHandler<AlterInstanceStatement> {
     
     private static final String XA_RECOVERY_NODES = "xa_recovery_nodes";
     

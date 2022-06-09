@@ -56,7 +56,7 @@ import java.util.Map.Entry;
 /**
  * Export database configuration handler.
  */
-public final class ExportDatabaseConfigurationHandler extends QueryableRALBackendHandler<ExportDatabaseConfigurationStatement, ExportDatabaseConfigurationHandler> {
+public final class ExportDatabaseConfigurationHandler extends QueryableRALBackendHandler<ExportDatabaseConfigurationStatement> {
     
     private static final String RESULT = "result";
     
@@ -101,9 +101,9 @@ public final class ExportDatabaseConfigurationHandler extends QueryableRALBacken
     }
     
     @Override
-    public ExportDatabaseConfigurationHandler init(final HandlerParameter<ExportDatabaseConfigurationStatement> parameter) {
+    public void init(final HandlerParameter<ExportDatabaseConfigurationStatement> parameter) {
+        super.init(parameter);
         connectionSession = parameter.getConnectionSession();
-        return super.init(parameter);
     }
     
     @Override

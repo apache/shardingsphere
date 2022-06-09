@@ -35,7 +35,7 @@ import java.util.Properties;
 /**
  * Format handler.
  */
-public final class FormatHandler extends QueryableRALBackendHandler<FormatStatement, FormatHandler> {
+public final class FormatHandler extends QueryableRALBackendHandler<FormatStatement> {
     
     private static final String FORMATTED_RESULT = "formatted_result";
     

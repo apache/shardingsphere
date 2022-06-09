@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 /**
  * Show instance handler.
  */
-public final class ShowInstanceHandler extends QueryableRALBackendHandler<ShowInstanceStatement, ShowInstanceHandler> {
+public final class ShowInstanceHandler extends QueryableRALBackendHandler<ShowInstanceStatement> {
     
     private static final String DELIMITER = "@";
     

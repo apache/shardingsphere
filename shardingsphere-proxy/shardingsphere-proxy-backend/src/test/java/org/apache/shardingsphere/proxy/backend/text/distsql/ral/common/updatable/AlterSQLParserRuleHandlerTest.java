@@ -48,7 +48,9 @@ public final class AlterSQLParserRuleHandlerTest extends ProxyContextRestorer {
         when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findRuleConfigurations(SQLParserRuleConfiguration.class)).thenReturn(Collections.emptyList());
         when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations()).thenReturn(new LinkedList<>());
         ProxyContext.init(contextManager);
-        new AlterSQLParserRuleHandler().init(new RALBackendHandler.HandlerParameter<>(createSQLStatement(), null)).execute();
+        AlterSQLParserRuleHandler handler = new AlterSQLParserRuleHandler();
+        handler.init(new RALBackendHandler.HandlerParameter<>(createSQLStatement(), null));
+        handler.execute();
         SQLParserRuleConfiguration actual = (SQLParserRuleConfiguration) contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations().iterator().next();
         assertTrue(actual.isSqlCommentParseEnabled());
         assertThat(actual.getSqlStatementCache().getInitialCapacity(), is(1000));
@@ -66,7 +68,9 @@ public final class AlterSQLParserRuleHandlerTest extends ProxyContextRestorer {
                 .getMetaData().getGlobalRuleMetaData().findRuleConfigurations(SQLParserRuleConfiguration.class)).thenReturn(Collections.singleton(sqlParserRuleConfig));
         when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations()).thenReturn(globalRuleConfigs);
         ProxyContext.init(contextManager);
-        new AlterSQLParserRuleHandler().init(new RALBackendHandler.HandlerParameter<>(createSQLStatement(), null)).execute();
+        AlterSQLParserRuleHandler handler = new AlterSQLParserRuleHandler();
+        handler.init(new RALBackendHandler.HandlerParameter<>(createSQLStatement(), null));
+        handler.execute();
         SQLParserRuleConfiguration actual = (SQLParserRuleConfiguration) contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations().iterator().next();
         assertTrue(actual.isSqlCommentParseEnabled());
         assertThat(actual.getSqlStatementCache().getInitialCapacity(), is(1000));
