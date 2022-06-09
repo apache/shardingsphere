@@ -60,14 +60,14 @@ public final class EncryptRuleStatementConverter {
     
     private static EncryptColumnRuleConfiguration createEncryptColumnRuleConfiguration(final String tableName, final EncryptColumnSegment columnSegment) {
         return new EncryptColumnRuleConfiguration(columnSegment.getName(), columnSegment.getCipherColumn(), columnSegment.getAssistedQueryColumn(),
-                columnSegment.getPlainColumn(), getEncryptorName(tableName, columnSegment.getName()), getAssistEncryptorName(tableName, columnSegment.getName()), null);
+                columnSegment.getPlainColumn(), getEncryptorName(tableName, columnSegment.getName()), getAssistedQueryEncryptorName(tableName, columnSegment.getName()), null);
     }
     
     private static Map<String, ShardingSphereAlgorithmConfiguration> createEncryptorConfigurations(final EncryptRuleSegment ruleSegment) {
         Map<String, ShardingSphereAlgorithmConfiguration> result = new HashMap<>();
         for (EncryptColumnSegment each : ruleSegment.getColumns()) {
             result.put(getEncryptorName(ruleSegment.getTableName(), each.getName()), createEncryptorConfiguration(each));
-            result.put(getAssistEncryptorName(ruleSegment.getTableName(), each.getName()), createAssistEncryptorConfiguration(each));
+            result.put(getAssistedQueryEncryptorName(ruleSegment.getTableName(), each.getName()), createAssistedQueryEncryptorConfiguration(each));
         }
         return result;
     }
@@ -76,15 +76,15 @@ public final class EncryptRuleStatementConverter {
         return new ShardingSphereAlgorithmConfiguration(columnSegment.getEncryptor().getName(), columnSegment.getEncryptor().getProps());
     }
     
-    private static ShardingSphereAlgorithmConfiguration createAssistEncryptorConfiguration(final EncryptColumnSegment columnSegment) {
-        return new ShardingSphereAlgorithmConfiguration(columnSegment.getAssistEncryptor().getName(), columnSegment.getAssistEncryptor().getProps());
+    private static ShardingSphereAlgorithmConfiguration createAssistedQueryEncryptorConfiguration(final EncryptColumnSegment columnSegment) {
+        return new ShardingSphereAlgorithmConfiguration(columnSegment.getAssistedQueryEncryptor().getName(), columnSegment.getAssistedQueryEncryptor().getProps());
     }
     
     private static String getEncryptorName(final String tableName, final String columnName) {
         return String.format("%s_%s", tableName, columnName);
     }
     
-    private static String getAssistEncryptorName(final String tableName, final String columnName) {
+    private static String getAssistedQueryEncryptorName(final String tableName, final String columnName) {
         return String.format("assist_%s_%s", tableName, columnName);
     }
 }
