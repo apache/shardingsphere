@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.advance;
 
 import com.google.gson.Gson;
 import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.ParseStatement;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
@@ -64,7 +63,7 @@ public final class ParseDistSQLBackendHandlerTest extends ProxyContextRestorer {
     public void assertGetRowData() throws SQLException {
         String sql = "select * from t_order";
         ParseStatement parseStatement = new ParseStatement(sql);
-        ParseDistSQLBackendHandler parseDistSQLBackendHandler = new ParseDistSQLBackendHandler().init(new HandlerParameter<>(parseStatement, new MySQLDatabaseType(), mock(ConnectionSession.class)));
+        ParseDistSQLBackendHandler parseDistSQLBackendHandler = new ParseDistSQLBackendHandler().init(new HandlerParameter<>(parseStatement, mock(ConnectionSession.class)));
         parseDistSQLBackendHandler.execute();
         parseDistSQLBackendHandler.next();
         SQLStatement statement = sqlParserRule.getSQLParserEngine("MySQL").parse(sql, false);
@@ -76,7 +75,7 @@ public final class ParseDistSQLBackendHandlerTest extends ProxyContextRestorer {
     public void assertExecute() throws SQLException {
         String sql = "wrong sql";
         ParseStatement parseStatement = new ParseStatement(sql);
-        ParseDistSQLBackendHandler parseDistSQLBackendHandler = new ParseDistSQLBackendHandler().init(new HandlerParameter<>(parseStatement, new MySQLDatabaseType(), mock(ConnectionSession.class)));
+        ParseDistSQLBackendHandler parseDistSQLBackendHandler = new ParseDistSQLBackendHandler().init(new HandlerParameter<>(parseStatement, mock(ConnectionSession.class)));
         parseDistSQLBackendHandler.execute();
     }
 }

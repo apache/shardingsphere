@@ -45,7 +45,7 @@ public final class ShowInstanceModeHandlerTest extends ProxyContextRestorer {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         InstanceContext instanceContext = createInstanceContext();
         when(contextManager.getInstanceContext()).thenReturn(instanceContext);
-        ShowInstanceModeHandler handler = new ShowInstanceModeHandler().init(new RALBackendHandler.HandlerParameter<>(new ShowInstanceModeStatement(), null, null));
+        ShowInstanceModeHandler handler = new ShowInstanceModeHandler().init(new RALBackendHandler.HandlerParameter<>(new ShowInstanceModeStatement(), null));
         ProxyContext.init(contextManager);
         handler.execute();
         handler.next();
