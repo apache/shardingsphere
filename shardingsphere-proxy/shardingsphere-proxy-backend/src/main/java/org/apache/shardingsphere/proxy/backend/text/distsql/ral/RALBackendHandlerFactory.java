@@ -166,7 +166,7 @@ public final class RALBackendHandlerFactory {
         if (sqlStatement instanceof UpdatableScalingRALStatement) {
             return new UpdatableScalingRALBackendHandler((UpdatableScalingRALStatement) sqlStatement);
         }
-        return getHandler(sqlStatement, new HandlerParameter(sqlStatement, databaseType, connectionSession));
+        return getHandler(sqlStatement, new HandlerParameter(sqlStatement, connectionSession));
     }
     
     private static RALBackendHandler newInstance(final Class<? extends RALBackendHandler> clazz) {

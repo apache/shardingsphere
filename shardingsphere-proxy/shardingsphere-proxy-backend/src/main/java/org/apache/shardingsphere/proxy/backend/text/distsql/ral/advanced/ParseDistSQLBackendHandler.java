@@ -45,13 +45,10 @@ public final class ParseDistSQLBackendHandler extends QueryableRALBackendHandler
     
     private static final String PARSED_STATEMENT_DETAIL = "parsed_statement_detail";
     
-    private DatabaseType databaseType;
-    
     private ConnectionSession connectionSession;
     
     @Override
     public ParseDistSQLBackendHandler init(final HandlerParameter<ParseStatement> parameter) {
-        databaseType = parameter.getDatabaseType();
         connectionSession = parameter.getConnectionSession();
         return super.init(parameter);
     }
@@ -67,17 +64,17 @@ public final class ParseDistSQLBackendHandler extends QueryableRALBackendHandler
         Preconditions.checkState(sqlParserRule.isPresent());
         SQLStatement parsedSqlStatement;
         try {
-            parsedSqlStatement = sqlParserRule.get().getSQLParserEngine(getStorageType(databaseType, connectionSession).getType()).parse(getSqlStatement().getSql(), false);
+            parsedSqlStatement = sqlParserRule.get().getSQLParserEngine(getStorageType(connectionSession).getType()).parse(getSqlStatement().getSql(), false);
         } catch (SQLParsingException ex) {
             throw new SQLParsingException("You have a syntax error in your parsed statement");
         }
         return Collections.singleton(Arrays.asList(parsedSqlStatement.getClass().getSimpleName(), new Gson().toJson(parsedSqlStatement)));
     }
     
-    private static DatabaseType getStorageType(final DatabaseType defaultDatabaseType, final ConnectionSession connectionSession) {
+    private static DatabaseType getStorageType(final ConnectionSession connectionSession) {
         String databaseName = connectionSession.getDatabaseName();
         return Strings.isNullOrEmpty(databaseName) || !ProxyContext.getInstance().databaseExists(databaseName)
-                ? defaultDatabaseType
+                ? connectionSession.getDatabaseType()
                 : ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases().get(databaseName).getResource().getDatabaseType();
     }
 }

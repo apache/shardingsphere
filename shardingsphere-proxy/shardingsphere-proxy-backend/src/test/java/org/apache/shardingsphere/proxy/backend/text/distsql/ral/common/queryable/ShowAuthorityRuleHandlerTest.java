@@ -42,7 +42,7 @@ import static org.mockito.Mockito.when;
 
 public final class ShowAuthorityRuleHandlerTest extends ProxyContextRestorer {
     
-    private final ShowAuthorityRuleHandler handler = new ShowAuthorityRuleHandler().init(new RALBackendHandler.HandlerParameter<>(new ShowAuthorityRuleStatement(), null, null));
+    private final ShowAuthorityRuleHandler handler = new ShowAuthorityRuleHandler().init(new RALBackendHandler.HandlerParameter<>(new ShowAuthorityRuleStatement(), null));
     
     @Test
     public void assertAuthorityRule() throws SQLException {

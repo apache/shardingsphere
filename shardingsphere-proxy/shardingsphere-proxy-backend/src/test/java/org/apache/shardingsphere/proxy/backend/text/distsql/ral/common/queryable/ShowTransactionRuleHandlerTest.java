@@ -41,7 +41,7 @@ import static org.mockito.Mockito.when;
 
 public final class ShowTransactionRuleHandlerTest extends ProxyContextRestorer {
     
-    private final ShowTransactionRuleHandler handler = new ShowTransactionRuleHandler().init(new RALBackendHandler.HandlerParameter<>(new ShowTransactionRuleStatement(), null, null));
+    private final ShowTransactionRuleHandler handler = new ShowTransactionRuleHandler().init(new RALBackendHandler.HandlerParameter<>(new ShowTransactionRuleStatement(), null));
     
     @Test
     public void assertExecutorWithXA() throws SQLException {
