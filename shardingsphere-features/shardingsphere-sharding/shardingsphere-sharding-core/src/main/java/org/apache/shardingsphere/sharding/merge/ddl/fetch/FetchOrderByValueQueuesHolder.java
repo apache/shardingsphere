@@ -33,13 +33,24 @@ public final class FetchOrderByValueQueuesHolder {
     
     private static final ThreadLocal<Map<String, Queue<OrderByValue>>> ORDER_BY_VALUE_QUEUES = ThreadLocal.withInitial(ConcurrentHashMap::new);
     
+    private static final ThreadLocal<Map<String, Long>> REMAINING_ROW_COUNTS = ThreadLocal.withInitial(ConcurrentHashMap::new);
+    
     /**
-     * Get fetch order by value queues.
+     * Get order by value queues.
      *
-     * @return fetch order by value queues
+     * @return order by value queues
      */
-    public static Map<String, Queue<OrderByValue>> get() {
+    public static Map<String, Queue<OrderByValue>> getOrderByValueQueues() {
         return ORDER_BY_VALUE_QUEUES.get();
+    }
+    
+    /**
+     * Get remaining row counts.
+     *
+     * @return remaining row counts
+     */
+    public static Map<String, Long> getRemainingRowCounts() {
+        return REMAINING_ROW_COUNTS.get();
     }
     
     /**
@@ -47,5 +58,6 @@ public final class FetchOrderByValueQueuesHolder {
      */
     public static void remove() {
         ORDER_BY_VALUE_QUEUES.remove();
+        REMAINING_ROW_COUNTS.remove();
     }
 }
