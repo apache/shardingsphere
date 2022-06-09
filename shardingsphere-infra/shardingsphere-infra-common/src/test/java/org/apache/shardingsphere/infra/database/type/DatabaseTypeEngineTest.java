@@ -149,9 +149,6 @@ public final class DatabaseTypeEngineTest {
             case "SQLServer":
                 url = "jdbc:microsoft:sqlserver://127.0.0.1;DatabaseName=test";
                 break;
-            case "FIXTURE":
-                url = "jdbc:fixture://localhost;DatabaseName=test";
-                break;
             default:
                 throw new IllegalStateException("Unexpected value: " + databaseType.getType());
         }
@@ -207,9 +204,9 @@ public final class DatabaseTypeEngineTest {
     
     @Test
     public void assertGetStorageType() throws SQLException {
-        DataSource datasource = mockDataSource(DatabaseTypeFactory.getInstance("FIXTURE"));
+        DataSource datasource = mockDataSource(DatabaseTypeFactory.getInstance("MySQL"));
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.singletonMap("", datasource), Collections.singletonList(new FixtureRuleConfiguration()));
-        assertThat(DatabaseTypeEngine.getStorageType(Collections.singletonMap("logic_db", databaseConfig)), instanceOf(FixtureDatabaseType.class));
+        assertThat(DatabaseTypeEngine.getStorageType(Collections.singletonMap("logic_db", databaseConfig)), instanceOf(MySQLDatabaseType.class));
     }
     
     @Test
