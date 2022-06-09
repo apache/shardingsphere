@@ -62,14 +62,14 @@ public final class ShowVariableHandler extends QueryableRALBackendHandler<ShowVa
     @Override
     protected Collection<List<Object>> getRows(final ContextManager contextManager) {
         if (hasSpecifiedKey()) {
-            return buildSpecifiedRow(contextManager, sqlStatement.getName());
+            return buildSpecifiedRow(contextManager, getSqlStatement().getName());
         } else {
             return buildAllVariableRows(contextManager);
         }
     }
     
     private boolean hasSpecifiedKey() {
-        return !Strings.isNullOrEmpty(sqlStatement.getName());
+        return !Strings.isNullOrEmpty(getSqlStatement().getName());
     }
     
     private Collection<List<Object>> buildAllVariableRows(final ContextManager contextManager) {

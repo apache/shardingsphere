@@ -119,10 +119,10 @@ public final class ExportDatabaseConfigurationHandler extends QueryableRALBacken
         configItem(ZERO, "databaseName", databaseName, result);
         getDataSourcesConfig(database, result);
         getRuleConfigurations(database.getRuleMetaData().getConfigurations(), result);
-        if (!sqlStatement.getFilePath().isPresent()) {
+        if (!getSqlStatement().getFilePath().isPresent()) {
             return Collections.singleton(Collections.singletonList(result.toString()));
         }
-        File outFile = new File(sqlStatement.getFilePath().get());
+        File outFile = new File(getSqlStatement().getFilePath().get());
         if (!outFile.exists()) {
             outFile.getParentFile().mkdirs();
         }
@@ -132,7 +132,7 @@ public final class ExportDatabaseConfigurationHandler extends QueryableRALBacken
         } catch (final IOException ex) {
             throw new ShardingSphereException(ex);
         }
-        return Collections.singleton(Collections.singletonList(String.format("Successfully exported to：'%s'", sqlStatement.getFilePath().get())));
+        return Collections.singleton(Collections.singletonList(String.format("Successfully exported to：'%s'", getSqlStatement().getFilePath().get())));
     }
     
     private void getDataSourcesConfig(final ShardingSphereDatabase database, final StringBuilder result) {
@@ -220,7 +220,7 @@ public final class ExportDatabaseConfigurationHandler extends QueryableRALBacken
     }
     
     private String getDatabaseName() {
-        String result = sqlStatement.getDatabase().isPresent() ? sqlStatement.getDatabase().get().getIdentifier().getValue() : connectionSession.getDatabaseName();
+        String result = getSqlStatement().getDatabase().isPresent() ? getSqlStatement().getDatabase().get().getIdentifier().getValue() : connectionSession.getDatabaseName();
         if (Strings.isNullOrEmpty(result)) {
             throw new NoDatabaseSelectedException();
         }
