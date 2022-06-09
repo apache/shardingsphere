@@ -59,6 +59,6 @@ public final class AlterTransactionRuleHandler extends UpdatableRALBackendHandle
     }
     
     private TransactionRuleConfiguration buildTransactionRuleConfiguration() {
-        return new TransactionRuleConfiguration(sqlStatement.getDefaultType(), sqlStatement.getProvider().getProviderType(), sqlStatement.getProvider().getProps());
+        return new TransactionRuleConfiguration(getSqlStatement().getDefaultType(), getSqlStatement().getProvider().getProviderType(), getSqlStatement().getProvider().getProps());
     }
 }

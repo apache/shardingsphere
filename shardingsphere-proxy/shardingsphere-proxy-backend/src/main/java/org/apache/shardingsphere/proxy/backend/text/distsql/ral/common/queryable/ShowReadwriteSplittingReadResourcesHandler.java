@@ -84,7 +84,7 @@ public final class ShowReadwriteSplittingReadResourcesHandler extends QueryableR
     }
     
     private String getDatabaseName() {
-        String result = sqlStatement.getDatabase().isPresent() ? sqlStatement.getDatabase().get().getIdentifier().getValue() : connectionSession.getDatabaseName();
+        String result = getSqlStatement().getDatabase().isPresent() ? getSqlStatement().getDatabase().get().getIdentifier().getValue() : connectionSession.getDatabaseName();
         if (Strings.isNullOrEmpty(result)) {
             throw new NoDatabaseSelectedException();
         }

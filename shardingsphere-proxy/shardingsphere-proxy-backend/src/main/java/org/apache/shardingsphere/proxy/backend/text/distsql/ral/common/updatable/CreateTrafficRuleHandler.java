@@ -64,7 +64,7 @@ public final class CreateTrafficRuleHandler extends UpdatableRALBackendHandler<C
     
     private void checkInvalidAlgorithmNames() throws DistSQLException {
         Collection<String> invalidAlgorithmNames = new LinkedList<>();
-        for (TrafficRuleSegment each : sqlStatement.getSegments()) {
+        for (TrafficRuleSegment each : getSqlStatement().getSegments()) {
             if (!TrafficAlgorithmFactory.contains(each.getAlgorithm().getName())) {
                 invalidAlgorithmNames.add(each.getAlgorithm().getName());
             }
