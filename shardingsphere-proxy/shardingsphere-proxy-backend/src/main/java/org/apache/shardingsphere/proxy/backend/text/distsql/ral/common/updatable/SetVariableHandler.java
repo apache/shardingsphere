@@ -47,9 +47,8 @@ public final class SetVariableHandler extends UpdatableRALBackendHandler<SetVari
     
     @Override
     public SetVariableHandler init(final HandlerParameter<SetVariableStatement> parameter) {
-        initStatement(parameter.getStatement());
         connectionSession = parameter.getConnectionSession();
-        return this;
+        return super.init(parameter);
     }
     
     @Override
