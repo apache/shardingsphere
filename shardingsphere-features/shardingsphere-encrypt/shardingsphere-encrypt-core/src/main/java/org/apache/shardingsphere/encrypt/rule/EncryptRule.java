@@ -69,13 +69,13 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
     }
     
     private boolean isValidRuleConfiguration(final EncryptRuleConfiguration config) {
-        return (config.getEncryptors().isEmpty() && config.getTables().isEmpty()) || isValidTableConfiguration(config);
+        return (config.getTables().isEmpty() && config.getEncryptors().isEmpty()) || isValidTableConfiguration(config);
     }
     
     private boolean isValidTableConfiguration(final EncryptRuleConfiguration config) {
         for (EncryptTableRuleConfiguration table : config.getTables()) {
             for (EncryptColumnRuleConfiguration column : table.getColumns()) {
-                if (!isValidColumnConfiguration(config, column)) {
+                if (!isValidCipherColumnConfiguration(config, column) || !isValidAssistColumnConfiguration(config, column)) {
                     return false;
                 }
             }
@@ -83,22 +83,30 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
         return true;
     }
     
-    private boolean isValidColumnConfiguration(final EncryptRuleConfiguration encryptRuleConfig, final EncryptColumnRuleConfiguration column) {
-        return !Strings.isNullOrEmpty(column.getEncryptorName()) && !Strings.isNullOrEmpty(column.getCipherColumn()) && containsEncryptors(encryptRuleConfig, column);
+    private boolean isValidCipherColumnConfiguration(final EncryptRuleConfiguration encryptRuleConfig, final EncryptColumnRuleConfiguration column) {
+        return !Strings.isNullOrEmpty(column.getCipherColumn()) && !Strings.isNullOrEmpty(column.getEncryptorName()) && containsEncryptors(encryptRuleConfig, column.getEncryptorName());
     }
     
-    private boolean containsEncryptors(final EncryptRuleConfiguration encryptRuleConfig, final EncryptColumnRuleConfiguration column) {
-        return encryptRuleConfig.getEncryptors().keySet().stream().anyMatch(each -> each.equals(column.getEncryptorName()));
+    private boolean isValidAssistColumnConfiguration(final EncryptRuleConfiguration encryptRuleConfig, final EncryptColumnRuleConfiguration column) {
+        if (Strings.isNullOrEmpty(column.getAssistedQueryColumn()) && Strings.isNullOrEmpty(column.getAssistedQueryEncryptorName())) {
+            return true;
+        }
+        return !Strings.isNullOrEmpty(column.getAssistedQueryColumn()) && !Strings.isNullOrEmpty(column.getAssistedQueryEncryptorName())
+                && containsEncryptors(encryptRuleConfig, column.getAssistedQueryEncryptorName());
+    }
+    
+    private boolean containsEncryptors(final EncryptRuleConfiguration encryptRuleConfig, final String encryptorName) {
+        return encryptRuleConfig.getEncryptors().keySet().stream().anyMatch(each -> each.equals(encryptorName));
     }
     
     private boolean isValidRuleConfigurationWithAlgorithmProvided(final AlgorithmProvidedEncryptRuleConfiguration config) {
-        return (config.getEncryptors().isEmpty() && config.getTables().isEmpty()) || isValidTableConfigurationWithAlgorithmProvided(config);
+        return (config.getTables().isEmpty() && config.getEncryptors().isEmpty()) || isValidTableConfigurationWithAlgorithmProvided(config);
     }
     
     private boolean isValidTableConfigurationWithAlgorithmProvided(final AlgorithmProvidedEncryptRuleConfiguration config) {
         for (EncryptTableRuleConfiguration table : config.getTables()) {
             for (EncryptColumnRuleConfiguration column : table.getColumns()) {
-                if (!isValidColumnConfigurationWithAlgorithmProvided(config, column)) {
+                if (!isValidCipherColumnConfigurationWithAlgorithmProvided(config, column) || !isValidAssistColumnConfigurationWithAlgorithmProvided(config, column)) {
                     return false;
                 }
             }
@@ -106,9 +114,17 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
         return true;
     }
     
-    private boolean isValidColumnConfigurationWithAlgorithmProvided(final AlgorithmProvidedEncryptRuleConfiguration encryptRuleConfig, final EncryptColumnRuleConfiguration column) {
-        return !Strings.isNullOrEmpty(column.getEncryptorName()) && !Strings.isNullOrEmpty(column.getCipherColumn())
+    private boolean isValidCipherColumnConfigurationWithAlgorithmProvided(final AlgorithmProvidedEncryptRuleConfiguration encryptRuleConfig, final EncryptColumnRuleConfiguration column) {
+        return !Strings.isNullOrEmpty(column.getCipherColumn()) && !Strings.isNullOrEmpty(column.getEncryptorName())
                 && encryptRuleConfig.getEncryptors().containsKey(column.getEncryptorName());
+    }
+    
+    private boolean isValidAssistColumnConfigurationWithAlgorithmProvided(final AlgorithmProvidedEncryptRuleConfiguration encryptRuleConfig, final EncryptColumnRuleConfiguration column) {
+        if (Strings.isNullOrEmpty(column.getAssistedQueryColumn()) && Strings.isNullOrEmpty(column.getAssistedQueryEncryptorName())) {
+            return true;
+        }
+        return !Strings.isNullOrEmpty(column.getAssistedQueryColumn()) && !Strings.isNullOrEmpty(column.getAssistedQueryEncryptorName())
+                && encryptRuleConfig.getEncryptors().containsKey(column.getAssistedQueryEncryptorName());
     }
     
     /**
