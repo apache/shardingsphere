@@ -31,7 +31,7 @@ import java.util.Collections;
 import java.util.Optional;
 
 /**
- * Copy statement helper class for different dialect SQL statements.
+ * Copy statement handler class for different dialect SQL statements.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CopyStatementHandler implements SQLStatementHandler {

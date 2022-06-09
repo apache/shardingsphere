@@ -28,6 +28,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateState
 
 import java.util.Optional;
 
+/**
+ * Prepare statement query segment.
+ */
 @RequiredArgsConstructor
 @Getter
 @Setter
