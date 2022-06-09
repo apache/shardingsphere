@@ -49,9 +49,8 @@ public final class ShowVariableHandler extends QueryableRALBackendHandler<ShowVa
     
     @Override
     public ShowVariableHandler init(final HandlerParameter<ShowVariableStatement> parameter) {
-        initStatement(parameter.getStatement());
         connectionSession = parameter.getConnectionSession();
-        return this;
+        return super.init(parameter);
     }
     
     @Override

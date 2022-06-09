@@ -21,6 +21,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.S
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.junit.Test;
@@ -40,7 +41,7 @@ import static org.mockito.Mockito.when;
 
 public final class ShowTransactionRuleHandlerTest extends ProxyContextRestorer {
     
-    private final ShowTransactionRuleHandler handler = new ShowTransactionRuleHandler().initStatement(new ShowTransactionRuleStatement());
+    private final ShowTransactionRuleHandler handler = new ShowTransactionRuleHandler().init(new RALBackendHandler.HandlerParameter<>(new ShowTransactionRuleStatement(), null, null));
     
     @Test
     public void assertExecutorWithXA() throws SQLException {
