@@ -39,7 +39,7 @@ import java.util.Optional;
 /**
  * Parse dist sql backend handler.
  */
-public final class ParseDistSQLBackendHandler extends QueryableRALBackendHandler<ParseStatement, ParseDistSQLBackendHandler> {
+public final class ParseDistSQLBackendHandler extends QueryableRALBackendHandler<ParseStatement> {
     
     private static final String PARSED_STATEMENT = "parsed_statement";
     
@@ -48,9 +48,9 @@ public final class ParseDistSQLBackendHandler extends QueryableRALBackendHandler
     private ConnectionSession connectionSession;
     
     @Override
-    public ParseDistSQLBackendHandler init(final HandlerParameter<ParseStatement> parameter) {
+    public void init(final HandlerParameter<ParseStatement> parameter) {
+        super.init(parameter);
         connectionSession = parameter.getConnectionSession();
-        return super.init(parameter);
     }
     
     @Override

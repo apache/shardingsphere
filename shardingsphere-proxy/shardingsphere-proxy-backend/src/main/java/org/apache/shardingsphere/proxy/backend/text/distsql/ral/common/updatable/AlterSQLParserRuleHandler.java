@@ -34,7 +34,7 @@ import java.util.Optional;
 /**
  * Alter SQL parser rule statement handler.
  */
-public final class AlterSQLParserRuleHandler extends UpdatableRALBackendHandler<AlterSQLParserRuleStatement, AlterSQLParserRuleHandler> {
+public final class AlterSQLParserRuleHandler extends UpdatableRALBackendHandler<AlterSQLParserRuleStatement> {
     
     @Override
     protected void update(final ContextManager contextManager, final AlterSQLParserRuleStatement sqlStatement) {

@@ -70,7 +70,8 @@ public final class ExportDatabaseConfigurationHandlerTest extends ProxyContextRe
     
     @Test
     public void assertExportDatabaseExecutor() throws SQLException {
-        ExportDatabaseConfigurationHandler handler = new ExportDatabaseConfigurationHandler().init(new HandlerParameter<>(createSQLStatement(), mock(ConnectionSession.class)));
+        ExportDatabaseConfigurationHandler handler = new ExportDatabaseConfigurationHandler();
+        handler.init(new HandlerParameter<>(createSQLStatement(), mock(ConnectionSession.class)));
         handler.execute();
         handler.next();
         Collection<Object> data = new ArrayList<>(handler.getRowData());

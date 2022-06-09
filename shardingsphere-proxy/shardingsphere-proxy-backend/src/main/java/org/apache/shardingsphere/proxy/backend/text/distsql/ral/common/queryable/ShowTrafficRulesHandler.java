@@ -38,7 +38,7 @@ import java.util.Optional;
  * Show traffic rules handler.
  */
 @RequiredArgsConstructor
-public final class ShowTrafficRulesHandler extends QueryableRALBackendHandler<ShowTrafficRulesStatement, ShowTrafficRulesHandler> {
+public final class ShowTrafficRulesHandler extends QueryableRALBackendHandler<ShowTrafficRulesStatement> {
     
     private static final String RULE_NAME = "name";
     

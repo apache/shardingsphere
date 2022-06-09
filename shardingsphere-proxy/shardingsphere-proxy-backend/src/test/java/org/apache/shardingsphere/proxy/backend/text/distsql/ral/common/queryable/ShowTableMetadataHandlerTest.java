@@ -57,7 +57,8 @@ public final class ShowTableMetadataHandlerTest extends ProxyContextRestorer {
         ProxyContext.init(contextManager);
         ConnectionSession connectionSession = mock(ConnectionSession.class, RETURNS_DEEP_STUBS);
         when(connectionSession.getDatabaseName()).thenReturn("db_name");
-        ShowTableMetadataHandler handler = new ShowTableMetadataHandler().init(new HandlerParameter<>(createSqlStatement(), connectionSession));
+        ShowTableMetadataHandler handler = new ShowTableMetadataHandler();
+        handler.init(new HandlerParameter<>(createSqlStatement(), connectionSession));
         handler.execute();
         handler.next();
         List<Object> data = new ArrayList<>(handler.getRowData());

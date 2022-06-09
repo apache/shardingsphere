@@ -31,14 +31,14 @@ import org.apache.shardingsphere.proxy.backend.text.distsql.ral.UpdatableRALBack
 /**
  * Refresh table metadata handler.
  */
-public final class RefreshTableMetadataHandler extends UpdatableRALBackendHandler<RefreshTableMetadataStatement, RefreshTableMetadataHandler> {
+public final class RefreshTableMetadataHandler extends UpdatableRALBackendHandler<RefreshTableMetadataStatement> {
     
     private ConnectionSession connectionSession;
     
     @Override
-    public RefreshTableMetadataHandler init(final HandlerParameter<RefreshTableMetadataStatement> parameter) {
+    public void init(final HandlerParameter<RefreshTableMetadataStatement> parameter) {
+        super.init(parameter);
         connectionSession = parameter.getConnectionSession();
-        return super.init(parameter);
     }
     
     @Override

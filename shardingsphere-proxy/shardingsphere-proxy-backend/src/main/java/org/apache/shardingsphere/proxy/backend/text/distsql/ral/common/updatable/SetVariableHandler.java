@@ -41,14 +41,14 @@ import java.util.Properties;
 /**
  * Set variable statement handler.
  */
-public final class SetVariableHandler extends UpdatableRALBackendHandler<SetVariableStatement, SetVariableHandler> {
+public final class SetVariableHandler extends UpdatableRALBackendHandler<SetVariableStatement> {
     
     private ConnectionSession connectionSession;
     
     @Override
-    public SetVariableHandler init(final HandlerParameter<SetVariableStatement> parameter) {
+    public void init(final HandlerParameter<SetVariableStatement> parameter) {
+        super.init(parameter);
         connectionSession = parameter.getConnectionSession();
-        return super.init(parameter);
     }
     
     @Override

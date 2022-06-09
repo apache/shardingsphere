@@ -95,7 +95,9 @@ public final class SetVariableBackendHandlerTest extends ProxyContextRestorer {
     @Test
     public void assertSwitchTransactionTypeXA() throws SQLException {
         connectionSession.setCurrentDatabase(String.format(DATABASE_PATTERN, 0));
-        ResponseHeader actual = new SetVariableHandler().init(new HandlerParameter<>(new SetVariableStatement("transaction_type", "XA"), connectionSession)).execute();
+        SetVariableHandler handler = new SetVariableHandler();
+        handler.init(new HandlerParameter<>(new SetVariableStatement("transaction_type", "XA"), connectionSession));
+        ResponseHeader actual = handler.execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));
         assertThat(connectionSession.getTransactionStatus().getTransactionType(), is(TransactionType.XA));
     }
@@ -103,7 +105,9 @@ public final class SetVariableBackendHandlerTest extends ProxyContextRestorer {
     @Test
     public void assertSwitchTransactionTypeBASE() throws SQLException {
         connectionSession.setCurrentDatabase(String.format(DATABASE_PATTERN, 0));
-        ResponseHeader actual = new SetVariableHandler().init(new HandlerParameter<>(new SetVariableStatement("transaction_type", "BASE"), connectionSession)).execute();
+        SetVariableHandler handler = new SetVariableHandler();
+        handler.init(new HandlerParameter<>(new SetVariableStatement("transaction_type", "BASE"), connectionSession));
+        ResponseHeader actual = handler.execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));
         assertThat(connectionSession.getTransactionStatus().getTransactionType(), is(TransactionType.BASE));
     }
@@ -111,42 +115,54 @@ public final class SetVariableBackendHandlerTest extends ProxyContextRestorer {
     @Test
     public void assertSwitchTransactionTypeLOCAL() throws SQLException {
         connectionSession.setCurrentDatabase(String.format(DATABASE_PATTERN, 0));
-        ResponseHeader actual = new SetVariableHandler().init(new HandlerParameter<>(new SetVariableStatement("transaction_type", "LOCAL"), connectionSession)).execute();
+        SetVariableHandler handler = new SetVariableHandler();
+        handler.init(new HandlerParameter<>(new SetVariableStatement("transaction_type", "LOCAL"), connectionSession));
+        ResponseHeader actual = handler.execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));
         assertThat(connectionSession.getTransactionStatus().getTransactionType(), is(TransactionType.LOCAL));
     }
     
     @Test(expected = UnsupportedVariableException.class)
     public void assertSwitchTransactionTypeFailed() throws SQLException {
+        SetVariableHandler handler = new SetVariableHandler();
         connectionSession.setCurrentDatabase(String.format(DATABASE_PATTERN, 0));
-        new SetVariableHandler().init(new HandlerParameter<>(new SetVariableStatement("transaction_type", "XXX"), connectionSession)).execute();
+        handler.init(new HandlerParameter<>(new SetVariableStatement("transaction_type", "XXX"), connectionSession));
+        handler.execute();
     }
     
     @Test(expected = UnsupportedVariableException.class)
     public void assertNotSupportedVariable() throws SQLException {
-        new SetVariableHandler().init(new HandlerParameter<>(new SetVariableStatement("@@session", "XXX"), connectionSession)).execute();
+        SetVariableHandler handler = new SetVariableHandler();
+        handler.init(new HandlerParameter<>(new SetVariableStatement("@@session", "XXX"), connectionSession));
+        handler.execute();
     }
     
     @Test
     public void assertSetAgentPluginsEnabledTrue() throws SQLException {
+        SetVariableHandler handler = new SetVariableHandler();
         connectionSession.setCurrentDatabase(String.format(DATABASE_PATTERN, 0));
-        ResponseHeader actual = new SetVariableHandler().init(new HandlerParameter<>(new SetVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.TRUE.toString()), null)).execute();
+        handler.init(new HandlerParameter<>(new SetVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.TRUE.toString()), null));
+        ResponseHeader actual = handler.execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));
         assertThat(SystemPropertyUtil.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.FALSE.toString()), is(Boolean.TRUE.toString()));
     }
     
     @Test
     public void assertSetAgentPluginsEnabledFalse() throws SQLException {
+        SetVariableHandler handler = new SetVariableHandler();
         connectionSession.setCurrentDatabase(String.format(DATABASE_PATTERN, 0));
-        ResponseHeader actual = new SetVariableHandler().init(new HandlerParameter<>(new SetVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.FALSE.toString()), null)).execute();
+        handler.init(new HandlerParameter<>(new SetVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.FALSE.toString()), null));
+        ResponseHeader actual = handler.execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));
         assertThat(SystemPropertyUtil.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.FALSE.toString()), is(Boolean.FALSE.toString()));
     }
     
     @Test
     public void assertSetAgentPluginsEnabledFalseWithUnknownValue() throws SQLException {
+        SetVariableHandler handler = new SetVariableHandler();
         connectionSession.setCurrentDatabase(String.format(DATABASE_PATTERN, 0));
-        ResponseHeader actual = new SetVariableHandler().init(new HandlerParameter<>(new SetVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name(), "xxx"), connectionSession)).execute();
+        handler.init(new HandlerParameter<>(new SetVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name(), "xxx"), connectionSession));
+        ResponseHeader actual = handler.execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));
         assertThat(SystemPropertyUtil.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.FALSE.toString()), is(Boolean.FALSE.toString()));
     }

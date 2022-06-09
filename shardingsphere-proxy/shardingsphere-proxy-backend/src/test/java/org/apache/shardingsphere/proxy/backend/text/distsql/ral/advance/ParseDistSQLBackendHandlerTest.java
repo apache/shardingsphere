@@ -67,7 +67,8 @@ public final class ParseDistSQLBackendHandlerTest extends ProxyContextRestorer {
     public void assertGetRowData() throws SQLException {
         String sql = "select * from t_order";
         ParseStatement parseStatement = new ParseStatement(sql);
-        ParseDistSQLBackendHandler parseDistSQLBackendHandler = new ParseDistSQLBackendHandler().init(new HandlerParameter<>(parseStatement, connectionSession));
+        ParseDistSQLBackendHandler parseDistSQLBackendHandler = new ParseDistSQLBackendHandler();
+        parseDistSQLBackendHandler.init(new HandlerParameter<>(parseStatement, connectionSession));
         parseDistSQLBackendHandler.execute();
         parseDistSQLBackendHandler.next();
         SQLStatement statement = sqlParserRule.getSQLParserEngine("MySQL").parse(sql, false);
@@ -79,7 +80,8 @@ public final class ParseDistSQLBackendHandlerTest extends ProxyContextRestorer {
     public void assertExecute() throws SQLException {
         String sql = "wrong sql";
         ParseStatement parseStatement = new ParseStatement(sql);
-        ParseDistSQLBackendHandler parseDistSQLBackendHandler = new ParseDistSQLBackendHandler().init(new HandlerParameter<>(parseStatement, connectionSession));
+        ParseDistSQLBackendHandler parseDistSQLBackendHandler = new ParseDistSQLBackendHandler();
+        parseDistSQLBackendHandler.init(new HandlerParameter<>(parseStatement, connectionSession));
         parseDistSQLBackendHandler.execute();
     }
 }

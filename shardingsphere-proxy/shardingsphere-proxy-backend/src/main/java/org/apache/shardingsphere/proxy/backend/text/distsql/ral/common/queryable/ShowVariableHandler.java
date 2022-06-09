@@ -39,7 +39,7 @@ import java.util.List;
 /**
  * Show variable handler.
  */
-public final class ShowVariableHandler extends QueryableRALBackendHandler<ShowVariableStatement, ShowVariableHandler> {
+public final class ShowVariableHandler extends QueryableRALBackendHandler<ShowVariableStatement> {
     
     private static final String VARIABLE_NAME = "variable_name";
     
@@ -48,9 +48,9 @@ public final class ShowVariableHandler extends QueryableRALBackendHandler<ShowVa
     private ConnectionSession connectionSession;
     
     @Override
-    public ShowVariableHandler init(final HandlerParameter<ShowVariableStatement> parameter) {
+    public void init(final HandlerParameter<ShowVariableStatement> parameter) {
+        super.init(parameter);
         connectionSession = parameter.getConnectionSession();
-        return super.init(parameter);
     }
     
     @Override

@@ -45,7 +45,7 @@ import java.util.function.Supplier;
 /**
  * Count instance rules handler.
  */
-public final class CountInstanceRulesHandler extends QueryableRALBackendHandler<CountInstanceRulesStatement, CountInstanceRulesHandler> {
+public final class CountInstanceRulesHandler extends QueryableRALBackendHandler<CountInstanceRulesStatement> {
     
     private static final int DEFAULT_COUNT = 0;
     

@@ -33,7 +33,7 @@ import java.sql.SQLException;
  * RAL backend handler.
  */
 @Getter
-public abstract class RALBackendHandler<E extends RALStatement, R extends RALBackendHandler> implements TextProtocolBackendHandler {
+public abstract class RALBackendHandler<E extends RALStatement> implements TextProtocolBackendHandler {
     
     private E sqlStatement;
     
@@ -41,11 +41,9 @@ public abstract class RALBackendHandler<E extends RALStatement, R extends RALBac
      * Method to initialize handler, this method needs to be rewritten when the handler has properties other than sql statement.
      *
      * @param parameter parameters required by handler
-     * @return the object itself
      */
-    public R init(final HandlerParameter<E> parameter) {
+    public void init(final HandlerParameter<E> parameter) {
         sqlStatement = parameter.getStatement();
-        return (R) this;
     }
     
     @Override

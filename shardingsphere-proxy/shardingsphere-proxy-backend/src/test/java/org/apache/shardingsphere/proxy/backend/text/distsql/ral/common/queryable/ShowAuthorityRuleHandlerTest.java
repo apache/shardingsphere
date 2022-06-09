@@ -42,13 +42,13 @@ import static org.mockito.Mockito.when;
 
 public final class ShowAuthorityRuleHandlerTest extends ProxyContextRestorer {
     
-    private final ShowAuthorityRuleHandler handler = new ShowAuthorityRuleHandler().init(new RALBackendHandler.HandlerParameter<>(new ShowAuthorityRuleStatement(), null));
-    
     @Test
     public void assertAuthorityRule() throws SQLException {
+        ShowAuthorityRuleHandler handler = new ShowAuthorityRuleHandler();
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(getGlobalRuleMetaData());
         ProxyContext.init(contextManager);
+        handler.init(new RALBackendHandler.HandlerParameter<>(new ShowAuthorityRuleStatement(), null));
         handler.execute();
         handler.next();
         List<Object> data = new ArrayList<>(handler.getRowData());

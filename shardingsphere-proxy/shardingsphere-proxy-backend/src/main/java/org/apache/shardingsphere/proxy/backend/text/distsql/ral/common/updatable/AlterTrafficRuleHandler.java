@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 /**
  * Alter traffic rule handler.
  */
-public final class AlterTrafficRuleHandler extends UpdatableRALBackendHandler<AlterTrafficRuleStatement, AlterTrafficRuleHandler> {
+public final class AlterTrafficRuleHandler extends UpdatableRALBackendHandler<AlterTrafficRuleStatement> {
     
     @Override
     protected void update(final ContextManager contextManager, final AlterTrafficRuleStatement sqlStatement) throws DistSQLException {
