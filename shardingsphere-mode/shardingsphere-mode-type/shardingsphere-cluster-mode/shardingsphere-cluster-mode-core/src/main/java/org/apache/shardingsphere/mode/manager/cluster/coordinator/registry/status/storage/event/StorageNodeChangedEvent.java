@@ -30,7 +30,7 @@ import org.apache.shardingsphere.mode.metadata.storage.StorageNodeDataSource;
 @Getter
 public final class StorageNodeChangedEvent implements GovernanceEvent {
     
-    private final QualifiedDatabase qualifiedSchema;
+    private final QualifiedDatabase qualifiedDatabase;
     
     private final StorageNodeDataSource dataSource;
 }

@@ -50,9 +50,9 @@ public final class StorageNodeStateChangedWatcherTest {
                 new DataChangedEvent("/nodes/storage_nodes/replica_query_db.readwrite_ds.replica_ds_0", "role: member\nstatus: enable\n", Type.ADDED));
         assertTrue(actual.isPresent());
         StorageNodeChangedEvent actualEvent = (StorageNodeChangedEvent) actual.get();
-        assertThat(actualEvent.getQualifiedSchema().getDatabaseName(), is("replica_query_db"));
-        assertThat(actualEvent.getQualifiedSchema().getGroupName(), is("readwrite_ds"));
-        assertThat(actualEvent.getQualifiedSchema().getDataSourceName(), is("replica_ds_0"));
+        assertThat(actualEvent.getQualifiedDatabase().getDatabaseName(), is("replica_query_db"));
+        assertThat(actualEvent.getQualifiedDatabase().getGroupName(), is("readwrite_ds"));
+        assertThat(actualEvent.getQualifiedDatabase().getDataSourceName(), is("replica_ds_0"));
         assertThat(actualEvent.getDataSource().getRole(), is("member"));
         assertThat(actualEvent.getDataSource().getStatus(), is("enable"));
     }
@@ -63,9 +63,9 @@ public final class StorageNodeStateChangedWatcherTest {
                 new DataChangedEvent("/nodes/storage_nodes/replica_query_db.readwrite_ds.replica_ds_0", "role: member\nstatus: disable\n", Type.DELETED));
         assertTrue(actual.isPresent());
         StorageNodeChangedEvent actualEvent = (StorageNodeChangedEvent) actual.get();
-        assertThat(actualEvent.getQualifiedSchema().getDatabaseName(), is("replica_query_db"));
-        assertThat(actualEvent.getQualifiedSchema().getGroupName(), is("readwrite_ds"));
-        assertThat(actualEvent.getQualifiedSchema().getDataSourceName(), is("replica_ds_0"));
+        assertThat(actualEvent.getQualifiedDatabase().getDatabaseName(), is("replica_query_db"));
+        assertThat(actualEvent.getQualifiedDatabase().getGroupName(), is("readwrite_ds"));
+        assertThat(actualEvent.getQualifiedDatabase().getDataSourceName(), is("replica_ds_0"));
         assertThat(actualEvent.getDataSource().getRole(), is("member"));
         assertThat(actualEvent.getDataSource().getStatus(), is("disable"));
     }
