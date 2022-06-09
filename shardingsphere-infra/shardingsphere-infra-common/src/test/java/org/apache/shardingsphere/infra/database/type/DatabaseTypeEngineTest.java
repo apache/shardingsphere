@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.dialect.MariaDBDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OracleDatabaseType;
-import org.apache.shardingsphere.infra.fixture.FixtureDatabaseType;
 import org.apache.shardingsphere.infra.fixture.FixtureRuleConfiguration;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import org.junit.Test;
