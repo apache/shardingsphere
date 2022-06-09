@@ -853,5 +853,4 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
     public ASTNode visitDropRestorePoint(final DropRestorePointContext ctx) {
         return new OracleDropRestorePointStatement();
     }
-    
 }
