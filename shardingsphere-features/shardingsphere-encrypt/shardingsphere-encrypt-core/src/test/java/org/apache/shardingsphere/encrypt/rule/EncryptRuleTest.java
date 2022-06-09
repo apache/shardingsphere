@@ -149,19 +149,19 @@ public final class EncryptRuleTest {
                 Collections.singleton(tableConfig), Collections.singletonMap("test_encryptor", new CoreEncryptAlgorithmFixture()), true);
         EncryptRule actual = new EncryptRule(ruleConfig);
         assertTrue(actual.isQueryWithCipherColumn("t_encrypt", "encrypt_column"));
-    
+        
         encryptColumnConfig = new EncryptColumnRuleConfiguration("encrypt_column", "encrypt_cipher", "", "", "test_encryptor", null);
         tableConfig = new EncryptTableRuleConfiguration("t_encrypt", Collections.singletonList(encryptColumnConfig), false);
         ruleConfig = new AlgorithmProvidedEncryptRuleConfiguration(Collections.singleton(tableConfig), Collections.singletonMap("test_encryptor", new CoreEncryptAlgorithmFixture()), true);
         actual = new EncryptRule(ruleConfig);
         assertFalse(actual.isQueryWithCipherColumn("t_encrypt", "encrypt_column"));
-    
+        
         encryptColumnConfig = new EncryptColumnRuleConfiguration("encrypt_column", "encrypt_cipher", "", "", "test_encryptor", true);
         tableConfig = new EncryptTableRuleConfiguration("t_encrypt", Collections.singletonList(encryptColumnConfig), false);
         ruleConfig = new AlgorithmProvidedEncryptRuleConfiguration(Collections.singleton(tableConfig), Collections.singletonMap("test_encryptor", new CoreEncryptAlgorithmFixture()), true);
         actual = new EncryptRule(ruleConfig);
         assertTrue(actual.isQueryWithCipherColumn("t_encrypt", "encrypt_column"));
-    
+        
         encryptColumnConfig = new EncryptColumnRuleConfiguration("encrypt_column", "encrypt_cipher", "", "", "test_encryptor", false);
         tableConfig = new EncryptTableRuleConfiguration("t_encrypt", Collections.singletonList(encryptColumnConfig), null);
         ruleConfig = new AlgorithmProvidedEncryptRuleConfiguration(Collections.singleton(tableConfig), Collections.singletonMap("test_encryptor", new CoreEncryptAlgorithmFixture()), true);
@@ -213,7 +213,7 @@ public final class EncryptRuleTest {
     @Test
     public void assertAssistedQueryEncryptorNameSpecified() {
         EncryptColumnRuleConfiguration pwdColumnConfig = new EncryptColumnRuleConfiguration("pwd", "pwd_cipher", "pwd_assist", "pwd_plain", "test_encryptor", "assisted_query_test_encryptor", null);
-        assertTrue(pwdColumnConfig.getAssistedQueryEncryptorName().equals("assisted_query_test_encryptor"));
+        assertThat(pwdColumnConfig.getAssistedQueryEncryptorName(), is("assisted_query_test_encryptor"));
     }
     
     private EncryptRuleConfiguration createEncryptRuleConfigurationWithUpperCaseLogicTable() {

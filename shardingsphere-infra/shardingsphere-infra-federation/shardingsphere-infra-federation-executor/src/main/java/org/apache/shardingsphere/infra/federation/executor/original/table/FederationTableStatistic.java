@@ -15,36 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.federation.executor.original;
+package org.apache.shardingsphere.infra.federation.executor.original.table;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.apache.calcite.rel.RelCollation;
 import org.apache.calcite.rel.RelDistribution;
 import org.apache.calcite.rel.RelDistributionTraitDef;
 import org.apache.calcite.rel.RelReferentialConstraint;
 import org.apache.calcite.schema.Statistic;
-import org.apache.calcite.util.ImmutableBitSet;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Statistic of federation table.
  */
 public final class FederationTableStatistic implements Statistic {
-    
-    @Override
-    public Double getRowCount() {
-        return Statistic.super.getRowCount();
-    }
-    
-    @Override
-    public boolean isKey(final ImmutableBitSet columns) {
-        return Statistic.super.isKey(columns);
-    }
-    
-    @Override
-    public List<ImmutableBitSet> getKeys() {
-        return Statistic.super.getKeys();
-    }
     
     @Override
     public List<RelReferentialConstraint> getReferentialConstraints() {

@@ -15,24 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.spi;
+package org.apache.shardingsphere.infra.federation.executor.advanced.resultset;
 
-import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
+import java.sql.SQLException;
+import java.sql.Wrapper;
 
 /**
- * Query assisted encrypt algorithm for SPI.
- *
- * @param <I> type of plain value
- * @param <O> type of cipher value
+ * Adapter for {@code java.sql.Wrapper}.
  */
-public interface QueryAssistedEncryptAlgorithm<I, O> extends EncryptAlgorithm<I, O> {
+public abstract class WrapperAdapter implements Wrapper {
     
-    /**
-     * Query assisted encrypt.
-     *
-     * @param plainValue plain value
-     * @param encryptContext encrypt context
-     * @return cipher value
-     */
-    O queryAssistedEncrypt(I plainValue, EncryptContext encryptContext);
+    @SuppressWarnings("unchecked")
+    @Override
+    public final <T> T unwrap(final Class<T> iface) throws SQLException {
+        if (isWrapperFor(iface)) {
+            return (T) this;
+        }
+        throw new SQLException(String.format("[%s] cannot be unwrapped as [%s]", getClass().getName(), iface.getName()));
+    }
+    
+    @Override
+    public final boolean isWrapperFor(final Class<?> iface) {
+        return iface.isInstance(this);
+    }
 }

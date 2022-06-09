@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.federation.executor.original.table;
 
-import com.google.common.collect.ImmutableList;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.calcite.linq4j.AbstractEnumerable;
 import org.apache.calcite.linq4j.Enumerable;
@@ -29,10 +29,6 @@ import org.apache.calcite.rel.core.RelFactories;
 import org.apache.calcite.rel.rel2sql.RelToSqlConverter;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.sql.SqlDialect;
-import org.apache.calcite.sql.dialect.MssqlSqlDialect;
-import org.apache.calcite.sql.dialect.MysqlSqlDialect;
-import org.apache.calcite.sql.dialect.OracleSqlDialect;
-import org.apache.calcite.sql.dialect.PostgresqlSqlDialect;
 import org.apache.calcite.sql.util.SqlString;
 import org.apache.calcite.tools.RelBuilder;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
@@ -41,13 +37,6 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
-import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.MariaDBDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.OracleDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.SQLServerDatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
@@ -63,6 +52,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.dr
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.process.ExecuteProcessEngine;
 import org.apache.shardingsphere.infra.federation.executor.FederationContext;
+import org.apache.shardingsphere.infra.federation.executor.original.SQLDialectFactory;
 import org.apache.shardingsphere.infra.federation.executor.original.row.EmptyRowEnumerator;
 import org.apache.shardingsphere.infra.federation.executor.original.row.FilterableRowEnumerator;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
@@ -80,7 +70,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -89,19 +78,8 @@ import java.util.stream.Collectors;
 /**
  * Filterable table scan executor.
  */
+@RequiredArgsConstructor
 public final class FilterableTableScanExecutor {
-    
-    private static final Map<Class<? extends DatabaseType>, SqlDialect> SQL_DIALECTS = new HashMap<>();
-    
-    static {
-        SQL_DIALECTS.put(H2DatabaseType.class, MysqlSqlDialect.DEFAULT);
-        SQL_DIALECTS.put(MySQLDatabaseType.class, MysqlSqlDialect.DEFAULT);
-        SQL_DIALECTS.put(MariaDBDatabaseType.class, MysqlSqlDialect.DEFAULT);
-        SQL_DIALECTS.put(OracleDatabaseType.class, OracleSqlDialect.DEFAULT);
-        SQL_DIALECTS.put(SQLServerDatabaseType.class, MssqlSqlDialect.DEFAULT);
-        SQL_DIALECTS.put(PostgreSQLDatabaseType.class, PostgresqlSqlDialect.DEFAULT);
-        SQL_DIALECTS.put(OpenGaussDatabaseType.class, PostgresqlSqlDialect.DEFAULT);
-    }
     
     private final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine;
     
@@ -112,16 +90,6 @@ public final class FilterableTableScanExecutor {
     private final OptimizerContext optimizerContext;
     
     private final FilterableTableScanExecutorContext executorContext;
-    
-    public FilterableTableScanExecutor(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
-                                       final JDBCExecutor jdbcExecutor, final JDBCExecutorCallback<? extends ExecuteResult> callback,
-                                       final OptimizerContext optimizerContext, final FilterableTableScanExecutorContext executorContext) {
-        this.jdbcExecutor = jdbcExecutor;
-        this.callback = callback;
-        this.prepareEngine = prepareEngine;
-        this.optimizerContext = optimizerContext;
-        this.executorContext = executorContext;
-    }
     
     /**
      * Execute.
@@ -134,7 +102,7 @@ public final class FilterableTableScanExecutor {
         String databaseName = executorContext.getDatabaseName();
         String schemaName = executorContext.getSchemaName();
         DatabaseType databaseType = DatabaseTypeEngine.getTrunkDatabaseType(optimizerContext.getParserContexts().get(databaseName).getDatabaseType().getType());
-        SqlString sqlString = createSQLString(tableMetaData, scanContext, databaseType);
+        SqlString sqlString = createSQLString(tableMetaData, scanContext, SQLDialectFactory.getSQLDialect(databaseType));
         // TODO replace sql parse with sql convert
         FederationContext federationContext = executorContext.getFederationContext();
         LogicSQL logicSQL = createLogicSQL(federationContext.getDatabases(), sqlString, databaseType);
@@ -187,12 +155,10 @@ public final class FilterableTableScanExecutor {
         return result;
     }
     
-    private SqlString createSQLString(final FederationTableMetaData tableMetaData, final FilterableTableScanContext scanContext, final DatabaseType databaseType) {
-        SqlDialect sqlDialect = SQL_DIALECTS.getOrDefault(databaseType.getClass(), MysqlSqlDialect.DEFAULT);
+    private SqlString createSQLString(final FederationTableMetaData tableMetaData, final FilterableTableScanContext scanContext, final SqlDialect sqlDialect) {
         return new RelToSqlConverter(sqlDialect).visitRoot(createRelNode(tableMetaData, scanContext)).asStatement().toSqlString(sqlDialect);
     }
     
-    @SneakyThrows
     private void setParameters(final Collection<ExecutionGroup<JDBCExecutionUnit>> inputGroups) {
         for (ExecutionGroup<JDBCExecutionUnit> each : inputGroups) {
             for (JDBCExecutionUnit executionUnit : each.getInputs()) {
@@ -204,23 +170,12 @@ public final class FilterableTableScanExecutor {
         }
     }
     
-    @SneakyThrows
+    @SneakyThrows(SQLException.class)
     private void setParameters(final PreparedStatement preparedStatement, final List<Object> parameters) {
         for (int i = 0; i < parameters.size(); i++) {
             Object parameter = parameters.get(i);
             preparedStatement.setObject(i + 1, parameter);
         }
-    }
-    
-    private List<Object> getParameters(final ImmutableList<Integer> parameterIndices) {
-        if (null == parameterIndices) {
-            return Collections.emptyList();
-        }
-        List<Object> result = new ArrayList<>();
-        for (Integer each : parameterIndices) {
-            result.add(executorContext.getFederationContext().getLogicSQL().getParameters().get(each));
-        }
-        return result;
     }
     
     private RelNode createRelNode(final FederationTableMetaData tableMetaData, final FilterableTableScanContext scanContext) {
@@ -261,6 +216,17 @@ public final class FilterableTableScanExecutor {
         List<Object> parameters = getParameters(sqlString.getDynamicParameters());
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(databases, parameters, sqlStatement, executorContext.getDatabaseName());
         return new LogicSQL(sqlStatementContext, sql, parameters);
+    }
+    
+    private List<Object> getParameters(final List<Integer> parameterIndexes) {
+        if (null == parameterIndexes) {
+            return Collections.emptyList();
+        }
+        List<Object> result = new ArrayList<>();
+        for (Integer each : parameterIndexes) {
+            result.add(executorContext.getFederationContext().getLogicSQL().getParameters().get(each));
+        }
+        return result;
     }
     
     private AbstractEnumerable<Object[]> createEmptyEnumerable() {
