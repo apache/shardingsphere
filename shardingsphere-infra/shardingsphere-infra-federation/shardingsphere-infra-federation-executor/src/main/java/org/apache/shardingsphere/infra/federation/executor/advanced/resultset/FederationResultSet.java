@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.federation.executor.customized;
+package org.apache.shardingsphere.infra.federation.executor.advanced.resultset;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
@@ -38,6 +38,9 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
 
+/**
+ * Federation result set.
+ */
 @RequiredArgsConstructor
 public final class FederationResultSet extends AbstractUnsupportedOperationResultSet {
     
