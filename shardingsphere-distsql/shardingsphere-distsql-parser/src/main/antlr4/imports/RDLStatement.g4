@@ -44,7 +44,7 @@ dropDefaultSingleTableRule
     ;
 
 dataSource
-    : dataSourceName LP (simpleSource | urlSource) COMMA USER EQ user (COMMA PASSWORD EQ password+)? propertiesDefinition? RP
+    : LP columnDefinition (COMMA plainColumnDefinition)? COMMA cipherColumnDefinition (COMMA assistedQueryColumnDefinition)? COMMA algorithmDefinition (COMMA algorithmDefinition)? RP
     ;
 
 dataSourceName
