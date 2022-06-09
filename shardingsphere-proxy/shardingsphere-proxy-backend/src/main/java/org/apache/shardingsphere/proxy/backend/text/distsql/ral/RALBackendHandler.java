@@ -20,7 +20,6 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -36,7 +35,6 @@ import java.sql.SQLException;
  * RAL backend handler.
  */
 @Getter
-@Setter
 public abstract class RALBackendHandler<E extends RALStatement, R extends RALBackendHandler> implements TextProtocolBackendHandler {
     
     private E sqlStatement;
@@ -63,6 +61,7 @@ public abstract class RALBackendHandler<E extends RALStatement, R extends RALBac
     
     /**
      * Initialize statement.
+     * 
      * @param statement RAL statement
      * @return the object itself
      */
