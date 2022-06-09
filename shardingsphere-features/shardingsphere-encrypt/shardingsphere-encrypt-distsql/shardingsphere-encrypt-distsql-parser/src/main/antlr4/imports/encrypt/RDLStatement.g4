@@ -86,7 +86,7 @@ assistedQueryColumnName
 algorithmDefinition
     : TYPE LP NAME EQ algorithmName (COMMA PROPERTIES LP algorithmProperties? RP)? RP
     ;
-    
+
 algorithmName
     : IDENTIFIER
     ;
