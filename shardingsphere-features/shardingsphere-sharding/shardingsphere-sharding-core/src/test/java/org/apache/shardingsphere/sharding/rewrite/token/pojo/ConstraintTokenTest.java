@@ -13,24 +13,17 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
-public class ConstraintTokenTest {
-
+public final class ConstraintTokenTest {
+    
     @Test
-    public void assertConstraintToken() {
-        ConstraintToken constraintToken = new ConstraintToken(0, 1, new IdentifierValue("uc"), mock(SQLStatementContext.class), mock(ShardingRule.class));
-        assertThat(constraintToken.toString(getRouteUnit()), is("uc_t_order_0"));
-        assertTokenGrid(constraintToken);
+    public void assertToString() {
+        assertThat(new ConstraintToken(0, 1, new IdentifierValue("uc"), mock(SQLStatementContext.class, RETURNS_DEEP_STUBS), mock(ShardingRule.class)).toString(getRouteUnit()), is("uc"));
     }
-
-    private void assertTokenGrid(ConstraintToken constraintToken) {
-        assertThat(constraintToken.getStopIndex(), is(1));
-        assertThat(constraintToken.getStartIndex(), is(0));
-    }
-
+    
     private RouteUnit getRouteUnit() {
         return new RouteUnit(new RouteMapper("logic_db", "logic_db"), Collections.singletonList(new RouteMapper("t_order", "t_order_0")));
     }
-
 }
