@@ -62,9 +62,8 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
     
     @Override
     public SetReadwriteSplittingStatusHandler init(final HandlerParameter<SetReadwriteSplittingStatusStatement> parameter) {
-        initStatement(parameter.getStatement());
         connectionSession = parameter.getConnectionSession();
-        return this;
+        return super.init(parameter);
     }
     
     @Override
