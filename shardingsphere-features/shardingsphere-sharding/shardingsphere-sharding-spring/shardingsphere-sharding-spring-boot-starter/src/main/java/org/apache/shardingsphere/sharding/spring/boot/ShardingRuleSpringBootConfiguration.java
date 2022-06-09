@@ -66,10 +66,7 @@ public class ShardingRuleSpringBootConfiguration {
                                                        final ObjectProvider<Map<String, KeyGenerateAlgorithm>> keyGenerateAlgorithmProvider) {
         Map<String, ShardingAlgorithm> shardingAlgorithmMap = Optional.ofNullable(shardingAlgorithmProvider.getIfAvailable()).orElse(Collections.emptyMap());
         Map<String, KeyGenerateAlgorithm> keyGenerateAlgorithmMap = Optional.ofNullable(keyGenerateAlgorithmProvider.getIfAvailable()).orElse(Collections.emptyMap());
-        AlgorithmProvidedShardingRuleConfiguration result = swapper.swapToObject(yamlConfig.getSharding());
-        result.setShardingAlgorithms(shardingAlgorithmMap);
-        result.setKeyGenerators(keyGenerateAlgorithmMap);
-        return result;
+        return swapper.swapToYamlConfigurationWithAlgorithms(yamlConfig.getSharding(), shardingAlgorithmMap, keyGenerateAlgorithmMap);
     }
     
     /**

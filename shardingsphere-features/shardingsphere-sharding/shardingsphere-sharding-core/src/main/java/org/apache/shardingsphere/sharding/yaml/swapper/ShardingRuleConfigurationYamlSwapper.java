@@ -17,19 +17,26 @@
 
 package org.apache.shardingsphere.sharding.yaml.swapper;
 
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.ShardingSphereAlgorithmConfigurationYamlSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rulealtered.OnRuleAlteredActionConfigurationYamlSwapper;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
+import org.apache.shardingsphere.sharding.factory.ShardingAlgorithmFactory;
+import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.swapper.rule.ShardingAutoTableRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.sharding.yaml.swapper.rule.ShardingTableRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.sharding.yaml.swapper.strategy.KeyGenerateStrategyConfigurationYamlSwapper;
 import org.apache.shardingsphere.sharding.yaml.swapper.strategy.ShardingStrategyConfigurationYamlSwapper;
 
+import java.util.Map;
 import java.util.Map.Entry;
 
 /**
@@ -53,7 +60,6 @@ public final class ShardingRuleConfigurationYamlSwapper implements YamlRuleConfi
     public YamlShardingRuleConfiguration swapToYamlConfiguration(final ShardingRuleConfiguration data) {
         YamlShardingRuleConfiguration result = new YamlShardingRuleConfiguration();
         data.getTables().forEach(each -> result.getTables().put(each.getLogicTable(), tableYamlSwapper.swapToYamlConfiguration(each)));
-        data.getAutoTables().forEach(each -> result.getAutoTables().put(each.getLogicTable(), autoTableYamlSwapper.swapToYamlConfiguration(each)));
         result.getBindingTables().addAll(data.getBindingTableGroups());
         result.getBroadcastTables().addAll(data.getBroadcastTables());
         setYamlDefaultStrategies(data, result);
@@ -90,6 +96,7 @@ public final class ShardingRuleConfigurationYamlSwapper implements YamlRuleConfi
     @Override
     public ShardingRuleConfiguration swapToObject(final YamlShardingRuleConfiguration yamlConfig) {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
+        setAlgorithms(yamlConfig, result);
         for (Entry<String, YamlTableRuleConfiguration> entry : yamlConfig.getTables().entrySet()) {
             YamlTableRuleConfiguration tableRuleConfig = entry.getValue();
             tableRuleConfig.setLogicTable(entry.getKey());
@@ -98,27 +105,14 @@ public final class ShardingRuleConfigurationYamlSwapper implements YamlRuleConfi
         for (Entry<String, YamlShardingAutoTableRuleConfiguration> entry : yamlConfig.getAutoTables().entrySet()) {
             YamlShardingAutoTableRuleConfiguration tableRuleConfig = entry.getValue();
             tableRuleConfig.setLogicTable(entry.getKey());
-            result.getAutoTables().add(autoTableYamlSwapper.swapToObject(tableRuleConfig));
+            result.getTables().add(autoTableYamlSwapper.swapToObject(tableRuleConfig, getShardingCount(result.getShardingAlgorithms(), entry.getValue().getShardingStrategy())));
         }
         result.getBindingTableGroups().addAll(yamlConfig.getBindingTables());
         result.getBroadcastTables().addAll(yamlConfig.getBroadcastTables());
         setDefaultStrategies(yamlConfig, result);
-        setAlgorithms(yamlConfig, result);
         result.setDefaultShardingColumn(yamlConfig.getDefaultShardingColumn());
         result.setScalingName(yamlConfig.getScalingName());
         return result;
-    }
-    
-    private void setDefaultStrategies(final YamlShardingRuleConfiguration yamlConfig, final ShardingRuleConfiguration ruleConfig) {
-        if (null != yamlConfig.getDefaultDatabaseStrategy()) {
-            ruleConfig.setDefaultDatabaseShardingStrategy(shardingStrategyYamlSwapper.swapToObject(yamlConfig.getDefaultDatabaseStrategy()));
-        }
-        if (null != yamlConfig.getDefaultTableStrategy()) {
-            ruleConfig.setDefaultTableShardingStrategy(shardingStrategyYamlSwapper.swapToObject(yamlConfig.getDefaultTableStrategy()));
-        }
-        if (null != yamlConfig.getDefaultKeyGenerateStrategy()) {
-            ruleConfig.setDefaultKeyGenerateStrategy(keyGenerateStrategyYamlSwapper.swapToObject(yamlConfig.getDefaultKeyGenerateStrategy()));
-        }
     }
     
     private void setAlgorithms(final YamlShardingRuleConfiguration yamlConfig, final ShardingRuleConfiguration ruleConfig) {
@@ -130,6 +124,30 @@ public final class ShardingRuleConfigurationYamlSwapper implements YamlRuleConfi
         }
         if (null != yamlConfig.getScaling()) {
             yamlConfig.getScaling().forEach((key, value) -> ruleConfig.getScaling().put(key, onRuleAlteredActionYamlSwapper.swapToObject(value)));
+        }
+    }
+    
+    private int getShardingCount(final Map<String, ShardingSphereAlgorithmConfiguration> shardingAlgorithms, final YamlShardingStrategyConfiguration shardingStrategy) {
+        ShardingStrategyConfiguration strategyConfiguration = new ShardingStrategyConfigurationYamlSwapper().swapToObject(shardingStrategy);
+        if (shardingAlgorithms.containsKey(strategyConfiguration.getShardingAlgorithmName())) {
+            ShardingSphereAlgorithmConfiguration algorithmConfiguration = shardingAlgorithms.get(strategyConfiguration.getShardingAlgorithmName());
+            ShardingAlgorithm algorithm = ShardingAlgorithmFactory.newInstance(algorithmConfiguration);
+            if (algorithm instanceof ShardingAutoTableAlgorithm) {
+                return ((ShardingAutoTableAlgorithm) algorithm).getAutoTablesAmount();
+            }
+        }
+        return 1;
+    }
+    
+    private void setDefaultStrategies(final YamlShardingRuleConfiguration yamlConfig, final ShardingRuleConfiguration ruleConfig) {
+        if (null != yamlConfig.getDefaultDatabaseStrategy()) {
+            ruleConfig.setDefaultDatabaseShardingStrategy(shardingStrategyYamlSwapper.swapToObject(yamlConfig.getDefaultDatabaseStrategy()));
+        }
+        if (null != yamlConfig.getDefaultTableStrategy()) {
+            ruleConfig.setDefaultTableShardingStrategy(shardingStrategyYamlSwapper.swapToObject(yamlConfig.getDefaultTableStrategy()));
+        }
+        if (null != yamlConfig.getDefaultKeyGenerateStrategy()) {
+            ruleConfig.setDefaultKeyGenerateStrategy(keyGenerateStrategyYamlSwapper.swapToObject(yamlConfig.getDefaultKeyGenerateStrategy()));
         }
     }
     
