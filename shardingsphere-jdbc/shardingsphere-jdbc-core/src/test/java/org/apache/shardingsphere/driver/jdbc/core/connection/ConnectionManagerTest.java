@@ -90,7 +90,7 @@ public final class ConnectionManagerTest {
         MetaDataPersistService metaDataPersistService = mockMetaDataPersistService();
         when(result.getDataSourceMap(DefaultDatabase.LOGIC_NAME)).thenReturn(dataSourceMap);
         when(result.getMetaDataContexts().getPersistService()).thenReturn(Optional.of(metaDataPersistService));
-        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(TransactionRule.class)).thenReturn(Optional.empty());
+        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(TransactionRule.class)).thenReturn(Optional.of(mock(TransactionRule.class, RETURNS_DEEP_STUBS)));
         when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(TrafficRule.class)).thenReturn(Optional.of(trafficRule));
         when(result.getInstanceContext().getComputeNodeInstances(InstanceType.PROXY, Arrays.asList("OLTP", "OLAP"))).thenReturn(Collections.singletonList(new InstanceDefinition(InstanceType.PROXY,
                 "127.0.0.1@3307", "127.0.0.1@3307")));

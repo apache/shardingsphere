@@ -97,11 +97,11 @@ public final class SetVariableHandler extends UpdatableRALBackendHandler<SetVari
         VariableEnum variable = VariableEnum.getValueOf(setVariableStatement.getName());
         switch (variable) {
             case AGENT_PLUGINS_ENABLED:
-                Boolean agentPluginsEnabled = BooleanUtils.toBooleanObject(sqlStatement.getValue());
+                Boolean agentPluginsEnabled = BooleanUtils.toBooleanObject(getSqlStatement().getValue());
                 SystemPropertyUtil.setSystemProperty(variable.name(), null == agentPluginsEnabled ? Boolean.FALSE.toString() : agentPluginsEnabled.toString());
                 break;
             case TRANSACTION_TYPE:
-                connectionSession.getTransactionStatus().setTransactionType(getTransactionType(sqlStatement.getValue()));
+                connectionSession.getTransactionStatus().setTransactionType(getTransactionType(getSqlStatement().getValue()));
                 break;
             default:
                 throw new UnsupportedVariableException(setVariableStatement.getName());

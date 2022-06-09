@@ -34,11 +34,10 @@ import java.sql.SQLException;
 /**
  * RAL backend handler.
  */
+@Getter
 public abstract class RALBackendHandler<E extends RALStatement, R extends RALBackendHandler> implements TextProtocolBackendHandler {
     
-    // CHECKSTYLE:OFF
-    protected E sqlStatement;
-    // CHECKSTYLE:ON
+    private E sqlStatement;
     
     @Override
     public final ResponseHeader execute() throws SQLException {
@@ -62,6 +61,7 @@ public abstract class RALBackendHandler<E extends RALStatement, R extends RALBac
     
     /**
      * Initialize statement.
+     * 
      * @param statement RAL statement
      * @return the object itself
      */

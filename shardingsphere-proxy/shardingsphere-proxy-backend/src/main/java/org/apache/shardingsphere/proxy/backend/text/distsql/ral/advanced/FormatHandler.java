@@ -50,7 +50,7 @@ public final class FormatHandler extends QueryableRALBackendHandler<FormatStatem
         SQLParserEngine parserEngine = new SQLParserEngine("MySQL", cacheOption);
         ParseASTNode parseASTNode;
         try {
-            parseASTNode = parserEngine.parse(sqlStatement.getSql(), false);
+            parseASTNode = parserEngine.parse(getSqlStatement().getSql(), false);
         } catch (SQLParsingException ex) {
             throw new SQLParsingException("You have a syntax error in your formatted statement");
         }

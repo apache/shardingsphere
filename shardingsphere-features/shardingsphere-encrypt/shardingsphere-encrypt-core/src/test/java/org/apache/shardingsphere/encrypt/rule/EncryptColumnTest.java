@@ -25,11 +25,11 @@ public final class EncryptColumnTest {
     
     @Test
     public void assertGetAssistedQueryColumn() {
-        assertTrue(new EncryptColumn("cipherColumn", "assistedQueryColumn", "plainColumn", "encryptorName", "assistEncryptorName", null).getAssistedQueryColumn().isPresent());
+        assertTrue(new EncryptColumn("cipherColumn", "assistedQueryColumn", "plainColumn", "encryptorName", null).getAssistedQueryColumn().isPresent());
     }
     
     @Test
     public void assertGetPlainColumn() {
-        assertTrue(new EncryptColumn("cipherColumn", "assistedQueryColumn", "plainColumn", "encryptorName", "assistEncryptorName", null).getPlainColumn().isPresent());
+        assertTrue(new EncryptColumn("cipherColumn", "assistedQueryColumn", "plainColumn", "encryptorName", null).getPlainColumn().isPresent());
     }
 }

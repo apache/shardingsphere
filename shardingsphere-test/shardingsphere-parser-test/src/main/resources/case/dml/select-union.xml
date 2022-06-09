@@ -24,13 +24,32 @@
         <from>
             <simple-table name="table1" start-index="14" stop-index="19" />
         </from>
-        <union union-type="UNION_DISTINCT" start-index="21" stop-index="46">
+        <combine combine-type="UNION" start-index="21" stop-index="46">
             <select>
                 <projections start-index="34" stop-index="34">
                     <shorthand-projection start-index="34" stop-index="34" />
                 </projections>
                 <from>
                     <simple-table name="table2" start-index="41" stop-index="46" />
+                </from>
+            </select>
+        </combine>
+    </select>
+
+    <select sql-case-id="select_with_union_all">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="table1" start-index="14" stop-index="19" />
+        </from>
+        <union union-type="UNION_ALL" start-index="21" stop-index="50">
+            <select>
+                <projections start-index="38" stop-index="38">
+                    <shorthand-projection start-index="38" stop-index="38" />
+                </projections>
+                <from>
+                    <simple-table name="table2" start-index="45" stop-index="50" />
                 </from>
             </select>
         </union>
@@ -43,7 +62,7 @@
         <from>
             <simple-table name="t_order" start-index="21" stop-index="27" />
         </from>
-        <union union-type="UNION_DISTINCT" start-index="29" stop-index="67">
+        <combine combine-type="UNION" start-index="29" stop-index="67">
             <select>
                 <projections start-index="42" stop-index="49">
                     <column-projection name="order_id" start-index="42" stop-index="49" />
@@ -52,7 +71,7 @@
                     <simple-table name="t_order_item" start-index="56" stop-index="67" />
                 </from>
             </select>
-        </union>
+        </combine>
     </select>
 
     <select sql-case-id="select_intersect">
@@ -62,7 +81,7 @@
         <from>
             <simple-table name="table1" start-index="14" stop-index="19" />
         </from>
-        <union union-type="INTERSECT_DISTINCT" start-index="21" stop-index="50">
+        <combine combine-type="INTERSECT" start-index="21" stop-index="50">
             <select>
                 <projections start-index="38" stop-index="38">
                     <shorthand-projection start-index="38" stop-index="38" />
@@ -71,8 +90,8 @@
                     <simple-table name="table2" start-index="45" stop-index="50" />
                 </from>
             </select>
-        </union>
-        <union union-type="INTERSECT_DISTINCT" start-index="52" stop-index="81">
+        </combine>
+        <combine combine-type="INTERSECT" start-index="52" stop-index="81">
             <select>
                 <projections start-index="69" stop-index="69">
                     <shorthand-projection start-index="69" stop-index="69" />
@@ -81,7 +100,7 @@
                     <simple-table name="table3" start-index="76" stop-index="81" />
                 </from>
             </select>
-        </union>
+        </combine>
     </select>
 
     <select sql-case-id="select_except">
@@ -91,7 +110,7 @@
         <from>
             <simple-table name="table1" start-index="14" stop-index="19" />
         </from>
-        <union union-type="EXCEPT_ALL" start-index="21" stop-index="51">
+        <combine combine-type="EXCEPT_ALL" start-index="21" stop-index="51">
             <select>
                 <projections start-index="39" stop-index="39">
                     <shorthand-projection start-index="39" stop-index="39" />
@@ -100,8 +119,8 @@
                     <simple-table name="table2" start-index="46" stop-index="51" />
                 </from>
             </select>
-        </union>
-        <union union-type="EXCEPT_ALL" start-index="53" stop-index="83">
+        </combine>
+        <combine combine-type="EXCEPT_ALL" start-index="53" stop-index="83">
             <select>
                 <projections start-index="71" stop-index="71">
                     <shorthand-projection start-index="71" stop-index="71" />
@@ -110,7 +129,7 @@
                     <simple-table name="table3" start-index="78" stop-index="83" />
                 </from>
             </select>
-        </union>
+        </combine>
     </select>
 
     <select sql-case-id="select_minus">
@@ -120,7 +139,7 @@
         <from>
             <simple-table name="table1" start-index="14" stop-index="19" />
         </from>
-        <union union-type="MINUS_DISTINCT" start-index="21" stop-index="46">
+        <combine combine-type="MINUS" start-index="21" stop-index="46">
             <select>
                 <projections start-index="34" stop-index="34">
                     <shorthand-projection start-index="34" stop-index="34" />
@@ -129,7 +148,7 @@
                     <simple-table name="table2" start-index="41" stop-index="46" />
                 </from>
             </select>
-        </union>
+        </combine>
     </select>
 
     <select sql-case-id="select_sub_union">
@@ -139,7 +158,7 @@
         <from>
             <simple-table name="table1" start-index="14" stop-index="19" />
         </from>
-        <union union-type="UNION_DISTINCT" start-index="21" stop-index="75">
+        <combine combine-type="UNION" start-index="21" stop-index="75">
             <select>
                 <projections start-index="35" stop-index="35">
                     <shorthand-projection start-index="35" stop-index="35" />
@@ -147,7 +166,7 @@
                 <from>
                     <simple-table name="table2" start-index="42" stop-index="47" />
                 </from>
-                <union union-type="UNION_DISTINCT" start-index="49" stop-index="74">
+                <combine combine-type="UNION" start-index="49" stop-index="74">
                     <select>
                         <projections start-index="62" stop-index="62">
                             <shorthand-projection start-index="62" stop-index="62" />
@@ -156,8 +175,8 @@
                             <simple-table name="table3" start-index="69" stop-index="74" />
                         </from>
                     </select>
-                </union>
+                </combine>
             </select>
-        </union>
+        </combine>
     </select>
 </sql-parser-test-cases>

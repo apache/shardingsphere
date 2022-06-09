@@ -37,7 +37,7 @@ public final class RefreshTableMetadataHandler extends UpdatableRALBackendHandle
     
     @Override
     public RefreshTableMetadataHandler init(final HandlerParameter<RefreshTableMetadataStatement> parameter) {
-        sqlStatement = parameter.getStatement();
+        initStatement(parameter.getStatement());
         connectionSession = parameter.getConnectionSession();
         return this;
     }
