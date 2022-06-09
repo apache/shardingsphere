@@ -35,7 +35,7 @@ public final class DataSourcePoolDestroyerTest {
         new DataSourcePoolDestroyer(new MockedDataSource()).asyncDestroy();
     }
     
-    @Test(timeout = 1000L)
+    @Test(timeout = 2000L)
     public void assertAsyncDestroyHikariDataSource() throws SQLException, InterruptedException {
         HikariDataSource dataSource = createHikariDataSource();
         try (Connection ignored = dataSource.getConnection()) {
