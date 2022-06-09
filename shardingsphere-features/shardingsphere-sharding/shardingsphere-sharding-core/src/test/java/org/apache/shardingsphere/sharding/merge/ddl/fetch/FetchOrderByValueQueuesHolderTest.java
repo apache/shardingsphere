@@ -33,11 +33,15 @@ public final class FetchOrderByValueQueuesHolderTest {
     }
     
     @Test
-    public void assertTrafficContextHolder() {
-        assertFalse(FetchOrderByValueQueuesHolder.get().containsKey("t_order_cursor"));
-        FetchOrderByValueQueuesHolder.get().computeIfAbsent("t_order_cursor", key -> new PriorityQueue<>());
-        assertTrue(FetchOrderByValueQueuesHolder.get().containsKey("t_order_cursor"));
+    public void assertFetchOrderByValueQueuesHolder() {
+        assertFalse(FetchOrderByValueQueuesHolder.getOrderByValueQueues().containsKey("t_order_cursor"));
+        assertFalse(FetchOrderByValueQueuesHolder.getRemainingRowCounts().containsKey("t_order_cursor"));
+        FetchOrderByValueQueuesHolder.getOrderByValueQueues().computeIfAbsent("t_order_cursor", key -> new PriorityQueue<>());
+        FetchOrderByValueQueuesHolder.getRemainingRowCounts().put("t_order_cursor", 0L);
+        assertTrue(FetchOrderByValueQueuesHolder.getOrderByValueQueues().containsKey("t_order_cursor"));
+        assertTrue(FetchOrderByValueQueuesHolder.getRemainingRowCounts().containsKey("t_order_cursor"));
         FetchOrderByValueQueuesHolder.remove();
-        assertFalse(FetchOrderByValueQueuesHolder.get().containsKey("t_order_cursor"));
+        assertFalse(FetchOrderByValueQueuesHolder.getOrderByValueQueues().containsKey("t_order_cursor"));
+        assertFalse(FetchOrderByValueQueuesHolder.getRemainingRowCounts().containsKey("t_order_cursor"));
     }
 }

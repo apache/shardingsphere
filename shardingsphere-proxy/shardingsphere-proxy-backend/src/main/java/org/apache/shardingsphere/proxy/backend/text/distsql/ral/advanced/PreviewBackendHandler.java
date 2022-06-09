@@ -104,7 +104,7 @@ public final class PreviewBackendHandler extends QueryableRALBackendHandler<Prev
         String databaseType = DatabaseTypeEngine.getTrunkDatabaseTypeName(metaDataContexts.getMetaData().getDatabases().get(databaseName).getProtocolType());
         Optional<SQLParserRule> sqlParserRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().findSingleRule(SQLParserRule.class);
         Preconditions.checkState(sqlParserRule.isPresent());
-        SQLStatement previewedStatement = sqlParserRule.get().getSQLParserEngine(databaseType).parse(sqlStatement.getSql(), false);
+        SQLStatement previewedStatement = sqlParserRule.get().getSQLParserEngine(databaseType).parse(getSqlStatement().getSql(), false);
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getMetaData().getDatabases(), previewedStatement, databaseName);
         // TODO optimize SQLStatementDatabaseHolder
         if (sqlStatementContext instanceof TableAvailable) {
@@ -117,7 +117,7 @@ public final class PreviewBackendHandler extends QueryableRALBackendHandler<Prev
         if (!database.isComplete()) {
             throw new RuleNotExistedException();
         }
-        LogicSQL logicSQL = new LogicSQL(sqlStatementContext, sqlStatement.getSql(), Collections.emptyList());
+        LogicSQL logicSQL = new LogicSQL(sqlStatementContext, getSqlStatement().getSql(), Collections.emptyList());
         ExecutionContext executionContext = kernelProcessor.generateExecutionContext(logicSQL, database, metaDataContexts.getMetaData().getProps());
         Collection<ExecutionUnit> executionUnits = executionContext.getRouteContext().isFederated()
                 ? getFederationExecutionUnits(logicSQL, databaseName, metaDataContexts)
