@@ -197,7 +197,7 @@ Apache ShardingSphere 接收到该 SQL，通过用户提供的加密配置，发
 
 ## 加密算法解析
 
-Apache ShardingSphere 提供了两种加密算法用于数据加密，这两种策略分别对应 Apache ShardingSphere 的两种加解密的接口，即 `EncryptAlgorithm` 和 `QueryAssistedEncryptAlgorithm`。
+Apache ShardingSphere 提供了加密算法用于数据加密，即 `EncryptAlgorithm`。
 
 一方面，Apache ShardingSphere 为用户提供了内置的加解密实现类，用户只需进行配置即可使用；
 另一方面，为了满足用户不同场景的需求，我们还开放了相关加解密接口，用户可依据这两种类型的接口提供具体实现类。

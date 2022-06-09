@@ -249,7 +249,7 @@ Without changing the business query SQL, the on-line system can safely and trans
 
 ## Solution
 
-Apache ShardingSphere has provided two data encryption solutions, corresponding to two ShardingSphere encryption and decryption interfaces, i.e., `EncryptAlgorithm` and `QueryAssistedEncryptAlgorithm`.
+Apache ShardingSphere has provided encryption solutions, i.e., `EncryptAlgorithm`.
 
 On the one hand, Apache ShardingSphere has provided internal encryption and decryption implementations for users, which can be used by them only after configuration. 
 On the other hand, to satisfy users' requirements for different scenarios, we have also opened relevant encryption and decryption interfaces, according to which, users can provide specific implementation types. 
