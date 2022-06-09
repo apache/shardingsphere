@@ -101,7 +101,8 @@ public final class SchemaAssignedDatabaseBackendHandler implements DatabaseBacke
             ((CursorDefinitionAware) statementContext).setUpCursorDefinition(cursorStatementContext);
         }
         if (statementContext instanceof CloseStatementContext) {
-            FetchOrderByValueQueuesHolder.get().remove(cursorName);
+            FetchOrderByValueQueuesHolder.getOrderByValueQueues().remove(cursorName);
+            FetchOrderByValueQueuesHolder.getRemainingRowCounts().remove(cursorName);
             connectionSession.getCursorDefinitions().remove(cursorName);
         }
     }
