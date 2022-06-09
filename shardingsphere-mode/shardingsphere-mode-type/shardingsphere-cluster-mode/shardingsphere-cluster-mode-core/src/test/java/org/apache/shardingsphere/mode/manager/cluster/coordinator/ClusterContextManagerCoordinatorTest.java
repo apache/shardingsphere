@@ -226,7 +226,7 @@ public final class ClusterContextManagerCoordinatorTest {
         StorageNodeChangedEvent event = new StorageNodeChangedEvent(new QualifiedDatabase("db.readwrite_ds.ds_0"), new StorageNodeDataSource(StorageNodeRole.MEMBER, StorageNodeStatus.DISABLED));
         coordinator.renew(event);
         verify(statusContainedRule, times(1)).updateStatus(argThat(
-                (ArgumentMatcher<StorageNodeDataSourceChangedEvent>) argumentEvent -> Objects.equals(event.getQualifiedSchema(), argumentEvent.getQualifiedDatabase())
+                (ArgumentMatcher<StorageNodeDataSourceChangedEvent>) argumentEvent -> Objects.equals(event.getQualifiedDatabase(), argumentEvent.getQualifiedDatabase())
                         && Objects.equals(event.getDataSource(), argumentEvent.getDataSource())));
     }
     
