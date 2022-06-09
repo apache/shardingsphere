@@ -26,7 +26,8 @@ import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.ExportableRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.StatusContainedRule;
-import org.apache.shardingsphere.mode.metadata.storage.event.DataSourceNameDisabledEvent;
+import org.apache.shardingsphere.mode.metadata.storage.StorageNodeStatus;
+import org.apache.shardingsphere.mode.metadata.storage.event.StorageNodeDataSourceChangedEvent;
 import org.apache.shardingsphere.readwritesplitting.algorithm.config.AlgorithmProvidedReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
@@ -108,10 +109,11 @@ public final class ReadwriteSplittingRule implements SchemaRule, DataSourceConta
     
     @Override
     public void updateStatus(final DataSourceStatusChangedEvent event) {
-        if (event instanceof DataSourceNameDisabledEvent) {
+        if (event instanceof StorageNodeDataSourceChangedEvent) {
             for (Entry<String, ReadwriteSplittingDataSourceRule> entry : dataSourceRules.entrySet()) {
-                entry.getValue().updateDisabledDataSourceNames(((DataSourceNameDisabledEvent) event).getQualifiedDatabase().getDataSourceName(),
-                        ((DataSourceNameDisabledEvent) event).isDisabled());
+                StorageNodeDataSourceChangedEvent dataSourceChangedEvent = (StorageNodeDataSourceChangedEvent) event;
+                entry.getValue().updateDisabledDataSourceNames(dataSourceChangedEvent.getQualifiedDatabase().getDataSourceName(),
+                        StorageNodeStatus.isDisable(dataSourceChangedEvent.getDataSource().getStatus()));
             }
         }
     }
