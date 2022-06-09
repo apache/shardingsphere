@@ -88,11 +88,11 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
     }
     
     private boolean isValidAssistColumnConfiguration(final EncryptRuleConfiguration encryptRuleConfig, final EncryptColumnRuleConfiguration column) {
-        if (Strings.isNullOrEmpty(column.getAssistedQueryColumn()) && Strings.isNullOrEmpty(column.getAssistEncryptorName())) {
+        if (Strings.isNullOrEmpty(column.getAssistedQueryColumn()) && Strings.isNullOrEmpty(column.getAssistedQueryEncryptorName())) {
             return true;
         }
-        return !Strings.isNullOrEmpty(column.getAssistedQueryColumn()) && !Strings.isNullOrEmpty(column.getAssistEncryptorName()) 
-                && containsEncryptors(encryptRuleConfig, column.getAssistEncryptorName());
+        return !Strings.isNullOrEmpty(column.getAssistedQueryColumn()) && !Strings.isNullOrEmpty(column.getAssistedQueryEncryptorName()) 
+                && containsEncryptors(encryptRuleConfig, column.getAssistedQueryEncryptorName());
     }
     
     private boolean containsEncryptors(final EncryptRuleConfiguration encryptRuleConfig, final String encryptorName) {
@@ -120,11 +120,11 @@ public final class EncryptRule implements SchemaRule, TableContainedRule {
     }
     
     private boolean isValidAssistColumnConfigurationWithAlgorithmProvided(final AlgorithmProvidedEncryptRuleConfiguration encryptRuleConfig, final EncryptColumnRuleConfiguration column) {
-        if (Strings.isNullOrEmpty(column.getAssistedQueryColumn()) && Strings.isNullOrEmpty(column.getAssistEncryptorName())) {
+        if (Strings.isNullOrEmpty(column.getAssistedQueryColumn()) && Strings.isNullOrEmpty(column.getAssistedQueryEncryptorName())) {
             return true;
         }
-        return !Strings.isNullOrEmpty(column.getAssistedQueryColumn()) && !Strings.isNullOrEmpty(column.getAssistEncryptorName())
-                && encryptRuleConfig.getEncryptors().containsKey(column.getAssistEncryptorName());
+        return !Strings.isNullOrEmpty(column.getAssistedQueryColumn()) && !Strings.isNullOrEmpty(column.getAssistedQueryEncryptorName())
+                && encryptRuleConfig.getEncryptors().containsKey(column.getAssistedQueryEncryptorName());
     }
     
     /**
