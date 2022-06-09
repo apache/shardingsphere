@@ -28,7 +28,6 @@ import org.apache.shardingsphere.mode.manager.memory.workerid.generator.MemoryWo
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
@@ -40,7 +39,7 @@ public final class ProxyInfoCollectorTest extends ProxyContextRestorer {
     public void assertCollect() {
         InstanceContext instanceContext = new InstanceContext(
                 new ComputeNodeInstance(mock(InstanceDefinition.class)), new MemoryWorkerIdGenerator(), new ModeConfiguration("Memory", null, false), mock(LockContext.class));
-        ProxyContext.init(new ContextManager(new MetaDataContexts(mock(MetaDataPersistService.class)), mock(TransactionContexts.class), instanceContext));
+        ProxyContext.init(new ContextManager(new MetaDataContexts(mock(MetaDataPersistService.class)), instanceContext));
         assertFalse(new ProxyInfoCollector().collect().isEmpty());
     }
 }

@@ -51,31 +51,13 @@ public final class FetchStreamMergedResult extends StreamMergedResult {
     
     public FetchStreamMergedResult(final List<QueryResult> queryResults, final FetchStatementContext fetchStatementContext, final ShardingSphereSchema schema) throws SQLException {
         String cursorName = fetchStatementContext.getCursorName().getIdentifier().getValue().toLowerCase();
-        SelectStatementContext selectStatementContext = fetchStatementContext.getCursorStatementContext().getSelectStatementContext();
-        orderByValuesQueue = FetchOrderByValueQueuesHolder.get().computeIfAbsent(cursorName, key -> new PriorityQueue<>(queryResults.size()));
-        orderResultSetsToQueue(queryResults, selectStatementContext, schema);
+        orderByValuesQueue = FetchOrderByValueQueuesHolder.getOrderByValueQueues().computeIfAbsent(cursorName, key -> new PriorityQueue<>(queryResults.size()));
         directionType = fetchStatementContext.getSqlStatement().getDirection().map(DirectionSegment::getDirectionType).orElse(DirectionType.NEXT);
         fetchCount = fetchStatementContext.getSqlStatement().getDirection().flatMap(DirectionSegment::getCount).orElse(1L);
+        SelectStatementContext selectStatementContext = fetchStatementContext.getCursorStatementContext().getSelectStatementContext();
+        addOrderedResultSetsToQueue(queryResults, selectStatementContext, schema);
+        mergeRemainingRowCount(cursorName);
         isFirstNext = true;
-    }
-    
-    private void orderResultSetsToQueue(final List<QueryResult> queryResults, final SelectStatementContext selectStatementContext, final ShardingSphereSchema schema) throws SQLException {
-        Collection<OrderByItem> items = selectStatementContext.getOrderByContext().getItems();
-        for (QueryResult each : queryResults) {
-            QueryResult queryResult = decorate(each, selectStatementContext.getDatabaseType());
-            OrderByValue orderByValue = new OrderByValue(queryResult, items, selectStatementContext, schema);
-            if (orderByValue.next()) {
-                orderByValuesQueue.offer(orderByValue);
-            }
-        }
-        setCurrentQueryResult(orderByValuesQueue.isEmpty() ? queryResults.get(0) : orderByValuesQueue.peek().getQueryResult());
-    }
-    
-    private QueryResult decorate(final QueryResult queryResult, final DatabaseType databaseType) throws SQLException {
-        if (!DirectionType.isAllDirectionType(directionType) && queryResult instanceof JDBCStreamQueryResult) {
-            return new JDBCMemoryQueryResult(((JDBCStreamQueryResult) queryResult).getResultSet(), databaseType);
-        }
-        return queryResult;
     }
     
     @Override
@@ -97,5 +79,35 @@ public final class FetchStreamMergedResult extends StreamMergedResult {
         }
         setCurrentQueryResult(orderByValuesQueue.peek().getQueryResult());
         return DirectionType.isAllDirectionType(directionType) || fetchCount-- > 0;
+    }
+    
+    private void addOrderedResultSetsToQueue(final List<QueryResult> queryResults, final SelectStatementContext selectStatementContext, final ShardingSphereSchema schema) throws SQLException {
+        Collection<OrderByItem> items = selectStatementContext.getOrderByContext().getItems();
+        for (QueryResult each : queryResults) {
+            QueryResult queryResult = decorate(each, selectStatementContext.getDatabaseType());
+            OrderByValue orderByValue = new OrderByValue(queryResult, items, selectStatementContext, schema);
+            if (orderByValue.next()) {
+                orderByValuesQueue.offer(orderByValue);
+            }
+        }
+        setCurrentQueryResult(orderByValuesQueue.isEmpty() ? queryResults.get(0) : orderByValuesQueue.peek().getQueryResult());
+    }
+    
+    private QueryResult decorate(final QueryResult queryResult, final DatabaseType databaseType) throws SQLException {
+        if (!DirectionType.isAllDirectionType(directionType) && queryResult instanceof JDBCStreamQueryResult) {
+            return new JDBCMemoryQueryResult(((JDBCStreamQueryResult) queryResult).getResultSet(), databaseType);
+        }
+        return queryResult;
+    }
+    
+    private void mergeRemainingRowCount(final String cursorName) {
+        long remainingRowCount = 0L;
+        for (OrderByValue each : orderByValuesQueue) {
+            if (each.getQueryResult() instanceof JDBCMemoryQueryResult) {
+                remainingRowCount += ((JDBCMemoryQueryResult) each.getQueryResult()).getRowCount();
+            }
+        }
+        remainingRowCount = DirectionType.isAllDirectionType(directionType) ? 0 : remainingRowCount - fetchCount;
+        FetchOrderByValueQueuesHolder.getRemainingRowCounts().put(cursorName, Math.max(remainingRowCount, 0));
     }
 }

@@ -42,6 +42,6 @@ public final class EncryptColumnRuleConfigurationYamlSwapper implements YamlConf
     public EncryptColumnRuleConfiguration swapToObject(final YamlEncryptColumnRuleConfiguration yamlConfig) {
         return new EncryptColumnRuleConfiguration(
                 yamlConfig.getLogicColumn(), yamlConfig.getCipherColumn(), yamlConfig.getAssistedQueryColumn(), yamlConfig.getPlainColumn(), yamlConfig.getEncryptorName(),
-                yamlConfig.getQueryWithCipherColumn());
+                yamlConfig.getAssistedQueryEncryptorName(), yamlConfig.getQueryWithCipherColumn());
     }
 }

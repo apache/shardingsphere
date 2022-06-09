@@ -95,7 +95,7 @@ public final class SetVariableBackendHandlerTest extends ProxyContextRestorer {
     @Test
     public void assertSwitchTransactionTypeXA() throws SQLException {
         connectionSession.setCurrentDatabase(String.format(DATABASE_PATTERN, 0));
-        ResponseHeader actual = new SetVariableHandler().init(getParameter(new SetVariableStatement("transaction_type", "XA"), connectionSession)).execute();
+        ResponseHeader actual = new SetVariableHandler().init(new HandlerParameter<>(new SetVariableStatement("transaction_type", "XA"), connectionSession)).execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));
         assertThat(connectionSession.getTransactionStatus().getTransactionType(), is(TransactionType.XA));
     }
@@ -103,7 +103,7 @@ public final class SetVariableBackendHandlerTest extends ProxyContextRestorer {
     @Test
     public void assertSwitchTransactionTypeBASE() throws SQLException {
         connectionSession.setCurrentDatabase(String.format(DATABASE_PATTERN, 0));
-        ResponseHeader actual = new SetVariableHandler().init(getParameter(new SetVariableStatement("transaction_type", "BASE"), connectionSession)).execute();
+        ResponseHeader actual = new SetVariableHandler().init(new HandlerParameter<>(new SetVariableStatement("transaction_type", "BASE"), connectionSession)).execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));
         assertThat(connectionSession.getTransactionStatus().getTransactionType(), is(TransactionType.BASE));
     }
@@ -111,7 +111,7 @@ public final class SetVariableBackendHandlerTest extends ProxyContextRestorer {
     @Test
     public void assertSwitchTransactionTypeLOCAL() throws SQLException {
         connectionSession.setCurrentDatabase(String.format(DATABASE_PATTERN, 0));
-        ResponseHeader actual = new SetVariableHandler().init(getParameter(new SetVariableStatement("transaction_type", "LOCAL"), connectionSession)).execute();
+        ResponseHeader actual = new SetVariableHandler().init(new HandlerParameter<>(new SetVariableStatement("transaction_type", "LOCAL"), connectionSession)).execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));
         assertThat(connectionSession.getTransactionStatus().getTransactionType(), is(TransactionType.LOCAL));
     }
@@ -119,18 +119,18 @@ public final class SetVariableBackendHandlerTest extends ProxyContextRestorer {
     @Test(expected = UnsupportedVariableException.class)
     public void assertSwitchTransactionTypeFailed() throws SQLException {
         connectionSession.setCurrentDatabase(String.format(DATABASE_PATTERN, 0));
-        new SetVariableHandler().init(getParameter(new SetVariableStatement("transaction_type", "XXX"), connectionSession)).execute();
+        new SetVariableHandler().init(new HandlerParameter<>(new SetVariableStatement("transaction_type", "XXX"), connectionSession)).execute();
     }
     
     @Test(expected = UnsupportedVariableException.class)
     public void assertNotSupportedVariable() throws SQLException {
-        new SetVariableHandler().init(getParameter(new SetVariableStatement("@@session", "XXX"), connectionSession)).execute();
+        new SetVariableHandler().init(new HandlerParameter<>(new SetVariableStatement("@@session", "XXX"), connectionSession)).execute();
     }
     
     @Test
     public void assertSetAgentPluginsEnabledTrue() throws SQLException {
         connectionSession.setCurrentDatabase(String.format(DATABASE_PATTERN, 0));
-        ResponseHeader actual = new SetVariableHandler().init(getParameter(new SetVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.TRUE.toString()), null)).execute();
+        ResponseHeader actual = new SetVariableHandler().init(new HandlerParameter<>(new SetVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.TRUE.toString()), null)).execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));
         assertThat(SystemPropertyUtil.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.FALSE.toString()), is(Boolean.TRUE.toString()));
     }
@@ -138,7 +138,7 @@ public final class SetVariableBackendHandlerTest extends ProxyContextRestorer {
     @Test
     public void assertSetAgentPluginsEnabledFalse() throws SQLException {
         connectionSession.setCurrentDatabase(String.format(DATABASE_PATTERN, 0));
-        ResponseHeader actual = new SetVariableHandler().init(getParameter(new SetVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.FALSE.toString()), null)).execute();
+        ResponseHeader actual = new SetVariableHandler().init(new HandlerParameter<>(new SetVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.FALSE.toString()), null)).execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));
         assertThat(SystemPropertyUtil.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.FALSE.toString()), is(Boolean.FALSE.toString()));
     }
@@ -146,12 +146,8 @@ public final class SetVariableBackendHandlerTest extends ProxyContextRestorer {
     @Test
     public void assertSetAgentPluginsEnabledFalseWithUnknownValue() throws SQLException {
         connectionSession.setCurrentDatabase(String.format(DATABASE_PATTERN, 0));
-        ResponseHeader actual = new SetVariableHandler().init(getParameter(new SetVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name(), "xxx"), connectionSession)).execute();
+        ResponseHeader actual = new SetVariableHandler().init(new HandlerParameter<>(new SetVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name(), "xxx"), connectionSession)).execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));
         assertThat(SystemPropertyUtil.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.FALSE.toString()), is(Boolean.FALSE.toString()));
-    }
-    
-    private HandlerParameter<SetVariableStatement> getParameter(final SetVariableStatement statement, final ConnectionSession connectionSession) {
-        return new HandlerParameter<>(statement, new MySQLDatabaseType(), connectionSession);
     }
 }

@@ -84,7 +84,7 @@ public final class ShowReadwriteSplittingReadResourcesHandler extends QueryableR
     }
     
     private String getDatabaseName() {
-        String result = sqlStatement.getDatabase().isPresent() ? sqlStatement.getDatabase().get().getIdentifier().getValue() : connectionSession.getDatabaseName();
+        String result = getSqlStatement().getDatabase().isPresent() ? getSqlStatement().getDatabase().get().getIdentifier().getValue() : connectionSession.getDatabaseName();
         if (Strings.isNullOrEmpty(result)) {
             throw new NoDatabaseSelectedException();
         }
@@ -111,9 +111,9 @@ public final class ShowReadwriteSplittingReadResourcesHandler extends QueryableR
         Map<String, StorageNodeDataSource> storageNodes = new StorageNodeStatusService((ClusterPersistRepository) persistService.getRepository()).loadStorageNodes();
         Map<String, StorageNodeDataSource> result = new HashMap<>();
         storageNodes.entrySet().stream().filter(entry -> "member".equalsIgnoreCase(entry.getValue().getRole())).forEach(entry -> {
-            QualifiedDatabase qualifiedSchema = new QualifiedDatabase(entry.getKey());
-            if (databaseName.equalsIgnoreCase(qualifiedSchema.getDatabaseName())) {
-                result.put(qualifiedSchema.getDataSourceName(), entry.getValue());
+            QualifiedDatabase qualifiedDatabase = new QualifiedDatabase(entry.getKey());
+            if (databaseName.equalsIgnoreCase(qualifiedDatabase.getDatabaseName())) {
+                result.put(qualifiedDatabase.getDataSourceName(), entry.getValue());
             }
         });
         return result;
