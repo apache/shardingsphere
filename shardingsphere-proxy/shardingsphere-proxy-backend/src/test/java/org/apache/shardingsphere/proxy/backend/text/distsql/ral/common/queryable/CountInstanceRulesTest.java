@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRule
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
@@ -118,7 +119,7 @@ public final class CountInstanceRulesTest extends ProxyContextRestorer {
     
     @Test
     public void assertGetRowData() throws SQLException {
-        CountInstanceRulesHandler handler = new CountInstanceRulesHandler().initStatement(new CountInstanceRulesStatement());
+        CountInstanceRulesHandler handler = new CountInstanceRulesHandler().init(new RALBackendHandler.HandlerParameter<>(new CountInstanceRulesStatement(), null, null));
         handler.execute();
         handler.next();
         Collection<Object> actual = handler.getRowData();
@@ -165,7 +166,7 @@ public final class CountInstanceRulesTest extends ProxyContextRestorer {
     
     @Test
     public void assertGetRowDataWithoutConfiguration() throws SQLException {
-        CountInstanceRulesHandler handler = new CountInstanceRulesHandler().initStatement(new CountInstanceRulesStatement());
+        CountInstanceRulesHandler handler = new CountInstanceRulesHandler().init(new RALBackendHandler.HandlerParameter<>(new CountInstanceRulesStatement(), null, null));
         when(database1.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
         when(database2.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
         handler.execute();

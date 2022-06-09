@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRule
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.junit.Test;
 
@@ -41,7 +42,7 @@ import static org.mockito.Mockito.when;
 
 public final class ShowAuthorityRuleHandlerTest extends ProxyContextRestorer {
     
-    private final ShowAuthorityRuleHandler handler = new ShowAuthorityRuleHandler().initStatement(new ShowAuthorityRuleStatement());
+    private final ShowAuthorityRuleHandler handler = new ShowAuthorityRuleHandler().init(new RALBackendHandler.HandlerParameter<>(new ShowAuthorityRuleStatement(), null, null));
     
     @Test
     public void assertAuthorityRule() throws SQLException {

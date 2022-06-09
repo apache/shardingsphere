@@ -22,6 +22,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.junit.Test;
 
@@ -39,7 +40,7 @@ public final class AlterInstanceHandlerTest extends ProxyContextRestorer {
         String instanceId = "instance_id";
         String key = "key_1";
         String value = "value_1";
-        new AlterInstanceHandler().initStatement(getSQLStatement(instanceId, key, value)).execute();
+        new AlterInstanceHandler().init(new RALBackendHandler.HandlerParameter<>(getSQLStatement(instanceId, key, value), null, null)).execute();
     }
     
     @Test(expected = UnsupportedOperationException.class)
@@ -50,7 +51,7 @@ public final class AlterInstanceHandlerTest extends ProxyContextRestorer {
         String instanceId = "instance_id";
         String key = "xa_recovery_nodes";
         String value = "value_1";
-        new AlterInstanceHandler().initStatement(getSQLStatement(instanceId, key, value)).execute();
+        new AlterInstanceHandler().init(new RALBackendHandler.HandlerParameter<>(getSQLStatement(instanceId, key, value), null, null)).execute();
     }
     
     @Test(expected = UnsupportedOperationException.class)
@@ -62,7 +63,7 @@ public final class AlterInstanceHandlerTest extends ProxyContextRestorer {
         String instanceId = "instance_id";
         String key = "xa_recovery_nodes";
         String value = "value_1";
-        new AlterInstanceHandler().initStatement(getSQLStatement(instanceId, key, value)).execute();
+        new AlterInstanceHandler().init(new RALBackendHandler.HandlerParameter<>(getSQLStatement(instanceId, key, value), null, null)).execute();
     }
     
     private AlterInstanceStatement getSQLStatement(final String instanceId, final String key, final String value) {

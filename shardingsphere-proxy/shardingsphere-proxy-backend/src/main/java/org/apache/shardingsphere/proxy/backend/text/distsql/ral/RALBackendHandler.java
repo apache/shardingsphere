@@ -55,18 +55,7 @@ public abstract class RALBackendHandler<E extends RALStatement, R extends RALBac
      * @return the object itself
      */
     public R init(final HandlerParameter<E> parameter) {
-        initStatement(parameter.getStatement());
-        return (R) this;
-    }
-    
-    /**
-     * Initialize statement.
-     * 
-     * @param statement RAL statement
-     * @return the object itself
-     */
-    public final R initStatement(final E statement) {
-        sqlStatement = statement;
+        sqlStatement = parameter.getStatement();
         return (R) this;
     }
     
