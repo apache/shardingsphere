@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.federation.executor.customized;
+package org.apache.shardingsphere.infra.federation.executor.advanced;
 
 import org.apache.calcite.interpreter.InterpretableConvention;
 import org.apache.calcite.interpreter.InterpretableConverter;
@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.federation.executor.FederationContext;
 import org.apache.shardingsphere.infra.federation.executor.FederationExecutor;
+import org.apache.shardingsphere.infra.federation.executor.advanced.resultset.FederationResultSet;
 import org.apache.shardingsphere.infra.federation.optimizer.ShardingSphereOptimizer;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
@@ -88,7 +89,7 @@ public final class AdvancedFederationExecutor implements FederationExecutor {
         SqlValidator validator = optimizerContext.getPlannerContexts().get(databaseName).getValidators().get(schemaName);
         SqlToRelConverter converter = optimizerContext.getPlannerContexts().get(databaseName).getConverters().get(schemaName);
         return new FederateInterpretableConverter(
-                cluster, cluster.traitSetOf(InterpretableConvention.INSTANCE), bestPlan).bind(new CustomizedFilterableExecuteDataContext(validator, converter));
+                cluster, cluster.traitSetOf(InterpretableConvention.INSTANCE), bestPlan).bind(new AdvancedExecuteDataContext(validator, converter));
     }
     
     @Override
