@@ -19,7 +19,7 @@ kubectl
 
 Helm 3.2.0+
 
-Use StorageClass to allow dynamic provisioning of Persistent Volumes (PV) for data persistent.
+Use StorageClass to allow dynamic provisioning of Persistent Volumes (PV) for data persistent (optional).
 
 ### Install
 

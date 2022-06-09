@@ -124,12 +124,12 @@ public final class ConnectionManager implements ExecutorJDBCConnectionManager, A
     
     private ConnectionTransaction createConnectionTransaction(final String databaseName, final ContextManager contextManager) {
         TransactionType type = TransactionTypeHolder.get();
+        Optional<TransactionRule> transactionRule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(TransactionRule.class);
+        Preconditions.checkState(transactionRule.isPresent());
         if (null == type) {
-            Optional<TransactionRule> transactionRule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(TransactionRule.class);
-            return transactionRule.map(optional -> new ConnectionTransaction(databaseName, optional, contextManager.getTransactionContexts()))
-                    .orElseGet(() -> new ConnectionTransaction(databaseName, contextManager.getTransactionContexts()));
+            return new ConnectionTransaction(databaseName, transactionRule.get());
         }
-        return new ConnectionTransaction(databaseName, type, contextManager.getTransactionContexts());
+        return new ConnectionTransaction(databaseName, type, transactionRule.get());
     }
     
     /**

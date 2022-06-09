@@ -20,7 +20,6 @@ package org.apache.shardingsphere.transaction.core.fixture;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.transaction.core.ResourceDataSource;
 import org.apache.shardingsphere.transaction.core.TransactionType;
-import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManager;
 
 import java.sql.Connection;
@@ -29,7 +28,7 @@ import java.util.Collection;
 public final class OtherShardingSphereTransactionManagerFixture implements ShardingSphereTransactionManager {
     
     @Override
-    public void init(final DatabaseType databaseType, final Collection<ResourceDataSource> resourceDataSources, final TransactionRule transactionRule) {
+    public void init(final DatabaseType databaseType, final Collection<ResourceDataSource> resourceDataSources, final String providerType) {
     }
     
     @Override

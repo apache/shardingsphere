@@ -1305,3 +1305,7 @@ profileName
 joinGroupName
     : identifier
     ;
+
+restorePointName
+    : identifier
+    ;

@@ -141,7 +141,7 @@ public final class TextProtocolBackendHandlerFactory {
     
     private static void handleAutoCommit(final SQLStatement sqlStatement, final ConnectionSession connectionSession) throws SQLException {
         if (AutoCommitUtils.needOpenTransaction(sqlStatement)) {
-            connectionSession.getBackendConnection().prepareForTaskExecution();
+            connectionSession.getBackendConnection().handleAutoCommit();
         }
     }
     

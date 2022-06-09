@@ -28,7 +28,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -76,7 +75,7 @@ public final class ComputeNodeStatusServiceTest {
     public void assertPersistInstanceXaRecoveryId() {
         InstanceDefinition instanceDefinition = new InstanceDefinition(InstanceType.PROXY, 3307);
         final String instanceId = instanceDefinition.getInstanceId();
-        new ComputeNodeStatusService(repository).persistInstanceXaRecoveryId(instanceId, Arrays.asList(instanceId));
+        new ComputeNodeStatusService(repository).persistInstanceXaRecoveryId(instanceId, Collections.singleton(instanceId));
         verify(repository).getChildrenKeys(ComputeNode.getXaRecoveryIdNodePath());
         verify(repository).persistEphemeral(ComputeNode.getInstanceXaRecoveryIdNodePath(instanceId, instanceId), "");
     }
