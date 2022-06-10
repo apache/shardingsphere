@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRule
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.junit.Test;
@@ -47,7 +46,7 @@ public final class ShowSQLParserRuleHandlerTest extends ProxyContextRestorer {
         when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(getGlobalRuleMetaData());
         ProxyContext.init(contextManager);
         ShowSQLParserRuleHandler handler = new ShowSQLParserRuleHandler();
-        handler.init(new RALBackendHandler.HandlerParameter<>(new ShowSQLParserRuleStatement(), null));
+        handler.init(new ShowSQLParserRuleStatement(), null);
         handler.execute();
         handler.next();
         List<Object> data = new ArrayList<>(handler.getRowData());

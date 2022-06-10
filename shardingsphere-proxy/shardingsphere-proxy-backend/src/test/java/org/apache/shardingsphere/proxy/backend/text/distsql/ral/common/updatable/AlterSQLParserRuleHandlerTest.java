@@ -24,7 +24,6 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.junit.Test;
 
@@ -49,7 +48,7 @@ public final class AlterSQLParserRuleHandlerTest extends ProxyContextRestorer {
         when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations()).thenReturn(new LinkedList<>());
         ProxyContext.init(contextManager);
         AlterSQLParserRuleHandler handler = new AlterSQLParserRuleHandler();
-        handler.init(new RALBackendHandler.HandlerParameter<>(createSQLStatement(), null));
+        handler.init(createSQLStatement(), null);
         handler.execute();
         SQLParserRuleConfiguration actual = (SQLParserRuleConfiguration) contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations().iterator().next();
         assertTrue(actual.isSqlCommentParseEnabled());
@@ -69,7 +68,7 @@ public final class AlterSQLParserRuleHandlerTest extends ProxyContextRestorer {
         when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations()).thenReturn(globalRuleConfigs);
         ProxyContext.init(contextManager);
         AlterSQLParserRuleHandler handler = new AlterSQLParserRuleHandler();
-        handler.init(new RALBackendHandler.HandlerParameter<>(createSQLStatement(), null));
+        handler.init(createSQLStatement(), null);
         handler.execute();
         SQLParserRuleConfiguration actual = (SQLParserRuleConfiguration) contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations().iterator().next();
         assertTrue(actual.isSqlCommentParseEnabled());

@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.QueryableRALBackendHandler;
 
 import java.util.ArrayList;
@@ -49,14 +48,6 @@ public final class ShowTableMetadataHandler extends QueryableRALBackendHandler<S
     
     private static final String NAME = "name";
     
-    private ConnectionSession connectionSession;
-    
-    @Override
-    public void init(final HandlerParameter<ShowTableMetadataStatement> parameter) {
-        super.init(parameter);
-        connectionSession = parameter.getConnectionSession();
-    }
-    
     @Override
     protected Collection<String> getColumnNames() {
         return Arrays.asList(SCHEMA_NAME, TABLE_NAME, TYPE, NAME);
@@ -65,14 +56,14 @@ public final class ShowTableMetadataHandler extends QueryableRALBackendHandler<S
     @Override
     protected Collection<List<Object>> getRows(final ContextManager contextManager) {
         String databaseName = getDatabaseName();
-        String defaultSchema = DatabaseTypeEngine.getDefaultSchemaName(connectionSession.getDatabaseType(), connectionSession.getDatabaseName());
+        String defaultSchema = DatabaseTypeEngine.getDefaultSchemaName(getConnectionSession().getDatabaseType(), getConnectionSession().getDatabaseName());
         ShardingSphereSchema schema = ProxyContext.getInstance().getDatabase(databaseName).getSchemas().get(defaultSchema);
         return schema.getAllTableNames().stream().filter(each -> getSqlStatement().getTableNames().contains(each))
                 .map(each -> buildTableRows(databaseName, schema, each)).flatMap(Collection::stream).collect(Collectors.toList());
     }
     
     private String getDatabaseName() {
-        String result = getSqlStatement().getDatabase().isPresent() ? getSqlStatement().getDatabase().get().getIdentifier().getValue() : connectionSession.getDatabaseName();
+        String result = getSqlStatement().getDatabase().isPresent() ? getSqlStatement().getDatabase().get().getIdentifier().getValue() : getConnectionSession().getDatabaseName();
         if (Strings.isNullOrEmpty(result)) {
             throw new NoDatabaseSelectedException();
         }

@@ -28,7 +28,6 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandler.HandlerParameter;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.enums.VariableEnum;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.exception.UnsupportedVariableException;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
@@ -64,7 +63,7 @@ public final class ShowVariableBackendHandlerTest extends ProxyContextRestorer {
     public void assertShowTransactionType() throws SQLException {
         connectionSession.setCurrentDatabase("db");
         ShowVariableHandler backendHandler = new ShowVariableHandler();
-        backendHandler.init(new HandlerParameter<>(new ShowVariableStatement("transaction_type"), connectionSession));
+        backendHandler.init(new ShowVariableStatement("transaction_type"), connectionSession);
         ResponseHeader actual = backendHandler.execute();
         assertThat(actual, instanceOf(QueryResponseHeader.class));
         assertThat(((QueryResponseHeader) actual).getQueryHeaders().size(), is(2));
@@ -78,7 +77,7 @@ public final class ShowVariableBackendHandlerTest extends ProxyContextRestorer {
     public void assertShowCachedConnections() throws SQLException {
         connectionSession.setCurrentDatabase("db");
         ShowVariableHandler backendHandler = new ShowVariableHandler();
-        backendHandler.init(new HandlerParameter<>(new ShowVariableStatement("cached_connections"), connectionSession));
+        backendHandler.init(new ShowVariableStatement("cached_connections"), connectionSession);
         ResponseHeader actual = backendHandler.execute();
         assertThat(actual, instanceOf(QueryResponseHeader.class));
         assertThat(((QueryResponseHeader) actual).getQueryHeaders().size(), is(2));
@@ -92,7 +91,7 @@ public final class ShowVariableBackendHandlerTest extends ProxyContextRestorer {
     public void assertShowCachedConnectionFailed() throws SQLException {
         connectionSession.setCurrentDatabase("db");
         ShowVariableHandler backendHandler = new ShowVariableHandler();
-        backendHandler.init(new HandlerParameter<>(new ShowVariableStatement("cached_connectionss"), connectionSession));
+        backendHandler.init(new ShowVariableStatement("cached_connectionss"), connectionSession);
         backendHandler.execute();
     }
     
@@ -101,7 +100,7 @@ public final class ShowVariableBackendHandlerTest extends ProxyContextRestorer {
         SystemPropertyUtil.setSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.TRUE.toString());
         connectionSession.setCurrentDatabase("db");
         ShowVariableHandler backendHandler = new ShowVariableHandler();
-        backendHandler.init(new HandlerParameter<>(new ShowVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name()), connectionSession));
+        backendHandler.init(new ShowVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name()), connectionSession);
         ResponseHeader actual = backendHandler.execute();
         assertThat(actual, instanceOf(QueryResponseHeader.class));
         assertThat(((QueryResponseHeader) actual).getQueryHeaders().size(), is(2));
@@ -122,7 +121,7 @@ public final class ShowVariableBackendHandlerTest extends ProxyContextRestorer {
         props.put("sql-show", Boolean.TRUE.toString());
         when(metaDataContexts.getMetaData().getProps()).thenReturn(new ConfigurationProperties(props));
         ShowVariableHandler backendHandler = new ShowVariableHandler();
-        backendHandler.init(new HandlerParameter<>(new ShowVariableStatement("SQL_SHOW"), connectionSession));
+        backendHandler.init(new ShowVariableStatement("SQL_SHOW"), connectionSession);
         ResponseHeader actual = backendHandler.execute();
         assertThat(actual, instanceOf(QueryResponseHeader.class));
         assertThat(((QueryResponseHeader) actual).getQueryHeaders().size(), is(2));
@@ -141,7 +140,7 @@ public final class ShowVariableBackendHandlerTest extends ProxyContextRestorer {
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         when(metaDataContexts.getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         ShowVariableHandler backendHandler = new ShowVariableHandler();
-        backendHandler.init(new HandlerParameter<>(new ShowVariableStatement(), connectionSession));
+        backendHandler.init(new ShowVariableStatement(), connectionSession);
         ResponseHeader actual = backendHandler.execute();
         assertThat(actual, instanceOf(QueryResponseHeader.class));
         assertThat(((QueryResponseHeader) actual).getQueryHeaders().size(), is(2));

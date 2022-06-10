@@ -33,7 +33,6 @@ import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.QueryableRALBackendHandler;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.yaml.swapper.ReadwriteSplittingRuleConfigurationYamlSwapper;
@@ -90,20 +89,12 @@ public final class ExportDatabaseConfigurationHandler extends QueryableRALBacken
     
     private static final Map<String, Class<? extends RuleConfiguration>> FEATURE_MAP = new HashMap<>(5, 1);
     
-    private ConnectionSession connectionSession;
-    
     static {
         FEATURE_MAP.put(SHARDING, ShardingRuleConfiguration.class);
         FEATURE_MAP.put(READWRITE_SPLITTING, ReadwriteSplittingRuleConfiguration.class);
         FEATURE_MAP.put(DB_DISCOVERY, DatabaseDiscoveryRuleConfiguration.class);
         FEATURE_MAP.put(ENCRYPT, EncryptRuleConfiguration.class);
         FEATURE_MAP.put(SHADOW, ShadowRuleConfiguration.class);
-    }
-    
-    @Override
-    public void init(final HandlerParameter<ExportDatabaseConfigurationStatement> parameter) {
-        super.init(parameter);
-        connectionSession = parameter.getConnectionSession();
     }
     
     @Override
@@ -220,7 +211,7 @@ public final class ExportDatabaseConfigurationHandler extends QueryableRALBacken
     }
     
     private String getDatabaseName() {
-        String result = getSqlStatement().getDatabase().isPresent() ? getSqlStatement().getDatabase().get().getIdentifier().getValue() : connectionSession.getDatabaseName();
+        String result = getSqlStatement().getDatabase().isPresent() ? getSqlStatement().getDatabase().get().getIdentifier().getValue() : getConnectionSession().getDatabaseName();
         if (Strings.isNullOrEmpty(result)) {
             throw new NoDatabaseSelectedException();
         }

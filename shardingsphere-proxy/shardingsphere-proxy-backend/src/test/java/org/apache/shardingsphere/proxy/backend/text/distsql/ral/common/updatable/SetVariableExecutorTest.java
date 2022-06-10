@@ -24,7 +24,6 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandler.HandlerParameter;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.enums.VariableEnum;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtil;
@@ -51,7 +50,7 @@ public final class SetVariableExecutorTest extends ProxyContextRestorer {
         SetVariableStatement statement = new SetVariableStatement("transaction_type", "local");
         when(connectionSession.getTransactionStatus()).thenReturn(new TransactionStatus(TransactionType.XA));
         SetVariableHandler handler = new SetVariableHandler();
-        handler.init(getParameter(statement, connectionSession));
+        handler.init(statement, connectionSession);
         handler.execute();
         assertThat(connectionSession.getTransactionStatus().getTransactionType().name(), is(TransactionType.LOCAL.name()));
     }
@@ -60,7 +59,7 @@ public final class SetVariableExecutorTest extends ProxyContextRestorer {
     public void assertExecuteWithAgent() throws SQLException {
         SetVariableStatement statement = new SetVariableStatement("AGENT_PLUGINS_ENABLED", Boolean.FALSE.toString());
         SetVariableHandler handler = new SetVariableHandler();
-        handler.init(getParameter(statement, connectionSession));
+        handler.init(statement, connectionSession);
         handler.execute();
         String actualValue = SystemPropertyUtil.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), "default");
         assertThat(actualValue, is(Boolean.FALSE.toString()));
@@ -72,14 +71,10 @@ public final class SetVariableExecutorTest extends ProxyContextRestorer {
         ProxyContext.init(contextManager);
         SetVariableStatement statement = new SetVariableStatement("proxy_frontend_flush_threshold", "1024");
         SetVariableHandler handler = new SetVariableHandler();
-        handler.init(getParameter(statement, connectionSession));
+        handler.init(statement, connectionSession);
         handler.execute();
         Object actualValue = contextManager.getMetaDataContexts().getMetaData().getProps().getProps().get("proxy-frontend-flush-threshold");
         assertThat(actualValue.toString(), is("1024"));
         assertThat(contextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD), is(1024));
-    }
-    
-    private HandlerParameter<SetVariableStatement> getParameter(final SetVariableStatement statement, final ConnectionSession connectionSession) {
-        return new HandlerParameter<>(statement, connectionSession);
     }
 }

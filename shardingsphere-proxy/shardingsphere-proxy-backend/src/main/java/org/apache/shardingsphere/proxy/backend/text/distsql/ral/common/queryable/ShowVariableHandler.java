@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.QueryableRALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.enums.VariableEnum;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.exception.UnsupportedVariableException;
@@ -44,14 +43,6 @@ public final class ShowVariableHandler extends QueryableRALBackendHandler<ShowVa
     private static final String VARIABLE_NAME = "variable_name";
     
     private static final String VARIABLE_VALUE = "variable_value";
-    
-    private ConnectionSession connectionSession;
-    
-    @Override
-    public void init(final HandlerParameter<ShowVariableStatement> parameter) {
-        super.init(parameter);
-        connectionSession = parameter.getConnectionSession();
-    }
     
     @Override
     protected Collection<String> getColumnNames() {
@@ -79,10 +70,10 @@ public final class ShowVariableHandler extends QueryableRALBackendHandler<ShowVa
             result.add(Arrays.asList(each.toLowerCase(), propertyValue));
         });
         result.add(Arrays.asList(VariableEnum.AGENT_PLUGINS_ENABLED.name().toLowerCase(), SystemPropertyUtil.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.TRUE.toString())));
-        if (connectionSession.getBackendConnection() instanceof JDBCBackendConnection) {
-            result.add(Arrays.asList(VariableEnum.CACHED_CONNECTIONS.name().toLowerCase(), ((JDBCBackendConnection) connectionSession.getBackendConnection()).getConnectionSize()));
+        if (getConnectionSession().getBackendConnection() instanceof JDBCBackendConnection) {
+            result.add(Arrays.asList(VariableEnum.CACHED_CONNECTIONS.name().toLowerCase(), ((JDBCBackendConnection) getConnectionSession().getBackendConnection()).getConnectionSize()));
         }
-        result.add(Arrays.asList(VariableEnum.TRANSACTION_TYPE.name().toLowerCase(), connectionSession.getTransactionStatus().getTransactionType().name()));
+        result.add(Arrays.asList(VariableEnum.TRANSACTION_TYPE.name().toLowerCase(), getConnectionSession().getTransactionStatus().getTransactionType().name()));
         return result;
     }
     
@@ -108,13 +99,13 @@ public final class ShowVariableHandler extends QueryableRALBackendHandler<ShowVa
             case AGENT_PLUGINS_ENABLED:
                 return SystemPropertyUtil.getSystemProperty(variable.name(), Boolean.TRUE.toString());
             case CACHED_CONNECTIONS:
-                if (connectionSession.getBackendConnection() instanceof JDBCBackendConnection) {
-                    int connectionSize = ((JDBCBackendConnection) connectionSession.getBackendConnection()).getConnectionSize();
+                if (getConnectionSession().getBackendConnection() instanceof JDBCBackendConnection) {
+                    int connectionSize = ((JDBCBackendConnection) getConnectionSession().getBackendConnection()).getConnectionSize();
                     return String.valueOf(connectionSize);
                 }
                 break;
             case TRANSACTION_TYPE:
-                TransactionType transactionType = connectionSession.getTransactionStatus().getTransactionType();
+                TransactionType transactionType = getConnectionSession().getTransactionStatus().getTransactionType();
                 return transactionType.name();
             default:
         }

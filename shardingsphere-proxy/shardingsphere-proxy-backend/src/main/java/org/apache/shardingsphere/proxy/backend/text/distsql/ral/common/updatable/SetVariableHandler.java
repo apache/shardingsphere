@@ -27,7 +27,6 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.UpdatableRALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.enums.VariableEnum;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.exception.InvalidValueException;
@@ -42,14 +41,6 @@ import java.util.Properties;
  * Set variable statement handler.
  */
 public final class SetVariableHandler extends UpdatableRALBackendHandler<SetVariableStatement> {
-    
-    private ConnectionSession connectionSession;
-    
-    @Override
-    public void init(final HandlerParameter<SetVariableStatement> parameter) {
-        super.init(parameter);
-        connectionSession = parameter.getConnectionSession();
-    }
     
     @Override
     protected void update(final ContextManager contextManager, final SetVariableStatement sqlStatement) throws DistSQLException {
@@ -100,7 +91,7 @@ public final class SetVariableHandler extends UpdatableRALBackendHandler<SetVari
                 SystemPropertyUtil.setSystemProperty(variable.name(), null == agentPluginsEnabled ? Boolean.FALSE.toString() : agentPluginsEnabled.toString());
                 break;
             case TRANSACTION_TYPE:
-                connectionSession.getTransactionStatus().setTransactionType(getTransactionType(getSqlStatement().getValue()));
+                getConnectionSession().getTransactionStatus().setTransactionType(getTransactionType(getSqlStatement().getValue()));
                 break;
             default:
                 throw new UnsupportedVariableException(setVariableStatement.getName());

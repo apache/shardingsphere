@@ -33,7 +33,6 @@ import org.apache.shardingsphere.mode.metadata.storage.StorageNodeStatus;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.QueryableRALBackendHandler;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.ShowReadwriteSplittingReadResourcesStatement;
 
@@ -60,14 +59,6 @@ public final class ShowReadwriteSplittingReadResourcesHandler extends QueryableR
     
     private static final String DELAY_TIME = "delay_time(ms)";
     
-    private ConnectionSession connectionSession;
-    
-    @Override
-    public void init(final HandlerParameter<ShowReadwriteSplittingReadResourcesStatement> parameter) {
-        super.init(parameter);
-        connectionSession = parameter.getConnectionSession();
-    }
-    
     @Override
     protected Collection<String> getColumnNames() {
         return Arrays.asList(RESOURCE, STATUS, DELAY_TIME);
@@ -84,7 +75,7 @@ public final class ShowReadwriteSplittingReadResourcesHandler extends QueryableR
     }
     
     private String getDatabaseName() {
-        String result = getSqlStatement().getDatabase().isPresent() ? getSqlStatement().getDatabase().get().getIdentifier().getValue() : connectionSession.getDatabaseName();
+        String result = getSqlStatement().getDatabase().isPresent() ? getSqlStatement().getDatabase().get().getIdentifier().getValue() : getConnectionSession().getDatabaseName();
         if (Strings.isNullOrEmpty(result)) {
             throw new NoDatabaseSelectedException();
         }

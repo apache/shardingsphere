@@ -38,8 +38,6 @@ import java.util.stream.Collectors;
  */
 public final class ShowInstanceHandler extends QueryableRALBackendHandler<ShowInstanceStatement> {
     
-    private static final String DELIMITER = "@";
-    
     private static final String ID = "instance_id";
     
     private static final String HOST = "host";

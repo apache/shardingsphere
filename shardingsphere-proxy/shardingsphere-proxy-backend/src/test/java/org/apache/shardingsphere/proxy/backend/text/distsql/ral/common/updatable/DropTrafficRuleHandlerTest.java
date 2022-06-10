@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmC
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.api.config.TrafficStrategyConfiguration;
@@ -54,7 +53,7 @@ public final class DropTrafficRuleHandlerTest extends ProxyContextRestorer {
         when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findRuleConfigurations(any())).thenReturn(new LinkedList<>());
         ProxyContext.init(contextManager);
         DropTrafficRuleHandler handler = new DropTrafficRuleHandler();
-        handler.init(new RALBackendHandler.HandlerParameter<>(new DropTrafficRuleStatement(Collections.singletonList("rule_name"), false), null));
+        handler.init(new DropTrafficRuleStatement(Collections.singletonList("rule_name"), false), null);
         handler.execute();
     }
     
@@ -64,7 +63,7 @@ public final class DropTrafficRuleHandlerTest extends ProxyContextRestorer {
         when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findRuleConfigurations(any())).thenReturn(new LinkedList<>());
         ProxyContext.init(contextManager);
         DropTrafficRuleHandler handler = new DropTrafficRuleHandler();
-        handler.init(new RALBackendHandler.HandlerParameter<>(new DropTrafficRuleStatement(Collections.singletonList("rule_name"), true), null));
+        handler.init(new DropTrafficRuleStatement(Collections.singletonList("rule_name"), true), null);
         handler.execute();
     }
     
@@ -74,7 +73,7 @@ public final class DropTrafficRuleHandlerTest extends ProxyContextRestorer {
         when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findRuleConfigurations(any())).thenReturn(Collections.singleton(createTrafficRuleConfiguration()));
         ProxyContext.init(contextManager);
         DropTrafficRuleHandler handler = new DropTrafficRuleHandler();
-        handler.init(new RALBackendHandler.HandlerParameter<>(new DropTrafficRuleStatement(Collections.singletonList("rule_name"), false), null));
+        handler.init(new DropTrafficRuleStatement(Collections.singletonList("rule_name"), false), null);
         handler.execute();
     }
     
@@ -84,7 +83,7 @@ public final class DropTrafficRuleHandlerTest extends ProxyContextRestorer {
         when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRuleConfiguration(any())).thenReturn(Optional.of(createTrafficRuleConfiguration()));
         ProxyContext.init(contextManager);
         DropTrafficRuleHandler handler = new DropTrafficRuleHandler();
-        handler.init(new RALBackendHandler.HandlerParameter<>(new DropTrafficRuleStatement(Collections.singletonList("rule_name_1"), false), null));
+        handler.init(new DropTrafficRuleStatement(Collections.singletonList("rule_name_1"), false), null);
         handler.execute();
         Optional<TrafficRuleConfiguration> ruleConfig = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRuleConfiguration(TrafficRuleConfiguration.class);
         assertTrue(ruleConfig.isPresent());
@@ -102,7 +101,7 @@ public final class DropTrafficRuleHandlerTest extends ProxyContextRestorer {
         when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRuleConfiguration(any())).thenReturn(Optional.of(createTrafficRuleConfiguration()));
         ProxyContext.init(contextManager);
         DropTrafficRuleHandler handler = new DropTrafficRuleHandler();
-        handler.init(new RALBackendHandler.HandlerParameter<>(new DropTrafficRuleStatement(Collections.singletonList("rule_name_1"), false), null));
+        handler.init(new DropTrafficRuleStatement(Collections.singletonList("rule_name_1"), false), null);
         handler.execute();
         Optional<TrafficRuleConfiguration> ruleConfig = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRuleConfiguration(TrafficRuleConfiguration.class);
         assertTrue(ruleConfig.isPresent());
@@ -120,7 +119,7 @@ public final class DropTrafficRuleHandlerTest extends ProxyContextRestorer {
         when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRuleConfiguration(any())).thenReturn(Optional.of(createTrafficRuleConfiguration()));
         ProxyContext.init(contextManager);
         DropTrafficRuleHandler handler = new DropTrafficRuleHandler();
-        handler.init(new RALBackendHandler.HandlerParameter<>(new DropTrafficRuleStatement(Collections.singletonList("rule_name_3"), true), null));
+        handler.init(new DropTrafficRuleStatement(Collections.singletonList("rule_name_3"), true), null);
         handler.execute();
         Optional<TrafficRuleConfiguration> ruleConfig = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRuleConfiguration(TrafficRuleConfiguration.class);
         assertTrue(ruleConfig.isPresent());
