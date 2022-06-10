@@ -28,6 +28,7 @@ import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.Aggregati
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ConstraintTokenGenerator;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.CursorTokenGenerator;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.DistinctProjectionPrefixTokenGenerator;
+import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.FetchDirectionTokenGenerator;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.IndexTokenGenerator;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.OffsetTokenGenerator;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.OrderByTokenGenerator;
@@ -77,6 +78,7 @@ public final class ShardingTokenGenerateBuilder implements SQLTokenGeneratorBuil
         addSQLTokenGenerator(result, new GeneratedKeyInsertValuesTokenGenerator());
         addSQLTokenGenerator(result, new ShardingRemoveTokenGenerator());
         addSQLTokenGenerator(result, new CursorTokenGenerator());
+        addSQLTokenGenerator(result, new FetchDirectionTokenGenerator());
         return result;
     }
     

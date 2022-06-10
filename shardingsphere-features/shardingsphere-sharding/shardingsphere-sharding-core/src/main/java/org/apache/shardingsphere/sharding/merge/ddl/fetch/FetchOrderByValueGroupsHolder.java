@@ -19,45 +19,44 @@ package org.apache.shardingsphere.sharding.merge.ddl.fetch;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sharding.merge.dql.orderby.OrderByValue;
 
+import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Hold fetch order by value queues for current thread.
+ * Hold fetch order by value groups for current thread.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class FetchOrderByValueQueuesHolder {
+public final class FetchOrderByValueGroupsHolder {
     
-    private static final ThreadLocal<Map<String, Queue<OrderByValue>>> ORDER_BY_VALUE_QUEUES = ThreadLocal.withInitial(ConcurrentHashMap::new);
+    private static final ThreadLocal<Map<String, List<FetchOrderByValueGroup>>> ORDER_BY_VALUE_GROUPS = ThreadLocal.withInitial(ConcurrentHashMap::new);
     
-    private static final ThreadLocal<Map<String, Long>> REMAINING_ROW_COUNTS = ThreadLocal.withInitial(ConcurrentHashMap::new);
+    private static final ThreadLocal<Map<String, Long>> MIN_GROUP_ROW_COUNTS = ThreadLocal.withInitial(ConcurrentHashMap::new);
     
     /**
-     * Get order by value queues.
+     * Get order by value groups.
      *
-     * @return order by value queues
+     * @return order by value groups
      */
-    public static Map<String, Queue<OrderByValue>> getOrderByValueQueues() {
-        return ORDER_BY_VALUE_QUEUES.get();
+    public static Map<String, List<FetchOrderByValueGroup>> getOrderByValueGroups() {
+        return ORDER_BY_VALUE_GROUPS.get();
     }
     
     /**
-     * Get remaining row counts.
+     * Get min group row counts.
      *
-     * @return remaining row counts
+     * @return min group row counts
      */
-    public static Map<String, Long> getRemainingRowCounts() {
-        return REMAINING_ROW_COUNTS.get();
+    public static Map<String, Long> getMinGroupRowCounts() {
+        return MIN_GROUP_ROW_COUNTS.get();
     }
     
     /**
-     * Remove fetch order by value queues.
+     * Remove.
      */
     public static void remove() {
-        ORDER_BY_VALUE_QUEUES.remove();
-        REMAINING_ROW_COUNTS.remove();
+        ORDER_BY_VALUE_GROUPS.remove();
+        MIN_GROUP_ROW_COUNTS.remove();
     }
 }
