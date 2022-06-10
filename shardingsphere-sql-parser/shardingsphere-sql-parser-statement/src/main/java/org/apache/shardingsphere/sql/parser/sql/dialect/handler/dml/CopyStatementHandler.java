@@ -15,38 +15,50 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml;
+package org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.prepare.PrepareStatementQuerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.CopyStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.handler.SQLStatementHandler;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLCopyStatement;
 
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.Collections;
 import java.util.Optional;
 
 /**
- * PostgreSQL copy statement.
+ * Copy statement handler class for different dialect SQL statements.
  */
-@ToString
-@Getter
-@Setter
-public final class PostgreSQLCopyStatement extends CopyStatement implements PostgreSQLStatement {
-    
-    private final Collection<ColumnSegment> columns = new LinkedList<>();
-    
-    private PrepareStatementQuerySegment prepareStatementQuerySegment;
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class CopyStatementHandler implements SQLStatementHandler {
     
     /**
      * Get prepare statement query segment.
      *
+     * @param copyStatement copy statement
      * @return prepare statement query segment
      */
-    public Optional<PrepareStatementQuerySegment> getPrepareStatementQuerySegment() {
-        return Optional.ofNullable(prepareStatementQuerySegment);
+    public static Optional<PrepareStatementQuerySegment> getPrepareStatementQuerySegment(final CopyStatement copyStatement) {
+        if (copyStatement instanceof PostgreSQLStatement) {
+            return ((PostgreSQLCopyStatement) copyStatement).getPrepareStatementQuerySegment();
+        }
+        return Optional.empty();
+    }
+    
+    /**
+     * Get list of column segment.
+     *
+     * @param copyStatement copy statement
+     * @return list of columns
+     */
+    public static Collection<ColumnSegment> getColumns(final CopyStatement copyStatement) {
+        if (copyStatement instanceof PostgreSQLStatement) {
+            return ((PostgreSQLCopyStatement) copyStatement).getColumns();
+        }
+        return Collections.emptyList();
     }
 }

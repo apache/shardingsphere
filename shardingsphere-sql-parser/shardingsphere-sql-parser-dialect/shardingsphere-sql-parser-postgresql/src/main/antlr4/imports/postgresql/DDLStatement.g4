@@ -1213,10 +1213,6 @@ clusterVerboseOption
     : VERBOSE booleanValue?
     ;
 
-booleanValue
-    : TRUE | ON | FALSE | OFF | NUMBER_
-    ;
-
 comment
     : COMMENT ON commentClauses
     ;

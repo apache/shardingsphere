@@ -4202,11 +4202,6 @@
     <sql-case id="alter_by_postgresql_source_test_case459" value="ALTER TYPE test_typex DROP ATTRIBUTE a;" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case460" value="ALTER TYPE tt_t0 DROP ATTRIBUTE z;" db-types="PostgreSQL" />
     <sql-case id="analyze_by_postgresql_source_test_case1" value="ANALYZE (nonexistent-arg) does_not_exist;" db-types="PostgreSQL" />
-    <sql-case id="copy_by_postgresql_source_test_case1" value="COPY testnull FROM stdin WITH NULL AS E&apos;\\0&apos;;" db-types="PostgreSQL" />
-    <sql-case id="copy_by_postgresql_source_test_case2" value="COPY testnull TO stdout WITH NULL AS E&apos;\\0&apos;;" db-types="PostgreSQL" />
-    <sql-case id="copy_by_postgresql_source_test_case3" value="COPY x from stdin WITH DELIMITER AS &apos;:&apos; NULL AS E&apos;\\X&apos; ENCODING &apos;sql_ascii&apos;;" db-types="PostgreSQL" />
-    <sql-case id="copy_by_postgresql_source_test_case4" value="COPY y TO stdout (FORMAT CSV, FORCE_QUOTE (col2), ESCAPE E&apos;\\&apos;);" db-types="PostgreSQL" />
-    <sql-case id="copy_by_postgresql_source_test_case5" value="COPY y TO stdout WITH CSV FORCE QUOTE col2 ESCAPE E&apos;\\&apos; ENCODING &apos;sql_ascii&apos;;" db-types="PostgreSQL" />
     <sql-case id="create_by_postgresql_source_test_case1" value="CREATE ACCESS METHOD bogus TYPE INDEX HANDLER heap_tableam_handler;" db-types="PostgreSQL" />
     <sql-case id="create_by_postgresql_source_test_case2" value="CREATE ACCESS METHOD bogus TYPE INDEX HANDLER int4in;" db-types="PostgreSQL" />
     <sql-case id="create_by_postgresql_source_test_case3" value="CREATE ACCESS METHOD bogus TYPE TABLE HANDLER bthandler;" db-types="PostgreSQL" />
@@ -7127,10 +7122,6 @@
     <sql-case id="low_alter_by_postgresql_source_test_case105" value="alter type rewritetype alter attribute a type varchar cascade;" db-types="PostgreSQL" />
     <sql-case id="low_alter_by_postgresql_source_test_case106" value="alter type testdomain2 rename to testdomain3;" db-types="PostgreSQL" />
     <sql-case id="low_alter_by_postgresql_source_test_case107" value="alter type two_ints add attribute c two_ints_range;" db-types="PostgreSQL" />
-    <sql-case id="low_copy_by_postgresql_source_test_case1" value="copy (select * from test1) (t,id) to stdout;" db-types="PostgreSQL" />
-    <sql-case id="low_copy_by_postgresql_source_test_case2" value="copy (select * from test1) from stdin;" db-types="PostgreSQL" />
-    <sql-case id="low_copy_by_postgresql_source_test_case3" value="copy (select 1) to stdout\; copy (select 2) to stdout\; select 0\; select 3;" db-types="PostgreSQL" />
-    <sql-case id="low_copy_by_postgresql_source_test_case4" value="copy (select 1) to stdout\; select 1/0;	-- row, then error select 1/0\; copy (select 1) to stdout;" db-types="PostgreSQL" />
     <sql-case id="low_create_by_postgresql_source_test_case1" value="create aggregate aggfns(integer,integer,text) (    sfunc = aggfns_trans, stype = aggtype[], sspace = 10000,    initcond = &apos;{}&apos; );" db-types="PostgreSQL" />
     <sql-case id="low_create_by_postgresql_source_test_case2" value="create aggregate aggfstr(integer,integer,text) (    sfunc = aggf_trans, stype = aggtype[],    initcond = &apos;{}&apos; );" db-types="PostgreSQL" />
     <sql-case id="low_create_by_postgresql_source_test_case3" value="create aggregate build_group(anyelement, integer) (   SFUNC = add_group,   STYPE = anyarray );" db-types="PostgreSQL" />
