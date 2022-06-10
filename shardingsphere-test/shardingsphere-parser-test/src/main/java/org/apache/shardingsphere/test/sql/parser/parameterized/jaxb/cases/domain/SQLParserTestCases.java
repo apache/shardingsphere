@@ -231,6 +231,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateInmemoryJoinGroupStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropInmemoryJoinGroupStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateRestorePointStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropRestorePointStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropRollbackSegmentStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AddShardingHintDatabaseValueStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AddShardingHintTableValueStatementTestCase;
@@ -1426,6 +1427,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "create-restore-point")
     private final List<CreateRestorePointStatementTestCase> createRestorePointTestCases = new LinkedList<>();
     
+    @XmlElement(name = "drop-restore-point")
+    private final List<DropRestorePointStatementTestCase> dropRestorePointTestCases = new LinkedList<>();
+    
     @XmlElement(name = "cursor")
     private final List<CursorStatementTestCase> cursorTestCases = new LinkedList<>();
     
@@ -1798,6 +1802,7 @@ public final class SQLParserTestCases {
         putAll(createInmemoryJoinGroupTestCases, result);
         putAll(dropInmemoryJoinGroupTestCases, result);
         putAll(createRestorePointTestCases, result);
+        putAll(dropRestorePointTestCases, result);
         putAll(cursorTestCases, result);
         putAll(closeTestCases, result);
         putAll(moveTestCases, result);

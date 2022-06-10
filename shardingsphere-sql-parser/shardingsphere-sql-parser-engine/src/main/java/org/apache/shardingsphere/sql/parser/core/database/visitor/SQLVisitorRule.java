@@ -552,6 +552,8 @@ public enum SQLVisitorRule {
     
     CREATE_RESTORE_POINT("CreateRestorePoint", SQLStatementType.DDL),
     
+    DROP_RESTORE_POINT("DropRestorePoint", SQLStatementType.DDL),
+    
     CURSOR("Cursor", SQLStatementType.DDL),
     
     CLOSE("Close", SQLStatementType.DDL),

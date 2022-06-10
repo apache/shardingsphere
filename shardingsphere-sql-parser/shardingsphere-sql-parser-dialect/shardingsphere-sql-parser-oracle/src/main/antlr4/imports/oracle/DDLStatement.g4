@@ -2497,3 +2497,8 @@ createRestorePoint
       (AS OF (TIMESTAMP | SCN) expr)?
       (PRESERVE | GUARANTEE FLASHBACK DATABASE)?
     ;
+
+dropRestorePoint
+    : DROP RESTORE POINT restorePointName (FOR PLUGGABLE DATABASE pdbName)?
+    ;
+    
