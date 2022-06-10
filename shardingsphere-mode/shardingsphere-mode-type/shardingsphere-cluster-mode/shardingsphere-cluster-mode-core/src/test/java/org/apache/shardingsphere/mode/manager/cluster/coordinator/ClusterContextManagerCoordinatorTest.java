@@ -313,8 +313,8 @@ public final class ClusterContextManagerCoordinatorTest {
     
     @Test
     public void assertRenewXaRecoveryIdEvent() {
-        coordinator.renew(new XaRecoveryIdAddedEvent(contextManager.getInstanceContext().getInstance().getInstanceDefinition().getInstanceId(), "127.0.0.100@3306"));
-        assertTrue(contextManager.getInstanceContext().getInstance().getXaRecoveryIds().contains("127.0.0.100@3306"));
+        coordinator.renew(new XaRecoveryIdAddedEvent(contextManager.getInstanceContext().getInstance().getInstanceDefinition().getInstanceId(), "foo_xa_recovery_id"));
+        assertTrue(contextManager.getInstanceContext().getInstance().getXaRecoveryIds().contains("foo_xa_recovery_id"));
     }
     
     @Test
