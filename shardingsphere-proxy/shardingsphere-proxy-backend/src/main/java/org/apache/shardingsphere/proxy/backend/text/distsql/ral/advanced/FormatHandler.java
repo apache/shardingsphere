@@ -46,17 +46,22 @@ public final class FormatHandler extends QueryableRALBackendHandler<FormatStatem
     
     @Override
     protected Collection<List<Object>> getRows(final ContextManager contextManager) throws SQLException {
-        CacheOption cacheOption = new CacheOption(128, 1024L);
-        SQLParserEngine parserEngine = new SQLParserEngine("MySQL", cacheOption);
-        ParseASTNode parseASTNode;
-        try {
-            parseASTNode = parserEngine.parse(getSqlStatement().getSql(), false);
-        } catch (SQLParsingException ex) {
-            throw new SQLParsingException("You have a syntax error in your formatted statement");
-        }
+        String sql = getSqlStatement().getSql();
+        String databaseType = getConnectionSession().getDatabaseType().getType();
+        return Collections.singleton(Collections.singletonList(formatSQL(sql, databaseType)));
+    }
+    
+    private Object formatSQL(final String sql, final String databaseType) {
         Properties props = new Properties();
         props.setProperty("parameterized", Boolean.FALSE.toString());
-        SQLVisitorEngine visitorEngine = new SQLVisitorEngine("MySQL", "FORMAT", false, props);
-        return Collections.singleton(Collections.singletonList(visitorEngine.visit(parseASTNode)));
+        return new SQLVisitorEngine(databaseType, "FORMAT", false, props).visit(parseSQL(sql, databaseType));
+    }
+    
+    private ParseASTNode parseSQL(final String sql, final String databaseType) {
+        try {
+            return new SQLParserEngine(databaseType, new CacheOption(1, 1L)).parse(sql, false);
+        } catch (final SQLParsingException ex) {
+            throw new SQLParsingException("You have a syntax error in your formatted statement");
+        }
     }
 }
