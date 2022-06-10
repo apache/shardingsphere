@@ -33,9 +33,9 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * Format handler.
+ * Format SQL handler.
  */
-public final class FormatHandler extends QueryableRALBackendHandler<FormatStatement> {
+public final class FormatSQLHandler extends QueryableRALBackendHandler<FormatStatement> {
     
     private static final String FORMATTED_RESULT = "formatted_result";
     
