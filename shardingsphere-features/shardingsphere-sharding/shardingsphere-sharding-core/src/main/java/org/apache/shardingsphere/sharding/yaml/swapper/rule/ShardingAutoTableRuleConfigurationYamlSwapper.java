@@ -18,13 +18,9 @@
 package org.apache.shardingsphere.sharding.yaml.swapper.rule;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.expr.InlineExpressionParser;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
-import org.apache.shardingsphere.sharding.factory.ShardingAlgorithmFactory;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.swapper.strategy.KeyGenerateStrategyConfigurationYamlSwapper;
 import org.apache.shardingsphere.sharding.yaml.swapper.strategy.ShardingStrategyConfigurationYamlSwapper;
@@ -33,7 +29,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.StringJoiner;
 
 /**
@@ -45,14 +40,21 @@ public final class ShardingAutoTableRuleConfigurationYamlSwapper {
     
     private final KeyGenerateStrategyConfigurationYamlSwapper keyGenerateStrategyYamlSwapper = new KeyGenerateStrategyConfigurationYamlSwapper();
     
+    /**
+     * Swap yaml sharding auto table rule to config.
+     * 
+     * @param yamlConfig yaml config
+     * @param shardingCount sharding count
+     * @return sharding table rule config
+     */
     public ShardingTableRuleConfiguration swapToObject(final YamlShardingAutoTableRuleConfiguration yamlConfig, final int shardingCount) {
         Preconditions.checkNotNull(yamlConfig.getLogicTable(), "Logic table cannot be null.");
-        Preconditions.checkNotNull(yamlConfig.getShardingStrategy(), "Logic table cannot be null.");
-        ShardingStrategyConfiguration strategyConfiguration = shardingStrategyYamlSwapper.swapToObject(yamlConfig.getShardingStrategy());
         ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration(yamlConfig.getLogicTable(), getActualDataNodes(yamlConfig, shardingCount));
         result.setActualTablePrefix(yamlConfig.getActualTablePrefix());
         result.setDatabaseShardingStrategy(new NoneShardingStrategyConfiguration());
-        result.setTableShardingStrategy(strategyConfiguration);
+        if (null != yamlConfig.getShardingStrategy()) {
+            result.setTableShardingStrategy(shardingStrategyYamlSwapper.swapToObject(yamlConfig.getShardingStrategy()));
+        }
         if (null != yamlConfig.getKeyGenerateStrategy()) {
             result.setKeyGenerateStrategy(keyGenerateStrategyYamlSwapper.swapToObject(yamlConfig.getKeyGenerateStrategy()));
         }

@@ -105,7 +105,7 @@ public final class ShardingRuleConfigurationYamlSwapper implements YamlRuleConfi
         for (Entry<String, YamlShardingAutoTableRuleConfiguration> entry : yamlConfig.getAutoTables().entrySet()) {
             YamlShardingAutoTableRuleConfiguration tableRuleConfig = entry.getValue();
             tableRuleConfig.setLogicTable(entry.getKey());
-            result.getTables().add(autoTableYamlSwapper.swapToObject(tableRuleConfig, getShardingCount(result.getShardingAlgorithms(), entry.getValue().getShardingStrategy())));
+            result.getTables().add(autoTableYamlSwapper.swapToObject(tableRuleConfig, getShardingCount(result.getShardingAlgorithms(), tableRuleConfig.getShardingStrategy())));
         }
         result.getBindingTableGroups().addAll(yamlConfig.getBindingTables());
         result.getBroadcastTables().addAll(yamlConfig.getBroadcastTables());

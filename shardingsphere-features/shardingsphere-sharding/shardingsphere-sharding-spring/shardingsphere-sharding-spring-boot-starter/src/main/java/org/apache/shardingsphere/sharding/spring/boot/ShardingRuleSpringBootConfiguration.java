@@ -114,7 +114,7 @@ public class ShardingRuleSpringBootConfiguration {
         for (Map.Entry<String, YamlShardingAutoTableRuleConfiguration> entry : yamlConfig.getAutoTables().entrySet()) {
             YamlShardingAutoTableRuleConfiguration tableRuleConfig = entry.getValue();
             tableRuleConfig.setLogicTable(entry.getKey());
-            result.add(autoTableSwapper.swapToObject(tableRuleConfig, getShardingCount(entry.getValue().getShardingStrategy(), algorithms)));
+            result.add(autoTableSwapper.swapToObject(tableRuleConfig, getShardingCount(tableRuleConfig.getShardingStrategy(), algorithms)));
         }
         return result;
     }
