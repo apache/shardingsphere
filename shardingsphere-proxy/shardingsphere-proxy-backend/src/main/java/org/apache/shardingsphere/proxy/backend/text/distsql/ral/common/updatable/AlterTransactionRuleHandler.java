@@ -35,7 +35,7 @@ import java.util.Optional;
 /**
  * Alter transaction rule statement handler.
  */
-public final class AlterTransactionRuleHandler extends UpdatableRALBackendHandler<AlterTransactionRuleStatement, AlterTrafficRuleHandler> {
+public final class AlterTransactionRuleHandler extends UpdatableRALBackendHandler<AlterTransactionRuleStatement> {
     
     @Override
     protected void update(final ContextManager contextManager, final AlterTransactionRuleStatement sqlStatement) {
@@ -59,6 +59,6 @@ public final class AlterTransactionRuleHandler extends UpdatableRALBackendHandle
     }
     
     private TransactionRuleConfiguration buildTransactionRuleConfiguration() {
-        return new TransactionRuleConfiguration(sqlStatement.getDefaultType(), sqlStatement.getProvider().getProviderType(), sqlStatement.getProvider().getProps());
+        return new TransactionRuleConfiguration(getSqlStatement().getDefaultType(), getSqlStatement().getProvider().getProviderType(), getSqlStatement().getProvider().getProps());
     }
 }

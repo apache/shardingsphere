@@ -36,7 +36,7 @@ import java.util.Optional;
  * Show transaction rule handler.
  */
 @RequiredArgsConstructor
-public final class ShowTransactionRuleHandler extends QueryableRALBackendHandler<ShowTransactionRuleStatement, ShowTransactionRuleHandler> {
+public final class ShowTransactionRuleHandler extends QueryableRALBackendHandler<ShowTransactionRuleStatement> {
     
     private static final String DEFAULT_TYPE = "default_type";
     

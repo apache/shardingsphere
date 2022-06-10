@@ -31,8 +31,8 @@ public final class RoundRobinTrafficLoadBalanceAlgorithmTest {
     
     @Test
     public void assertGetInstanceId() {
-        InstanceDefinition instance1 = new InstanceDefinition(InstanceType.PROXY, "127.0.0.1@3307");
-        InstanceDefinition instance2 = new InstanceDefinition(InstanceType.PROXY, "127.0.0.1@3308");
+        InstanceDefinition instance1 = new InstanceDefinition(InstanceType.PROXY, "127.0.0.1@3307", "127.0.0.1@3307");
+        InstanceDefinition instance2 = new InstanceDefinition(InstanceType.PROXY, "127.0.0.1@3308", "127.0.0.1@3308");
         List<InstanceDefinition> instances = Arrays.asList(instance1, instance2);
         RoundRobinTrafficLoadBalanceAlgorithm roundRobinAlgorithm = new RoundRobinTrafficLoadBalanceAlgorithm();
         assertThat(roundRobinAlgorithm.getInstanceId("simple_traffic", instances), is(instance1));

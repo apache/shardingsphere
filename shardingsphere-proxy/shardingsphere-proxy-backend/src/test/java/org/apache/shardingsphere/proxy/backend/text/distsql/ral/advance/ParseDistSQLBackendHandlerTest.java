@@ -43,7 +43,6 @@ import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -54,17 +53,22 @@ public final class ParseDistSQLBackendHandlerTest extends ProxyContextRestorer {
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ContextManager contextManager;
     
+    @Mock
+    private ConnectionSession connectionSession;
+    
     @Before
     public void setUp() throws SQLException {
         ProxyContext.init(contextManager);
         when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(SQLParserRule.class)).thenReturn(Optional.of(sqlParserRule));
+        when(connectionSession.getDatabaseType()).thenReturn(new MySQLDatabaseType());
     }
     
     @Test
     public void assertGetRowData() throws SQLException {
         String sql = "select * from t_order";
         ParseStatement parseStatement = new ParseStatement(sql);
-        ParseDistSQLBackendHandler parseDistSQLBackendHandler = new ParseDistSQLBackendHandler().init(new HandlerParameter<>(parseStatement, new MySQLDatabaseType(), mock(ConnectionSession.class)));
+        ParseDistSQLBackendHandler parseDistSQLBackendHandler = new ParseDistSQLBackendHandler();
+        parseDistSQLBackendHandler.init(new HandlerParameter<>(parseStatement, connectionSession));
         parseDistSQLBackendHandler.execute();
         parseDistSQLBackendHandler.next();
         SQLStatement statement = sqlParserRule.getSQLParserEngine("MySQL").parse(sql, false);
@@ -76,7 +80,8 @@ public final class ParseDistSQLBackendHandlerTest extends ProxyContextRestorer {
     public void assertExecute() throws SQLException {
         String sql = "wrong sql";
         ParseStatement parseStatement = new ParseStatement(sql);
-        ParseDistSQLBackendHandler parseDistSQLBackendHandler = new ParseDistSQLBackendHandler().init(new HandlerParameter<>(parseStatement, new MySQLDatabaseType(), mock(ConnectionSession.class)));
+        ParseDistSQLBackendHandler parseDistSQLBackendHandler = new ParseDistSQLBackendHandler();
+        parseDistSQLBackendHandler.init(new HandlerParameter<>(parseStatement, connectionSession));
         parseDistSQLBackendHandler.execute();
     }
 }

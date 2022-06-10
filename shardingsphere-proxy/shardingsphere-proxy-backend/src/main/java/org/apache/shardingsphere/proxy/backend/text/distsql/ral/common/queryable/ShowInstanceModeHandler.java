@@ -33,7 +33,7 @@ import java.util.List;
 /**
  * Show instance mode handler.
  */
-public final class ShowInstanceModeHandler extends QueryableRALBackendHandler<ShowInstanceModeStatement, ShowInstanceModeHandler> {
+public final class ShowInstanceModeHandler extends QueryableRALBackendHandler<ShowInstanceModeStatement> {
     
     private static final String INSTANCE_ID = "instance_id";
     

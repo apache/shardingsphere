@@ -52,7 +52,7 @@ import java.util.stream.Collectors;
 /**
  * Show readwrite-splitting read resources executor.
  */
-public final class ShowReadwriteSplittingReadResourcesHandler extends QueryableRALBackendHandler<ShowReadwriteSplittingReadResourcesStatement, ShowReadwriteSplittingReadResourcesHandler> {
+public final class ShowReadwriteSplittingReadResourcesHandler extends QueryableRALBackendHandler<ShowReadwriteSplittingReadResourcesStatement> {
     
     private static final String RESOURCE = "resource";
     
@@ -63,9 +63,9 @@ public final class ShowReadwriteSplittingReadResourcesHandler extends QueryableR
     private ConnectionSession connectionSession;
     
     @Override
-    public ShowReadwriteSplittingReadResourcesHandler init(final HandlerParameter<ShowReadwriteSplittingReadResourcesStatement> parameter) {
+    public void init(final HandlerParameter<ShowReadwriteSplittingReadResourcesStatement> parameter) {
+        super.init(parameter);
         connectionSession = parameter.getConnectionSession();
-        return super.init(parameter);
     }
     
     @Override
@@ -84,7 +84,7 @@ public final class ShowReadwriteSplittingReadResourcesHandler extends QueryableR
     }
     
     private String getDatabaseName() {
-        String result = sqlStatement.getDatabase().isPresent() ? sqlStatement.getDatabase().get().getIdentifier().getValue() : connectionSession.getDatabaseName();
+        String result = getSqlStatement().getDatabase().isPresent() ? getSqlStatement().getDatabase().get().getIdentifier().getValue() : connectionSession.getDatabaseName();
         if (Strings.isNullOrEmpty(result)) {
             throw new NoDatabaseSelectedException();
         }
@@ -111,9 +111,9 @@ public final class ShowReadwriteSplittingReadResourcesHandler extends QueryableR
         Map<String, StorageNodeDataSource> storageNodes = new StorageNodeStatusService((ClusterPersistRepository) persistService.getRepository()).loadStorageNodes();
         Map<String, StorageNodeDataSource> result = new HashMap<>();
         storageNodes.entrySet().stream().filter(entry -> "member".equalsIgnoreCase(entry.getValue().getRole())).forEach(entry -> {
-            QualifiedDatabase qualifiedSchema = new QualifiedDatabase(entry.getKey());
-            if (databaseName.equalsIgnoreCase(qualifiedSchema.getDatabaseName())) {
-                result.put(qualifiedSchema.getDataSourceName(), entry.getValue());
+            QualifiedDatabase qualifiedDatabase = new QualifiedDatabase(entry.getKey());
+            if (databaseName.equalsIgnoreCase(qualifiedDatabase.getDatabaseName())) {
+                result.put(qualifiedDatabase.getDataSourceName(), entry.getValue());
             }
         });
         return result;

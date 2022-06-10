@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 /**
  * Show table metadata handler.
  */
-public final class ShowTableMetadataHandler extends QueryableRALBackendHandler<ShowTableMetadataStatement, ShowTableMetadataHandler> {
+public final class ShowTableMetadataHandler extends QueryableRALBackendHandler<ShowTableMetadataStatement> {
     
     private static final String SCHEMA_NAME = "schema_name";
     
@@ -52,9 +52,9 @@ public final class ShowTableMetadataHandler extends QueryableRALBackendHandler<S
     private ConnectionSession connectionSession;
     
     @Override
-    public ShowTableMetadataHandler init(final HandlerParameter<ShowTableMetadataStatement> parameter) {
+    public void init(final HandlerParameter<ShowTableMetadataStatement> parameter) {
+        super.init(parameter);
         connectionSession = parameter.getConnectionSession();
-        return super.init(parameter);
     }
     
     @Override
@@ -67,12 +67,12 @@ public final class ShowTableMetadataHandler extends QueryableRALBackendHandler<S
         String databaseName = getDatabaseName();
         String defaultSchema = DatabaseTypeEngine.getDefaultSchemaName(connectionSession.getDatabaseType(), connectionSession.getDatabaseName());
         ShardingSphereSchema schema = ProxyContext.getInstance().getDatabase(databaseName).getSchemas().get(defaultSchema);
-        return schema.getAllTableNames().stream().filter(each -> sqlStatement.getTableNames().contains(each))
+        return schema.getAllTableNames().stream().filter(each -> getSqlStatement().getTableNames().contains(each))
                 .map(each -> buildTableRows(databaseName, schema, each)).flatMap(Collection::stream).collect(Collectors.toList());
     }
     
     private String getDatabaseName() {
-        String result = sqlStatement.getDatabase().isPresent() ? sqlStatement.getDatabase().get().getIdentifier().getValue() : connectionSession.getDatabaseName();
+        String result = getSqlStatement().getDatabase().isPresent() ? getSqlStatement().getDatabase().get().getIdentifier().getValue() : connectionSession.getDatabaseName();
         if (Strings.isNullOrEmpty(result)) {
             throw new NoDatabaseSelectedException();
         }

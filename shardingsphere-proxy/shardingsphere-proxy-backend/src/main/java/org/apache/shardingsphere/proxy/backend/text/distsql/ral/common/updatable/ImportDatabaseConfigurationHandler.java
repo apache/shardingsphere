@@ -74,7 +74,7 @@ import java.util.stream.Collectors;
 /**
  * Import database configuration handler.
  */
-public final class ImportDatabaseConfigurationHandler extends UpdatableRALBackendHandler<ImportDatabaseConfigurationStatement, ImportDatabaseConfigurationHandler> {
+public final class ImportDatabaseConfigurationHandler extends UpdatableRALBackendHandler<ImportDatabaseConfigurationStatement> {
     
     private final DataSourcePropertiesValidator validator = new DataSourcePropertiesValidator();
     

@@ -37,7 +37,7 @@ import java.util.Optional;
 /**
  * Unlabel instance handler.
  */
-public final class UnlabelInstanceHandler extends UpdatableRALBackendHandler<UnlabelInstanceStatement, UnlabelInstanceHandler> {
+public final class UnlabelInstanceHandler extends UpdatableRALBackendHandler<UnlabelInstanceStatement> {
     
     @Override
     protected void update(final ContextManager contextManager, final UnlabelInstanceStatement sqlStatement) throws DistSQLException {

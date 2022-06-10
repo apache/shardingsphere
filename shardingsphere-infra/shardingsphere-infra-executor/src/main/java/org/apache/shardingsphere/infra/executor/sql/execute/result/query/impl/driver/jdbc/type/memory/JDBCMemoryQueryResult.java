@@ -31,6 +31,6 @@ import java.sql.SQLException;
 public final class JDBCMemoryQueryResult extends AbstractMemoryQueryResult {
     
     public JDBCMemoryQueryResult(final ResultSet resultSet, final DatabaseType databaseType) throws SQLException {
-        super(new JDBCQueryResultMetaData(resultSet.getMetaData()), DialectJDBCRowsLoaderFactory.getInstance(databaseType).load(resultSet.getMetaData().getColumnCount(), resultSet).iterator());
+        super(new JDBCQueryResultMetaData(resultSet.getMetaData()), DialectJDBCRowsLoaderFactory.getInstance(databaseType).load(resultSet.getMetaData().getColumnCount(), resultSet));
     }
 }

@@ -28,7 +28,7 @@ import org.apache.shardingsphere.proxy.backend.text.distsql.ral.UpdatableRALBack
 /**
  * Set instance status handler.
  */
-public final class SetInstanceStatusHandler extends UpdatableRALBackendHandler<SetInstanceStatusStatement, SetInstanceStatusHandler> {
+public final class SetInstanceStatusHandler extends UpdatableRALBackendHandler<SetInstanceStatusStatement> {
     
     @Override
     protected void update(final ContextManager contextManager, final SetInstanceStatusStatement sqlStatement) {

@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 /**
  * Alter traffic rule handler.
  */
-public final class AlterTrafficRuleHandler extends UpdatableRALBackendHandler<AlterTrafficRuleStatement, AlterTrafficRuleHandler> {
+public final class AlterTrafficRuleHandler extends UpdatableRALBackendHandler<AlterTrafficRuleStatement> {
     
     @Override
     protected void update(final ContextManager contextManager, final AlterTrafficRuleStatement sqlStatement) throws DistSQLException {
@@ -67,7 +67,7 @@ public final class AlterTrafficRuleHandler extends UpdatableRALBackendHandler<Al
     
     private Collection<String> getInvalidAlgorithmNames() {
         Collection<String> result = new LinkedList<>();
-        for (TrafficRuleSegment each : sqlStatement.getSegments()) {
+        for (TrafficRuleSegment each : getSqlStatement().getSegments()) {
             if (!TrafficAlgorithmFactory.contains(each.getAlgorithm().getName())) {
                 result.add(each.getAlgorithm().getName());
             }

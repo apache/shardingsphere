@@ -21,6 +21,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.S
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.junit.Test;
@@ -40,10 +41,10 @@ import static org.mockito.Mockito.when;
 
 public final class ShowTransactionRuleHandlerTest extends ProxyContextRestorer {
     
-    private final ShowTransactionRuleHandler handler = new ShowTransactionRuleHandler().initStatement(new ShowTransactionRuleStatement());
-    
     @Test
     public void assertExecutorWithXA() throws SQLException {
+        ShowTransactionRuleHandler handler = new ShowTransactionRuleHandler();
+        handler.init(new RALBackendHandler.HandlerParameter<>(new ShowTransactionRuleStatement(), null));
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(getGlobalRuleMetaData("XA", "Atomikos", getProperties()));
         ProxyContext.init(contextManager);
@@ -60,6 +61,8 @@ public final class ShowTransactionRuleHandlerTest extends ProxyContextRestorer {
     
     @Test
     public void assertExecutorWithLocal() throws SQLException {
+        ShowTransactionRuleHandler handler = new ShowTransactionRuleHandler();
+        handler.init(new RALBackendHandler.HandlerParameter<>(new ShowTransactionRuleStatement(), null));
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(getGlobalRuleMetaData("LOCAL", null, null));
         ProxyContext.init(contextManager);

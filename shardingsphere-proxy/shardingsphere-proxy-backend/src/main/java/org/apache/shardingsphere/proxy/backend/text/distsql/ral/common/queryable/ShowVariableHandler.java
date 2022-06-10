@@ -39,7 +39,7 @@ import java.util.List;
 /**
  * Show variable handler.
  */
-public final class ShowVariableHandler extends QueryableRALBackendHandler<ShowVariableStatement, ShowVariableHandler> {
+public final class ShowVariableHandler extends QueryableRALBackendHandler<ShowVariableStatement> {
     
     private static final String VARIABLE_NAME = "variable_name";
     
@@ -48,10 +48,9 @@ public final class ShowVariableHandler extends QueryableRALBackendHandler<ShowVa
     private ConnectionSession connectionSession;
     
     @Override
-    public ShowVariableHandler init(final HandlerParameter<ShowVariableStatement> parameter) {
-        initStatement(parameter.getStatement());
+    public void init(final HandlerParameter<ShowVariableStatement> parameter) {
+        super.init(parameter);
         connectionSession = parameter.getConnectionSession();
-        return this;
     }
     
     @Override
@@ -62,14 +61,14 @@ public final class ShowVariableHandler extends QueryableRALBackendHandler<ShowVa
     @Override
     protected Collection<List<Object>> getRows(final ContextManager contextManager) {
         if (hasSpecifiedKey()) {
-            return buildSpecifiedRow(contextManager, sqlStatement.getName());
+            return buildSpecifiedRow(contextManager, getSqlStatement().getName());
         } else {
             return buildAllVariableRows(contextManager);
         }
     }
     
     private boolean hasSpecifiedKey() {
-        return !Strings.isNullOrEmpty(sqlStatement.getName());
+        return !Strings.isNullOrEmpty(getSqlStatement().getName());
     }
     
     private Collection<List<Object>> buildAllVariableRows(final ContextManager contextManager) {

@@ -38,7 +38,7 @@ import java.util.Optional;
  * Show traffic rules handler.
  */
 @RequiredArgsConstructor
-public final class ShowTrafficRulesHandler extends QueryableRALBackendHandler<ShowTrafficRulesStatement, ShowTrafficRulesHandler> {
+public final class ShowTrafficRulesHandler extends QueryableRALBackendHandler<ShowTrafficRulesStatement> {
     
     private static final String RULE_NAME = "name";
     
@@ -62,7 +62,7 @@ public final class ShowTrafficRulesHandler extends QueryableRALBackendHandler<Sh
         Optional<TrafficRuleConfiguration> config = ProxyContext.getInstance().getContextManager().getMetaDataContexts()
                 .getMetaData().getGlobalRuleMetaData().findRuleConfigurations(TrafficRuleConfiguration.class).stream().findAny();
         Collection<List<Object>> result = new LinkedList<>();
-        Optional<String> ruleName = Optional.ofNullable(sqlStatement.getRuleName());
+        Optional<String> ruleName = Optional.ofNullable(getSqlStatement().getRuleName());
         config.ifPresent(optional -> {
             Map<String, ShardingSphereAlgorithmConfiguration> trafficAlgorithms = optional.getTrafficAlgorithms();
             Map<String, ShardingSphereAlgorithmConfiguration> loadBalancers = optional.getLoadBalancers();
