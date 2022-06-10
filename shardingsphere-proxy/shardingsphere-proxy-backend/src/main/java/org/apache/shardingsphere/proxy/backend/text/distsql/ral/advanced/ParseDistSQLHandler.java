@@ -36,9 +36,9 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Parse dist sql backend handler.
+ * Parse Dist SQL handler.
  */
-public final class ParseDistSQLBackendHandler extends QueryableRALBackendHandler<ParseStatement> {
+public final class ParseDistSQLHandler extends QueryableRALBackendHandler<ParseStatement> {
     
     private static final String PARSED_STATEMENT = "parsed_statement";
     
