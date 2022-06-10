@@ -73,9 +73,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Preview backend handler.
+ * Preview handler.
  */
-public final class PreviewBackendHandler extends QueryableRALBackendHandler<PreviewStatement> {
+public final class PreviewHandler extends QueryableRALBackendHandler<PreviewStatement> {
     
     private static final String DATA_SOURCE_NAME = "data_source_name";
     
