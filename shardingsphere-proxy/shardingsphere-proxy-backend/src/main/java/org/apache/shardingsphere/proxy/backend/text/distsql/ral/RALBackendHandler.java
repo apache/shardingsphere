@@ -17,9 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral;
 
-import com.google.common.base.Preconditions;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -40,7 +38,7 @@ public abstract class RALBackendHandler<E extends RALStatement> implements TextP
     private ConnectionSession connectionSession;
     
     /**
-     * Method to initialize handler, this method needs to be rewritten when the handler has properties other than sql statement.
+     * Initialize.
      *
      * @param sqlStatement SQL statement
      * @param connectionSession connection session
@@ -52,19 +50,8 @@ public abstract class RALBackendHandler<E extends RALStatement> implements TextP
     
     @Override
     public final ResponseHeader execute() throws SQLException {
-        Preconditions.checkNotNull(sqlStatement, "sql statement cannot be empty.");
-        ContextManager contextManager = ProxyContext.getInstance().getContextManager();
-        return handle(contextManager, sqlStatement);
+        return handle(ProxyContext.getInstance().getContextManager(), sqlStatement);
     }
     
     protected abstract ResponseHeader handle(ContextManager contextManager, E sqlStatement) throws SQLException;
-    
-    @RequiredArgsConstructor
-    @Getter
-    public static class HandlerParameter<E extends RALStatement> {
-        
-        private final E statement;
-        
-        private final ConnectionSession connectionSession;
-    }
 }
