@@ -19,13 +19,8 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral;
 
 import lombok.Getter;
 import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
-import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
-
-import java.sql.SQLException;
 
 /**
  * RAL backend handler.
@@ -43,15 +38,8 @@ public abstract class RALBackendHandler<E extends RALStatement> implements TextP
      * @param sqlStatement SQL statement
      * @param connectionSession connection session
      */
-    public void init(final RALStatement sqlStatement, final ConnectionSession connectionSession) {
+    public final void init(final RALStatement sqlStatement, final ConnectionSession connectionSession) {
         this.sqlStatement = (E) sqlStatement;
         this.connectionSession = connectionSession;
     }
-    
-    @Override
-    public final ResponseHeader execute() throws SQLException {
-        return handle(ProxyContext.getInstance().getContextManager(), sqlStatement);
-    }
-    
-    protected abstract ResponseHeader handle(ContextManager contextManager, E sqlStatement) throws SQLException;
 }
