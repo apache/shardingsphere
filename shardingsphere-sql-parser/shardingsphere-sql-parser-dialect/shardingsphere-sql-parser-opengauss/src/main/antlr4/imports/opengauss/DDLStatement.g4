@@ -1972,7 +1972,7 @@ dropSchema
     ;
 
 fetch
-    : FETCH (direction (FROM | IN))? cursorName
+    : FETCH (direction (FROM | IN)?)? cursorName
     ;
 
 direction
