@@ -156,7 +156,7 @@ public final class RALBackendHandlerFactory {
         return getHandler(sqlStatement, connectionSession);
     }
     
-    private static RALBackendHandler newInstance(final Class<? extends RALBackendHandler> clazz) {
+    private static RALBackendHandler<?> newInstance(final Class<? extends RALBackendHandler> clazz) {
         try {
             return clazz.getDeclaredConstructor().newInstance();
         } catch (final ReflectiveOperationException ex) {
