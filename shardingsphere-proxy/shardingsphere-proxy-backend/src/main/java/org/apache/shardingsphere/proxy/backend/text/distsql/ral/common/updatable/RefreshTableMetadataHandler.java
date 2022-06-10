@@ -25,21 +25,12 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.proxy.backend.exception.UnknownDatabaseException;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.UpdatableRALBackendHandler;
 
 /**
  * Refresh table metadata handler.
  */
 public final class RefreshTableMetadataHandler extends UpdatableRALBackendHandler<RefreshTableMetadataStatement> {
-    
-    private ConnectionSession connectionSession;
-    
-    @Override
-    public void init(final HandlerParameter<RefreshTableMetadataStatement> parameter) {
-        super.init(parameter);
-        connectionSession = parameter.getConnectionSession();
-    }
     
     @Override
     protected void update(final ContextManager contextManager, final RefreshTableMetadataStatement sqlStatement) throws DistSQLException {
@@ -61,7 +52,7 @@ public final class RefreshTableMetadataHandler extends UpdatableRALBackendHandle
     }
     
     private String getDatabaseName() {
-        String result = connectionSession.getDatabaseName();
+        String result = getConnectionSession().getDatabaseName();
         if (Strings.isNullOrEmpty(result)) {
             throw new NoDatabaseSelectedException();
         }
@@ -75,6 +66,6 @@ public final class RefreshTableMetadataHandler extends UpdatableRALBackendHandle
         if (sqlStatement.getSchemaName().isPresent()) {
             return sqlStatement.getSchemaName().get();
         }
-        return DatabaseTypeEngine.getDefaultSchemaName(connectionSession.getDatabaseType(), databaseName);
+        return DatabaseTypeEngine.getDefaultSchemaName(getConnectionSession().getDatabaseType(), databaseName);
     }
 }

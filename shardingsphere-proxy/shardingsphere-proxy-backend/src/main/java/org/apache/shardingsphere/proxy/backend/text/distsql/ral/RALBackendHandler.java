@@ -37,13 +37,17 @@ public abstract class RALBackendHandler<E extends RALStatement> implements TextP
     
     private E sqlStatement;
     
+    private ConnectionSession connectionSession;
+    
     /**
      * Method to initialize handler, this method needs to be rewritten when the handler has properties other than sql statement.
      *
-     * @param parameter parameters required by handler
+     * @param sqlStatement SQL statement
+     * @param connectionSession connection session
      */
-    public void init(final HandlerParameter<E> parameter) {
-        sqlStatement = parameter.getStatement();
+    public void init(final RALStatement sqlStatement, final ConnectionSession connectionSession) {
+        this.sqlStatement = (E) sqlStatement;
+        this.connectionSession = connectionSession;
     }
     
     @Override

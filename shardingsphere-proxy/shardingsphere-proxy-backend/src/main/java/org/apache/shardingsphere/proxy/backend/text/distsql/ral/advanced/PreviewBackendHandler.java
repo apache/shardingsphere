@@ -58,7 +58,6 @@ import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistedException;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.QueryableRALBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
@@ -82,15 +81,7 @@ public final class PreviewBackendHandler extends QueryableRALBackendHandler<Prev
     
     private static final String ACTUAL_SQL = "actual_sql";
     
-    private ConnectionSession connectionSession;
-    
     private final KernelProcessor kernelProcessor = new KernelProcessor();
-    
-    @Override
-    public void init(final HandlerParameter<PreviewStatement> parameter) {
-        super.init(parameter);
-        connectionSession = parameter.getConnectionSession();
-    }
     
     @Override
     protected Collection<String> getColumnNames() {
@@ -113,7 +104,7 @@ public final class PreviewBackendHandler extends QueryableRALBackendHandler<Prev
         if (sqlStatementContext instanceof CursorAvailable && sqlStatementContext instanceof CursorDefinitionAware) {
             setUpCursorDefinition(sqlStatementContext);
         }
-        ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(connectionSession.getDatabaseName());
+        ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(getConnectionSession().getDatabaseName());
         if (!database.isComplete()) {
             throw new RuleNotExistedException();
         }
@@ -127,7 +118,7 @@ public final class PreviewBackendHandler extends QueryableRALBackendHandler<Prev
     
     private void setUpCursorDefinition(final SQLStatementContext<?> sqlStatementContext) {
         String cursorName = ((CursorAvailable) sqlStatementContext).getCursorName().getIdentifier().getValue().toLowerCase();
-        CursorStatementContext cursorStatementContext = connectionSession.getCursorDefinitions().get(cursorName);
+        CursorStatementContext cursorStatementContext = getConnectionSession().getCursorDefinitions().get(cursorName);
         Preconditions.checkArgument(null != cursorStatementContext, "Cursor %s does not exist.", cursorName);
         ((CursorDefinitionAware) sqlStatementContext).setUpCursorDefinition(cursorStatementContext);
     }
@@ -166,13 +157,13 @@ public final class PreviewBackendHandler extends QueryableRALBackendHandler<Prev
     
     private DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> createDriverExecutionPrepareEngine(final boolean isReturnGeneratedKeys, final MetaDataContexts metaDataContexts) {
         int maxConnectionsSizePerQuery = metaDataContexts.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        return new DriverExecutionPrepareEngine<>(JDBCDriverType.STATEMENT, maxConnectionsSizePerQuery, (JDBCBackendConnection) connectionSession.getBackendConnection(),
-                (JDBCBackendStatement) connectionSession.getStatementManager(), new StatementOption(isReturnGeneratedKeys),
+        return new DriverExecutionPrepareEngine<>(JDBCDriverType.STATEMENT, maxConnectionsSizePerQuery, (JDBCBackendConnection) getConnectionSession().getBackendConnection(),
+                (JDBCBackendStatement) getConnectionSession().getStatementManager(), new StatementOption(isReturnGeneratedKeys),
                 metaDataContexts.getMetaData().getDatabases().get(getDatabaseName()).getRuleMetaData().getRules());
     }
     
     private String getDatabaseName() {
-        String result = !Strings.isNullOrEmpty(connectionSession.getDatabaseName()) ? connectionSession.getDatabaseName() : connectionSession.getDefaultDatabaseName();
+        String result = !Strings.isNullOrEmpty(getConnectionSession().getDatabaseName()) ? getConnectionSession().getDatabaseName() : getConnectionSession().getDefaultDatabaseName();
         if (Strings.isNullOrEmpty(result)) {
             throw new NoDatabaseSelectedException();
         }

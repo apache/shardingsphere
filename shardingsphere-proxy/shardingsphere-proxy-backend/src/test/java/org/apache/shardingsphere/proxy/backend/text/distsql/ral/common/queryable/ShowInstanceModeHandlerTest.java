@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.junit.Test;
 
@@ -46,7 +45,7 @@ public final class ShowInstanceModeHandlerTest extends ProxyContextRestorer {
         InstanceContext instanceContext = createInstanceContext();
         when(contextManager.getInstanceContext()).thenReturn(instanceContext);
         ShowInstanceModeHandler handler = new ShowInstanceModeHandler();
-        handler.init(new RALBackendHandler.HandlerParameter<>(new ShowInstanceModeStatement(), null));
+        handler.init(new ShowInstanceModeStatement(), null);
         ProxyContext.init(contextManager);
         handler.execute();
         handler.next();

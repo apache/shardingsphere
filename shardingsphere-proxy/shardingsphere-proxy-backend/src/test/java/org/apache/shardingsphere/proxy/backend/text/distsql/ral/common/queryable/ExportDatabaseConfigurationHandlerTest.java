@@ -28,7 +28,6 @@ import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandler.HandlerParameter;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -71,7 +70,7 @@ public final class ExportDatabaseConfigurationHandlerTest extends ProxyContextRe
     @Test
     public void assertExportDatabaseExecutor() throws SQLException {
         ExportDatabaseConfigurationHandler handler = new ExportDatabaseConfigurationHandler();
-        handler.init(new HandlerParameter<>(createSQLStatement(), mock(ConnectionSession.class)));
+        handler.init(createSQLStatement(), mock(ConnectionSession.class));
         handler.execute();
         handler.next();
         Collection<Object> data = new ArrayList<>(handler.getRowData());

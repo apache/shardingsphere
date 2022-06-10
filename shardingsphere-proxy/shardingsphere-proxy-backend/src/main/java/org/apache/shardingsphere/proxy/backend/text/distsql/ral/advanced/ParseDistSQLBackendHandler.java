@@ -45,14 +45,6 @@ public final class ParseDistSQLBackendHandler extends QueryableRALBackendHandler
     
     private static final String PARSED_STATEMENT_DETAIL = "parsed_statement_detail";
     
-    private ConnectionSession connectionSession;
-    
-    @Override
-    public void init(final HandlerParameter<ParseStatement> parameter) {
-        super.init(parameter);
-        connectionSession = parameter.getConnectionSession();
-    }
-    
     @Override
     protected Collection<String> getColumnNames() {
         return Arrays.asList(PARSED_STATEMENT, PARSED_STATEMENT_DETAIL);
@@ -64,7 +56,7 @@ public final class ParseDistSQLBackendHandler extends QueryableRALBackendHandler
         Preconditions.checkState(sqlParserRule.isPresent());
         SQLStatement parsedSqlStatement;
         try {
-            parsedSqlStatement = sqlParserRule.get().getSQLParserEngine(getStorageType(connectionSession).getType()).parse(getSqlStatement().getSql(), false);
+            parsedSqlStatement = sqlParserRule.get().getSQLParserEngine(getStorageType(getConnectionSession()).getType()).parse(getSqlStatement().getSql(), false);
         } catch (SQLParsingException ex) {
             throw new SQLParsingException("You have a syntax error in your parsed statement");
         }

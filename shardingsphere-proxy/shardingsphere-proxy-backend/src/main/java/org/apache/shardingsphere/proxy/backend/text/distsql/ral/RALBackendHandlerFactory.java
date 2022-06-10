@@ -53,7 +53,6 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.QueryableS
 import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableScalingRALStatement;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandler.HandlerParameter;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.advanced.FormatHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.advanced.ParseDistSQLBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.advanced.PreviewBackendHandler;
@@ -171,7 +170,7 @@ public final class RALBackendHandlerFactory {
             throw new UnsupportedOperationException(String.format("Unsupported SQL statement : %s", sqlStatement.getClass().getCanonicalName()));
         }
         RALBackendHandler<?> result = newInstance(clazz);
-        result.init(new HandlerParameter(sqlStatement, connectionSession));
+        result.init(sqlStatement, connectionSession);
         return result;
     }
 }

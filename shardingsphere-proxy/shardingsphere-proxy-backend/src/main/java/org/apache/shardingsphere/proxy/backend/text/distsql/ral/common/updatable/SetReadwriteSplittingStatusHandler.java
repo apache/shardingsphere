@@ -36,7 +36,6 @@ import org.apache.shardingsphere.mode.metadata.storage.event.DataSourceDisabledE
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.UpdatableRALBackendHandler;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.status.SetReadwriteSplittingStatusStatement;
@@ -58,17 +57,9 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
     
     private static final String DISABLE = "DISABLE";
     
-    private ConnectionSession connectionSession;
-    
-    @Override
-    public void init(final HandlerParameter<SetReadwriteSplittingStatusStatement> parameter) {
-        super.init(parameter);
-        connectionSession = parameter.getConnectionSession();
-    }
-    
     @Override
     protected void update(final ContextManager contextManager, final SetReadwriteSplittingStatusStatement sqlStatement) throws DistSQLException {
-        String databaseName = sqlStatement.getDatabase().isPresent() ? sqlStatement.getDatabase().get().getIdentifier().getValue() : connectionSession.getDatabaseName();
+        String databaseName = sqlStatement.getDatabase().isPresent() ? sqlStatement.getDatabase().get().getIdentifier().getValue() : getConnectionSession().getDatabaseName();
         String toBeUpdatedResource = sqlStatement.getResourceName();
         checkModeAndPersistRepository(contextManager);
         checkDatabaseName(databaseName);

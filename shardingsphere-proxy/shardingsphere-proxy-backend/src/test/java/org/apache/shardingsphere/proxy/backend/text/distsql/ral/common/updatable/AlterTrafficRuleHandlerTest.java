@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmCo
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.api.config.TrafficStrategyConfiguration;
@@ -54,7 +53,7 @@ public final class AlterTrafficRuleHandlerTest extends ProxyContextRestorer {
         TrafficRuleSegment trafficRuleSegment = new TrafficRuleSegment("input_rule_name", Arrays.asList("olap", "order_by"),
                 new AlgorithmSegment("invalid", new Properties()), new AlgorithmSegment("invalid", new Properties()));
         AlterTrafficRuleHandler handler = new AlterTrafficRuleHandler();
-        handler.init(new RALBackendHandler.HandlerParameter<>(getSQLStatement(trafficRuleSegment), null));
+        handler.init(getSQLStatement(trafficRuleSegment), null);
         handler.execute();
     }
     
@@ -66,7 +65,7 @@ public final class AlterTrafficRuleHandlerTest extends ProxyContextRestorer {
         TrafficRuleSegment trafficRuleSegment = new TrafficRuleSegment("rule_name_1", Arrays.asList("olap", "order_by"),
                 new AlgorithmSegment("invalid", new Properties()), new AlgorithmSegment("invalid", new Properties()));
         AlterTrafficRuleHandler handler = new AlterTrafficRuleHandler();
-        handler.init(new RALBackendHandler.HandlerParameter<>(getSQLStatement(trafficRuleSegment), null));
+        handler.init(getSQLStatement(trafficRuleSegment), null);
         handler.execute();
     }
     
@@ -78,7 +77,7 @@ public final class AlterTrafficRuleHandlerTest extends ProxyContextRestorer {
         TrafficRuleSegment trafficRuleSegment = new TrafficRuleSegment("rule_name_3", Arrays.asList("olap", "order_by"),
                 new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()), new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()));
         AlterTrafficRuleHandler handler = new AlterTrafficRuleHandler();
-        handler.init(new RALBackendHandler.HandlerParameter<>(getSQLStatement(trafficRuleSegment), null));
+        handler.init(getSQLStatement(trafficRuleSegment), null);
         handler.execute();
     }
     
@@ -92,7 +91,7 @@ public final class AlterTrafficRuleHandlerTest extends ProxyContextRestorer {
         TrafficRuleSegment trafficRuleSegment2 = new TrafficRuleSegment("rule_name_2", Collections.emptyList(),
                 new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()), null);
         AlterTrafficRuleHandler handler = new AlterTrafficRuleHandler();
-        handler.init(new RALBackendHandler.HandlerParameter<>(getSQLStatement(trafficRuleSegment1, trafficRuleSegment2), null));
+        handler.init(getSQLStatement(trafficRuleSegment1, trafficRuleSegment2), null);
         handler.execute();
     }
     

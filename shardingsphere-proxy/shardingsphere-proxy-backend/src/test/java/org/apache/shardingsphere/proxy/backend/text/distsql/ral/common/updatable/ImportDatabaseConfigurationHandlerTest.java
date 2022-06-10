@@ -29,7 +29,6 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.checker.DatabaseDiscoveryRuleConfigurationImportChecker;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.checker.ReadwriteSplittingRuleConfigurationImportChecker;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.checker.ShardingRuleConfigurationImportChecker;
@@ -130,7 +129,8 @@ public final class ImportDatabaseConfigurationHandlerTest extends ProxyContextRe
     
     private void init(final String feature) throws Exception {
         ImportDatabaseConfigurationHandler handler = importDatabaseConfigurationHandler = new ImportDatabaseConfigurationHandler();
-        handler.init(getParameter(featureMap.get(feature), mock(ConnectionSession.class)));
+        handler.init(new ImportDatabaseConfigurationStatement(Objects.requireNonNull(ImportDatabaseConfigurationHandlerTest.class.getResource(featureMap.get(feature))).getPath()),
+                mock(ConnectionSession.class));
         Field validatorField = importDatabaseConfigurationHandler.getClass().getDeclaredField("validator");
         validatorField.setAccessible(true);
         validatorField.set(importDatabaseConfigurationHandler, validator);
@@ -153,11 +153,5 @@ public final class ImportDatabaseConfigurationHandlerTest extends ProxyContextRe
         Collection<ShardingSphereColumn> columns = Collections.singleton(new ShardingSphereColumn("order_id", 0, false, false, false));
         Collection<ShardingSphereIndex> indexes = Collections.singleton(new ShardingSphereIndex("primary"));
         return Collections.singletonMap("t_order", new ShardingSphereTable("t_order", columns, indexes, Collections.emptyList()));
-    }
-    
-    private RALBackendHandler.HandlerParameter<ImportDatabaseConfigurationStatement> getParameter(final String importFilePath, final ConnectionSession connectionSession) {
-        ImportDatabaseConfigurationStatement statement = new ImportDatabaseConfigurationStatement(
-                Objects.requireNonNull(ImportDatabaseConfigurationHandlerTest.class.getResource(importFilePath)).getPath());
-        return new RALBackendHandler.HandlerParameter<>(statement, connectionSession);
     }
 }

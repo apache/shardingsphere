@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleExcep
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.api.config.TrafficStrategyConfiguration;
@@ -52,7 +51,7 @@ public final class CreateTrafficRuleHandlerTest extends ProxyContextRestorer {
         TrafficRuleSegment trafficRuleSegment = new TrafficRuleSegment("input_rule_name", Arrays.asList("olap", "order_by"),
                 new AlgorithmSegment("invalid", new Properties()), new AlgorithmSegment("invalid", new Properties()));
         CreateTrafficRuleHandler handler = new CreateTrafficRuleHandler();
-        handler.init(new RALBackendHandler.HandlerParameter<>(new CreateTrafficRuleStatement(Collections.singletonList(trafficRuleSegment)), null));
+        handler.init(new CreateTrafficRuleStatement(Collections.singletonList(trafficRuleSegment)), null);
         handler.execute();
         
     }
@@ -65,7 +64,7 @@ public final class CreateTrafficRuleHandlerTest extends ProxyContextRestorer {
         TrafficRuleSegment trafficRuleSegment = new TrafficRuleSegment("input_rule_name", Arrays.asList("olap", "order_by"),
                 new AlgorithmSegment("invalid", new Properties()), new AlgorithmSegment("invalid", new Properties()));
         CreateTrafficRuleHandler handler = new CreateTrafficRuleHandler();
-        handler.init(new RALBackendHandler.HandlerParameter<>(new CreateTrafficRuleStatement(Collections.singletonList(trafficRuleSegment)), null));
+        handler.init(new CreateTrafficRuleStatement(Collections.singletonList(trafficRuleSegment)), null);
         handler.execute();
     }
     
@@ -77,7 +76,7 @@ public final class CreateTrafficRuleHandlerTest extends ProxyContextRestorer {
         TrafficRuleSegment trafficRuleSegment = new TrafficRuleSegment("rule_name_1", Arrays.asList("olap", "order_by"),
                 new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()), new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()));
         CreateTrafficRuleHandler handler = new CreateTrafficRuleHandler();
-        handler.init(new RALBackendHandler.HandlerParameter<>(new CreateTrafficRuleStatement(Collections.singletonList(trafficRuleSegment)), null));
+        handler.init(new CreateTrafficRuleStatement(Collections.singletonList(trafficRuleSegment)), null);
         handler.execute();
     }
     
@@ -91,7 +90,7 @@ public final class CreateTrafficRuleHandlerTest extends ProxyContextRestorer {
         TrafficRuleSegment trafficRuleSegment2 = new TrafficRuleSegment("rule_name_4", Collections.emptyList(),
                 new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()), null);
         CreateTrafficRuleHandler handler = new CreateTrafficRuleHandler();
-        handler.init(new RALBackendHandler.HandlerParameter<>(new CreateTrafficRuleStatement(Arrays.asList(trafficRuleSegment1, trafficRuleSegment2)), null));
+        handler.init(new CreateTrafficRuleStatement(Arrays.asList(trafficRuleSegment1, trafficRuleSegment2)), null);
         handler.execute();
     }
     

@@ -25,7 +25,6 @@ import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandler.HandlerParameter;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.advanced.ParseDistSQLBackendHandler;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
@@ -68,7 +67,7 @@ public final class ParseDistSQLBackendHandlerTest extends ProxyContextRestorer {
         String sql = "select * from t_order";
         ParseStatement parseStatement = new ParseStatement(sql);
         ParseDistSQLBackendHandler parseDistSQLBackendHandler = new ParseDistSQLBackendHandler();
-        parseDistSQLBackendHandler.init(new HandlerParameter<>(parseStatement, connectionSession));
+        parseDistSQLBackendHandler.init(parseStatement, connectionSession);
         parseDistSQLBackendHandler.execute();
         parseDistSQLBackendHandler.next();
         SQLStatement statement = sqlParserRule.getSQLParserEngine("MySQL").parse(sql, false);
@@ -81,7 +80,7 @@ public final class ParseDistSQLBackendHandlerTest extends ProxyContextRestorer {
         String sql = "wrong sql";
         ParseStatement parseStatement = new ParseStatement(sql);
         ParseDistSQLBackendHandler parseDistSQLBackendHandler = new ParseDistSQLBackendHandler();
-        parseDistSQLBackendHandler.init(new HandlerParameter<>(parseStatement, connectionSession));
+        parseDistSQLBackendHandler.init(parseStatement, connectionSession);
         parseDistSQLBackendHandler.execute();
     }
 }
