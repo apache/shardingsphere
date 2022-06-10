@@ -19,3 +19,26 @@ Attributes:
 Type: UUID
 
 Attributes: None
+
+## CosId
+
+Type: COSID
+
+Attributes：
+
+| *Name*    | *DataType* | *Description*                                                                                                                                                                      | *Default Value* |
+|-----------|------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------|
+| id-name   | String     | ID generator name                                                                                                                                                                  | `__share__`     |
+| as-string | bool       | Whether to generate a string type ID: Convert `long` type ID to Base-62 `String` type (`Long.MAX_VALUE` maximum string length is 11 digits), and ensure the ordering of string IDs | `false`         |
+
+## CosId-Snowflake
+
+Type: COSID_SNOWFLAKE
+
+Attributes：
+
+| *Name*    | *DataType* | *Description*                                                                                                                                                                      | *Default Value* |
+|-----------|------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------|
+| epoch     | String     | EPOCH of Snowflake ID Algorithm                                                                                                                                                    | `1477929600000` |
+| as-string | bool       | Whether to generate a string type ID: Convert `long` type ID to Base-62 `String` type (`Long.MAX_VALUE` maximum string length is 11 digits), and ensure the ordering of string IDs | `false`         |
+
