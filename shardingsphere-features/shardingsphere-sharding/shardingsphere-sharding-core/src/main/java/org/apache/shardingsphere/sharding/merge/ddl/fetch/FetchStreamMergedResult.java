@@ -146,13 +146,13 @@ public final class FetchStreamMergedResult extends StreamMergedResult {
     }
     
     private long getGroupRowCount(final FetchOrderByValueGroup fetchOrderByValueGroup) {
-        long groupRowCount = 0;
+        long result = 0;
         for (OrderByValue each : fetchOrderByValueGroup.getOrderByValues()) {
             if (each.getQueryResult() instanceof JDBCMemoryQueryResult) {
                 JDBCMemoryQueryResult queryResult = (JDBCMemoryQueryResult) each.getQueryResult();
-                groupRowCount += queryResult.wasNull() ? queryResult.getRowCount() : queryResult.getRowCount() + 1;
+                result += queryResult.wasNull() ? queryResult.getRowCount() : queryResult.getRowCount() + 1;
             }
         }
-        return groupRowCount;
+        return result;
     }
 }
