@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.QueryableRALBackendHandler;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -56,17 +55,17 @@ public final class ParseDistSQLBackendHandler extends QueryableRALBackendHandler
         Preconditions.checkState(sqlParserRule.isPresent());
         SQLStatement parsedSqlStatement;
         try {
-            parsedSqlStatement = sqlParserRule.get().getSQLParserEngine(getStorageType(getConnectionSession()).getType()).parse(getSqlStatement().getSql(), false);
-        } catch (SQLParsingException ex) {
+            parsedSqlStatement = sqlParserRule.get().getSQLParserEngine(getStorageType().getType()).parse(getSqlStatement().getSql(), false);
+        } catch (final SQLParsingException ex) {
             throw new SQLParsingException("You have a syntax error in your parsed statement");
         }
         return Collections.singleton(Arrays.asList(parsedSqlStatement.getClass().getSimpleName(), new Gson().toJson(parsedSqlStatement)));
     }
     
-    private static DatabaseType getStorageType(final ConnectionSession connectionSession) {
-        String databaseName = connectionSession.getDatabaseName();
+    private DatabaseType getStorageType() {
+        String databaseName = getConnectionSession().getDatabaseName();
         return Strings.isNullOrEmpty(databaseName) || !ProxyContext.getInstance().databaseExists(databaseName)
-                ? connectionSession.getDatabaseType()
+                ? getConnectionSession().getDatabaseType()
                 : ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases().get(databaseName).getResource().getDatabaseType();
     }
 }
