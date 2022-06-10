@@ -22,11 +22,11 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 
 /**
- * Schema version changed event.
+ * Database version changed event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class SchemaVersionChangedEvent implements GovernanceEvent {
+public final class DatabaseVersionChangedEvent implements GovernanceEvent {
     
     private final String databaseName;
     
