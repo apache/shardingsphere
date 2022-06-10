@@ -32,7 +32,7 @@ import java.util.Set;
 @Getter
 public enum DirectionType {
     
-    NEXT("NEXT"), 
+    NEXT("NEXT"),
     
     PRIOR("PRIOR"),
     
@@ -62,11 +62,10 @@ public enum DirectionType {
     
     private static final Set<DirectionType> ALL_DIRECTION_TYPES = new HashSet<>(Arrays.asList(ALL, FORWARD_ALL, BACKWARD_ALL));
     
-    private static final Collection<DirectionType> FORWARD_COUNT_DIRECTION_TYPES
-            = new HashSet<>(Arrays.asList(DirectionType.NEXT, DirectionType.COUNT, DirectionType.FORWARD, DirectionType.FORWARD_COUNT));
+    private static final Collection<DirectionType> FORWARD_COUNT_DIRECTION_TYPES =
+            new HashSet<>(Arrays.asList(DirectionType.NEXT, DirectionType.COUNT, DirectionType.FORWARD, DirectionType.FORWARD_COUNT));
     
-    private static final Collection<DirectionType> BACKWARD_COUNT_DIRECTION_TYPES
-            = new HashSet<>(Arrays.asList(DirectionType.PRIOR, DirectionType.BACKWARD, DirectionType.BACKWARD_COUNT));
+    private static final Collection<DirectionType> BACKWARD_COUNT_DIRECTION_TYPES = new HashSet<>(Arrays.asList(DirectionType.PRIOR, DirectionType.BACKWARD, DirectionType.BACKWARD_COUNT));
     
     private final String name;
     

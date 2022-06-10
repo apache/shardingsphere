@@ -44,16 +44,16 @@ public final class FetchOrderByValueGroupsHolder {
     }
     
     /**
-     * Get min result set row counts.
+     * Get min group row counts.
      *
-     * @return min result set row counts
+     * @return min group row counts
      */
     public static Map<String, Long> getMinGroupRowCounts() {
         return MIN_GROUP_ROW_COUNTS.get();
     }
     
     /**
-     * Remove fetch order by value groups.
+     * Remove.
      */
     public static void remove() {
         ORDER_BY_VALUE_GROUPS.remove();
