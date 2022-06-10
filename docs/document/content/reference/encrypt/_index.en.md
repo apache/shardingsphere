@@ -245,7 +245,7 @@ The solution has been continuously launched on JD Digits, providing internal bas
 3. Provides a encryption strategy API interface, users can implement the interface to use a custom encryption strategy for data encryption.
 4. Support switching different encryption strategies.
 5. For online services, it is possible to store plaintext data and ciphertext data synchronously, and decide whether to use plaintext or ciphertext columns for query through configuration. 
-   Without changing the business query SQL, the on-line system can safely and transparently migrate data before and after encryption. 
+Without changing the business query SQL, the on-line system can safely and transparently migrate data before and after encryption.
 
 ## Solution
 
