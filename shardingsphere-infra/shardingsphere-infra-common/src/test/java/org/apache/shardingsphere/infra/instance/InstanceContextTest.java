@@ -49,7 +49,7 @@ public final class InstanceContextTest {
     @Test
     public void assertUpdateInstanceStatus() {
         InstanceDefinition instanceDefinition = mock(InstanceDefinition.class);
-        when(instanceDefinition.getInstanceId()).thenReturn("127.0.0.1@3307");
+        when(instanceDefinition.getInstanceId()).thenReturn("foo_instance_id");
         InstanceContext context = new InstanceContext(new ComputeNodeInstance(instanceDefinition), new WorkerIdGeneratorFixture(Long.MIN_VALUE), modeConfig, lockContext);
         StateType actual = context.getInstance().getState().getCurrentState();
         assertThat(actual, is(StateType.OK));
@@ -76,10 +76,10 @@ public final class InstanceContextTest {
     @Test
     public void assertUpdateLabel() {
         InstanceDefinition instanceDefinition = mock(InstanceDefinition.class);
-        when(instanceDefinition.getInstanceId()).thenReturn("127.0.0.1@3307");
+        when(instanceDefinition.getInstanceId()).thenReturn("foo_instance_id");
         InstanceContext context = new InstanceContext(new ComputeNodeInstance(instanceDefinition), new WorkerIdGeneratorFixture(Long.MIN_VALUE), modeConfig, lockContext);
         Set<String> expected = new LinkedHashSet<>(Arrays.asList("label_1", "label_2"));
-        context.updateLabel("127.0.0.1@3307", expected);
+        context.updateLabel("foo_instance_id", expected);
         Collection<String> actual = context.getInstance().getLabels();
         assertThat(actual, is(expected));
     }
