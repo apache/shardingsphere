@@ -100,7 +100,7 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RALBackendHandlerFactory {
     
-    private static final Map<Class<? extends RALStatement>, Class<? extends RALBackendHandler>> HANDLERS = new HashMap<>();
+    private static final Map<Class<? extends RALStatement>, Class<? extends RALBackendHandler<?>>> HANDLERS = new HashMap<>();
     
     static {
         HANDLERS.put(LabelInstanceStatement.class, LabelInstanceHandler.class);
@@ -156,7 +156,7 @@ public final class RALBackendHandlerFactory {
         return createRALBackendHandler(sqlStatement, connectionSession);
     }
     
-    private static RALBackendHandler<?> newInstance(final Class<? extends RALBackendHandler> clazz) {
+    private static RALBackendHandler<?> newInstance(final Class<? extends RALBackendHandler<?>> clazz) {
         try {
             return clazz.getDeclaredConstructor().newInstance();
         } catch (final ReflectiveOperationException ex) {
@@ -165,7 +165,7 @@ public final class RALBackendHandlerFactory {
     }
     
     private static RALBackendHandler<?> createRALBackendHandler(final RALStatement sqlStatement, final ConnectionSession connectionSession) {
-        Class<? extends RALBackendHandler> clazz = HANDLERS.get(sqlStatement.getClass());
+        Class<? extends RALBackendHandler<?>> clazz = HANDLERS.get(sqlStatement.getClass());
         if (null == clazz) {
             throw new UnsupportedOperationException(String.format("Unsupported SQL statement : %s", sqlStatement.getClass().getCanonicalName()));
         }
