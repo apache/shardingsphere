@@ -19,12 +19,13 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral;
 
 import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.data.impl.TextQueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.sharding.merge.dal.common.MultipleLocalDataMergedResult;
 
 import java.sql.SQLException;
@@ -46,9 +47,9 @@ public abstract class QueryableRALBackendHandler<E extends RALStatement> extends
     private MultipleLocalDataMergedResult mergedResult;
     
     @Override
-    protected final ResponseHeader handle(final ContextManager contextManager, final E sqlStatement) throws SQLException {
+    public final ResponseHeader execute() throws SQLException {
         queryHeaders = createQueryHeader(getColumnNames());
-        mergedResult = createMergedResult(getRows(contextManager));
+        mergedResult = createMergedResult(getRows(ProxyContext.getInstance().getContextManager()));
         return new QueryResponseHeader(queryHeaders);
     }
     
