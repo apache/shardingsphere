@@ -53,7 +53,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.QueryableS
 import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableScalingRALStatement;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.advanced.FormatHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.advanced.FormatSQLHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.advanced.ParseDistSQLBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.advanced.PreviewBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.HintDistSQLBackendHandler;
@@ -132,7 +132,7 @@ public final class RALBackendHandlerFactory {
         HANDLERS.put(ExportDatabaseConfigurationStatement.class.getName(), ExportDatabaseConfigurationHandler.class);
         HANDLERS.put(ParseStatement.class.getName(), ParseDistSQLBackendHandler.class);
         HANDLERS.put(PreviewStatement.class.getName(), PreviewBackendHandler.class);
-        HANDLERS.put(FormatStatement.class.getName(), FormatHandler.class);
+        HANDLERS.put(FormatStatement.class.getName(), FormatSQLHandler.class);
     }
     
     /**
