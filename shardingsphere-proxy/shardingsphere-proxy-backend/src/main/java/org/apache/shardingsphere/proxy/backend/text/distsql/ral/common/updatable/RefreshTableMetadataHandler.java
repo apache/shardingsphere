@@ -33,22 +33,22 @@ import org.apache.shardingsphere.proxy.backend.text.distsql.ral.UpdatableRALBack
 public final class RefreshTableMetadataHandler extends UpdatableRALBackendHandler<RefreshTableMetadataStatement> {
     
     @Override
-    protected void update(final ContextManager contextManager, final RefreshTableMetadataStatement sqlStatement) throws DistSQLException {
+    protected void update(final ContextManager contextManager) throws DistSQLException {
         String databaseName = getDatabaseName();
-        String schemaName = getSchemaName(sqlStatement, databaseName);
-        if (sqlStatement.getResourceName().isPresent()) {
-            if (sqlStatement.getTableName().isPresent()) {
-                contextManager.reloadMetaData(databaseName, schemaName, sqlStatement.getResourceName().get(), sqlStatement.getTableName().get());
+        String schemaName = getSchemaName(databaseName);
+        if (getSqlStatement().getResourceName().isPresent()) {
+            if (getSqlStatement().getTableName().isPresent()) {
+                contextManager.reloadMetaData(databaseName, schemaName, getSqlStatement().getResourceName().get(), getSqlStatement().getTableName().get());
             } else {
-                contextManager.reloadSchemaMetaData(databaseName, schemaName, sqlStatement.getResourceName().get());
+                contextManager.reloadSchemaMetaData(databaseName, schemaName, getSqlStatement().getResourceName().get());
             }
             return;
         }
-        if (sqlStatement.getTableName().isPresent()) {
-            contextManager.reloadMetaData(databaseName, schemaName, sqlStatement.getTableName().get());
-            return;
+        if (getSqlStatement().getTableName().isPresent()) {
+            contextManager.reloadMetaData(databaseName, schemaName, getSqlStatement().getTableName().get());
+        } else {
+            contextManager.reloadMetaData(databaseName);
         }
-        contextManager.reloadMetaData(databaseName);
     }
     
     private String getDatabaseName() {
@@ -62,10 +62,9 @@ public final class RefreshTableMetadataHandler extends UpdatableRALBackendHandle
         return result;
     }
     
-    private String getSchemaName(final RefreshTableMetadataStatement sqlStatement, final String databaseName) {
-        if (sqlStatement.getSchemaName().isPresent()) {
-            return sqlStatement.getSchemaName().get();
-        }
-        return DatabaseTypeEngine.getDefaultSchemaName(getConnectionSession().getDatabaseType(), databaseName);
+    private String getSchemaName(final String databaseName) {
+        return getSqlStatement().getSchemaName().isPresent()
+                ? getSqlStatement().getSchemaName().get()
+                : DatabaseTypeEngine.getDefaultSchemaName(getConnectionSession().getDatabaseType(), databaseName);
     }
 }

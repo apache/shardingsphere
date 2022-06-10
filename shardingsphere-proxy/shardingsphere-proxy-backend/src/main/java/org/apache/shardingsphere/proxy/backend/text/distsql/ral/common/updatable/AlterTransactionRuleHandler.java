@@ -38,7 +38,7 @@ import java.util.Optional;
 public final class AlterTransactionRuleHandler extends UpdatableRALBackendHandler<AlterTransactionRuleStatement> {
     
     @Override
-    protected void update(final ContextManager contextManager, final AlterTransactionRuleStatement sqlStatement) {
+    protected void update(final ContextManager contextManager) {
         ShardingSphereRuleMetaData globalRuleMetaData = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData();
         Collection<ShardingSphereRule> globalRules = globalRuleMetaData.getRules();
         globalRules.removeIf(each -> each instanceof TransactionRule);

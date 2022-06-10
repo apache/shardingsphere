@@ -58,16 +58,16 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
     private static final String DISABLE = "DISABLE";
     
     @Override
-    protected void update(final ContextManager contextManager, final SetReadwriteSplittingStatusStatement sqlStatement) throws DistSQLException {
-        String databaseName = sqlStatement.getDatabase().isPresent() ? sqlStatement.getDatabase().get().getIdentifier().getValue() : getConnectionSession().getDatabaseName();
-        String toBeUpdatedResource = sqlStatement.getResourceName();
+    protected void update(final ContextManager contextManager) throws DistSQLException {
+        String databaseName = getSqlStatement().getDatabase().isPresent() ? getSqlStatement().getDatabase().get().getIdentifier().getValue() : getConnectionSession().getDatabaseName();
+        String toBeUpdatedResource = getSqlStatement().getResourceName();
         checkModeAndPersistRepository(contextManager);
         checkDatabaseName(databaseName);
         checkReadwriteSplittingRule(contextManager, databaseName);
         Map<String, String> replicaResources = getReplicaResources(contextManager, databaseName);
         Map<String, String> disabledResources = getDisabledResources(contextManager, databaseName);
         Map<String, String> autoAwareResources = getAutoAwareResources(contextManager, databaseName);
-        boolean isDisable = DISABLE.equals(sqlStatement.getStatus());
+        boolean isDisable = DISABLE.equals(getSqlStatement().getStatus());
         if (isDisable) {
             checkDisable(contextManager, databaseName, disabledResources.keySet(), toBeUpdatedResource, replicaResources);
         } else {

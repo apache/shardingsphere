@@ -35,9 +35,9 @@ public abstract class UpdatableRALBackendHandler<E extends RALStatement> extends
     
     @Override
     public final ResponseHeader execute() throws SQLException {
-        update(ProxyContext.getInstance().getContextManager(), getSqlStatement());
+        update(ProxyContext.getInstance().getContextManager());
         return new UpdateResponseHeader(getSqlStatement());
     }
     
-    protected abstract void update(ContextManager contextManager, E sqlStatement) throws DistSQLException;
+    protected abstract void update(ContextManager contextManager) throws DistSQLException;
 }

@@ -153,7 +153,7 @@ public final class RALBackendHandlerFactory {
         if (sqlStatement instanceof UpdatableScalingRALStatement) {
             return new UpdatableScalingRALBackendHandler((UpdatableScalingRALStatement) sqlStatement);
         }
-        return getHandler(sqlStatement, connectionSession);
+        return createRALBackendHandler(sqlStatement, connectionSession);
     }
     
     private static RALBackendHandler<?> newInstance(final Class<? extends RALBackendHandler> clazz) {
@@ -164,7 +164,7 @@ public final class RALBackendHandlerFactory {
         }
     }
     
-    private static RALBackendHandler<?> getHandler(final RALStatement sqlStatement, final ConnectionSession connectionSession) {
+    private static RALBackendHandler<?> createRALBackendHandler(final RALStatement sqlStatement, final ConnectionSession connectionSession) {
         Class<? extends RALBackendHandler> clazz = HANDLERS.get(sqlStatement.getClass().getName());
         if (null == clazz) {
             throw new UnsupportedOperationException(String.format("Unsupported SQL statement : %s", sqlStatement.getClass().getCanonicalName()));

@@ -39,24 +39,24 @@ import java.util.stream.Collectors;
 public final class DropTrafficRuleHandler extends UpdatableRALBackendHandler<DropTrafficRuleStatement> {
     
     @Override
-    protected void update(final ContextManager contextManager, final DropTrafficRuleStatement sqlStatement) throws DistSQLException {
+    protected void update(final ContextManager contextManager) throws DistSQLException {
         Optional<TrafficRuleConfiguration> config = ProxyContext.getInstance()
                 .getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRuleConfiguration(TrafficRuleConfiguration.class);
-        if (!sqlStatement.isContainsIfExistClause()) {
+        if (!getSqlStatement().isContainsIfExistClause()) {
             DistSQLException.predictionThrow(config.isPresent(), () -> new RequiredRuleMissedException("Traffic"));
-            checkTrafficRuleConfiguration(sqlStatement, config.get());
+            checkTrafficRuleConfiguration(config.get());
         }
         if (config.isPresent()) {
-            config.get().getTrafficStrategies().removeIf(each -> sqlStatement.getRuleNames().contains(each.getName()));
+            config.get().getTrafficStrategies().removeIf(each -> getSqlStatement().getRuleNames().contains(each.getName()));
             getUnusedAlgorithm(config.get()).forEach(each -> config.get().getTrafficAlgorithms().remove(each));
             getUnusedLoadBalancer(config.get()).forEach(each -> config.get().getLoadBalancers().remove(each));
             updateToRepository(config.get());
         }
     }
     
-    private void checkTrafficRuleConfiguration(final DropTrafficRuleStatement sqlStatement, final TrafficRuleConfiguration config) throws DistSQLException {
+    private void checkTrafficRuleConfiguration(final TrafficRuleConfiguration config) throws DistSQLException {
         Set<String> currentTrafficStrategyNames = config.getTrafficStrategies().stream().map(TrafficStrategyConfiguration::getName).collect(Collectors.toSet());
-        Set<String> notExistRuleNames = sqlStatement.getRuleNames().stream().filter(each -> !currentTrafficStrategyNames.contains(each)).collect(Collectors.toSet());
+        Set<String> notExistRuleNames = getSqlStatement().getRuleNames().stream().filter(each -> !currentTrafficStrategyNames.contains(each)).collect(Collectors.toSet());
         DistSQLException.predictionThrow(notExistRuleNames.isEmpty(), () -> new RequiredRuleMissedException("Traffic"));
     }
     

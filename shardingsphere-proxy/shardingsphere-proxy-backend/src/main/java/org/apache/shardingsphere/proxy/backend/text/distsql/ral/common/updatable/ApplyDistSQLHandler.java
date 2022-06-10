@@ -27,7 +27,7 @@ import org.apache.shardingsphere.proxy.backend.text.distsql.ral.UpdatableRALBack
 public final class ApplyDistSQLHandler extends UpdatableRALBackendHandler<AlterTransactionRuleStatement> {
     
     @Override
-    protected void update(final ContextManager contextManager, final AlterTransactionRuleStatement sqlStatement) {
+    protected void update(final ContextManager contextManager) {
         // TODO Metadata support required
     }
 }

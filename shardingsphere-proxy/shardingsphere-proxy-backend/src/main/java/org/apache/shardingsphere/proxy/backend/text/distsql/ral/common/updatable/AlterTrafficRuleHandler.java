@@ -45,11 +45,11 @@ import java.util.stream.Collectors;
 public final class AlterTrafficRuleHandler extends UpdatableRALBackendHandler<AlterTrafficRuleStatement> {
     
     @Override
-    protected void update(final ContextManager contextManager, final AlterTrafficRuleStatement sqlStatement) throws DistSQLException {
+    protected void update(final ContextManager contextManager) throws DistSQLException {
         Optional<TrafficRuleConfiguration> currentConfig = findCurrentConfiguration();
         DistSQLException.predictionThrow(currentConfig.isPresent(), () -> new RequiredRuleMissedException("Traffic"));
-        check(sqlStatement, currentConfig.get());
-        TrafficRuleConfiguration toBeAlteredConfig = TrafficRuleConverter.convert(sqlStatement.getSegments());
+        check(getSqlStatement(), currentConfig.get());
+        TrafficRuleConfiguration toBeAlteredConfig = TrafficRuleConverter.convert(getSqlStatement().getSegments());
         persistNewRuleConfigurations(toBeAlteredConfig, currentConfig.get());
     }
     

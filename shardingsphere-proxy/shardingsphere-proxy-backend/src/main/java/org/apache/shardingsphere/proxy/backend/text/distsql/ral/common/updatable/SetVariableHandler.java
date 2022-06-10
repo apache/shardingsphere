@@ -43,14 +43,14 @@ import java.util.Properties;
 public final class SetVariableHandler extends UpdatableRALBackendHandler<SetVariableStatement> {
     
     @Override
-    protected void update(final ContextManager contextManager, final SetVariableStatement sqlStatement) throws DistSQLException {
-        Enum<?> enumType = getEnumType(sqlStatement.getName());
+    protected void update(final ContextManager contextManager) throws DistSQLException {
+        Enum<?> enumType = getEnumType(getSqlStatement().getName());
         if (enumType instanceof ConfigurationPropertyKey) {
-            handleConfigurationProperty((ConfigurationPropertyKey) enumType, sqlStatement.getValue());
+            handleConfigurationProperty((ConfigurationPropertyKey) enumType, getSqlStatement().getValue());
         } else if (enumType instanceof VariableEnum) {
-            handleVariables(sqlStatement);
+            handleVariables();
         } else {
-            throw new UnsupportedVariableException(sqlStatement.getName());
+            throw new UnsupportedVariableException(getSqlStatement().getName());
         }
     }
     
@@ -83,8 +83,8 @@ public final class SetVariableHandler extends UpdatableRALBackendHandler<SetVari
         }
     }
     
-    private void handleVariables(final SetVariableStatement setVariableStatement) {
-        VariableEnum variable = VariableEnum.getValueOf(setVariableStatement.getName());
+    private void handleVariables() {
+        VariableEnum variable = VariableEnum.getValueOf(getSqlStatement().getName());
         switch (variable) {
             case AGENT_PLUGINS_ENABLED:
                 Boolean agentPluginsEnabled = BooleanUtils.toBooleanObject(getSqlStatement().getValue());
@@ -94,14 +94,14 @@ public final class SetVariableHandler extends UpdatableRALBackendHandler<SetVari
                 getConnectionSession().getTransactionStatus().setTransactionType(getTransactionType(getSqlStatement().getValue()));
                 break;
             default:
-                throw new UnsupportedVariableException(setVariableStatement.getName());
+                throw new UnsupportedVariableException(getSqlStatement().getName());
         }
     }
     
     private TransactionType getTransactionType(final String transactionTypeName) throws UnsupportedVariableException {
         try {
             return TransactionType.valueOf(transactionTypeName.toUpperCase());
-        } catch (IllegalArgumentException ex) {
+        } catch (final IllegalArgumentException ex) {
             throw new UnsupportedVariableException(transactionTypeName);
         }
     }

@@ -36,23 +36,18 @@ public final class AlterInstanceHandler extends UpdatableRALBackendHandler<Alter
     private static final String XA_RECOVERY_NODES = "xa_recovery_nodes";
     
     @Override
-    protected void update(final ContextManager contextManager, final AlterInstanceStatement sqlStatement) throws DistSQLException {
-        if (XA_RECOVERY_NODES.equalsIgnoreCase(sqlStatement.getKey())) {
-            setXaRecoveryId(contextManager, sqlStatement);
-        } else {
-            throw new UnsupportedOperationException(String.format("%s is not supported", sqlStatement.getKey()));
+    protected void update(final ContextManager contextManager) throws DistSQLException {
+        if (!XA_RECOVERY_NODES.equalsIgnoreCase(getSqlStatement().getKey())) {
+            throw new UnsupportedOperationException(String.format("%s is not supported", getSqlStatement().getKey()));
         }
-    }
-    
-    private void setXaRecoveryId(final ContextManager contextManager, final AlterInstanceStatement sqlStatement) {
         Optional<MetaDataPersistService> persistService = contextManager.getMetaDataContexts().getPersistService();
         if (!persistService.isPresent()) {
-            throw new UnsupportedOperationException(String.format("No persistence configuration found, unable to set '%s'", sqlStatement.getKey()));
+            throw new UnsupportedOperationException(String.format("No persistence configuration found, unable to set '%s'", getSqlStatement().getKey()));
         }
-        if (!contextManager.getInstanceContext().getComputeNodeInstanceById(sqlStatement.getInstanceId()).isPresent()) {
-            throw new UnsupportedOperationException(String.format("'%s' does not exist", sqlStatement.getInstanceId()));
+        if (!contextManager.getInstanceContext().getComputeNodeInstanceById(getSqlStatement().getInstanceId()).isPresent()) {
+            throw new UnsupportedOperationException(String.format("'%s' does not exist", getSqlStatement().getInstanceId()));
         }
         // TODO need support standalone mode
-        ShardingSphereEventBus.getInstance().post(new XaRecoveryIdChangedEvent(sqlStatement.getInstanceId(), Splitter.on(",").splitToList(sqlStatement.getValue())));
+        ShardingSphereEventBus.getInstance().post(new XaRecoveryIdChangedEvent(getSqlStatement().getInstanceId(), Splitter.on(",").splitToList(getSqlStatement().getValue())));
     }
 }

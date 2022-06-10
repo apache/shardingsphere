@@ -37,7 +37,7 @@ import java.util.Optional;
 public final class AlterSQLParserRuleHandler extends UpdatableRALBackendHandler<AlterSQLParserRuleStatement> {
     
     @Override
-    protected void update(final ContextManager contextManager, final AlterSQLParserRuleStatement sqlStatement) {
+    protected void update(final ContextManager contextManager) {
         Optional<SQLParserRuleConfiguration> currentConfig = findCurrentConfiguration();
         SQLParserRuleConfiguration toBeAlteredRuleConfig = createSQLParserRuleConfiguration(currentConfig.orElseGet(() -> new DefaultSQLParserRuleConfigurationBuilder().build()));
         Collection<RuleConfiguration> globalRuleConfigs = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations();
