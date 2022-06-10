@@ -38,16 +38,16 @@ import java.util.Optional;
 public final class LabelInstanceHandler extends UpdatableRALBackendHandler<LabelInstanceStatement> {
     
     @Override
-    public void update(final ContextManager contextManager, final LabelInstanceStatement sqlStatement) {
+    public void update(final ContextManager contextManager) {
         MetaDataPersistService persistService = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getPersistService().orElse(null);
         if (null == persistService || null == persistService.getRepository() || persistService.getRepository() instanceof StandalonePersistRepository) {
             throw new UnsupportedOperationException("Labels can only be added in cluster mode");
         }
-        String instanceId = sqlStatement.getInstanceId();
+        String instanceId = getSqlStatement().getInstanceId();
         Optional<ComputeNodeInstance> computeNodeInstance = contextManager.getInstanceContext().getComputeNodeInstanceById(instanceId);
         if (computeNodeInstance.isPresent()) {
-            Collection<String> labels = new LinkedHashSet<>(sqlStatement.getLabels());
-            if (!sqlStatement.isOverwrite() && null != computeNodeInstance.get().getLabels()) {
+            Collection<String> labels = new LinkedHashSet<>(getSqlStatement().getLabels());
+            if (!getSqlStatement().isOverwrite() && null != computeNodeInstance.get().getLabels()) {
                 labels.addAll(computeNodeInstance.get().getLabels());
             }
             ShardingSphereEventBus.getInstance().post(new LabelsChangedEvent(instanceId, new LinkedList<>(labels)));

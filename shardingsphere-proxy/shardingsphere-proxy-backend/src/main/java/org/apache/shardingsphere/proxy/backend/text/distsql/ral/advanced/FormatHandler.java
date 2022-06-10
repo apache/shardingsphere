@@ -41,7 +41,7 @@ public final class FormatHandler extends QueryableRALBackendHandler<FormatStatem
     
     @Override
     protected Collection<String> getColumnNames() {
-        return Collections.singletonList(FORMATTED_RESULT);
+        return Collections.singleton(FORMATTED_RESULT);
     }
     
     @Override
