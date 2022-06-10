@@ -33,8 +33,8 @@ public final class ComputeNodeTest {
     
     @Test
     public void assertGetOnlineInstanceNodePath() {
-        assertThat(ComputeNode.getOnlineInstanceNodePath("127.0.0.1@3307", InstanceType.PROXY), is("/nodes/compute_nodes/online/proxy/127.0.0.1@3307"));
-        assertThat(ComputeNode.getOnlineInstanceNodePath("127.0.0.1@3307", InstanceType.JDBC), is("/nodes/compute_nodes/online/jdbc/127.0.0.1@3307"));
+        assertThat(ComputeNode.getOnlineInstanceNodePath("foo_instance_1", InstanceType.PROXY), is("/nodes/compute_nodes/online/proxy/foo_instance_1"));
+        assertThat(ComputeNode.getOnlineInstanceNodePath("foo_instance_2", InstanceType.JDBC), is("/nodes/compute_nodes/online/jdbc/foo_instance_2"));
     }
     
     @Test
@@ -44,37 +44,37 @@ public final class ComputeNodeTest {
     
     @Test
     public void assertGetProcessTriggerInstanceIdNodePath() {
-        assertThat(ComputeNode.getProcessTriggerInstanceIdNodePath("127.0.0.1@3307", "foo_process_id"),
-                is("/nodes/compute_nodes/process_trigger/127.0.0.1@3307:foo_process_id"));
-        assertThat(ComputeNode.getProcessTriggerInstanceIdNodePath("127.0.0.1@3307", "foo_process_id"),
-                is("/nodes/compute_nodes/process_trigger/127.0.0.1@3307:foo_process_id"));
+        assertThat(ComputeNode.getProcessTriggerInstanceIdNodePath("foo_instance", "foo_process_id"),
+                is("/nodes/compute_nodes/process_trigger/foo_instance:foo_process_id"));
+        assertThat(ComputeNode.getProcessTriggerInstanceIdNodePath("foo_instance", "foo_process_id"),
+                is("/nodes/compute_nodes/process_trigger/foo_instance:foo_process_id"));
     }
     
     @Test
     public void assertGetInstanceLabelsNodePath() {
-        assertThat(ComputeNode.getInstanceLabelsNodePath("127.0.0.1@3307"), is("/nodes/compute_nodes/labels/127.0.0.1@3307"));
+        assertThat(ComputeNode.getInstanceLabelsNodePath("foo_instance"), is("/nodes/compute_nodes/labels/foo_instance"));
     }
     
     @Test
     public void assertGetInstanceWorkerIdNodePath() {
-        assertThat(ComputeNode.getInstanceWorkerIdNodePath("127.0.0.1@3307"), is("/nodes/compute_nodes/worker_id/127.0.0.1@3307"));
+        assertThat(ComputeNode.getInstanceWorkerIdNodePath("foo_instance"), is("/nodes/compute_nodes/worker_id/foo_instance"));
     }
     
     @Test
     public void assertGetInstanceIdByComputeNodePath() {
-        assertThat(ComputeNode.getInstanceIdByComputeNode("/nodes/compute_nodes/status/127.0.0.1@3307"), is("127.0.0.1@3307"));
-        assertThat(ComputeNode.getInstanceIdByComputeNode("/nodes/compute_nodes/worker_id/127.0.0.1@3308"), is("127.0.0.1@3308"));
-        assertThat(ComputeNode.getInstanceIdByComputeNode("/nodes/compute_nodes/labels/127.0.0.1@3309"), is("127.0.0.1@3309"));
+        assertThat(ComputeNode.getInstanceIdByComputeNode("/nodes/compute_nodes/status/foo_instance_1"), is("foo_instance_1"));
+        assertThat(ComputeNode.getInstanceIdByComputeNode("/nodes/compute_nodes/worker_id/foo_instance_2"), is("foo_instance_2"));
+        assertThat(ComputeNode.getInstanceIdByComputeNode("/nodes/compute_nodes/labels/foo_instance_3"), is("foo_instance_3"));
     }
     
     @Test
     public void assertGetInstanceStatusNodePath() {
-        assertThat(ComputeNode.getInstanceStatusNodePath("127.0.0.1@3307"), is("/nodes/compute_nodes/status/127.0.0.1@3307"));
+        assertThat(ComputeNode.getInstanceStatusNodePath("foo_instance"), is("/nodes/compute_nodes/status/foo_instance"));
     }
     
     @Test
     public void assertGetInstanceXaRecoveryIdNodePath() {
-        assertThat(ComputeNode.getInstanceXaRecoveryIdNodePath("127.0.0.1@3307", "127.0.0.1@3307"), is("/nodes/compute_nodes/xa_recovery_id/127.0.0.1@3307/127.0.0.1@3307"));
+        assertThat(ComputeNode.getInstanceXaRecoveryIdNodePath("foo_xa_recovery_id", "foo_instance"), is("/nodes/compute_nodes/xa_recovery_id/foo_xa_recovery_id/foo_instance"));
     }
     
     @Test
