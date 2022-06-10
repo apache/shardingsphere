@@ -467,7 +467,7 @@ copy
     ;
 
 copyWithTableOrQuery
-    : COPY (tableName columnNames? | LP_ preparableStmt RP_) (FROM | TO) (fileName | PROGRAM STRING_ | STDIN | STDOUT) (WITH? LP_ copyOptionList RP_)? whereClause?
+    : COPY (qualifiedName columnNames? | LP_ preparableStmt RP_) (FROM | TO) (fileName | PROGRAM STRING_ | STDIN | STDOUT) (WITH? LP_ copyOptionList RP_)? whereClause?
     ;
 
 copyOptionList
@@ -490,11 +490,11 @@ copyOption
 
 
 copyWithTableOrQueryBinaryCsv
-    : COPY (tableName columnNames? | LP_ preparableStmt RP_) (FROM | TO) (fileName | STDIN | STDOUT) (WITH? BINARY? (DELIMITER AS? STRING_)? (NULL AS? STRING_)? (CSV HEADER? (QUOTE AS? STRING_)? (ESCAPE AS? STRING_)? (FORCE NOT NULL columnName (COMMA_ columnName)*)? (FORCE QUOTE (columnName (COMMA_ columnName)* | ASTERISK_))?)?)?
+    : COPY (qualifiedName columnNames? | LP_ preparableStmt RP_) (FROM | TO) (fileName | STDIN | STDOUT) (WITH? BINARY? (DELIMITER AS? STRING_)? (NULL AS? STRING_)? (CSV HEADER? (QUOTE AS? STRING_)? (ESCAPE AS? STRING_)? (FORCE NOT NULL columnName (COMMA_ columnName)*)? (FORCE QUOTE (columnName (COMMA_ columnName)* | ASTERISK_))?)?)?
     ;
 
 copyWithTableBinary
-    : COPY BINARY? tableName (FROM | TO) (fileName | STDIN | STDOUT) (USING? DELIMITERS STRING_)? (WITH NULL AS STRING_)?
+    : COPY BINARY? qualifiedName (FROM | TO) (fileName | STDIN | STDOUT) (USING? DELIMITERS STRING_)? (WITH NULL AS STRING_)?
     ;
 
 fetch

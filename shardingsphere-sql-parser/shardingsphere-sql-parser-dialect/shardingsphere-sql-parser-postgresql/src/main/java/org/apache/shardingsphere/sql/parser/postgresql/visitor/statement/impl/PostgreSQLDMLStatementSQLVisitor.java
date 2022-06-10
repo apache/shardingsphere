@@ -104,8 +104,8 @@ public final class PostgreSQLDMLStatementSQLVisitor extends PostgreSQLStatementS
     @Override
     public ASTNode visitCopyWithTableOrQuery(final CopyWithTableOrQueryContext ctx) {
         PostgreSQLCopyStatement result = new PostgreSQLCopyStatement();
-        if (null != ctx.tableName()) {
-            result.setTableSegment((SimpleTableSegment) visit(ctx.tableName()));
+        if (null != ctx.qualifiedName()) {
+            result.setTableSegment((SimpleTableSegment) visit(ctx.qualifiedName()));
             if (null != ctx.columnNames()) {
                 result.getColumns().addAll(((CollectionValue<ColumnSegment>) visit(ctx.columnNames())).getValue());
             }
@@ -133,8 +133,8 @@ public final class PostgreSQLDMLStatementSQLVisitor extends PostgreSQLStatementS
     @Override
     public ASTNode visitCopyWithTableOrQueryBinaryCsv(final CopyWithTableOrQueryBinaryCsvContext ctx) {
         PostgreSQLCopyStatement result = new PostgreSQLCopyStatement();
-        if (null != ctx.tableName()) {
-            result.setTableSegment((SimpleTableSegment) visit(ctx.tableName()));
+        if (null != ctx.qualifiedName()) {
+            result.setTableSegment((SimpleTableSegment) visit(ctx.qualifiedName()));
             if (null != ctx.columnNames()) {
                 result.getColumns().addAll(((CollectionValue<ColumnSegment>) visit(ctx.columnNames())).getValue());
             }
@@ -148,8 +148,8 @@ public final class PostgreSQLDMLStatementSQLVisitor extends PostgreSQLStatementS
     @Override
     public ASTNode visitCopyWithTableBinary(final CopyWithTableBinaryContext ctx) {
         PostgreSQLCopyStatement result = new PostgreSQLCopyStatement();
-        if (null != ctx.tableName()) {
-            result.setTableSegment((SimpleTableSegment) visit(ctx.tableName()));
+        if (null != ctx.qualifiedName()) {
+            result.setTableSegment((SimpleTableSegment) visit(ctx.qualifiedName()));
         }
         return result;
     }
