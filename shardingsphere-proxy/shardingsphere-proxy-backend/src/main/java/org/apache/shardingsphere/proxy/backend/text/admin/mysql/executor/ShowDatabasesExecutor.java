@@ -52,14 +52,14 @@ public final class ShowDatabasesExecutor implements DatabaseAdminQueryExecutor {
     
     @Override
     public void execute(final ConnectionSession connectionSession) {
-        mergedResult = new LocalDataMergedResult(Collections.singleton(getDatabaseNames(connectionSession)));
+        mergedResult = new LocalDataMergedResult(getDatabaseNames(connectionSession));
     }
     
-    private List<Object> getDatabaseNames(final ConnectionSession connectionSession) {
-        List<Object> result = new LinkedList<>();
+    private Collection<List<Object>> getDatabaseNames(final ConnectionSession connectionSession) {
+        List<List<Object>> result = new LinkedList<>();
         for (String each : ProxyContext.getInstance().getAllDatabaseNames()) {
             if (checkLikePattern(each) && SQLCheckEngine.check(each, getRules(each), connectionSession.getGrantee())) {
-                result.add(each);
+                result.add(Collections.singletonList(each));
             }
         }
         return result;
