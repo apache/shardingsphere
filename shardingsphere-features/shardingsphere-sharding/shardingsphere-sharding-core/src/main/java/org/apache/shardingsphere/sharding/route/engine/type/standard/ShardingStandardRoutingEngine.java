@@ -41,13 +41,7 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Sharding standard routing engine.
@@ -202,6 +196,16 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
     }
     
     private Collection<String> routeDataSources(final TableRule tableRule, final ShardingStrategy databaseShardingStrategy, final List<ShardingConditionValue> databaseShardingValues) {
+        //先判断是否存在Hit上下文路由标，如果有,则优先根据用户指定的规则路由库
+        Collection<Comparable<?>> databaseShardings = HintManager.getDatabaseShardingValues(tableRule.getLogicTable());
+        if (databaseShardings != null && databaseShardings.size() > 0) {
+            List<String> list = new ArrayList<>();
+            for (Comparable<?> databaseSharding : databaseShardings) {
+                list.add((String) databaseSharding);
+            }
+            return list;
+        }
+        //没有Hit路由规则，则按sharding 规则路由
         if (databaseShardingValues.isEmpty()) {
             return tableRule.getActualDatasourceNames();
         }
@@ -214,15 +218,32 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
     
     private Collection<DataNode> routeTables(final TableRule tableRule, final String routedDataSource,
                                              final ShardingStrategy tableShardingStrategy, final List<ShardingConditionValue> tableShardingValues) {
-        Collection<String> availableTargetTables = tableRule.getActualTableNames(routedDataSource);
-        Collection<String> routedTables = tableShardingValues.isEmpty()
-                ? availableTargetTables
-                : tableShardingStrategy.doSharding(availableTargetTables, tableShardingValues, tableRule.getTableDataNode(), properties);
+        Collection<Comparable<?>> tableShardings = HintManager.getTableShardingValues(tableRule.getLogicTable());
+        Collection<String> routedTables;
+        if (tableShardings != null && tableShardings.size() > 0) {
+            routedTables = new ArrayList<>(2);
+            for (Comparable<?> tableSharding : tableShardings) {
+                routedTables.add((String)tableSharding);
+            }
+        } else {
+            Collection<String> availableTargetTables = tableRule.getActualTableNames(routedDataSource);
+            routedTables = new LinkedHashSet<>(tableShardingValues.isEmpty()
+                    ? availableTargetTables : tableShardingStrategy.doSharding(availableTargetTables, tableShardingValues, tableRule.getTableDataNode(),properties));
+        }
         Collection<DataNode> result = new LinkedList<>();
         for (String each : routedTables) {
             result.add(new DataNode(routedDataSource, each));
         }
         return result;
+//        Collection<String> availableTargetTables = tableRule.getActualTableNames(routedDataSource);
+//        Collection<String> routedTables = tableShardingValues.isEmpty()
+//                ? availableTargetTables
+//                : tableShardingStrategy.doSharding(availableTargetTables, tableShardingValues, tableRule.getTableDataNode(), properties);
+//        Collection<DataNode> result = new LinkedList<>();
+//        for (String each : routedTables) {
+//            result.add(new DataNode(routedDataSource, each));
+//        }
+//        return result;
     }
     
     private ShardingStrategy createShardingStrategy(final ShardingStrategyConfiguration shardingStrategyConfig, final Map<String, ShardingAlgorithm> shardingAlgorithms,
