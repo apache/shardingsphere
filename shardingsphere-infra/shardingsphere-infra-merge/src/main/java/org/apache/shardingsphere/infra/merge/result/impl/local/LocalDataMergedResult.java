@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.merge.dal.common;
+package org.apache.shardingsphere.infra.merge.result.impl.local;
 
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 
