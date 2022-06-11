@@ -15,14 +15,14 @@ SHOW ENCRYPT TABLE RULE tableName [from databaseName]
 ## 返回值说明
 
 | 列                        | 说明                |
-| ---------------           | ----------         |
+| ------------------------- | ------------------ |
 | table                     | 逻辑表名             |
 | logic_column              | 逻辑列名             |
 | logic_data_type           | 逻辑列数据类型        |
 | cipher_column             | 密文列名             |
 | cipher_data_type          | 密文列数据类型        |
 | plain_column              | 明文列名             |
-| plain_data_type           | 明文列数据类型          |
+| plain_data_type           | 明文列数据类型        |
 | assisted_query_column     | 辅助查询列名          |
 | assisted_query_data_type  | 辅助查询列数据类型     |
 | encryptor_type            | 加密算法类型          |
