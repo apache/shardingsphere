@@ -32,13 +32,14 @@ public final class PostgreSQLJdbcQueryPropertiesExtensionTest {
     
     @Test
     public void assertExtendQueryProperties() {
-        Optional<JdbcQueryPropertiesExtension> extensionOptional = JdbcQueryPropertiesExtensionFactory.getInstance("PostgreSQL");
-        assertTrue(extensionOptional.isPresent());
-        
-        JdbcQueryPropertiesExtension extension = extensionOptional.get();
-        assertThat(extension, instanceOf(PostgreSQLJdbcQueryPropertiesExtension.class));
-        assertThat(extension.getType(), equalTo("PostgreSQL"));
-        assertTrue(extension.extendQueryProperties().isEmpty());
+        Optional<JdbcQueryPropertiesExtension> extension = JdbcQueryPropertiesExtensionFactory.getInstance("PostgreSQL");
+        assertTrue(extension.isPresent());
+        assertExtension(extension.get());
     }
     
+    private void assertExtension(final JdbcQueryPropertiesExtension actual) {
+        assertThat(actual, instanceOf(PostgreSQLJdbcQueryPropertiesExtension.class));
+        assertThat(actual.getType(), equalTo("PostgreSQL"));
+        assertTrue(actual.extendQueryProperties().isEmpty());
+    }
 }

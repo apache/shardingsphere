@@ -32,13 +32,14 @@ public final class OpenGaussJdbcQueryPropertiesExtensionTest {
     
     @Test
     public void assertExtendQueryProperties() {
-        Optional<JdbcQueryPropertiesExtension> extensionOptional = JdbcQueryPropertiesExtensionFactory.getInstance("openGauss");
-        assertTrue(extensionOptional.isPresent());
-        
-        JdbcQueryPropertiesExtension extension = extensionOptional.get();
-        assertThat(extension, instanceOf(OpenGaussJdbcQueryPropertiesExtension.class));
-        assertThat(extension.getType(), equalTo("openGauss"));
-        assertTrue(extension.extendQueryProperties().isEmpty());
+        Optional<JdbcQueryPropertiesExtension> extension = JdbcQueryPropertiesExtensionFactory.getInstance("openGauss");
+        assertTrue(extension.isPresent());
+        assertExtension(extension.get());
     }
     
+    private void assertExtension(final JdbcQueryPropertiesExtension actual) {
+        assertThat(actual, instanceOf(OpenGaussJdbcQueryPropertiesExtension.class));
+        assertThat(actual.getType(), equalTo("openGauss"));
+        assertTrue(actual.extendQueryProperties().isEmpty());
+    }
 }
