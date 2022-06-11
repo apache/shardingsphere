@@ -17,8 +17,16 @@
 
 package org.apache.shardingsphere.infra.database.type;
 
+import java.util.Properties;
+import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
+import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.dialect.MariaDBDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.OracleDatabaseType;
+import org.apache.shardingsphere.infra.fixture.FixtureRuleConfiguration;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -180,5 +188,31 @@ public final class DatabaseTypeEngineTest {
     @Test
     public void assertGetTrunkDatabaseTypeNameWithBranchDatabaseType() {
         assertThat(DatabaseTypeEngine.getTrunkDatabaseTypeName(new MariaDBDatabaseType()), is("MySQL"));
+    }
+    
+    @Test
+    public void assertGetProtocolType() {
+        Properties trunkDatabaseProps = new Properties();
+        trunkDatabaseProps.setProperty(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE.getKey(), "H2");
+        DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.singletonList(new FixtureRuleConfiguration()));
+        assertThat(DatabaseTypeEngine.getProtocolType(Collections.singletonMap("logic_db", databaseConfig), new ConfigurationProperties(trunkDatabaseProps)), instanceOf(MySQLDatabaseType.class));
+        Properties noTrunkDatabaseProps = new Properties();
+        noTrunkDatabaseProps.setProperty(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE.getKey(), "Oracle");
+        assertThat(DatabaseTypeEngine.getProtocolType(Collections.singletonMap("logic_db", databaseConfig), new ConfigurationProperties(noTrunkDatabaseProps)), instanceOf(OracleDatabaseType.class));
+    }
+    
+    @Test
+    public void assertGetStorageType() throws SQLException {
+        DataSource datasource = mockDataSource(DatabaseTypeFactory.getInstance("MySQL"));
+        DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.singletonMap("", datasource), Collections.singletonList(new FixtureRuleConfiguration()));
+        assertThat(DatabaseTypeEngine.getStorageType(Collections.singletonMap("logic_db", databaseConfig)), instanceOf(MySQLDatabaseType.class));
+    }
+    
+    @Test
+    public void assertGetDefaultSchemaName() {
+        DatabaseType schemaSupportDatabaseType = DatabaseTypeFactory.getInstance("openGauss");
+        assertThat(DatabaseTypeEngine.getDefaultSchemaName(schemaSupportDatabaseType, ""), is("public"));
+        DatabaseType schemaNoSupportDatabaseType = DatabaseTypeFactory.getInstance("MySQL");
+        assertThat(DatabaseTypeEngine.getDefaultSchemaName(schemaNoSupportDatabaseType, "MySQL"), is("MySQL"));
     }
 }
