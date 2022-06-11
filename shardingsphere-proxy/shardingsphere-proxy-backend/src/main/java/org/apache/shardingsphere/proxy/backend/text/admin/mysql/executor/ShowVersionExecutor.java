@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.ra
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminQueryExecutor;
-import org.apache.shardingsphere.sharding.merge.dal.common.SingleLocalDataMergedResult;
+import org.apache.shardingsphere.sharding.merge.dal.common.LocalDataMergedResult;
 
 import java.sql.Types;
 import java.util.Collections;
@@ -42,7 +42,7 @@ public final class ShowVersionExecutor implements DatabaseAdminQueryExecutor {
     
     @Override
     public void execute(final ConnectionSession connectionSession) {
-        mergedResult = new SingleLocalDataMergedResult(Collections.singleton(MySQLServerInfo.getServerVersion(connectionSession.getDatabaseName())));
+        mergedResult = new LocalDataMergedResult(Collections.singleton(Collections.singletonList(MySQLServerInfo.getServerVersion(connectionSession.getDatabaseName()))));
     }
     
     @Override

@@ -30,13 +30,13 @@ import java.util.List;
 /**
  * Merged result for multiple local data.
  */
-public final class MultipleLocalDataMergedResult implements MergedResult {
+public final class LocalDataMergedResult implements MergedResult {
     
     private final Iterator<List<Object>> rows;
     
     private List<Object> currentRow;
     
-    public MultipleLocalDataMergedResult(final Collection<List<Object>> rows) {
+    public LocalDataMergedResult(final Collection<List<Object>> rows) {
         this.rows = rows.iterator();
     }
     

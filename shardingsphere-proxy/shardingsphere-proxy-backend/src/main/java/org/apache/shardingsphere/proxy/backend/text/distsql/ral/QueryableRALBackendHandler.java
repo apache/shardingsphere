@@ -27,7 +27,7 @@ import org.apache.shardingsphere.proxy.backend.response.data.impl.TextQueryRespo
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
-import org.apache.shardingsphere.sharding.merge.dal.common.MultipleLocalDataMergedResult;
+import org.apache.shardingsphere.sharding.merge.dal.common.LocalDataMergedResult;
 
 import java.sql.SQLException;
 import java.sql.Types;
@@ -59,7 +59,7 @@ public abstract class QueryableRALBackendHandler<E extends RALStatement> extends
     }
     
     private MergedResult createMergedResult() throws SQLException {
-        return new MultipleLocalDataMergedResult(getRows(ProxyContext.getInstance().getContextManager()));
+        return new LocalDataMergedResult(getRows(ProxyContext.getInstance().getContextManager()));
     }
     
     @Override

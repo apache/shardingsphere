@@ -34,7 +34,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.QueryRespon
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.admin.postgresql.executor.SelectTableExecutor;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
-import org.apache.shardingsphere.sharding.merge.dal.common.SingleLocalDataMergedResult;
+import org.apache.shardingsphere.sharding.merge.dal.common.LocalDataMergedResult;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,6 +47,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -70,7 +71,7 @@ public final class DatabaseAdminQueryBackendHandlerTest extends ProxyContextRest
         ProxyContext.init(contextManager);
         when(connectionSession.getDatabaseName()).thenReturn("db");
         SelectTableExecutor executor = mock(SelectTableExecutor.class, RETURNS_DEEP_STUBS);
-        MergedResult mergedResult = new SingleLocalDataMergedResult(Arrays.asList("demo_ds_0", "demo_ds_1"));
+        MergedResult mergedResult = new LocalDataMergedResult(Collections.singleton(Arrays.asList("demo_ds_0", "demo_ds_1")));
         when(executor.getMergedResult()).thenReturn(mergedResult);
         when(executor.getQueryResultMetaData().getColumnCount()).thenReturn(1);
         handler = new DatabaseAdminQueryBackendHandler(connectionSession, executor);
@@ -95,12 +96,14 @@ public final class DatabaseAdminQueryBackendHandlerTest extends ProxyContextRest
     public void assertNext() {
         handler.execute();
         assertTrue(handler.next());
+        assertFalse(handler.next());
     }
     
     @SneakyThrows
     @Test
     public void assertGetRowData() {
         handler.execute();
+        assertTrue(handler.next());
         assertThat(handler.getRowData().size(), is(1));
     }
 }
