@@ -15,35 +15,35 @@ RAL (Resource & Rule Administration Language) 为 Apache ShardingSphere 的管�
 | SET SHARDING HINT DATABASE_VALUE = yy                | 针对当前连接，设置 hint 仅对数据库分片有效，并添加分片值，yy：数据库分片值 | SET SHARDING HINT DATABASE_VALUE = 100         |
 | ADD SHARDING HINT DATABASE_VALUE xx = yy             | 针对当前连接，为表 xx 添加分片值 yy，xx：逻辑表名称，yy：数据库分片值     | ADD SHARDING HINT DATABASE_VALUE t_order= 100 |
 | ADD SHARDING HINT TABLE_VALUE xx = yy                | 针对当前连接，为表 xx 添加分片值 yy，xx：逻辑表名称，yy：表分片值        | ADD SHARDING HINT TABLE_VALUE t_order = 100   |
-| CLEAR HINT SETTINGS                                          | 针对当前连接，清除 hint 所有设置                                    | CLEAR HINT                                   |
+| CLEAR HINT SETTINGS                                  | 针对当前连接，清除 hint 所有设置                                    | CLEAR HINT                                    |
 | CLEAR [SHARDING HINT / READWRITE_SPLITTING HINT]     | 针对当前连接，清除 sharding 或 readwrite_splitting 的 hint 设置     | CLEAR READWRITE_SPLITTING HINT                |
 | SHOW [SHARDING / READWRITE_SPLITTING] HINT STATUS    | 针对当前连接，查询 sharding 或 readwrite_splitting 的 hint 设置     | SHOW READWRITE_SPLITTING HINT STATUS          |
 
 ## 弹性伸缩
 
-| 语句                                                 | 说明                                                           | 示例                                            |
-|:--------------------------------------------------- |:------------------------------------------------------------- |:----------------------------------------------- |
-| SHOW SCALING LIST                                   | 查询运行列表                                                    | SHOW SCALING LIST                               |
-| SHOW SCALING STATUS jobId                            | 查询任务状态，xx：任务 id                                         | SHOW SCALING STATUS 1234                        |
-| START SCALING jobId                                    | 开始运行任务，xx：任务 id                                         | START SCALING 1234                              |
-| STOP SCALING jobId                                     | 停止运行任务，xx：任务 id                                         | STOP SCALING 12345                              |
-| DROP SCALING jobId                                     | 移除任务，xx：任务 id                                            | DROP SCALING 1234                               |
-| RESET SCALING jobId                                    | 重置任务进度，xx：任务 id                                         | RESET SCALING 1234                              |
-| CHECK SCALING jobId                                    | 数据一致性校验，使用 `server.yaml` 里的校验算法，xx：任务 id         | CHECK SCALING 1234                              |
-| SHOW SCALING CHECK ALGORITHMS                       | 展示可用的一致性校验算法                                          | SHOW SCALING CHECK ALGORITHMS                   |
-| CHECK SCALING {jobId} by type(name={algorithmType}) | 数据一致性校验，使用指定的校验算法                                  | CHECK SCALING 1234 by type(name=DEFAULT)        |
-| STOP SCALING SOURCE WRITING jobId                      | 旧的 ShardingSphere 数据源停写，xx：任务 id                        | STOP SCALING SOURCE WRITING 1234                |
-| RESTORE SCALING SOURCE WRITING jobId                   | 旧的 ShardingSphere 数据源恢复写，xx：任务 id                      | RESTORE SCALING SOURCE WRITING 1234             |
-| APPLY SCALING jobId                                    | 切换至新的 ShardingSphere 元数据，xx：任务 id                      | APPLY SCALING 1234                              |
+| 语句                                                 | 说明                                                   | 示例                                     |
+|:--------------------------------------------------- |:----------------------------------------------------- |:--------------------------------------- |
+| SHOW SCALING LIST                                   | 查询运行列表                                            | SHOW SCALING LIST                        |
+| SHOW SCALING STATUS jobId                           | 查询任务状态，xx：任务 id                                | SHOW SCALING STATUS 1234                 |
+| START SCALING jobId                                 | 开始运行任务，xx：任务 id                                | START SCALING 1234                       |
+| STOP SCALING jobId                                  | 停止运行任务，xx：任务 id                                | STOP SCALING 12345                       |
+| DROP SCALING jobId                                  | 移除任务，xx：任务 id                                   | DROP SCALING 1234                        |
+| RESET SCALING jobId                                 | 重置任务进度，xx：任务 id                                | RESET SCALING 1234                       |
+| CHECK SCALING jobId                                 | 数据一致性校验，使用 `server.yaml` 里的校验算法，xx：任务 id | CHECK SCALING 1234                       |
+| SHOW SCALING CHECK ALGORITHMS                       | 展示可用的一致性校验算法                                  | SHOW SCALING CHECK ALGORITHMS            |
+| CHECK SCALING {jobId} by type(name={algorithmType}) | 数据一致性校验，使用指定的校验算法                          | CHECK SCALING 1234 by type(name=DEFAULT) |
+| STOP SCALING SOURCE WRITING jobId                   | 旧的 ShardingSphere 数据源停写，xx：任务 id               | STOP SCALING SOURCE WRITING 1234         |
+| RESTORE SCALING SOURCE WRITING jobId                | 旧的 ShardingSphere 数据源恢复写，xx：任务 id             | RESTORE SCALING SOURCE WRITING 1234      |
+| APPLY SCALING jobId                                 | 切换至新的 ShardingSphere 元数据，xx：任务 id             | APPLY SCALING 1234                       |
 
 ## 熔断
 
-| 语句                                                                              | 说明                                                | 示例                                         |
-|:--------------------------------------------------------------------------------|:-------------------------------------------------- |:-------------------------------------------|
-| [ENABLE / DISABLE] READWRITE_SPLITTING (READ)? resourceName [FROM databaseName] | 启用 / 禁用读库                                      | ENABLE READWRITE_SPLITTING READ resource_0 |
-| [ENABLE / DISABLE] INSTANCE instanceId                                          | 启用 / 禁用 proxy 实例                               | DISABLE INSTANCE instance_1                |
-| SHOW INSTANCE LIST                                                              | 查询 proxy 实例信息                                  | SHOW INSTANCE LIST                         |
-| SHOW READWRITE_SPLITTING (READ)? resourceName [FROM databaseName]               | 查询所有读库的状态                                    | SHOW READWRITE_SPLITTING READ RESOURCES    |
+| 语句                                                                             | 说明                  | 示例                                       |
+|:------------------------------------------------------------------------------- |:-------------------- |:------------------------------------------ |
+| [ENABLE / DISABLE] READWRITE_SPLITTING (READ)? resourceName [FROM databaseName] | 启用 / 禁用读库        | ENABLE READWRITE_SPLITTING READ resource_0 |
+| [ENABLE / DISABLE] INSTANCE instanceId                                          | 启用 / 禁用 proxy 实例 | DISABLE INSTANCE instance_1                |
+| SHOW INSTANCE LIST                                                              | 查询 proxy 实例信息    | SHOW INSTANCE LIST                         |
+| SHOW READWRITE_SPLITTING (READ)? resourceName [FROM databaseName]               | 查询所有读库的状态      | SHOW READWRITE_SPLITTING READ RESOURCES    |
 
 ## 全局规则
 
