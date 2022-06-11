@@ -31,7 +31,7 @@ public final class LocalDataQueryResultRow {
     
     private final List<Object> data;
     
-    public LocalDataQueryResultRow(final Object ... data) {
+    public LocalDataQueryResultRow(final Object... data) {
         this.data = Arrays.asList(data);
     }
     
