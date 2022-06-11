@@ -33,21 +33,24 @@ public final class MySQLJdbcQueryPropertiesExtensionTest {
     
     @Test
     public void assertExtendQueryProperties() {
-        Optional<JdbcQueryPropertiesExtension> extensionOptional = JdbcQueryPropertiesExtensionFactory.getInstance("MySQL");
-        assertTrue(extensionOptional.isPresent());
-        
-        JdbcQueryPropertiesExtension extension = extensionOptional.get();
-        assertThat(extension, instanceOf(MySQLJdbcQueryPropertiesExtension.class));
-        assertThat(extension.getType(), equalTo("MySQL"));
-        
-        Properties queryProps = extension.extendQueryProperties();
-        assertThat(queryProps.size(), equalTo(6));
-        assertThat(queryProps.getProperty("useSSL"), equalTo(Boolean.FALSE.toString()));
-        assertThat(queryProps.getProperty("rewriteBatchedStatements"), equalTo(Boolean.TRUE.toString()));
-        assertThat(queryProps.getProperty("yearIsDateType"), equalTo(Boolean.FALSE.toString()));
-        assertThat(queryProps.getProperty("zeroDateTimeBehavior"), equalTo("convertToNull"));
-        assertThat(queryProps.getProperty("noDatetimeStringSync"), equalTo(Boolean.TRUE.toString()));
-        assertThat(queryProps.getProperty("jdbcCompliantTruncation"), equalTo(Boolean.FALSE.toString()));
+        Optional<JdbcQueryPropertiesExtension> extension = JdbcQueryPropertiesExtensionFactory.getInstance("MySQL");
+        assertTrue(extension.isPresent());
+        assertExtension(extension.get());
+        assertQueryProperties(extension.get().extendQueryProperties());
     }
     
+    private void assertExtension(final JdbcQueryPropertiesExtension actual) {
+        assertThat(actual, instanceOf(MySQLJdbcQueryPropertiesExtension.class));
+        assertThat(actual.getType(), equalTo("MySQL"));
+    }
+    
+    private void assertQueryProperties(final Properties actual) {
+        assertThat(actual.size(), equalTo(6));
+        assertThat(actual.getProperty("useSSL"), equalTo(Boolean.FALSE.toString()));
+        assertThat(actual.getProperty("rewriteBatchedStatements"), equalTo(Boolean.TRUE.toString()));
+        assertThat(actual.getProperty("yearIsDateType"), equalTo(Boolean.FALSE.toString()));
+        assertThat(actual.getProperty("zeroDateTimeBehavior"), equalTo("convertToNull"));
+        assertThat(actual.getProperty("noDatetimeStringSync"), equalTo(Boolean.TRUE.toString()));
+        assertThat(actual.getProperty("jdbcCompliantTruncation"), equalTo(Boolean.FALSE.toString()));
+    }
 }
