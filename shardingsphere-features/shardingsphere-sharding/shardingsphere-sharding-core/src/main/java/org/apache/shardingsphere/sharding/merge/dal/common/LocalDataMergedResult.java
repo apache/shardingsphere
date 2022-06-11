@@ -28,7 +28,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Merged result for multiple local data.
+ * Local data merged result.
  */
 public final class LocalDataMergedResult implements MergedResult {
     
