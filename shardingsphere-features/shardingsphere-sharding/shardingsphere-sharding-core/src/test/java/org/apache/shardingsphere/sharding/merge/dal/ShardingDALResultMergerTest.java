@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.sharding.merge.dal.common.SingleLocalDataMergedResult;
+import org.apache.shardingsphere.sharding.merge.dal.common.LocalDataMergedResult;
 import org.apache.shardingsphere.sharding.merge.dal.show.LogicTablesMergedResult;
 import org.apache.shardingsphere.sharding.merge.dal.show.ShowCreateTableMergedResult;
 import org.apache.shardingsphere.sharding.merge.dal.show.ShowIndexMergedResult;
@@ -68,7 +68,7 @@ public final class ShardingDALResultMergerTest {
         ShardingDALResultMerger resultMerger = new ShardingDALResultMerger(DefaultDatabase.LOGIC_NAME, null);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
-        assertThat(resultMerger.merge(queryResults, sqlStatementContext, database), instanceOf(SingleLocalDataMergedResult.class));
+        assertThat(resultMerger.merge(queryResults, sqlStatementContext, database), instanceOf(LocalDataMergedResult.class));
     }
     
     @Test

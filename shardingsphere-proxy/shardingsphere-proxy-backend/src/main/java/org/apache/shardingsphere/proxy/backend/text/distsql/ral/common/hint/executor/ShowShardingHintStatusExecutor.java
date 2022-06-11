@@ -29,7 +29,7 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.HintShardingType;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.result.ShowShardingHintStatusResult;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.hint.ShowShardingHintStatusStatement;
-import org.apache.shardingsphere.sharding.merge.dal.common.MultipleLocalDataMergedResult;
+import org.apache.shardingsphere.sharding.merge.dal.common.LocalDataMergedResult;
 
 import java.sql.Types;
 import java.util.ArrayList;
@@ -94,7 +94,7 @@ public final class ShowShardingHintStatusExecutor extends AbstractHintQueryExecu
         for (ShowShardingHintStatusResult each : showShardingHintStatusResults) {
             values.add(createRow(each));
         }
-        return new MultipleLocalDataMergedResult(values);
+        return new LocalDataMergedResult(values);
     }
     
     private List<Object> createRow(final ShowShardingHintStatusResult showShardingHintStatusResult) {

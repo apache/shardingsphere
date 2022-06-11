@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.HintSourceType;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.hint.ShowReadwriteSplittingHintStatusStatement;
-import org.apache.shardingsphere.sharding.merge.dal.common.MultipleLocalDataMergedResult;
+import org.apache.shardingsphere.sharding.merge.dal.common.LocalDataMergedResult;
 
 import java.sql.Types;
 import java.util.ArrayList;
@@ -46,7 +46,7 @@ public final class ShowReadwriteSplittingHintStatusExecutor extends AbstractHint
     @Override
     protected MergedResult createMergedResult() {
         List<Object> row = createRow(HintManager.isWriteRouteOnly() ? HintSourceType.WRITE.getValue() : HintSourceType.AUTO.getValue());
-        return new MultipleLocalDataMergedResult(Collections.singletonList(row));
+        return new LocalDataMergedResult(Collections.singletonList(row));
     }
     
     private List<Object> createRow(final String source) {

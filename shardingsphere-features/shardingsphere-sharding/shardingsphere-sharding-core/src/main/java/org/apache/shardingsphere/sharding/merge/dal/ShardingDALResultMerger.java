@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
-import org.apache.shardingsphere.sharding.merge.dal.common.SingleLocalDataMergedResult;
+import org.apache.shardingsphere.sharding.merge.dal.common.LocalDataMergedResult;
 import org.apache.shardingsphere.sharding.merge.dal.show.LogicTablesMergedResult;
 import org.apache.shardingsphere.sharding.merge.dal.show.ShowCreateTableMergedResult;
 import org.apache.shardingsphere.sharding.merge.dal.show.ShowIndexMergedResult;
@@ -58,7 +58,7 @@ public final class ShardingDALResultMerger implements ResultMerger {
         SQLStatement dalStatement = sqlStatementContext.getSqlStatement();
         String schemaName = sqlStatementContext.getTablesContext().getSchemaName().orElse(DatabaseTypeEngine.getDefaultSchemaName(sqlStatementContext.getDatabaseType(), database.getName()));
         if (dalStatement instanceof MySQLShowDatabasesStatement) {
-            return new SingleLocalDataMergedResult(Collections.singletonList(databaseName));
+            return new LocalDataMergedResult(Collections.singleton(Collections.singletonList(databaseName)));
         }
         ShardingSphereSchema schema = database.getSchemas().get(schemaName);
         if (dalStatement instanceof MySQLShowTablesStatement) {

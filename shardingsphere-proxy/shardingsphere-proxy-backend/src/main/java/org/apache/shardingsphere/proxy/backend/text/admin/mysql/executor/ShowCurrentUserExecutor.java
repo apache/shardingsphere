@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminQueryExecutor;
-import org.apache.shardingsphere.sharding.merge.dal.common.SingleLocalDataMergedResult;
+import org.apache.shardingsphere.sharding.merge.dal.common.LocalDataMergedResult;
 
 import java.sql.Types;
 import java.util.Collection;
@@ -54,7 +54,7 @@ public final class ShowCurrentUserExecutor implements DatabaseAdminQueryExecutor
         Optional<Grantee> grantee = rules.stream().filter(each -> each instanceof AuthorityRule)
                 .map(each -> ((AuthorityRule) each).findUser(connectionSession.getGrantee())).filter(Optional::isPresent)
                 .map(Optional::get).map(ShardingSphereUser::getGrantee).findFirst();
-        mergedResult = new SingleLocalDataMergedResult(Collections.singleton(grantee.isPresent() ? grantee.get().toString() : ""));
+        mergedResult = new LocalDataMergedResult(Collections.singleton(Collections.singletonList(grantee.isPresent() ? grantee.get().toString() : "")));
     }
     
     @Override
