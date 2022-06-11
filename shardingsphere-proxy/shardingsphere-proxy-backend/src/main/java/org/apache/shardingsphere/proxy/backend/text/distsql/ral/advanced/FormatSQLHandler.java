@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.advanced;
 
 import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.FormatStatement;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.QueryableRALBackendHandler;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
@@ -29,7 +30,6 @@ import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Properties;
 
 /**
@@ -45,10 +45,10 @@ public final class FormatSQLHandler extends QueryableRALBackendHandler<FormatSta
     }
     
     @Override
-    protected Collection<List<Object>> getRows(final ContextManager contextManager) throws SQLException {
+    protected Collection<LocalDataQueryResultRow> getRows(final ContextManager contextManager) throws SQLException {
         String sql = getSqlStatement().getSql();
         String databaseType = getConnectionSession().getDatabaseType().getType();
-        return Collections.singleton(Collections.singletonList(formatSQL(sql, databaseType)));
+        return Collections.singleton(new LocalDataQueryResultRow(formatSQL(sql, databaseType)));
     }
     
     private Object formatSQL(final String sql, final String databaseType) {

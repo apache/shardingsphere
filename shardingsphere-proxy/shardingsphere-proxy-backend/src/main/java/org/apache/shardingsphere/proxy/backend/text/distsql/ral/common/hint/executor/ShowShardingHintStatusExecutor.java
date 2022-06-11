@@ -21,6 +21,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedResult;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistedException;
@@ -29,7 +31,6 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.HintShardingType;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.result.ShowShardingHintStatusResult;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.hint.ShowShardingHintStatusStatement;
-import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedResult;
 
 import java.sql.Types;
 import java.util.ArrayList;
@@ -38,6 +39,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Show sharding hint status executor.
@@ -90,19 +92,12 @@ public final class ShowShardingHintStatusExecutor extends AbstractHintQueryExecu
     }
     
     private MergedResult convertToMergedResult(final Collection<ShowShardingHintStatusResult> showShardingHintStatusResults) {
-        Collection<List<Object>> values = new ArrayList<>(showShardingHintStatusResults.size());
-        for (ShowShardingHintStatusResult each : showShardingHintStatusResults) {
-            values.add(createRow(each));
-        }
-        return new LocalDataMergedResult(values);
+        return new LocalDataMergedResult(showShardingHintStatusResults.stream().map(this::createRow).collect(Collectors.toList()));
     }
     
-    private List<Object> createRow(final ShowShardingHintStatusResult showShardingHintStatusResult) {
-        List<Object> result = new ArrayList<>(3);
-        result.add(showShardingHintStatusResult.getLogicTable());
-        result.add(String.join(",", showShardingHintStatusResult.getDatabaseShardingValues()));
-        result.add(String.join(",", showShardingHintStatusResult.getTableShardingValues()));
-        result.add(String.valueOf(HintManager.isDatabaseShardingOnly() ? HintShardingType.DATABASES_ONLY : HintShardingType.DATABASES_TABLES).toLowerCase());
-        return result;
+    private LocalDataQueryResultRow createRow(final ShowShardingHintStatusResult showShardingHintStatusResult) {
+        return new LocalDataQueryResultRow(showShardingHintStatusResult.getLogicTable(),
+                String.join(",", showShardingHintStatusResult.getDatabaseShardingValues()), String.join(",", showShardingHintStatusResult.getTableShardingValues()),
+                String.valueOf(HintManager.isDatabaseShardingOnly() ? HintShardingType.DATABASES_ONLY : HintShardingType.DATABASES_TABLES).toLowerCase());
     }
 }

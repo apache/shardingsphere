@@ -21,6 +21,7 @@ import com.google.gson.Gson;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ShowInstanceModeStatement;
 import org.apache.shardingsphere.infra.config.mode.PersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.QueryableRALBackendHandler;
@@ -28,7 +29,6 @@ import org.apache.shardingsphere.proxy.backend.text.distsql.ral.QueryableRALBack
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 /**
  * Show instance mode handler.
@@ -51,7 +51,7 @@ public final class ShowInstanceModeHandler extends QueryableRALBackendHandler<Sh
     }
     
     @Override
-    protected Collection<List<Object>> getRows(final ContextManager contextManager) {
+    protected Collection<LocalDataQueryResultRow> getRows(final ContextManager contextManager) {
         InstanceContext instanceContext = ProxyContext.getInstance().getContextManager().getInstanceContext();
         PersistRepositoryConfiguration repositoryConfig = instanceContext.getModeConfiguration().getRepository();
         String instanceId = instanceContext.getInstance().getInstanceDefinition().getInstanceId();
@@ -59,6 +59,6 @@ public final class ShowInstanceModeHandler extends QueryableRALBackendHandler<Sh
         String repositoryType = null == repositoryConfig ? "" : repositoryConfig.getType();
         String props = null == repositoryConfig || null == repositoryConfig.getProps() ? "" : new Gson().toJson(repositoryConfig.getProps());
         String overwrite = String.valueOf(instanceContext.getModeConfiguration().isOverwrite());
-        return Collections.singleton(Arrays.asList(instanceId, modeType, repositoryType, props, overwrite));
+        return Collections.singleton(new LocalDataQueryResultRow(instanceId, modeType, repositoryType, props, overwrite));
     }
 }

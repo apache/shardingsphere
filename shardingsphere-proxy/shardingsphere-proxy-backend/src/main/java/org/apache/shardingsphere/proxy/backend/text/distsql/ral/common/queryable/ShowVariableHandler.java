@@ -21,6 +21,7 @@ import com.google.common.base.Strings;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ShowVariableStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.QueryableRALBackendHandler;
@@ -50,7 +51,7 @@ public final class ShowVariableHandler extends QueryableRALBackendHandler<ShowVa
     }
     
     @Override
-    protected Collection<List<Object>> getRows(final ContextManager contextManager) {
+    protected Collection<LocalDataQueryResultRow> getRows(final ContextManager contextManager) {
         if (hasSpecifiedKey()) {
             return buildSpecifiedRow(contextManager, getSqlStatement().getName());
         } else {
@@ -62,26 +63,27 @@ public final class ShowVariableHandler extends QueryableRALBackendHandler<ShowVa
         return !Strings.isNullOrEmpty(getSqlStatement().getName());
     }
     
-    private Collection<List<Object>> buildAllVariableRows(final ContextManager contextManager) {
-        List<List<Object>> result = new LinkedList<>();
+    private Collection<LocalDataQueryResultRow> buildAllVariableRows(final ContextManager contextManager) {
+        List<LocalDataQueryResultRow> result = new LinkedList<>();
         ConfigurationProperties props = contextManager.getMetaDataContexts().getMetaData().getProps();
         ConfigurationPropertyKey.getKeyNames().forEach(each -> {
             String propertyValue = props.getValue(ConfigurationPropertyKey.valueOf(each)).toString();
-            result.add(Arrays.asList(each.toLowerCase(), propertyValue));
+            result.add(new LocalDataQueryResultRow(each.toLowerCase(), propertyValue));
         });
-        result.add(Arrays.asList(VariableEnum.AGENT_PLUGINS_ENABLED.name().toLowerCase(), SystemPropertyUtil.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.TRUE.toString())));
+        result.add(new LocalDataQueryResultRow(
+                VariableEnum.AGENT_PLUGINS_ENABLED.name().toLowerCase(), SystemPropertyUtil.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.TRUE.toString())));
         if (getConnectionSession().getBackendConnection() instanceof JDBCBackendConnection) {
-            result.add(Arrays.asList(VariableEnum.CACHED_CONNECTIONS.name().toLowerCase(), ((JDBCBackendConnection) getConnectionSession().getBackendConnection()).getConnectionSize()));
+            result.add(new LocalDataQueryResultRow(VariableEnum.CACHED_CONNECTIONS.name().toLowerCase(), ((JDBCBackendConnection) getConnectionSession().getBackendConnection()).getConnectionSize()));
         }
-        result.add(Arrays.asList(VariableEnum.TRANSACTION_TYPE.name().toLowerCase(), getConnectionSession().getTransactionStatus().getTransactionType().name()));
+        result.add(new LocalDataQueryResultRow(VariableEnum.TRANSACTION_TYPE.name().toLowerCase(), getConnectionSession().getTransactionStatus().getTransactionType().name()));
         return result;
     }
     
-    private Collection<List<Object>> buildSpecifiedRow(final ContextManager contextManager, final String key) {
+    private Collection<LocalDataQueryResultRow> buildSpecifiedRow(final ContextManager contextManager, final String key) {
         if (isConfigurationKey(key)) {
-            return Collections.singletonList(Arrays.asList(key.toLowerCase(), getConfigurationValue(contextManager, key)));
+            return Collections.singletonList(new LocalDataQueryResultRow(key.toLowerCase(), getConfigurationValue(contextManager, key)));
         } else {
-            return Collections.singletonList(Arrays.asList(key.toLowerCase(), getSpecialValue(key)));
+            return Collections.singletonList(new LocalDataQueryResultRow(key.toLowerCase(), getSpecialValue(key)));
         }
     }
     

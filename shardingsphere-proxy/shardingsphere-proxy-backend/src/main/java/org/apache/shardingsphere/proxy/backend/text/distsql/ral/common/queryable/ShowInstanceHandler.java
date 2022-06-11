@@ -20,16 +20,14 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryabl
 import com.google.common.base.Joiner;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ShowInstanceStatement;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.QueryableRALBackendHandler;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -58,29 +56,20 @@ public final class ShowInstanceHandler extends QueryableRALBackendHandler<ShowIn
     }
     
     @Override
-    protected Collection<List<Object>> getRows(final ContextManager contextManager) {
-        return buildInstanceRows(contextManager);
-    }
-    
-    private Collection<List<Object>> buildInstanceRows(final ContextManager contextManager) {
+    protected Collection<LocalDataQueryResultRow> getRows(final ContextManager contextManager) {
         String modeType = contextManager.getInstanceContext().getModeConfiguration().getType();
         if ("Memory".equalsIgnoreCase(modeType) || "Standalone".equalsIgnoreCase(modeType)) {
             return Collections.singletonList(buildRow(contextManager.getInstanceContext().getInstance(), modeType));
         }
         Collection<ComputeNodeInstance> instances = contextManager.getInstanceContext().getComputeNodeInstances().stream()
                 .filter(each -> InstanceType.PROXY.equals(each.getInstanceDefinition().getInstanceType())).collect(Collectors.toList());
-        return instances.isEmpty() ? Collections.emptyList()
-                : instances.stream().filter(Objects::nonNull).map(each -> buildRow(each, modeType)).collect(Collectors.toList());
+        return instances.isEmpty() ? Collections.emptyList() : instances.stream().filter(Objects::nonNull).map(each -> buildRow(each, modeType)).collect(Collectors.toList());
     }
     
-    private List<Object> buildRow(final ComputeNodeInstance instance, final String modeType) {
-        return buildRow(instance.getInstanceDefinition(), instance.getState().getCurrentState().name(), modeType, instance.getLabels(), Joiner.on(",").join(instance.getXaRecoveryIds()));
-    }
-    
-    private List<Object> buildRow(final InstanceDefinition instanceDefinition, final String status, final String modeType, final Collection<String> instanceLabels, final String xaRecoveryId) {
-        String host = instanceDefinition.getIp();
-        String port = instanceDefinition.getUniqueSign();
-        String labels = null == instanceLabels ? "" : String.join(",", instanceLabels);
-        return new LinkedList<>(Arrays.asList(instanceDefinition.getInstanceId(), host, port, status, modeType, labels, null == xaRecoveryId ? "" : xaRecoveryId));
+    private LocalDataQueryResultRow buildRow(final ComputeNodeInstance instance, final String modeType) {
+        String labels = null == instance.getLabels() ? "" : String.join(",", instance.getLabels());
+        String xaRecoveryIds = Joiner.on(",").join(instance.getXaRecoveryIds());
+        return new LocalDataQueryResultRow(instance.getInstanceDefinition().getInstanceId(),
+                instance.getInstanceDefinition().getIp(), instance.getInstanceDefinition().getUniqueSign(), instance.getState().getCurrentState().name(), modeType, labels, xaRecoveryIds);
     }
 }
