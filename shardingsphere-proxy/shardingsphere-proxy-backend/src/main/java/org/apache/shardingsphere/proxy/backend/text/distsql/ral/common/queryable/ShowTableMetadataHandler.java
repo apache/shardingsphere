@@ -21,6 +21,7 @@ import com.google.common.base.Strings;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ShowTableMetadataStatement;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.exception.DatabaseNotExistedException;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -28,11 +29,9 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.QueryableRALBackendHandler;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -54,7 +53,7 @@ public final class ShowTableMetadataHandler extends QueryableRALBackendHandler<S
     }
     
     @Override
-    protected Collection<List<Object>> getRows(final ContextManager contextManager) {
+    protected Collection<LocalDataQueryResultRow> getRows(final ContextManager contextManager) {
         String databaseName = getDatabaseName();
         String defaultSchema = DatabaseTypeEngine.getDefaultSchemaName(getConnectionSession().getDatabaseType(), getConnectionSession().getDatabaseName());
         ShardingSphereSchema schema = ProxyContext.getInstance().getDatabase(databaseName).getSchemas().get(defaultSchema);
@@ -73,18 +72,17 @@ public final class ShowTableMetadataHandler extends QueryableRALBackendHandler<S
         return result;
     }
     
-    private Collection<List<Object>> buildTableRows(final String databaseName, final ShardingSphereSchema schema, final String tableName) {
-        Collection<List<Object>> result = new LinkedList<>();
-        Collection<List<Object>> columnRows = schema.getAllColumnNames(tableName).stream().map(each -> buildRow(databaseName, tableName, "COLUMN", each))
-                .collect(Collectors.toList());
-        Collection<List<Object>> indexRows = schema.getTables().get(tableName).getIndexes().values().stream().map(ShardingSphereIndex::getName)
+    private Collection<LocalDataQueryResultRow> buildTableRows(final String databaseName, final ShardingSphereSchema schema, final String tableName) {
+        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
+        Collection<LocalDataQueryResultRow> columnRows = schema.getAllColumnNames(tableName).stream().map(each -> buildRow(databaseName, tableName, "COLUMN", each)).collect(Collectors.toList());
+        Collection<LocalDataQueryResultRow> indexRows = schema.getTables().get(tableName).getIndexes().values().stream().map(ShardingSphereIndex::getName)
                 .map(each -> buildRow(databaseName, tableName, "INDEX", each)).collect(Collectors.toList());
         result.addAll(columnRows);
         result.addAll(indexRows);
         return result;
     }
     
-    private List<Object> buildRow(final String databaseName, final String tableName, final String type, final String name) {
-        return new ArrayList<>(Arrays.asList(databaseName, tableName, type, name));
+    private LocalDataQueryResultRow buildRow(final String databaseName, final String tableName, final String type, final String name) {
+        return new LocalDataQueryResultRow(databaseName, tableName, type, name);
     }
 }

@@ -20,10 +20,11 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.exe
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedResult;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.HintSourceType;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.hint.ShowReadwriteSplittingHintStatusStatement;
-import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedResult;
 
 import java.sql.Types;
 import java.util.ArrayList;
@@ -45,13 +46,7 @@ public final class ShowReadwriteSplittingHintStatusExecutor extends AbstractHint
     
     @Override
     protected MergedResult createMergedResult() {
-        List<Object> row = createRow(HintManager.isWriteRouteOnly() ? HintSourceType.WRITE.getValue() : HintSourceType.AUTO.getValue());
-        return new LocalDataMergedResult(Collections.singletonList(row));
-    }
-    
-    private List<Object> createRow(final String source) {
-        List<Object> result = new ArrayList<>(1);
-        result.add(source);
-        return result;
+        LocalDataQueryResultRow row = new LocalDataQueryResultRow(HintManager.isWriteRouteOnly() ? HintSourceType.WRITE.getValue() : HintSourceType.AUTO.getValue());
+        return new LocalDataMergedResult(Collections.singleton(row));
     }
 }

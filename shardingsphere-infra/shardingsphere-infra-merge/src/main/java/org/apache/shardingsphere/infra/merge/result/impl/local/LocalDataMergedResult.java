@@ -25,18 +25,17 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 
 /**
  * Local data merged result.
  */
 public final class LocalDataMergedResult implements MergedResult {
     
-    private final Iterator<List<Object>> rows;
+    private final Iterator<LocalDataQueryResultRow> rows;
     
-    private List<Object> currentRow;
+    private LocalDataQueryResultRow currentRow;
     
-    public LocalDataMergedResult(final Collection<List<Object>> rows) {
+    public LocalDataMergedResult(final Collection<LocalDataQueryResultRow> rows) {
         this.rows = rows.iterator();
     }
     
@@ -51,12 +50,12 @@ public final class LocalDataMergedResult implements MergedResult {
     
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) {
-        return currentRow.get(columnIndex - 1);
+        return currentRow.getCell(columnIndex);
     }
     
     @Override
     public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) {
-        return currentRow.get(columnIndex - 1);
+        return currentRow.getCell(columnIndex);
     }
     
     @Override

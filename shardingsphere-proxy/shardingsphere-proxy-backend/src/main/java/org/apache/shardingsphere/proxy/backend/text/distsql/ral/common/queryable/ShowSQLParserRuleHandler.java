@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryabl
 
 import com.google.gson.Gson;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ShowSQLParserRuleStatement;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -27,8 +28,6 @@ import org.apache.shardingsphere.proxy.backend.text.distsql.ral.QueryableRALBack
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -50,17 +49,14 @@ public final class ShowSQLParserRuleHandler extends QueryableRALBackendHandler<S
     }
     
     @Override
-    protected Collection<List<Object>> getRows(final ContextManager contextManager) {
+    protected Collection<LocalDataQueryResultRow> getRows(final ContextManager contextManager) {
         Optional<SQLParserRuleConfiguration> sqlParserRuleConfig = ProxyContext.getInstance().getContextManager()
                 .getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findRuleConfigurations(SQLParserRuleConfiguration.class).stream().findAny();
         return sqlParserRuleConfig.isPresent() ? Collections.singleton(getRow(sqlParserRuleConfig.get())) : Collections.emptyList();
     }
     
-    private List<Object> getRow(final SQLParserRuleConfiguration sqlParserRuleConfig) {
-        List<Object> result = new LinkedList<>();
-        result.add(String.valueOf(sqlParserRuleConfig.isSqlCommentParseEnabled()));
-        result.add(GSON.toJson(sqlParserRuleConfig.getParseTreeCache()));
-        result.add(GSON.toJson(sqlParserRuleConfig.getSqlStatementCache()));
-        return result;
+    private LocalDataQueryResultRow getRow(final SQLParserRuleConfiguration sqlParserRuleConfig) {
+        return new LocalDataQueryResultRow(
+                String.valueOf(sqlParserRuleConfig.isSqlCommentParseEnabled()), GSON.toJson(sqlParserRuleConfig.getParseTreeCache()), GSON.toJson(sqlParserRuleConfig.getSqlStatementCache()));
     }
 }

@@ -22,6 +22,8 @@ import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedResult;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
@@ -33,12 +35,10 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.QueryRespon
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.admin.postgresql.executor.SelectTableExecutor;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
-import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedResult;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
@@ -64,7 +64,7 @@ public final class DatabaseAdminQueryBackendHandlerTest extends ProxyContextRest
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(connectionSession.getDatabaseName()).thenReturn("db");
         SelectTableExecutor executor = mock(SelectTableExecutor.class, RETURNS_DEEP_STUBS);
-        MergedResult mergedResult = new LocalDataMergedResult(Collections.singleton(Arrays.asList("demo_ds_0", "demo_ds_1")));
+        MergedResult mergedResult = new LocalDataMergedResult(Collections.singleton(new LocalDataQueryResultRow("demo_ds_0", "demo_ds_1")));
         when(executor.getMergedResult()).thenReturn(mergedResult);
         when(executor.getQueryResultMetaData().getColumnCount()).thenReturn(1);
         handler = new DatabaseAdminQueryBackendHandler(connectionSession, executor);

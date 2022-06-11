@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryabl
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ShowTrafficRulesStatement;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.properties.PropertiesConverter;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -30,7 +31,6 @@ import org.apache.shardingsphere.traffic.api.config.TrafficStrategyConfiguration
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -58,10 +58,10 @@ public final class ShowTrafficRulesHandler extends QueryableRALBackendHandler<Sh
     }
     
     @Override
-    protected Collection<List<Object>> getRows(final ContextManager contextManager) {
+    protected Collection<LocalDataQueryResultRow> getRows(final ContextManager contextManager) {
         Optional<TrafficRuleConfiguration> config = ProxyContext.getInstance().getContextManager().getMetaDataContexts()
                 .getMetaData().getGlobalRuleMetaData().findRuleConfigurations(TrafficRuleConfiguration.class).stream().findAny();
-        Collection<List<Object>> result = new LinkedList<>();
+        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         Optional<String> ruleName = Optional.ofNullable(getSqlStatement().getRuleName());
         config.ifPresent(optional -> {
             Map<String, ShardingSphereAlgorithmConfiguration> trafficAlgorithms = optional.getTrafficAlgorithms();
@@ -72,15 +72,10 @@ public final class ShowTrafficRulesHandler extends QueryableRALBackendHandler<Sh
         return result;
     }
     
-    private List<Object> buildRow(final TrafficStrategyConfiguration strategy, final ShardingSphereAlgorithmConfiguration trafficAlgorithm,
-                                  final ShardingSphereAlgorithmConfiguration loadBalancer) {
-        List<Object> result = new LinkedList<>();
-        result.add(strategy.getName());
-        result.add(String.join(",", strategy.getLabels()));
-        result.add(null != trafficAlgorithm ? trafficAlgorithm.getType() : "");
-        result.add(null != trafficAlgorithm ? PropertiesConverter.convert(trafficAlgorithm.getProps()) : "");
-        result.add(null != loadBalancer ? loadBalancer.getType() : "");
-        result.add(null != loadBalancer ? PropertiesConverter.convert(loadBalancer.getProps()) : "");
-        return result;
+    private LocalDataQueryResultRow buildRow(final TrafficStrategyConfiguration strategy,
+                                             final ShardingSphereAlgorithmConfiguration trafficAlgorithm, final ShardingSphereAlgorithmConfiguration loadBalancer) {
+        return new LocalDataQueryResultRow(strategy.getName(), String.join(",", strategy.getLabels()), null != trafficAlgorithm ? trafficAlgorithm.getType() : "",
+                null != trafficAlgorithm ? PropertiesConverter.convert(trafficAlgorithm.getProps()) : "", null != loadBalancer ? loadBalancer.getType() : "",
+                null != loadBalancer ? PropertiesConverter.convert(loadBalancer.getProps()) : "");
     }
 }

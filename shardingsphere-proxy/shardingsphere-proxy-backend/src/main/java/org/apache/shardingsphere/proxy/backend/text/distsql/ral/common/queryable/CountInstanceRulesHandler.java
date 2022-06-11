@@ -22,6 +22,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.C
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -73,10 +74,14 @@ public final class CountInstanceRulesHandler extends QueryableRALBackendHandler<
     }
     
     @Override
-    protected Collection<List<Object>> getRows(final ContextManager contextManager) throws SQLException {
+    protected Collection<LocalDataQueryResultRow> getRows(final ContextManager contextManager) throws SQLException {
         Map<String, List<Object>> dataMap = new LinkedHashMap<>();
         ProxyContext.getInstance().getAllDatabaseNames().forEach(each -> addSchemaData(dataMap, ProxyContext.getInstance().getDatabase(each)));
-        return dataMap.values();
+        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
+        for (List<Object> each : dataMap.values()) {
+            result.add(new LocalDataQueryResultRow(each));
+        }
+        return result;
     }
     
     private void addSchemaData(final Map<String, List<Object>> dataMap, final ShardingSphereDatabase database) {

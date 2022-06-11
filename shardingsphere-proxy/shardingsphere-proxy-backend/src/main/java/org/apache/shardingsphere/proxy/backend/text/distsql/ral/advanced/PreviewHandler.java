@@ -47,6 +47,7 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.Statemen
 import org.apache.shardingsphere.infra.federation.executor.FederationContext;
 import org.apache.shardingsphere.infra.federation.executor.FederationExecutor;
 import org.apache.shardingsphere.infra.federation.executor.FederationExecutorFactory;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -68,7 +69,6 @@ import java.sql.Statement;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -89,7 +89,7 @@ public final class PreviewHandler extends QueryableRALBackendHandler<PreviewStat
     }
     
     @Override
-    protected Collection<List<Object>> getRows(final ContextManager contextManager) throws SQLException {
+    protected Collection<LocalDataQueryResultRow> getRows(final ContextManager contextManager) throws SQLException {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         String databaseName = getDatabaseName();
         String databaseType = DatabaseTypeEngine.getTrunkDatabaseTypeName(metaDataContexts.getMetaData().getDatabases().get(databaseName).getProtocolType());
@@ -123,8 +123,8 @@ public final class PreviewHandler extends QueryableRALBackendHandler<PreviewStat
         ((CursorDefinitionAware) sqlStatementContext).setUpCursorDefinition(cursorStatementContext);
     }
     
-    private List<Object> buildRow(final ExecutionUnit unit) {
-        return Arrays.asList(unit.getDataSourceName(), unit.getSqlUnit().getSql());
+    private LocalDataQueryResultRow buildRow(final ExecutionUnit unit) {
+        return new LocalDataQueryResultRow(unit.getDataSourceName(), unit.getSqlUnit().getSql());
     }
     
     private Collection<ExecutionUnit> getFederationExecutionUnits(final LogicSQL logicSQL, final String databaseName, final MetaDataContexts metaDataContexts) throws SQLException {

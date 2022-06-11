@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryabl
 import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ShowTransactionRuleStatement;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.QueryableRALBackendHandler;
@@ -28,8 +29,6 @@ import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -50,16 +49,14 @@ public final class ShowTransactionRuleHandler extends QueryableRALBackendHandler
     }
     
     @Override
-    protected Collection<List<Object>> getRows(final ContextManager contextManager) {
+    protected Collection<LocalDataQueryResultRow> getRows(final ContextManager contextManager) {
         Optional<TransactionRuleConfiguration> ruleConfig = ProxyContext.getInstance().getContextManager()
                 .getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findRuleConfigurations(TransactionRuleConfiguration.class).stream().findAny();
         if (!ruleConfig.isPresent()) {
             return Collections.emptyList();
         }
-        List<Object> row = new LinkedList<>();
-        row.add(ruleConfig.get().getDefaultType());
-        row.add(null == ruleConfig.get().getProviderType() ? "" : ruleConfig.get().getProviderType());
-        row.add(null == ruleConfig.get().getProps() ? "" : new Gson().toJson(ruleConfig.get().getProps()));
-        return Collections.singleton(row);
+        return Collections.singleton(new LocalDataQueryResultRow(
+                ruleConfig.get().getDefaultType(), null == ruleConfig.get().getProviderType() ? "" : ruleConfig.get().getProviderType(),
+                null == ruleConfig.get().getProps() ? "" : new Gson().toJson(ruleConfig.get().getProps())));
     }
 }

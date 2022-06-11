@@ -21,6 +21,7 @@ import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableItemConstants;
 import org.apache.shardingsphere.infra.exception.DatabaseNotExistedException;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.type.ExportableRule;
@@ -43,7 +44,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -65,7 +65,7 @@ public final class ShowReadwriteSplittingReadResourcesHandler extends QueryableR
     }
     
     @Override
-    protected Collection<List<Object>> getRows(final ContextManager contextManager) {
+    protected Collection<LocalDataQueryResultRow> getRows(final ContextManager contextManager) {
         String databaseName = getDatabaseName();
         MetaDataContexts metaDataContexts = contextManager.getMetaDataContexts();
         ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabases().get(databaseName);
@@ -110,7 +110,7 @@ public final class ShowReadwriteSplittingReadResourcesHandler extends QueryableR
         return result;
     }
     
-    private Collection<List<Object>> buildRows(final Collection<String> readResources, final Map<String, StorageNodeDataSource> persistentReadResources) {
+    private Collection<LocalDataQueryResultRow> buildRows(final Collection<String> readResources, final Map<String, StorageNodeDataSource> persistentReadResources) {
         Map<String, Map<String, StorageNodeDataSource>> persistentReadResourceGroup = persistentReadResources.entrySet().stream()
                 .collect(Collectors.groupingBy(each -> each.getValue().getStatus().toUpperCase(), Collectors.toMap(Entry::getKey, Entry::getValue)));
         Map<String, StorageNodeDataSource> disabledReadResources = persistentReadResourceGroup.getOrDefault(StorageNodeStatus.DISABLED.name(), Collections.emptyMap());
@@ -118,20 +118,19 @@ public final class ShowReadwriteSplittingReadResourcesHandler extends QueryableR
         readResources.removeIf(disabledReadResources::containsKey);
         readResources.addAll(enabledReadResources.keySet());
         readResources.addAll(disabledReadResources.keySet());
-        return readResources.stream().map(each -> buildRow(each, disabledReadResources.get(each))).collect(Collectors.toCollection(LinkedList::new));
+        return readResources.stream().map(each -> buildRow(each, disabledReadResources.get(each))).collect(Collectors.toList());
     }
     
     private LinkedList<String> deconstructString(final String str) {
         return new LinkedList<>(Arrays.asList(str.split(",")));
     }
     
-    private List<Object> buildRow(final String resource, final StorageNodeDataSource storageNodeDataSource) {
+    private LocalDataQueryResultRow buildRow(final String resource, final StorageNodeDataSource storageNodeDataSource) {
         if (null == storageNodeDataSource) {
-            return Arrays.asList(resource, StorageNodeStatus.ENABLED.name().toLowerCase(), "0");
-        } else {
-            long replicationDelayMilliseconds = storageNodeDataSource.getReplicationDelayMilliseconds();
-            String status = StorageNodeStatus.valueOf(storageNodeDataSource.getStatus().toUpperCase()).name().toLowerCase();
-            return Arrays.asList(resource, status, Long.toString(replicationDelayMilliseconds));
+            return new LocalDataQueryResultRow(resource, StorageNodeStatus.ENABLED.name().toLowerCase(), "0");
         }
+        long replicationDelayMilliseconds = storageNodeDataSource.getReplicationDelayMilliseconds();
+        String status = StorageNodeStatus.valueOf(storageNodeDataSource.getStatus().toUpperCase()).name().toLowerCase();
+        return new LocalDataQueryResultRow(resource, status, Long.toString(replicationDelayMilliseconds));
     }
 }
