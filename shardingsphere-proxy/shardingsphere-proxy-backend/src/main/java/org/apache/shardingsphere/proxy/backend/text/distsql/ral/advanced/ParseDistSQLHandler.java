@@ -51,15 +51,18 @@ public final class ParseDistSQLHandler extends QueryableRALBackendHandler<ParseS
     
     @Override
     protected Collection<List<Object>> getRows(final ContextManager contextManager) {
+        SQLStatement parsedSqlStatement = parseSQL(contextManager);
+        return Collections.singleton(Arrays.asList(parsedSqlStatement.getClass().getSimpleName(), new Gson().toJson(parsedSqlStatement)));
+    }
+    
+    private SQLStatement parseSQL(final ContextManager contextManager) {
         Optional<SQLParserRule> sqlParserRule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(SQLParserRule.class);
         Preconditions.checkState(sqlParserRule.isPresent());
-        SQLStatement parsedSqlStatement;
         try {
-            parsedSqlStatement = sqlParserRule.get().getSQLParserEngine(getStorageType().getType()).parse(getSqlStatement().getSql(), false);
+            return sqlParserRule.get().getSQLParserEngine(getStorageType().getType()).parse(getSqlStatement().getSql(), false);
         } catch (final SQLParsingException ex) {
             throw new SQLParsingException("You have a syntax error in your parsed statement");
         }
-        return Collections.singleton(Arrays.asList(parsedSqlStatement.getClass().getSimpleName(), new Gson().toJson(parsedSqlStatement)));
     }
     
     private DatabaseType getStorageType() {
