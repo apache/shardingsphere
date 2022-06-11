@@ -37,8 +37,6 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -47,8 +45,6 @@ import java.util.function.Supplier;
  * Count instance rules handler.
  */
 public final class CountInstanceRulesHandler extends QueryableRALBackendHandler<CountInstanceRulesStatement> {
-    
-    private static final int DEFAULT_COUNT = 0;
     
     private static final String SINGLE_TABLE = "single_table";
     
@@ -75,82 +71,71 @@ public final class CountInstanceRulesHandler extends QueryableRALBackendHandler<
     
     @Override
     protected Collection<LocalDataQueryResultRow> getRows(final ContextManager contextManager) throws SQLException {
-        Map<String, List<Object>> dataMap = new LinkedHashMap<>();
-        ProxyContext.getInstance().getAllDatabaseNames().forEach(each -> addDatabaseData(dataMap, ProxyContext.getInstance().getDatabase(each)));
-        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        for (List<Object> each : dataMap.values()) {
-            result.add(new LocalDataQueryResultRow(each));
+        Map<String, LocalDataQueryResultRow> result = initRows();
+        ProxyContext.getInstance().getAllDatabaseNames().forEach(each -> addDatabaseData(result, ProxyContext.getInstance().getDatabase(each)));
+        return result.values();
+    }
+    
+    private Map<String, LocalDataQueryResultRow> initRows() {
+        Map<String, LocalDataQueryResultRow> result = new LinkedHashMap<>();
+        for (String each : Arrays.asList(SINGLE_TABLE, SHARDING_TABLE, SHARDING_BINDING_TABLE, SHARDING_BROADCAST_TABLE, SHARDING_SCALING, READWRITE_SPLITTING, DB_DISCOVERY, ENCRYPT, SHADOW)) {
+            result.put(each, new LocalDataQueryResultRow(each, 0));
         }
         return result;
     }
     
-    private void addDatabaseData(final Map<String, List<Object>> dataMap, final ShardingSphereDatabase database) {
-        initData(dataMap);
+    private void addDatabaseData(final Map<String, LocalDataQueryResultRow> rowMap, final ShardingSphereDatabase database) {
         for (ShardingSphereRule each : database.getRuleMetaData().getRules()) {
             if (each instanceof SingleTableRule) {
-                addSingleTableData(dataMap, (SingleTableRule) each);
+                addSingleTableData(rowMap, (SingleTableRule) each);
             } else if (each instanceof ShardingRule) {
                 Optional<ShardingRuleConfiguration> shardingRuleConfig = database.getRuleMetaData().findSingleRuleConfiguration(ShardingRuleConfiguration.class);
                 Preconditions.checkState(shardingRuleConfig.isPresent());
-                addShardingData(dataMap, (ShardingRule) each, shardingRuleConfig.get());
+                addShardingData(rowMap, (ShardingRule) each, shardingRuleConfig.get());
             } else if (each instanceof ReadwriteSplittingRule) {
-                addReadwriteSplittingData(dataMap, (ReadwriteSplittingRule) each);
+                addReadwriteSplittingData(rowMap, (ReadwriteSplittingRule) each);
             } else if (each instanceof DatabaseDiscoveryRule) {
-                addDBDiscoveryData(dataMap, (DatabaseDiscoveryRule) each);
+                addDBDiscoveryData(rowMap, (DatabaseDiscoveryRule) each);
             } else if (each instanceof EncryptRule) {
-                addEncryptData(dataMap, (EncryptRule) each);
+                addEncryptData(rowMap, (EncryptRule) each);
             } else if (each instanceof ShadowRule) {
-                addShadowData(dataMap, (ShadowRule) each);
+                addShadowData(rowMap, (ShadowRule) each);
             }
         }
     }
     
-    private void initData(final Map<String, List<Object>> dataMap) {
-        for (String each : Arrays.asList(SINGLE_TABLE, SHARDING_TABLE, SHARDING_BINDING_TABLE, SHARDING_BROADCAST_TABLE, SHARDING_SCALING, READWRITE_SPLITTING, DB_DISCOVERY, ENCRYPT, SHADOW)) {
-            dataMap.putIfAbsent(each, buildRow(each, DEFAULT_COUNT));
-        }
+    private void addSingleTableData(final Map<String, LocalDataQueryResultRow> rowMap, final SingleTableRule rule) {
+        rowMap.compute(SINGLE_TABLE, (key, value) -> buildRow(value, SINGLE_TABLE, rule.getAllTables().size()));
     }
     
-    private void addSingleTableData(final Map<String, List<Object>> dataMap, final SingleTableRule rule) {
-        dataMap.compute(SINGLE_TABLE, (key, value) -> buildRow(value, SINGLE_TABLE, rule.getAllTables().size()));
+    private void addShardingData(final Map<String, LocalDataQueryResultRow> rowMap, final ShardingRule rule, final ShardingRuleConfiguration ruleConfig) {
+        addData(rowMap, SHARDING_TABLE, () -> rule.getTables().size());
+        addData(rowMap, SHARDING_BINDING_TABLE, () -> rule.getBindingTableRules().size());
+        addData(rowMap, SHARDING_BROADCAST_TABLE, () -> rule.getBroadcastTables().size());
+        addData(rowMap, SHARDING_SCALING, () -> ruleConfig.getScaling().size());
     }
     
-    private void addShardingData(final Map<String, List<Object>> dataMap, final ShardingRule rule, final ShardingRuleConfiguration ruleConfig) {
-        addData(dataMap, SHARDING_TABLE, () -> rule.getTables().size());
-        addData(dataMap, SHARDING_BINDING_TABLE, () -> rule.getBindingTableRules().size());
-        addData(dataMap, SHARDING_BROADCAST_TABLE, () -> rule.getBroadcastTables().size());
-        addData(dataMap, SHARDING_SCALING, () -> ruleConfig.getScaling().size());
+    private void addReadwriteSplittingData(final Map<String, LocalDataQueryResultRow> rowMap, final ReadwriteSplittingRule rule) {
+        addData(rowMap, READWRITE_SPLITTING, () -> rule.getDataSourceMapper().size());
     }
     
-    private void addReadwriteSplittingData(final Map<String, List<Object>> dataMap, final ReadwriteSplittingRule rule) {
-        addData(dataMap, READWRITE_SPLITTING, () -> rule.getDataSourceMapper().size());
+    private void addDBDiscoveryData(final Map<String, LocalDataQueryResultRow> rowMap, final DatabaseDiscoveryRule rule) {
+        addData(rowMap, DB_DISCOVERY, () -> rule.getDataSourceMapper().size());
     }
     
-    private void addDBDiscoveryData(final Map<String, List<Object>> dataMap, final DatabaseDiscoveryRule rule) {
-        addData(dataMap, DB_DISCOVERY, () -> rule.getDataSourceMapper().size());
+    private void addEncryptData(final Map<String, LocalDataQueryResultRow> rowMap, final EncryptRule rule) {
+        addData(rowMap, ENCRYPT, () -> rule.getTables().size());
     }
     
-    private void addEncryptData(final Map<String, List<Object>> dataMap, final EncryptRule rule) {
-        addData(dataMap, ENCRYPT, () -> rule.getTables().size());
+    private void addShadowData(final Map<String, LocalDataQueryResultRow> rowMap, final ShadowRule rule) {
+        addData(rowMap, SHADOW, () -> rule.getDataSourceMapper().size());
     }
     
-    private void addShadowData(final Map<String, List<Object>> dataMap, final ShadowRule rule) {
-        addData(dataMap, SHADOW, () -> rule.getDataSourceMapper().size());
+    private void addData(final Map<String, LocalDataQueryResultRow> rowMap, final String dataKey, final Supplier<Integer> apply) {
+        rowMap.compute(dataKey, (key, value) -> buildRow(value, dataKey, apply.get()));
     }
     
-    private void addData(final Map<String, List<Object>> dataMap, final String dataKey, final Supplier<Integer> apply) {
-        dataMap.compute(dataKey, (key, value) -> buildRow(value, dataKey, apply.get()));
-    }
-    
-    private List<Object> buildRow(final List<Object> value, final String ruleName, final int count) {
-        if (null == value) {
-            return Arrays.asList(ruleName, count);
-        }
-        Integer oldCount = (Integer) new LinkedList<>(value).getLast();
-        return Arrays.asList(ruleName, Integer.sum(oldCount, count));
-    }
-    
-    private List<Object> buildRow(final String ruleName, final int count) {
-        return Arrays.asList(ruleName, count);
+    private LocalDataQueryResultRow buildRow(final LocalDataQueryResultRow value, final String ruleName, final int count) {
+        return null == value ? new LocalDataQueryResultRow(ruleName, count) : new LocalDataQueryResultRow(ruleName, Integer.sum((Integer) value.getCell(2), count));
     }
 }
