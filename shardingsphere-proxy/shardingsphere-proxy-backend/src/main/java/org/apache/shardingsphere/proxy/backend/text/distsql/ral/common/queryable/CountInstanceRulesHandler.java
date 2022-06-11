@@ -76,7 +76,7 @@ public final class CountInstanceRulesHandler extends QueryableRALBackendHandler<
     @Override
     protected Collection<LocalDataQueryResultRow> getRows(final ContextManager contextManager) throws SQLException {
         Map<String, List<Object>> dataMap = new LinkedHashMap<>();
-        ProxyContext.getInstance().getAllDatabaseNames().forEach(each -> addSchemaData(dataMap, ProxyContext.getInstance().getDatabase(each)));
+        ProxyContext.getInstance().getAllDatabaseNames().forEach(each -> addDatabaseData(dataMap, ProxyContext.getInstance().getDatabase(each)));
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         for (List<Object> each : dataMap.values()) {
             result.add(new LocalDataQueryResultRow(each));
@@ -84,7 +84,7 @@ public final class CountInstanceRulesHandler extends QueryableRALBackendHandler<
         return result;
     }
     
-    private void addSchemaData(final Map<String, List<Object>> dataMap, final ShardingSphereDatabase database) {
+    private void addDatabaseData(final Map<String, List<Object>> dataMap, final ShardingSphereDatabase database) {
         initData(dataMap);
         Collection<SingleTableRule> singleTableRules = database.getRuleMetaData().findRules(SingleTableRule.class);
         if (!singleTableRules.isEmpty()) {
@@ -92,6 +92,12 @@ public final class CountInstanceRulesHandler extends QueryableRALBackendHandler<
         }
         if (hasRuleConfiguration(database)) {
             addConfigurationData(dataMap, database.getRuleMetaData().getConfigurations());
+        }
+    }
+    
+    private void initData(final Map<String, List<Object>> dataMap) {
+        for (String each : Arrays.asList(SINGLE_TABLE, SHARDING_TABLE, SHARDING_BINDING_TABLE, SHARDING_BROADCAST_TABLE, SHARDING_SCALING, READWRITE_SPLITTING, DB_DISCOVERY, ENCRYPT, SHADOW)) {
+            dataMap.putIfAbsent(each, buildRow(each, DEFAULT_COUNT));
         }
     }
     
@@ -104,10 +110,6 @@ public final class CountInstanceRulesHandler extends QueryableRALBackendHandler<
     private boolean hasRuleConfiguration(final ShardingSphereDatabase database) {
         Collection<RuleConfiguration> configs = database.getRuleMetaData().getConfigurations();
         return null != configs && !configs.isEmpty();
-    }
-    
-    private void initData(final Map<String, List<Object>> dataMap) {
-        addDefaultData(dataMap, SINGLE_TABLE, SHARDING_TABLE, SHARDING_BINDING_TABLE, SHARDING_BROADCAST_TABLE, SHARDING_SCALING, READWRITE_SPLITTING, DB_DISCOVERY, ENCRYPT, SHADOW);
     }
     
     private void addConfigurationData(final Map<String, List<Object>> dataMap, final Collection<RuleConfiguration> ruleConfigs) {
@@ -162,22 +164,15 @@ public final class CountInstanceRulesHandler extends QueryableRALBackendHandler<
         dataMap.compute(dataKey, (key, value) -> buildRow(value, dataKey, apply.get()));
     }
     
-    private void addDefaultData(final Map<String, List<Object>> dataMap, final String... dataKey) {
-        for (String each : dataKey) {
-            dataMap.putIfAbsent(each, buildRow(each, DEFAULT_COUNT));
-        }
-    }
-    
-    private List<Object> buildRow(final Collection<Object> value, final String ruleName, final Integer count) {
-        if (value == null) {
+    private List<Object> buildRow(final List<Object> value, final String ruleName, final int count) {
+        if (null == value) {
             return Arrays.asList(ruleName, count);
-        } else {
-            Integer oldCount = (Integer) new LinkedList<>(value).getLast();
-            return Arrays.asList(ruleName, Integer.sum(oldCount, count));
         }
+        Integer oldCount = (Integer) new LinkedList<>(value).getLast();
+        return Arrays.asList(ruleName, Integer.sum(oldCount, count));
     }
     
-    private List<Object> buildRow(final String ruleName, final Integer count) {
+    private List<Object> buildRow(final String ruleName, final int count) {
         return Arrays.asList(ruleName, count);
     }
 }
