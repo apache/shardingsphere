@@ -18,21 +18,17 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable;
 
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.CountInstanceRulesStatement;
-import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
-import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.rule.BindingTableRule;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,13 +43,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Map;
-import java.util.Properties;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -71,15 +65,10 @@ public final class CountInstanceRulesTest extends ProxyContextRestorer {
     
     @Before
     public void before() {
-        Collection<ShardingSphereRule> rules = new LinkedList<>();
-        rules.add(mockSingleTableRule());
         ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class);
-        when(ruleMetaData.findRules(any())).thenReturn(rules);
-        Collection<RuleConfiguration> ruleConfigs = new LinkedList<>();
-        ruleConfigs.add(mockShardingTableRule());
-        ruleConfigs.add(mockReadwriteSplittingRule());
-        ruleConfigs.add(mockEncryptRule());
-        when(ruleMetaData.getConfigurations()).thenReturn(ruleConfigs);
+        when(ruleMetaData.findSingleRuleConfiguration(ShardingRuleConfiguration.class)).thenReturn(Optional.of(mock(ShardingRuleConfiguration.class)));
+        Collection<ShardingSphereRule> rules = Arrays.asList(mockSingleTableRule(), mockShardingRule(), mockReadwriteSplittingRule(), mockEncryptRule());
+        when(ruleMetaData.getRules()).thenReturn(rules);
         when(database1.getRuleMetaData()).thenReturn(ruleMetaData);
         when(database2.getRuleMetaData()).thenReturn(ruleMetaData);
         Map<String, ShardingSphereDatabase> databases = new HashMap<>(2, 1);
@@ -91,28 +80,27 @@ public final class CountInstanceRulesTest extends ProxyContextRestorer {
     
     private SingleTableRule mockSingleTableRule() {
         SingleTableRule result = mock(SingleTableRule.class);
-        when(result.export(ExportableConstants.EXPORT_SINGLE_TABLES)).thenReturn(java.util.Optional.of(Arrays.asList("single_table_1", "single_table_2")));
+        when(result.getAllTables()).thenReturn(Arrays.asList("single_table_1", "single_table_2"));
         return result;
     }
     
-    private RuleConfiguration mockShardingTableRule() {
-        ShardingRuleConfiguration result = mock(ShardingRuleConfiguration.class);
-        when(result.getTables()).thenReturn(Collections.singletonList(new ShardingTableRuleConfiguration("sharding_table")));
-        when(result.getAutoTables()).thenReturn(Collections.singletonList(new ShardingAutoTableRuleConfiguration("sharding_auto_table")));
-        when(result.getBindingTableGroups()).thenReturn(Collections.singletonList("binding_table_1,binding_table_2"));
+    private ShardingRule mockShardingRule() {
+        ShardingRule result = mock(ShardingRule.class);
+        when(result.getTables()).thenReturn(Arrays.asList("sharding_table", "sharding_auto_table"));
+        when(result.getBindingTableRules()).thenReturn(Collections.singletonMap("binding_table", mock(BindingTableRule.class)));
         when(result.getBroadcastTables()).thenReturn(Arrays.asList("broadcast_table_1", "broadcast_table_2"));
         return result;
     }
     
-    private RuleConfiguration mockReadwriteSplittingRule() {
-        ReadwriteSplittingRuleConfiguration result = mock(ReadwriteSplittingRuleConfiguration.class);
-        when(result.getDataSources()).thenReturn(Collections.singletonList(new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_splitting", "", new Properties(), "")));
+    private ReadwriteSplittingRule mockReadwriteSplittingRule() {
+        ReadwriteSplittingRule result = mock(ReadwriteSplittingRule.class);
+        when(result.getDataSourceMapper()).thenReturn(Collections.singletonMap("readwrite_splitting", Arrays.asList("write_ds", "read_ds")));
         return result;
     }
     
-    private RuleConfiguration mockEncryptRule() {
-        EncryptRuleConfiguration result = mock(EncryptRuleConfiguration.class);
-        when(result.getTables()).thenReturn(Collections.singletonList(new EncryptTableRuleConfiguration("encrypt_table", Collections.emptyList(), false)));
+    private EncryptRule mockEncryptRule() {
+        EncryptRule result = mock(EncryptRule.class);
+        when(result.getTables()).thenReturn(Collections.singleton("encrypt_table"));
         return result;
     }
     
@@ -168,8 +156,9 @@ public final class CountInstanceRulesTest extends ProxyContextRestorer {
     public void assertGetRowDataWithoutConfiguration() throws SQLException {
         CountInstanceRulesHandler handler = new CountInstanceRulesHandler();
         handler.init(new CountInstanceRulesStatement(), null);
-        when(database1.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
-        when(database2.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
+        Collection<ShardingSphereRule> rules = Collections.singleton(mockSingleTableRule());
+        when(database1.getRuleMetaData().getRules()).thenReturn(rules);
+        when(database2.getRuleMetaData().getRules()).thenReturn(rules);
         handler.execute();
         handler.next();
         Collection<Object> actual = handler.getRowData();
