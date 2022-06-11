@@ -17,7 +17,7 @@ chapter = true
 | PostgreSQLFrontendEngine | Base on PostgreSQL database protocol |
 | OpenGaussFrontendEngine  | Base on openGauss database protocol  |
 
-## AuthorityProvideAlgorithm
+## AuthorityProviderAlgorithm
 
 | *SPI Name*                       | *Description*                  |
 | -------------------------------  | ------------------------------ |
