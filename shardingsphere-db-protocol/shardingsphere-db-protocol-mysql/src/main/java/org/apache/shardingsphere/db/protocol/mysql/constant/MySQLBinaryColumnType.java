@@ -130,6 +130,7 @@ public enum MySQLBinaryColumnType implements BinaryColumnType {
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.LONGVARBINARY, MYSQL_TYPE_VAR_STRING);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.NULL, MYSQL_TYPE_NULL);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.BLOB, MYSQL_TYPE_BLOB);
+        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.OTHER, MYSQL_TYPE_GEOMETRY);
         for (MySQLBinaryColumnType each : values()) {
             VALUE_AND_COLUMN_TYPE_MAP.put(each.value, each);
         }

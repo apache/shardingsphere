@@ -31,8 +31,8 @@ dataSources:
 #    password: 123456
   ds01:
     url: jdbc:start-db:url=http://127.0.0.1:8000
-    username: root
-    password: 123456
+    username: start_db
+    password: start-db
 #
 #databaseName: sharding_db
 #
