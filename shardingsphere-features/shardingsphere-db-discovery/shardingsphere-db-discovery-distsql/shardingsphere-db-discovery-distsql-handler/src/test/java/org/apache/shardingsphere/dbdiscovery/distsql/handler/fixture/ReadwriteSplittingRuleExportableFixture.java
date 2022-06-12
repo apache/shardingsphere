@@ -19,7 +19,7 @@ package org.apache.shardingsphere.dbdiscovery.distsql.handler.fixture;
 
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableItemConstants;
-import org.apache.shardingsphere.infra.rule.identifier.type.ExportableRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.exportable.ExportableRule;
 
 import java.util.Collections;
 import java.util.HashMap;

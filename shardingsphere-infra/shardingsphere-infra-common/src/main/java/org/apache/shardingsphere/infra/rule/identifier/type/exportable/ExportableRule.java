@@ -15,28 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.distsql.handler.fixture;
+package org.apache.shardingsphere.infra.rule.identifier.type.exportable;
 
-import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
-import org.apache.shardingsphere.infra.rule.identifier.type.exportable.ExportableRule;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
-import java.util.Collections;
 import java.util.Map;
 import java.util.function.Supplier;
 
-public final class DatabaseDiscoveryRuleExportableFixture implements ExportableRule {
+/**
+ * ShardingSphere rule which supports exporting data.
+ */
+public interface ExportableRule extends ShardingSphereRule {
     
-    @Override
-    public String getType() {
-        return null;
-    }
-    
-    @Override
-    public Map<String, Supplier<Object>> getExportedMethods() {
-        return Collections.singletonMap(ExportableConstants.EXPORT_DB_DISCOVERY_PRIMARY_DATA_SOURCES, this::exportedMethod);
-    }
-    
-    private Map<String, String> exportedMethod() {
-        return Collections.singletonMap("ms_group", "ds_0");
-    }
+    /**
+     * The methods that the rule can supply.
+     *
+     * @return export method supplier
+     */
+    Map<String, Supplier<Object>> getExportedMethods();
 }
