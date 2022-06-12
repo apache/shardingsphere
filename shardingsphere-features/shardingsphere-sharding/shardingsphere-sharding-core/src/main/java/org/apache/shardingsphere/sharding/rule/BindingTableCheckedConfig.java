@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.handler.checker;
+package org.apache.shardingsphere.sharding.rule;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
