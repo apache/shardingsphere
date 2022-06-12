@@ -13,7 +13,7 @@ Please register [here](https://github.com/apache/shardingsphere/discussions/1225
 
 ## Who is Using ShardingSphere?
 
-Total: 207 companies.
+Total: 209 companies.
 
 ### Infra Software
 <ul>
@@ -35,6 +35,7 @@ Total: 207 companies.
 <ul>
     <li><a href="https://www.bestpay.com.cn/" rel="nofollow">China Telecom Best Pay(Orange Finance)</a></li>
     <li><a href="https://www.kjtpay.com/" rel="nofollow">KJT pay</a></li>
+    <li><a href="https://www.baofu.com/" rel="nofollow">BAO FU</a></li>
 </ul>
 
 ### Telecommunications
@@ -73,6 +74,7 @@ Total: 207 companies.
     <li><a href="https://www.jd.ru/" rel="nofollow">JD.ru</a></li>
     <li><a href="https://www.wandougongzhu.cn" rel="nofollow">WanDouGongZhu</a></li>
     <li><a href="https://www.missfresh.cn/" rel="nofollow">MissFresh</a></li>
+    <li><a href="http://www.ucreater.com/" rel="nofollow">UCREATER</a></li>
 </ul>
 
 ### E-Commerce
