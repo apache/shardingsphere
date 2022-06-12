@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.rule.identifier.type.exportable.Exportabl
 
 import java.util.Collections;
 import java.util.Map;
-import java.util.function.Supplier;
 
 public final class DatabaseDiscoveryRuleExportableFixture implements ExportableRule {
     
@@ -32,11 +31,7 @@ public final class DatabaseDiscoveryRuleExportableFixture implements ExportableR
     }
     
     @Override
-    public Map<String, Supplier<Object>> getExportData() {
-        return Collections.singletonMap(ExportableConstants.EXPORT_DB_DISCOVERY_PRIMARY_DATA_SOURCES, this::exportedMethod);
-    }
-    
-    private Map<String, String> exportedMethod() {
-        return Collections.singletonMap("ms_group", "ds_0");
+    public Map<String, Object> getExportData() {
+        return Collections.singletonMap(ExportableConstants.EXPORT_DB_DISCOVERY_PRIMARY_DATA_SOURCES, Collections.singletonMap("ms_group", "ds_0"));
     }
 }

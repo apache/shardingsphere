@@ -29,9 +29,9 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.exportable.ExportableRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.exportable.ExportableRule;
 import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
 import org.apache.shardingsphere.singletable.datanode.SingleTableDataNodeLoader;
 
@@ -46,7 +46,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.TreeSet;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -268,7 +267,7 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
     }
     
     @Override
-    public Map<String, Supplier<Object>> getExportData() {
-        return Collections.singletonMap(ExportableConstants.EXPORT_SINGLE_TABLES, tableNames::keySet);
+    public Map<String, Object> getExportData() {
+        return Collections.singletonMap(ExportableConstants.EXPORT_SINGLE_TABLES, tableNames.keySet());
     }
 }

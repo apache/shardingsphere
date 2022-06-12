@@ -24,8 +24,8 @@ import org.apache.shardingsphere.infra.distsql.constant.ExportableItemConstants;
 import org.apache.shardingsphere.infra.rule.event.DataSourceStatusChangedEvent;
 import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.exportable.ExportableRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.StatusContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.exportable.ExportableRule;
 import org.apache.shardingsphere.mode.metadata.storage.StorageNodeStatus;
 import org.apache.shardingsphere.mode.metadata.storage.event.StorageNodeDataSourceChangedEvent;
 import org.apache.shardingsphere.readwritesplitting.algorithm.config.AlgorithmProvidedReadwriteSplittingRuleConfiguration;
@@ -42,7 +42,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 /**
  * Readwrite-splitting rule.
@@ -119,10 +118,10 @@ public final class ReadwriteSplittingRule implements SchemaRule, DataSourceConta
     }
     
     @Override
-    public Map<String, Supplier<Object>> getExportData() {
-        Map<String, Supplier<Object>> result = new HashMap<>(2, 1);
-        result.put(ExportableConstants.EXPORT_DYNAMIC_READWRITE_SPLITTING_RULE, this::exportDynamicDataSources);
-        result.put(ExportableConstants.EXPORT_STATIC_READWRITE_SPLITTING_RULE, this::exportStaticDataSources);
+    public Map<String, Object> getExportData() {
+        Map<String, Object> result = new HashMap<>(2, 1);
+        result.put(ExportableConstants.EXPORT_DYNAMIC_READWRITE_SPLITTING_RULE, exportDynamicDataSources());
+        result.put(ExportableConstants.EXPORT_STATIC_READWRITE_SPLITTING_RULE, exportStaticDataSources());
         return result;
     }
     

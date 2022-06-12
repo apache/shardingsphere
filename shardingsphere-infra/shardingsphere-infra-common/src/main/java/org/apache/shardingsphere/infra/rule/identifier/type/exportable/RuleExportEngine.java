@@ -23,7 +23,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 /**
  * Rule export engine.
@@ -40,11 +39,11 @@ public final class RuleExportEngine {
      * @return data map
      */
     public Map<String, Object> export(final Collection<String> keys) {
-        Map<String, Supplier<Object>> exportMethods = rule.getExportData();
+        Map<String, Object> exportMethods = rule.getExportData();
         Map<String, Object> result = new HashMap<>(keys.size(), 1);
         keys.forEach(each -> {
             if (exportMethods.containsKey(each)) {
-                result.put(each, exportMethods.get(each).get());
+                result.put(each, exportMethods.get(each));
             }
         });
         return result;
@@ -57,11 +56,7 @@ public final class RuleExportEngine {
      * @return data
      */
     public Optional<Object> export(final String key) {
-        Map<String, Supplier<Object>> exportMethods = rule.getExportData();
-        if (exportMethods.containsKey(key)) {
-            return Optional.ofNullable(exportMethods.get(key).get());
-        }
-        return Optional.empty();
+        return Optional.ofNullable(rule.getExportData().get(key));
     }
     
     /**
