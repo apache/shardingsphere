@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sharding.rule;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 
@@ -26,11 +26,11 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * Binding table checked config.
+ * Binding table checked configuration.
  */
+@RequiredArgsConstructor
 @Getter
-@AllArgsConstructor
-public final class BindingTableCheckedConfig {
+public final class BindingTableCheckedConfiguration {
     
     private final Collection<String> dataSourceNames;
     

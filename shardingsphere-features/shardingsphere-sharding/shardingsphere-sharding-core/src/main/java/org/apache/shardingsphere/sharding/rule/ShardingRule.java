@@ -124,7 +124,7 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
                 : keyGenerators.get(config.getDefaultKeyGenerateStrategy().getKeyGeneratorName());
         defaultShardingColumn = config.getDefaultShardingColumn();
         shardingTableDataNodes = createShardingTableDataNodes(tableRules);
-        Preconditions.checkArgument(isValidBindingTableConfiguration(tableRules, new BindingTableCheckedConfig(this.dataSourceNames, shardingAlgorithms, config.getBindingTableGroups(),
+        Preconditions.checkArgument(isValidBindingTableConfiguration(tableRules, new BindingTableCheckedConfiguration(this.dataSourceNames, shardingAlgorithms, config.getBindingTableGroups(),
                 broadcastTables, defaultDatabaseShardingStrategyConfig, defaultTableShardingStrategyConfig, defaultShardingColumn)),
                 "Invalid binding table configuration in ShardingRuleConfiguration.");
     }
@@ -144,7 +144,7 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
                 : keyGenerators.get(config.getDefaultKeyGenerateStrategy().getKeyGeneratorName());
         defaultShardingColumn = config.getDefaultShardingColumn();
         shardingTableDataNodes = createShardingTableDataNodes(tableRules);
-        Preconditions.checkArgument(isValidBindingTableConfiguration(tableRules, new BindingTableCheckedConfig(this.dataSourceNames, shardingAlgorithms, config.getBindingTableGroups(),
+        Preconditions.checkArgument(isValidBindingTableConfiguration(tableRules, new BindingTableCheckedConfiguration(this.dataSourceNames, shardingAlgorithms, config.getBindingTableGroups(),
                 broadcastTables, defaultDatabaseShardingStrategyConfig, defaultTableShardingStrategyConfig, defaultShardingColumn)),
                 "Invalid binding table configuration in ShardingRuleConfiguration.");
     }
@@ -168,7 +168,7 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
         ShardingStrategyConfiguration defaultTableShardingStrategyConfig = null == config.getDefaultTableShardingStrategy()
                 ? new NoneShardingStrategyConfiguration()
                 : config.getDefaultTableShardingStrategy();
-        return isValidBindingTableConfiguration(tableRules, new BindingTableCheckedConfig(allDataSourceNames, shardingAlgorithms, config.getBindingTableGroups(), broadcastTables,
+        return isValidBindingTableConfiguration(tableRules, new BindingTableCheckedConfiguration(allDataSourceNames, shardingAlgorithms, config.getBindingTableGroups(), broadcastTables,
                 defaultDatabaseShardingStrategyConfig, defaultTableShardingStrategyConfig, config.getDefaultShardingColumn()));
     }
     
@@ -269,7 +269,7 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
         return result;
     }
     
-    private boolean isValidBindingTableConfiguration(final Map<String, TableRule> tableRules, final BindingTableCheckedConfig checkedConfig) {
+    private boolean isValidBindingTableConfiguration(final Map<String, TableRule> tableRules, final BindingTableCheckedConfiguration checkedConfig) {
         for (String each : checkedConfig.getBindingTableGroups()) {
             Collection<String> bindingTables = Splitter.on(",").trimResults().splitToList(each.toLowerCase());
             if (bindingTables.size() <= 1) {
@@ -307,13 +307,13 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
         return true;
     }
     
-    private boolean isValidShardingAlgorithm(final TableRule sampleTableRule, final TableRule tableRule, final boolean databaseAlgorithm, final BindingTableCheckedConfig checkedConfig) {
+    private boolean isValidShardingAlgorithm(final TableRule sampleTableRule, final TableRule tableRule, final boolean databaseAlgorithm, final BindingTableCheckedConfiguration checkedConfig) {
         String sampleAlgorithmExpression = getAlgorithmExpression(sampleTableRule, databaseAlgorithm, checkedConfig);
         String algorithmExpression = getAlgorithmExpression(tableRule, databaseAlgorithm, checkedConfig);
         return sampleAlgorithmExpression.equalsIgnoreCase(algorithmExpression);
     }
     
-    private String getAlgorithmExpression(final TableRule tableRule, final boolean databaseAlgorithm, final BindingTableCheckedConfig checkedConfig) {
+    private String getAlgorithmExpression(final TableRule tableRule, final boolean databaseAlgorithm, final BindingTableCheckedConfiguration checkedConfig) {
         ShardingStrategyConfiguration shardingStrategyConfig = databaseAlgorithm
                 ? null == tableRule.getDatabaseShardingStrategyConfig() ? checkedConfig.getDefaultDatabaseShardingStrategyConfig() : tableRule.getDatabaseShardingStrategyConfig()
                 : null == tableRule.getTableShardingStrategyConfig() ? checkedConfig.getDefaultTableShardingStrategyConfig() : tableRule.getTableShardingStrategyConfig();
