@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.rule.identifier.type.exportable;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import java.util.Map;
-import java.util.function.Supplier;
 
 /**
  * Exportable rule.
@@ -28,9 +27,9 @@ import java.util.function.Supplier;
 public interface ExportableRule extends ShardingSphereRule {
     
     /**
-     * The methods that the rule can supply.
+     * Get export data.
      *
-     * @return export method supplier
+     * @return exported data
      */
-    Map<String, Supplier<Object>> getExportData();
+    Map<String, Object> getExportData();
 }

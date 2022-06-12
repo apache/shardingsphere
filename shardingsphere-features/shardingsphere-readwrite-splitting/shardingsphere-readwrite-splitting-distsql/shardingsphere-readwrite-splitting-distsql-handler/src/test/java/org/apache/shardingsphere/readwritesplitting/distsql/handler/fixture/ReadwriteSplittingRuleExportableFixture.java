@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.rule.identifier.type.exportable.Exportabl
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.function.Supplier;
 
 public final class ReadwriteSplittingRuleExportableFixture implements ExportableRule {
     
@@ -34,10 +33,10 @@ public final class ReadwriteSplittingRuleExportableFixture implements Exportable
     }
     
     @Override
-    public Map<String, Supplier<Object>> getExportData() {
-        Map<String, Supplier<Object>> result = new HashMap<>(4, 1);
-        result.put(ExportableConstants.EXPORT_DYNAMIC_READWRITE_SPLITTING_RULE, this::exportDynamicDataSources);
-        result.put(ExportableConstants.EXPORT_STATIC_READWRITE_SPLITTING_RULE, this::exportStaticDataSources);
+    public Map<String, Object> getExportData() {
+        Map<String, Object> result = new HashMap<>(4, 1);
+        result.put(ExportableConstants.EXPORT_DYNAMIC_READWRITE_SPLITTING_RULE, exportDynamicDataSources());
+        result.put(ExportableConstants.EXPORT_STATIC_READWRITE_SPLITTING_RULE, exportStaticDataSources());
         return result;
     }
     
