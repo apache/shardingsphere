@@ -17,7 +17,7 @@ chapter = true
 | PostgreSQLFrontendEngine | 基于 PostgreSQL 的数据库协议实现 |
 | OpenGaussFrontendEngine  | 基于 openGauss 的数据库协议实现   |
 
-## AuthorityProvideAlgorithm
+## AuthorityProviderAlgorithm
 
 | *SPI 名称*                       | *详细说明*                    |
 | ------------------------------- | ---------------------------- |
