@@ -74,7 +74,7 @@ public final class SchemaRulesCountResultSetTest {
     
     private SingleTableRule mockSingleTableRule() {
         SingleTableRule result = mock(SingleTableRule.class);
-        when(result.export(ExportableConstants.EXPORT_SINGLE_TABLES)).thenReturn(java.util.Optional.of(Arrays.asList("single_table_1", "single_table_2")));
+        when(result.getExportedMethods()).thenReturn(Collections.singletonMap(ExportableConstants.EXPORT_SINGLE_TABLES, () -> Arrays.asList("single_table_1", "single_table_2")));
         return result;
     }
     

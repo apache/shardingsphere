@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.identifier.type;
+package org.apache.shardingsphere.infra.rule.identifier.type.exportable;
 
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -26,16 +26,12 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 /**
- * ShardingSphere rule which supports exporting data.
+ * Rule export engine.
  */
-public interface ExportableRule extends ShardingSphereRule {
+@RequiredArgsConstructor
+public final class RuleExportEngine {
     
-    /**
-     * The methods that the rule can supply.
-     *
-     * @return export method supplier
-     */
-    Map<String, Supplier<Object>> getExportedMethods();
+    private final ExportableRule rule;
     
     /**
      * Export data by specified key.
@@ -43,8 +39,8 @@ public interface ExportableRule extends ShardingSphereRule {
      * @param keys specified keys
      * @return data map
      */
-    default Map<String, Object> export(final Collection<String> keys) {
-        Map<String, Supplier<Object>> exportMethods = getExportedMethods();
+    public Map<String, Object> export(final Collection<String> keys) {
+        Map<String, Supplier<Object>> exportMethods = rule.getExportedMethods();
         Map<String, Object> result = new HashMap<>(keys.size(), 1);
         keys.forEach(each -> {
             if (exportMethods.containsKey(each)) {
@@ -60,8 +56,8 @@ public interface ExportableRule extends ShardingSphereRule {
      * @param key specified key
      * @return data
      */
-    default Optional<Object> export(final String key) {
-        Map<String, Supplier<Object>> exportMethods = getExportedMethods();
+    public Optional<Object> export(final String key) {
+        Map<String, Supplier<Object>> exportMethods = rule.getExportedMethods();
         if (exportMethods.containsKey(key)) {
             return Optional.ofNullable(exportMethods.get(key).get());
         }
@@ -74,7 +70,7 @@ public interface ExportableRule extends ShardingSphereRule {
      * @param keys specified keys
      * @return contain or not
      */
-    default boolean containExportableKey(final Collection<String> keys) {
-        return keys.stream().anyMatch(each -> getExportedMethods().containsKey(each));
+    public boolean containExportableKey(final Collection<String> keys) {
+        return keys.stream().anyMatch(each -> rule.getExportedMethods().containsKey(each));
     }
 }
