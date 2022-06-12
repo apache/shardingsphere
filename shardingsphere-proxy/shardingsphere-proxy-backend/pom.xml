@@ -141,11 +141,6 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-sharding-distsql-parser</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-data-pipeline-mysql</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
