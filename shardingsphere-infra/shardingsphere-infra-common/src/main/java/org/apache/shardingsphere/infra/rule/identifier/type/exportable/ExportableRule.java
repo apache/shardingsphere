@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 /**
- * ShardingSphere rule which supports exporting data.
+ * Exportable rule.
  */
 public interface ExportableRule extends ShardingSphereRule {
     
@@ -32,5 +32,5 @@ public interface ExportableRule extends ShardingSphereRule {
      *
      * @return export method supplier
      */
-    Map<String, Supplier<Object>> getExportedMethods();
+    Map<String, Supplier<Object>> getExportData();
 }

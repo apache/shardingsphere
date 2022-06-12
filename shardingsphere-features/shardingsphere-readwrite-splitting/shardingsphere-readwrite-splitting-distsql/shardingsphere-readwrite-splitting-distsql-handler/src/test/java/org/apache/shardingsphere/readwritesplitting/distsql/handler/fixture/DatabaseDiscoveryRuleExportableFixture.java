@@ -32,7 +32,7 @@ public final class DatabaseDiscoveryRuleExportableFixture implements ExportableR
     }
     
     @Override
-    public Map<String, Supplier<Object>> getExportedMethods() {
+    public Map<String, Supplier<Object>> getExportData() {
         return Collections.singletonMap(ExportableConstants.EXPORT_DB_DISCOVERY_PRIMARY_DATA_SOURCES, this::exportedMethod);
     }
     

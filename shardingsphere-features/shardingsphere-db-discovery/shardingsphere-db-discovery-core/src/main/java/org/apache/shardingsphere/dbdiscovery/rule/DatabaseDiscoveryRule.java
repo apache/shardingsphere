@@ -171,7 +171,7 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
     }
     
     @Override
-    public Map<String, Supplier<Object>> getExportedMethods() {
+    public Map<String, Supplier<Object>> getExportData() {
         return Collections.singletonMap(ExportableConstants.EXPORT_DB_DISCOVERY_PRIMARY_DATA_SOURCES, this::exportPrimaryDataSourceMap);
     }
     
