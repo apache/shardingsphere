@@ -19,9 +19,10 @@ package org.apache.shardingsphere.dbdiscovery.distsql.handler.update;
 
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
-import org.apache.shardingsphere.dbdiscovery.distsql.handler.fixture.ReadwriteSplittingRuleExportableFixture;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.DropDatabaseDiscoveryRuleStatement;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
+import org.apache.shardingsphere.infra.distsql.constant.ExportableItemConstants;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RuleInUsedException;
@@ -33,6 +34,8 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
@@ -70,10 +73,34 @@ public final class DropDatabaseDiscoveryRuleStatementUpdaterTest {
     @Test(expected = RuleInUsedException.class)
     public void assertCheckSQLStatementWithRuleInUsed() throws DistSQLException {
         when(database.getRuleMetaData()).thenReturn(mock(ShardingSphereRuleMetaData.class, RETURNS_DEEP_STUBS));
-        when(database.getRuleMetaData().findRules(ExportableRule.class)).thenReturn(Collections.singleton(new ReadwriteSplittingRuleExportableFixture()));
+        ExportableRule exportableRule = mock(ExportableRule.class);
+        when(exportableRule.getExportData()).thenReturn(getExportData());
+        when(database.getRuleMetaData().findRules(ExportableRule.class)).thenReturn(Collections.singleton(exportableRule));
         DatabaseDiscoveryDataSourceRuleConfiguration configuration = new DatabaseDiscoveryDataSourceRuleConfiguration("ha_group", null, null, null);
         updater.checkSQLStatement(database, createSQLStatement(),
                 new DatabaseDiscoveryRuleConfiguration(Collections.singletonList(configuration), Collections.emptyMap(), Collections.emptyMap()));
+    }
+    
+    private Map<String, Object> getExportData() {
+        Map<String, Object> result = new HashMap<>(2, 1);
+        result.put(ExportableConstants.EXPORT_DYNAMIC_READWRITE_SPLITTING_RULE, exportDynamicDataSources());
+        result.put(ExportableConstants.EXPORT_STATIC_READWRITE_SPLITTING_RULE, exportStaticDataSources());
+        return result;
+    }
+    
+    private Map<String, Map<String, String>> exportDynamicDataSources() {
+        Map<String, String> result = new LinkedHashMap<>(3, 1);
+        result.put(ExportableItemConstants.AUTO_AWARE_DATA_SOURCE_NAME, "ha_group");
+        result.put(ExportableItemConstants.PRIMARY_DATA_SOURCE_NAME, "write_ds");
+        result.put(ExportableItemConstants.REPLICA_DATA_SOURCE_NAMES, "read_ds_0, read_ds_1");
+        return Collections.singletonMap("dynamic_rule", result);
+    }
+    
+    private Map<String, Map<String, String>> exportStaticDataSources() {
+        Map<String, String> result = new LinkedHashMap<>(2, 1);
+        result.put(ExportableItemConstants.PRIMARY_DATA_SOURCE_NAME, "write_ds");
+        result.put(ExportableItemConstants.REPLICA_DATA_SOURCE_NAMES, "read_ds");
+        return Collections.singletonMap("static_rule", result);
     }
     
     @Test
