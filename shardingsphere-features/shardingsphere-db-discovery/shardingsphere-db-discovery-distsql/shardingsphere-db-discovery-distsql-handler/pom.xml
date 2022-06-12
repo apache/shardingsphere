@@ -38,6 +38,11 @@
             <artifactId>shardingsphere-db-discovery-distsql-statement</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-db-discovery-distsql-parser</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         
         <dependency>
             <groupId>com.google.code.gson</groupId>
