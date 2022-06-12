@@ -40,7 +40,7 @@ public final class RuleExportEngine {
      * @return data map
      */
     public Map<String, Object> export(final Collection<String> keys) {
-        Map<String, Supplier<Object>> exportMethods = rule.getExportedMethods();
+        Map<String, Supplier<Object>> exportMethods = rule.getExportData();
         Map<String, Object> result = new HashMap<>(keys.size(), 1);
         keys.forEach(each -> {
             if (exportMethods.containsKey(each)) {
@@ -57,7 +57,7 @@ public final class RuleExportEngine {
      * @return data
      */
     public Optional<Object> export(final String key) {
-        Map<String, Supplier<Object>> exportMethods = rule.getExportedMethods();
+        Map<String, Supplier<Object>> exportMethods = rule.getExportData();
         if (exportMethods.containsKey(key)) {
             return Optional.ofNullable(exportMethods.get(key).get());
         }
@@ -71,6 +71,6 @@ public final class RuleExportEngine {
      * @return contain or not
      */
     public boolean containExportableKey(final Collection<String> keys) {
-        return keys.stream().anyMatch(each -> rule.getExportedMethods().containsKey(each));
+        return keys.stream().anyMatch(each -> rule.getExportData().containsKey(each));
     }
 }
