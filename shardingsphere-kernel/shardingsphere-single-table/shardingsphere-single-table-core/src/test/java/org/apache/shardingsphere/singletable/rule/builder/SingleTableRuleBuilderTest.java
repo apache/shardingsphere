@@ -32,10 +32,7 @@ import java.util.Collections;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 public final class SingleTableRuleBuilderTest {
@@ -49,7 +46,6 @@ public final class SingleTableRuleBuilderTest {
         ShardingSphereRule shardingSphereRule = mock(ShardingSphereRule.class);
         DatabaseRule databaseRule = builder.build(config, "", Collections.emptyMap(), Collections.singletonList(shardingSphereRule), new ConfigurationProperties(createProperties()));
         assertThat(databaseRule, instanceOf(SingleTableRule.class));
-        assertFalse(((SingleTableRule) databaseRule).getDefaultDataSource().isPresent());
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -62,8 +58,6 @@ public final class SingleTableRuleBuilderTest {
         config.setDefaultDataSource("ds_0");
         DatabaseRule databaseRule = builder.build(config, "", Collections.emptyMap(), Collections.singletonList(shardingSphereRule), new ConfigurationProperties(createProperties()));
         assertThat(databaseRule, instanceOf(SingleTableRule.class));
-        assertTrue(((SingleTableRule) databaseRule).getDefaultDataSource().isPresent());
-        assertThat(((SingleTableRule) databaseRule).getDefaultDataSource().get(), is("ds_0"));
     }
     
     private Properties createProperties() {

@@ -36,6 +36,7 @@ import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration
 import org.apache.shardingsphere.singletable.datanode.SingleTableDataNodeLoader;
 
 import javax.sql.DataSource;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -46,29 +47,31 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.TreeSet;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 /**
  * Single table rule.
  */
-@Getter
 public final class SingleTableRule implements DatabaseRule, DataNodeContainedRule, TableContainedRule, MutableDataNodeRule, ExportableRule {
     
-    private String defaultDataSource;
+    private final String defaultDataSource;
     
+    @Getter
     private final Collection<String> dataSourceNames;
     
+    @Getter
     private final Map<String, Collection<DataNode>> singleTableDataNodes;
     
     private final Map<String, String> tableNames;
     
     public SingleTableRule(final SingleTableRuleConfiguration config, final String databaseName, final DatabaseType databaseType,
                            final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules, final ConfigurationProperties props) {
+        defaultDataSource = config.getDefaultDataSource().orElse(null);
         Map<String, DataSource> aggregateDataSourceMap = getAggregateDataSourceMap(dataSourceMap, builtRules);
         dataSourceNames = aggregateDataSourceMap.keySet();
         singleTableDataNodes = SingleTableDataNodeLoader.load(databaseName, databaseType, aggregateDataSourceMap, getExcludedTables(builtRules), props);
         tableNames = singleTableDataNodes.entrySet().stream().collect(Collectors.toConcurrentMap(Entry::getKey, entry -> entry.getValue().iterator().next().getTableName()));
-        config.getDefaultDataSource().ifPresent(optional -> defaultDataSource = optional);
     }
     
     private Map<String, DataSource> getAggregateDataSourceMap(final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules) {
@@ -92,6 +95,15 @@ public final class SingleTableRule implements DatabaseRule, DataNodeContainedRul
         }
         result.putAll(dataSourceMap);
         return result;
+    }
+    
+    /**
+     * Assign new data source name.
+     *
+     * @return assigned data source name
+     */
+    public String assignNewDataSourceName() {
+        return null == defaultDataSource ? new ArrayList<>(dataSourceNames).get(ThreadLocalRandom.current().nextInt(dataSourceNames.size())) : defaultDataSource;
     }
     
     /**
@@ -139,15 +151,6 @@ public final class SingleTableRule implements DatabaseRule, DataNodeContainedRul
             }
         }
         return true;
-    }
-    
-    /**
-     * Get default data source.
-     *
-     * @return default data source
-     */
-    public Optional<String> getDefaultDataSource() {
-        return Optional.ofNullable(defaultDataSource);
     }
     
     /**
