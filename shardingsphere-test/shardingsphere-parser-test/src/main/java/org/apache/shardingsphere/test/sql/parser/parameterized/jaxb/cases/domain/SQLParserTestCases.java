@@ -109,6 +109,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterIndexStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterLanguageStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterMaterializedViewStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterOperatorStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterOutlineStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterPackageStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterProcedureStatementTestCase;
@@ -1278,6 +1279,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "alter-materialized-view")
     private final List<AlterMaterializedViewStatementTestCase> alterMaterializedViewTestCases = new LinkedList<>();
     
+    @XmlElement(name = "alter-operator")
+    private final List<AlterOperatorStatementTestCase> alterOperatorTestCases = new LinkedList<>();
+    
     @XmlElement(name = "create-text-search")
     private final List<CreateTextSearchStatementTestCase> createTextSearchTestCases = new LinkedList<>();
     
@@ -1300,7 +1304,7 @@ public final class SQLParserTestCases {
     private final List<ShowUnusedShardingAlgorithmsStatementTestCase> showUnusedShardingAlgorithmsTestCases = new LinkedList<>();
     
     @XmlElement(name = "count-database-rules")
-    private final List<CountDatabaseRulesStatementTestCase> countSchemaRulesTestCases = new LinkedList<>();
+    private final List<CountDatabaseRulesStatementTestCase> countDatabaseRulesTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-unused-sharding-key-generators")
     private final List<ShowUnusedShardingKeyGeneratorsStatementTestCase> showUnusedShardingKeyGeneratorsTestCases = new LinkedList<>();
@@ -1742,6 +1746,7 @@ public final class SQLParserTestCases {
         putAll(dropForeignTableTestCases, result);
         putAll(alterGroupTestCases, result);
         putAll(alterMaterializedViewTestCases, result);
+        putAll(alterOperatorTestCases, result);
         putAll(createTextSearchTestCases, result);
         putAll(alterTextSearchTestCases, result);
         putAll(createLanguageTestCases, result);
@@ -1761,7 +1766,7 @@ public final class SQLParserTestCases {
         putAll(renameTableTestCases, result);
         putAll(showBinlogEventsTestCases, result);
         putAll(createExtensionTestCases, result);
-        putAll(countSchemaRulesTestCases, result);
+        putAll(countDatabaseRulesTestCases, result);
         putAll(alterExtensionTestCases, result);
         putAll(dropExtensionTestCases, result);
         putAll(declareTestCases, result);

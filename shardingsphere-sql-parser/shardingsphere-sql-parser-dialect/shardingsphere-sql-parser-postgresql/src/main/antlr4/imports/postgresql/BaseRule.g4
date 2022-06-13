@@ -461,7 +461,7 @@ typeFuncNameKeyword
     ;
 
 schemaName
-    : identifier
+    : (owner DOT_)? identifier
     ;
 
 tableName
@@ -1705,10 +1705,7 @@ replicaIdentity
     ;
 
 operArgtypes
-    : LP_ typeName RP_
-    | LP_ typeName COMMA_ typeName RP_
-    | LP_ NONE COMMA_ typeName RP_
-    | LP_ typeName COMMA_ NONE RP_
+    : LP_ (typeName | NONE) COMMA_ typeName RP_
     ;
 
 funcArg

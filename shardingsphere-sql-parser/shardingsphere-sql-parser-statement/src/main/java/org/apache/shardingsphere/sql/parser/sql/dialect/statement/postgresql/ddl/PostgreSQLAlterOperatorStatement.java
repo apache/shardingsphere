@@ -15,12 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.identifier.scope;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterOperatorStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
- * Schema rule.
+ * PostgreSQL alter operator statement.
  */
-public interface SchemaRule extends ShardingSphereRule {
+@ToString
+public final class PostgreSQLAlterOperatorStatement extends AlterOperatorStatement implements PostgreSQLStatement {
 }

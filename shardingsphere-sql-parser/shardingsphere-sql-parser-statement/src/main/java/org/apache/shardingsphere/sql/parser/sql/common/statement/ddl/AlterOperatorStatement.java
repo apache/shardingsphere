@@ -15,12 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.scope;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * Schema rule configuration.
+ * Alter operator statement.
  */
-public interface SchemaRuleConfiguration extends RuleConfiguration {
+@ToString
+public abstract class AlterOperatorStatement extends AbstractSQLStatement implements DDLStatement {
 }

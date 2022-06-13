@@ -148,5 +148,6 @@ execute
     | checkpoint
     | close
     | cluster
+    | alterOperator
     ) SEMI_? EOF
     ;

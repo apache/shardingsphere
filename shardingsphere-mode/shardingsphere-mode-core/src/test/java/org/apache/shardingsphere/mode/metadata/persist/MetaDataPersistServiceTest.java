@@ -65,7 +65,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class MetaDataPersistServiceTest {
     
-    private static final String SCHEMA_RULE_YAML = "yaml/persist/data-schema-rule.yaml";
+    private static final String SCHEMA_RULE_YAML = "yaml/persist/data-database-rule.yaml";
     
     @Mock
     private DataSourcePersistService dataSourceService;

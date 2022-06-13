@@ -15,9 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.rule;
+package org.apache.shardingsphere.infra.rule.identifier.scope;
 
-import org.apache.shardingsphere.infra.config.scope.DatabaseRuleConfiguration;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
-public final class ShardingSphereRuleConfigurationFixture implements DatabaseRuleConfiguration {
+/**
+ * Database rule.
+ */
+public interface DatabaseRule extends ShardingSphereRule {
 }

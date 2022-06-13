@@ -17,7 +17,8 @@
   -->
 
 <sql-cases>
-    <sql-case id="drop_operator" value="DROP OPERATOR === (boolean, boolean)" db-types="PostgreSQL" />
-    <sql-case id="drop_operator_if_exists" value="DROP OPERATOR IF EXISTS === (boolean, boolean)" db-types="PostgreSQL" />
-    <sql-case id="drop_operator_force" value="DROP OPERATOR eq_op FORCE;" db-types="Oracle" />
+    <sql-case id="alter_operator_owner" value="ALTER OPERATOR @+@(int4, int4) OWNER TO regress_alter_generic_user2" db-types="PostgreSQL" />
+    <sql-case id="alter_operator_set_schema" value="ALTER OPERATOR @+@(int4, int4) SET SCHEMA alt_nsp2;" db-types="PostgreSQL" />
+    <sql-case id="alter_operator_set" value="ALTER OPERATOR === (boolean, boolean) SET (RESTRICT = non_existent_func);" db-types="PostgreSQL" />
+    <sql-case id="alter_operator_set_restrict_join" value="ALTER OPERATOR === (boolean, boolean) SET (RESTRICT = customcontsel, JOIN = contjoinsel);" db-types="PostgreSQL" />
 </sql-cases>

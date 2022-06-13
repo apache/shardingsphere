@@ -15,4 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.rule.builder.fixture.FixtureSchemaRuleConfigurationBuilder
+org.apache.shardingsphere.infra.fixture.TestShardingSphereRuleBuilder
+org.apache.shardingsphere.infra.rule.builder.fixture.FixtureDatabaseRuleBuilder

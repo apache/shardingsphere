@@ -16,8 +16,9 @@
   ~ limitations under the License.
   -->
 
-<sql-cases>
-    <sql-case id="drop_operator" value="DROP OPERATOR === (boolean, boolean)" db-types="PostgreSQL" />
-    <sql-case id="drop_operator_if_exists" value="DROP OPERATOR IF EXISTS === (boolean, boolean)" db-types="PostgreSQL" />
-    <sql-case id="drop_operator_force" value="DROP OPERATOR eq_op FORCE;" db-types="Oracle" />
-</sql-cases>
+<sql-parser-test-cases>
+    <alter-operator sql-case-id="alter_operator_owner" />
+    <alter-operator sql-case-id="alter_operator_set_schema" />
+    <alter-operator sql-case-id="alter_operator_set" />
+    <alter-operator sql-case-id="alter_operator_set_restrict_join" />
+</sql-parser-test-cases>

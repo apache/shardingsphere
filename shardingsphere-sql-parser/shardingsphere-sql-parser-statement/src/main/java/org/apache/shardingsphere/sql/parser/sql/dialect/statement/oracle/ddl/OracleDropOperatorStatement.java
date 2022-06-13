@@ -15,14 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.builder.fixture;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropOperatorStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
-public final class FixtureSchemaRule implements SchemaRule {
-    
-    @Override
-    public String getType() {
-        return FixtureSchemaRule.class.getSimpleName();
-    }
+/**
+ * Oracle drop operator statement.
+ */
+@ToString
+public final class OracleDropOperatorStatement extends DropOperatorStatement implements OracleStatement {
 }

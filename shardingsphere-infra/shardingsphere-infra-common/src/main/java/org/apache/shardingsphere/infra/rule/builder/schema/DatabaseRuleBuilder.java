@@ -15,31 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.builder.fixture;
+package org.apache.shardingsphere.infra.rule.builder.schema;
 
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilder;
+import org.apache.shardingsphere.infra.rule.builder.RuleBuilder;
+import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
 
 import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Map;
 
-public final class FixtureSchemaRuleBuilder implements SchemaRuleBuilder<FixtureSchemaRuleConfiguration> {
+/**
+ * Database rule builder.
+ * 
+ * @param <T> type of rule configuration
+ */
+@SingletonSPI
+public interface DatabaseRuleBuilder<T extends RuleConfiguration> extends RuleBuilder<T> {
     
-    @Override
-    public FixtureSchemaRule build(final FixtureSchemaRuleConfiguration config, final String databaseName, final Map<String, DataSource> dataSources,
-                                   final Collection<ShardingSphereRule> builtRules, final ConfigurationProperties props) {
-        return new FixtureSchemaRule();
-    }
-    
-    @Override
-    public int getOrder() {
-        return 0;
-    }
-    
-    @Override
-    public Class<FixtureSchemaRuleConfiguration> getTypeClass() {
-        return FixtureSchemaRuleConfiguration.class;
-    }
+    /**
+     * Build database rule.
+     *
+     * @param config rule configuration
+     * @param databaseName database name
+     * @param dataSources data sources
+     * @param builtRules built rules
+     * @param props configuration properties
+     * @return built database rule
+     */
+    DatabaseRule build(T config, String databaseName, Map<String, DataSource> dataSources, Collection<ShardingSphereRule> builtRules, ConfigurationProperties props);
 }

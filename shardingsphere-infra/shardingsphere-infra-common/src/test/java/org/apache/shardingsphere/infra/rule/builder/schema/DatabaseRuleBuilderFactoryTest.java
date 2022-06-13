@@ -20,8 +20,8 @@ package org.apache.shardingsphere.infra.rule.builder.schema;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.fixture.TestRuleConfiguration;
 import org.apache.shardingsphere.infra.fixture.TestShardingSphereRuleBuilder;
-import org.apache.shardingsphere.infra.rule.builder.fixture.FixtureSchemaRuleBuilder;
-import org.apache.shardingsphere.infra.rule.builder.fixture.FixtureSchemaRuleConfiguration;
+import org.apache.shardingsphere.infra.rule.builder.fixture.FixtureDatabaseRuleBuilder;
+import org.apache.shardingsphere.infra.rule.builder.fixture.FixtureDatabaseRuleConfiguration;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -33,29 +33,29 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
-public final class SchemaRuleBuilderFactoryTest {
+public final class DatabaseRuleBuilderFactoryTest {
     
     @SuppressWarnings("rawtypes")
     @Test
     public void assertGetInstances() {
-        Iterator<SchemaRuleBuilder> actual = SchemaRuleBuilderFactory.getInstances().iterator();
+        Iterator<DatabaseRuleBuilder> actual = DatabaseRuleBuilderFactory.getInstances().iterator();
         assertThat(actual.next(), instanceOf(TestShardingSphereRuleBuilder.class));
-        assertThat(actual.next(), instanceOf(FixtureSchemaRuleBuilder.class));
+        assertThat(actual.next(), instanceOf(FixtureDatabaseRuleBuilder.class));
         assertFalse(actual.hasNext());
     }
     
     @Test
     public void assertGetInstanceMap() {
-        FixtureSchemaRuleConfiguration ruleConfig = new FixtureSchemaRuleConfiguration();
-        assertThat(SchemaRuleBuilderFactory.getInstanceMap(Collections.singleton(ruleConfig)).get(ruleConfig), instanceOf(FixtureSchemaRuleBuilder.class));
+        FixtureDatabaseRuleConfiguration ruleConfig = new FixtureDatabaseRuleConfiguration();
+        assertThat(DatabaseRuleBuilderFactory.getInstanceMap(Collections.singleton(ruleConfig)).get(ruleConfig), instanceOf(FixtureDatabaseRuleBuilder.class));
     }
     
     @Test
     public void assertGetInstanceMapWithComparator() {
-        Iterator<RuleConfiguration> actual = SchemaRuleBuilderFactory.getInstanceMap(
-                Arrays.asList(new FixtureSchemaRuleConfiguration(), new TestRuleConfiguration()), Comparator.naturalOrder()).keySet().iterator();
+        Iterator<RuleConfiguration> actual = DatabaseRuleBuilderFactory.getInstanceMap(
+                Arrays.asList(new FixtureDatabaseRuleConfiguration(), new TestRuleConfiguration()), Comparator.naturalOrder()).keySet().iterator();
         assertThat(actual.next(), instanceOf(TestRuleConfiguration.class));
-        assertThat(actual.next(), instanceOf(FixtureSchemaRuleConfiguration.class));
+        assertThat(actual.next(), instanceOf(FixtureDatabaseRuleConfiguration.class));
         assertFalse(actual.hasNext());
     }
 }

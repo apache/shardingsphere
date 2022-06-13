@@ -15,9 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.rule;
+package org.apache.shardingsphere.infra.rule.builder.fixture;
 
-import org.apache.shardingsphere.infra.config.scope.DatabaseRuleConfiguration;
+import org.apache.shardingsphere.infra.rule.builder.schema.DefaultDatabaseRuleConfigurationBuilder;
 
-public final class ShardingSphereRuleConfigurationFixture implements DatabaseRuleConfiguration {
+public final class FixtureDatabaseRuleConfigurationBuilder implements DefaultDatabaseRuleConfigurationBuilder<FixtureDatabaseRuleConfiguration, FixtureDatabaseRuleBuilder> {
+    
+    @Override
+    public FixtureDatabaseRuleConfiguration build() {
+        return new FixtureDatabaseRuleConfiguration();
+    }
+    
+    @Override
+    public int getOrder() {
+        return 0;
+    }
+    
+    @Override
+    public Class<FixtureDatabaseRuleBuilder> getTypeClass() {
+        return FixtureDatabaseRuleBuilder.class;
+    }
 }

@@ -15,18 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.builder.schema;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
-import org.apache.shardingsphere.infra.rule.builder.DefaultRuleConfigurationBuilder;
-import org.apache.shardingsphere.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Default schema rule configuration builder.
- * 
- * @param <T> type of schema rule configuration
- * @param <B> type of schema rule builder
+ * Alter operator statement test case.
  */
-@SingletonSPI
-public interface DefaultSchemaRuleConfigurationBuilder<T extends SchemaRuleConfiguration, B extends SchemaRuleBuilder<?>> extends DefaultRuleConfigurationBuilder<T, B> {
+public final class AlterOperatorStatementTestCase extends SQLParserTestCase {
 }

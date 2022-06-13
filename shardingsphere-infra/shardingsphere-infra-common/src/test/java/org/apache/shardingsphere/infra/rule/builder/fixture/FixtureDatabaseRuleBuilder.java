@@ -15,36 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.builder.schema;
+package org.apache.shardingsphere.infra.rule.builder.fixture;
 
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.builder.RuleBuilder;
-import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
-import org.apache.shardingsphere.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.rule.builder.schema.DatabaseRuleBuilder;
 
 import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Map;
 
-/**
- * Schema rule builder.
- * 
- * @param <T> type of rule configuration
- */
-@SingletonSPI
-public interface SchemaRuleBuilder<T extends RuleConfiguration> extends RuleBuilder<T> {
+public final class FixtureDatabaseRuleBuilder implements DatabaseRuleBuilder<FixtureDatabaseRuleConfiguration> {
     
-    /**
-     * Build schema rule.
-     *
-     * @param config rule configuration
-     * @param databaseName database name
-     * @param dataSources data sources
-     * @param builtRules built rules
-     * @param props configuration properties
-     * @return built schema rule
-     */
-    SchemaRule build(T config, String databaseName, Map<String, DataSource> dataSources, Collection<ShardingSphereRule> builtRules, ConfigurationProperties props);
+    @Override
+    public FixtureDatabaseRule build(final FixtureDatabaseRuleConfiguration config, final String databaseName, final Map<String, DataSource> dataSources,
+                                     final Collection<ShardingSphereRule> builtRules, final ConfigurationProperties props) {
+        return new FixtureDatabaseRule();
+    }
+    
+    @Override
+    public int getOrder() {
+        return 0;
+    }
+    
+    @Override
+    public Class<FixtureDatabaseRuleConfiguration> getTypeClass() {
+        return FixtureDatabaseRuleConfiguration.class;
+    }
 }
