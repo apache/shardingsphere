@@ -129,3 +129,33 @@
 #      type: MySQL.MGR
 #      props:
 #        group-name: 92504d5b-6dec-11e8-91ea-246e9612aaf1
+
+######################################################################################################
+#
+# If you want to connect to MySQL, you should manually copy MySQL driver to lib directory.
+# If you want to use MySQL normal replication, you should set discovery type to MySQL.NORMAL_REPLICATION.
+# The definitions of databaseName and dataSources are the same as MySQL.MGR.
+#
+######################################################################################################
+
+#rules:
+#- !DB_DISCOVERY
+#  dataSources:
+#    readwrite_ds:
+#      dataSourceNames:
+#        - ds_0
+#        - ds_1
+#        - ds_2
+#      discoveryHeartbeatName: normal-replication-heartbeat
+#      discoveryTypeName: normal-replication
+#  discoveryHeartbeats:
+#    normal-replication-heartbeat:
+#      props:
+#        keep-alive-cron: '0/5 * * * * ?'
+#  discoveryTypes:
+#    normal-replication:
+#      type: MySQL.NORMAL_REPLICATION
+#      props:
+#        delay-milliseconds-threshold: 60000
+#        # If you want to use your own defined sql to determine the replication delay, the following properties can be configured or not.
+#        delay-checked-sql: select abs(unix_timestamp(now())-unix_timestamp(max(Ftime))) as delay from dba.delay_monitor limit 1

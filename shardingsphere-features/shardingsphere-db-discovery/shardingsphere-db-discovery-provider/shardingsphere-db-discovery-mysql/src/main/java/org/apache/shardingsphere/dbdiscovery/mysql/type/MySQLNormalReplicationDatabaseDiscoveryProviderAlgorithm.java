@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.dbdiscovery.mysql.type;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
@@ -123,6 +124,19 @@ public final class MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm impl
     }
     
     private long queryReplicationDelayMilliseconds(final Statement statement) throws SQLException {
+        String delayCheckedSql = getProps().getProperty("delay-checked-sql");
+        return Strings.isNullOrEmpty(delayCheckedSql) ? queryDelayMillisecondsFromSecondBehindMaster(statement) : queryDelayMillisecondsFromDelayCheckedSql(statement, delayCheckedSql);
+    }
+    
+    private long queryDelayMillisecondsFromDelayCheckedSql(final Statement statement, final String delayCheckedSql) throws SQLException {
+        try (ResultSet resultSet = statement.executeQuery(delayCheckedSql)) {
+            return resultSet.next() ? resultSet.getLong(1) * 1000L : queryDelayMillisecondsFromSecondBehindMaster(statement);
+        } catch (SQLException ex) {
+            return queryDelayMillisecondsFromSecondBehindMaster(statement);
+        }
+    }
+    
+    private long queryDelayMillisecondsFromSecondBehindMaster(final Statement statement) throws SQLException {
         try (ResultSet resultSet = statement.executeQuery(SHOW_SLAVE_STATUS)) {
             return resultSet.next() ? resultSet.getLong("Seconds_Behind_Master") * 1000L : 0L;
         }
