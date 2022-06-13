@@ -83,7 +83,7 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
         this.databaseName = databaseName;
         this.dataSourceMap = dataSourceMap;
         dataSourceRules = getDataSourceRules(dataSourceRuleConfigs, heartBeatConfig);
-        findMasterSlaveRelation(databaseName, dataSourceMap);
+        findPrimaryReplicaRelationship(databaseName, dataSourceMap);
         initAware();
     }
     
@@ -105,7 +105,7 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
         return result;
     }
     
-    private void findMasterSlaveRelation(final String databaseName, final Map<String, DataSource> dataSourceMap) {
+    private void findPrimaryReplicaRelationship(final String databaseName, final Map<String, DataSource> dataSourceMap) {
         for (Entry<String, DatabaseDiscoveryDataSourceRule> entry : dataSourceRules.entrySet()) {
             String groupName = entry.getKey();
             DatabaseDiscoveryDataSourceRule dataSourceRule = entry.getValue();
