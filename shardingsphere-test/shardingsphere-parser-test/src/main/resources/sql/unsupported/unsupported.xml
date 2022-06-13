@@ -39,7 +39,6 @@
     <sql-case id="create_foreign_data_wrapper" value="CREATE FOREIGN DATA WRAPPER alt_fdw1" db-types="PostgreSQL" />
     <sql-case id="create_server" value="CREATE SERVER alt_fserv1 FOREIGN DATA WRAPPER alt_fdw1;" db-types="PostgreSQL" />
     <sql-case id="create_operator" value="CREATE OPERATOR @-@ ( leftarg = int4, rightarg = int4, procedure = int4mi )" db-types="PostgreSQL" />
-    <sql-case id="alter_operator" value="ALTER OPERATOR @+@(int4, int4) OWNER TO regress_alter_generic_user2" db-types="PostgreSQL" />
     <sql-case id="create_statistics" value="CREATE STATISTICS alt_stat1 ON a, b FROM alt_regress_1" db-types="PostgreSQL" />
     <sql-case id="alter_statistics" value="ALTER STATISTICS alt_stat1 RENAME TO alt_stat2" db-types="PostgreSQL" />
     <sql-case id="create_table_no_valid" value="create table nv_parent (d date, check (false) no inherit not valid)" db-types="PostgreSQL" />
@@ -3875,26 +3874,6 @@
     <sql-case id="low_with_by_mysql_source_test_case1" value="with qn as (SELECT  MAX(a) FROM t1 WHERE (b) IN ( SELECT MIN(t2.b) FROM (SELECT b from t1) AS t2 GROUP BY t2.b WITH ROLLUP HAVING GROUPING (t2.b)=0)) SELECT * FROM qn" db-types="MySQL" />
     <sql-case id="low_with_by_mysql_source_test_case2" value="with t1 as (select * from t1 where a=3) delete from t1" db-types="MySQL" />
     <sql-case id="low_with_by_mysql_source_test_case3" value="with t1 as (select * from t1 where a=3) delete t1.* from t1, t1 as t2" db-types="MySQL" />
-    <sql-case id="alter_by_postgresql_source_test_case131" value="ALTER OPERATOR &amp; (bit, bit) SET (&quot;Restrict&quot; = _int_contsel, &quot;Join&quot; = _int_contjoinsel);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case132" value="ALTER OPERATOR === (boolean, boolean) SET (COMMUTATOR = !==);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case133" value="ALTER OPERATOR === (boolean, boolean) SET (COMMUTATOR = ====);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case134" value="ALTER OPERATOR === (boolean, boolean) SET (JOIN = NONE);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case135" value="ALTER OPERATOR === (boolean, boolean) SET (JOIN = contjoinsel);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case136" value="ALTER OPERATOR === (boolean, boolean) SET (JOIN = non_existent_func);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case137" value="ALTER OPERATOR === (boolean, boolean) SET (NEGATOR = !==);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case138" value="ALTER OPERATOR === (boolean, boolean) SET (NEGATOR = ====);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case139" value="ALTER OPERATOR === (boolean, boolean) SET (RESTRICT = NONE);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case140" value="ALTER OPERATOR === (boolean, boolean) SET (RESTRICT = NONE);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case141" value="ALTER OPERATOR === (boolean, boolean) SET (RESTRICT = NONE, JOIN = NONE);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case142" value="ALTER OPERATOR === (boolean, boolean) SET (RESTRICT = contsel);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case143" value="ALTER OPERATOR === (boolean, boolean) SET (RESTRICT = customcontsel, JOIN = contjoinsel);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case144" value="ALTER OPERATOR === (boolean, boolean) SET (RESTRICT = non_existent_func);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case145" value="ALTER OPERATOR @+@(int4, int4) OWNER TO regress_alter_generic_user2;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case146" value="ALTER OPERATOR @+@(int4, int4) OWNER TO regress_alter_generic_user2;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case147" value="ALTER OPERATOR @+@(int4, int4) OWNER TO regress_alter_generic_user3;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case148" value="ALTER OPERATOR @+@(int4, int4) SET SCHEMA alt_nsp2;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case149" value="ALTER OPERATOR @-@(int4, int4) OWNER TO regress_alter_generic_user3;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case150" value="ALTER OPERATOR @-@(int4, int4) SET SCHEMA alt_nsp2;" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case151" value="ALTER OPERATOR CLASS alt_opc1 USING hash OWNER TO regress_alter_generic_user1;" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case152" value="ALTER OPERATOR CLASS alt_opc1 USING hash OWNER TO regress_alter_generic_user2;" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case153" value="ALTER OPERATOR CLASS alt_opc1 USING hash RENAME TO alt_opc2;" db-types="PostgreSQL" />
@@ -7065,7 +7044,6 @@
     <sql-case id="low_alter_by_postgresql_source_test_case47" value="alter event trigger regress_event_trigger owner to regress_evt_user;" db-types="PostgreSQL" />
     <sql-case id="low_alter_by_postgresql_source_test_case48" value="alter event trigger regress_event_trigger rename to regress_event_trigger2;" db-types="PostgreSQL" />
     <sql-case id="low_alter_by_postgresql_source_test_case49" value="alter event trigger regress_event_trigger rename to regress_event_trigger3;" db-types="PostgreSQL" />
-    <sql-case id="low_alter_by_postgresql_source_test_case50" value="alter operator alter1.=(alter1.ctype, alter1.ctype) set schema alter2;" db-types="PostgreSQL" />
     <sql-case id="low_alter_by_postgresql_source_test_case51" value="alter operator class alter1.ctype_hash_ops using hash set schema alter2;" db-types="PostgreSQL" />
     <sql-case id="low_alter_by_postgresql_source_test_case52" value="alter operator family alter1.ctype_hash_ops using hash set schema alter2;" db-types="PostgreSQL" />
     <sql-case id="low_alter_by_postgresql_source_test_case53" value="alter operator family integer_ops using btree add   function 1 int8alias1cmp (int8, int8alias1);" db-types="PostgreSQL" />

@@ -671,7 +671,7 @@ opclassPurpose
     ;
 
 alterOperatorClauses
-    : operatorWithArgtypes SET SCHEMA name
+    : operatorWithArgtypes SET SCHEMA schemaName
     | operatorWithArgtypes SET LP_ operatorDefList RP_
     | operatorWithArgtypes OWNER TO roleSpec
     ;
@@ -681,7 +681,7 @@ operatorDefList
     ;
 
 operatorDefElem
-    : colLabel EQ_ (NONE | operatorDefArg)
+    : (RESTRICT | JOIN) EQ_ (NONE | operatorDefArg)
     ;
 
 operatorDefArg
