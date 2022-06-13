@@ -334,6 +334,7 @@ The following components are provided under the CDDL License. See project link f
 The text of each license is also included at licenses/LICENSE-[project].txt.
 
     jta 1.1: http://jta-spec.java.net, CDDL
+    jaxb-api 2.3.0: https://github.com/javaee/jaxb-spec, CDDL
 
 ========================================================================
 EPL licenses
