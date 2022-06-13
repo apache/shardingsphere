@@ -544,10 +544,7 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
     
     @Override
     public ASTNode visitIndexExpression(final IndexExpressionContext ctx) {
-        if (null != ctx.expr()) {
-            return visit(ctx.expr());
-        }
-        return visit(ctx.columnName());
+        return null != ctx.expr() ? visit(ctx.expr()) : visit(ctx.columnName());
     }
     
     @Override
