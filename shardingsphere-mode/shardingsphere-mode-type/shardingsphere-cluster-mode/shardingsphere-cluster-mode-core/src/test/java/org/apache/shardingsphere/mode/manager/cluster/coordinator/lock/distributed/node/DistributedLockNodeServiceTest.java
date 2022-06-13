@@ -27,11 +27,6 @@ public final class DistributedLockNodeServiceTest {
     private static final DistributedLockNodeService SERVICE = new DistributedLockNodeService();
     
     @Test
-    public void assertGetSequenceNodePath() {
-        assertThat(SERVICE.getSequenceNodePath(), is("/lock/distributed/sequence"));
-    }
-    
-    @Test
     public void assertGetLockLevel() {
         assertThat(SERVICE.getLockTypeName(), is("distributed"));
     }

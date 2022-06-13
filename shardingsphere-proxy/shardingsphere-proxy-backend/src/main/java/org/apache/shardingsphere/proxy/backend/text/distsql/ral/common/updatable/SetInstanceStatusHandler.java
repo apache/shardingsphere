@@ -28,15 +28,15 @@ import org.apache.shardingsphere.proxy.backend.text.distsql.ral.UpdatableRALBack
 /**
  * Set instance status handler.
  */
-public final class SetInstanceStatusHandler extends UpdatableRALBackendHandler<SetInstanceStatusStatement, SetInstanceStatusHandler> {
+public final class SetInstanceStatusHandler extends UpdatableRALBackendHandler<SetInstanceStatusStatement> {
     
     @Override
-    protected void update(final ContextManager contextManager, final SetInstanceStatusStatement sqlStatement) {
+    protected void update(final ContextManager contextManager) {
         if (!contextManager.getInstanceContext().isCluster()) {
             throw new UnsupportedOperationException("Only allowed in cluster mode");
         }
-        String instanceId = sqlStatement.getInstanceId();
-        boolean isDisable = "DISABLE".equals(sqlStatement.getStatus());
+        String instanceId = getSqlStatement().getInstanceId();
+        boolean isDisable = "DISABLE".equals(getSqlStatement().getStatus());
         if (isDisable) {
             checkDisablingIsValid(contextManager, instanceId);
         } else {

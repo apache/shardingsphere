@@ -102,5 +102,8 @@ execute
     | createLockdownProfile
     | dropLockdownProfile
     | createInmemoryJoinGroup
+    | dropInmemoryJoinGroup
+    | createRestorePoint
+    | dropRestorePoint
     ) SEMI_?
     ;

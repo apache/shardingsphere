@@ -32,10 +32,10 @@ public interface DatabaseProtocolFrontendEngine extends TypedSPI {
     /**
      * Set database version.
      * 
-     * @param schemaName schema name
+     * @param databaseName database name
      * @param databaseVersion database version
      */
-    default void setDatabaseVersion(String schemaName, String databaseVersion) {
+    default void setDatabaseVersion(String databaseName, String databaseVersion) {
     }
     
     /**

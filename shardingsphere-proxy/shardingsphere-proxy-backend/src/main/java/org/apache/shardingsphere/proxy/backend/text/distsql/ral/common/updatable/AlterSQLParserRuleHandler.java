@@ -34,10 +34,10 @@ import java.util.Optional;
 /**
  * Alter SQL parser rule statement handler.
  */
-public final class AlterSQLParserRuleHandler extends UpdatableRALBackendHandler<AlterSQLParserRuleStatement, AlterSQLParserRuleHandler> {
+public final class AlterSQLParserRuleHandler extends UpdatableRALBackendHandler<AlterSQLParserRuleStatement> {
     
     @Override
-    protected void update(final ContextManager contextManager, final AlterSQLParserRuleStatement sqlStatement) {
+    protected void update(final ContextManager contextManager) {
         Optional<SQLParserRuleConfiguration> currentConfig = findCurrentConfiguration();
         SQLParserRuleConfiguration toBeAlteredRuleConfig = createSQLParserRuleConfiguration(currentConfig.orElseGet(() -> new DefaultSQLParserRuleConfigurationBuilder().build()));
         Collection<RuleConfiguration> globalRuleConfigs = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations();
@@ -52,10 +52,11 @@ public final class AlterSQLParserRuleHandler extends UpdatableRALBackendHandler<
     
     private SQLParserRuleConfiguration createSQLParserRuleConfiguration(final SQLParserRuleConfiguration currentConfig) {
         SQLParserRuleConfiguration result = new SQLParserRuleConfiguration();
-        result.setSqlCommentParseEnabled(null == sqlStatement.getSqlCommentParseEnable() ? currentConfig.isSqlCommentParseEnabled() : sqlStatement.getSqlCommentParseEnable());
-        result.setParseTreeCache(null == sqlStatement.getParseTreeCache() ? currentConfig.getParseTreeCache() : createCacheOption(currentConfig.getParseTreeCache(), sqlStatement.getParseTreeCache()));
-        result.setSqlStatementCache(null == sqlStatement.getSqlStatementCache() ? currentConfig.getSqlStatementCache()
-                : createCacheOption(currentConfig.getSqlStatementCache(), sqlStatement.getSqlStatementCache()));
+        result.setSqlCommentParseEnabled(null == getSqlStatement().getSqlCommentParseEnable() ? currentConfig.isSqlCommentParseEnabled() : getSqlStatement().getSqlCommentParseEnable());
+        result.setParseTreeCache(
+                null == getSqlStatement().getParseTreeCache() ? currentConfig.getParseTreeCache() : createCacheOption(currentConfig.getParseTreeCache(), getSqlStatement().getParseTreeCache()));
+        result.setSqlStatementCache(null == getSqlStatement().getSqlStatementCache() ? currentConfig.getSqlStatementCache()
+                : createCacheOption(currentConfig.getSqlStatementCache(), getSqlStatement().getSqlStatementCache()));
         return result;
     }
     

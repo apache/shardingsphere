@@ -23,6 +23,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.List;
 
 @Data
 @XmlRootElement(name = "command")
@@ -40,4 +41,10 @@ public final class ExtraSQLCommand {
     
     @XmlElement(name = "full-insert-order-item")
     private String fullInsertOrderItem;
+    
+    @XmlElement(name = "create-table-index")
+    private List<String> createTableIndexList;
+    
+    @XmlElement(name = "create-column-comment")
+    private List<String> createColumnCommentList;
 }

@@ -99,7 +99,7 @@ public final class TextProtocolBackendHandlerFactory {
             if (connectionSession.getTransactionStatus().isInTransaction() && !(sqlStatement instanceof RQLStatement || sqlStatement instanceof QueryableRALStatement)) {
                 throw new UnsupportedOperationException("Non-query dist sql is not supported within a transaction");
             }
-            return DistSQLBackendHandlerFactory.newInstance(databaseType, (DistSQLStatement) sqlStatement, connectionSession);
+            return DistSQLBackendHandlerFactory.newInstance((DistSQLStatement) sqlStatement, connectionSession);
         }
         handleAutoCommit(sqlStatement, connectionSession);
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases(),
@@ -141,7 +141,7 @@ public final class TextProtocolBackendHandlerFactory {
     
     private static void handleAutoCommit(final SQLStatement sqlStatement, final ConnectionSession connectionSession) throws SQLException {
         if (AutoCommitUtils.needOpenTransaction(sqlStatement)) {
-            connectionSession.getBackendConnection().prepareForTaskExecution();
+            connectionSession.getBackendConnection().handleAutoCommit();
         }
     }
     

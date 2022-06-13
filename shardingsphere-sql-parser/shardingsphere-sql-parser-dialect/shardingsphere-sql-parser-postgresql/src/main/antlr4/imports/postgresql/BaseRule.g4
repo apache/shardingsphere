@@ -1857,3 +1857,7 @@ notExistClause
 existClause
     : IF EXISTS
     ;
+
+booleanValue
+    : TRUE | ON | FALSE | OFF | NUMBER_
+    ;

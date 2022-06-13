@@ -182,7 +182,7 @@ public final class TableRuleTest {
     @Test
     public void assertDatNodeGroupsWhenShardingTableConfigActualTablePrefix() {
         ShardingTableRuleConfiguration shardingTableRuleConfig = new ShardingTableRuleConfiguration("t_order", "ds_${0..1}.t_order_${0..1}");
-        shardingTableRuleConfig.setReplaceTablePrefix("tmp_");
+        shardingTableRuleConfig.setActualTablePrefix("tmp_");
         TableRule tableRule = new TableRule(shardingTableRuleConfig, Arrays.asList("ds_0", "ds_1"), "order_id");
         Map<String, List<DataNode>> actual = tableRule.getDataNodeGroups();
         assertThat(actual.size(), is(2));
@@ -195,7 +195,7 @@ public final class TableRuleTest {
     @Test
     public void assertDatNodeGroupsWhenShardingAutoTableConfigActualTablePrefix() {
         ShardingAutoTableRuleConfiguration shardingTableRuleConfig = new ShardingAutoTableRuleConfiguration("t_order", "ds_${0..1}");
-        shardingTableRuleConfig.setReplaceTablePrefix("tmp_");
+        shardingTableRuleConfig.setActualTablePrefix("tmp_");
         shardingTableRuleConfig.setShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "mod"));
         ModShardingAlgorithm modShardingAlgorithm = createModShardingAlgorithm();
         TableRule tableRule = new TableRule(shardingTableRuleConfig, Arrays.asList("ds_0", "ds_1"), modShardingAlgorithm, "order_id");

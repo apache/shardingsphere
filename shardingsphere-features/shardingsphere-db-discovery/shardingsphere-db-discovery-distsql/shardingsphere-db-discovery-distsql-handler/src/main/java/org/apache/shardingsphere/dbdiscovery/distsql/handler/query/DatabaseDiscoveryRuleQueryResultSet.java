@@ -26,7 +26,8 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmC
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.identifier.type.ExportableRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.exportable.ExportableRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.exportable.RuleExportEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
@@ -72,9 +73,10 @@ public final class DatabaseDiscoveryRuleQueryResultSet implements DistSQLResultS
         discoveryHeartbeats = ruleConfig.map(DatabaseDiscoveryRuleConfiguration::getDiscoveryHeartbeats).orElseGet(Collections::emptyMap);
         Optional<ExportableRule> exportableRule = database.getRuleMetaData().getRules()
                 .stream().filter(each -> each instanceof ExportableRule)
-                .filter(each -> ((ExportableRule) each).containExportableKey(Collections.singleton(ExportableConstants.EXPORT_DB_DISCOVERY_PRIMARY_DATA_SOURCES)))
+                .filter(each -> new RuleExportEngine((ExportableRule) each).containExportableKey(Collections.singleton(ExportableConstants.EXPORT_DB_DISCOVERY_PRIMARY_DATA_SOURCES)))
                 .map(each -> (ExportableRule) each).findAny();
-        primaryDataSources = (Map<String, String>) (exportableRule.map(optional -> optional.export(ExportableConstants.EXPORT_DB_DISCOVERY_PRIMARY_DATA_SOURCES).orElseGet(Collections::emptyMap))
+        primaryDataSources = (Map<String, String>) (exportableRule.map(optional -> new RuleExportEngine(optional)
+                .export(ExportableConstants.EXPORT_DB_DISCOVERY_PRIMARY_DATA_SOURCES).orElseGet(Collections::emptyMap))
                 .orElseGet(Collections::emptyMap));
     }
     

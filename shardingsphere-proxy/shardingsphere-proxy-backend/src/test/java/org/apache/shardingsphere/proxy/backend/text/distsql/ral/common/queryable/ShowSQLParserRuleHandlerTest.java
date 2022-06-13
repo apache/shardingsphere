@@ -45,7 +45,8 @@ public final class ShowSQLParserRuleHandlerTest extends ProxyContextRestorer {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(getGlobalRuleMetaData());
         ProxyContext.init(contextManager);
-        ShowSQLParserRuleHandler handler = new ShowSQLParserRuleHandler().initStatement(new ShowSQLParserRuleStatement());
+        ShowSQLParserRuleHandler handler = new ShowSQLParserRuleHandler();
+        handler.init(new ShowSQLParserRuleStatement(), null);
         handler.execute();
         handler.next();
         List<Object> data = new ArrayList<>(handler.getRowData());

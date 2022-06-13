@@ -20,7 +20,6 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryabl
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ExportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereIndex;
@@ -29,7 +28,6 @@ import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandler.HandlerParameter;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -71,7 +69,8 @@ public final class ExportDatabaseConfigurationHandlerTest extends ProxyContextRe
     
     @Test
     public void assertExportDatabaseExecutor() throws SQLException {
-        ExportDatabaseConfigurationHandler handler = new ExportDatabaseConfigurationHandler().init(createParameter(createSQLStatement(), mock(ConnectionSession.class)));
+        ExportDatabaseConfigurationHandler handler = new ExportDatabaseConfigurationHandler();
+        handler.init(createSQLStatement(), mock(ConnectionSession.class));
         handler.execute();
         handler.next();
         Collection<Object> data = new ArrayList<>(handler.getRowData());
@@ -131,9 +130,5 @@ public final class ExportDatabaseConfigurationHandlerTest extends ProxyContextRe
     
     private ExportDatabaseConfigurationStatement createSQLStatement() {
         return new ExportDatabaseConfigurationStatement(new DatabaseSegment(0, 0, new IdentifierValue("sharding_db")), null);
-    }
-    
-    private HandlerParameter<ExportDatabaseConfigurationStatement> createParameter(final ExportDatabaseConfigurationStatement statement, final ConnectionSession connectionSession) {
-        return new HandlerParameter<>(statement, new MySQLDatabaseType(), connectionSession);
     }
 }

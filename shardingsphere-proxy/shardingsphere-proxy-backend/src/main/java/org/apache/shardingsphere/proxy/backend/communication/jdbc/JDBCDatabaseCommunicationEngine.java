@@ -210,6 +210,7 @@ public final class JDBCDatabaseCommunicationEngine extends DatabaseCommunication
         Collection<SQLException> result = new LinkedList<>();
         for (Statement each : cachedStatements) {
             try {
+                each.cancel();
                 each.close();
             } catch (final SQLException ex) {
                 result.add(ex);

@@ -27,7 +27,8 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissed
 import org.apache.shardingsphere.infra.distsql.exception.rule.RuleInUsedException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.identifier.type.ExportableRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.exportable.ExportableRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.exportable.RuleExportEngine;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -69,10 +70,10 @@ public final class DropDatabaseDiscoveryRuleStatementUpdater implements RuleDefi
     
     private void checkIsInUse(final String databaseName, final DropDatabaseDiscoveryRuleStatement sqlStatement, final ShardingSphereDatabase database) throws DistSQLException {
         Optional<ExportableRule> exportableRule = database.getRuleMetaData().findRules(ExportableRule.class).stream()
-                .filter(each -> each.containExportableKey(Collections.singletonList(ExportableConstants.EXPORT_DYNAMIC_READWRITE_SPLITTING_RULE))).findFirst();
+                .filter(each -> new RuleExportEngine(each).containExportableKey(Collections.singletonList(ExportableConstants.EXPORT_DYNAMIC_READWRITE_SPLITTING_RULE))).findFirst();
         Collection<String> rulesInUse = new ArrayList<>();
-        exportableRule.ifPresent(op -> {
-            Map<String, Map<String, String>> readwriteRuleMap = op.export(ExportableConstants.EXPORT_DYNAMIC_READWRITE_SPLITTING_RULE)
+        exportableRule.ifPresent(optional -> {
+            Map<String, Map<String, String>> readwriteRuleMap = new RuleExportEngine(optional).export(ExportableConstants.EXPORT_DYNAMIC_READWRITE_SPLITTING_RULE)
                     .map(each -> (Map<String, Map<String, String>>) each).orElse(Collections.emptyMap());
             readwriteRuleMap.values().stream().map(each -> each.get(ExportableItemConstants.AUTO_AWARE_DATA_SOURCE_NAME)).forEach(rulesInUse::add);
         });

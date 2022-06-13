@@ -24,10 +24,10 @@ import org.apache.shardingsphere.proxy.backend.text.distsql.ral.UpdatableRALBack
 /**
  * Discard dist sql statement handler.
  */
-public final class DiscardDistSQLHandler extends UpdatableRALBackendHandler<AlterTransactionRuleStatement, AlterTrafficRuleHandler> {
+public final class DiscardDistSQLHandler extends UpdatableRALBackendHandler<AlterTransactionRuleStatement> {
     
     @Override
-    protected void update(final ContextManager contextManager, final AlterTransactionRuleStatement sqlStatement) {
+    protected void update(final ContextManager contextManager) {
         // TODO Metadata support required
     }
 }

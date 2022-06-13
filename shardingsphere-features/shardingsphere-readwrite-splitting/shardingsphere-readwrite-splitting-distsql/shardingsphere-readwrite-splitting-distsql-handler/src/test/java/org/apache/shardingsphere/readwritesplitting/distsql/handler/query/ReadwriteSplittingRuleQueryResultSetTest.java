@@ -19,23 +19,26 @@ package org.apache.shardingsphere.readwritesplitting.distsql.handler.query;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
+import org.apache.shardingsphere.infra.distsql.constant.ExportableItemConstants;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.identifier.type.ExportableRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.exportable.ExportableRule;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.distsql.handler.fixture.ReadwriteSplittingRuleExportableFixture;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.ShowReadwriteSplittingRulesStatement;
 import org.junit.Test;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -45,9 +48,7 @@ public final class ReadwriteSplittingRuleQueryResultSetTest {
     @Test
     public void assertGetRowData() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        ExportableRule exportableRule = mock(ExportableRule.class);
-        when(database.getRuleMetaData().findRules(any())).thenReturn(Collections.singletonList(exportableRule));
-        when(exportableRule.export(anyCollection())).thenReturn(Collections.emptyMap());
+        when(database.getRuleMetaData().findRules(any())).thenReturn(Collections.singleton(mock(ExportableRule.class)));
         when(database.getRuleMetaData().findRuleConfigurations(any())).thenReturn(Collections.singleton(createRuleConfiguration()));
         ReadwriteSplittingRuleQueryResultSet resultSet = new ReadwriteSplittingRuleQueryResultSet();
         resultSet.init(database, mock(ShowReadwriteSplittingRulesStatement.class));
@@ -71,9 +72,7 @@ public final class ReadwriteSplittingRuleQueryResultSetTest {
     @Test
     public void assertGetRowDataWithoutLoadBalancer() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        ExportableRule exportableRule = mock(ExportableRule.class);
-        when(database.getRuleMetaData().findRules(any())).thenReturn(Collections.singletonList(exportableRule));
-        when(exportableRule.export(anyCollection())).thenReturn(Collections.emptyMap());
+        when(database.getRuleMetaData().findRules(any())).thenReturn(Collections.singleton(mock(ExportableRule.class)));
         when(database.getRuleMetaData().findRuleConfigurations(any())).thenReturn(Collections.singleton(createRuleConfigurationWithoutLoadBalancer()));
         ReadwriteSplittingRuleQueryResultSet resultSet = new ReadwriteSplittingRuleQueryResultSet();
         resultSet.init(database, mock(ShowReadwriteSplittingRulesStatement.class));
@@ -100,7 +99,9 @@ public final class ReadwriteSplittingRuleQueryResultSetTest {
     @Test
     public void assertGetRowDataWithAutoAwareDataSource() {
         ShardingSphereDatabase metaData = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(metaData.getRuleMetaData().findRules(ExportableRule.class)).thenReturn(Collections.singletonList(new ReadwriteSplittingRuleExportableFixture()));
+        ExportableRule exportableRule = mock(ExportableRule.class);
+        when(exportableRule.getExportData()).thenReturn(getExportData());
+        when(metaData.getRuleMetaData().findRules(ExportableRule.class)).thenReturn(Collections.singleton(exportableRule));
         when(metaData.getRuleMetaData().findRuleConfigurations(any())).thenReturn(Collections.singleton(createRuleConfigurationWithAutoAwareDataSource()));
         ReadwriteSplittingRuleQueryResultSet resultSet = new ReadwriteSplittingRuleQueryResultSet();
         resultSet.init(metaData, mock(ShowReadwriteSplittingRulesStatement.class));
@@ -110,6 +111,36 @@ public final class ReadwriteSplittingRuleQueryResultSetTest {
         assertTrue(actual.contains("rd_rs"));
         assertTrue(actual.contains("write_ds"));
         assertTrue(actual.contains("read_ds_0,read_ds_1"));
+    }
+    
+    private Map<String, Object> getExportData() {
+        Map<String, Object> result = new HashMap<>(2, 1);
+        result.put(ExportableConstants.EXPORT_DYNAMIC_READWRITE_SPLITTING_RULE, exportDynamicDataSources());
+        result.put(ExportableConstants.EXPORT_STATIC_READWRITE_SPLITTING_RULE, exportStaticDataSources());
+        return result;
+    }
+    
+    private Map<String, Map<String, String>> exportDynamicDataSources() {
+        Map<String, Map<String, String>> result = new HashMap<>(1, 1);
+        result.put("readwrite_ds", getAutoAwareDataSources());
+        return result;
+    }
+    
+    private Map<String, String> getAutoAwareDataSources() {
+        Map<String, String> result = new HashMap<>(3, 1);
+        result.put(ExportableItemConstants.AUTO_AWARE_DATA_SOURCE_NAME, "ha_group");
+        result.put(ExportableItemConstants.PRIMARY_DATA_SOURCE_NAME, "write_ds");
+        result.put(ExportableItemConstants.REPLICA_DATA_SOURCE_NAMES, "read_ds_0,read_ds_1");
+        return result;
+    }
+    
+    private Map<String, Map<String, String>> exportStaticDataSources() {
+        Map<String, Map<String, String>> result = new LinkedHashMap<>();
+        Map<String, String> staticRule = new LinkedHashMap<>(2, 1);
+        staticRule.put(ExportableItemConstants.PRIMARY_DATA_SOURCE_NAME, "ds_0");
+        staticRule.put(ExportableItemConstants.REPLICA_DATA_SOURCE_NAMES, "ds_1");
+        result.put("static_rule_1", staticRule);
+        return result;
     }
     
     private RuleConfiguration createRuleConfigurationWithAutoAwareDataSource() {

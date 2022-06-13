@@ -40,10 +40,10 @@ import static org.mockito.Mockito.when;
 
 public final class ShowTransactionRuleHandlerTest extends ProxyContextRestorer {
     
-    private final ShowTransactionRuleHandler handler = new ShowTransactionRuleHandler().initStatement(new ShowTransactionRuleStatement());
-    
     @Test
     public void assertExecutorWithXA() throws SQLException {
+        ShowTransactionRuleHandler handler = new ShowTransactionRuleHandler();
+        handler.init(new ShowTransactionRuleStatement(), null);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(getGlobalRuleMetaData("XA", "Atomikos", getProperties()));
         ProxyContext.init(contextManager);
@@ -60,6 +60,8 @@ public final class ShowTransactionRuleHandlerTest extends ProxyContextRestorer {
     
     @Test
     public void assertExecutorWithLocal() throws SQLException {
+        ShowTransactionRuleHandler handler = new ShowTransactionRuleHandler();
+        handler.init(new ShowTransactionRuleStatement(), null);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(getGlobalRuleMetaData("LOCAL", null, null));
         ProxyContext.init(contextManager);

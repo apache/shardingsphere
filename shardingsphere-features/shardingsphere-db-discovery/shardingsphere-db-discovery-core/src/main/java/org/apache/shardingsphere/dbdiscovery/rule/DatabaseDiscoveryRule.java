@@ -27,18 +27,19 @@ import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHe
 import org.apache.shardingsphere.dbdiscovery.factory.DatabaseDiscoveryProviderAlgorithmFactory;
 import org.apache.shardingsphere.dbdiscovery.heartbeat.HeartbeatJob;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
-import org.apache.shardingsphere.infra.datasource.strategy.DynamicDataSourceStrategyFactory;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.datasource.strategy.DynamicDataSourceStrategyFactory;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.rule.event.DataSourceStatusChangedEvent;
 import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.ExportableRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.InstanceAwareRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.StatusContainedRule;
-import org.apache.shardingsphere.mode.metadata.storage.event.DataSourceNameDisabledEvent;
+import org.apache.shardingsphere.infra.rule.identifier.type.exportable.ExportableRule;
+import org.apache.shardingsphere.mode.metadata.storage.StorageNodeStatus;
 import org.apache.shardingsphere.mode.metadata.storage.event.PrimaryDataSourceChangedEvent;
+import org.apache.shardingsphere.mode.metadata.storage.event.StorageNodeDataSourceChangedEvent;
 import org.apache.shardingsphere.schedule.core.api.CronJob;
 import org.apache.shardingsphere.schedule.core.api.ModeScheduleContext;
 import org.apache.shardingsphere.schedule.core.api.ModeScheduleContextFactory;
@@ -52,7 +53,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -151,12 +151,13 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
     
     @Override
     public void updateStatus(final DataSourceStatusChangedEvent event) {
-        if (event instanceof DataSourceNameDisabledEvent) {
+        if (event instanceof StorageNodeDataSourceChangedEvent) {
             for (Entry<String, DatabaseDiscoveryDataSourceRule> entry : dataSourceRules.entrySet()) {
-                if (((DataSourceNameDisabledEvent) event).isDisabled()) {
-                    entry.getValue().disableDataSource(((DataSourceNameDisabledEvent) event).getQualifiedDatabase().getDataSourceName());
+                StorageNodeDataSourceChangedEvent dataSourceChangedEvent = (StorageNodeDataSourceChangedEvent) event;
+                if (StorageNodeStatus.isDisable(dataSourceChangedEvent.getDataSource().getStatus())) {
+                    entry.getValue().disableDataSource(dataSourceChangedEvent.getQualifiedDatabase().getDataSourceName());
                 } else {
-                    entry.getValue().enableDataSource(((DataSourceNameDisabledEvent) event).getQualifiedDatabase().getDataSourceName());
+                    entry.getValue().enableDataSource(dataSourceChangedEvent.getQualifiedDatabase().getDataSourceName());
                 }
             }
         } else if (event instanceof PrimaryDataSourceChangedEvent) {
@@ -169,8 +170,8 @@ public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContai
     }
     
     @Override
-    public Map<String, Supplier<Object>> getExportedMethods() {
-        return Collections.singletonMap(ExportableConstants.EXPORT_DB_DISCOVERY_PRIMARY_DATA_SOURCES, this::exportPrimaryDataSourceMap);
+    public Map<String, Object> getExportData() {
+        return Collections.singletonMap(ExportableConstants.EXPORT_DB_DISCOVERY_PRIMARY_DATA_SOURCES, exportPrimaryDataSourceMap());
     }
     
     private Map<String, String> exportPrimaryDataSourceMap() {

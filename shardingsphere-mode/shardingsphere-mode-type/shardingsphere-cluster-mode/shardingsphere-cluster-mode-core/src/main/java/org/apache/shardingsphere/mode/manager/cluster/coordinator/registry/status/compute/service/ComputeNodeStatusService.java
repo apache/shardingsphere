@@ -160,8 +160,7 @@ public final class ComputeNodeStatusService {
         Arrays.stream(InstanceType.values()).forEach(instanceType -> {
             Collection<String> onlineComputeNodes = repository.getChildrenKeys(ComputeNode.getOnlineNodePath(instanceType));
             onlineComputeNodes.forEach(each -> {
-                InstanceDefinition instanceDefinition = new InstanceDefinition(instanceType, each);
-                instanceDefinition.setAttributes(repository.get(ComputeNode.getOnlineInstanceNodePath(each, instanceType)));
+                InstanceDefinition instanceDefinition = new InstanceDefinition(instanceType, each, repository.get(ComputeNode.getOnlineInstanceNodePath(each, instanceType)));
                 result.add(loadComputeNodeInstance(instanceDefinition));
             });
         });

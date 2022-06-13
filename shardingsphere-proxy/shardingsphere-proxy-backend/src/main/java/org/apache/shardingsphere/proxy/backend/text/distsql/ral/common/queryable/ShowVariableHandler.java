@@ -21,9 +21,9 @@ import com.google.common.base.Strings;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ShowVariableStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.QueryableRALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.enums.VariableEnum;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.exception.UnsupportedVariableException;
@@ -39,20 +39,11 @@ import java.util.List;
 /**
  * Show variable handler.
  */
-public final class ShowVariableHandler extends QueryableRALBackendHandler<ShowVariableStatement, ShowVariableHandler> {
+public final class ShowVariableHandler extends QueryableRALBackendHandler<ShowVariableStatement> {
     
     private static final String VARIABLE_NAME = "variable_name";
     
     private static final String VARIABLE_VALUE = "variable_value";
-    
-    private ConnectionSession connectionSession;
-    
-    @Override
-    public ShowVariableHandler init(final HandlerParameter<ShowVariableStatement> parameter) {
-        initStatement(parameter.getStatement());
-        connectionSession = parameter.getConnectionSession();
-        return this;
-    }
     
     @Override
     protected Collection<String> getColumnNames() {
@@ -60,38 +51,39 @@ public final class ShowVariableHandler extends QueryableRALBackendHandler<ShowVa
     }
     
     @Override
-    protected Collection<List<Object>> getRows(final ContextManager contextManager) {
+    protected Collection<LocalDataQueryResultRow> getRows(final ContextManager contextManager) {
         if (hasSpecifiedKey()) {
-            return buildSpecifiedRow(contextManager, sqlStatement.getName());
+            return buildSpecifiedRow(contextManager, getSqlStatement().getName());
         } else {
             return buildAllVariableRows(contextManager);
         }
     }
     
     private boolean hasSpecifiedKey() {
-        return !Strings.isNullOrEmpty(sqlStatement.getName());
+        return !Strings.isNullOrEmpty(getSqlStatement().getName());
     }
     
-    private Collection<List<Object>> buildAllVariableRows(final ContextManager contextManager) {
-        List<List<Object>> result = new LinkedList<>();
+    private Collection<LocalDataQueryResultRow> buildAllVariableRows(final ContextManager contextManager) {
+        List<LocalDataQueryResultRow> result = new LinkedList<>();
         ConfigurationProperties props = contextManager.getMetaDataContexts().getMetaData().getProps();
         ConfigurationPropertyKey.getKeyNames().forEach(each -> {
             String propertyValue = props.getValue(ConfigurationPropertyKey.valueOf(each)).toString();
-            result.add(Arrays.asList(each.toLowerCase(), propertyValue));
+            result.add(new LocalDataQueryResultRow(each.toLowerCase(), propertyValue));
         });
-        result.add(Arrays.asList(VariableEnum.AGENT_PLUGINS_ENABLED.name().toLowerCase(), SystemPropertyUtil.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.TRUE.toString())));
-        if (connectionSession.getBackendConnection() instanceof JDBCBackendConnection) {
-            result.add(Arrays.asList(VariableEnum.CACHED_CONNECTIONS.name().toLowerCase(), ((JDBCBackendConnection) connectionSession.getBackendConnection()).getConnectionSize()));
+        result.add(new LocalDataQueryResultRow(
+                VariableEnum.AGENT_PLUGINS_ENABLED.name().toLowerCase(), SystemPropertyUtil.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.TRUE.toString())));
+        if (getConnectionSession().getBackendConnection() instanceof JDBCBackendConnection) {
+            result.add(new LocalDataQueryResultRow(VariableEnum.CACHED_CONNECTIONS.name().toLowerCase(), ((JDBCBackendConnection) getConnectionSession().getBackendConnection()).getConnectionSize()));
         }
-        result.add(Arrays.asList(VariableEnum.TRANSACTION_TYPE.name().toLowerCase(), connectionSession.getTransactionStatus().getTransactionType().name()));
+        result.add(new LocalDataQueryResultRow(VariableEnum.TRANSACTION_TYPE.name().toLowerCase(), getConnectionSession().getTransactionStatus().getTransactionType().name()));
         return result;
     }
     
-    private Collection<List<Object>> buildSpecifiedRow(final ContextManager contextManager, final String key) {
+    private Collection<LocalDataQueryResultRow> buildSpecifiedRow(final ContextManager contextManager, final String key) {
         if (isConfigurationKey(key)) {
-            return Collections.singletonList(Arrays.asList(key.toLowerCase(), getConfigurationValue(contextManager, key)));
+            return Collections.singletonList(new LocalDataQueryResultRow(key.toLowerCase(), getConfigurationValue(contextManager, key)));
         } else {
-            return Collections.singletonList(Arrays.asList(key.toLowerCase(), getSpecialValue(key)));
+            return Collections.singletonList(new LocalDataQueryResultRow(key.toLowerCase(), getSpecialValue(key)));
         }
     }
     
@@ -109,13 +101,13 @@ public final class ShowVariableHandler extends QueryableRALBackendHandler<ShowVa
             case AGENT_PLUGINS_ENABLED:
                 return SystemPropertyUtil.getSystemProperty(variable.name(), Boolean.TRUE.toString());
             case CACHED_CONNECTIONS:
-                if (connectionSession.getBackendConnection() instanceof JDBCBackendConnection) {
-                    int connectionSize = ((JDBCBackendConnection) connectionSession.getBackendConnection()).getConnectionSize();
+                if (getConnectionSession().getBackendConnection() instanceof JDBCBackendConnection) {
+                    int connectionSize = ((JDBCBackendConnection) getConnectionSession().getBackendConnection()).getConnectionSize();
                     return String.valueOf(connectionSize);
                 }
                 break;
             case TRANSACTION_TYPE:
-                TransactionType transactionType = connectionSession.getTransactionStatus().getTransactionType();
+                TransactionType transactionType = getConnectionSession().getTransactionStatus().getTransactionType();
                 return transactionType.name();
             default:
         }

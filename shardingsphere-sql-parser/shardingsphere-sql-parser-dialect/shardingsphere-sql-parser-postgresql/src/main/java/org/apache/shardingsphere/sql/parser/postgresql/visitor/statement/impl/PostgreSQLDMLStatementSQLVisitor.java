@@ -26,10 +26,21 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Ca
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CallContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CheckpointContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CopyContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CopyWithTableBinaryContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CopyWithTableOrQueryBinaryCsvContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CopyWithTableOrQueryContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DoStatementContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.PreparableStmtContext;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.prepare.PrepareStatementQuerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLCallStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLCheckpointStatement;
@@ -81,6 +92,61 @@ public final class PostgreSQLDMLStatementSQLVisitor extends PostgreSQLStatementS
     
     @Override
     public ASTNode visitCopy(final CopyContext ctx) {
+        if (null != ctx.copyWithTableOrQuery()) {
+            return visit(ctx.copyWithTableOrQuery());
+        } else if (null != ctx.copyWithTableOrQueryBinaryCsv()) {
+            return visit(ctx.copyWithTableOrQueryBinaryCsv());
+        } else {
+            return visit(ctx.copyWithTableBinary());
+        }
+    }
+    
+    @Override
+    public ASTNode visitCopyWithTableOrQuery(final CopyWithTableOrQueryContext ctx) {
+        PostgreSQLCopyStatement result = new PostgreSQLCopyStatement();
+        if (null != ctx.qualifiedName()) {
+            result.setTableSegment((SimpleTableSegment) visit(ctx.qualifiedName()));
+            if (null != ctx.columnNames()) {
+                result.getColumns().addAll(((CollectionValue<ColumnSegment>) visit(ctx.columnNames())).getValue());
+            }
+        }
+        if (null != ctx.preparableStmt()) {
+            result.setPrepareStatementQuerySegment(extractPrepareStatementQuerySegmentFromPreparableStmt(ctx.preparableStmt()));
+        }
+        return result;
+    }
+    
+    private PrepareStatementQuerySegment extractPrepareStatementQuerySegmentFromPreparableStmt(final PreparableStmtContext ctx) {
+        PrepareStatementQuerySegment result = new PrepareStatementQuerySegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        if (null != ctx.select()) {
+            result.setSelect((SelectStatement) visit(ctx.select()));
+        } else if (null != ctx.insert()) {
+            result.setInsert((InsertStatement) visit(ctx.insert()));
+        } else if (null != ctx.update()) {
+            result.setUpdate((UpdateStatement) visit(ctx.update()));
+        } else {
+            result.setDelete((DeleteStatement) visit(ctx.delete()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitCopyWithTableOrQueryBinaryCsv(final CopyWithTableOrQueryBinaryCsvContext ctx) {
+        PostgreSQLCopyStatement result = new PostgreSQLCopyStatement();
+        if (null != ctx.qualifiedName()) {
+            result.setTableSegment((SimpleTableSegment) visit(ctx.qualifiedName()));
+            if (null != ctx.columnNames()) {
+                result.getColumns().addAll(((CollectionValue<ColumnSegment>) visit(ctx.columnNames())).getValue());
+            }
+        }
+        if (null != ctx.preparableStmt()) {
+            result.setPrepareStatementQuerySegment(extractPrepareStatementQuerySegmentFromPreparableStmt(ctx.preparableStmt()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitCopyWithTableBinary(final CopyWithTableBinaryContext ctx) {
         PostgreSQLCopyStatement result = new PostgreSQLCopyStatement();
         if (null != ctx.qualifiedName()) {
             result.setTableSegment((SimpleTableSegment) visit(ctx.qualifiedName()));

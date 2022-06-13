@@ -325,6 +325,7 @@
                         <property key="aes-key-value" value="123456abc"/>
                     </properties>
                 </encryptor>
+                <assisted-query-encryptor algorithm-name="MD5" />
             </column>
             <column name="order_id" cipher-column="order_cipher">
                 <encryptor algorithm-name="MD5"/>
