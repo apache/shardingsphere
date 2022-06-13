@@ -29,7 +29,7 @@ Apache ShardingSphere 会将用户请求的明文进行加密后存储到底层�
 
 **加密算法配置**：指使用什么加密算法进行加解密。目前 ShardingSphere 内置了五种加解密算法：AES，MD5，RC4，SM3 和 SM4。用户还可以通过实现 ShardingSphere 提供的接口，自行实现一套加解密算法。
 
-**加密表配置**：用于告诉 ShardingSphere 数据表里哪个列用于存储密文数据（cipherColumn）、使用什么算法加解密（encryptorName）、哪个列用于存储辅助查询数据（assistedQueryColumn）、使用什么算法加解密（assistedQueryEncryptorName）、哪个列用于存储明文数据（plainColumn）以及用户想使用哪个列进行 SQL 编写（logicColumn）。
+**加密表配置**：用于告诉 ShardingSphere 数据表里哪个列用于存储密文数据（cipherColumn）、使用什么算法加解密（encryptorName）、哪个列用于存储辅助查询数据（assistedQueryColumn）、使用什么算法对辅助查询数据加解密（assistedQueryEncryptorName）、哪个列用于存储明文数据（plainColumn）以及用户想使用哪个列进行 SQL 编写（logicColumn）。
 
 >  如何理解 `用户想使用哪个列进行 SQL 编写（logicColumn）`？
 >
@@ -193,9 +193,10 @@ Apache ShardingSphere 接收到该 SQL，通过用户提供的加密配置，发
 ![8](https://shardingsphere.apache.org/document/current/img/encrypt/8.png)
 
 4. 系统迁移完成 
+
 安全审计部门再要求，业务系统需要定期或某些紧急安全事件触发修改密钥，我们需要再次进行迁移洗数，即使用旧密钥解密后再使用新密钥加密。既要又要还要的问题来了，明文列数据已删除，数据库表中数据量千万级，迁移洗数需要一定时间，迁移洗数过程中密文列在变化，系统还需正确提供服务。怎么办？
 答案是：辅助查询列
-**因为辅助查询列一般使用不可逆的 MD5 和 SM3 等算法，基于辅助列进行查询，即使在迁移洗数过程中，系统也是可以提供正确服务。
+**因为辅助查询列一般使用不可逆的 MD5 和 SM3 等算法，基于辅助列进行查询，即使在迁移洗数过程中，系统也是可以提供正确服务。**
 
 至此，已在线业务加密整改解决方案全部叙述完毕。我们提供了 Java、YAML、Spring Boot Starter、Spring 命名空间多种方式供用户选择接入，力求满足业务不同的接入需求。
 该解决方案目前已在京东数科不断落地上线，提供对内基础服务支撑。
