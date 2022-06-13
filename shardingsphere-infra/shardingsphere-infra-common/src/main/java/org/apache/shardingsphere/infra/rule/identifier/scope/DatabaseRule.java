@@ -15,18 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.builder.schema;
+package org.apache.shardingsphere.infra.rule.identifier.scope;
 
-import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
-import org.apache.shardingsphere.infra.rule.builder.DefaultRuleConfigurationBuilder;
-import org.apache.shardingsphere.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 /**
- * Default schema rule configuration builder.
- * 
- * @param <T> type of schema rule configuration
- * @param <B> type of schema rule builder
+ * Database rule.
  */
-@SingletonSPI
-public interface DefaultSchemaRuleConfigurationBuilder<T extends SchemaRuleConfiguration, B extends SchemaRuleBuilder<?>> extends DefaultRuleConfigurationBuilder<T, B> {
+public interface DatabaseRule extends ShardingSphereRule {
 }

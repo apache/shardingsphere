@@ -17,22 +17,27 @@
 
 package org.apache.shardingsphere.singletable.rule.builder;
 
-import org.apache.shardingsphere.infra.rule.builder.schema.DefaultSchemaRuleConfigurationBuilder;
-import org.apache.shardingsphere.infra.rule.builder.schema.DefaultSchemaRuleConfigurationBuilderFactory;
 import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
-import org.junit.Test;
+import org.apache.shardingsphere.singletable.constant.SingleTableOrder;
+import org.apache.shardingsphere.infra.rule.builder.schema.DefaultDatabaseRuleConfigurationBuilder;
 
-import java.util.Collections;
-
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
-
-public final class DefaultSingleTableSchemaRuleConfigurationBuilderTest {
+/**
+ * Default single table rule configuration builder.
+ */
+public final class DefaultSingleTableDatabaseRuleConfigurationBuilder implements DefaultDatabaseRuleConfigurationBuilder<SingleTableRuleConfiguration, SingleTableRuleBuilder> {
     
-    @SuppressWarnings("rawtypes")
-    @Test
-    public void assertBuild() {
-        DefaultSchemaRuleConfigurationBuilder builder = DefaultSchemaRuleConfigurationBuilderFactory.getInstances(Collections.singletonList(new SingleTableRuleBuilder())).values().iterator().next();
-        assertThat(builder.build(), instanceOf(SingleTableRuleConfiguration.class));
+    @Override
+    public SingleTableRuleConfiguration build() {
+        return new SingleTableRuleConfiguration();
+    }
+    
+    @Override
+    public int getOrder() {
+        return SingleTableOrder.ORDER;
+    }
+    
+    @Override
+    public Class<SingleTableRuleBuilder> getTypeClass() {
+        return SingleTableRuleBuilder.class;
     }
 }

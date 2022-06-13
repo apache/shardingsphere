@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.infra.rule.builder.schema;
 
-import org.apache.shardingsphere.infra.rule.builder.fixture.FixtureSchemaRuleBuilder;
-import org.apache.shardingsphere.infra.rule.builder.fixture.FixtureSchemaRuleConfigurationBuilder;
+import org.apache.shardingsphere.infra.rule.builder.fixture.FixtureDatabaseRuleBuilder;
+import org.apache.shardingsphere.infra.rule.builder.fixture.FixtureDatabaseRuleConfigurationBuilder;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -27,13 +27,13 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
-public final class DefaultSchemaRuleConfigurationBuilderFactoryTest {
+public final class DefaultDatabaseRuleConfigurationBuilderFactoryTest {
     
     @Test
     @SuppressWarnings("rawtypes")
     public void assertGetInstances() {
-        FixtureSchemaRuleBuilder builder = new FixtureSchemaRuleBuilder();
-        Map<SchemaRuleBuilder, DefaultSchemaRuleConfigurationBuilder> actual = DefaultSchemaRuleConfigurationBuilderFactory.getInstances(Collections.singleton(builder));
-        assertThat(actual.get(builder), instanceOf(FixtureSchemaRuleConfigurationBuilder.class));
+        FixtureDatabaseRuleBuilder builder = new FixtureDatabaseRuleBuilder();
+        Map<DatabaseRuleBuilder, DefaultDatabaseRuleConfigurationBuilder> actual = DefaultDatabaseRuleConfigurationBuilderFactory.getInstances(Collections.singleton(builder));
+        assertThat(actual.get(builder), instanceOf(FixtureDatabaseRuleConfigurationBuilder.class));
     }
 }

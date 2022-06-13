@@ -17,7 +17,12 @@
 
 package org.apache.shardingsphere.infra.rule.builder.fixture;
 
-import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
+import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
 
-public final class FixtureSchemaRuleConfiguration implements SchemaRuleConfiguration {
+public final class FixtureDatabaseRule implements DatabaseRule {
+    
+    @Override
+    public String getType() {
+        return FixtureDatabaseRule.class.getSimpleName();
+    }
 }

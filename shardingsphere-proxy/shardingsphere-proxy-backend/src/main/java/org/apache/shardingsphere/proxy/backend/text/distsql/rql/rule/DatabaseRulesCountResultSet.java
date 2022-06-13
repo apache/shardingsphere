@@ -42,9 +42,9 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 /**
- * Result set for count schema rules.
+ * Result set for count database rules.
  */
-public final class SchemaRulesCountResultSet implements DistSQLResultSet {
+public final class DatabaseRulesCountResultSet implements DistSQLResultSet {
     
     private static final int DEFAULT_COUNT = 0;
     

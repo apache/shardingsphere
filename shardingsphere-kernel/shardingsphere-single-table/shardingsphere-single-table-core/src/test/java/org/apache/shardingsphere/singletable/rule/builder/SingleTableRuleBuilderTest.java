@@ -20,9 +20,9 @@ package org.apache.shardingsphere.singletable.rule.builder;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilder;
-import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilderFactory;
-import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
+import org.apache.shardingsphere.infra.rule.builder.schema.DatabaseRuleBuilder;
+import org.apache.shardingsphere.infra.rule.builder.schema.DatabaseRuleBuilderFactory;
+import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
 import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 import org.junit.Test;
@@ -43,27 +43,27 @@ public final class SingleTableRuleBuilderTest {
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     public void assertBuild() {
-        Collection<SchemaRuleBuilder> builders = SchemaRuleBuilderFactory.getInstances();
-        SchemaRuleBuilder builder = builders.iterator().next();
+        Collection<DatabaseRuleBuilder> builders = DatabaseRuleBuilderFactory.getInstances();
+        DatabaseRuleBuilder builder = builders.iterator().next();
         SingleTableRuleConfiguration config = mock(SingleTableRuleConfiguration.class);
         ShardingSphereRule shardingSphereRule = mock(ShardingSphereRule.class);
-        SchemaRule schemaRule = builder.build(config, "", Collections.emptyMap(), Collections.singletonList(shardingSphereRule), new ConfigurationProperties(createProperties()));
-        assertThat(schemaRule, instanceOf(SingleTableRule.class));
-        assertFalse(((SingleTableRule) schemaRule).getDefaultDataSource().isPresent());
+        DatabaseRule databaseRule = builder.build(config, "", Collections.emptyMap(), Collections.singletonList(shardingSphereRule), new ConfigurationProperties(createProperties()));
+        assertThat(databaseRule, instanceOf(SingleTableRule.class));
+        assertFalse(((SingleTableRule) databaseRule).getDefaultDataSource().isPresent());
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     public void assertBuildWithDefaultDataSource() {
         ShardingSphereRule shardingSphereRule = mock(ShardingSphereRule.class);
-        Collection<SchemaRuleBuilder> builders = SchemaRuleBuilderFactory.getInstances();
-        SchemaRuleBuilder builder = builders.iterator().next();
+        Collection<DatabaseRuleBuilder> builders = DatabaseRuleBuilderFactory.getInstances();
+        DatabaseRuleBuilder builder = builders.iterator().next();
         SingleTableRuleConfiguration config = new SingleTableRuleConfiguration();
         config.setDefaultDataSource("ds_0");
-        SchemaRule schemaRule = builder.build(config, "", Collections.emptyMap(), Collections.singletonList(shardingSphereRule), new ConfigurationProperties(createProperties()));
-        assertThat(schemaRule, instanceOf(SingleTableRule.class));
-        assertTrue(((SingleTableRule) schemaRule).getDefaultDataSource().isPresent());
-        assertThat(((SingleTableRule) schemaRule).getDefaultDataSource().get(), is("ds_0"));
+        DatabaseRule databaseRule = builder.build(config, "", Collections.emptyMap(), Collections.singletonList(shardingSphereRule), new ConfigurationProperties(createProperties()));
+        assertThat(databaseRule, instanceOf(SingleTableRule.class));
+        assertTrue(((SingleTableRule) databaseRule).getDefaultDataSource().isPresent());
+        assertThat(((SingleTableRule) databaseRule).getDefaultDataSource().get(), is("ds_0"));
     }
     
     private Properties createProperties() {

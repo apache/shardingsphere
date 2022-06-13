@@ -26,23 +26,23 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * Default schema rule configuration builder factory.
+ * Default database rule configuration builder factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DefaultSchemaRuleConfigurationBuilderFactory {
+public final class DefaultDatabaseRuleConfigurationBuilderFactory {
     
     static {
-        ShardingSphereServiceLoader.register(DefaultSchemaRuleConfigurationBuilder.class);
+        ShardingSphereServiceLoader.register(DefaultDatabaseRuleConfigurationBuilder.class);
     }
     
     /**
-     * Get instances of schema rule builder.
+     * Get instances of database rule builder.
      *
-     * @param builders schema rule builders
+     * @param builders database rule builders
      * @return got instances
      */
     @SuppressWarnings("rawtypes")
-    public static Map<SchemaRuleBuilder, DefaultSchemaRuleConfigurationBuilder> getInstances(final Collection<SchemaRuleBuilder> builders) {
-        return OrderedSPIRegistry.getRegisteredServices(DefaultSchemaRuleConfigurationBuilder.class, builders);
+    public static Map<DatabaseRuleBuilder, DefaultDatabaseRuleConfigurationBuilder> getInstances(final Collection<DatabaseRuleBuilder> builders) {
+        return OrderedSPIRegistry.getRegisteredServices(DefaultDatabaseRuleConfigurationBuilder.class, builders);
     }
 }
