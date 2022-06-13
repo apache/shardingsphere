@@ -176,17 +176,14 @@ public final class TransactionBackendHandler implements TextProtocolBackendHandl
     private void handleSetAutoCommit() throws SQLException {
         if (tclStatement instanceof MySQLSetAutoCommitStatement) {
             handleMySQLSetAutoCommit();
-        } else {
-            connectionSession.setAutoCommit(((SetAutoCommitStatement) tclStatement).isAutoCommit());
         }
+        connectionSession.setAutoCommit(((SetAutoCommitStatement) tclStatement).isAutoCommit());
     }
     
     private void handleMySQLSetAutoCommit() throws SQLException {
         MySQLSetAutoCommitStatement statement = (MySQLSetAutoCommitStatement) tclStatement;
         if (statement.isAutoCommit() && connectionSession.getTransactionStatus().isInTransaction()) {
             backendTransactionManager.commit();
-        } else {
-            connectionSession.setAutoCommit(statement.isAutoCommit());
         }
     }
 }
