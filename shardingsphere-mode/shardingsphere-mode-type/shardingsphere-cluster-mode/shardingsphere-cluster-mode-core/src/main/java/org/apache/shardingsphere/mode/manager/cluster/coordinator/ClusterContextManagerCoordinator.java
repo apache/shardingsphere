@@ -211,6 +211,7 @@ public final class ClusterContextManagerCoordinator {
     @Subscribe
     public synchronized void renew(final GlobalRuleConfigurationsChangedEvent event) {
         contextManager.alterGlobalRuleConfiguration(event.getRuleConfigurations());
+        buildSpecialRules();
     }
     
     /**
