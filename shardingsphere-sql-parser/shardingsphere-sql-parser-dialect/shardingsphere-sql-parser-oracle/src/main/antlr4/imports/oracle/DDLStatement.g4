@@ -2502,3 +2502,6 @@ dropRestorePoint
     : DROP RESTORE POINT restorePointName (FOR PLUGGABLE DATABASE pdbName)?
     ;
     
+dropOperator
+    : DROP OPERATOR (schemaName DOT_)? operatorName FORCE?
+    ;
