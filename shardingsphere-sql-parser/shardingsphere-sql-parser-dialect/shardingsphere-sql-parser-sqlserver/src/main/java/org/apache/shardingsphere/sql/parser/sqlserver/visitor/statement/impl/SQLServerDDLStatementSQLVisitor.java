@@ -40,6 +40,8 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Col
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ColumnDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ColumnDefinitionOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ColumnNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ColumnNameWithSortContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ColumnNamesWithSortContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateDatabaseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateIndexContext;
@@ -334,7 +336,22 @@ public final class SQLServerDDLStatementSQLVisitor extends SQLServerStatementSQL
         SQLServerCreateIndexStatement result = new SQLServerCreateIndexStatement();
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         result.setIndex((IndexSegment) visit(ctx.indexName()));
+        result.setColumns(((CollectionValue) visit(ctx.columnNamesWithSort())).getValue());
         return result;
+    }
+    
+    @Override
+    public ASTNode visitColumnNamesWithSort(final ColumnNamesWithSortContext ctx) {
+        CollectionValue<ColumnSegment> result = new CollectionValue<>();
+        for (ColumnNameWithSortContext each : ctx.columnNameWithSort()) {
+            result.getValue().add((ColumnSegment) visit(each));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitColumnNameWithSort(final ColumnNameWithSortContext ctx) {
+        return visit(ctx.columnName());
     }
     
     @Override
