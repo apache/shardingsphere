@@ -56,7 +56,7 @@ public final class DatabaseDiscoveryRuleQueryResultSet implements DistSQLResultS
     
     private static final String HEARTBEAT = "discovery_heartbeat";
     
-    private Iterator<DatabaseDiscoveryDataSourceRuleConfiguration> data;
+    private Iterator<DatabaseDiscoveryDataSourceRuleConfiguration> dataSourceRules;
     
     private Map<String, ShardingSphereAlgorithmConfiguration> discoveryTypes;
     
@@ -66,11 +66,11 @@ public final class DatabaseDiscoveryRuleQueryResultSet implements DistSQLResultS
     
     @Override
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
-        Optional<DatabaseDiscoveryRuleConfiguration> ruleConfig = database.getRuleMetaData().getConfigurations()
-                .stream().filter(each -> each instanceof DatabaseDiscoveryRuleConfiguration).map(each -> (DatabaseDiscoveryRuleConfiguration) each).findAny();
-        data = ruleConfig.map(optional -> optional.getDataSources().iterator()).orElseGet(Collections::emptyIterator);
-        discoveryTypes = ruleConfig.map(DatabaseDiscoveryRuleConfiguration::getDiscoveryTypes).orElseGet(Collections::emptyMap);
-        discoveryHeartbeats = ruleConfig.map(DatabaseDiscoveryRuleConfiguration::getDiscoveryHeartbeats).orElseGet(Collections::emptyMap);
+        Optional<DatabaseDiscoveryRuleConfiguration> ruleConfig = database.getRuleMetaData().findSingleRuleConfiguration(DatabaseDiscoveryRuleConfiguration.class);
+        Preconditions.checkState(ruleConfig.isPresent());
+        dataSourceRules = ruleConfig.get().getDataSources().iterator();
+        discoveryTypes = ruleConfig.get().getDiscoveryTypes();
+        discoveryHeartbeats = ruleConfig.get().getDiscoveryHeartbeats();
         primaryDataSources = getPrimaryDataSources(database);
     }
     
@@ -87,12 +87,12 @@ public final class DatabaseDiscoveryRuleQueryResultSet implements DistSQLResultS
     
     @Override
     public boolean next() {
-        return data.hasNext();
+        return dataSourceRules.hasNext();
     }
     
     @Override
     public Collection<Object> getRowData() {
-        DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = data.next();
+        DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = dataSourceRules.next();
         Map<String, String> typeMap = new LinkedHashMap<>();
         typeMap.put(NAME, dataSourceRuleConfig.getDiscoveryTypeName());
         typeMap.putAll(convertToMap(discoveryTypes.get(dataSourceRuleConfig.getDiscoveryTypeName())));

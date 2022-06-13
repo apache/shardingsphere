@@ -23,7 +23,6 @@ import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHe
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.ShowDatabaseDiscoveryRulesStatement;
 import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryDataSourceRule;
 import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryRule;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -50,7 +49,7 @@ public final class DatabaseDiscoveryRuleQueryResultSetTest {
     @Test
     public void assertInit() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.singleton(createRuleConfiguration()));
+        when(database.getRuleMetaData().findSingleRuleConfiguration(DatabaseDiscoveryRuleConfiguration.class)).thenReturn(Optional.of(createRuleConfiguration()));
         DatabaseDiscoveryRule databaseDiscoveryRule = mock(DatabaseDiscoveryRule.class, RETURNS_DEEP_STUBS);
         DatabaseDiscoveryDataSourceRule dataSourceRule = mock(DatabaseDiscoveryDataSourceRule.class);
         when(dataSourceRule.getPrimaryDataSourceName()).thenReturn("ds_0");
@@ -62,7 +61,7 @@ public final class DatabaseDiscoveryRuleQueryResultSetTest {
         assertRowData(new ArrayList<>(resultSet.getRowData()));
     }
     
-    private RuleConfiguration createRuleConfiguration() {
+    private DatabaseDiscoveryRuleConfiguration createRuleConfiguration() {
         DatabaseDiscoveryDataSourceRuleConfiguration databaseDiscoveryDataSourceRuleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration(
                 "ms_group", Arrays.asList("ds_0", "ds_1"), "heartbeat_test", "type_test");
         ShardingSphereAlgorithmConfiguration shardingSphereAlgorithmConfig = new ShardingSphereAlgorithmConfiguration("MySQL.MGR", new Properties());
