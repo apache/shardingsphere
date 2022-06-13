@@ -17,3 +17,4 @@
 
 org.apache.shardingsphere.dbdiscovery.mysql.type.MGRMySQLDatabaseDiscoveryProviderAlgorithm
 org.apache.shardingsphere.dbdiscovery.mysql.type.MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm
+org.apache.shardingsphere.dbdiscovery.mysql.type.MySQLNormalReplicationCheckedDelayByDefinedSQLDatabaseDiscoveryProviderAlgorithm
