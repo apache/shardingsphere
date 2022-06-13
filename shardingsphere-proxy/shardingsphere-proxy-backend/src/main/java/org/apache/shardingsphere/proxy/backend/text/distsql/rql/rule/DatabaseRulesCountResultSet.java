@@ -21,10 +21,8 @@ import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleCon
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.CountDatabaseRulesStatement;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.identifier.type.exportable.RuleExportEngine;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -33,7 +31,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -83,8 +80,7 @@ public final class DatabaseRulesCountResultSet implements DistSQLResultSet {
     }
     
     private void addSingleTableData(final Map<String, Collection<Object>> dataMap, final Collection<SingleTableRule> rules) {
-        Optional<Integer> count = rules.stream().map(each -> (Collection) new RuleExportEngine(each).export(ExportableConstants.EXPORT_SINGLE_TABLES).orElse(Collections.emptyMap()))
-                .map(Collection::size).reduce(Integer::sum);
+        Optional<Integer> count = rules.stream().map(each -> each.getAllTables().size()).reduce(Integer::sum);
         dataMap.compute(SINGLE_TABLE, (key, value) -> buildRow(value, SINGLE_TABLE, count.orElse(DEFAULT_COUNT)));
     }
     
