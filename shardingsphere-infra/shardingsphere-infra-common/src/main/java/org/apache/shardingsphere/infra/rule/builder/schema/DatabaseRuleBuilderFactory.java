@@ -28,43 +28,43 @@ import java.util.Comparator;
 import java.util.Map;
 
 /**
- * Schema rule builder factory.
+ * Database rule builder factory.
  */
 @SuppressWarnings("rawtypes")
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SchemaRuleBuilderFactory {
+public final class DatabaseRuleBuilderFactory {
     
     static {
-        ShardingSphereServiceLoader.register(SchemaRuleBuilder.class);
+        ShardingSphereServiceLoader.register(DatabaseRuleBuilder.class);
     }
     
     /**
-     * Get instances of schema rule builder.
+     * Get instances of database rule builder.
      *
      * @return got instances
      */
-    public static Collection<SchemaRuleBuilder> getInstances() {
-        return OrderedSPIRegistry.getRegisteredServices(SchemaRuleBuilder.class);
+    public static Collection<DatabaseRuleBuilder> getInstances() {
+        return OrderedSPIRegistry.getRegisteredServices(DatabaseRuleBuilder.class);
     }
     
     /**
-     * Get instance map of schema rule builder.
+     * Get instance map of database rule builder.
      *
      * @param ruleConfigs rule configurations
      * @return got instance map
      */
-    public static Map<RuleConfiguration, SchemaRuleBuilder> getInstanceMap(final Collection<RuleConfiguration> ruleConfigs) {
-        return OrderedSPIRegistry.getRegisteredServices(SchemaRuleBuilder.class, ruleConfigs);
+    public static Map<RuleConfiguration, DatabaseRuleBuilder> getInstanceMap(final Collection<RuleConfiguration> ruleConfigs) {
+        return OrderedSPIRegistry.getRegisteredServices(DatabaseRuleBuilder.class, ruleConfigs);
     }
     
     /**
-     * Get instance map of schema rule builder.
+     * Get instance map of database rule builder.
      *
      * @param ruleConfigs rule configurations
      * @param orderComparator order comparator
      * @return got instance map
      */
-    public static Map<RuleConfiguration, SchemaRuleBuilder> getInstanceMap(final Collection<RuleConfiguration> ruleConfigs, final Comparator<Integer> orderComparator) {
-        return OrderedSPIRegistry.getRegisteredServices(SchemaRuleBuilder.class, ruleConfigs, orderComparator);
+    public static Map<RuleConfiguration, DatabaseRuleBuilder> getInstanceMap(final Collection<RuleConfiguration> ruleConfigs, final Comparator<Integer> orderComparator) {
+        return OrderedSPIRegistry.getRegisteredServices(DatabaseRuleBuilder.class, ruleConfigs, orderComparator);
     }
 }

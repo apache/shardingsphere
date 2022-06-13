@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shadow.rule.builder;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilder;
+import org.apache.shardingsphere.infra.rule.builder.schema.DatabaseRuleBuilder;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.constant.ShadowOrder;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
@@ -31,7 +31,7 @@ import java.util.Map;
 /**
  * Shadow rule builder.
  */
-public final class ShadowRuleBuilder implements SchemaRuleBuilder<ShadowRuleConfiguration> {
+public final class ShadowRuleBuilder implements DatabaseRuleBuilder<ShadowRuleConfiguration> {
     
     @Override
     public ShadowRule build(final ShadowRuleConfiguration config, final String databaseName,

@@ -15,24 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.builder.fixture;
+package org.apache.shardingsphere.infra.rule.builder.schema;
 
-import org.apache.shardingsphere.infra.rule.builder.schema.DefaultSchemaRuleConfigurationBuilder;
+import org.apache.shardingsphere.infra.config.scope.DatabaseRuleConfiguration;
+import org.apache.shardingsphere.infra.rule.builder.DefaultRuleConfigurationBuilder;
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
 
-public final class FixtureSchemaRuleConfigurationBuilder implements DefaultSchemaRuleConfigurationBuilder<FixtureSchemaRuleConfiguration, FixtureSchemaRuleBuilder> {
-    
-    @Override
-    public FixtureSchemaRuleConfiguration build() {
-        return new FixtureSchemaRuleConfiguration();
-    }
-    
-    @Override
-    public int getOrder() {
-        return 0;
-    }
-    
-    @Override
-    public Class<FixtureSchemaRuleBuilder> getTypeClass() {
-        return FixtureSchemaRuleBuilder.class;
-    }
+/**
+ * Default database rule configuration builder.
+ * 
+ * @param <T> type of database rule configuration
+ * @param <B> type of database rule builder
+ */
+@SingletonSPI
+public interface DefaultDatabaseRuleConfigurationBuilder<T extends DatabaseRuleConfiguration, B extends DatabaseRuleBuilder<?>> extends DefaultRuleConfigurationBuilder<T, B> {
 }

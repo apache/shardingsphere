@@ -1296,7 +1296,7 @@ public final class SQLParserTestCases {
     private final List<ShowUnusedShardingAlgorithmsStatementTestCase> showUnusedShardingAlgorithmsTestCases = new LinkedList<>();
     
     @XmlElement(name = "count-database-rules")
-    private final List<CountDatabaseRulesStatementTestCase> countSchemaRulesTestCases = new LinkedList<>();
+    private final List<CountDatabaseRulesStatementTestCase> countDatabaseRulesTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-unused-sharding-key-generators")
     private final List<ShowUnusedShardingKeyGeneratorsStatementTestCase> showUnusedShardingKeyGeneratorsTestCases = new LinkedList<>();
@@ -1756,7 +1756,7 @@ public final class SQLParserTestCases {
         putAll(renameTableTestCases, result);
         putAll(showBinlogEventsTestCases, result);
         putAll(createExtensionTestCases, result);
-        putAll(countSchemaRulesTestCases, result);
+        putAll(countDatabaseRulesTestCases, result);
         putAll(alterExtensionTestCases, result);
         putAll(dropExtensionTestCases, result);
         putAll(declareTestCases, result);

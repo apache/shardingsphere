@@ -39,7 +39,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class SchemaRulePersistServiceTest {
+public final class DatabaseRulePersistServiceTest {
     
     @Mock
     private PersistRepository repository;
@@ -61,14 +61,14 @@ public final class SchemaRulePersistServiceTest {
     public void assertIsExisted() {
         when(repository.get("/metadata/foo_db/active_version")).thenReturn("0");
         when(repository.get("/metadata/foo_db/versions/0/rules")).thenReturn(readYAML());
-        DatabaseRulePersistService schemaRulePersistService = new DatabaseRulePersistService(repository);
-        assertTrue(schemaRulePersistService.isExisted("foo_db"));
-        assertFalse(schemaRulePersistService.isExisted("foo_db_1"));
+        DatabaseRulePersistService databaseRulePersistService = new DatabaseRulePersistService(repository);
+        assertTrue(databaseRulePersistService.isExisted("foo_db"));
+        assertFalse(databaseRulePersistService.isExisted("foo_db_1"));
     }
     
     @SneakyThrows({IOException.class, URISyntaxException.class})
     private String readYAML() {
-        return Files.readAllLines(Paths.get(ClassLoader.getSystemResource("yaml/persist/data-schema-rule.yaml").toURI()))
+        return Files.readAllLines(Paths.get(ClassLoader.getSystemResource("yaml/persist/data-database-rule.yaml").toURI()))
                 .stream().map(each -> each + System.lineSeparator()).collect(Collectors.joining());
     }
 }
