@@ -159,7 +159,7 @@ public final class SingleTableRuleTest {
     }
     
     @Test
-    public void assertGetDataSource() {
+    public void assertAssignNewDataSourceName() {
         DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class);
         SingleTableRuleConfiguration singleTableRuleConfig = new SingleTableRuleConfiguration();
         singleTableRuleConfig.setDefaultDataSource("ds_0");
