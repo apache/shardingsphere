@@ -9,7 +9,7 @@ Use [Helm](https://helm.sh/) to provide guidance for the installation of Shardin
 
 ```shell
 helm repo add shardingsphere https://shardingsphere.apache.org/charts
-helm install shardingsphere-proxy shardingsphere/shardingsphere-proxy
+helm install shardingsphere-proxy shardingsphere/apache-shardingsphere-proxy
 ```
 
 ## Step By Step
@@ -36,17 +36,17 @@ helm repo add shardingsphere https://shardingsphere.apache.org/charts
 2. Install ShardingSphere-Proxy charts:
 
 ```shell
-helm install shardingsphere-proxy shardingsphere/shardingsphere-proxy
+helm install shardingsphere-proxy shardingsphere/apache-shardingsphere-proxy
 ```
 
 #### Source installation
 ```shell
-cd shardingsphere-proxy/charts/governance
+cd apache-shardingsphere-proxy/charts/governance
 helm dependency build 
 cd ../..                               
 helm dependency build                                   
 cd ..                                                   
-helm install shardingsphere-proxy shardingsphere-proxy 
+helm install shardingsphere-proxy apache-shardingsphere-proxy
 ```
 
 Charts will be installed with default configuration if above commands executed.
