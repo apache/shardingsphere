@@ -33,8 +33,10 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.ReleaseSavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SavepointStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SetAutoCommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLBeginTransactionStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLSetAutoCommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.tcl.OpenGaussCommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.tcl.OpenGaussRollbackStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLCommitStatement;
@@ -122,6 +124,9 @@ public final class TransactionBackendHandler implements TextProtocolBackendHandl
             case ROLLBACK:
                 backendTransactionManager.rollback();
                 break;
+            case SET_AUTOCOMMIT:
+                handleSetAutoCommit();
+                break;
             default:
                 throw new SQLFeatureNotSupportedException(operationType.name());
         }
@@ -166,5 +171,19 @@ public final class TransactionBackendHandler implements TextProtocolBackendHandl
             }
         }
         return result;
+    }
+    
+    private void handleSetAutoCommit() throws SQLException {
+        if (tclStatement instanceof MySQLSetAutoCommitStatement) {
+            handleMySQLSetAutoCommit();
+        }
+        connectionSession.setAutoCommit(((SetAutoCommitStatement) tclStatement).isAutoCommit());
+    }
+    
+    private void handleMySQLSetAutoCommit() throws SQLException {
+        MySQLSetAutoCommitStatement statement = (MySQLSetAutoCommitStatement) tclStatement;
+        if (statement.isAutoCommit() && connectionSession.getTransactionStatus().isInTransaction()) {
+            backendTransactionManager.commit();
+        }
     }
 }
