@@ -49,12 +49,12 @@ public final class DatabaseDiscoveryRuleQueryResultSetTest {
     @Test
     public void assertInit() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getRuleMetaData().findSingleRuleConfiguration(DatabaseDiscoveryRuleConfiguration.class)).thenReturn(Optional.of(createRuleConfiguration()));
-        DatabaseDiscoveryRule databaseDiscoveryRule = mock(DatabaseDiscoveryRule.class, RETURNS_DEEP_STUBS);
+        DatabaseDiscoveryRule rule = mock(DatabaseDiscoveryRule.class, RETURNS_DEEP_STUBS);
+        when(rule.getConfiguration()).thenReturn(createRuleConfiguration());
         DatabaseDiscoveryDataSourceRule dataSourceRule = mock(DatabaseDiscoveryDataSourceRule.class);
         when(dataSourceRule.getPrimaryDataSourceName()).thenReturn("ds_0");
-        when(databaseDiscoveryRule.getDataSourceRules()).thenReturn(Collections.singletonMap("ms_group", dataSourceRule));
-        when(database.getRuleMetaData().findSingleRule(DatabaseDiscoveryRule.class)).thenReturn(Optional.of(databaseDiscoveryRule));
+        when(rule.getDataSourceRules()).thenReturn(Collections.singletonMap("ms_group", dataSourceRule));
+        when(database.getRuleMetaData().findSingleRule(DatabaseDiscoveryRule.class)).thenReturn(Optional.of(rule));
         DistSQLResultSet resultSet = new DatabaseDiscoveryRuleQueryResultSet();
         resultSet.init(database, mock(ShowDatabaseDiscoveryRulesStatement.class));
         assertColumns(resultSet.getColumnNames());

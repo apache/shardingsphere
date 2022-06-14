@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * ShardingSphere rule meta data.
@@ -37,6 +38,15 @@ public final class ShardingSphereRuleMetaData {
     private final Collection<RuleConfiguration> configurations;
     
     private final Collection<ShardingSphereRule> rules;
+    
+    /**
+     * Get rule configurations.
+     * 
+     * @return rule configurations
+     */
+    public Collection<RuleConfiguration> getConfigurations() {
+        return rules.stream().map(ShardingSphereRule::getConfiguration).collect(Collectors.toList());
+    }
     
     /**
      * Find rules by class.
@@ -82,17 +92,5 @@ public final class ShardingSphereRuleMetaData {
     public <T extends ShardingSphereRule> Optional<T> findSingleRule(final Class<T> clazz) {
         Collection<T> foundRules = findRules(clazz);
         return foundRules.isEmpty() ? Optional.empty() : Optional.of(foundRules.iterator().next());
-    }
-    
-    /**
-     * Find single rule configuration by class.
-     *
-     * @param clazz target class
-     * @param <T> type of rule configuration
-     * @return found rule configuration
-     */
-    public <T extends RuleConfiguration> Optional<T> findSingleRuleConfiguration(final Class<T> clazz) {
-        Collection<T> foundRuleConfig = findRuleConfigurations(clazz);
-        return foundRuleConfig.isEmpty() ? Optional.empty() : Optional.of(foundRuleConfig.iterator().next());
     }
 }

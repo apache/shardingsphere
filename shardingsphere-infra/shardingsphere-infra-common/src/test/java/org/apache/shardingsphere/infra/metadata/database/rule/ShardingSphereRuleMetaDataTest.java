@@ -44,9 +44,4 @@ public final class ShardingSphereRuleMetaDataTest {
     public void assertFindRuleConfigurations() {
         assertThat(ruleMetaData.findRuleConfigurations(ShardingSphereRuleConfigurationFixture.class).size(), is(1));
     }
-    
-    @Test
-    public void assertFindSingleRuleConfiguration() {
-        assertTrue(ruleMetaData.findSingleRuleConfiguration(ShardingSphereRuleConfigurationFixture.class).isPresent());
-    }
 }
