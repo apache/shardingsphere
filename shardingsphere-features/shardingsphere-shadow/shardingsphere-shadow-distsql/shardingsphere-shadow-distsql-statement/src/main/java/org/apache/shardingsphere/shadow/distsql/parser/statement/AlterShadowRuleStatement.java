@@ -30,6 +30,6 @@ import java.util.Collection;
 @RequiredArgsConstructor
 @Getter
 public final class AlterShadowRuleStatement extends AlterRuleStatement {
-
+    
     private final Collection<ShadowRuleSegment> rules;
 }

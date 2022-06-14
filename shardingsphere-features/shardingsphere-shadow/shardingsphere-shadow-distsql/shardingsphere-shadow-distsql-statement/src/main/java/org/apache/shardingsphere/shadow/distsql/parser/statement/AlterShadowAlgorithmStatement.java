@@ -30,6 +30,6 @@ import java.util.Collection;
 @RequiredArgsConstructor
 @Getter
 public final class AlterShadowAlgorithmStatement extends AlterRuleStatement {
-
+    
     private final Collection<ShadowAlgorithmSegment> algorithms;
 }

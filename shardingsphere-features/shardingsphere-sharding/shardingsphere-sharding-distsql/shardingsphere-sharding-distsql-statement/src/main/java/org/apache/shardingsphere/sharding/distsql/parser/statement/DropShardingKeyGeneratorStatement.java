@@ -29,6 +29,6 @@ import java.util.Collection;
 @RequiredArgsConstructor
 @Getter
 public final class DropShardingKeyGeneratorStatement extends DropRuleStatement {
-
+    
     private final Collection<String> keyGeneratorNames;
 }

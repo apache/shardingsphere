@@ -26,7 +26,7 @@ import java.util.Optional;
  * Show sharding table rules used algorithm statement.
  */
 public final class ShowShardingTableRulesUsedAlgorithmStatement extends ShowRulesStatement {
-
+    
     private final String algorithmName;
     
     public ShowShardingTableRulesUsedAlgorithmStatement(final String algorithmName, final DatabaseSegment database) {

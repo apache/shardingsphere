@@ -29,7 +29,7 @@ import java.util.Collection;
 @RequiredArgsConstructor
 @Getter
 public final class DropShadowRuleStatement extends DropRuleStatement {
-
+    
     private final Collection<String> ruleNames;
     
     public DropShadowRuleStatement(final boolean containsExistClause, final Collection<String> ruleNames) {
