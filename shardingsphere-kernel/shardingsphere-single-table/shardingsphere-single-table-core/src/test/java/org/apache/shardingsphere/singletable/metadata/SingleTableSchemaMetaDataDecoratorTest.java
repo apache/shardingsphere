@@ -38,7 +38,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public final class SingleTableSchemaMetaDataBuilderTest {
+public final class SingleTableSchemaMetaDataDecoratorTest {
     
     private static final String TABLE_NAME = "t_single";
     
