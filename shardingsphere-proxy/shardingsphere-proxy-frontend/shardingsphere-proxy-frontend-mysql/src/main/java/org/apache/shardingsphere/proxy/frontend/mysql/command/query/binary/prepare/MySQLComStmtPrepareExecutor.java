@@ -77,10 +77,9 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         if (!MySQLComStmtPrepareChecker.isStatementAllowed(sqlStatement)) {
             throw new UnsupportedPreparedStatementException();
         }
-        int parameterCount = sqlStatement.getParameterCount();
         int projectionCount = getProjectionCount(sqlStatement);
-        int statementId = MySQLPreparedStatementRegistry.getInstance().getConnectionPreparedStatements(connectionSession.getConnectionId()).prepareStatement(packet.getSql(), parameterCount);
-        return createPackets(statementId, projectionCount, parameterCount);
+        int statementId = MySQLPreparedStatementRegistry.getInstance().getConnectionPreparedStatements(connectionSession.getConnectionId()).prepareStatement(packet.getSql(), sqlStatement);
+        return createPackets(statementId, projectionCount, sqlStatement.getParameterCount());
     }
     
     private void failedIfContainsMultiStatements() {

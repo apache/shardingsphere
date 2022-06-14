@@ -50,6 +50,7 @@ public final class MySQLComStmtExecutePacket extends MySQLCommandPacket {
     
     private final int statementId;
     
+    @Getter
     private final MySQLPreparedStatement preparedStatement;
     
     private final int flags;
@@ -70,7 +71,7 @@ public final class MySQLComStmtExecutePacket extends MySQLCommandPacket {
         preparedStatement = MySQLPreparedStatementRegistry.getInstance().getConnectionPreparedStatements(connectionId).get(statementId);
         flags = payload.readInt1();
         Preconditions.checkArgument(ITERATION_COUNT == payload.readInt4());
-        int parameterCount = preparedStatement.getParameterCount();
+        int parameterCount = preparedStatement.getSqlStatement().getParameterCount();
         sql = preparedStatement.getSql();
         if (parameterCount > 0) {
             nullBitmap = new MySQLNullBitmap(parameterCount, NULL_BITMAP_OFFSET);
@@ -113,7 +114,7 @@ public final class MySQLComStmtExecutePacket extends MySQLCommandPacket {
         payload.writeInt4(statementId);
         payload.writeInt1(flags);
         payload.writeInt4(ITERATION_COUNT);
-        if (preparedStatement.getParameterCount() > 0) {
+        if (preparedStatement.getSqlStatement().getParameterCount() > 0) {
             for (int each : nullBitmap.getNullBitmap()) {
                 payload.writeInt1(each);
             }

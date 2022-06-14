@@ -41,8 +41,11 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.proxy.frontend.mysql.ProxyContextRestorer;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CommitStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLCommitStatement;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.Before;
 import org.junit.Test;
@@ -92,7 +95,6 @@ public final class MySQLComStmtExecuteExecutorTest extends ProxyContextRestorer 
         when(connectionSession.getAttributeMap().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).get()).thenReturn(MySQLCharacterSet.UTF8MB4_GENERAL_CI);
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
         when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
-        when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(SQLParserRule.class)).thenReturn(Optional.of(sqlParserRule));
     }
     
     private ShardingSphereDatabase mockDatabase() {
@@ -107,8 +109,9 @@ public final class MySQLComStmtExecuteExecutorTest extends ProxyContextRestorer 
     public void assertIsQueryResponse() throws NoSuchFieldException, SQLException, IllegalAccessException {
         when(connectionSession.getDatabaseName()).thenReturn("logic_db");
         when(connectionSession.getDefaultDatabaseName()).thenReturn("logic_db");
-        MySQLComStmtExecutePacket packet = mock(MySQLComStmtExecutePacket.class);
+        MySQLComStmtExecutePacket packet = mock(MySQLComStmtExecutePacket.class, RETURNS_DEEP_STUBS);
         when(packet.getSql()).thenReturn("SELECT 1");
+        when(packet.getPreparedStatement().getSqlStatement()).thenReturn(prepareSQLStatement());
         MySQLComStmtExecuteExecutor mysqlComStmtExecuteExecutor = new MySQLComStmtExecuteExecutor(packet, connectionSession);
         MemberAccessor accessor = Plugins.getMemberAccessor();
         accessor.set(MySQLComStmtExecuteExecutor.class.getDeclaredField("databaseCommunicationEngine"), mysqlComStmtExecuteExecutor, databaseCommunicationEngine);
@@ -121,8 +124,9 @@ public final class MySQLComStmtExecuteExecutorTest extends ProxyContextRestorer 
     public void assertIsUpdateResponse() throws NoSuchFieldException, SQLException, IllegalAccessException {
         when(connectionSession.getDatabaseName()).thenReturn("logic_db");
         when(connectionSession.getDefaultDatabaseName()).thenReturn("logic_db");
-        MySQLComStmtExecutePacket packet = mock(MySQLComStmtExecutePacket.class);
+        MySQLComStmtExecutePacket packet = mock(MySQLComStmtExecutePacket.class, RETURNS_DEEP_STUBS);
         when(packet.getSql()).thenReturn("SELECT 1");
+        when(packet.getPreparedStatement().getSqlStatement()).thenReturn(prepareSQLStatement());
         MySQLComStmtExecuteExecutor mysqlComStmtExecuteExecutor = new MySQLComStmtExecuteExecutor(packet, connectionSession);
         MemberAccessor accessor = Plugins.getMemberAccessor();
         accessor.set(MySQLComStmtExecuteExecutor.class.getDeclaredField("databaseCommunicationEngine"), mysqlComStmtExecuteExecutor, databaseCommunicationEngine);
@@ -131,12 +135,19 @@ public final class MySQLComStmtExecuteExecutorTest extends ProxyContextRestorer 
         assertThat(mysqlComStmtExecuteExecutor.getResponseType(), is(ResponseType.UPDATE));
     }
     
+    private MySQLSelectStatement prepareSQLStatement() {
+        MySQLSelectStatement sqlStatement = new MySQLSelectStatement();
+        sqlStatement.setProjections(new ProjectionsSegment(0, 0));
+        return sqlStatement;
+    }
+    
     @Test
     public void assertExecutePreparedCommit() throws SQLException, NoSuchFieldException, IllegalAccessException {
         when(connectionSession.getDatabaseName()).thenReturn("logic_db");
         when(connectionSession.getDefaultDatabaseName()).thenReturn("logic_db");
-        MySQLComStmtExecutePacket packet = mock(MySQLComStmtExecutePacket.class);
+        MySQLComStmtExecutePacket packet = mock(MySQLComStmtExecutePacket.class, RETURNS_DEEP_STUBS);
         when(packet.getSql()).thenReturn("commit");
+        when(packet.getPreparedStatement().getSqlStatement()).thenReturn(new MySQLCommitStatement());
         MySQLComStmtExecuteExecutor mysqlComStmtExecuteExecutor = new MySQLComStmtExecuteExecutor(packet, connectionSession);
         TextProtocolBackendHandler textProtocolBackendHandler = mock(TextProtocolBackendHandler.class);
         MemberAccessor accessor = Plugins.getMemberAccessor();

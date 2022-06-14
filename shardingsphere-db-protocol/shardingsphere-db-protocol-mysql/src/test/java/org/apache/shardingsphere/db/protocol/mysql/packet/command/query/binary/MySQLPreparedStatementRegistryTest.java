@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary;
 
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,30 +39,36 @@ public final class MySQLPreparedStatementRegistryTest {
     
     @Test
     public void assertRegisterIfAbsent() {
-        assertThat(MySQLPreparedStatementRegistry.getInstance().getConnectionPreparedStatements(CONNECTION_ID).prepareStatement(SQL, 1), is(1));
+        assertThat(MySQLPreparedStatementRegistry.getInstance().getConnectionPreparedStatements(CONNECTION_ID).prepareStatement(SQL, prepareSQLStatement()), is(1));
         MySQLPreparedStatement actual = MySQLPreparedStatementRegistry.getInstance().getConnectionPreparedStatements(CONNECTION_ID).get(1);
         assertThat(actual.getSql(), is(SQL));
-        assertThat(actual.getParameterCount(), is(1));
+        assertThat(actual.getSqlStatement().getParameterCount(), is(1));
     }
     
     @Test
     public void assertPrepareSameSQL() {
-        assertThat(MySQLPreparedStatementRegistry.getInstance().getConnectionPreparedStatements(CONNECTION_ID).prepareStatement(SQL, 1), is(1));
-        assertThat(MySQLPreparedStatementRegistry.getInstance().getConnectionPreparedStatements(CONNECTION_ID).prepareStatement(SQL, 1), is(2));
+        assertThat(MySQLPreparedStatementRegistry.getInstance().getConnectionPreparedStatements(CONNECTION_ID).prepareStatement(SQL, prepareSQLStatement()), is(1));
+        assertThat(MySQLPreparedStatementRegistry.getInstance().getConnectionPreparedStatements(CONNECTION_ID).prepareStatement(SQL, prepareSQLStatement()), is(2));
         MySQLPreparedStatement actual = MySQLPreparedStatementRegistry.getInstance().getConnectionPreparedStatements(CONNECTION_ID).get(1);
         assertThat(actual.getSql(), is(SQL));
-        assertThat(actual.getParameterCount(), is(1));
+        assertThat(actual.getSqlStatement().getParameterCount(), is(1));
         actual = MySQLPreparedStatementRegistry.getInstance().getConnectionPreparedStatements(CONNECTION_ID).get(1);
         assertThat(actual.getSql(), is(SQL));
-        assertThat(actual.getParameterCount(), is(1));
+        assertThat(actual.getSqlStatement().getParameterCount(), is(1));
     }
     
     @Test
     public void assertCloseStatement() {
-        MySQLPreparedStatementRegistry.getInstance().getConnectionPreparedStatements(CONNECTION_ID).prepareStatement(SQL, 1);
+        MySQLPreparedStatementRegistry.getInstance().getConnectionPreparedStatements(CONNECTION_ID).prepareStatement(SQL, prepareSQLStatement());
         MySQLPreparedStatementRegistry.getInstance().getConnectionPreparedStatements(CONNECTION_ID).closeStatement(1);
         MySQLPreparedStatement actual = MySQLPreparedStatementRegistry.getInstance().getConnectionPreparedStatements(CONNECTION_ID).get(1);
         assertNull(actual);
+    }
+    
+    private MySQLSelectStatement prepareSQLStatement() {
+        MySQLSelectStatement result = new MySQLSelectStatement();
+        result.setParameterCount(1);
+        return result;
     }
     
     @After
