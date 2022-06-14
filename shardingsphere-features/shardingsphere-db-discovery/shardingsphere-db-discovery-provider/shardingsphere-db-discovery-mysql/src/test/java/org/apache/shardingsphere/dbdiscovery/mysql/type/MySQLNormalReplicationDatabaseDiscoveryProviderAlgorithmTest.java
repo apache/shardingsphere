@@ -19,9 +19,11 @@ package org.apache.shardingsphere.dbdiscovery.mysql.type;
 
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
 import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
+import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
@@ -38,7 +40,7 @@ public final class MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithmTest 
     
     @Test
     public void assertCheckEnvironment() throws SQLException {
-        new MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm().checkEnvironment("foo_db", Collections.singletonList(mockDataSourceForReplicationInstances()));
+        new MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm().checkEnvironment("foo_db", Collections.singleton(mockDataSourceForReplicationInstances()));
     }
     
     @Test
@@ -47,25 +49,16 @@ public final class MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithmTest 
     }
     
     private DataSource mockDataSourceForReplicationInstances() throws SQLException {
-        DataSource result = mock(DataSource.class, RETURNS_DEEP_STUBS);
         ResultSet resultSet = mock(ResultSet.class);
-        when(result.getConnection().createStatement().executeQuery("SHOW SLAVE HOSTS")).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true, false);
         when(resultSet.getString("Host")).thenReturn("127.0.0.1");
         when(resultSet.getString("Port")).thenReturn("3306");
-        when(result.getConnection().getMetaData().getURL()).thenReturn("jdbc:mysql://127.0.0.1:3306/foo_ds");
-        return result;
+        Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
+        when(connection.createStatement().executeQuery("SHOW SLAVE HOSTS")).thenReturn(resultSet);
+        when(connection.getMetaData().getURL()).thenReturn("jdbc:mysql://127.0.0.1:3306/foo_ds");
+        return new MockedDataSource(connection);
     }
-
-    private DataSource mockDataSourceForReplicaStatus() throws SQLException {
-        DataSource result = mock(DataSource.class, RETURNS_DEEP_STUBS);
-        ResultSet resultSet = mock(ResultSet.class);
-        when(result.getConnection().createStatement().executeQuery("SHOW SLAVE STATUS")).thenReturn(resultSet);
-        when(resultSet.next()).thenReturn(true, false);
-        when(resultSet.getLong("Seconds_Behind_Master")).thenReturn(10L);
-        return result;
-    }
-
+    
     @Test
     public void assertLoadReplicaStatus() throws SQLException {
         Properties props = new Properties();
@@ -76,5 +69,14 @@ public final class MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithmTest 
         ReplicaDataSourceStatus actual = algorithm.loadReplicaStatus(dataSource);
         assertTrue(actual.isOnline());
         assertThat(actual.getReplicationDelayMilliseconds(), is(10000L));
+    }
+    
+    private DataSource mockDataSourceForReplicaStatus() throws SQLException {
+        ResultSet resultSet = mock(ResultSet.class);
+        when(resultSet.next()).thenReturn(true, false);
+        when(resultSet.getLong("Seconds_Behind_Master")).thenReturn(10L);
+        Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
+        when(connection.createStatement().executeQuery("SHOW SLAVE STATUS")).thenReturn(resultSet);
+        return new MockedDataSource(connection);
     }
 }
