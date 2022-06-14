@@ -24,18 +24,15 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.locks.Lock;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class CuratorZookeeperRepositoryMockedServerTest {
+public final class ZookeeperDistributedLockRepositoryTest {
     
     private static final CuratorZookeeperRepository REPOSITORY = new CuratorZookeeperRepository();
     
@@ -55,49 +52,6 @@ public final class CuratorZookeeperRepositoryMockedServerTest {
         properties.put("timeToLiveSeconds", 60);
         properties.put("operationTimeoutMilliseconds", 500);
         return new ClusterPersistRepositoryConfiguration("Cluster", "governance_ds", "localhost:2181", properties);
-    }
-    
-    @Test
-    public void assertGet() {
-        assertNull(REPOSITORY.get("/test/get"));
-    }
-    
-    @Test
-    public void assertGetChildrenKeys() {
-        REPOSITORY.persist("/test/children_key1", "127.0.0.1");
-        REPOSITORY.persist("/test/children_key2", "127.0.0.1");
-        REPOSITORY.persist("/test/children_key3", "127.0.0.1");
-        List<String> childrenKeys = REPOSITORY.getChildrenKeys("/test");
-        assertThat(childrenKeys.size(), is(3));
-        Iterator<String> iterator = childrenKeys.iterator();
-        assertThat(iterator.next(), is("children_key3"));
-        assertThat(iterator.next(), is("children_key2"));
-        assertThat(iterator.next(), is("children_key1"));
-    }
-    
-    @Test
-    public void assertPersist() {
-        String key = "/test/persist";
-        REPOSITORY.persist(key, "127.0.0.1");
-        assertThat(REPOSITORY.get(key), is("127.0.0.1"));
-    }
-    
-    @Test
-    public void assertPersistEphemeral() {
-        String key = "/test/ephemeral_key";
-        REPOSITORY.persistEphemeral(key, "127.0.0.1");
-        assertThat(REPOSITORY.get(key), is("127.0.0.1"));
-        REPOSITORY.delete(key);
-        assertNull(REPOSITORY.get(key));
-    }
-    
-    @Test
-    public void assertGetSequentialId() {
-        String key = "/sequential/sequential_id";
-        String sequentialIdStr = REPOSITORY.getSequentialId(key, "127.0.0.1");
-        assertNotNull(sequentialIdStr);
-        Long sequentialId = Long.valueOf(sequentialIdStr);
-        assertThat(sequentialId, is(0L));
     }
     
     @Test
