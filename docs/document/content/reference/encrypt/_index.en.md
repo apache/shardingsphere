@@ -40,7 +40,7 @@ Users can also implement a set of encryption/decryption algorithms by implementi
 
 **Encryption Table Configuration**：Show the ShardingSphere data table which column is used to store cipher column data (cipherColumn), 
 what algorithm is used to encryption/decryption (encryptorName), which column is used to store assisted query data (assistedQueryColumn),
-what algorithm is used to encrypt/decrypt assisted query data (assistedQueryColumn),  which column is used to store plain text data (plainColumn), 
+what algorithm is used to encrypt/decrypt assisted query data (assistedQueryEncryptorName),  which column is used to store plain text data (plainColumn), 
 and which column users want to use for SQL writing (logicColumn)
 
 > How to understand `Which column do users want to use to write SQL (logicColumn)`?
