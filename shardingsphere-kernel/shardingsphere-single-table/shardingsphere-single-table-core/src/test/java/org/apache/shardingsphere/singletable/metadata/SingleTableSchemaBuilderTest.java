@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.singletable.metadata;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -28,6 +27,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
+import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
@@ -65,25 +65,22 @@ public final class SingleTableSchemaBuilderTest {
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private DatabaseType databaseType;
     
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private DataSource dataSource;
-    
     @Test
     public void assertBuildOfSingleTables() throws SQLException {
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
-        when(dataSource.getConnection()).thenReturn(connection);
-        Collection<ShardingSphereRule> rules = Collections.singletonList(mockSingleTableRuleLoad(connection));
+        when(connection.getMetaData().getURL()).thenReturn("jdbc:h2:mem:db");
+        DataSource dataSource = new MockedDataSource(connection);
+        Collection<ShardingSphereRule> rules = Collections.singleton(mockSingleTableRuleLoad(dataSource, connection));
         mockSQLLoad(connection);
-        GenericSchemaBuilderMaterials materials = new GenericSchemaBuilderMaterials(databaseType, databaseType,
-                Collections.singletonMap(DefaultDatabase.LOGIC_NAME, dataSource), rules, new ConfigurationProperties(new Properties()), DefaultDatabase.LOGIC_NAME);
+        GenericSchemaBuilderMaterials materials = new GenericSchemaBuilderMaterials(
+                databaseType, databaseType, Collections.singletonMap(DefaultDatabase.LOGIC_NAME, dataSource), rules, new ConfigurationProperties(new Properties()), DefaultDatabase.LOGIC_NAME);
         Map<String, ShardingSphereSchema> actual = GenericSchemaBuilder.build(Arrays.asList(singleTableNames), materials);
         assertThat(actual.size(), is(1));
         assertThat(actual.values().iterator().next().getTables().size(), is(2));
         assertActualOfSingleTables(actual.values().iterator().next().getTables().values());
     }
     
-    @SneakyThrows(SQLException.class)
-    private void mockSQLLoad(final Connection connection) {
+    private void mockSQLLoad(final Connection connection) throws SQLException {
         when(databaseType.formatTableNamePattern("single_table1")).thenReturn("single_table1");
         when(databaseType.getQuoteCharacter().wrap("single_table1")).thenReturn("single_table1");
         when(databaseType.formatTableNamePattern("single_table2")).thenReturn("single_table2");
@@ -108,18 +105,17 @@ public final class SingleTableSchemaBuilderTest {
         when(connection.getMetaData().getColumns(any(), any(), eq("single_table2"), eq("%"))).thenReturn(column2);
     }
     
-    @SneakyThrows(SQLException.class)
-    private SingleTableRule mockSingleTableRuleLoad(final Connection connection) {
+    private SingleTableRule mockSingleTableRuleLoad(final DataSource dataSource, final Connection connection) throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
         when(connection.getMetaData().getTables(any(), any(), eq(null), any())).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true, true, true, true, true, true, false);
         when(resultSet.getString(TABLE_NAME)).thenReturn(singleTableNames[0], singleTableNames[1]);
-        return new SingleTableRule(new SingleTableRuleConfiguration(), DefaultDatabase.LOGIC_NAME, databaseType, Collections.singletonMap("logic_db", dataSource),
-                Collections.emptyList(), new ConfigurationProperties(new Properties()));
+        return new SingleTableRule(new SingleTableRuleConfiguration(),
+                DefaultDatabase.LOGIC_NAME, Collections.singletonMap("logic_db", dataSource), Collections.emptyList(), new ConfigurationProperties(new Properties()));
     }
     
     private void assertActualOfSingleTables(final Collection<ShardingSphereTable> actual) {
-        Map<String, ShardingSphereTable> tables = actual.stream().collect(Collectors.toMap(ShardingSphereTable::getName, v -> v));
+        Map<String, ShardingSphereTable> tables = actual.stream().collect(Collectors.toMap(ShardingSphereTable::getName, value -> value));
         assertTrue(tables.containsKey(singleTableNames[0]));
         assertFalse(tables.get(singleTableNames[0]).getColumns().isEmpty());
         assertTrue(tables.containsKey(singleTableNames[1]));
