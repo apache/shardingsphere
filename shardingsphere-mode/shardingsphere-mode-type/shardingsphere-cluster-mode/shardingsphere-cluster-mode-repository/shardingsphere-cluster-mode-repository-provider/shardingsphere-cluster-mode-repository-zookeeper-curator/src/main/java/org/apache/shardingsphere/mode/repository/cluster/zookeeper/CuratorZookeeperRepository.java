@@ -228,9 +228,9 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     
     @Override
     public void watch(final String key, final DataChangedEventListener listener) {
-        if (!caches.containsKey(key)) {
-            CuratorCache curatorCache = CuratorCache.build(client, key);
-            start(curatorCache);
+        CuratorCache curatorCache = caches.get(key);
+        if (null == curatorCache) {
+            curatorCache = CuratorCache.build(client, key);
             caches.put(key, curatorCache);
         }
         CuratorCacheListener curatorCacheListener = CuratorCacheListener.builder()
@@ -242,6 +242,7 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
                     }
                 }).build();
         caches.get(key).listenable().addListener(curatorCacheListener);
+        start(curatorCache);
     }
     
     private void start(final CuratorCache cache) {
