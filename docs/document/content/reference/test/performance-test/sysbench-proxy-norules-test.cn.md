@@ -113,7 +113,7 @@ SQL statistics:
         other:                           27943700                       # 其他操作总数 (COMMIT 等)
         total:                           27943700                       # 全部总数
     transactions:                        1397185 (11638.59 per sec.)    # 总事务数 ( 每秒事务数 )
-    queries:                             27943700 (232771.76 per sec.)  # 读总数 ( 每秒读次数 )
+    queries:                             27943700 (232771.76 per sec.)  # 执行语句总数 ( 每秒执行语句次数 )
     ignored errors:                      0      (0.00 per sec.)         # 忽略错误数 ( 每秒忽略错误数 )
     reconnects:                          0      (0.00 per sec.)         # 重连次数 ( 每秒重连次数 )
 
