@@ -174,23 +174,19 @@ public final class ProjectionEngineTest {
         when(schema.getAllColumnNames("t_order")).thenReturn(Arrays.asList("order_id", "customer_id"));
         SimpleTableSegment customersTableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_customer")));
         when(schema.getAllColumnNames("t_customer")).thenReturn(Collections.singletonList("customer_id"));
-        
         JoinTableSegment table = new JoinTableSegment();
         table.setLeft(ordersTableSegment);
         table.setRight(customersTableSegment);
         table.setCondition(new CommonExpressionSegment(0, 0, "t_order.customer_id=t_customer.customer_id"));
-        
         ShorthandProjectionSegment shorthandProjectionSegment = new ShorthandProjectionSegment(0, 10);
-        Optional<Projection> actual = new ProjectionEngine(DefaultDatabase.LOGIC_NAME, Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema), databaseType)
-                .createProjection(table, shorthandProjectionSegment);
-        
+        Optional<Projection> actual = new ProjectionEngine(
+                DefaultDatabase.LOGIC_NAME, Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema), databaseType).createProjection(table, shorthandProjectionSegment);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(ShorthandProjection.class));
-        assertThat(((ShorthandProjection) actual.get()).getActualColumns().size(), is(3));
-        Map<String, ColumnProjection> actualColumns = new LinkedHashMap<>();
-        actualColumns.put("t_order.order_id", new ColumnProjection("t_order", "order_id", null));
-        actualColumns.put("t_order.customer_id", new ColumnProjection("t_order", "customer_id", null));
-        actualColumns.put("t_customer.customer_id", new ColumnProjection("t_customer", "customer_id", null));
-        assertThat(((ShorthandProjection) actual.get()).getActualColumns(), is(actualColumns));
+        Map<String, ColumnProjection> actualColumns = ((ShorthandProjection) actual.get()).getActualColumns();
+        assertThat(actualColumns.size(), is(3));
+        assertThat(actualColumns.get("t_order.order_id"), is(new ColumnProjection("t_order", "order_id", null)));
+        assertThat(actualColumns.get("t_order.customer_id"), is(new ColumnProjection("t_order", "customer_id", null)));
+        assertThat(actualColumns.get("t_customer.customer_id"), is(new ColumnProjection("t_customer", "customer_id", null)));
     }
 }
