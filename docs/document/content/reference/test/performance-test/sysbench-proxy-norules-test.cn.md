@@ -66,12 +66,12 @@ dataSources:
   ds_0:
     url: jdbc:mysql://***.***.***.***:****/test?serverTimezone=UTC&useSSL=false # 参数可适当调整
     username: test
-    password: 
+    password:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 200 # 最大链接池设为 ${压测并发数} 与压测并发数保持一致，屏蔽压测过程中额外的链接带来的影响
-    minPoolSize: 200 # 最小链接池设为 ${压测并发数} 与压测并发数保持一致，屏蔽压测过程中初始化链接带来的影响 
+    minPoolSize: 200 # 最小链接池设为 ${压测并发数} 与压测并发数保持一致，屏蔽压测过程中初始化链接带来的影响
 
 rules: []
 
@@ -82,14 +82,14 @@ rules: []
 ### 环境准备
 
 ```shell
-sysbench oltp_read_write --mysql-host='${DB_IP}' --mysql-port=${DB_PORT} --mysql-user=${USER} --mysql-password='${PASSWD}' --mysql-db=test --tables=10 --table-size=1000000 --report-interval=10 --time=100 --threads=200  cleanup
-sysbench oltp_read_write --mysql-host='${DB_IP}' --mysql-port=${DB_PORT} --mysql-user=${USER} --mysql-password='${PASSWD}' --mysql-db=test --tables=10 --table-size=1000000 --report-interval=10 --time=100 --threads=200  prepare
+sysbench oltp_read_write --mysql-host=${DB_IP} --mysql-port=${DB_PORT} --mysql-user=${USER} --mysql-password=${PASSWD} --mysql-db=test --tables=10 --table-size=1000000 --report-interval=10 --time=100 --threads=200  cleanup
+sysbench oltp_read_write --mysql-host=${DB_IP} --mysql-port=${DB_PORT} --mysql-user=${USER} --mysql-password=${PASSWD} --mysql-db=test --tables=10 --table-size=1000000 --report-interval=10 --time=100 --threads=200  prepare
 ```
 
 ### 压测命令
 
 ```shell
-sysbench oltp_read_write --mysql-host='${DB/PROXY_IP}' --mysql-port=${DB/PROXY_PORT} --mysql-user=${USER} --mysql-password='${PASSWD}' --mysql-db=test --tables=10 --table-size=1000000 --report-interval=10 --time=100 --threads=200  run
+sysbench oltp_read_write --mysql-host=${DB/PROXY_IP} --mysql-port=${DB/PROXY_PORT} --mysql-user=${USER} --mysql-password=${PASSWD} --mysql-db=test --tables=10 --table-size=1000000 --report-interval=10 --time=100 --threads=200  run
 ```
 
 ### 压测报告分析
@@ -97,38 +97,40 @@ sysbench oltp_read_write --mysql-host='${DB/PROXY_IP}' --mysql-port=${DB/PROXY_P
 ```shell
 sysbench 1.0.20 (using bundled LuaJIT 2.1.0-beta2)
 Running the test with following options:
-Number of threads: 16
+Number of threads: 200
 Report intermediate results every 10 second(s)
 Initializing random number generator from current time
 Initializing worker threads...
 Threads started!
 # 每 10 秒钟报告一次测试结果，tps、每秒读、每秒写、95% 以上的响应时长统计
-[ 10s ] thds: 16 tps: 21532.38 qps: 21532.38 (r/w/o: 21532.38/0.00/0.00) lat (ms,95%): 1.04 err/s: 0.00 reconn/s: 0.00
+[ 10s ] thds: 200 tps: 11161.70 qps: 223453.06 (r/w/o: 156451.76/44658.51/22342.80) lat (ms,95%): 27.17 err/s: 0.00 reconn/s: 0.00
 ...
-[ 60s ] thds: 16 tps: 21597.56 qps: 21597.56 (r/w/o: 21597.56/0.00/0.00) lat (ms,95%): 1.01 err/s: 0.00 reconn/s: 0.00
+[ 120s ] thds: 200 tps: 11731.00 qps: 234638.36 (r/w/o: 164251.67/46924.69/23462.00) lat (ms,95%): 24.38 err/s: 0.00 reconn/s: 0.00
 SQL statistics:
     queries performed:
-        read:                            1294886                        # 读总数
-        write:                           0                              # 写总数
-        other:                           0                              # 其他操作总数 (COMMIT 等)
-        total:                           1294886                        # 全部总数
-    transactions:                        1294886 (21579.74 per sec.)    # 总事务数 ( 每秒事务数 )
-    queries:                             1294886 (21579.74 per sec.)    # 读总数 ( 每秒读次数 )
+        read:                            19560590                       # 读总数     
+        write:                           5588740                        # 写总数
+        other:                           27943700                       # 其他操作总数 (COMMIT 等)
+        total:                           27943700                       # 全部总数
+    transactions:                        1397185 (11638.59 per sec.)    # 总事务数 ( 每秒事务数 )
+    queries:                             27943700 (232771.76 per sec.)  # 读总数 ( 每秒读次数 )
     ignored errors:                      0      (0.00 per sec.)         # 忽略错误数 ( 每秒忽略错误数 )
     reconnects:                          0      (0.00 per sec.)         # 重连次数 ( 每秒重连次数 )
+
 General statistics:
-    total time:                          60.0029s                       # 总共耗时
-    total number of events:              1294886                        # 总共发生多少事务数
+    total time:                          120.0463s                      # 总共耗时
+    total number of events:              1397185                        # 总共发生多少事务数
 
 Latency (ms):
-         min:                                    0.36                   # 最小延时 
-         avg:                                    0.74                   # 平均延时
-         max:                                    8.90                   # 最大延时
-         95th percentile:                        1.01                   # 超过 95% 平均耗时
-         sum:                               959137.19 
+         min:                                    5.37                   # 最小延时
+         avg:                                   17.13                   # 平均延时
+         max:                                  109.75                   # 最大延时
+         95th percentile:                       24.83                   # 超过 95% 平均耗时
+         sum:                             23999546.19
+
 Threads fairness:
-    events (avg/stddev):           80930.3750/440.48                    # 平均每线程完成 80930.3750 次 event，标准差为 440.48
-    execution time (avg/stddev):   59.9461/0.00                         # 每个线程平均耗时 59.9 秒，标准差为 0
+    events (avg/stddev):           6985.9250/34.74                      # 平均每线程完成 6985.9250 次 event，标准差为 34.74
+    execution time (avg/stddev):   119.9977/0.01                        # 每个线程平均耗时 119.9977 秒，标准差为 0.01
 
 ```
 
