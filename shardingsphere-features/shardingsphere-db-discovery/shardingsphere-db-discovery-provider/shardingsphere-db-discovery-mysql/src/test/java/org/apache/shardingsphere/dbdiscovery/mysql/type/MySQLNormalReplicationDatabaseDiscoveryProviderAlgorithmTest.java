@@ -73,6 +73,7 @@ public final class MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithmTest 
         DatabaseDiscoveryProviderAlgorithm algorithm = new MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm();
         algorithm.init(props);
         DataSource dataSource = mockDataSourceForReplicaStatus();
+
         ReplicaDataSourceStatus actual = algorithm.loadReplicaStatus(dataSource);
         assertTrue(actual.isOnline());
         assertThat(actual.getReplicationDelayMilliseconds(), is(10000L));
