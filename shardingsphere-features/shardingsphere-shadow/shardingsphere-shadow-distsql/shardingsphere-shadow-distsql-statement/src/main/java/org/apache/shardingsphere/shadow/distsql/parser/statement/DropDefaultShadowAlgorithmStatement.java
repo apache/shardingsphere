@@ -19,7 +19,6 @@ package org.apache.shardingsphere.shadow.distsql.parser.statement;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.subject.impl.ShadowSubjectSupplier;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRuleStatement;
 
 /**
@@ -27,7 +26,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRuleState
  */
 @RequiredArgsConstructor
 @Getter
-public final class DropDefaultShadowAlgorithmStatement extends DropRuleStatement implements ShadowSubjectSupplier {
+public final class DropDefaultShadowAlgorithmStatement extends DropRuleStatement {
     
     public DropDefaultShadowAlgorithmStatement(final boolean containsExistClause) {
         setContainsExistClause(containsExistClause);
