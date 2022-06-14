@@ -92,7 +92,7 @@ public final class TrafficEngineTest {
         when(strategyRule.getLabels()).thenReturn(Arrays.asList("OLTP", "OLAP"));
         TrafficLoadBalanceAlgorithm loadBalancer = mock(TrafficLoadBalanceAlgorithm.class);
         List<InstanceDefinition> instanceIds = mockComputeNodeInstances();
-        when(loadBalancer.getInstanceId("traffic", instanceIds)).thenReturn(new InstanceDefinition(InstanceType.PROXY, "127.0.0.1@3307"));
+        when(loadBalancer.getInstanceId("traffic", instanceIds)).thenReturn(new InstanceDefinition(InstanceType.PROXY, 3307, "127.0.0.1@3307"));
         when(strategyRule.getLoadBalancer()).thenReturn(loadBalancer);
         when(strategyRule.getName()).thenReturn("traffic");
         when(instanceContext.getComputeNodeInstances(InstanceType.PROXY, Arrays.asList("OLTP", "OLAP"))).thenReturn(instanceIds);

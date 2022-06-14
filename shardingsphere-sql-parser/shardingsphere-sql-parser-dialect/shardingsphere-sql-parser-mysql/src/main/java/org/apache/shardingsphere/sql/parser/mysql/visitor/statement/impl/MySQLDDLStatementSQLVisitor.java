@@ -488,7 +488,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
             result.setConstraintName((ConstraintSegment) visit(ctx.constraintClause().constraintName()));
         }
         if (null != ctx.KEY() && null != ctx.PRIMARY()) {
-            result.getPrimaryKeyColumns().addAll(getKeyColumnsFromKeyListWithExpression(ctx.keyListWithExpression()));
+            result.getPrimaryKeyColumns().addAll(((CollectionValue) visit(ctx.keyListWithExpression())).getValue());
             return result;
         }
         if (null != ctx.FOREIGN()) {
@@ -496,7 +496,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
             return result;
         }
         if (null != ctx.UNIQUE()) {
-            result.getIndexColumns().addAll(getKeyColumnsFromKeyListWithExpression(ctx.keyListWithExpression()));
+            result.getIndexColumns().addAll(((CollectionValue) visit(ctx.keyListWithExpression())).getValue());
             if (null != ctx.indexName()) {
                 result.setIndexName((IndexSegment) visit(ctx.indexName()));
             }
@@ -505,18 +505,19 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         if (null != ctx.checkConstraint()) {
             return result;
         }
-        result.getIndexColumns().addAll(getKeyColumnsFromKeyListWithExpression(ctx.keyListWithExpression()));
+        result.getIndexColumns().addAll(((CollectionValue) visit(ctx.keyListWithExpression())).getValue());
         if (null != ctx.indexName()) {
             result.setIndexName((IndexSegment) visit(ctx.indexName()));
         }
         return result;
     }
     
-    private Collection<ColumnSegment> getKeyColumnsFromKeyListWithExpression(final KeyListWithExpressionContext ctx) {
-        Collection<ColumnSegment> result = new LinkedList<>();
+    @Override
+    public ASTNode visitKeyListWithExpression(final KeyListWithExpressionContext ctx) {
+        CollectionValue<ColumnSegment> result = new CollectionValue<>();
         for (KeyPartWithExpressionContext each : ctx.keyPartWithExpression()) {
             if (null != each.keyPart()) {
-                result.add((ColumnSegment) visit(each.keyPart().columnName()));
+                result.getValue().add((ColumnSegment) visit(each.keyPart().columnName()));
             }
         }
         return result;
@@ -559,6 +560,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         IndexNameSegment indexName = new IndexNameSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), new IdentifierValue(ctx.indexName().getText()));
         result.setIndex(new IndexSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), indexName));
+        result.setColumns(((CollectionValue) visit(ctx.keyListWithExpression())).getValue());
         return result;
     }
     

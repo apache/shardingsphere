@@ -43,28 +43,28 @@ import java.util.stream.Collectors;
 /**
  * Create traffic rule handler.
  */
-public final class CreateTrafficRuleHandler extends UpdatableRALBackendHandler<CreateTrafficRuleStatement, CreateTrafficRuleHandler> {
+public final class CreateTrafficRuleHandler extends UpdatableRALBackendHandler<CreateTrafficRuleStatement> {
     
     @Override
-    protected void update(final ContextManager contextManager, final CreateTrafficRuleStatement sqlStatement) throws DistSQLException {
+    protected void update(final ContextManager contextManager) throws DistSQLException {
         Optional<TrafficRuleConfiguration> trafficRuleConfig = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData()
                 .findRuleConfigurations(TrafficRuleConfiguration.class).stream().findAny();
         if (trafficRuleConfig.isPresent()) {
-            checkTrafficRuleConfiguration(sqlStatement, trafficRuleConfig.get());
+            checkTrafficRuleConfiguration(trafficRuleConfig.get());
         }
         checkInvalidAlgorithmNames();
-        updateToRepository(TrafficRuleConverter.convert(sqlStatement.getSegments()), trafficRuleConfig.orElse(null));
+        updateToRepository(TrafficRuleConverter.convert(getSqlStatement().getSegments()), trafficRuleConfig.orElse(null));
     }
     
-    private void checkTrafficRuleConfiguration(final CreateTrafficRuleStatement sqlStatement, final TrafficRuleConfiguration trafficRuleConfig) throws DistSQLException {
+    private void checkTrafficRuleConfiguration(final TrafficRuleConfiguration trafficRuleConfig) throws DistSQLException {
         Collection<String> currentRuleNames = trafficRuleConfig.getTrafficStrategies().stream().map(TrafficStrategyConfiguration::getName).collect(Collectors.toSet());
-        Set<String> duplicatedRuleNames = sqlStatement.getSegments().stream().map(TrafficRuleSegment::getName).filter(currentRuleNames::contains).collect(Collectors.toSet());
+        Set<String> duplicatedRuleNames = getSqlStatement().getSegments().stream().map(TrafficRuleSegment::getName).filter(currentRuleNames::contains).collect(Collectors.toSet());
         DistSQLException.predictionThrow(duplicatedRuleNames.isEmpty(), () -> new DuplicateRuleException("traffic", duplicatedRuleNames));
     }
     
     private void checkInvalidAlgorithmNames() throws DistSQLException {
         Collection<String> invalidAlgorithmNames = new LinkedList<>();
-        for (TrafficRuleSegment each : sqlStatement.getSegments()) {
+        for (TrafficRuleSegment each : getSqlStatement().getSegments()) {
             if (!TrafficAlgorithmFactory.contains(each.getAlgorithm().getName())) {
                 invalidAlgorithmNames.add(each.getAlgorithm().getName());
             }

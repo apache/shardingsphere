@@ -19,29 +19,19 @@ package org.apache.shardingsphere.infra.federation.optimizer;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.calcite.adapter.enumerable.EnumerableConvention;
-import org.apache.calcite.plan.Convention;
 import org.apache.calcite.plan.RelOptPlanner;
 import org.apache.calcite.plan.RelTraitSet;
-import org.apache.calcite.rel.RelCollation;
-import org.apache.calcite.rel.RelCollations;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.RelRoot;
-import org.apache.calcite.rel.core.Sort;
-import org.apache.calcite.rel.type.RelDataType;
-import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.calcite.tools.Programs;
-import org.apache.calcite.util.ImmutableIntList;
-import org.apache.calcite.util.Pair;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.converter.SQLNodeConverterEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 /**
  * ShardingSphere optimizer.
@@ -72,20 +62,7 @@ public final class ShardingSphereOptimizer {
     
     private RelNode optimize(final SqlToRelConverter converter, final RelRoot relRoot) {
         RelOptPlanner planner = converter.getCluster().getPlanner();
-        RelNode optimizedRelNode = planner.changeTraits(relRoot.rel, getDesiredTraitSet(converter.getCluster().traitSet(), EnumerableConvention.INSTANCE));
-        RelRoot optimizedRelRoot = createOptimizedRelRoot(optimizedRelNode, relRoot.validatedRowType);
-        return Programs.standard().run(planner, optimizedRelRoot.rel, optimizedRelRoot.rel.getTraitSet(), Collections.emptyList(), Collections.emptyList());
-    }
-    
-    // TODO replace to related convention
-    private RelTraitSet getDesiredTraitSet(final RelTraitSet relTraitSet, final Convention convention) {
-        return relTraitSet.replace(convention).simplify();
-    }
-    
-    private RelRoot createOptimizedRelRoot(final RelNode relNode, final RelDataType resultType) {
-        RelDataType rowType = relNode.getRowType();
-        List<Pair<Integer, String>> fields = Pair.zip(ImmutableIntList.identity(rowType.getFieldCount()), rowType.getFieldNames());
-        RelCollation collation = relNode instanceof Sort ? ((Sort) relNode).collation : RelCollations.EMPTY;
-        return new RelRoot(relNode, resultType, SqlKind.SELECT, fields, collation, new ArrayList<>());
+        RelTraitSet desiredTraitSet = relRoot.rel.getTraitSet().replace(EnumerableConvention.INSTANCE).simplify();
+        return Programs.standard().run(planner, relRoot.rel, desiredTraitSet, Collections.emptyList(), Collections.emptyList());
     }
 }

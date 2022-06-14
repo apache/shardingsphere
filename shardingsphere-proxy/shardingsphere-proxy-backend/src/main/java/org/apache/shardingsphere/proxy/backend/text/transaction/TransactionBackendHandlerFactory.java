@@ -56,7 +56,7 @@ public final class TransactionBackendHandlerFactory {
             return new TransactionBackendHandler(tclStatement, TransactionOperationType.BEGIN, connectionSession);
         }
         if (tclStatement instanceof SetAutoCommitStatement) {
-            return new TransactionAutoCommitHandler((SetAutoCommitStatement) tclStatement, connectionSession);
+            return new TransactionBackendHandler(tclStatement, TransactionOperationType.SET_AUTOCOMMIT, connectionSession);
         }
         if (tclStatement instanceof SavepointStatement) {
             return new TransactionBackendHandler(tclStatement, TransactionOperationType.SAVEPOINT, connectionSession);

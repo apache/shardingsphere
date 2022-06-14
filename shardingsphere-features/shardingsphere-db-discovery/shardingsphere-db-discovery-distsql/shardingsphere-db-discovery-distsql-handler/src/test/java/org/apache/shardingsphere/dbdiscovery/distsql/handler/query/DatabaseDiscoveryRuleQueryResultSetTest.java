@@ -20,9 +20,9 @@ package org.apache.shardingsphere.dbdiscovery.distsql.handler.query;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHeartBeatConfiguration;
-import org.apache.shardingsphere.dbdiscovery.distsql.handler.fixture.DatabaseDiscoveryRuleExportableFixture;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.ShowDatabaseDiscoveryRulesStatement;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryDataSourceRule;
+import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryRule;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -34,6 +34,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -46,30 +47,40 @@ import static org.mockito.Mockito.when;
 public final class DatabaseDiscoveryRuleQueryResultSetTest {
     
     @Test
-    public void assertGetRowData() {
+    public void assertInit() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.singleton(createRuleConfiguration()));
-        when(database.getRuleMetaData().getRules()).thenReturn(Collections.singleton(new DatabaseDiscoveryRuleExportableFixture()));
+        when(database.getRuleMetaData().findSingleRuleConfiguration(DatabaseDiscoveryRuleConfiguration.class)).thenReturn(Optional.of(createRuleConfiguration()));
+        DatabaseDiscoveryRule databaseDiscoveryRule = mock(DatabaseDiscoveryRule.class, RETURNS_DEEP_STUBS);
+        DatabaseDiscoveryDataSourceRule dataSourceRule = mock(DatabaseDiscoveryDataSourceRule.class);
+        when(dataSourceRule.getPrimaryDataSourceName()).thenReturn("ds_0");
+        when(databaseDiscoveryRule.getDataSourceRules()).thenReturn(Collections.singletonMap("ms_group", dataSourceRule));
+        when(database.getRuleMetaData().findSingleRule(DatabaseDiscoveryRule.class)).thenReturn(Optional.of(databaseDiscoveryRule));
         DistSQLResultSet resultSet = new DatabaseDiscoveryRuleQueryResultSet();
         resultSet.init(database, mock(ShowDatabaseDiscoveryRulesStatement.class));
-        Collection<String> columnNames = resultSet.getColumnNames();
-        List<Object> actual = new ArrayList<>(resultSet.getRowData());
-        assertThat(columnNames.size(), is(5));
-        assertTrue(columnNames.containsAll(Arrays.asList("group_name", "data_source_names", "primary_data_source_name", "discovery_type", "discovery_heartbeat")));
-        assertThat(actual.size(), is(5));
-        assertThat(actual.get(0), is("ms_group"));
-        assertThat(actual.get(1), is("ds_0,ds_1"));
-        assertThat(actual.get(2), is("ds_0"));
-        assertThat(actual.get(3).toString(), is("{name=type_test, type=MySQL.MGR, props={}}"));
-        assertThat(actual.get(4).toString(), is("{name=heartbeat_test, props={}}"));
+        assertColumns(resultSet.getColumnNames());
+        assertRowData(new ArrayList<>(resultSet.getRowData()));
     }
     
-    private RuleConfiguration createRuleConfiguration() {
+    private DatabaseDiscoveryRuleConfiguration createRuleConfiguration() {
         DatabaseDiscoveryDataSourceRuleConfiguration databaseDiscoveryDataSourceRuleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration(
                 "ms_group", Arrays.asList("ds_0", "ds_1"), "heartbeat_test", "type_test");
         ShardingSphereAlgorithmConfiguration shardingSphereAlgorithmConfig = new ShardingSphereAlgorithmConfiguration("MySQL.MGR", new Properties());
         Map<String, DatabaseDiscoveryHeartBeatConfiguration> discoveryHeartbeat = Collections.singletonMap("heartbeat_test", new DatabaseDiscoveryHeartBeatConfiguration(new Properties()));
         Map<String, ShardingSphereAlgorithmConfiguration> discoverTypes = Collections.singletonMap("type_test", shardingSphereAlgorithmConfig);
         return new DatabaseDiscoveryRuleConfiguration(Collections.singleton(databaseDiscoveryDataSourceRuleConfig), discoveryHeartbeat, discoverTypes);
+    }
+    
+    private void assertColumns(final Collection<String> actual) {
+        assertThat(actual.size(), is(5));
+        assertTrue(actual.containsAll(Arrays.asList("group_name", "data_source_names", "primary_data_source_name", "discovery_type", "discovery_heartbeat")));
+    }
+    
+    private void assertRowData(final List<Object> actual) {
+        assertThat(actual.size(), is(5));
+        assertThat(actual.get(0), is("ms_group"));
+        assertThat(actual.get(1), is("ds_0,ds_1"));
+        assertThat(actual.get(2), is("ds_0"));
+        assertThat(actual.get(3).toString(), is("{name=type_test, type=MySQL.MGR, props={}}"));
+        assertThat(actual.get(4).toString(), is("{name=heartbeat_test, props={}}"));
     }
 }

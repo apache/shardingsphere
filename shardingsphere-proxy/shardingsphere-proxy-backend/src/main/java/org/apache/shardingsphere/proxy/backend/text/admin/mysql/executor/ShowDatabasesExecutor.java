@@ -24,11 +24,12 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryRe
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultColumnMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultMetaData;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedResult;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminQueryExecutor;
-import org.apache.shardingsphere.sharding.merge.dal.common.SingleLocalDataMergedResult;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowDatabasesStatement;
 
@@ -37,6 +38,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Show databases executor.
@@ -51,17 +53,12 @@ public final class ShowDatabasesExecutor implements DatabaseAdminQueryExecutor {
     
     @Override
     public void execute(final ConnectionSession connectionSession) {
-        mergedResult = new SingleLocalDataMergedResult(getDatabaseNames(connectionSession));
+        mergedResult = new LocalDataMergedResult(getDatabaseNames(connectionSession));
     }
     
-    private Collection<Object> getDatabaseNames(final ConnectionSession connectionSession) {
-        Collection<Object> result = new LinkedList<>();
-        for (String each : ProxyContext.getInstance().getAllDatabaseNames()) {
-            if (checkLikePattern(each) && SQLCheckEngine.check(each, getRules(each), connectionSession.getGrantee())) {
-                result.add(each);
-            }
-        }
-        return result;
+    private Collection<LocalDataQueryResultRow> getDatabaseNames(final ConnectionSession connectionSession) {
+        return ProxyContext.getInstance().getAllDatabaseNames().stream()
+                .filter(each -> checkLikePattern(each) && SQLCheckEngine.check(each, getRules(each), connectionSession.getGrantee())).map(LocalDataQueryResultRow::new).collect(Collectors.toList());
     }
     
     private boolean checkLikePattern(final String databaseName) {

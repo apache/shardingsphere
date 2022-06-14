@@ -27,17 +27,17 @@ Apache ShardingSphere 会将用户请求的明文进行加密后存储到底层�
 
 **数据源配置**：指数据源配置。
 
-**加密算法配置**：指使用什么加密算法进行加解密。目前 ShardingSphere 内置了三种加解密算法：AES，MD5 和 RC4。用户还可以通过实现 ShardingSphere 提供的接口，自行实现一套加解密算法。
+**加密算法配置**：指使用什么加密算法进行加解密。目前 ShardingSphere 内置了五种加解密算法：AES，MD5，RC4，SM3 和 SM4。用户还可以通过实现 ShardingSphere 提供的接口，自行实现一套加解密算法。
 
-**加密表配置**：用于告诉 ShardingSphere 数据表里哪个列用于存储密文数据（cipherColumn）、哪个列用于存储明文数据（plainColumn）以及用户想使用哪个列进行 SQL 编写（logicColumn）。
+**加密表配置**：用于告诉 ShardingSphere 数据表里哪个列用于存储密文数据（cipherColumn）、使用什么算法加解密（encryptorName）、哪个列用于存储辅助查询数据（assistedQueryColumn）、使用什么算法加解密（assistedQueryEncryptorName）、哪个列用于存储明文数据（plainColumn）以及用户想使用哪个列进行 SQL 编写（logicColumn）。
 
 >  如何理解 `用户想使用哪个列进行 SQL 编写（logicColumn）`？
 >
-> 我们可以从加密模块存在的意义来理解。加密模块最终目的是希望屏蔽底层对数据的加密处理，也就是说我们不希望用户知道数据是如何被加解密的、如何将明文数据存储到 plainColumn，将密文数据存储到 cipherColumn。
-换句话说，我们不希望用户知道 plainColumn 和 cipherColumn 的存在和使用。
-所以，我们需要给用户提供一个概念意义上的列，这个列可以脱离底层数据库的真实列，它可以是数据库表里的一个真实列，也可以不是，从而使得用户可以随意改变底层数据库的 plainColumn 和 cipherColumn 的列名。
+> 我们可以从加密模块存在的意义来理解。加密模块最终目的是希望屏蔽底层对数据的加密处理，也就是说我们不希望用户知道数据是如何被加解密的、如何将明文数据存储到 plainColumn，将密文数据存储到 cipherColumn，将辅助查询数据存储到 assistedQueryColumn。
+换句话说，我们不希望用户知道 plainColumn、cipherColumn 和 assistedQueryColumn 的存在和使用。
+所以，我们需要给用户提供一个概念意义上的列，这个列可以脱离底层数据库的真实列，它可以是数据库表里的一个真实列，也可以不是，从而使得用户可以随意改变底层数据库的 plainColumn、cipherColumn 和 assistedQueryColumn 的列名。
 或者删除 plainColumn，选择永远不再存储明文，只存储密文。
-只要用户的 SQL 面向这个逻辑列进行编写，并在加密规则里给出 logicColumn 和 plainColumn、cipherColumn 之间正确的映射关系即可。
+只要用户的 SQL 面向这个逻辑列进行编写，并在加密规则里给出 logicColumn 和 plainColumn、cipherColumn、assistedQueryColumn 之间正确的映射关系即可。
 >
 > 为什么要这么做呢？答案在文章后面，即为了让已上线的业务能无缝、透明、安全地进行数据加密迁移。
 
@@ -45,7 +45,7 @@ Apache ShardingSphere 会将用户请求的明文进行加密后存储到底层�
 
 ### 加密处理过程
 
-举例说明，假如数据库里有一张表叫做 `t_user`，这张表里实际有两个字段 `pwd_plain`，用于存放明文数据、`pwd_cipher`，用于存放密文数据，同时定义 logicColumn 为 `pwd`。
+举例说明，假如数据库里有一张表叫做 `t_user`，这张表里实际有两个字段 `pwd_plain`，用于存放明文数据、`pwd_cipher`，用于存放密文数据、`pwd_assisted_query`，用于存放辅助查询数据，同时定义 logicColumn 为 `pwd`。
 那么，用户在编写 SQL 时应该面向 logicColumn 进行编写，即 `INSERT INTO t_user SET pwd = '123'`。
 Apache ShardingSphere 接收到该 SQL，通过用户提供的加密配置，发现 `pwd` 是 logicColumn，于是便对逻辑列及其对应的明文数据进行加密处理。
 **Apache ShardingSphere 将面向用户的逻辑列与面向底层数据库的明文列和密文列进行了列名以及数据的加密映射转换。** 
@@ -82,11 +82,14 @@ Apache ShardingSphere 接收到该 SQL，通过用户提供的加密配置，发
     t_user:
       columns:
         pwd:
-          cipherColumn: pwd
+          cipherColumn: pwd_cipher
           encryptorName: aes_encryptor
+          assistedQueryColumn: pwd_assisted_query
+          assistedQueryEncryptorName: pwd_assisted_query_cipher
+          queryWithCipherColumn: true
 ```
 
-使用这套配置， Apache ShardingSphere 只需将 logicColumn 和 cipherColumn 进行转换，底层数据表不存储明文，只存储了密文，这也是安全审计部分的要求所在。
+使用这套配置， Apache ShardingSphere 只需将 logicColumn 和 cipherColumn，assistedQueryColumn 进行转换，底层数据表不存储明文，只存储了密文，这也是安全审计部分的要求所在。
 如果用户希望将明文、密文一同存储到数据库，只需添加 plainColumn 配置即可。整体处理流程如下图所示：
 
 ![5](https://shardingsphere.apache.org/document/current/img/encrypt/5.png)
@@ -125,7 +128,9 @@ Apache ShardingSphere 接收到该 SQL，通过用户提供的加密配置，发
           plainColumn: pwd
           cipherColumn: pwd_cipher
           encryptorName: aes_encryptor
-  queryWithCipherColumn: false
+          assistedQueryColumn: pwd_assisted_query
+          assistedQueryEncryptorName: pwd_assisted_query_cipher
+          queryWithCipherColumn: false
 ```
 
 依据上述加密规则可知，首先需要在数据库表 `t_user` 里新增一个字段叫做 `pwd_cipher`，即 cipherColumn，用于存放密文数据，同时我们把 plainColumn 设置为 `pwd`，用于存放明文数据，而把 logicColumn 也设置为 `pwd`。
@@ -178,11 +183,19 @@ Apache ShardingSphere 接收到该 SQL，通过用户提供的加密配置，发
         pwd: # pwd 与 pwd_cipher 的转换映射
           cipherColumn: pwd_cipher
           encryptorName: aes_encryptor
+          assistedQueryColumn: pwd_assisted_query
+          assistedQueryEncryptorName: pwd_assisted_query_cipher
+          queryWithCipherColumn: true
 ```
 
 其处理流程如下：
 
 ![8](https://shardingsphere.apache.org/document/current/img/encrypt/8.png)
+
+4. 系统迁移完成 
+安全审计部门再要求，业务系统需要定期或某些紧急安全事件触发修改密钥，我们需要再次进行迁移洗数，即使用旧密钥解密后再使用新密钥加密。既要又要还要的问题来了，明文列数据已删除，数据库表中数据量千万级，迁移洗数需要一定时间，迁移洗数过程中密文列在变化，系统还需正确提供服务。怎么办？
+答案是：辅助查询列
+**因为辅助查询列一般使用不可逆的 MD5 和 SM3 等算法，基于辅助列进行查询，即使在迁移洗数过程中，系统也是可以提供正确服务。
 
 至此，已在线业务加密整改解决方案全部叙述完毕。我们提供了 Java、YAML、Spring Boot Starter、Spring 命名空间多种方式供用户选择接入，力求满足业务不同的接入需求。
 该解决方案目前已在京东数科不断落地上线，提供对内基础服务支撑。
@@ -197,7 +210,7 @@ Apache ShardingSphere 接收到该 SQL，通过用户提供的加密配置，发
 
 ## 加密算法解析
 
-Apache ShardingSphere 提供了两种加密算法用于数据加密，这两种策略分别对应 Apache ShardingSphere 的两种加解密的接口，即 `EncryptAlgorithm` 和 `QueryAssistedEncryptAlgorithm`。
+Apache ShardingSphere 提供了加密算法用于数据加密，即 `EncryptAlgorithm`。
 
 一方面，Apache ShardingSphere 为用户提供了内置的加解密实现类，用户只需进行配置即可使用；
 另一方面，为了满足用户不同场景的需求，我们还开放了相关加解密接口，用户可依据这两种类型的接口提供具体实现类。
@@ -210,21 +223,3 @@ Apache ShardingSphere 提供了两种加密算法用于数据加密，这两种�
 而在 `SELECT` 时，则调用 `decrypt()` 方法将从数据库中取出的加密数据进行逆向解密，最终将原始数据返回给用户。
 
 当前，Apache ShardingSphere 针对这种类型的加密解决方案提供了五种具体实现类，分别是 MD5（不可逆），AES（可逆），RC4（可逆），SM3（不可逆），SM4（可逆），用户只需配置即可使用这五种内置的方案。
-
-### QueryAssistedEncryptAlgorithm
-
-相比较于第一种加密方案，该方案更为安全和复杂。它的理念是：即使是相同的数据，如两个用户的密码相同，它们在数据库里存储的加密数据也应当是不一样的。这种理念更有利于保护用户信息，防止撞库成功。
-
-它提供三种函数进行实现，分别是 `encrypt()`，`decrypt()`，`queryAssistedEncrypt()`。在 `encrypt()` 阶段，用户通过设置某个变动种子，例如时间戳。
-针对原始数据+变动种子组合的内容进行加密，就能保证即使原始数据相同，也因为有变动种子的存在，致使加密后的加密数据是不一样的。在 `decrypt()` 可依据之前规定的加密算法，利用种子数据进行解密。
-
-虽然这种方式确实可以增加数据的保密性，但是另一个问题却随之出现：相同的数据在数据库里存储的内容是不一样的，那么当用户按照这个加密列进行等值查询（`SELECT FROM table WHERE encryptedColumnn = ?`）时会发现无法将所有相同的原始数据查询出来。
-为此，我们提出了辅助查询列的概念。
-该辅助查询列通过 `queryAssistedEncrypt()` 生成，与 `decrypt()` 不同的是，该方法通过对原始数据进行另一种方式的加密，但是针对原始数据相同的数据，这种加密方式产生的加密数据是一致的。
-将 `queryAssistedEncrypt()` 后的数据存储到数据中用于辅助查询真实数据。因此，数据库表中多出这一个辅助查询列。
-
-由于 `queryAssistedEncrypt()` 和 `encrypt()` 产生不同加密数据进行存储，而 `decrypt()` 可逆，`queryAssistedEncrypt()` 不可逆。
-在查询原始数据的时候，我们会自动对SQL进行解析、改写、路由，利用辅助查询列进行 `WHERE` 条件的查询，却利用 `decrypt()` 对 `encrypt()` 加密后的数据进行解密，并将原始数据返回给用户。
-这一切都是对用户透明化的。
-
-当前，Apache ShardingSphere 针对这种类型的加密解决方案并没有提供具体实现类，却将该理念抽象成接口，提供给用户自行实现。ShardingSphere 将调用用户提供的该方案的具体实现类进行数据加密。

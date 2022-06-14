@@ -2497,3 +2497,11 @@ createRestorePoint
       (AS OF (TIMESTAMP | SCN) expr)?
       (PRESERVE | GUARANTEE FLASHBACK DATABASE)?
     ;
+
+dropRestorePoint
+    : DROP RESTORE POINT restorePointName (FOR PLUGGABLE DATABASE pdbName)?
+    ;
+    
+dropOperator
+    : DROP OPERATOR (schemaName DOT_)? operatorName FORCE?
+    ;

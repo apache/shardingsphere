@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.fixture.TestRuleConfiguration;
 import org.apache.shardingsphere.infra.fixture.TestShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.builder.fixture.FixtureSchemaRule;
+import org.apache.shardingsphere.infra.rule.builder.fixture.FixtureDatabaseRule;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -40,7 +40,7 @@ public final class DatabaseRulesBuilderTest {
         Iterator<ShardingSphereRule> actual = DatabaseRulesBuilder.build("schema_name",
                 new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.singleton(new TestRuleConfiguration())), new ConfigurationProperties(new Properties())).iterator();
         assertThat(actual.next(), instanceOf(TestShardingSphereRule.class));
-        assertThat(actual.next(), instanceOf(FixtureSchemaRule.class));
+        assertThat(actual.next(), instanceOf(FixtureDatabaseRule.class));
         assertFalse(actual.hasNext());
     }
 }

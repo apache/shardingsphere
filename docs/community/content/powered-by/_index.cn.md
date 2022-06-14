@@ -13,7 +13,7 @@ chapter = true
 
 ## 谁在使用 ShardingSphere?
 
-共计 207 家公司。
+共计 209 家公司。
 
 ### 基础软件
 <ul>
@@ -35,6 +35,7 @@ chapter = true
 <ul>
     <li><a href="https://www.bestpay.com.cn/" rel="nofollow">中国电信翼支付（甜橙金融）</a></li>
     <li><a href="https://www.kjtpay.com/" rel="nofollow">快捷通支付服务有限公司</a></li>
+    <li><a href="https://www.baofu.com/" rel="nofollow">宝付支付</a></li>
 </ul>
 
 ### 电信
@@ -73,6 +74,7 @@ chapter = true
     <li><a href="https://www.jd.ru/" rel="nofollow">京东商城俄文站</a></li>
     <li><a href="https://www.wandougongzhu.cn" rel="nofollow">豌豆公主</a></li>
     <li><a href="https://www.missfresh.cn/" rel="nofollow">每日优鲜</a></li>
+    <li><a href="http://www.ucreater.com/" rel="nofollow">由创科技</a></li>
 </ul>
 
 ### 新零售

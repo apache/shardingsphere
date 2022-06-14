@@ -45,13 +45,13 @@ public final class YamlProxyConfigurationSwapperTest {
     public void assertSwap() throws IOException {
         YamlProxyConfiguration yamlProxyConfig = ProxyConfigurationLoader.load("/conf/swap");
         ProxyConfiguration actual = new YamlProxyConfigurationSwapper().swap(yamlProxyConfig);
-        assertSchemaDataSources(actual);
-        assertSchemaRules(actual);
+        assertDataSources(actual);
+        assertDatabaseRules(actual);
         assertAuthorityRuleConfiguration(actual);
         assertProxyConfigurationProps(actual);
     }
     
-    private void assertSchemaDataSources(final ProxyConfiguration proxyConfig) {
+    private void assertDataSources(final ProxyConfiguration proxyConfig) {
         Map<String, DatabaseConfiguration> actual = proxyConfig.getDatabaseConfigurations();
         assertThat(actual.size(), is(1));
         HikariDataSource dataSource = (HikariDataSource) actual.get("swapper_test").getDataSources().get("foo_db");
@@ -66,7 +66,7 @@ public final class YamlProxyConfigurationSwapperTest {
         assertTrue(dataSource.isReadOnly());
     }
     
-    private void assertSchemaRules(final ProxyConfiguration proxyConfig) {
+    private void assertDatabaseRules(final ProxyConfiguration proxyConfig) {
         Map<String, DatabaseConfiguration> actual = proxyConfig.getDatabaseConfigurations();
         assertThat(actual.size(), is(1));
         Collection<RuleConfiguration> ruleConfigs = actual.get("swapper_test").getRuleConfigurations();
