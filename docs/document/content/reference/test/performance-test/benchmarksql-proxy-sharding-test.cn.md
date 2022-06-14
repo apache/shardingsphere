@@ -1,7 +1,11 @@
 +++
-title = "BenchmarkSQL 性能测试"
+title = "BenchmarkSQL ShardingSphere Proxy 分片性能测试"
 weight = 2
 +++
+
+## 测试目的
+
+使用 BenchmarkSQL 工具测试 ShardingSphere Proxy 的分片性能。
 
 ## 测试方法
 
