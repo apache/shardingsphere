@@ -3,429 +3,137 @@ title = "Sysbench 性能测试"
 weight = 1
 +++
 
-## 目标
+## 测试目的
 
-对 ShardingSphere-JDBC，ShardingSphere-Proxy 及 MySQL 进行性能对比。从业务角度考虑，在基本应用场景（单路由，主从+加密+分库分表，全路由）下，INSERT+UPDATE+DELETE 通常用作一个完整的关联操作，用于性能评估，而 SELECT 关注分片优化可用作性能评估的另一个操作；而主从模式下，可将 INSERT+SELECT+DELETE 作为一组评估性能的关联操作。
-为了更好的观察效果，设计在一定数据量的基础上，使用 jmeter 20 并发线程持续压测半小时，进行增删改查性能测试，且每台机器部署一个 MySQL 实例，而对比 MySQL 场景为单机单实例部署。
+对 ShardingSphere-Proxy 及 MySQL 进行性能对比
+1. sysbench 直接压测 MySQL 性能
+2. sysbench 压测 ShardingSphere-Proxy(底层透传 MySQL)
 
-## 测试场景
-
-### 单路由
-
-在 1000 数据量的基础上分库分表，根据 `id` 分为 4 个库，部署在同一台机器上，根据 `k` 分为 1024 个表，查询操作路由到单库单表；
-作为对比，MySQL 运行在 1000 数据量的基础上，使用 INSERT+UPDATE+DELETE 和单路由查询语句。
-
-### 主从
-
-基本主从场景，设置一主库一从库，部署在两台不同的机器上，在 10000 数据量的基础上，观察读写性能；
-作为对比，MySQL 运行在10000数据量的基础上，使用 INSERT+SELECT+DELETE 语句。
-
-### 主从+加密+分库分表
-
-在 1000 数据量的基础上，根据 `id` 分为 4 个库，部署在四台不同的机器上，根据 `k` 分为 1024 个表，`c` 使用 aes 加密，`pad` 使用 md5 加密，查询操作路由到单库单表；
-作为对比，MySQL 运行在 1000 数据量的基础上，使用 INSERT+UPDATE+DELETE 和单路由查询语句。
-
-### 全路由
-
-在 1000 数据量的基础上，分库分表，根据 `id` 分为 4 个库，部署在四台不同的机器上，根据 `k` 分为 1 个表，查询操作使用全路由。
-作为对比，MySQL 运行在 1000 数据量的基础上，使用 INSERT+UPDATE+DELETE 和全路由查询语句。
+基于以上两组实验，得到使用 ShardingSphere-Proxy 对于 MySQL 的损耗。
 
 ## 测试环境搭建
 
-### 数据库表结构
+### 服务器信息
 
-此处表结构参考 sysbench 的 sbtest 表。
+1. DB 相关配置：推荐内存大于压测的数据量，使得数据均在内存热块中，其余可自行调整；
+2. ShardingSphere-Proxy 相关配置：推荐使用高性能多核 CPU，其余可自行调整；
+3. 压测涉及服务器均关闭 swap 分区。
+
+### 数据库
 
 ```shell
-CREATE TABLE `tbl` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `k` int(11) NOT NULL DEFAULT 0,
-  `c` char(120) NOT NULL DEFAULT '',
-  `pad` char(60) NOT NULL DEFAULT '',
-  PRIMARY KEY (`id`)
-);
+[mysqld]
+innodb_buffer_pool_size=${MORE_THAN_DATA_SIZE}
+innodb-log-file-size=3000000000
+innodb-log-files-in-group=5
+innodb-flush-log-at-trx-commit=0
+innodb-change-buffer-max-size=40
+back_log=900
+innodb_max_dirty_pages_pct=75
+innodb_open_files=20480
+innodb_buffer_pool_instances=8
+innodb_page_cleaners=8
+innodb_purge_threads=2
+innodb_read_io_threads=8
+innodb_write_io_threads=8
+table_open_cache=102400
+log_timestamps=system
+thread_cache_size=16384
+transaction_isolation=READ-COMMITTED
+
+# 可参考进行适当调优，旨在放大底层 DB 性能，不让实验受制于 DB 性能瓶颈。
+
 ```
 
-### 测试场景配置
+### 压测工具
 
-ShardingSphere-JDBC 使用与 ShardingSphere-Proxy 一致的配置，MySQL 直连一个库用作性能对比，下面为四个场景的具体配置：
+可通过 [ sysbench ](https://github.com/akopytov/sysbench) 官网自行获取
 
-#### 单路由配置
+### ShardingSphere-Proxy
+
+#### bin/start.sh
+
+```shell
+ -Xmx16g -Xms16g -Xmn8g  # 调整 JVM 相关参数
+```
+
+#### config.yaml
 
 ```yaml
 schemaName: sharding_db
 
 dataSources:
   ds_0:
-    url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
+    url: jdbc:mysql://***.***.***.***:****/test?serverTimezone=UTC&useSSL=false # 参数可适当调整
     username: test
     password: 
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 200
-  ds_1:
-    url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
-    username: test
-    password: 
-    connectionTimeoutMilliseconds: 30000
-    idleTimeoutMilliseconds: 60000
-    maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 200
-  ds_2:
-    url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
-    username: test 
-    password: 
-    connectionTimeoutMilliseconds: 30000
-    idleTimeoutMilliseconds: 60000
-    maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 200
-  ds_3:
-    url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
-    username: test
-    password:
-    connectionTimeoutMilliseconds: 30000
-    idleTimeoutMilliseconds: 60000
-    maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 200
-rules:
-- !SHARDING
-  tables:
-    tbl:
-      actualDataNodes: ds_${0..3}.tbl${0..1023}
-      tableStrategy:
-        standard:
-          shardingColumn: k
-          shardingAlgorithmName: tbl_table_inline
-      keyGenerateStrategy:
-          column: id
-          keyGeneratorName: snowflake
-  defaultDatabaseStrategy:
-    standard:
-      shardingColumn: id
-      shardingAlgorithmName: default_db_inline
-  defaultTableStrategy:
-    none:
-  shardingAlgorithms:
-    tbl_table_inline:
-      type: INLINE
-      props:
-        algorithm-expression: tbl${k % 1024}
-    default_db_inline:
-      type: INLINE
-      props:
-        algorithm-expression: ds_${id % 4}
-  keyGenerators:
-    snowflake:
-      type: SNOWFLAKE
+    maxPoolSize: 200 # 最大链接池设为 ${压测并发数} 与压测并发数保持一致，屏蔽压测过程中额外的链接带来的影响
+    minPoolSize: 200 # 最小链接池设为 ${压测并发数} 与压测并发数保持一致，屏蔽压测过程中初始化链接带来的影响 
+
+rules: []
+
 ```
 
-#### 主从配置
+## 测试阶段
 
-```yaml
-schemaName: sharding_db
-
-dataSources:
-  primary_ds:
-    url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
-    username: test
-    password:
-    connectionTimeoutMilliseconds: 30000
-    idleTimeoutMilliseconds: 60000
-    maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 200
-  replica_ds_0:
-    url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
-    username: test
-    password:
-    connectionTimeoutMilliseconds: 30000
-    idleTimeoutMilliseconds: 60000
-    maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 200
-rules:
-- !READWRITE_SPLITTING
-  dataSources:
-    readwrite_ds:
-      type: Static
-      props:
-        write-data-source-name: primary_ds
-        read-data-source-names: replica_ds_0
-```
-
-#### 主从+加密+分库分表配置
-
-```yaml
-schemaName: sharding_db
-
-dataSources:
-  primary_ds_0:
-    url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
-    username: test
-    password:
-    connectionTimeoutMilliseconds: 30000
-    idleTimeoutMilliseconds: 60000
-    maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 200
-  replica_ds_0:
-    url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
-    username: test
-    password:
-    connectionTimeoutMilliseconds: 30000
-    idleTimeoutMilliseconds: 60000
-    maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 200
-  primary_ds_1:
-    url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
-    username: test
-    password:
-    connectionTimeoutMilliseconds: 30000
-    idleTimeoutMilliseconds: 60000
-    maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 200
-  replica_ds_1:
-    url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
-    username: test
-    password:
-    connectionTimeoutMilliseconds: 30000
-    idleTimeoutMilliseconds: 60000
-    maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 200
-  primary_ds_2:
-    url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
-    username: test
-    password:
-    connectionTimeoutMilliseconds: 30000
-    idleTimeoutMilliseconds: 60000
-    maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 200
-  replica_ds_2:
-    url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
-    username: test
-    password:
-    connectionTimeoutMilliseconds: 30000
-    idleTimeoutMilliseconds: 60000
-    maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 200
-  primary_ds_3:
-    url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
-    username: test
-    password:
-    connectionTimeoutMilliseconds: 30000
-    idleTimeoutMilliseconds: 60000
-    maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 200
-  replica_ds_3:
-    url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
-    username: test
-    password:
-    connectionTimeoutMilliseconds: 30000
-    idleTimeoutMilliseconds: 60000
-    maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 200
-rules:
-- !SHARDING
-  tables:
-    tbl:
-      actualDataNodes: readwrite_ds_${0..3}.tbl${0..1023}
-      databaseStrategy:
-        standard:
-          shardingColumn: id
-          shardingAlgorithmName: tbl_database_inline
-      tableStrategy:
-        standard:
-          shardingColumn: k
-          shardingAlgorithmName: tbl_table_inline
-      keyGenerateStrategy:
-        column: id
-        keyGeneratorName: snowflake
-  bindingTables:
-    - tbl
-  defaultDataSourceName: primary_ds_1
-  defaultTableStrategy:
-    none:
-  shardingAlgorithms:
-    tbl_database_inline:
-      type: INLINE
-      props:
-        algorithm-expression: readwrite_ds_${id % 4}
-    tbl_table_inline:
-      type: INLINE
-      props:
-        algorithm-expression: tbl${k % 1024}
-  keyGenerators:
-    snowflake:
-      type: SNOWFLAKE
-- !READWRITE_SPLITTING
-  dataSources:
-    readwrite_ds_0:
-      type: Static
-      props:
-        write-data-source-name: primary_ds_0
-        read-data-source-names: replica_ds_0
-    readwrite_ds_1:
-      type: Static
-      props:
-        write-data-source-name: primary_ds_1
-        read-data-source-names: replica_ds_1
-      loadBalancerName: round_robin
-    readwrite_ds_2:
-      type: Static
-      props:
-        write-data-source-name: primary_ds_2
-        read-data-source-names: replica_ds_2
-      loadBalancerName: round_robin
-    readwrite_ds_3:
-      type: Static
-      props:
-        write-data-source-name: primary_ds_3
-        read-data-source-names: replica_ds_3
-      loadBalancerName: round_robin
-  loadBalancers:
-    round_robin:
-      type: ROUND_ROBIN
-- !ENCRYPT:
-  encryptors:
-    aes_encryptor:
-      type: AES
-      props:
-        aes-key-value: 123456abc
-    md5_encryptor:
-      type: MD5
-  tables:
-    sbtest:
-      columns:
-        c:
-          plainColumn: c_plain
-          cipherColumn: c_cipher
-          encryptorName: aes_encryptor
-        pad:
-          cipherColumn: pad_cipher
-          encryptorName: md5_encryptor
-```
-
-#### 全路由
-
-```yaml
-schemaName: sharding_db
-
-dataSources:
-  ds_0:
-    url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
-    username: test
-    password:
-    connectionTimeoutMilliseconds: 30000
-    idleTimeoutMilliseconds: 60000
-    maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 200
-  ds_1:
-    url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
-    username: test
-    password:
-    connectionTimeoutMilliseconds: 30000
-    idleTimeoutMilliseconds: 60000
-    maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 200
-  ds_2:
-    url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
-    username: test
-    password:
-    connectionTimeoutMilliseconds: 30000
-    idleTimeoutMilliseconds: 60000
-    maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 200
-  ds_3:
-    url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
-    username: test
-    password:
-    connectionTimeoutMilliseconds: 30000
-    idleTimeoutMilliseconds: 60000
-    maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 200
-rules:
-- !SHARDING
-  tables:
-    tbl:
-      actualDataNodes: ds_${0..3}.tbl1
-      tableStrategy:
-        standard:
-          shardingColumn: k
-          shardingAlgorithmName: tbl_table_inline
-      keyGenerateStrategy:
-        column: id
-        keyGeneratorName: snowflake
-  defaultDatabaseStrategy:
-    standard:
-      shardingColumn: id
-      shardingAlgorithmName: default_database_inline
-  defaultTableStrategy:
-    none:  
-  shardingAlgorithms:
-    default_database_inline:
-      type: INLINE
-      props:
-        algorithm-expression: ds_${id % 4}
-    tbl_table_inline:
-      type: INLINE
-      props:
-        algorithm-expression: tbl1    
-  keyGenerators:
-    snowflake:
-      type: SNOWFLAKE
-```
-
-## 测试结果验证
-
-### 压测语句
+### 环境准备
 
 ```shell
-INSERT+UPDATE+DELETE 语句：
-INSERT INTO tbl(k, c, pad) VALUES(1, '###-###-###', '###-###');
-UPDATE tbl SET c='####-####-####', pad='####-####' WHERE id=?;
-DELETE FROM tbl WHERE id=?
-
-全路由查询语句：
-SELECT max(id) FROM tbl WHERE id%4=1
-
-单路由查询语句：
-SELECT id, k FROM tbl ignore index(`PRIMARY`) WHERE id=1 AND k=1
-
-INSERT+SELECT+DELETE 语句：
-INSERT INTO tbl1(k, c, pad) VALUES(1, '###-###-###', '###-###');
-SELECT count(id) FROM tbl1;
-SELECT max(id) FROM tbl1 ignore index(`PRIMARY`);
-DELETE FROM tbl1 WHERE id=?
+sysbench oltp_read_write --mysql-host='${DB_IP}' --mysql-port=${DB_PORT} --mysql-user=${USER} --mysql-password='${PASSWD}' --mysql-db=test --tables=10 --table-size=1000000 --report-interval=10 --time=100 --threads=200  cleanup
+sysbench oltp_read_write --mysql-host='${DB_IP}' --mysql-port=${DB_PORT} --mysql-user=${USER} --mysql-password='${PASSWD}' --mysql-db=test --tables=10 --table-size=1000000 --report-interval=10 --time=100 --threads=200  prepare
 ```
 
-### 压测类
-
-参考 [ shardingsphere-benchmark ](https://github.com/apache/shardingsphere-benchmark/tree/master/shardingsphere-benchmark) 实现，注意阅读其中的注释。
-
-### 编译
+### 压测命令
 
 ```shell
-git clone https://github.com/apache/shardingsphere-benchmark.git
-cd shardingsphere-benchmark/shardingsphere-benchmark
-mvn clean install
+sysbench oltp_read_write --mysql-host='${DB/PROXY_IP}' --mysql-port=${DB/PROXY_PORT} --mysql-user=${USER} --mysql-password='${PASSWD}' --mysql-db=test --tables=10 --table-size=1000000 --report-interval=10 --time=100 --threads=200  run
 ```
 
-### 压测执行
+### 压测报告分析
 
 ```shell
-cp target/shardingsphere-benchmark-1.0-SNAPSHOT-jar-with-dependencies.jar apache-jmeter-4.0/lib/ext
-jmeter –n –t test_plan/test.jmx
-test.jmx 参考 https://github.com/apache/shardingsphere-benchmark/tree/master/report/script/test_plan/test.jmx
+sysbench 1.0.20 (using bundled LuaJIT 2.1.0-beta2)
+Running the test with following options:
+Number of threads: 16
+Report intermediate results every 10 second(s)
+Initializing random number generator from current time
+Initializing worker threads...
+Threads started!
+# 每 10 秒钟报告一次测试结果，tps、每秒读、每秒写、95% 以上的响应时长统计
+[ 10s ] thds: 16 tps: 21532.38 qps: 21532.38 (r/w/o: 21532.38/0.00/0.00) lat (ms,95%): 1.04 err/s: 0.00 reconn/s: 0.00
+...
+[ 60s ] thds: 16 tps: 21597.56 qps: 21597.56 (r/w/o: 21597.56/0.00/0.00) lat (ms,95%): 1.01 err/s: 0.00 reconn/s: 0.00
+SQL statistics:
+    queries performed:
+        read:                            1294886                        # 读总数
+        write:                           0                              # 写总数
+        other:                           0                              # 其他操作总数 (COMMIT 等)
+        total:                           1294886                        # 全部总数
+    transactions:                        1294886 (21579.74 per sec.)    # 总事务数 ( 每秒事务数 )
+    queries:                             1294886 (21579.74 per sec.)    # 读总数 ( 每秒读次数 )
+    ignored errors:                      0      (0.00 per sec.)         # 忽略错误数 ( 每秒忽略错误数 )
+    reconnects:                          0      (0.00 per sec.)         # 重连次数 ( 每秒重连次数 )
+General statistics:
+    total time:                          60.0029s                       # 总共耗时
+    total number of events:              1294886                        # 总共发生多少事务数
+
+Latency (ms):
+         min:                                    0.36                   # 最小延时 
+         avg:                                    0.74                   # 平均延时
+         max:                                    8.90                   # 最大延时
+         95th percentile:                        1.01                   # 超过 95% 平均耗时
+         sum:                               959137.19 
+Threads fairness:
+    events (avg/stddev):           80930.3750/440.48                    # 平均每线程完成 80930.3750 次 event，标准差为 440.48
+    execution time (avg/stddev):   59.9461/0.00                         # 每个线程平均耗时 59.9 秒，标准差为 0
+
 ```
 
-### 压测结果处理
+### 压测过程中值得关注的点
 
-注意修改为上一步生成的 result.jtl 的位置。
-```shell
-sh shardingsphere-benchmark/report/script/gen_report.sh
-```
-
-### 历史压测数据展示
-
-正在进行中，请等待。
-<!--
-[Benchmark 性能平台](https://shardingsphere.apache.org/benchmark/#/overview)是数据以天粒度展示
--->
+1. ShardingSphere-Proxy 所在服务器 CPU 利用率，充分利用 CPU 为佳；
+2. DB 所在服务器磁盘 IO，物理读越低越好；
+3. 压测中涉及服务器的网络 IO。
