@@ -114,7 +114,7 @@ public final class CommandExecutorTask implements Runnable {
             }
             return true;
         } catch (final SQLException ex) {
-            databaseProtocolFrontendEngine.handleException(connectionSession);
+            databaseProtocolFrontendEngine.handleException(connectionSession, ex);
             throw ex;
         } finally {
             commandExecutor.close();
