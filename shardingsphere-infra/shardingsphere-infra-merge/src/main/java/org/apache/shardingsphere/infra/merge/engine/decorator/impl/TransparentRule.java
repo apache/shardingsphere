@@ -17,12 +17,18 @@
 
 package org.apache.shardingsphere.infra.merge.engine.decorator.impl;
 
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 /**
  * Transparent rule.
  */
 public final class TransparentRule implements ShardingSphereRule {
+    
+    @Override
+    public RuleConfiguration getConfiguration() {
+        return null;
+    }
     
     @Override
     public String getType() {
