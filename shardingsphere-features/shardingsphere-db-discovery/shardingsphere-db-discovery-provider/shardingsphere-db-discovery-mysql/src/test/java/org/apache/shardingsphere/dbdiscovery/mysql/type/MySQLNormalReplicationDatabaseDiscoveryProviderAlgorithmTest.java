@@ -17,13 +17,18 @@
 
 package org.apache.shardingsphere.dbdiscovery.mysql.type;
 
+import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
+import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
 import org.junit.Test;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -33,15 +38,15 @@ public final class MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithmTest 
     
     @Test
     public void assertCheckEnvironment() throws SQLException {
-        new MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm().checkEnvironment("foo_db", Collections.singletonList(mockDataSource()));
+        new MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm().checkEnvironment("foo_db", Collections.singletonList(mockDataSourceForReplicationInstances()));
     }
     
     @Test
     public void assertIsPrimaryInstance() throws SQLException {
-        assertTrue(new MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm().isPrimaryInstance(mockDataSource()));
+        assertTrue(new MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm().isPrimaryInstance(mockDataSourceForReplicationInstances()));
     }
     
-    private DataSource mockDataSource() throws SQLException {
+    private DataSource mockDataSourceForReplicationInstances() throws SQLException {
         DataSource result = mock(DataSource.class, RETURNS_DEEP_STUBS);
         ResultSet resultSet = mock(ResultSet.class);
         when(result.getConnection().createStatement().executeQuery("SHOW SLAVE HOSTS")).thenReturn(resultSet);
@@ -50,5 +55,26 @@ public final class MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithmTest 
         when(resultSet.getString("Port")).thenReturn("3306");
         when(result.getConnection().getMetaData().getURL()).thenReturn("jdbc:mysql://127.0.0.1:3306/foo_ds");
         return result;
+    }
+
+    private DataSource mockDataSourceForReplicaStatus() throws SQLException {
+        DataSource result = mock(DataSource.class, RETURNS_DEEP_STUBS);
+        ResultSet resultSet = mock(ResultSet.class);
+        when(result.getConnection().createStatement().executeQuery("SHOW SLAVE STATUS")).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(true, false);
+        when(resultSet.getLong("Seconds_Behind_Master")).thenReturn(10L);
+        return result;
+    }
+
+    @Test
+    public void assertLoadReplicaStatus() throws SQLException {
+        Properties props = new Properties();
+        props.setProperty("delay-milliseconds-threshold", "15000");
+        DatabaseDiscoveryProviderAlgorithm algorithm = new MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm();
+        algorithm.init(props);
+        DataSource dataSource = mockDataSourceForReplicaStatus();
+        ReplicaDataSourceStatus actual = algorithm.loadReplicaStatus(dataSource);
+        assertTrue(actual.isOnline());
+        assertThat(actual.getReplicationDelayMilliseconds(), is(10000L));
     }
 }
