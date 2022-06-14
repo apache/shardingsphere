@@ -63,6 +63,7 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -251,6 +252,10 @@ public abstract class BaseITCase {
         executeWithLog(String.format("STOP SCALING SOURCE WRITING %s", jobId));
     }
     
+    private void restoreScalingSourceWriting(final String jobId) {
+        executeWithLog(String.format("RESTORE SCALING SOURCE WRITING %s", jobId));
+    }
+    
     protected void applyScaling(final String jobId) {
         executeWithLog(String.format("APPLY SCALING %s", jobId));
     }
@@ -302,6 +307,7 @@ public abstract class BaseITCase {
         }
         assertThat(actualStatusMap.values().stream().filter(StringUtils::isNotBlank).collect(Collectors.toSet()).size(), is(1));
         stopScalingSourceWriting(jobId);
+        assertStopScalingSourceWriting();
         assertBeforeApplyScalingMetadataCorrectly();
         List<Map<String, Object>> checkScalingResults = queryForListWithLog(String.format("CHECK SCALING %s BY TYPE (NAME=DATA_MATCH)", jobId));
         log.info("checkScalingResults: {}", checkScalingResults);
@@ -317,5 +323,47 @@ public abstract class BaseITCase {
         assertThat(previewResults.stream().map(each -> each.get("data_source_name")).collect(Collectors.toSet()), is(new HashSet<>(Arrays.asList("ds_2", "ds_3", "ds_4"))));
         assertThat(targetSources, is(new HashSet<>(Arrays.asList("SELECT COUNT(1) FROM t_order_0 UNION ALL SELECT COUNT(1) FROM t_order_3",
                 "SELECT COUNT(1) FROM t_order_1 UNION ALL SELECT COUNT(1) FROM t_order_4", "SELECT COUNT(1) FROM t_order_2 UNION ALL SELECT COUNT(1) FROM t_order_5"))));
+        assertRestoreScalingSourceWriting(jobId);
+    }
+    
+    private void assertStopScalingSourceWriting() {
+        executeWithLog("SELECT count(*) FROM t_order");
+        assertFalse(assertUpdate());
+        assertFalse(assertDDL());
+    }
+    
+    private void assertRestoreScalingSourceWriting(final String jobId) {
+        restoreScalingSourceWriting(jobId);
+        assertTrue(assertUpdate());
+        assertTrue(assertDDL());
+    }
+    
+    private boolean assertUpdate() {
+        try {
+            int row = jdbcTemplate.update("UPDATE t_order SET status= 'unlock'");
+            return row > 0;
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            return checkSQLException((SQLException) ex.getCause());
+        }
+    }
+    
+    private boolean assertDDL() {
+        try {
+            jdbcTemplate.execute("create index idx_order_status on t_order (status)");
+            return true;
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            return checkSQLException((SQLException) ex.getCause());
+        }
+    }
+    
+    private boolean checkSQLException(final SQLException exception) {
+        assertThat(exception.getErrorCode(), is(1300));
+        assertThat(exception.getSQLState(), is("C1300"));
+        assertThat(exception.getMessage(), is("The database sharding_db is read-only"));
+        return false;
     }
 }
