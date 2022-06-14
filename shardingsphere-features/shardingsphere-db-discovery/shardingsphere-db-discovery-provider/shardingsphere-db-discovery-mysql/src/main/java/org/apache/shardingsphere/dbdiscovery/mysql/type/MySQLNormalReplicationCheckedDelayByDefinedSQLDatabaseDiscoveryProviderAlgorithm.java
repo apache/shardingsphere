@@ -39,7 +39,7 @@ import java.util.concurrent.ExecutorService;
 import javax.sql.DataSource;
 
 /**
- * Normal replication database discovery provider algorithm for MySQL, default use delay-checked-sql.
+ * Normal replication database discovery provider algorithm for MySQL, default use delay-checked-sql which define in props.
  */
 @Getter
 @Slf4j
