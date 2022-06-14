@@ -137,11 +137,3 @@ Threads fairness:
 1. ShardingSphere-Proxy 所在服务器 CPU 利用率，充分利用 CPU 为佳；
 2. DB 所在服务器磁盘 IO，物理读越低越好；
 3. 压测中涉及服务器的网络 IO。
-
-
-### 历史压测数据展示
-
-正在进行中，请等待。
-<!--
-[Benchmark 性能平台](https://shardingsphere.apache.org/benchmark/#/overview)是数据以天粒度展示
--->
