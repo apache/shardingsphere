@@ -321,41 +321,11 @@ public abstract class BaseITCase {
         restoreScalingSourceWriting(jobId);
     }
     
-    protected void restoreScalingSourceWriting(final String jobId) {
+    private void restoreScalingSourceWriting(final String jobId) {
         executeWithLog(String.format("RESTORE SCALING SOURCE WRITING %s", jobId));
     }
     
     protected abstract void assertStopScalingSourceWriting();
     
     protected abstract void assertRestoreScalingSourceWriting();
-    
-    protected boolean executeUpdate(final String sql) {
-        log.info("jdbcTemplate execute:{}", sql);
-        try {
-            jdbcTemplate.update(sql);
-            return true;
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            assertSQLException((SQLException) ex.getCause());
-            return false;
-        }
-    }
-    
-    protected boolean executeDDL(final String sql) {
-        log.info("jdbcTemplate execute:{}", sql);
-        try {
-            jdbcTemplate.execute(sql);
-            return true;
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            assertSQLException((SQLException) ex.getCause());
-            return false;
-        }
-    }
-    
-    private void assertSQLException(final SQLException exception) {
-        assertTrue(exception.getMessage().endsWith("The database sharding_db is read-only"));
-    }
 }

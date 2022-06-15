@@ -59,13 +59,25 @@ public abstract class BaseExtraSQLITCase extends BaseITCase {
     
     @Override
     protected void assertStopScalingSourceWriting() {
-        assertFalse(executeUpdate(extraSQLCommand.getUpdateTableOrderStatus()));
-        assertFalse(executeDDL(extraSQLCommand.getCreateIndexStatus()));
+        assertFalse(executeSql(extraSQLCommand.getUpdateTableOrderStatus()));
+        assertFalse(executeSql(extraSQLCommand.getCreateIndexStatus()));
     }
     
     @Override
     protected void assertRestoreScalingSourceWriting() {
-        assertTrue(executeUpdate(extraSQLCommand.getUpdateTableOrderStatus()));
-        assertTrue(executeDDL(extraSQLCommand.getCreateIndexStatus()));
+        assertTrue(executeSql(extraSQLCommand.getUpdateTableOrderStatus()));
+        assertTrue(executeSql(extraSQLCommand.getCreateIndexStatus()));
+    }
+    
+    private boolean executeSql(final String sql) {
+        try {
+            getJdbcTemplate().execute(sql);
+            return true;
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            assertTrue(ex.getCause().getMessage().endsWith("The database sharding_db is read-only"));
+            return false;
+        }
     }
 }
