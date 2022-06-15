@@ -60,8 +60,7 @@ public final class ShardingRuleConfigurationYamlSwapper implements YamlRuleConfi
     public YamlShardingRuleConfiguration swapToYamlConfiguration(final ShardingRuleConfiguration data) {
         YamlShardingRuleConfiguration result = new YamlShardingRuleConfiguration();
         data.getTables().forEach(each -> result.getTables().put(each.getLogicTable(), tableYamlSwapper.swapToYamlConfiguration(each)));
-        data.getAutoTables().forEach(each -> result.getAutoTables().put(each.getLogicTable(), autoTableYamlSwapper.swapToYamlConfiguration(each, 
-                getShardingCount(each, data.getShardingAlgorithms()))));
+        data.getAutoTables().forEach(each -> result.getAutoTables().put(each.getLogicTable(), autoTableYamlSwapper.swapToYamlConfigurationWithAlgorithmsConfig(each, data.getShardingAlgorithms())));
         result.getBindingTables().addAll(data.getBindingTableGroups());
         result.getBroadcastTables().addAll(data.getBroadcastTables());
         setYamlDefaultStrategies(data, result);
@@ -70,15 +69,6 @@ public final class ShardingRuleConfigurationYamlSwapper implements YamlRuleConfi
         result.setScalingName(data.getScalingName());
         return result;
     }
-    
-    private int getShardingCount(final ShardingAutoTableRuleConfiguration configuration, final Map<String, ShardingSphereAlgorithmConfiguration> shardingAlgorithms) {
-        Preconditions.checkNotNull(configuration.getShardingStrategy());
-        Preconditions.checkState(shardingAlgorithms.containsKey(configuration.getShardingStrategy().getShardingAlgorithmName()));
-        ShardingAlgorithm algorithm = ShardingAlgorithmFactory.newInstance(shardingAlgorithms.get(configuration.getShardingStrategy().getShardingAlgorithmName()));
-        Preconditions.checkState(algorithm instanceof ShardingAutoTableAlgorithm);
-        return ((ShardingAutoTableAlgorithm) algorithm).getAutoTablesAmount();
-    }
-    
     
     private void setYamlDefaultStrategies(final ShardingRuleConfiguration data, final YamlShardingRuleConfiguration yamlConfig) {
         if (null != data.getDefaultDatabaseShardingStrategy()) {
