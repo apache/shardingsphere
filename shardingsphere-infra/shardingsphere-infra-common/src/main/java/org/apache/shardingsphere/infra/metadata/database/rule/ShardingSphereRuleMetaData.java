@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.metadata.database.rule;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
@@ -31,19 +30,16 @@ import java.util.stream.Collectors;
 /**
  * ShardingSphere rule meta data.
  */
-@RequiredArgsConstructor
 @Getter
 public final class ShardingSphereRuleMetaData {
     
     private final Collection<ShardingSphereRule> rules;
     
-    /**
-     * Get rule configurations.
-     * 
-     * @return rule configurations
-     */
-    public Collection<RuleConfiguration> getConfigurations() {
-        return rules.stream().map(ShardingSphereRule::getConfiguration).collect(Collectors.toList());
+    private final Collection<RuleConfiguration> configurations;
+    
+    public ShardingSphereRuleMetaData(final Collection<ShardingSphereRule> rules) {
+        this.rules = rules;
+        configurations = rules.stream().map(ShardingSphereRule::getConfiguration).collect(Collectors.toList());
     }
     
     /**
