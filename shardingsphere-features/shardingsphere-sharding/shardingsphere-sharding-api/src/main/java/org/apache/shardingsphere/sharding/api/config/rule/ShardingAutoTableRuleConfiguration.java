@@ -41,6 +41,8 @@ public final class ShardingAutoTableRuleConfiguration {
     
     private KeyGenerateStrategyConfiguration keyGenerateStrategy;
     
+    private String actualDataNodes;
+    
     public ShardingAutoTableRuleConfiguration(final String logicTable) {
         this(logicTable, null);
     }

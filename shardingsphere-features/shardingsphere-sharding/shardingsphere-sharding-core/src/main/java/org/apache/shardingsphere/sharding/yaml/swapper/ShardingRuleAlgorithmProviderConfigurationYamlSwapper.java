@@ -17,10 +17,14 @@
 
 package org.apache.shardingsphere.sharding.yaml.swapper;
 
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.sharding.algorithm.config.AlgorithmProvidedShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
+import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfiguration;
@@ -29,6 +33,7 @@ import org.apache.shardingsphere.sharding.yaml.swapper.rule.ShardingTableRuleCon
 import org.apache.shardingsphere.sharding.yaml.swapper.strategy.KeyGenerateStrategyConfigurationYamlSwapper;
 import org.apache.shardingsphere.sharding.yaml.swapper.strategy.ShardingStrategyConfigurationYamlSwapper;
 
+import java.util.Map;
 import java.util.Map.Entry;
 
 /**
@@ -48,13 +53,23 @@ public final class ShardingRuleAlgorithmProviderConfigurationYamlSwapper impleme
     public YamlShardingRuleConfiguration swapToYamlConfiguration(final AlgorithmProvidedShardingRuleConfiguration data) {
         YamlShardingRuleConfiguration result = new YamlShardingRuleConfiguration();
         data.getTables().forEach(each -> result.getTables().put(each.getLogicTable(), tableYamlSwapper.swapToYamlConfiguration(each)));
-        data.getAutoTables().forEach(each -> result.getAutoTables().put(each.getLogicTable(), autoTableYamlSwapper.swapToYamlConfiguration(each)));
+        data.getAutoTables().forEach(each -> result.getAutoTables().put(each.getLogicTable(), autoTableYamlSwapper.swapToYamlConfiguration(each, 
+                getShardingCount(each, data.getShardingAlgorithms()))));
         result.getBindingTables().addAll(data.getBindingTableGroups());
         result.getBroadcastTables().addAll(data.getBroadcastTables());
         setYamlDefaultStrategies(data, result);
         setYamlAlgorithms(data, result);
         return result;
     }
+    
+    private int getShardingCount(final ShardingAutoTableRuleConfiguration configuration, final Map<String, ShardingAlgorithm> shardingAlgorithms) {
+        Preconditions.checkNotNull(configuration.getShardingStrategy());
+        Preconditions.checkState(shardingAlgorithms.containsKey(configuration.getShardingStrategy().getShardingAlgorithmName()));
+        ShardingAlgorithm algorithm = shardingAlgorithms.get(configuration.getShardingStrategy().getShardingAlgorithmName());
+        Preconditions.checkState(algorithm instanceof ShardingAutoTableAlgorithm);
+        return ((ShardingAutoTableAlgorithm) algorithm).getAutoTablesAmount();
+    }
+    
     
     @Override
     public AlgorithmProvidedShardingRuleConfiguration swapToObject(final YamlShardingRuleConfiguration yamlConfig) {
