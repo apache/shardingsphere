@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Licensed to the Apache Software Foundation (ASF) under one or more
   ~ contributor license agreements.  See the NOTICE file distributed with
@@ -14,22 +15,15 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<command>
-    <create-table-order>
-        CREATE TABLE t_order (
-        id varchar(255) NOT NULL,
-        order_id int4 NOT NULL,
-        user_id int NOT NULL,
-        status varchar(255) NULL,
-        PRIMARY KEY (id)
-        )
-    </create-table-order>
 
-    <update-table-order-status>
-        UPDATE test.t_order SET status= 'unlock'
-    </update-table-order-status>
+<rewrite-assertions yaml-rule="scenario/encrypt/config/query-with-cipher.yaml">
+    <rewrite-assertion id="create_index_with_assisted_query_column_for_cipher" db-types="MySQL">
+        <input sql="CREATE INDEX t_account_certificate_number_idx ON t_account(certificate_number)" />
+        <output sql="CREATE INDEX t_account_certificate_number_idx ON t_account(assisted_query_certificate_number)" />
+    </rewrite-assertion>
 
-    <create-index-status>
-        CREATE INDEX "idx_user_status" ON test.t_order ( status )
-    </create-index-status>
-</command>
+    <rewrite-assertion id="create_index_with_cipher_column_for_cipher" db-types="MySQL">
+        <input sql="CREATE INDEX t_account_amount_idx ON t_account(amount)" />
+        <output sql="CREATE INDEX t_account_amount_idx ON t_account(cipher_amount)" />
+    </rewrite-assertion>
+</rewrite-assertions>

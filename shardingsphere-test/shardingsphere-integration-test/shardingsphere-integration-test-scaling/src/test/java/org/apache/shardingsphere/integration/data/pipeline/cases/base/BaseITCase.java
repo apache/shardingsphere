@@ -302,6 +302,7 @@ public abstract class BaseITCase {
         }
         assertThat(actualStatusMap.values().stream().filter(StringUtils::isNotBlank).collect(Collectors.toSet()).size(), is(1));
         stopScalingSourceWriting(jobId);
+        assertStopScalingSourceWriting();
         assertBeforeApplyScalingMetadataCorrectly();
         List<Map<String, Object>> checkScalingResults = queryForListWithLog(String.format("CHECK SCALING %s BY TYPE (NAME=DATA_MATCH)", jobId));
         log.info("checkScalingResults: {}", checkScalingResults);
@@ -317,5 +318,14 @@ public abstract class BaseITCase {
         assertThat(previewResults.stream().map(each -> each.get("data_source_name")).collect(Collectors.toSet()), is(new HashSet<>(Arrays.asList("ds_2", "ds_3", "ds_4"))));
         assertThat(targetSources, is(new HashSet<>(Arrays.asList("SELECT COUNT(1) FROM t_order_0 UNION ALL SELECT COUNT(1) FROM t_order_3",
                 "SELECT COUNT(1) FROM t_order_1 UNION ALL SELECT COUNT(1) FROM t_order_4", "SELECT COUNT(1) FROM t_order_2 UNION ALL SELECT COUNT(1) FROM t_order_5"))));
+        restoreScalingSourceWriting(jobId);
     }
+    
+    private void restoreScalingSourceWriting(final String jobId) {
+        executeWithLog(String.format("RESTORE SCALING SOURCE WRITING %s", jobId));
+    }
+    
+    protected abstract void assertStopScalingSourceWriting();
+    
+    protected abstract void assertRestoreScalingSourceWriting();
 }

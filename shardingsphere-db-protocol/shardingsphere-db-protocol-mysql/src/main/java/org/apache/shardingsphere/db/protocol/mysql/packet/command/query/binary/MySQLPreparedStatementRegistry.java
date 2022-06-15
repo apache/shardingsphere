@@ -19,6 +19,7 @@ package org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -82,12 +83,12 @@ public final class MySQLPreparedStatementRegistry {
          * Prepare statement.
          *
          * @param sql SQL
-         * @param parameterCount parameter count
+         * @param sqlStatement sql statement of prepared statement
          * @return statement ID
          */
-        public int prepareStatement(final String sql, final int parameterCount) {
+        public int prepareStatement(final String sql, final SQLStatement sqlStatement) {
             int result = sequence.incrementAndGet();
-            preparedStatements.put(result, new MySQLPreparedStatement(sql, parameterCount));
+            preparedStatements.put(result, new MySQLPreparedStatement(sql, sqlStatement));
             return result;
         }
         
