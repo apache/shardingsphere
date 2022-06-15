@@ -47,8 +47,8 @@ import static org.mockito.Mockito.mock;
 
 public final class SingleTableDropSchemaMetadataValidatorTest {
     
-    @Test
-    public void assertGetInstance() {
+    @Test(expected = ShardingSphereException.class)
+    public void assertValidate() {
         FixtureRule rule = mock(FixtureRule.class);
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.singleton(rule));
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME,
@@ -60,13 +60,7 @@ public final class SingleTableDropSchemaMetadataValidatorTest {
         sqlStatement.setParameterCount(1);
         SQLStatementContext<DropSchemaStatement> sqlStatementContext = new CommonSQLStatementContext<>(sqlStatement);
         Optional<SingleTableMetadataValidator> result = SingleTableMetadataValidatorFactory.newInstance(sqlStatementContext.getSqlStatement());
-        String msg = "";
-        try {
-            result.ifPresent(optional -> optional.validate(singleTableRule, sqlStatementContext, database));
-        } catch (ShardingSphereException ex) {
-            msg = ex.getMessage();
-        }
-        assertTrue(msg, result.isPresent());
+        result.ifPresent(optional -> optional.validate(singleTableRule, sqlStatementContext, database));
     }
     
     private Map<String, DataSource> createSingleDataSourceMap() {
