@@ -40,10 +40,10 @@ public final class MySQLBinlogRotateEventPacket extends AbstractMySQLBinlogEvent
         this.nextBinlogName = nextBinlogName;
     }
     
-    public MySQLBinlogRotateEventPacket(final MySQLBinlogEventHeader binlogEventHeader, final MySQLPacketPayload payload) {
+    public MySQLBinlogRotateEventPacket(final MySQLBinlogEventHeader binlogEventHeader, final MySQLPacketPayload payload, final int checksumLength) {
         super(binlogEventHeader);
         position = payload.readInt8();
-        nextBinlogName = payload.readStringEOF();
+        nextBinlogName = payload.readStringFix(getRemainBytesLength(payload, checksumLength));
     }
     
     @Override

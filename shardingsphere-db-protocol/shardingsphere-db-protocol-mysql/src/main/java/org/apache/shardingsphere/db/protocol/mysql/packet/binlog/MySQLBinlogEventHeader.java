@@ -44,6 +44,9 @@ public final class MySQLBinlogEventHeader implements MySQLPacket {
     
     private final int serverId;
     
+    /**
+     * Size of the event (header, post-header, body).
+     */
     private final int eventSize;
     
     private final int logPos;
