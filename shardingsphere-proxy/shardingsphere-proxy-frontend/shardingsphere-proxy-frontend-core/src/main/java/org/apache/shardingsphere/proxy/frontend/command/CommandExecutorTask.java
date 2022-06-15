@@ -114,10 +114,7 @@ public final class CommandExecutorTask implements Runnable {
                 commandExecuteEngine.writeQueryData(context, connectionSession.getBackendConnection(), (QueryCommandExecutor) commandExecutor, responsePackets.size());
             }
             return true;
-        } catch (final SQLException ex) {
-            databaseProtocolFrontendEngine.handleException(connectionSession, ex);
-            throw ex;
-        } catch (final BackendException ex) {
+        } catch (final SQLException | BackendException ex) {
             databaseProtocolFrontendEngine.handleException(connectionSession, ex);
             throw ex;
         } finally {

@@ -18,16 +18,14 @@
 package org.apache.shardingsphere.proxy.backend.exception;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * In transaction exception.
  */
 @Getter
+@RequiredArgsConstructor
 public final class InTransactionException extends BackendException {
     
     private final String message;
-    
-    public InTransactionException(final String message) {
-        this.message = message;
-    }
 }
