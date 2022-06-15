@@ -23,6 +23,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
+import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.Test;
 
 import java.sql.SQLException;
@@ -45,7 +46,8 @@ public final class ShowTransactionRuleHandlerTest extends ProxyContextRestorer {
         ShowTransactionRuleHandler handler = new ShowTransactionRuleHandler();
         handler.init(new ShowTransactionRuleStatement(), null);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(getGlobalRuleMetaData("XA", "Atomikos", getProperties()));
+        ShardingSphereRuleMetaData metaData = createGlobalRuleMetaData("XA", "Atomikos", getProperties());
+        when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(metaData);
         ProxyContext.init(contextManager);
         handler.execute();
         handler.next();
@@ -63,7 +65,8 @@ public final class ShowTransactionRuleHandlerTest extends ProxyContextRestorer {
         ShowTransactionRuleHandler handler = new ShowTransactionRuleHandler();
         handler.init(new ShowTransactionRuleStatement(), null);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(getGlobalRuleMetaData("LOCAL", null, null));
+        ShardingSphereRuleMetaData metaData = createGlobalRuleMetaData("LOCAL", null, null);
+        when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(metaData);
         ProxyContext.init(contextManager);
         handler.execute();
         handler.next();
@@ -74,8 +77,9 @@ public final class ShowTransactionRuleHandlerTest extends ProxyContextRestorer {
         assertThat(data.get(2), is(""));
     }
     
-    private ShardingSphereRuleMetaData getGlobalRuleMetaData(final String defaultType, final String providerType, final Properties props) {
-        return new ShardingSphereRuleMetaData(Collections.singleton(new TransactionRuleConfiguration(defaultType, providerType, props)), Collections.emptyList());
+    private ShardingSphereRuleMetaData createGlobalRuleMetaData(final String defaultType, final String providerType, final Properties props) {
+        TransactionRule rule = new TransactionRule(new TransactionRuleConfiguration(defaultType, providerType, props), Collections.emptyMap());
+        return new ShardingSphereRuleMetaData(Collections.singleton(rule));
     }
     
     private Properties getProperties() {

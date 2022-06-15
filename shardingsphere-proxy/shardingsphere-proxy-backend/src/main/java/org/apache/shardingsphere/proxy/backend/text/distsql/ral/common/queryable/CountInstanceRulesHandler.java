@@ -89,9 +89,9 @@ public final class CountInstanceRulesHandler extends QueryableRALBackendHandler<
             if (each instanceof SingleTableRule) {
                 addSingleTableData(rowMap, (SingleTableRule) each);
             } else if (each instanceof ShardingRule) {
-                Optional<ShardingRuleConfiguration> shardingRuleConfig = database.getRuleMetaData().findSingleRuleConfiguration(ShardingRuleConfiguration.class);
-                Preconditions.checkState(shardingRuleConfig.isPresent());
-                addShardingData(rowMap, (ShardingRule) each, shardingRuleConfig.get());
+                Optional<ShardingRule> shardingRule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
+                Preconditions.checkState(shardingRule.isPresent());
+                addShardingData(rowMap, (ShardingRule) each);
             } else if (each instanceof ReadwriteSplittingRule) {
                 addReadwriteSplittingData(rowMap, (ReadwriteSplittingRule) each);
             } else if (each instanceof DatabaseDiscoveryRule) {
@@ -108,11 +108,11 @@ public final class CountInstanceRulesHandler extends QueryableRALBackendHandler<
         rowMap.compute(SINGLE_TABLE, (key, value) -> buildRow(value, SINGLE_TABLE, rule.getAllTables().size()));
     }
     
-    private void addShardingData(final Map<String, LocalDataQueryResultRow> rowMap, final ShardingRule rule, final ShardingRuleConfiguration ruleConfig) {
+    private void addShardingData(final Map<String, LocalDataQueryResultRow> rowMap, final ShardingRule rule) {
         addData(rowMap, SHARDING_TABLE, () -> rule.getTables().size());
         addData(rowMap, SHARDING_BINDING_TABLE, () -> rule.getBindingTableRules().size());
         addData(rowMap, SHARDING_BROADCAST_TABLE, () -> rule.getBroadcastTables().size());
-        addData(rowMap, SHARDING_SCALING, () -> ruleConfig.getScaling().size());
+        addData(rowMap, SHARDING_SCALING, () -> ((ShardingRuleConfiguration) rule.getConfiguration()).getScaling().size());
     }
     
     private void addReadwriteSplittingData(final Map<String, LocalDataQueryResultRow> rowMap, final ReadwriteSplittingRule rule) {

@@ -42,6 +42,8 @@ import java.util.Properties;
 @Slf4j
 public final class TransactionRule implements GlobalRule, InstanceAwareRule, ResourceHeldRule<ShardingSphereTransactionManagerEngine> {
     
+    private final TransactionRuleConfiguration configuration;
+    
     private final TransactionType defaultType;
     
     private final String providerType;
@@ -53,6 +55,7 @@ public final class TransactionRule implements GlobalRule, InstanceAwareRule, Res
     private volatile Map<String, ShardingSphereTransactionManagerEngine> resources;
     
     public TransactionRule(final TransactionRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases) {
+        configuration = ruleConfig;
         defaultType = TransactionType.valueOf(ruleConfig.getDefaultType().toUpperCase());
         providerType = ruleConfig.getProviderType();
         props = ruleConfig.getProps();

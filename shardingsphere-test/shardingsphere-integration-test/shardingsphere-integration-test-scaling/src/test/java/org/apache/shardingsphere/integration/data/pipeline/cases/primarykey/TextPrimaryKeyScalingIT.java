@@ -38,8 +38,8 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import static org.junit.Assert.assertTrue;
 
-@Slf4j
 @RunWith(Parameterized.class)
+@Slf4j
 public class TextPrimaryKeyScalingIT extends BaseExtraSQLITCase {
     
     private static final IntegrationTestEnvironment ENV = IntegrationTestEnvironment.getInstance();

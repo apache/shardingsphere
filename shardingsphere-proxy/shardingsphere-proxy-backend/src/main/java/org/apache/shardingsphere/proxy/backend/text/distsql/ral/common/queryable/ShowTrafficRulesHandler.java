@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable;
 
+import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ShowTrafficRulesStatement;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
@@ -25,8 +26,8 @@ import org.apache.shardingsphere.infra.properties.PropertiesConverter;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.QueryableRALBackendHandler;
-import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.api.config.TrafficStrategyConfiguration;
+import org.apache.shardingsphere.traffic.rule.TrafficRule;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -59,16 +60,14 @@ public final class ShowTrafficRulesHandler extends QueryableRALBackendHandler<Sh
     
     @Override
     protected Collection<LocalDataQueryResultRow> getRows(final ContextManager contextManager) {
-        Optional<TrafficRuleConfiguration> config = ProxyContext.getInstance().getContextManager().getMetaDataContexts()
-                .getMetaData().getGlobalRuleMetaData().findRuleConfigurations(TrafficRuleConfiguration.class).stream().findAny();
+        Optional<TrafficRule> rule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(TrafficRule.class);
+        Preconditions.checkState(rule.isPresent());
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         Optional<String> ruleName = Optional.ofNullable(getSqlStatement().getRuleName());
-        config.ifPresent(optional -> {
-            Map<String, ShardingSphereAlgorithmConfiguration> trafficAlgorithms = optional.getTrafficAlgorithms();
-            Map<String, ShardingSphereAlgorithmConfiguration> loadBalancers = optional.getLoadBalancers();
-            optional.getTrafficStrategies().stream().filter(each -> !ruleName.isPresent() || each.getName().equals(ruleName.get()))
-                    .forEach(each -> result.add(buildRow(each, trafficAlgorithms.get(each.getAlgorithmName()), loadBalancers.get(each.getLoadBalancerName()))));
-        });
+        Map<String, ShardingSphereAlgorithmConfiguration> trafficAlgorithms = rule.get().getConfiguration().getTrafficAlgorithms();
+        Map<String, ShardingSphereAlgorithmConfiguration> loadBalancers = rule.get().getConfiguration().getLoadBalancers();
+        rule.get().getConfiguration().getTrafficStrategies().stream().filter(each -> !ruleName.isPresent() || each.getName().equals(ruleName.get()))
+                .forEach(each -> result.add(buildRow(each, trafficAlgorithms.get(each.getAlgorithmName()), loadBalancers.get(each.getLoadBalancerName()))));
         return result;
     }
     
