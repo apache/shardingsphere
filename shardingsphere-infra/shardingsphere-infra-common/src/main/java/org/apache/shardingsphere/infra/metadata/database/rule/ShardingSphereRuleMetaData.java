@@ -35,8 +35,6 @@ import java.util.stream.Collectors;
 @Getter
 public final class ShardingSphereRuleMetaData {
     
-    private final Collection<RuleConfiguration> configurations;
-    
     private final Collection<ShardingSphereRule> rules;
     
     /**

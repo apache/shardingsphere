@@ -61,6 +61,6 @@ public final class ShowAuthorityRuleHandlerTest extends ProxyContextRestorer {
     private ShardingSphereRuleMetaData createGlobalRuleMetaData() {
         ShardingSphereUser root = new ShardingSphereUser("root", "", "localhost");
         AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(Collections.singleton(root), new ShardingSphereAlgorithmConfiguration("ALL_PERMITTED", new Properties()));
-        return new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.singleton(new AuthorityRule(ruleConfig, Collections.emptyMap())));
+        return new ShardingSphereRuleMetaData(Collections.singleton(new AuthorityRule(ruleConfig, Collections.emptyMap())));
     }
 }

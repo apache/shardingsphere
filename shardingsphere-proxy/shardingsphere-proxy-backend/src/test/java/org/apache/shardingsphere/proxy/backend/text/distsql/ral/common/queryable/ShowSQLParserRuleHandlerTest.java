@@ -65,6 +65,6 @@ public final class ShowSQLParserRuleHandlerTest extends ProxyContextRestorer {
         CacheOption parseTreeCache = new CacheOption(128, 1024);
         CacheOption sqlStatementCache = new CacheOption(2000, 65535);
         SQLParserRuleConfiguration config = new SQLParserRuleConfiguration(true, parseTreeCache, sqlStatementCache);
-        return new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.singleton(new SQLParserRule(config)));
+        return new ShardingSphereRuleMetaData(Collections.singleton(new SQLParserRule(config)));
     }
 }

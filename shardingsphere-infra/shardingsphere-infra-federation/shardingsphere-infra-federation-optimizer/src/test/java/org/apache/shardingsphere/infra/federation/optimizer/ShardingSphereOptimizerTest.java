@@ -106,7 +106,7 @@ public final class ShardingSphereOptimizerTest {
         Collection<ShardingSphereRule> rules = new LinkedList<>();
         CacheOption cacheOption = new CacheOption(128, 1024L);
         rules.add(new SQLParserRule(new SQLParserRuleConfiguration(false, cacheOption, cacheOption)));
-        return new ShardingSphereRuleMetaData(Collections.emptyList(), rules);
+        return new ShardingSphereRuleMetaData(rules);
     }
     
     private ShardingSphereResource mockResource() {

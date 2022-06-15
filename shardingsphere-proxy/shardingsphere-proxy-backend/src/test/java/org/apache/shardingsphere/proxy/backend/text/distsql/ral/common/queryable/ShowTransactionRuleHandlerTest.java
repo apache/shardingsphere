@@ -79,7 +79,7 @@ public final class ShowTransactionRuleHandlerTest extends ProxyContextRestorer {
     
     private ShardingSphereRuleMetaData createGlobalRuleMetaData(final String defaultType, final String providerType, final Properties props) {
         TransactionRule rule = new TransactionRule(new TransactionRuleConfiguration(defaultType, providerType, props), Collections.emptyMap());
-        return new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.singleton(rule));
+        return new ShardingSphereRuleMetaData(Collections.singleton(rule));
     }
     
     private Properties getProperties() {
