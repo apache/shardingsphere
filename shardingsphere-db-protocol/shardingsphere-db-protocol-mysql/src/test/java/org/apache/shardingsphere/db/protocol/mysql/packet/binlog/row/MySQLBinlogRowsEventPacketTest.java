@@ -73,11 +73,11 @@ public final class MySQLBinlogRowsEventPacketTest {
     @Test
     public void assertReadWriteRowV1WithoutNullValue() throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         MySQLBinlogRowsEventPacket actual = new MySQLBinlogRowsEventPacket(binlogEventHeader, payload);
-        MySQLPacketPayload packetPayload = new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
-        Serializable[] result = (Serializable[]) invokeMethod(actual, "readRow", new Class[]{List.class, MySQLPacketPayload.class}, new Object[]{columnDefs, packetPayload});
         assertBinlogRowsEventV1BeforeRows(actual);
         assertFalse(actual.getColumnsPresentBitmap().isNullParameter(0));
         assertNull(actual.getColumnsPresentBitmap2());
+        MySQLPacketPayload packetPayload = new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
+        Serializable[] result = (Serializable[]) invokeMethod(actual, "readRow", new Class[]{List.class, MySQLPacketPayload.class}, new Object[]{columnDefs, packetPayload});
         assertThat(result[0], is(0L));
     }
     
