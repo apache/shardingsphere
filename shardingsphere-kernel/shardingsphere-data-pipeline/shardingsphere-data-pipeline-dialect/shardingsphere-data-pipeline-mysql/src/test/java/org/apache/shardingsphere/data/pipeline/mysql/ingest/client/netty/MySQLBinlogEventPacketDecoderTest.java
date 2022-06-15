@@ -38,6 +38,7 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.List;
@@ -126,6 +127,8 @@ public final class MySQLBinlogEventPacketDecoderTest {
         binlogEventPacketDecoder.decode(channelHandlerContext, byteBuf, decodedEvents);
         assertThat(decodedEvents.size(), is(1));
         assertThat(decodedEvents.get(0), instanceOf(WriteRowsEvent.class));
+        WriteRowsEvent actual = (WriteRowsEvent) decodedEvents.get(0);
+        assertThat(actual.getAfterRows().get(0), is(new Serializable[]{1L, 1, "SUCCESS", null}));
     }
     
     @Test
@@ -140,6 +143,9 @@ public final class MySQLBinlogEventPacketDecoderTest {
         binlogEventPacketDecoder.decode(channelHandlerContext, byteBuf, decodedEvents);
         assertThat(decodedEvents.size(), is(1));
         assertThat(decodedEvents.get(0), instanceOf(UpdateRowsEvent.class));
+        UpdateRowsEvent actual = (UpdateRowsEvent) decodedEvents.get(0);
+        assertThat(actual.getBeforeRows().get(0), is(new Serializable[]{1L, 1, "SUCCESS", null}));
+        assertThat(actual.getAfterRows().get(0), is(new Serializable[]{1L, 1, "updated", null}));
     }
     
     @Test
@@ -153,6 +159,8 @@ public final class MySQLBinlogEventPacketDecoderTest {
         binlogEventPacketDecoder.decode(channelHandlerContext, byteBuf, decodedEvents);
         assertThat(decodedEvents.size(), is(1));
         assertThat(decodedEvents.get(0), instanceOf(DeleteRowsEvent.class));
+        DeleteRowsEvent actual = (DeleteRowsEvent) decodedEvents.get(0);
+        assertThat(actual.getBeforeRows().get(0), is(new Serializable[]{1L, 1, "SUCCESS", null}));
     }
     
     @Test
