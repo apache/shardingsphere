@@ -70,6 +70,8 @@ public enum SQLVisitorRule {
     
     ALTER_MATERIALIZED_VIEW("AlterMaterializedView", SQLStatementType.DDL),
     
+    ALTER_OPERATOR("AlterOperator", SQLStatementType.DDL),
+    
     DROP_TABLE("DropTable", SQLStatementType.DDL),
     
     TRUNCATE_TABLE("TruncateTable", SQLStatementType.DDL),
@@ -551,6 +553,8 @@ public enum SQLVisitorRule {
     DROP_INMEMORY_JOIN_GROUP("DropInmemoryJoinGroup", SQLStatementType.DDL),
     
     CREATE_RESTORE_POINT("CreateRestorePoint", SQLStatementType.DDL),
+    
+    DROP_RESTORE_POINT("DropRestorePoint", SQLStatementType.DDL),
     
     CURSOR("Cursor", SQLStatementType.DDL),
     

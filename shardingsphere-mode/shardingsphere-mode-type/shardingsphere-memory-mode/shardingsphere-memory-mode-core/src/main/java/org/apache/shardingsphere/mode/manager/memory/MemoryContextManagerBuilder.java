@@ -47,7 +47,7 @@ public final class MemoryContextManagerBuilder implements ContextManagerBuilder 
                 parameter.getDatabaseConfigs(), parameter.getGlobalRuleConfigs(), new ConfigurationProperties(parameter.getProps())).build(null);
         InstanceContext instanceContext = buildInstanceContext(parameter);
         generateTransactionConfigurationFile(instanceContext, metaDataContexts);
-        ContextManager result = new ContextManager(metaDataContexts, buildInstanceContext(parameter));
+        ContextManager result = new ContextManager(metaDataContexts, instanceContext);
         setInstanceContext(result);
         return result;
     }

@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.sharding.route.engine.fixture;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -35,19 +35,23 @@ import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingC
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
+import org.apache.shardingsphere.test.mock.MockedDataSource;
 
 import javax.sql.DataSource;
-import java.util.ArrayList;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public abstract class AbstractRoutingEngineTest {
     
@@ -200,7 +204,7 @@ public abstract class AbstractRoutingEngineTest {
     }
     
     protected final ShardingConditions createShardingConditions(final String tableName) {
-        List<ShardingCondition> result = new ArrayList<>(1);
+        List<ShardingCondition> result = new LinkedList<>();
         ShardingConditionValue shardingConditionValue1 = new ListShardingConditionValue<>("user_id", tableName, Collections.singleton(1L));
         ShardingConditionValue shardingConditionValue2 = new ListShardingConditionValue<>("order_id", tableName, Collections.singleton(1L));
         ShardingCondition shardingCondition = new ShardingCondition();
@@ -211,7 +215,7 @@ public abstract class AbstractRoutingEngineTest {
     }
     
     protected final ShardingConditions createErrorShardingConditions(final String tableName) {
-        List<ShardingCondition> result = new ArrayList<>(1);
+        List<ShardingCondition> result = new LinkedList<>();
         ShardingConditionValue shardingConditionValue1 = new ListShardingConditionValue<>("user_id", tableName, Collections.singleton(1L));
         ShardingConditionValue shardingConditionValue2 = new ListShardingConditionValue<>("order_id", tableName, Collections.singleton(2L));
         ShardingCondition shardingCondition = new ShardingCondition();
@@ -222,7 +226,7 @@ public abstract class AbstractRoutingEngineTest {
     }
     
     protected final ShardingConditions createIntervalShardingConditions(final String tableName) {
-        List<ShardingCondition> result = new ArrayList<>(1);
+        List<ShardingCondition> result = new LinkedList<>();
         ShardingConditionValue shardingConditionValue = new ListShardingConditionValue<>("create_at", tableName, Collections.singleton("2021-01-01 20:20:20"));
         ShardingCondition shardingCondition = new ShardingCondition();
         shardingCondition.getValues().add(shardingConditionValue);
@@ -234,25 +238,21 @@ public abstract class AbstractRoutingEngineTest {
         return Arrays.asList("ds_0", "ds_1");
     }
     
-    private Map<String, DataSource> createDataSourceMapWithMain() {
-        Map<String, DataSource> result = new HashMap<>(3, 1);
-        result.put("ds_0", mock(DataSource.class, RETURNS_DEEP_STUBS));
-        result.put("ds_1", mock(DataSource.class, RETURNS_DEEP_STUBS));
-        result.put("main", mock(DataSource.class, RETURNS_DEEP_STUBS));
+    protected final SingleTableRule createSingleTableRule(final Collection<ShardingSphereRule> rules) {
+        Map<String, DataSource> dataSourceMap = createDataSourceMap();
+        SingleTableRule result = new SingleTableRule(new SingleTableRuleConfiguration(), DefaultDatabase.LOGIC_NAME, dataSourceMap, rules, new ConfigurationProperties(new Properties()));
+        result.put(dataSourceMap.keySet().iterator().next(), DefaultDatabase.LOGIC_NAME, "t_category");
         return result;
     }
     
-    /**
-     * Create single table rule.
-     * 
-     * @param rules rules
-     * @return single table rule
-     */
-    protected SingleTableRule createSingleTableRule(final Collection<ShardingSphereRule> rules) {
-        Map<String, DataSource> dataSourceMap = createDataSourceMapWithMain();
-        SingleTableRule result = new SingleTableRule(new SingleTableRuleConfiguration(),
-                DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class), dataSourceMap, rules, new ConfigurationProperties(new Properties()));
-        result.put(dataSourceMap.keySet().iterator().next(), DefaultDatabase.LOGIC_NAME, "t_category");
+    @SneakyThrows(SQLException.class)
+    private Map<String, DataSource> createDataSourceMap() {
+        Map<String, DataSource> result = new HashMap<>(3, 1);
+        Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
+        when(connection.getMetaData().getURL()).thenReturn("jdbc:h2:mem:db");
+        result.put("ds_0", new MockedDataSource(connection));
+        result.put("ds_1", new MockedDataSource(connection));
+        result.put("main", new MockedDataSource(connection));
         return result;
     }
 }

@@ -50,7 +50,10 @@ public final class CreateTrafficRuleHandlerTest extends ProxyContextRestorer {
         ProxyContext.init(contextManager);
         TrafficRuleSegment trafficRuleSegment = new TrafficRuleSegment("input_rule_name", Arrays.asList("olap", "order_by"),
                 new AlgorithmSegment("invalid", new Properties()), new AlgorithmSegment("invalid", new Properties()));
-        new CreateTrafficRuleHandler().initStatement(new CreateTrafficRuleStatement(Collections.singletonList(trafficRuleSegment))).execute();
+        CreateTrafficRuleHandler handler = new CreateTrafficRuleHandler();
+        handler.init(new CreateTrafficRuleStatement(Collections.singletonList(trafficRuleSegment)), null);
+        handler.execute();
+        
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
@@ -60,7 +63,9 @@ public final class CreateTrafficRuleHandlerTest extends ProxyContextRestorer {
         ProxyContext.init(contextManager);
         TrafficRuleSegment trafficRuleSegment = new TrafficRuleSegment("input_rule_name", Arrays.asList("olap", "order_by"),
                 new AlgorithmSegment("invalid", new Properties()), new AlgorithmSegment("invalid", new Properties()));
-        new CreateTrafficRuleHandler().initStatement(new CreateTrafficRuleStatement(Collections.singletonList(trafficRuleSegment))).execute();
+        CreateTrafficRuleHandler handler = new CreateTrafficRuleHandler();
+        handler.init(new CreateTrafficRuleStatement(Collections.singletonList(trafficRuleSegment)), null);
+        handler.execute();
     }
     
     @Test(expected = DuplicateRuleException.class)
@@ -70,7 +75,9 @@ public final class CreateTrafficRuleHandlerTest extends ProxyContextRestorer {
         ProxyContext.init(contextManager);
         TrafficRuleSegment trafficRuleSegment = new TrafficRuleSegment("rule_name_1", Arrays.asList("olap", "order_by"),
                 new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()), new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()));
-        new CreateTrafficRuleHandler().initStatement(new CreateTrafficRuleStatement(Collections.singletonList(trafficRuleSegment))).execute();
+        CreateTrafficRuleHandler handler = new CreateTrafficRuleHandler();
+        handler.init(new CreateTrafficRuleStatement(Collections.singletonList(trafficRuleSegment)), null);
+        handler.execute();
     }
     
     @Test
@@ -82,7 +89,9 @@ public final class CreateTrafficRuleHandlerTest extends ProxyContextRestorer {
                 new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()), new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()));
         TrafficRuleSegment trafficRuleSegment2 = new TrafficRuleSegment("rule_name_4", Collections.emptyList(),
                 new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()), null);
-        new CreateTrafficRuleHandler().initStatement(new CreateTrafficRuleStatement(Arrays.asList(trafficRuleSegment1, trafficRuleSegment2))).execute();
+        CreateTrafficRuleHandler handler = new CreateTrafficRuleHandler();
+        handler.init(new CreateTrafficRuleStatement(Arrays.asList(trafficRuleSegment1, trafficRuleSegment2)), null);
+        handler.execute();
     }
     
     private RuleConfiguration createTrafficRuleConfiguration() {

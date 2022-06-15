@@ -51,7 +51,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -248,13 +247,18 @@ public abstract class BaseITCase {
         getIncreaseTaskThread().start();
     }
     
+    protected void stopScalingSourceWriting(final String jobId) {
+        executeWithLog(String.format("STOP SCALING SOURCE WRITING %s", jobId));
+    }
+    
+    protected void applyScaling(final String jobId) {
+        executeWithLog(String.format("APPLY SCALING %s", jobId));
+    }
+    
     protected void assertBeforeApplyScalingMetadataCorrectly() {
         List<Map<String, Object>> previewResults = queryForListWithLog("PREVIEW SELECT COUNT(1) FROM t_order");
-        Set<Object> actualSources = previewResults.stream().map(each -> each.get("actual_sql")).collect(Collectors.toSet());
         assertThat("data_source_name name not correct, it's effective early, search watcher failed get more info",
                 previewResults.stream().map(each -> each.get("data_source_name")).collect(Collectors.toSet()), is(new HashSet<>(Arrays.asList("ds_0", "ds_1"))));
-        assertThat("actual_sql not correct, it's effective early, search watcher failed get more info", actualSources,
-                is(new HashSet<>(Collections.singletonList("SELECT COUNT(1) FROM t_order_0 UNION ALL SELECT COUNT(1) FROM t_order_1"))));
     }
     
     /**
@@ -270,7 +274,7 @@ public abstract class BaseITCase {
         TimeUnit.SECONDS.sleep(4);
         List<Map<String, Object>> scalingListMap = queryForListWithLog("SHOW SCALING LIST");
         assertThat(scalingListMap.size(), is(1));
-        Object jobId = scalingListMap.get(0).get("id");
+        String jobId = scalingListMap.get(0).get("id").toString();
         log.info("jobId: {}", jobId);
         Map<String, String> actualStatusMap = new HashMap<>(2, 1);
         String showScalingStatus = String.format("SHOW SCALING STATUS %s", jobId);
@@ -297,7 +301,7 @@ public abstract class BaseITCase {
             TimeUnit.SECONDS.sleep(2);
         }
         assertThat(actualStatusMap.values().stream().filter(StringUtils::isNotBlank).collect(Collectors.toSet()).size(), is(1));
-        executeWithLog(String.format("STOP SCALING SOURCE WRITING %s", jobId));
+        stopScalingSourceWriting(jobId);
         assertBeforeApplyScalingMetadataCorrectly();
         List<Map<String, Object>> checkScalingResults = queryForListWithLog(String.format("CHECK SCALING %s BY TYPE (NAME=DATA_MATCH)", jobId));
         log.info("checkScalingResults: {}", checkScalingResults);
@@ -305,7 +309,7 @@ public abstract class BaseITCase {
             assertTrue(Boolean.parseBoolean(entry.get("records_content_matched").toString()));
         }
         assertBeforeApplyScalingMetadataCorrectly();
-        executeWithLog(String.format("APPLY SCALING %s", jobId));
+        applyScaling(jobId);
         // TODO make sure the scaling job was applied
         TimeUnit.SECONDS.sleep(2);
         List<Map<String, Object>> previewResults = queryForListWithLog("PREVIEW SELECT COUNT(1) FROM t_order");

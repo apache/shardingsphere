@@ -474,6 +474,11 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         return result;
     }
     
+    private ExecutionContext createExecutionContext(final LogicSQL logicSQL, final TrafficContext trafficContext) {
+        ExecutionUnit executionUnit = new ExecutionUnit(trafficContext.getInstanceId(), new SQLUnit(logicSQL.getSql(), logicSQL.getParameters()));
+        return new ExecutionContext(logicSQL, Collections.singletonList(executionUnit), trafficContext.getRouteContext());
+    }
+    
     private LogicSQL createLogicSQL() {
         List<Object> parameters = new ArrayList<>(getParameters());
         if (sqlStatementContext instanceof ParameterAware) {
@@ -540,7 +545,9 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     @Override
     public void addBatch() {
         try {
-            executionContext = createExecutionContext(createLogicSQL());
+            LogicSQL logicSQL = createLogicSQL();
+            trafficContext = getTrafficContext(logicSQL);
+            executionContext = trafficContext.isMatchTraffic() ? createExecutionContext(logicSQL, trafficContext) : createExecutionContext(logicSQL);
             batchPreparedStatementExecutor.addBatchForExecutionUnits(executionContext.getExecutionUnits());
         } finally {
             currentResultSet = null;

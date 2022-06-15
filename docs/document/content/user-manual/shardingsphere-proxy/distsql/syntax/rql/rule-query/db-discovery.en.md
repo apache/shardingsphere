@@ -36,7 +36,7 @@ SHOW DB_DISCOVERY HEARTBEATS [FROM databaseName]
 ### DB Discovery Heartbeat
 
 | Column                   | Description           |
-| ------------------------ | ----------------------|
+| ------------------------ | --------------------- |
 | name                     | Heartbeat name        |
 | props                    | Heartbeat properties  |
 

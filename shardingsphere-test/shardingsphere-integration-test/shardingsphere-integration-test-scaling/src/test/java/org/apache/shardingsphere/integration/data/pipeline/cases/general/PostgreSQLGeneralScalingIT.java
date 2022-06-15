@@ -76,6 +76,7 @@ public final class PostgreSQLGeneralScalingIT extends BaseExtraSQLITCase {
         createSchema("test");
         getCreateOrderWithItemSharingTableRule();
         createOrderTable();
+        createTableIndexList();
         createOrderItemTable();
         SnowflakeKeyGenerateAlgorithm keyGenerateAlgorithm = new SnowflakeKeyGenerateAlgorithm();
         Pair<List<Object[]>, List<Object[]>> dataPair = ScalingCaseHelper.generateFullInsertData(keyGenerateAlgorithm, parameterized.getDatabaseType(), 3000);

@@ -310,7 +310,7 @@ svn --username=${APACHE LDAP username} commit -m "release ${RELEASE.VERSION}"
 **Check sha512 hash**
 
 ```shell
-shasum -c apache-shardingsphere-${RELEASE.VERSION}-*.sha512
+shasum -c *.sha512
 ```
 
 **Check gpg Signature**

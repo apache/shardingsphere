@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.sharding.rule.builder;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilder;
-import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilderFactory;
+import org.apache.shardingsphere.infra.rule.builder.schema.DatabaseRuleBuilder;
+import org.apache.shardingsphere.infra.rule.builder.schema.DatabaseRuleBuilderFactory;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.Before;
@@ -39,12 +39,12 @@ public final class ShardingRuleBuilderTest {
     private ShardingRuleConfiguration ruleConfig;
     
     @SuppressWarnings("rawtypes")
-    private SchemaRuleBuilder builder;
+    private DatabaseRuleBuilder builder;
     
     @Before
     public void setUp() {
         ruleConfig = new ShardingRuleConfiguration();
-        builder = SchemaRuleBuilderFactory.getInstanceMap(Collections.singletonList(ruleConfig)).get(ruleConfig);
+        builder = DatabaseRuleBuilderFactory.getInstanceMap(Collections.singletonList(ruleConfig)).get(ruleConfig);
     }
     
     @SuppressWarnings("unchecked")

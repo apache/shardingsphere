@@ -17,9 +17,7 @@
 
 package org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory;
 
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
@@ -31,12 +29,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectOutputStream;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Iterator;
 
 /**
  * Abstract memory query result.
  */
-@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class AbstractMemoryQueryResult implements QueryResult {
     
     @Getter
@@ -46,10 +44,20 @@ public abstract class AbstractMemoryQueryResult implements QueryResult {
     
     private MemoryQueryResultDataRow currentRow;
     
+    @Getter
+    private long rowCount;
+    
+    protected AbstractMemoryQueryResult(final QueryResultMetaData metaData, final Collection<MemoryQueryResultDataRow> rows) {
+        this.metaData = metaData;
+        this.rows = rows.iterator();
+        rowCount = rows.size();
+    }
+    
     @Override
     public final boolean next() {
         if (rows.hasNext()) {
             currentRow = rows.next();
+            rowCount--;
             return true;
         }
         currentRow = null;

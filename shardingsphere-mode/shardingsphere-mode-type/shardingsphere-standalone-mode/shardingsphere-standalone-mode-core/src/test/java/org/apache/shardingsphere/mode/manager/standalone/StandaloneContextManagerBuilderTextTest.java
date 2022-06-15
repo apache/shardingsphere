@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
+import org.apache.shardingsphere.mode.manager.instance.InstanceIdGeneratorFactory;
 import org.apache.shardingsphere.mode.metadata.persist.node.GlobalNode;
 import org.apache.shardingsphere.mode.metadata.persist.node.DatabaseMetaDataNode;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
@@ -44,11 +45,12 @@ public final class StandaloneContextManagerBuilderTextTest {
     
     @Test
     public void assertBuild() throws SQLException {
-        ContextManager actual = new StandaloneContextManagerBuilder().build(ContextManagerBuilderParameter.builder().modeConfig(new ModeConfiguration("Standalone", null, false))
+        ContextManager actual = new StandaloneContextManagerBuilder().build(ContextManagerBuilderParameter.builder()
+                .modeConfig(new ModeConfiguration("Standalone", null, false))
                 .databaseConfigs(Collections.singletonMap("foo_schema",
                         new DataSourceProvidedDatabaseConfiguration(Collections.singletonMap("foo_ds", new MockedDataSource()), Collections.singleton(mock(RuleConfiguration.class)))))
                 .globalRuleConfigs(Collections.singleton(mock(RuleConfiguration.class))).props(new Properties())
-                .instanceDefinition(new InstanceDefinition(InstanceType.PROXY, 3307)).build());
+                .instanceDefinition(new InstanceDefinition(InstanceType.PROXY, 3307, InstanceIdGeneratorFactory.getInstance(null).generate(InstanceType.PROXY))).build());
         assertNotNull(actual.getMetaDataContexts().getMetaData().getDatabases().get("foo_schema"));
         assertTrue(actual.getMetaDataContexts().getPersistService().isPresent());
         PersistRepository repository = actual.getMetaDataContexts().getPersistService().get().getRepository();

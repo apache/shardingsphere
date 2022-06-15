@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.mode.metadata.fixture;
 
-import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
+import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
 
-public final class FixtureRule implements SchemaRule {
+public final class FixtureRule implements DatabaseRule {
     
     @Override
     public String getType() {

@@ -39,7 +39,9 @@ public final class AlterInstanceHandlerTest extends ProxyContextRestorer {
         String instanceId = "instance_id";
         String key = "key_1";
         String value = "value_1";
-        new AlterInstanceHandler().initStatement(getSQLStatement(instanceId, key, value)).execute();
+        AlterInstanceHandler handler = new AlterInstanceHandler();
+        handler.init(getSQLStatement(instanceId, key, value), null);
+        handler.execute();
     }
     
     @Test(expected = UnsupportedOperationException.class)
@@ -50,7 +52,9 @@ public final class AlterInstanceHandlerTest extends ProxyContextRestorer {
         String instanceId = "instance_id";
         String key = "xa_recovery_nodes";
         String value = "value_1";
-        new AlterInstanceHandler().initStatement(getSQLStatement(instanceId, key, value)).execute();
+        AlterInstanceHandler handler = new AlterInstanceHandler();
+        handler.init(getSQLStatement(instanceId, key, value), null);
+        handler.execute();
     }
     
     @Test(expected = UnsupportedOperationException.class)
@@ -62,7 +66,9 @@ public final class AlterInstanceHandlerTest extends ProxyContextRestorer {
         String instanceId = "instance_id";
         String key = "xa_recovery_nodes";
         String value = "value_1";
-        new AlterInstanceHandler().initStatement(getSQLStatement(instanceId, key, value)).execute();
+        AlterInstanceHandler handler = new AlterInstanceHandler();
+        handler.init(getSQLStatement(instanceId, key, value), null);
+        handler.execute();
     }
     
     private AlterInstanceStatement getSQLStatement(final String instanceId, final String key, final String value) {

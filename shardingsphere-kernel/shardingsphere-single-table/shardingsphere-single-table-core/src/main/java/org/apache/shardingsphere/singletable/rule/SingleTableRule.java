@@ -19,23 +19,24 @@ package org.apache.shardingsphere.singletable.rule;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
+import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.ExportableRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.exportable.ExportableRule;
 import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
 import org.apache.shardingsphere.singletable.datanode.SingleTableDataNodeLoader;
 
 import javax.sql.DataSource;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -46,30 +47,31 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.TreeSet;
-import java.util.function.Supplier;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 /**
  * Single table rule.
  */
-@Getter
-public final class SingleTableRule implements SchemaRule, DataNodeContainedRule, TableContainedRule, MutableDataNodeRule, ExportableRule {
+public final class SingleTableRule implements DatabaseRule, DataNodeContainedRule, TableContainedRule, MutableDataNodeRule, ExportableRule {
     
-    private String defaultDataSource;
+    private final String defaultDataSource;
     
+    @Getter
     private final Collection<String> dataSourceNames;
     
+    @Getter
     private final Map<String, Collection<DataNode>> singleTableDataNodes;
     
     private final Map<String, String> tableNames;
     
-    public SingleTableRule(final SingleTableRuleConfiguration config, final String databaseName, final DatabaseType databaseType,
+    public SingleTableRule(final SingleTableRuleConfiguration config, final String databaseName,
                            final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules, final ConfigurationProperties props) {
+        defaultDataSource = config.getDefaultDataSource().orElse(null);
         Map<String, DataSource> aggregateDataSourceMap = getAggregateDataSourceMap(dataSourceMap, builtRules);
         dataSourceNames = aggregateDataSourceMap.keySet();
-        singleTableDataNodes = SingleTableDataNodeLoader.load(databaseName, databaseType, aggregateDataSourceMap, getExcludedTables(builtRules), props);
+        singleTableDataNodes = SingleTableDataNodeLoader.load(databaseName, DatabaseTypeEngine.getDatabaseType(dataSourceMap.values()), aggregateDataSourceMap, getExcludedTables(builtRules), props);
         tableNames = singleTableDataNodes.entrySet().stream().collect(Collectors.toConcurrentMap(Entry::getKey, entry -> entry.getValue().iterator().next().getTableName()));
-        config.getDefaultDataSource().ifPresent(optional -> defaultDataSource = optional);
     }
     
     private Map<String, DataSource> getAggregateDataSourceMap(final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules) {
@@ -93,6 +95,15 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
         }
         result.putAll(dataSourceMap);
         return result;
+    }
+    
+    /**
+     * Assign new data source name.
+     *
+     * @return assigned data source name
+     */
+    public String assignNewDataSourceName() {
+        return null == defaultDataSource ? new ArrayList<>(dataSourceNames).get(ThreadLocalRandom.current().nextInt(dataSourceNames.size())) : defaultDataSource;
     }
     
     /**
@@ -140,15 +151,6 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
             }
         }
         return true;
-    }
-    
-    /**
-     * Get default data source.
-     *
-     * @return default data source
-     */
-    public Optional<String> getDefaultDataSource() {
-        return Optional.ofNullable(defaultDataSource);
     }
     
     /**
@@ -268,7 +270,7 @@ public final class SingleTableRule implements SchemaRule, DataNodeContainedRule,
     }
     
     @Override
-    public Map<String, Supplier<Object>> getExportedMethods() {
-        return Collections.singletonMap(ExportableConstants.EXPORT_SINGLE_TABLES, tableNames::keySet);
+    public Map<String, Object> getExportData() {
+        return Collections.singletonMap(ExportableConstants.EXPORT_SINGLE_TABLES, tableNames.keySet());
     }
 }

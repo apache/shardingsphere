@@ -22,6 +22,7 @@ import org.apache.shardingsphere.integration.data.pipeline.cases.command.ExtraSQ
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
 
 import javax.xml.bind.JAXB;
+import java.util.List;
 
 public abstract class BaseExtraSQLITCase extends BaseITCase {
     
@@ -40,6 +41,13 @@ public abstract class BaseExtraSQLITCase extends BaseITCase {
     
     protected void createOrderTable() {
         executeWithLog(extraSQLCommand.getCreateTableOrder());
+    }
+    
+    protected void createTableIndexList() {
+        List<String> createTableIndexList = extraSQLCommand.getCreateTableIndexList();
+        for (String each : createTableIndexList) {
+            executeWithLog(each);
+        }
     }
     
     protected void createOrderItemTable() {

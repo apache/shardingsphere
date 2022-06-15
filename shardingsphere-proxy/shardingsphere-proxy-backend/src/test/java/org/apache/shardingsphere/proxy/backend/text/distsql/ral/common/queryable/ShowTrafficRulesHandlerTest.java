@@ -48,7 +48,8 @@ public class ShowTrafficRulesHandlerTest extends ProxyContextRestorer {
     public void assertExecutor() throws SQLException {
         ShowTrafficRulesStatement showTrafficRuleStatement = new ShowTrafficRulesStatement();
         showTrafficRuleStatement.setRuleName("rule_name_1");
-        ShowTrafficRulesHandler handler = new ShowTrafficRulesHandler().initStatement(showTrafficRuleStatement);
+        ShowTrafficRulesHandler handler = new ShowTrafficRulesHandler();
+        handler.init(showTrafficRuleStatement, null);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findRuleConfigurations(any())).thenReturn(createTrafficRule());
         ProxyContext.init(contextManager);

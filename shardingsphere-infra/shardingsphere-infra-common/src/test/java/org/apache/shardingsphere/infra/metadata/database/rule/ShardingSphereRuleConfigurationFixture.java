@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.database.rule;
 
-import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
+import org.apache.shardingsphere.infra.config.scope.DatabaseRuleConfiguration;
 
-public final class ShardingSphereRuleConfigurationFixture implements SchemaRuleConfiguration {
+public final class ShardingSphereRuleConfigurationFixture implements DatabaseRuleConfiguration {
 }

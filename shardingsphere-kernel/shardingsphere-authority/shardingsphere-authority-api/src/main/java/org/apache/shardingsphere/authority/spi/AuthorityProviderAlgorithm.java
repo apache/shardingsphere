@@ -26,13 +26,13 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * Authority provide algorithm.
-*/
+ * Authority provider algorithm.
+ */
 public interface AuthorityProviderAlgorithm extends ShardingSphereAlgorithm {
     
     /**
      * Build authority registry.
-     * 
+     *
      * @param databases databases
      * @param users users
      * @return built authority registry

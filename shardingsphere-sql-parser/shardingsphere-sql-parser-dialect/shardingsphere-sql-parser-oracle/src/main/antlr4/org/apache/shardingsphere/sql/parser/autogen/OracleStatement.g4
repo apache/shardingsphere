@@ -104,5 +104,7 @@ execute
     | createInmemoryJoinGroup
     | dropInmemoryJoinGroup
     | createRestorePoint
+    | dropRestorePoint
+    | dropOperator
     ) SEMI_?
     ;
