@@ -29,6 +29,8 @@ import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.UpdateR
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.WriteRowsEvent;
 import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLBinaryColumnType;
+import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.management.MySQLBinlogFormatDescriptionEventPacket;
+import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.management.MySQLBinlogRotateEventPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.MySQLBinlogTableMapEventPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.MySQLBinlogColumnDef;
 import org.junit.Before;
@@ -46,7 +48,6 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -88,7 +89,8 @@ public final class MySQLBinlogEventPacketDecoderTest {
         byteBuf.writeBytes(StringUtil.decodeHexDump("01000000000004010000002c0000000000000020001a9100000000000062696e6c6f672e3030303032394af65c24"));
         List<Object> decodedEvents = new LinkedList<>();
         binlogEventPacketDecoder.decode(channelHandlerContext, byteBuf, decodedEvents);
-        assertTrue(decodedEvents.isEmpty());
+        assertThat(decodedEvents.size(), is(1));
+        assertThat(decodedEvents.get(0), instanceOf(MySQLBinlogRotateEventPacket.class));
         assertThat(binlogContext.getFileName(), is("binlog.000029"));
     }
     
@@ -99,7 +101,8 @@ public final class MySQLBinlogEventPacketDecoderTest {
                 + "000000000013000d0008000000000400040000006100041a08000000080808020000000a0a0a2a2a001234000a280140081396"));
         List<Object> decodedEvents = new LinkedList<>();
         binlogEventPacketDecoder.decode(channelHandlerContext, byteBuf, decodedEvents);
-        assertTrue(decodedEvents.isEmpty());
+        assertThat(decodedEvents.size(), is(1));
+        assertThat(decodedEvents.get(0), instanceOf(MySQLBinlogFormatDescriptionEventPacket.class));
         assertThat(binlogContext.getChecksumLength(), is(4));
     }
     
@@ -111,7 +114,8 @@ public final class MySQLBinlogEventPacketDecoderTest {
         binlogContext.getTableMap().put(123L, tableMapEventPacket);
         List<Object> decodedEvents = new LinkedList<>();
         binlogEventPacketDecoder.decode(channelHandlerContext, byteBuf, decodedEvents);
-        assertTrue(decodedEvents.isEmpty());
+        assertThat(decodedEvents.size(), is(1));
+        assertThat(decodedEvents.get(0), instanceOf(MySQLBinlogTableMapEventPacket.class));
         assertThat(binlogContext.getTableMap().size(), is(1));
         assertThat(binlogContext.getTableMap().get(123L), instanceOf(MySQLBinlogTableMapEventPacket.class));
     }
