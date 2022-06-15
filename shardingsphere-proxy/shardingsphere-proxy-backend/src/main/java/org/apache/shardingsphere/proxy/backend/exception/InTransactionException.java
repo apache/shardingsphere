@@ -15,16 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception;
+package org.apache.shardingsphere.proxy.backend.exception;
 
-import java.sql.SQLException;
+import lombok.Getter;
 
 /**
  * In transaction exception.
  */
-public final class InTransactionException extends SQLException {
+@Getter
+public final class InTransactionException extends BackendException {
+    
+    private final String message;
     
     public InTransactionException(final String message) {
-        super(message);
+        this.message = message;
     }
 }
