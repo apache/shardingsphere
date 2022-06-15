@@ -148,5 +148,6 @@ execute
     | close
     | cluster
     | alterOperator
+    | createAccessMethod
     ) SEMI_? EOF
     ;
