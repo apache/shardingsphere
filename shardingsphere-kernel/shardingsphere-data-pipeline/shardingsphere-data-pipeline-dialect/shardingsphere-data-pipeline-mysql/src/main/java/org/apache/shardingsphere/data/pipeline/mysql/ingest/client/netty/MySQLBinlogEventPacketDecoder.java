@@ -23,6 +23,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.BinlogContext;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.AbstractBinlogEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.AbstractRowsEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.DeleteRowsEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.PlaceholderEvent;
@@ -55,7 +56,7 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
     
     @Override
     protected void decode(final ChannelHandlerContext ctx, final ByteBuf in, final List<Object> out) {
-        // readable bytes must grete + seqId(1b) + statusCode(1b) + header-length(19b) + 
+        // readable bytes must grete + seqId(1b) + statusCode(1b) + header-length(19b) +
         while (in.readableBytes() >= 2 + MySQLBinlogEventHeader.MYSQL_BINLOG_EVENT_HEADER_LENGTH) {
             in.markReaderIndex();
             MySQLPacketPayload payload = new MySQLPacketPayload(in, ctx.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get());
@@ -68,7 +69,10 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
                 in.resetReaderIndex();
                 break;
             }
-            out.add(decodeEvent(payload, binlogEventHeader));
+            Object event = decodeEvent(payload, binlogEventHeader);
+            if (event instanceof AbstractBinlogEvent) {
+                out.add(event);
+            }
             skipChecksum(binlogEventHeader.getEventType(), in);
         }
     }
