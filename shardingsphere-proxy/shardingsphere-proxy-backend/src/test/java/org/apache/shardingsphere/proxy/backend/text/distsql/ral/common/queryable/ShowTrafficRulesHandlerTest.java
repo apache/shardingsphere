@@ -18,26 +18,25 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable;
 
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ShowTrafficRulesStatement;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.api.config.TrafficStrategyConfiguration;
+import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.junit.Test;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -45,13 +44,15 @@ import static org.mockito.Mockito.when;
 public class ShowTrafficRulesHandlerTest extends ProxyContextRestorer {
     
     @Test
-    public void assertExecutor() throws SQLException {
+    public void assertExecute() throws SQLException {
         ShowTrafficRulesStatement showTrafficRuleStatement = new ShowTrafficRulesStatement();
         showTrafficRuleStatement.setRuleName("rule_name_1");
         ShowTrafficRulesHandler handler = new ShowTrafficRulesHandler();
         handler.init(showTrafficRuleStatement, null);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findRuleConfigurations(any())).thenReturn(createTrafficRule());
+        TrafficRule rule = mock(TrafficRule.class);
+        when(rule.getConfiguration()).thenReturn(createTrafficRuleConfiguration());
+        when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(TrafficRule.class)).thenReturn(Optional.of(rule));
         ProxyContext.init(contextManager);
         handler.execute();
         handler.next();
@@ -65,7 +66,7 @@ public class ShowTrafficRulesHandlerTest extends ProxyContextRestorer {
         assertThat(data.get(5), is(""));
     }
     
-    private Collection<RuleConfiguration> createTrafficRule() {
+    private TrafficRuleConfiguration createTrafficRuleConfiguration() {
         TrafficRuleConfiguration result = new TrafficRuleConfiguration();
         result.getTrafficStrategies().add(new TrafficStrategyConfiguration("rule_name_1", Arrays.asList("olap", "order_by"), "algorithm_1", "load_balancer_1"));
         result.getTrafficStrategies().add(new TrafficStrategyConfiguration("rule_name_2", Collections.singletonList("oltp"), "algorithm_2", "load_balancer_2"));
@@ -73,7 +74,7 @@ public class ShowTrafficRulesHandlerTest extends ProxyContextRestorer {
         result.getLoadBalancers().put("load_balancer_2", new ShardingSphereAlgorithmConfiguration("ROBIN", new Properties()));
         result.getTrafficAlgorithms().put("algorithm_1", new ShardingSphereAlgorithmConfiguration("SQL_MATCH", createProperties()));
         result.getTrafficAlgorithms().put("algorithm_2", new ShardingSphereAlgorithmConfiguration("SQL_HINT", new Properties()));
-        return Collections.singleton(result);
+        return result;
     }
     
     private Properties createProperties() {

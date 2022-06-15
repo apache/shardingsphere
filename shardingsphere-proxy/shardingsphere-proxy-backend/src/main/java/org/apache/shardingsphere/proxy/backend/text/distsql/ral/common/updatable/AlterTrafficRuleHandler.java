@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable;
 
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.distsql.parser.segment.TrafficRuleSegment;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.AlterTrafficRuleStatement;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
@@ -32,6 +33,7 @@ import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.api.config.TrafficStrategyConfiguration;
 import org.apache.shardingsphere.traffic.factory.TrafficAlgorithmFactory;
 import org.apache.shardingsphere.traffic.factory.TrafficLoadBalanceAlgorithmFactory;
+import org.apache.shardingsphere.traffic.rule.TrafficRule;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -46,15 +48,16 @@ public final class AlterTrafficRuleHandler extends UpdatableRALBackendHandler<Al
     
     @Override
     protected void update(final ContextManager contextManager) throws DistSQLException {
-        Optional<TrafficRuleConfiguration> currentConfig = findCurrentConfiguration();
-        DistSQLException.predictionThrow(currentConfig.isPresent(), () -> new RequiredRuleMissedException("Traffic"));
-        check(getSqlStatement(), currentConfig.get());
+        TrafficRuleConfiguration currentConfig = findCurrentConfiguration();
+        check(getSqlStatement(), currentConfig);
         TrafficRuleConfiguration toBeAlteredConfig = TrafficRuleConverter.convert(getSqlStatement().getSegments());
-        persistNewRuleConfigurations(toBeAlteredConfig, currentConfig.get());
+        persistNewRuleConfigurations(toBeAlteredConfig, currentConfig);
     }
     
-    private Optional<TrafficRuleConfiguration> findCurrentConfiguration() {
-        return ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findRuleConfigurations(TrafficRuleConfiguration.class).stream().findAny();
+    private TrafficRuleConfiguration findCurrentConfiguration() {
+        Optional<TrafficRule> rule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(TrafficRule.class);
+        Preconditions.checkState(rule.isPresent());
+        return rule.get().getConfiguration();
     }
     
     private void check(final AlterTrafficRuleStatement sqlStatement, final TrafficRuleConfiguration currentConfig) throws DistSQLException {

@@ -27,7 +27,8 @@ public final class TransparentRule implements ShardingSphereRule {
     
     @Override
     public RuleConfiguration getConfiguration() {
-        return null;
+        return new RuleConfiguration() {
+        };
     }
     
     @Override
