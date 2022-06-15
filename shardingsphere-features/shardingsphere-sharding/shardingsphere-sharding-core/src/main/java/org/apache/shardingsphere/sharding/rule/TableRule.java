@@ -38,7 +38,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -161,19 +160,7 @@ public final class TableRule {
         }
         List<String> dataSources = Strings.isNullOrEmpty(tableRuleConfig.getActualDataSources()) ? new LinkedList<>(dataSourceNames)
                 : new InlineExpressionParser(tableRuleConfig.getActualDataSources()).splitAndEvaluate();
-        return fillDataSourceNames(shardingAlgorithm.getAutoTablesAmount(), dataSources);
-    }
-    
-    private List<String> fillDataSourceNames(final int amount, final List<String> dataSources) {
-        List<String> result = new LinkedList<>();
-        Iterator<String> iterator = dataSources.iterator();
-        for (int i = 0; i < amount; i++) {
-            if (!iterator.hasNext()) {
-                iterator = dataSources.iterator();
-            }
-            result.add(String.format("%s.%s_%s", iterator.next(), logicTable, i));
-        }
-        return result;
+        return DataNodeUtil.getFormatDataNodeList(shardingAlgorithm.getAutoTablesAmount(), logicTable, dataSources);
     }
     
     private Set<String> getActualTables() {
