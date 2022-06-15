@@ -21,7 +21,6 @@ import org.apache.shardingsphere.distsql.parser.statement.rql.show.CountDatabase
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
@@ -74,7 +73,7 @@ public final class DatabaseRulesCountResultSetTest {
     
     private SingleTableRule mockSingleTableRule() {
         SingleTableRule result = mock(SingleTableRule.class);
-        when(result.getExportData()).thenReturn(Collections.singletonMap(ExportableConstants.EXPORT_SINGLE_TABLES, Arrays.asList("single_table_1", "single_table_2")));
+        when(result.getAllTables()).thenReturn(Arrays.asList("single_table_1", "single_table_2"));
         return result;
     }
     
