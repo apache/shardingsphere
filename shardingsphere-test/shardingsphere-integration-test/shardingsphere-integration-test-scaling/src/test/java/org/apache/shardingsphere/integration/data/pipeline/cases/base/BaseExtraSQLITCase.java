@@ -24,6 +24,9 @@ import org.apache.shardingsphere.integration.data.pipeline.framework.param.Scali
 import javax.xml.bind.JAXB;
 import java.util.List;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 public abstract class BaseExtraSQLITCase extends BaseITCase {
     
     @Getter
@@ -52,5 +55,17 @@ public abstract class BaseExtraSQLITCase extends BaseITCase {
     
     protected void createOrderItemTable() {
         executeWithLog(extraSQLCommand.getCreateTableOrderItem());
+    }
+    
+    @Override
+    protected void assertStopScalingSourceWriting() {
+        assertFalse(executeUpdate(extraSQLCommand.getUpdateTableOrderStatus()));
+        assertFalse(executeDDL(extraSQLCommand.getCreateIndexStatus()));
+    }
+    
+    @Override
+    protected void assertRestoreScalingSourceWriting() {
+        assertTrue(executeUpdate(extraSQLCommand.getUpdateTableOrderStatus()));
+        assertTrue(executeDDL(extraSQLCommand.getCreateIndexStatus()));
     }
 }

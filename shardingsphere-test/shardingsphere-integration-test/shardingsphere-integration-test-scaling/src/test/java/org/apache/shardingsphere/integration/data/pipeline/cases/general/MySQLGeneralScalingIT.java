@@ -83,5 +83,6 @@ public final class MySQLGeneralScalingIT extends BaseExtraSQLITCase {
         addTargetResource();
         executeWithLog(getCommonSQLCommand().getAutoAlterOrderWithItemShardingTableRule());
         assertCheckMatchConsistencySuccess();
+        assertRestoreScalingSourceWriting();
     }
 }
