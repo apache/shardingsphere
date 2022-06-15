@@ -25,7 +25,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 
-public class DataBaseTypeFixTure implements DatabaseType {
+public final class DataBaseTypeFixture implements DatabaseType {
     
     @Override
     public QuoteCharacter getQuoteCharacter() {

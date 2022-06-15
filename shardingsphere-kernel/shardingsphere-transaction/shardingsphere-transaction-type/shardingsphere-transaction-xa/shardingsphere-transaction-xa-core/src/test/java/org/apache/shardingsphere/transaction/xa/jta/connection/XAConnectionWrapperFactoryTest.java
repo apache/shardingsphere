@@ -22,8 +22,8 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.transaction.xa.fixture.DataSourceUtils;
-import org.apache.shardingsphere.transaction.xa.fixture.XAConnectionWrapperFixTure;
-import org.apache.shardingsphere.transaction.xa.fixture.XADataSourceDefinitionFixTure;
+import org.apache.shardingsphere.transaction.xa.fixture.XAConnectionWrapperFixture;
+import org.apache.shardingsphere.transaction.xa.fixture.XADataSourceDefinitionFixture;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.swapper.DataSourceSwapper;
 import org.junit.Test;
 
@@ -42,7 +42,7 @@ public final class XAConnectionWrapperFactoryTest {
     
     @Test
     public void assertGetInstance() throws SQLException {
-        XAConnectionWrapper xaConnectionWrapperFixTrue = new XAConnectionWrapperFixTure();
+        XAConnectionWrapper xaConnectionWrapperFixTrue = new XAConnectionWrapperFixture();
         XAConnection actual = xaConnectionWrapperFixTrue.wrap(createXADataSource(), mockConnection());
         assertThat(actual.getXAResource(), instanceOf(JDBC4MysqlXAConnection.class));
     }
@@ -50,7 +50,7 @@ public final class XAConnectionWrapperFactoryTest {
     private XADataSource createXADataSource() {
         DatabaseType databaseType = DatabaseTypeFactory.getInstance("FIXTURE");
         DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, databaseType, "foo_ds");
-        XADataSourceDefinitionFixTure xaDataSourceDefinitionFixTure = new XADataSourceDefinitionFixTure();
+        XADataSourceDefinitionFixture xaDataSourceDefinitionFixTure = new XADataSourceDefinitionFixture();
         return new DataSourceSwapper(xaDataSourceDefinitionFixTure).swap(dataSource);
     }
     

@@ -26,7 +26,7 @@ import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public final class XAConnectionWrapperFixTure implements XAConnectionWrapper {
+public final class XAConnectionWrapperFixture implements XAConnectionWrapper {
     
     private static volatile Class<Connection> jdbcConnectionClass;
     

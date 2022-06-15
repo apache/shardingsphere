@@ -22,7 +22,7 @@ import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XAData
 import java.util.Arrays;
 import java.util.Collection;
 
-public final class XADataSourceDefinitionFixTure implements XADataSourceDefinition {
+public final class XADataSourceDefinitionFixture implements XADataSourceDefinition {
     
     @Override
     public Collection<String> getXADriverClassName() {
