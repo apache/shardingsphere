@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.singletable.fixtrue;
 
-import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
-public final class FixtureRule implements SchemaRule {
+public final class FixtureRule implements ShardingSphereRule {
     
     @Override
     public String getType() {

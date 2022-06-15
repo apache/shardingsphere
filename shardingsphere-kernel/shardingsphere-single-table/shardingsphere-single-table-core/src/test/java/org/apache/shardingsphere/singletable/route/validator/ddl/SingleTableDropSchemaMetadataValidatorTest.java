@@ -40,7 +40,7 @@ import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropSchemaStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLDropSchemaStatement;
-import static org.junit.Assert.assertTrue;
+import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -53,7 +53,7 @@ public final class SingleTableDropSchemaMetadataValidatorTest {
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.singleton(rule));
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME,
                 mock(DatabaseType.class), mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS), ruleMetaData, Collections.emptyMap());
-        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class),
+        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), DefaultDatabase.LOGIC_NAME,
                 createSingleDataSourceMap(), Collections.emptyList(), new ConfigurationProperties(new Properties()));
         DropSchemaStatement sqlStatement = new PostgreSQLDropSchemaStatement();
         sqlStatement.getSchemaNames().add(new IdentifierValue("t_order_item"));
@@ -65,7 +65,7 @@ public final class SingleTableDropSchemaMetadataValidatorTest {
     
     private Map<String, DataSource> createSingleDataSourceMap() {
         Map<String, DataSource> result = new HashMap<>(2, 1);
-        result.put("ds_0", mock(DataSource.class, RETURNS_DEEP_STUBS));
+        result.put("ds_0", new MockedDataSource());
         return result;
     }
 }
