@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.binder.type;
 
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 
 import java.util.Collection;
 
@@ -32,4 +33,11 @@ public interface IndexAvailable {
      * @return index segments
      */
     Collection<IndexSegment> getIndexes();
+    
+    /**
+     * Get index columns.
+     *
+     * @return index columns
+     */
+    Collection<ColumnSegment> getIndexColumns();
 }
