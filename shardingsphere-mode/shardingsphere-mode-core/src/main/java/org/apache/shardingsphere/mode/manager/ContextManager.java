@@ -49,6 +49,8 @@ import org.apache.shardingsphere.infra.rule.builder.schema.DatabaseRulesBuilder;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
+import org.apache.shardingsphere.mode.manager.lock.LockJudgeEngine;
+import org.apache.shardingsphere.mode.manager.lock.LockJudgeEngineBuilder;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsBuilder;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
@@ -83,10 +85,13 @@ public final class ContextManager implements AutoCloseable {
     
     private final ExecutorEngine executorEngine;
     
+    private final LockJudgeEngine lockJudgeEngine;
+    
     public ContextManager(final MetaDataContexts metaDataContexts, final InstanceContext instanceContext) {
         this.metaDataContexts = metaDataContexts;
         this.instanceContext = instanceContext;
         executorEngine = ExecutorEngine.createExecutorEngineWithSize(metaDataContexts.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE));
+        lockJudgeEngine = LockJudgeEngineBuilder.build(instanceContext.getLockContext());
     }
     
     /**
