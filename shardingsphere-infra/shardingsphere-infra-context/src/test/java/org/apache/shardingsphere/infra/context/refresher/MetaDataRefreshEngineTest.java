@@ -43,7 +43,7 @@ import static org.mockito.Mockito.when;
 
 public final class MetaDataRefreshEngineTest {
     
-    private final MetaDataRefreshEngine engine =  new MetaDataRefreshEngine(
+    private final MetaDataRefreshEngine engine = new MetaDataRefreshEngine(
             mock(ShardingSphereDatabase.class), mock(FederationDatabaseMetaData.class), Collections.emptyMap(), new ConfigurationProperties(new Properties()));
     
     @SuppressWarnings("rawtypes")
