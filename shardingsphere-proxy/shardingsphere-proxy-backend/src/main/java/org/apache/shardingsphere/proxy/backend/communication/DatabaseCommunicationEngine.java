@@ -39,6 +39,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.event.MetaDataRe
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.mode.manager.lock.LockJudgeEngine;
+import org.apache.shardingsphere.mode.manager.lock.LockJudgeEngineBuilder;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.DatabaseLockedException;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
@@ -95,7 +96,7 @@ public abstract class DatabaseCommunicationEngine<T> {
                 ProxyContext.getInstance().getContextManager().getMetaDataContexts().getOptimizerContext().getFederationMetaData().getDatabases().get(databaseName),
                 ProxyContext.getInstance().getContextManager().getMetaDataContexts().getOptimizerContext().getPlannerContexts(),
                 ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps());
-        lockJudgeEngine = ProxyContext.getInstance().getContextManager().getLockJudgeEngine();
+        lockJudgeEngine = LockJudgeEngineBuilder.build(ProxyContext.getInstance().getContextManager().getInstanceContext().getLockContext());
     }
     
     /**
