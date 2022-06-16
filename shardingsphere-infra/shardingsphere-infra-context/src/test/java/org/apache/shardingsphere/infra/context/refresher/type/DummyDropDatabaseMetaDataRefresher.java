@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.context.refresher.type;
 
+import lombok.Getter;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.refresher.MetaDataRefresher;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContext;
@@ -29,14 +30,17 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 
+@Getter
 public final class DummyDropDatabaseMetaDataRefresher implements MetaDataRefresher<DropDatabaseStatement> {
+    
+    private int count;
     
     @Override
     public Optional<MetaDataRefreshedEvent> refresh(final ShardingSphereDatabase database, final FederationDatabaseMetaData federationDatabaseMetaData,
                                                     final Map<String, OptimizerPlannerContext> optimizerPlanners,
                                                     final Collection<String> logicDataSourceNames, final String schemaName, final DropDatabaseStatement sqlStatement,
                                                     final ConfigurationProperties props) {
-        sqlStatement.getDatabaseName();
+        count++;
         return Optional.empty();
     }
     

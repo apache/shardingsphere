@@ -55,7 +55,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Database communication engine.
@@ -106,8 +105,7 @@ public abstract class DatabaseCommunicationEngine<T> {
     public abstract T execute();
     
     protected void refreshMetaData(final ExecutionContext executionContext) throws SQLException {
-        Optional<MetaDataRefreshedEvent> event = metadataRefreshEngine.refresh(executionContext.getSqlStatementContext(), () -> executionContext.getRouteContext().getRouteUnits().stream()
-                .map(each -> each.getDataSourceMapper().getLogicName()).collect(Collectors.toList()));
+        Optional<MetaDataRefreshedEvent> event = metadataRefreshEngine.refresh(executionContext.getSqlStatementContext(), executionContext.getRouteContext().getRouteUnits());
         if (ProxyContext.getInstance().getContextManager().getInstanceContext().isCluster() && event.isPresent()) {
             ShardingSphereEventBus.getInstance().post(event.get());
         }
