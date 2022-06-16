@@ -57,7 +57,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -128,7 +127,7 @@ public abstract class BaseITCase {
         long startTime = System.currentTimeMillis();
         int waitTimes = 0;
         do {
-            List<Map<String, Object>> result = jdbcTemplate.queryForList("SHOW SHARDING ALGORITHMS");
+            List<Map<String, Object>> result = queryForListWithLog("SHOW SHARDING ALGORITHMS");
             if (result.size() >= 3) {
                 log.info("waitShardingAlgorithmEffect time consume: {}", System.currentTimeMillis() - startTime);
                 return true;
@@ -261,20 +260,19 @@ public abstract class BaseITCase {
                 previewResults.stream().map(each -> each.get("data_source_name")).collect(Collectors.toSet()), is(new HashSet<>(Arrays.asList("ds_0", "ds_1"))));
     }
     
-    /**
-     * Check data match consistency.
-     *
-     * @throws InterruptedException interrupted exception
-     */
-    protected void assertCheckMatchConsistencySuccess() throws InterruptedException {
+    protected String getScalingJobId() {
         assertBeforeApplyScalingMetadataCorrectly();
-        if (null != increaseTaskThread) {
-            increaseTaskThread.join(60 * 1000L);
-        }
-        TimeUnit.SECONDS.sleep(4);
         List<Map<String, Object>> scalingListMap = queryForListWithLog("SHOW SCALING LIST");
         assertThat(scalingListMap.size(), is(1));
         String jobId = scalingListMap.get(0).get("id").toString();
+        log.info("jobId: {}", jobId);
+        return jobId;
+    }
+    
+    protected void waitScalingFinished(final String jobId) throws InterruptedException {
+        if (null != increaseTaskThread) {
+            TimeUnit.SECONDS.timedJoin(increaseTaskThread, 60);
+        }
         log.info("jobId: {}", jobId);
         Map<String, String> actualStatusMap = new HashMap<>(2, 1);
         String showScalingStatus = String.format("SHOW SCALING STATUS %s", jobId);
@@ -301,27 +299,25 @@ public abstract class BaseITCase {
             TimeUnit.SECONDS.sleep(2);
         }
         assertThat(actualStatusMap.values().stream().filter(StringUtils::isNotBlank).collect(Collectors.toSet()).size(), is(1));
+    }
+    
+    protected void assertCheckScalingSuccess(final String jobId) {
         stopScalingSourceWriting(jobId);
         assertStopScalingSourceWriting();
-        assertBeforeApplyScalingMetadataCorrectly();
         List<Map<String, Object>> checkScalingResults = queryForListWithLog(String.format("CHECK SCALING %s BY TYPE (NAME=DATA_MATCH)", jobId));
         log.info("checkScalingResults: {}", checkScalingResults);
         for (Map<String, Object> entry : checkScalingResults) {
             assertTrue(Boolean.parseBoolean(entry.get("records_content_matched").toString()));
         }
-        assertBeforeApplyScalingMetadataCorrectly();
-        applyScaling(jobId);
-        // TODO make sure the scaling job was applied
-        TimeUnit.SECONDS.sleep(2);
-        List<Map<String, Object>> previewResults = queryForListWithLog("PREVIEW SELECT COUNT(1) FROM t_order");
-        Set<Object> targetSources = previewResults.stream().map(each -> each.get("actual_sql")).collect(Collectors.toSet());
-        assertThat(previewResults.stream().map(each -> each.get("data_source_name")).collect(Collectors.toSet()), is(new HashSet<>(Arrays.asList("ds_2", "ds_3", "ds_4"))));
-        assertThat(targetSources, is(new HashSet<>(Arrays.asList("SELECT COUNT(1) FROM t_order_0 UNION ALL SELECT COUNT(1) FROM t_order_3",
-                "SELECT COUNT(1) FROM t_order_1 UNION ALL SELECT COUNT(1) FROM t_order_4", "SELECT COUNT(1) FROM t_order_2 UNION ALL SELECT COUNT(1) FROM t_order_5"))));
-        restoreScalingSourceWriting(jobId);
     }
     
-    private void restoreScalingSourceWriting(final String jobId) {
+    protected void assertPreviewTableSuccess(final String tableName, final List<String> expect) {
+        List<Map<String, Object>> actualResults = queryForListWithLog(String.format("PREVIEW SELECT COUNT(1) FROM %s", tableName));
+        List<String> dataSourceNames = actualResults.stream().map(each -> String.valueOf(each.get("data_source_name"))).collect(Collectors.toList());
+        assertThat(dataSourceNames, is(expect));
+    }
+    
+    protected void restoreScalingSourceWriting(final String jobId) {
         executeWithLog(String.format("RESTORE SCALING SOURCE WRITING %s", jobId));
     }
     

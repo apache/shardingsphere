@@ -31,6 +31,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -82,7 +83,13 @@ public final class MySQLGeneralScalingIT extends BaseExtraSQLITCase {
         startIncrementTask(new MySQLIncrementTask(getJdbcTemplate(), keyGenerateAlgorithm, true));
         addTargetResource();
         executeWithLog(getCommonSQLCommand().getAutoAlterOrderWithItemShardingTableRule());
-        assertCheckMatchConsistencySuccess();
+        String jobId = getScalingJobId();
+        waitScalingFinished(jobId);
+        assertCheckScalingSuccess(jobId);
+        applyScaling(jobId);
+        assertPreviewTableSuccess("t_order", Arrays.asList("ds_2", "ds_3", "ds_4"));
+        assertPreviewTableSuccess("t_order_item", Arrays.asList("ds_2", "ds_3", "ds_4"));
+        restoreScalingSourceWriting(jobId);
         assertRestoreScalingSourceWriting();
     }
 }
