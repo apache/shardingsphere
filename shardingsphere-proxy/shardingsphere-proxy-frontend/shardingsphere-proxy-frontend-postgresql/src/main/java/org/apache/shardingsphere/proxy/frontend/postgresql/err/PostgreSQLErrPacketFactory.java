@@ -24,6 +24,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLError
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLMessageSeverityLevel;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
 import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
+import org.apache.shardingsphere.proxy.backend.exception.InTransactionException;
 import org.apache.shardingsphere.proxy.backend.exception.DatabaseLockedException;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.InvalidAuthorizationSpecificationException;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.PostgreSQLAuthenticationException;
@@ -49,6 +50,9 @@ public final class PostgreSQLErrPacketFactory {
     public static PostgreSQLErrorResponsePacket newInstance(final Exception cause) {
         if (cause instanceof PSQLException && null != ((PSQLException) cause).getServerErrorMessage()) {
             return createErrorResponsePacket(((PSQLException) cause).getServerErrorMessage());
+        }
+        if (cause instanceof InTransactionException) {
+            return PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.WARNING, PostgreSQLErrorCode.WARNING.getErrorCode(), cause.getMessage()).build();
         }
         if (cause instanceof SQLException) {
             return createErrorResponsePacket((SQLException) cause);

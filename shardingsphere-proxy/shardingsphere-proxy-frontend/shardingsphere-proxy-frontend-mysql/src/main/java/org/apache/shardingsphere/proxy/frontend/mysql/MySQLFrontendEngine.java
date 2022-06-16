@@ -63,7 +63,7 @@ public final class MySQLFrontendEngine implements DatabaseProtocolFrontendEngine
     }
     
     @Override
-    public void handleException(final ConnectionSession connectionSession) {
+    public void handleException(final ConnectionSession connectionSession, final Exception exception) {
     }
     
     @Override
