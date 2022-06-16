@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -36,5 +37,5 @@ public final class MySQLPreparedStatement {
     
     private final SQLStatement sqlStatement;
     
-    private List<MySQLPreparedStatementParameterType> parameterTypes;
+    private List<MySQLPreparedStatementParameterType> parameterTypes = Collections.emptyList();
 }
