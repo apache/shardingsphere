@@ -82,7 +82,8 @@ public final class MySQLGeneralScalingIT extends BaseExtraSQLITCase {
         }
         startIncrementTask(new MySQLIncrementTask(getJdbcTemplate(), keyGenerateAlgorithm, true));
         addTargetResource();
-        String jobId = startScaling();
+        executeWithLog(getCommonSQLCommand().getAutoAlterOrderWithItemShardingTableRule());
+        String jobId = getScalingJobId();
         waitScalingFinished(jobId);
         assertCheckScalingSuccess(jobId);
         applyScaling(jobId);

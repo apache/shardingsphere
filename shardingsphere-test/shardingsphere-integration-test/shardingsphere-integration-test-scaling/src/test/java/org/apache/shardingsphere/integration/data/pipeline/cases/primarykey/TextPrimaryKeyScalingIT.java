@@ -75,11 +75,12 @@ public class TextPrimaryKeyScalingIT extends BaseExtraSQLITCase {
         createOrderTable();
         batchInsertOrder();
         addTargetResource();
-        String jobId = startScaling();
+        executeWithLog(getCommonSQLCommand().getAutoAlterOrderShardingTableRule());
+        String jobId = getScalingJobId();
         waitScalingFinished(jobId);
         assertCheckScalingSuccess(jobId);
+        applyScaling(jobId);
         assertPreviewTableSuccess("t_order", Arrays.asList("ds_2", "ds_3", "ds_4"));
-        assertPreviewTableSuccess("t_order_order", Arrays.asList("ds_2", "ds_3", "ds_4"));
     }
     
     private void batchInsertOrder() {

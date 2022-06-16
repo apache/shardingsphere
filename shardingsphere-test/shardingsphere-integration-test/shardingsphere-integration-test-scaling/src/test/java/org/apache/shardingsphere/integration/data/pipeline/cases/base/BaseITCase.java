@@ -260,9 +260,7 @@ public abstract class BaseITCase {
                 previewResults.stream().map(each -> each.get("data_source_name")).collect(Collectors.toSet()), is(new HashSet<>(Arrays.asList("ds_0", "ds_1"))));
     }
     
-    protected String startScaling() {
-        executeWithLog(getCommonSQLCommand().getAutoAlterOrderWithItemShardingTableRule());
-        ThreadUtil.sleep(2, TimeUnit.SECONDS);
+    protected String getScalingJobId() {
         assertBeforeApplyScalingMetadataCorrectly();
         List<Map<String, Object>> scalingListMap = queryForListWithLog("SHOW SCALING LIST");
         assertThat(scalingListMap.size(), is(1));
