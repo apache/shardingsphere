@@ -86,5 +86,6 @@ public final class PostgreSQLGeneralScalingIT extends BaseExtraSQLITCase {
         addTargetResource();
         getJdbcTemplate().execute(getCommonSQLCommand().getAutoAlterOrderWithItemShardingTableRule());
         assertCheckMatchConsistencySuccess();
+        assertRestoreScalingSourceWriting();
     }
 }

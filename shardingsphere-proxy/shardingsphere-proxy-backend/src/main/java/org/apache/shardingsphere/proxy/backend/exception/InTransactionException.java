@@ -15,9 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.rule;
+package org.apache.shardingsphere.proxy.backend.exception;
 
-import org.apache.shardingsphere.infra.config.scope.DatabaseRuleConfiguration;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-public final class ShardingSphereRuleConfigurationFixture implements DatabaseRuleConfiguration {
+/**
+ * In transaction exception.
+ */
+@Getter
+@RequiredArgsConstructor
+public final class InTransactionException extends BackendException {
+    
+    private final String message;
 }

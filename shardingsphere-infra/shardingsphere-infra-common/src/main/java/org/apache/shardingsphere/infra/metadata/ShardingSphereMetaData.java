@@ -42,6 +42,6 @@ public final class ShardingSphereMetaData {
     private final ConfigurationProperties props;
     
     public ShardingSphereMetaData() {
-        this(new LinkedHashMap<>(), new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()), new ConfigurationProperties(new Properties()));
+        this(new LinkedHashMap<>(), new ShardingSphereRuleMetaData(Collections.emptyList()), new ConfigurationProperties(new Properties()));
     }
 }

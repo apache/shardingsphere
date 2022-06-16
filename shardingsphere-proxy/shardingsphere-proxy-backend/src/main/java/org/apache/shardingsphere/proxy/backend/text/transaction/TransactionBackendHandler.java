@@ -18,8 +18,10 @@
 package org.apache.shardingsphere.proxy.backend.text.transaction;
 
 import io.vertx.core.Future;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.proxy.backend.exception.InTransactionException;
 import org.apache.shardingsphere.proxy.backend.communication.TransactionManager;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.JDBCBackendTransactionManager;
@@ -35,7 +37,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackSta
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SetAutoCommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLBeginTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLSetAutoCommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.tcl.OpenGaussCommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.tcl.OpenGaussRollbackStatement;
@@ -80,8 +81,12 @@ public final class TransactionBackendHandler implements TextProtocolBackendHandl
     private Future<Void> determineFuture(final VertxLocalTransactionManager transactionManager) {
         switch (operationType) {
             case BEGIN:
-                if (tclStatement instanceof MySQLBeginTransactionStatement && connectionSession.getTransactionStatus().isInTransaction()) {
-                    return transactionManager.commit().compose(unused -> transactionManager.begin());
+                if (connectionSession.getTransactionStatus().isInTransaction()) {
+                    if (connectionSession.getDatabaseType() instanceof MySQLDatabaseType) {
+                        return transactionManager.commit().compose(unused -> transactionManager.begin());
+                    } else if (connectionSession.getDatabaseType() instanceof PostgreSQLDatabaseType || connectionSession.getDatabaseType() instanceof OpenGaussDatabaseType) {
+                        return Future.failedFuture(new InTransactionException("There is already a transaction in progress."));
+                    }
                 }
                 return transactionManager.begin();
             case SAVEPOINT:
@@ -103,10 +108,7 @@ public final class TransactionBackendHandler implements TextProtocolBackendHandl
     public ResponseHeader execute() throws SQLException {
         switch (operationType) {
             case BEGIN:
-                if (tclStatement instanceof MySQLBeginTransactionStatement && connectionSession.getTransactionStatus().isInTransaction()) {
-                    backendTransactionManager.commit();
-                }
-                backendTransactionManager.begin();
+                handleBegin();
                 break;
             case SAVEPOINT:
                 handleSavepoint();
@@ -131,6 +133,17 @@ public final class TransactionBackendHandler implements TextProtocolBackendHandl
                 throw new SQLFeatureNotSupportedException(operationType.name());
         }
         return new UpdateResponseHeader(tclStatement);
+    }
+    
+    private void handleBegin() throws SQLException {
+        if (connectionSession.getTransactionStatus().isInTransaction()) {
+            if (connectionSession.getDatabaseType() instanceof MySQLDatabaseType) {
+                backendTransactionManager.commit();
+            } else if (connectionSession.getDatabaseType() instanceof PostgreSQLDatabaseType || connectionSession.getDatabaseType() instanceof OpenGaussDatabaseType) {
+                throw new InTransactionException("There is already a transaction in progress.");
+            }
+        }
+        backendTransactionManager.begin();
     }
     
     private void handleSavepoint() throws SQLException {

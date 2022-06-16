@@ -137,7 +137,7 @@ public final class OpenGaussAuthenticationHandlerTest extends ProxyContextRestor
             ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
             ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
             when(database.getResource()).thenReturn(new ShardingSphereResource(Collections.emptyMap()));
-            when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()));
+            when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
             when(database.getSchemas().get(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
             when(schema.getTables()).thenReturn(Collections.emptyMap());
             result.put(String.format(SCHEMA_PATTERN, i), database);
@@ -148,7 +148,7 @@ public final class OpenGaussAuthenticationHandlerTest extends ProxyContextRestor
     private ShardingSphereRuleMetaData buildGlobalRuleMetaData(final ShardingSphereUser user) {
         AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(Collections.singletonList(user), new ShardingSphereAlgorithmConfiguration("NATIVE", new Properties()));
         AuthorityRule rule = new AuthorityRuleBuilder().build(ruleConfig, Collections.emptyMap());
-        return new ShardingSphereRuleMetaData(Collections.singletonList(ruleConfig), Collections.singleton(rule));
+        return new ShardingSphereRuleMetaData(Collections.singleton(rule));
     }
     
     private String encodeDigest(final String password, final String random64code, final String token, final int serverIteration) {

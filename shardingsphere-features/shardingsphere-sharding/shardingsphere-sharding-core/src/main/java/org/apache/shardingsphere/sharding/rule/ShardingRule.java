@@ -87,6 +87,8 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
     
     private static final String ALGORITHM_EXPRESSION_KEY = "algorithm-expression";
     
+    private final RuleConfiguration configuration;
+    
     private final Collection<String> dataSourceNames;
     
     private final Map<String, ShardingAlgorithm> shardingAlgorithms = new LinkedHashMap<>();
@@ -110,13 +112,14 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
     private final Map<String, Collection<DataNode>> shardingTableDataNodes;
     
     public ShardingRule(final ShardingRuleConfiguration config, final Collection<String> dataSourceNames) {
+        configuration = config;
         this.dataSourceNames = getDataSourceNames(config.getTables(), config.getAutoTables(), dataSourceNames);
         config.getShardingAlgorithms().forEach((key, value) -> shardingAlgorithms.put(key, createShardingAlgorithm(key, value, config.getTables(), config.getAutoTables())));
         config.getKeyGenerators().forEach((key, value) -> keyGenerators.put(key, KeyGenerateAlgorithmFactory.newInstance(value)));
         tableRules.putAll(createTableRules(config.getTables(), config.getDefaultKeyGenerateStrategy()));
         tableRules.putAll(createAutoTableRules(config.getAutoTables(), config.getDefaultKeyGenerateStrategy()));
-        bindingTableRules.putAll(createBindingTableRules(config.getBindingTableGroups()));
         broadcastTables = createBroadcastTables(config.getBroadcastTables());
+        bindingTableRules.putAll(createBindingTableRules(config.getBindingTableGroups()));
         defaultDatabaseShardingStrategyConfig = null == config.getDefaultDatabaseShardingStrategy() ? new NoneShardingStrategyConfiguration() : config.getDefaultDatabaseShardingStrategy();
         defaultTableShardingStrategyConfig = null == config.getDefaultTableShardingStrategy() ? new NoneShardingStrategyConfiguration() : config.getDefaultTableShardingStrategy();
         defaultKeyGenerateAlgorithm = null == config.getDefaultKeyGenerateStrategy()
@@ -130,13 +133,14 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
     }
     
     public ShardingRule(final AlgorithmProvidedShardingRuleConfiguration config, final Collection<String> dataSourceNames) {
+        configuration = config;
         this.dataSourceNames = getDataSourceNames(config.getTables(), config.getAutoTables(), dataSourceNames);
         shardingAlgorithms.putAll(config.getShardingAlgorithms());
         keyGenerators.putAll(config.getKeyGenerators());
         tableRules.putAll(createTableRules(config.getTables(), config.getDefaultKeyGenerateStrategy()));
         tableRules.putAll(createAutoTableRules(config.getAutoTables(), config.getDefaultKeyGenerateStrategy()));
-        bindingTableRules.putAll(createBindingTableRules(config.getBindingTableGroups()));
         broadcastTables = createBroadcastTables(config.getBroadcastTables());
+        bindingTableRules.putAll(createBindingTableRules(config.getBindingTableGroups()));
         defaultDatabaseShardingStrategyConfig = null == config.getDefaultDatabaseShardingStrategy() ? new NoneShardingStrategyConfiguration() : config.getDefaultDatabaseShardingStrategy();
         defaultTableShardingStrategyConfig = null == config.getDefaultTableShardingStrategy() ? new NoneShardingStrategyConfiguration() : config.getDefaultTableShardingStrategy();
         defaultKeyGenerateAlgorithm = null == config.getDefaultKeyGenerateStrategy()

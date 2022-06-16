@@ -20,7 +20,9 @@ package org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -33,7 +35,7 @@ public final class MySQLPreparedStatement {
     
     private final String sql;
     
-    private final int parameterCount;
+    private final SQLStatement sqlStatement;
     
-    private List<MySQLPreparedStatementParameterType> parameterTypes;
+    private List<MySQLPreparedStatementParameterType> parameterTypes = Collections.emptyList();
 }

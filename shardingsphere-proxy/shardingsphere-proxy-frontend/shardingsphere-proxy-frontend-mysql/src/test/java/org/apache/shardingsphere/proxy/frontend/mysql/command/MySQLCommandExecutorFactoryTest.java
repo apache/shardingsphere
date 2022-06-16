@@ -146,9 +146,8 @@ public final class MySQLCommandExecutorFactoryTest extends ProxyContextRestorer 
     
     @Test
     public void assertNewInstanceWithComStmtExecute() throws SQLException {
-        MySQLComStmtExecutePacket packet = mock(MySQLComStmtExecutePacket.class);
-        when(packet.getSql()).thenReturn("SELECT 1");
-        assertThat(MySQLCommandExecutorFactory.newInstance(MySQLCommandPacketType.COM_STMT_EXECUTE, packet, connectionSession), instanceOf(MySQLComStmtExecuteExecutor.class));
+        assertThat(MySQLCommandExecutorFactory.newInstance(MySQLCommandPacketType.COM_STMT_EXECUTE, mock(MySQLComStmtExecutePacket.class), connectionSession),
+                instanceOf(MySQLComStmtExecuteExecutor.class));
     }
     
     @Test
