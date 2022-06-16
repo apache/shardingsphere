@@ -29,9 +29,6 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 
-/**
- * MetaDataRefresher for testing.
- */
 public final class DummyDropDatabaseMetaDataRefresher implements MetaDataRefresher<DropDatabaseStatement> {
     
     @Override

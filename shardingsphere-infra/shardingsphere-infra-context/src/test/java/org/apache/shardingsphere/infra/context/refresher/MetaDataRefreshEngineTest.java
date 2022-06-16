@@ -50,7 +50,6 @@ public final class MetaDataRefreshEngineTest {
     
     @Test
     public void assertRefreshNonIgnorableSQLStatement() throws Exception {
-        final int dropTimes = 10;
         SQLStatementContext<DropDatabaseStatement> sqlStatementContext = mock(SQLStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(DropDatabaseStatement.class));
         when(sqlStatementContext.getTablesContext()).thenReturn(mock(TablesContext.class));
@@ -60,12 +59,14 @@ public final class MetaDataRefreshEngineTest {
         Field field = metaDataRefreshEngine.getClass().getDeclaredField("database");
         field.setAccessible(true);
         field.set(metaDataRefreshEngine, database);
+        int dropTimes = 10;
         for (int i = 0; i < dropTimes; i++) {
             metaDataRefreshEngine.refresh(sqlStatementContext, Collections::emptyList);
         }
         verify(sqlStatementContext.getSqlStatement(), times(dropTimes)).getDatabaseName();
     }
     
+    @SuppressWarnings("unchecked")
     @Test
     public void assertRefreshIgnorableSQLStatement() throws SQLException {
         SQLStatementContext<SelectStatement> sqlStatementContext = mock(SQLStatementContext.class);
@@ -74,7 +75,8 @@ public final class MetaDataRefreshEngineTest {
         assertTrue(getIgnorableSQLStatementClasses().contains(sqlStatementContext.getSqlStatement().getClass()));
     }
     
-    @SneakyThrows
+    @SuppressWarnings("unchecked")
+    @SneakyThrows(ReflectiveOperationException.class)
     private Set<Class<? extends SQLStatement>> getIgnorableSQLStatementClasses() {
         Field field = MetaDataRefreshEngine.class.getDeclaredField("IGNORABLE_SQL_STATEMENT_CLASSES");
         field.setAccessible(true);
