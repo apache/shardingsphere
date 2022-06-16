@@ -40,6 +40,7 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.MySQLBinlog
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * MySQL binlog event packet decoder.
@@ -56,7 +57,7 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
     
     @Override
     protected void decode(final ChannelHandlerContext ctx, final ByteBuf in, final List<Object> out) {
-        // readable bytes must grete + seqId(1b) + statusCode(1b) + header-length(19b) +
+        // readable bytes must greater + seqId(1b) + statusCode(1b) + header-length(19b) +
         while (in.readableBytes() >= 2 + MySQLBinlogEventHeader.MYSQL_BINLOG_EVENT_HEADER_LENGTH) {
             in.markReaderIndex();
             MySQLPacketPayload payload = new MySQLPacketPayload(in, ctx.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get());
@@ -69,22 +70,22 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
                 in.resetReaderIndex();
                 break;
             }
-            Object event = decodeEvent(payload, binlogEventHeader);
-            if (event instanceof AbstractBinlogEvent) {
-                out.add(event);
-            }
+            Optional.ofNullable(decodeEvent(payload, binlogEventHeader)).ifPresent(out::add);
             skipChecksum(binlogEventHeader.getEventType(), in);
         }
     }
     
-    private Object decodeEvent(final MySQLPacketPayload payload, final MySQLBinlogEventHeader binlogEventHeader) {
+    private AbstractBinlogEvent decodeEvent(final MySQLPacketPayload payload, final MySQLBinlogEventHeader binlogEventHeader) {
         switch (MySQLBinlogEventType.valueOf(binlogEventHeader.getEventType())) {
             case ROTATE_EVENT:
-                return decodeRotateEvent(binlogEventHeader, payload);
+                decodeRotateEvent(binlogEventHeader, payload);
+                return null;
             case FORMAT_DESCRIPTION_EVENT:
-                return new MySQLBinlogFormatDescriptionEventPacket(binlogEventHeader, payload);
+                new MySQLBinlogFormatDescriptionEventPacket(binlogEventHeader, payload);
+                return null;
             case TABLE_MAP_EVENT:
-                return decodeTableMapEvent(binlogEventHeader, payload);
+                decodeTableMapEvent(binlogEventHeader, payload);
+                return null;
             case WRITE_ROWS_EVENTv1:
             case WRITE_ROWS_EVENTv2:
                 return decodeWriteRowsEventV2(binlogEventHeader, payload);
