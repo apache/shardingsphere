@@ -33,7 +33,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -43,7 +42,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class MetaDataRefreshEngine {
     
-    private static final Set<Class<? extends SQLStatement>> IGNORABLE_SQL_STATEMENT_CLASSES = Collections.newSetFromMap(new ConcurrentHashMap<>());
+    private static final Collection<Class<? extends SQLStatement>> IGNORED_SQL_STATEMENT_CLASSES = Collections.newSetFromMap(new ConcurrentHashMap<>());
     
     private final ShardingSphereDatabase database;
     
@@ -64,7 +63,7 @@ public final class MetaDataRefreshEngine {
     @SuppressWarnings({"unchecked", "rawtypes"})
     public Optional<MetaDataRefreshedEvent> refresh(final SQLStatementContext<?> sqlStatementContext, final Collection<RouteUnit> routeUnits) throws SQLException {
         Class<? extends SQLStatement> sqlStatementClass = sqlStatementContext.getSqlStatement().getClass();
-        if (IGNORABLE_SQL_STATEMENT_CLASSES.contains(sqlStatementClass)) {
+        if (IGNORED_SQL_STATEMENT_CLASSES.contains(sqlStatementClass)) {
             return Optional.empty();
         }
         Optional<MetaDataRefresher> schemaRefresher = MetaDataRefresherFactory.findInstance(sqlStatementClass);
@@ -74,7 +73,7 @@ public final class MetaDataRefreshEngine {
             Collection<String> logicDataSourceNames = routeUnits.stream().map(each -> each.getDataSourceMapper().getLogicName()).collect(Collectors.toList());
             return schemaRefresher.get().refresh(database, federationMetaData, optimizerPlanners, logicDataSourceNames, schemaName, sqlStatementContext.getSqlStatement(), props);
         }
-        IGNORABLE_SQL_STATEMENT_CLASSES.add(sqlStatementClass);
+        IGNORED_SQL_STATEMENT_CLASSES.add(sqlStatementClass);
         return Optional.empty();
     }
 }
