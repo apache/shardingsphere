@@ -31,7 +31,6 @@ import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.UpdateR
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.WriteRowsEvent;
 import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLBinlogEventType;
-import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.AbstractMySQLBinlogEventPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.MySQLBinlogEventHeader;
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.management.MySQLBinlogFormatDescriptionEventPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.management.MySQLBinlogRotateEventPacket;
@@ -133,16 +132,14 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
         }
     }
     
-    private AbstractMySQLBinlogEventPacket decodeRotateEvent(final MySQLBinlogEventHeader binlogEventHeader, final MySQLPacketPayload payload) {
-        MySQLBinlogRotateEventPacket result = new MySQLBinlogRotateEventPacket(binlogEventHeader, payload);
-        binlogContext.setFileName(result.getNextBinlogName());
-        return result;
+    private void decodeRotateEvent(final MySQLBinlogEventHeader binlogEventHeader, final MySQLPacketPayload payload) {
+        MySQLBinlogRotateEventPacket rotateEventPacket = new MySQLBinlogRotateEventPacket(binlogEventHeader, payload);
+        binlogContext.setFileName(rotateEventPacket.getNextBinlogName());
     }
     
-    private MySQLBinlogTableMapEventPacket decodeTableMapEvent(final MySQLBinlogEventHeader binlogEventHeader, final MySQLPacketPayload payload) {
-        MySQLBinlogTableMapEventPacket result = new MySQLBinlogTableMapEventPacket(binlogEventHeader, payload);
-        binlogContext.putTableMapEvent(result.getTableId(), result);
-        return result;
+    private void decodeTableMapEvent(final MySQLBinlogEventHeader binlogEventHeader, final MySQLPacketPayload payload) {
+        MySQLBinlogTableMapEventPacket tableMapEventPacket = new MySQLBinlogTableMapEventPacket(binlogEventHeader, payload);
+        binlogContext.putTableMapEvent(tableMapEventPacket.getTableId(), tableMapEventPacket);
     }
     
     private DeleteRowsEvent decodeDeleteRowsEventV2(final MySQLBinlogEventHeader binlogEventHeader, final MySQLPacketPayload payload) {
