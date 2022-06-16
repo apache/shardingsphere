@@ -996,7 +996,7 @@ refreshMatViewStmt
     ;
 
 alterPolicy
-    : ALTER POLICY existClause? name ON qualifiedName alterPolicyClauses
+    : ALTER POLICY name ON tableName alterPolicyClauses
     ;
 
 alterPolicyClauses

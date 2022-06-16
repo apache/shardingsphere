@@ -480,6 +480,8 @@ public enum SQLVisitorRule {
     
     ALTER_DOMAIN("AlterDomain", SQLStatementType.DDL),
     
+    ALTER_POLICY("AlterPolicy", SQLStatementType.DDL),
+    
     ALTER_CONVERSION("AlterConversion", SQLStatementType.DDL),
     
     CREATE_TEXT_SEARCH("CreateTextSearch", SQLStatementType.DDL),
