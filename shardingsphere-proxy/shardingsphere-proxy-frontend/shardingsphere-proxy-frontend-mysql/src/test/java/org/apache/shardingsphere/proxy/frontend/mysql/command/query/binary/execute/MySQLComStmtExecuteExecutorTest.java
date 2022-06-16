@@ -19,7 +19,14 @@ package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.exec
 
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLCharacterSet;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
+import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.MySQLColumnDefinition41Packet;
+import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.MySQLFieldCountPacket;
+import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.MySQLPreparedStatementRegistry;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.execute.MySQLComStmtExecutePacket;
+import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLEofPacket;
+import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
+import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
@@ -29,8 +36,7 @@ import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRule
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
-import org.apache.shardingsphere.parser.rule.SQLParserRule;
-import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
+import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.JDBCDatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -39,38 +45,47 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.QueryRespon
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.proxy.frontend.mysql.ProxyContextRestorer;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.ColumnAssignmentSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CommitStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLUpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLCommitStatement;
-import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
-import org.mockito.internal.configuration.plugins.Plugins;
+import org.mockito.MockedStatic;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.mockito.plugins.MemberAccessor;
 
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.Optional;
+import java.util.Iterator;
 import java.util.Properties;
+import java.util.function.Supplier;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class MySQLComStmtExecuteExecutorTest extends ProxyContextRestorer {
-    
-    private final SQLParserRule sqlParserRule = new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build());
     
     @Mock
     private JDBCDatabaseCommunicationEngine databaseCommunicationEngine;
@@ -85,16 +100,21 @@ public final class MySQLComStmtExecuteExecutorTest extends ProxyContextRestorer 
     public void setUp() {
         ShardingSphereDatabase database = mockDatabase();
         ShardingSphereRuleMetaData metaData = mock(ShardingSphereRuleMetaData.class);
-        when(metaData.findSingleRule(TransactionRule.class)).thenReturn(Optional.of(mock(TransactionRule.class)));
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
                 new ShardingSphereMetaData(Collections.singletonMap("logic_db", database), metaData, new ConfigurationProperties(new Properties())),
                 mock(OptimizerContext.class, RETURNS_DEEP_STUBS));
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
+        when(connectionSession.getConnectionId()).thenReturn(1);
         when(connectionSession.getAttributeMap().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).get()).thenReturn(MySQLCharacterSet.UTF8MB4_GENERAL_CI);
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
-        when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
+        when(connectionSession.getDatabaseName()).thenReturn("logic_db");
+        when(connectionSession.getDefaultDatabaseName()).thenReturn("logic_db");
+        MySQLPreparedStatementRegistry.getInstance().registerConnection(1);
+        MySQLPreparedStatementRegistry.getInstance().getConnectionPreparedStatements(1).prepareStatement("select * from tbl where id = ?", prepareSelectStatement());
+        MySQLPreparedStatementRegistry.getInstance().getConnectionPreparedStatements(1).prepareStatement("update tbl set col=1 where id = ?", prepareUpdateStatement());
+        MySQLPreparedStatementRegistry.getInstance().getConnectionPreparedStatements(1).prepareStatement("commit", new MySQLCommitStatement());
     }
     
     private ShardingSphereDatabase mockDatabase() {
@@ -105,55 +125,71 @@ public final class MySQLComStmtExecuteExecutorTest extends ProxyContextRestorer 
         return result;
     }
     
-    @Test
-    public void assertIsQueryResponse() throws NoSuchFieldException, SQLException, IllegalAccessException {
-        when(connectionSession.getDatabaseName()).thenReturn("logic_db");
-        when(connectionSession.getDefaultDatabaseName()).thenReturn("logic_db");
-        MySQLComStmtExecutePacket packet = mock(MySQLComStmtExecutePacket.class, RETURNS_DEEP_STUBS);
-        when(packet.getSql()).thenReturn("SELECT 1");
-        when(packet.getPreparedStatement().getSqlStatement()).thenReturn(prepareSQLStatement());
-        MySQLComStmtExecuteExecutor mysqlComStmtExecuteExecutor = new MySQLComStmtExecuteExecutor(packet, connectionSession);
-        MemberAccessor accessor = Plugins.getMemberAccessor();
-        accessor.set(MySQLComStmtExecuteExecutor.class.getDeclaredField("databaseCommunicationEngine"), mysqlComStmtExecuteExecutor, databaseCommunicationEngine);
-        when(databaseCommunicationEngine.execute()).thenReturn(new QueryResponseHeader(Collections.singletonList(mock(QueryHeader.class))));
-        mysqlComStmtExecuteExecutor.execute();
-        assertThat(mysqlComStmtExecuteExecutor.getResponseType(), is(ResponseType.QUERY));
-    }
-    
-    @Test
-    public void assertIsUpdateResponse() throws NoSuchFieldException, SQLException, IllegalAccessException {
-        when(connectionSession.getDatabaseName()).thenReturn("logic_db");
-        when(connectionSession.getDefaultDatabaseName()).thenReturn("logic_db");
-        MySQLComStmtExecutePacket packet = mock(MySQLComStmtExecutePacket.class, RETURNS_DEEP_STUBS);
-        when(packet.getSql()).thenReturn("SELECT 1");
-        when(packet.getPreparedStatement().getSqlStatement()).thenReturn(prepareSQLStatement());
-        MySQLComStmtExecuteExecutor mysqlComStmtExecuteExecutor = new MySQLComStmtExecuteExecutor(packet, connectionSession);
-        MemberAccessor accessor = Plugins.getMemberAccessor();
-        accessor.set(MySQLComStmtExecuteExecutor.class.getDeclaredField("databaseCommunicationEngine"), mysqlComStmtExecuteExecutor, databaseCommunicationEngine);
-        when(databaseCommunicationEngine.execute()).thenReturn(new UpdateResponseHeader(mock(SQLStatement.class)));
-        mysqlComStmtExecuteExecutor.execute();
-        assertThat(mysqlComStmtExecuteExecutor.getResponseType(), is(ResponseType.UPDATE));
-    }
-    
-    private MySQLSelectStatement prepareSQLStatement() {
+    private MySQLSelectStatement prepareSelectStatement() {
         MySQLSelectStatement sqlStatement = new MySQLSelectStatement();
         sqlStatement.setProjections(new ProjectionsSegment(0, 0));
         return sqlStatement;
     }
     
+    private MySQLUpdateStatement prepareUpdateStatement() {
+        MySQLUpdateStatement result = new MySQLUpdateStatement();
+        ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("col"));
+        ColumnAssignmentSegment columnAssignmentSegment = new ColumnAssignmentSegment(0, 0, Collections.singletonList(columnSegment), new ParameterMarkerExpressionSegment(0, 0, 0));
+        result.setSetAssignment(new SetAssignmentSegment(0, 0, Collections.singletonList(columnAssignmentSegment)));
+        return result;
+    }
+    
     @Test
-    public void assertExecutePreparedCommit() throws SQLException, NoSuchFieldException, IllegalAccessException {
-        when(connectionSession.getDatabaseName()).thenReturn("logic_db");
-        when(connectionSession.getDefaultDatabaseName()).thenReturn("logic_db");
-        MySQLComStmtExecutePacket packet = mock(MySQLComStmtExecutePacket.class, RETURNS_DEEP_STUBS);
-        when(packet.getSql()).thenReturn("commit");
-        when(packet.getPreparedStatement().getSqlStatement()).thenReturn(new MySQLCommitStatement());
+    public void assertIsQueryResponse() throws SQLException {
+        MySQLComStmtExecutePacket packet = mock(MySQLComStmtExecutePacket.class);
+        when(packet.getStatementId()).thenReturn(1);
+        MySQLComStmtExecuteExecutor mysqlComStmtExecuteExecutor = new MySQLComStmtExecuteExecutor(packet, connectionSession);
+        when(databaseCommunicationEngine.execute()).thenReturn(new QueryResponseHeader(Collections.singletonList(mock(QueryHeader.class))));
+        Iterator<DatabasePacket<?>> actual;
+        try (MockedStatic<DatabaseCommunicationEngineFactory> mockedStatic = mockStatic(DatabaseCommunicationEngineFactory.class, RETURNS_DEEP_STUBS)) {
+            mockedStatic.when(() -> DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(any(SQLStatementContext.class), anyString(), anyList(), eq(backendConnection)))
+                    .thenReturn(databaseCommunicationEngine);
+            actual = mysqlComStmtExecuteExecutor.execute().iterator();
+        }
+        assertThat(mysqlComStmtExecuteExecutor.getResponseType(), is(ResponseType.QUERY));
+        assertThat(actual.next(), instanceOf(MySQLFieldCountPacket.class));
+        assertThat(actual.next(), instanceOf(MySQLColumnDefinition41Packet.class));
+        assertThat(actual.next(), instanceOf(MySQLEofPacket.class));
+        assertFalse(actual.hasNext());
+    }
+    
+    @Test
+    public void assertIsUpdateResponse() throws SQLException {
+        MySQLComStmtExecutePacket packet = mock(MySQLComStmtExecutePacket.class);
+        when(packet.getStatementId()).thenReturn(2);
+        MySQLComStmtExecuteExecutor mysqlComStmtExecuteExecutor = new MySQLComStmtExecuteExecutor(packet, connectionSession);
+        when(databaseCommunicationEngine.execute()).thenReturn(new UpdateResponseHeader(new MySQLUpdateStatement()));
+        Iterator<DatabasePacket<?>> actual;
+        try (MockedStatic<DatabaseCommunicationEngineFactory> mockedStatic = mockStatic(DatabaseCommunicationEngineFactory.class, RETURNS_DEEP_STUBS)) {
+            mockedStatic.when(() -> DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(any(SQLStatementContext.class), anyString(), anyList(), eq(backendConnection)))
+                    .thenReturn(databaseCommunicationEngine);
+            actual = mysqlComStmtExecuteExecutor.execute().iterator();
+        }
+        assertThat(mysqlComStmtExecuteExecutor.getResponseType(), is(ResponseType.UPDATE));
+        assertThat(actual.next(), instanceOf(MySQLOKPacket.class));
+        assertFalse(actual.hasNext());
+    }
+    
+    @Test
+    public void assertExecutePreparedCommit() throws SQLException {
+        MySQLComStmtExecutePacket packet = mock(MySQLComStmtExecutePacket.class);
+        when(packet.getStatementId()).thenReturn(3);
         MySQLComStmtExecuteExecutor mysqlComStmtExecuteExecutor = new MySQLComStmtExecuteExecutor(packet, connectionSession);
         TextProtocolBackendHandler textProtocolBackendHandler = mock(TextProtocolBackendHandler.class);
-        MemberAccessor accessor = Plugins.getMemberAccessor();
-        accessor.set(MySQLComStmtExecuteExecutor.class.getDeclaredField("textProtocolBackendHandler"), mysqlComStmtExecuteExecutor, textProtocolBackendHandler);
-        when(textProtocolBackendHandler.execute()).thenReturn(new UpdateResponseHeader(mock(CommitStatement.class)));
-        mysqlComStmtExecuteExecutor.execute();
+        when(textProtocolBackendHandler.execute()).thenReturn(new UpdateResponseHeader(new MySQLCommitStatement()));
+        Iterator<DatabasePacket<?>> actual;
+        try (MockedStatic<TextProtocolBackendHandlerFactory> mockedStatic = mockStatic(TextProtocolBackendHandlerFactory.class)) {
+            mockedStatic.when(() -> TextProtocolBackendHandlerFactory.newInstance(any(MySQLDatabaseType.class), eq("commit"), any(Supplier.class), eq(connectionSession)))
+                    .thenReturn(textProtocolBackendHandler);
+            actual = mysqlComStmtExecuteExecutor.execute().iterator();
+        }
         assertThat(mysqlComStmtExecuteExecutor.getResponseType(), is(ResponseType.UPDATE));
+        assertThat(actual.next(), instanceOf(MySQLOKPacket.class));
+        assertFalse(actual.hasNext());
     }
 }
