@@ -4164,13 +4164,6 @@
     <sql-case id="alter_by_postgresql_source_test_case459" value="ALTER TYPE test_typex DROP ATTRIBUTE a;" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case460" value="ALTER TYPE tt_t0 DROP ATTRIBUTE z;" db-types="PostgreSQL" />
     <sql-case id="analyze_by_postgresql_source_test_case1" value="ANALYZE (nonexistent-arg) does_not_exist;" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case1" value="CREATE ACCESS METHOD bogus TYPE INDEX HANDLER heap_tableam_handler;" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case2" value="CREATE ACCESS METHOD bogus TYPE INDEX HANDLER int4in;" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case3" value="CREATE ACCESS METHOD bogus TYPE TABLE HANDLER bthandler;" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case4" value="CREATE ACCESS METHOD bogus TYPE TABLE HANDLER int4in;" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case5" value="CREATE ACCESS METHOD gist2 TYPE INDEX HANDLER gisthandler;" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case6" value="CREATE ACCESS METHOD heap2 TYPE TABLE HANDLER heap_tableam_handler;" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case7" value="CREATE ACCESS METHOD heap_psql TYPE TABLE HANDLER heap_tableam_handler;" db-types="PostgreSQL" />
     <sql-case id="create_by_postgresql_source_test_case8" value="CREATE AGGREGATE addr_nsp.genaggr(int4) (sfunc = int4pl, stype = int4);" db-types="PostgreSQL" />
     <sql-case id="create_by_postgresql_source_test_case9" value="CREATE AGGREGATE alt_agg1 (   sfunc1 = int4pl, basetype = int4, stype1 = int4, initcond = 0 );" db-types="PostgreSQL" />
     <sql-case id="create_by_postgresql_source_test_case10" value="CREATE AGGREGATE alt_agg1 (   sfunc1 = int4pl, basetype = int4, stype1 = int4, initcond = 100 );" db-types="PostgreSQL" />

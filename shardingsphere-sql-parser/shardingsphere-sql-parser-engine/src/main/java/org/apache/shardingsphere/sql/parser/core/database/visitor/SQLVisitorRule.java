@@ -568,7 +568,9 @@ public enum SQLVisitorRule {
     
     CHECKPOINT("Checkpoint", SQLStatementType.DML),
     
-    CLUSTER("Cluster", SQLStatementType.DDL);
+    CLUSTER("Cluster", SQLStatementType.DDL),
+    
+    CREATE_ACCESS_METHOD("CreateAccessMethod", SQLStatementType.DDL);
     
     private final String name;
     
