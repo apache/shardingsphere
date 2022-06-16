@@ -66,7 +66,10 @@ public final class MySQLBinlogTableMapEventPacket extends AbstractMySQLBinlogEve
         // mysql 8 binlog table map event include column type def
         // for support lower than 8, read column type def by sql query
         // so skip readable bytes here
-        payload.getByteBuf().skipBytes(payload.getByteBuf().readableBytes());
+        int remainBytesLength = getRemainBytesLength(payload);
+        if (remainBytesLength > 0) {
+            payload.skipReserved(remainBytesLength);
+        }
     }
     
     private void readColumnDefs(final MySQLPacketPayload payload) {

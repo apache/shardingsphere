@@ -17,15 +17,17 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
+import com.google.common.base.Preconditions;
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.aware.EncryptRuleAware;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.ddl.CreateIndexStatementContext;
+import org.apache.shardingsphere.infra.binder.type.IndexAvailable;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.SubstitutableColumnNameToken;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 
 import java.util.Collection;
@@ -34,24 +36,27 @@ import java.util.LinkedList;
 import java.util.Optional;
 
 /**
- * Create index token generator for encrypt.
+ * Index column token generator for encrypt.
  */
 @Setter
-public final class EncryptCreateIndexTokenGenerator implements CollectionSQLTokenGenerator<CreateIndexStatementContext>, EncryptRuleAware {
+public final class EncryptIndexColumnTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext<?>>, EncryptRuleAware {
     
     private EncryptRule encryptRule;
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext<?> sqlStatementContext) {
-        return sqlStatementContext instanceof CreateIndexStatementContext && !(((CreateIndexStatementContext) sqlStatementContext).getSqlStatement()).getColumns().isEmpty();
+        return sqlStatementContext instanceof IndexAvailable;
     }
     
     @Override
-    public Collection<SQLToken> generateSQLTokens(final CreateIndexStatementContext createIndexStatementContext) {
+    public Collection<SQLToken> generateSQLTokens(final SQLStatementContext<?> sqlStatementContext) {
+        Preconditions.checkArgument(sqlStatementContext instanceof IndexAvailable, "SQLStatementContext must implementation IndexAvailable interface.");
+        if (sqlStatementContext.getTablesContext().getTableNames().isEmpty()) {
+            return Collections.emptyList();
+        }
         Collection<SQLToken> result = new LinkedList<>();
-        String tableName = createIndexStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
-        Collection<ColumnSegment> columns = createIndexStatementContext.getSqlStatement().getColumns();
-        for (ColumnSegment each : columns) {
+        String tableName = sqlStatementContext.getTablesContext().getTableNames().iterator().next();
+        for (ColumnSegment each : ((IndexAvailable) sqlStatementContext).getIndexColumns()) {
             encryptRule.findEncryptor(tableName, each.getIdentifier().getValue()).flatMap(optional -> getColumnToken(tableName, each)).ifPresent(result::add);
         }
         return result;
@@ -59,28 +64,31 @@ public final class EncryptCreateIndexTokenGenerator implements CollectionSQLToke
     
     private Optional<SQLToken> getColumnToken(final String tableName, final ColumnSegment columnSegment) {
         String columnName = columnSegment.getIdentifier().getValue();
+        QuoteCharacter quoteCharacter = columnSegment.getIdentifier().getQuoteCharacter();
+        int startIndex = columnSegment.getStartIndex();
+        int stopIndex = columnSegment.getStopIndex();
         boolean queryWithCipherColumn = encryptRule.isQueryWithCipherColumn(tableName, columnName);
         if (queryWithCipherColumn) {
-            Optional<String> assistedQueryColumn = encryptRule.findAssistedQueryColumn(tableName, columnName);
-            return assistedQueryColumn.map(optional -> getAssistedQueryColumnToken(columnSegment, optional)).orElseGet(() -> getCipherColumnToken(tableName, columnSegment, columnName));
+            return encryptRule.findAssistedQueryColumn(tableName, columnName).map(optional -> getAssistedQueryColumnToken(startIndex, stopIndex, optional, quoteCharacter))
+                    .orElseGet(() -> getCipherColumnToken(tableName, startIndex, stopIndex, columnName, quoteCharacter));
         }
-        return getPlainColumnToken(tableName, columnSegment, columnName);
+        return getPlainColumnToken(tableName, startIndex, stopIndex, columnName, quoteCharacter);
     }
     
-    private Optional<SQLToken> getAssistedQueryColumnToken(final ColumnSegment columnSegment, final String columnName) {
+    private Optional<SQLToken> getAssistedQueryColumnToken(final int startIndex, final int stopIndex, final String columnName, final QuoteCharacter quoteCharacter) {
         Collection<ColumnProjection> columnProjections = getColumnProjections(columnName);
-        return Optional.of(new SubstitutableColumnNameToken(columnSegment.getStartIndex(), columnSegment.getStopIndex(), columnProjections));
+        return Optional.of(new SubstitutableColumnNameToken(startIndex, stopIndex, columnProjections, quoteCharacter));
     }
     
-    private Optional<SQLToken> getCipherColumnToken(final String tableName, final ColumnSegment columnSegment, final String columnName) {
+    private Optional<SQLToken> getCipherColumnToken(final String tableName, final int startIndex, final int stopIndex, final String columnName, final QuoteCharacter quoteCharacter) {
         String cipherColumn = encryptRule.getCipherColumn(tableName, columnName);
         Collection<ColumnProjection> columnProjections = getColumnProjections(cipherColumn);
-        return Optional.of(new SubstitutableColumnNameToken(columnSegment.getStartIndex(), columnSegment.getStopIndex(), columnProjections));
+        return Optional.of(new SubstitutableColumnNameToken(startIndex, stopIndex, columnProjections, quoteCharacter));
     }
     
-    private Optional<SQLToken> getPlainColumnToken(final String tableName, final ColumnSegment columnSegment, final String columnName) {
-        Optional<String> plainColumn = encryptRule.findPlainColumn(tableName, columnName);
-        return plainColumn.map(optional -> new SubstitutableColumnNameToken(columnSegment.getStartIndex(), columnSegment.getStopIndex(), getColumnProjections(optional)));
+    private Optional<SQLToken> getPlainColumnToken(final String tableName, final int startIndex, final int stopIndex, final String columnName, final QuoteCharacter quoteCharacter) {
+        return encryptRule.findPlainColumn(tableName, columnName)
+                .map(optional -> new SubstitutableColumnNameToken(startIndex, stopIndex, getColumnProjections(optional), quoteCharacter));
     }
     
     private Collection<ColumnProjection> getColumnProjections(final String columnName) {

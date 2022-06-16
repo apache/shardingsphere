@@ -15,18 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.subject.impl;
+package org.apache.shardingsphere.proxy.backend.exception;
 
-import org.apache.shardingsphere.distsql.parser.subject.DistSQLSubjectSupplier;
-import org.apache.shardingsphere.distsql.parser.subject.DistSQLSubjectTypeEnum;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Readwrite splitting subject supplier.
+ * In transaction exception.
  */
-public interface ReadwriteSplittingSubjectSupplier extends DistSQLSubjectSupplier {
+@Getter
+@RequiredArgsConstructor
+public final class InTransactionException extends BackendException {
     
-    @Override
-    default DistSQLSubjectTypeEnum getSubjectType() {
-        return DistSQLSubjectTypeEnum.READWRITE_SPLITTING;
-    }
+    private final String message;
 }

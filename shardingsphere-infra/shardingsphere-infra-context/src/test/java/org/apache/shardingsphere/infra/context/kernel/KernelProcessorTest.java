@@ -49,8 +49,8 @@ public final class KernelProcessorTest {
         SQLStatementContext<SQLStatement> sqlStatementContext = mock(CommonSQLStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(SelectStatement.class));
         LogicSQL logicSQL = new LogicSQL(sqlStatementContext, "SELECT * FROM tbl", Collections.emptyList());
-        ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class), mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS),
-                new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()), Collections.emptyMap());
+        ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME,
+                mock(DatabaseType.class), mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS), new ShardingSphereRuleMetaData(Collections.emptyList()), Collections.emptyMap());
         ConfigurationProperties props = new ConfigurationProperties(createProperties());
         ExecutionContext actual = new KernelProcessor().generateExecutionContext(logicSQL, database, props);
         assertThat(actual.getExecutionUnits().size(), is(1));

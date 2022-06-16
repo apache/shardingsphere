@@ -15,18 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.subject.impl;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
-import org.apache.shardingsphere.distsql.parser.subject.DistSQLSubjectSupplier;
-import org.apache.shardingsphere.distsql.parser.subject.DistSQLSubjectTypeEnum;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * Shadow subject supplier.
+ * Alter policy statement.
  */
-public interface ShadowSubjectSupplier extends DistSQLSubjectSupplier {
-    
-    @Override
-    default DistSQLSubjectTypeEnum getSubjectType() {
-        return DistSQLSubjectTypeEnum.SHADOW;
-    }
+public abstract class AlterPolicyStatement extends AbstractSQLStatement implements DDLStatement {
 }

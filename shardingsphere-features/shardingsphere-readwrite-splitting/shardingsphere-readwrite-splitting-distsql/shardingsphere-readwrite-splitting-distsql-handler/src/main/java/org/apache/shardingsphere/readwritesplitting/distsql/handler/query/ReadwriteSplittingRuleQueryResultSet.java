@@ -53,9 +53,9 @@ public final class ReadwriteSplittingRuleQueryResultSet implements DistSQLResult
     
     @Override
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
-        Optional<ReadwriteSplittingRuleConfiguration> ruleConfig = database.getRuleMetaData().findRuleConfigurations(ReadwriteSplittingRuleConfiguration.class).stream().findAny();
+        Optional<ReadwriteSplittingRule> rule = database.getRuleMetaData().findSingleRule(ReadwriteSplittingRule.class);
         buildExportableMap(database);
-        ruleConfig.ifPresent(optional -> data = buildData(optional).iterator());
+        rule.ifPresent(optional -> data = buildData(optional).iterator());
     }
     
     @SuppressWarnings("unchecked")
@@ -67,10 +67,10 @@ public final class ReadwriteSplittingRuleQueryResultSet implements DistSQLResult
         exportableDataSourceMap = (Map<String, Map<String, String>>) exportedData.get(ExportableConstants.EXPORT_STATIC_READWRITE_SPLITTING_RULE);
     }
     
-    private Collection<Collection<Object>> buildData(final ReadwriteSplittingRuleConfiguration ruleConfig) {
+    private Collection<Collection<Object>> buildData(final ReadwriteSplittingRule rule) {
         Collection<Collection<Object>> result = new LinkedList<>();
-        ruleConfig.getDataSources().forEach(each -> {
-            Collection<Object> dataItem = buildDataItem(each, getLoadBalancers(ruleConfig));
+        ((ReadwriteSplittingRuleConfiguration) rule.getConfiguration()).getDataSources().forEach(each -> {
+            Collection<Object> dataItem = buildDataItem(each, getLoadBalancers((ReadwriteSplittingRuleConfiguration) rule.getConfiguration()));
             result.add(dataItem);
         });
         return result;

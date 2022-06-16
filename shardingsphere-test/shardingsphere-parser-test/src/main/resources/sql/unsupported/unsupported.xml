@@ -3940,23 +3940,6 @@
     <sql-case id="alter_by_postgresql_source_test_case214" value="ALTER OPERATOR FAMILY alt_opf7 USING btree DROP OPERATOR 1 (int4, int2, int8);" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case215" value="ALTER OPERATOR FAMILY alt_opf8 USING btree ADD OPERATOR 1 &lt; (int4, int4);" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case216" value="ALTER OPERATOR FAMILY alt_opf9 USING gist ADD OPERATOR 1 &lt; (int4, int4) FOR ORDER BY float_ops;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case217" value="ALTER POLICY dep_p1 ON dep1 TO regress_rls_bob,regress_rls_carol;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case218" value="ALTER POLICY dep_p1 ON dep1 USING (true);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case219" value="ALTER POLICY p ON tbl1 TO regress_rls_frank USING (true);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case220" value="ALTER POLICY p1 ON document USING (dauthor = current_user);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case221" value="ALTER POLICY p1 ON document USING (true);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case222" value="ALTER POLICY p1 ON event_trigger_test RENAME TO p2;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case223" value="ALTER POLICY p1 ON event_trigger_test USING (TRUE);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case224" value="ALTER POLICY p1 ON s1 USING (a in (select x from v2));" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case225" value="ALTER POLICY p1 ON t1 RENAME TO p1;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case226" value="ALTER POLICY p1 ON t1 RENAME TO p2;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case227" value="ALTER POLICY p2 ON s2 USING (x % 2 = 0);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case228" value="ALTER POLICY p2 ON s2 USING (x in (select a from s1 where b like &apos;%d2%&apos;));" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case229" value="ALTER POLICY pp1 ON part_document USING (dauthor = current_user);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case230" value="ALTER POLICY pp1 ON part_document USING (true);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case231" value="ALTER POLICY r1 ON rec1 USING (x = (SELECT a FROM rec2 WHERE b = y));" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case232" value="ALTER POLICY r1 ON rec1 USING (x = (SELECT a FROM rec2v WHERE b = y));" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case233" value="ALTER POLICY r2 ON rec2 USING (a = (SELECT x FROM rec1v WHERE y = b));" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case234" value="ALTER PUBLICATION testpib_ins_trunct ADD TABLE pub_test.testpub_nopk, testpub_tbl1;" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case235" value="ALTER PUBLICATION testpub1_forschema ADD ALL TABLES IN SCHEMA non_existent_schema;" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case236" value="ALTER PUBLICATION testpub1_forschema ADD ALL TABLES IN SCHEMA pub_test1;" db-types="PostgreSQL" />

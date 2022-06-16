@@ -1507,6 +1507,7 @@ roleSpec
     | CURRENT_USER
     | SESSION_USER
     | CURRENT_ROLE
+    | PUBLIC
     ;
 
 varName

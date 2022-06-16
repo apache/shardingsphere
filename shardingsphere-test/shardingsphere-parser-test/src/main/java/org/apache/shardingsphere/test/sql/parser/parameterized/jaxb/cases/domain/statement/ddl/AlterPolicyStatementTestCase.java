@@ -15,29 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.subject;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import java.util.Collection;
-import java.util.Collections;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Dist SQL subject supplier.
+ * Alter policy statement test case.
  */
-public interface DistSQLSubjectSupplier {
-    
-    /**
-     * Get subject type.
-     *
-     * @return subject type
-     */
-    DistSQLSubjectTypeEnum getSubjectType();
-    
-    /**
-     * Get subject names.
-     *
-     * @return subject names
-     */
-    default Collection<String> getSubjectNames() {
-        return Collections.emptyList();
-    }
+public final class AlterPolicyStatementTestCase extends SQLParserTestCase {
 }
