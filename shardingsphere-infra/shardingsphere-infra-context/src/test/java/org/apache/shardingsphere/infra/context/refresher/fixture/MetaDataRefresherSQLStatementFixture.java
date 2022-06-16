@@ -19,10 +19,5 @@ package org.apache.shardingsphere.infra.context.refresher.fixture;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
-public final class FixtureSQLStatement extends AbstractSQLStatement {
-    
-    @Override
-    public int getParameterCount() {
-        return 0;
-    }
+public final class MetaDataRefresherSQLStatementFixture extends AbstractSQLStatement {
 }
