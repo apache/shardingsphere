@@ -121,7 +121,8 @@ public final class ShardingRouteEngineFactory {
             return new ShardingIgnoreRoutingEngine();
         }
         if (sqlStatementContext instanceof CursorAvailable) {
-            return new ShardingStandardRoutingEngine(tableNames.iterator().next(), shardingConditions, props);
+            return shardingRule.isAllBroadcastTables(shardingRuleTableNames) ? new ShardingUnicastRoutingEngine(sqlStatementContext, shardingRuleTableNames)
+                    : new ShardingStandardRoutingEngine(shardingRuleTableNames.iterator().next(), shardingConditions, props);
         }
         return new ShardingTableBroadcastRoutingEngine(database, sqlStatementContext, shardingRuleTableNames);
     }
@@ -151,7 +152,7 @@ public final class ShardingRouteEngineFactory {
                     : new ShardingTableBroadcastRoutingEngine(database, sqlStatementContext, shardingRuleTableNames);
         }
         if (!shardingRuleTableNames.isEmpty()) {
-            return new ShardingUnicastRoutingEngine(shardingRuleTableNames);
+            return new ShardingUnicastRoutingEngine(sqlStatementContext, shardingRuleTableNames);
         }
         return new ShardingDataSourceGroupBroadcastRoutingEngine();
     }
@@ -184,10 +185,12 @@ public final class ShardingRouteEngineFactory {
                                                            final ShardingConditions shardingConditions, final ConfigurationProperties props) {
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         if (shardingRule.isAllBroadcastTables(tableNames)) {
-            return sqlStatementContext.getSqlStatement() instanceof SelectStatement ? new ShardingUnicastRoutingEngine(tableNames) : new ShardingDatabaseBroadcastRoutingEngine();
+            return sqlStatementContext.getSqlStatement() instanceof SelectStatement
+                    ? new ShardingUnicastRoutingEngine(sqlStatementContext, tableNames)
+                    : new ShardingDatabaseBroadcastRoutingEngine();
         }
         if (sqlStatementContext.getSqlStatement() instanceof DMLStatement && shardingConditions.isAlwaysFalse() || tableNames.isEmpty()) {
-            return new ShardingUnicastRoutingEngine(tableNames);
+            return new ShardingUnicastRoutingEngine(sqlStatementContext, tableNames);
         }
         Collection<String> shardingLogicTableNames = shardingRule.getShardingLogicTableNames(tableNames);
         if (shardingLogicTableNames.isEmpty()) {
